@@ -21,7 +21,7 @@ class ValidateNode {
   /// If set, the key must match the restriction if an error is returned the key
   /// is considered invalid.
   /// Should only be used together with a [Keyword.any].
-  List<SourceSpanException>? Function(String, SourceSpan?)? keyRestriction;
+  List<SourceSpanException>? Function(String, String, SourceSpan?)? keyRestriction;
 
   /// If set, the value must match the restriction if an error is returned the
   /// value is considered invalid.

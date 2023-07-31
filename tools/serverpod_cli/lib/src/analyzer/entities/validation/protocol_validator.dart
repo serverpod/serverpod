@@ -67,6 +67,7 @@ void validateYamlProtocol(
 
   for (var node in documentStructure) {
     _collectKeyRestrictionErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -214,6 +215,7 @@ void _collectDeprecatedKeyErrors(
 }
 
 void _collectKeyRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -223,6 +225,7 @@ void _collectKeyRestrictionErrors(
   if (node.key == Keyword.any) {
     for (var document in documentContents.nodes.entries) {
       var errors = node.keyRestriction?.call(
+        context.parentNodeName,
         document.key.toString(),
         document.key.span,
       );
@@ -233,6 +236,7 @@ void _collectKeyRestrictionErrors(
     }
   } else if (documentContents.containsKey(node.key)) {
     var errors = node.keyRestriction?.call(
+      context.parentNodeName,
       node.key,
       documentContents.key(node.key)?.span,
     );

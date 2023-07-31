@@ -121,11 +121,11 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateTableIndexName(
-    dynamic indexName,
+    String parentNodeName,
+    String indexName,
     SourceSpan? span,
   ) {
-    if (indexName is! String ||
-        !StringValidators.isValidTableIndexName(indexName)) {
+    if (!StringValidators.isValidTableIndexName(indexName)) {
       return [
         SourceSpanSeverityException(
           'Invalid format for index "$indexName", must follow the format lower_snake_case.',
@@ -148,7 +148,8 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateFieldName(
-    dynamic fieldName,
+    String parentNodeName,
+    String fieldName,
     SourceSpan? span,
   ) {
     if (!StringValidators.isValidFieldName(fieldName)) {
