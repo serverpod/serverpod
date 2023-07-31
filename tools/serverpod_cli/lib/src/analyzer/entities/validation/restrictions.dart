@@ -434,6 +434,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateRelationKey(
+    String parentNodeName,
     String relation,
     SourceSpan? span,
   ) {
