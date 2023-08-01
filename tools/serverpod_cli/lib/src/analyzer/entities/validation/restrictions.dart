@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
@@ -22,10 +23,11 @@ class Restrictions {
   });
 
   List<SourceSpanSeverityException> validateClassName(
-    dynamic content,
+    String parentNodeName,
+    dynamic className,
     SourceSpan? span,
   ) {
-    if (content is! String) {
+    if (className is! String) {
       return [
         SourceSpanSeverityException(
           'The "$documentType" type must be a String.',
@@ -34,7 +36,7 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidClassName(content)) {
+    if (!StringValidators.isValidClassName(className)) {
       return [
         SourceSpanSeverityException(
           'The "$documentType" type must be a valid class name (e.g. PascalCaseString).',
@@ -43,21 +45,21 @@ class Restrictions {
       ];
     }
 
-    var reservedClassNames = {'List', 'Map', 'String', 'DateTime'};
-    if (reservedClassNames.contains(content)) {
+    var reservedClassNames = const {'List', 'Map', 'String', 'DateTime'};
+    if (reservedClassNames.contains(className)) {
       return [
         SourceSpanSeverityException(
-          'The class name "$content" is reserved and cannot be used.',
+          'The class name "$className" is reserved and cannot be used.',
           span,
         )
       ];
     }
 
-    var classesByName = entityRelations?.classNames[content];
+    var classesByName = entityRelations?.classNames[className];
     if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanSeverityException(
-          'The $documentType name "$content" is already used by another protocol class.',
+          'The $documentType name "$className" is already used by another protocol class.',
           span,
         )
       ];
@@ -67,6 +69,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateTableName(
+    String parentNodeName,
     dynamic tableName,
     SourceSpan? span,
   ) {
@@ -103,6 +106,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateBoolType(
+    String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {
@@ -144,10 +148,10 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateFieldName(
-    dynamic content,
+    dynamic fieldName,
     SourceSpan? span,
   ) {
-    if (StringValidators.isInvalidFieldValueInfoSeverity(content)) {
+    if (StringValidators.isInvalidFieldValueInfoSeverity(fieldName)) {
       return [
         SourceSpanSeverityException(
           'Field names should be valid Dart variable names (e.g. camelCaseString).',
@@ -157,7 +161,7 @@ class Restrictions {
       ];
     }
 
-    if (!StringValidators.isValidFieldName(content)) {
+    if (!StringValidators.isValidFieldName(fieldName)) {
       return [
         SourceSpanSeverityException(
           'Field names must be valid Dart variable names (e.g. camelCaseString).',
@@ -167,7 +171,7 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (content == 'id' && def is ClassDefinition && def.tableName != null) {
+    if (fieldName == 'id' && def is ClassDefinition && def.tableName != null) {
       return [
         SourceSpanSeverityException(
           'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
@@ -179,7 +183,75 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateRelationInterdependencies(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var definition = documentDefinition;
+
+    if (definition is! ClassDefinition) return errors;
+
+    var field = definition.findField(parentNodeName);
+    var type = field?.type.className;
+
+    if (!AnalyzeChecker.isIdType(type) &&
+        AnalyzeChecker.isParentDefined(content)) {
+      errors.add(SourceSpanSeverityException(
+        'The "parent" property should be omitted on protocol relations.',
+        span,
+      ));
+    }
+
+    if (AnalyzeChecker.isIdType(type) &&
+        AnalyzeChecker.isOptionalDefined(content)) {
+      errors.add(SourceSpanSeverityException(
+        'The "optional" property should be omitted on id fields.',
+        span,
+      ));
+    }
+
+    if (AnalyzeChecker.isIdType(type) &&
+        !AnalyzeChecker.isParentDefined(content)) {
+      errors.add(SourceSpanSeverityException(
+        'The "parent" property must be defined on id fields.',
+        span,
+      ));
+    }
+
+    var classes = entityRelations?.classNames[type];
+
+    if (!AnalyzeChecker.isIdType(type) &&
+        (classes == null || classes.isEmpty)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$type" was not found in any protocol.',
+        span,
+      ));
+      return errors;
+    }
+
+    if (!AnalyzeChecker.isIdType(type) && !_hasTableDefined(classes)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$type" must have a "table" property defined to be used in a relation.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
+  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
+    var hasTable = classes
+        ?.whereType<ClassDefinition>()
+        .any((definition) => definition.tableName != null);
+    if (hasTable == null) return false;
+
+    return hasTable;
+  }
+
   List<SourceSpanSeverityException> validateParentName(
+    String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {
@@ -218,6 +290,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateFieldDataType(
+    String parentNodeName,
     dynamic type,
     SourceSpan? span,
   ) {
@@ -230,19 +303,32 @@ class Restrictions {
       ];
     }
 
+    var errors = <SourceSpanSeverityException>[];
+
     if (!_isValidFieldType(type)) {
-      return [
-        SourceSpanSeverityException(
-          'The field has an invalid datatype "$type".',
-          span,
-        )
-      ];
+      errors.add(SourceSpanSeverityException(
+        'The field has an invalid datatype "$type".',
+        span,
+      ));
     }
 
-    return [];
+    var def = documentDefinition;
+    if (def is ClassDefinition) {
+      var field = def.findField(parentNodeName);
+
+      if (field?.scalarFieldName != null && !type.endsWith('?')) {
+        errors.add(SourceSpanSeverityException(
+          'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
+          span,
+        ));
+      }
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateIndexFieldsValue(
+    String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {
@@ -285,6 +371,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateIndexType(
+    String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {
@@ -320,6 +407,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateEnumValues(
+    String parentNodeName,
     dynamic content,
     SourceSpan? span,
   ) {

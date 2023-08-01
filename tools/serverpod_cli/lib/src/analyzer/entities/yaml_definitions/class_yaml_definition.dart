@@ -55,11 +55,17 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.relation,
                 keyRestriction: restrictions.validateRelationKey,
+                valueRestriction:
+                    restrictions.validateRelationInterdependencies,
                 mutuallyExclusiveKeys: {Keyword.parent},
+                allowEmptyNestedValue: true,
                 nested: {
                   ValidateNode(
                     Keyword.parent,
                     valueRestriction: restrictions.validateParentName,
+                  ),
+                  ValidateNode(
+                    Keyword.optional,
                   ),
                 },
               ),
