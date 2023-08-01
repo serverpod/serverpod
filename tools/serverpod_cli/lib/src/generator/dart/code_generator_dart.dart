@@ -33,7 +33,7 @@ class DartCodeGenerator extends CodeGenerator {
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
           serverSideGenerator
               .generateTemporaryProtocol(entities: entities)
-              .generateCode(true),
+              .generateCode(),
       for (var protocolFile in entities)
         p.joinAll([
           ...config.generatedServerProtocolPathParts,
@@ -41,7 +41,7 @@ class DartCodeGenerator extends CodeGenerator {
           '${protocolFile.fileName}.dart'
         ]): serverSideGenerator
             .generateEntityLibrary(protocolFile)
-            .generateCode(true),
+            .generateCode(),
 
       // Client
       for (var protocolFile in entities)
@@ -52,7 +52,7 @@ class DartCodeGenerator extends CodeGenerator {
             '${protocolFile.fileName}.dart',
           ]): clientSideGenerator
               .generateEntityLibrary(protocolFile)
-              .generateCode(true),
+              .generateCode(),
     };
   }
 
@@ -74,20 +74,18 @@ class DartCodeGenerator extends CodeGenerator {
     return {
       // Server
       p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
-          serverClassGenerator.generateProtocol().generateCode(true),
+          serverClassGenerator.generateProtocol().generateCode(),
       p.joinAll([...config.generatedServerProtocolPathParts, 'endpoints.dart']):
-          serverClassGenerator
-              .generateServerEndpointDispatch()
-              .generateCode(true),
+          serverClassGenerator.generateServerEndpointDispatch().generateCode(),
 
       // Client
       p.joinAll([
         ...config.generatedDartClientProtocolPathParts,
         'protocol.dart'
-      ]): clientClassGenerator.generateProtocol().generateCode(true),
+      ]): clientClassGenerator.generateProtocol().generateCode(),
       p.joinAll(
               [...config.generatedDartClientProtocolPathParts, 'client.dart']):
-          clientClassGenerator.generateClientEndpointCalls().generateCode(true),
+          clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
   }
 
@@ -106,11 +104,10 @@ class DartCodeGenerator extends CodeGenerator {
 }
 
 extension on Library {
-  String generateCode(bool dartFormat) {
+  String generateCode() {
     var code = accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString();
-    if (dartFormat) {
-      try {
-        return DartFormatter().format('''
+    try {
+      return DartFormatter().format('''
 /* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
 /*   To generate run: "serverpod generate"    */
 
@@ -120,9 +117,8 @@ extension on Library {
 
 $code
 ''');
-      } on FormatterException catch (e) {
-        log.error(e.toString());
-      }
+    } on FormatterException catch (e) {
+      log.error(e.toString());
     }
     return code;
   }
