@@ -147,10 +147,20 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
+    if (StringValidators.isInvalidFieldValueInfoSeverity(content)) {
+      return [
+        SourceSpanSeverityException(
+          'Field names should be valid Dart variable names (e.g. camelCaseString).',
+          span,
+          severity: SourceSpanSeverity.info,
+        )
+      ];
+    }
+
     if (!StringValidators.isValidFieldName(content)) {
       return [
         SourceSpanSeverityException(
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
+          'Field names must be valid Dart variable names (e.g. camelCaseString).',
           span,
         )
       ];
@@ -333,7 +343,7 @@ class Restrictions {
         );
       }
 
-      if (StringValidators.isInvalidInfoEnumValue(node.value)) {
+      if (StringValidators.isInvalidFieldValueInfoSeverity(node.value)) {
         return SourceSpanSeverityException(
           'Enum values should be lowerCamelCase.',
           node.span,
@@ -341,7 +351,7 @@ class Restrictions {
         );
       }
 
-      if (!StringValidators.isValidEnumValue(node.value)) {
+      if (!StringValidators.isValidFieldName(node.value)) {
         return SourceSpanSeverityException(
           'Enum values must be lowerCamelCase.',
           node.span,
