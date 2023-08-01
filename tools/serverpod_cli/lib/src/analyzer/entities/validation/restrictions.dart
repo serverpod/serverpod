@@ -412,7 +412,3 @@ class Restrictions {
     return classes.firstWhere((c) => c != documentDefinition);
   }
 }
-
-enum Enum {
-  FULLCAPS,
-}
