@@ -122,10 +122,11 @@ class StdOutLogger extends Logger {
       return await runner();
     }
 
-    if (newParagraph) _write('\n', LogLevel.info);
+    _stopAnimationInProgress();
+
+    if (newParagraph) _write('', LogLevel.info, newParagraph: newParagraph);
 
     var progress = Progress(message, stdout);
-    _stopAnimationInProgress();
     trackedAnimationInProgress = progress;
     bool success = await runner();
     trackedAnimationInProgress = null;
@@ -153,11 +154,7 @@ class StdOutLogger extends Logger {
         _SeveritySpanHelpers.highlightAnsiCode(logLevel, isHint);
     var message = sourceSpan.toString(color: highlightAnsiCode);
 
-    if (newParagraph) {
-      message = '\n$message';
-    }
-
-    _write(message, logLevel);
+    _write(message, logLevel, newParagraph: newParagraph);
   }
 
   @override
@@ -215,24 +212,25 @@ class StdOutLogger extends Logger {
       message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
     }
 
-    if (newParagraph) {
-      message = '\n$message';
-    }
-
-    if (type is! RawLogType) {
-      // If it is not a raw log we append a new line after the message.
-      message = '$message\n';
-    }
-
-    _write(message, logLevel);
+    _write(
+      message,
+      logLevel,
+      newParagraph: newParagraph,
+      newLine: type is! RawLogType,
+    );
   }
 
-  void _write(String message, LogLevel logLevel) {
+  void _write(
+    String message,
+    LogLevel logLevel, {
+    required newParagraph,
+    newLine = true,
+  }) {
     _stopAnimationInProgress();
     if (logLevel.index >= LogLevel.warning.index) {
-      stderr.write(message);
+      stderr.write('${newParagraph ? '\n' : ''}$message${newLine ? '\n' : ''}');
     } else {
-      stdout.write(message);
+      stdout.write('${newParagraph ? '\n' : ''}$message${newLine ? '\n' : ''}');
     }
   }
 
@@ -257,18 +255,23 @@ class WindowsStdOutLogger extends StdOutLogger {
   @override
   void _write(
     String message,
-    LogLevel logLevel,
-  ) {
+    LogLevel logLevel, {
+    required newParagraph,
+    newLine = true,
+  }) {
     super._write(
-        message
-            .replaceAll('🥳', '=D')
-            .replaceAll(
-              '✅',
-              AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
-            )
-            .replaceAll('🚀', '')
-            .replaceAll('📦', ''),
-        logLevel);
+      message
+          .replaceAll('🥳', '=D')
+          .replaceAll(
+            '✅',
+            AnsiStyle.bold.wrap(AnsiStyle.lightGreen.wrap('✓')),
+          )
+          .replaceAll('🚀', '')
+          .replaceAll('📦', ''),
+      logLevel,
+      newParagraph: newParagraph,
+      newLine: newLine,
+    );
   }
 }
 

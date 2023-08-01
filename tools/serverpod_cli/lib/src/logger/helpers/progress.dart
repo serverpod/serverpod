@@ -83,6 +83,7 @@ class Progress {
     }
 
     _timer = Timer.periodic(const Duration(milliseconds: 80), _onTick);
+    _onTick(_timer);
   }
 
   final ProgressOptions _options;
