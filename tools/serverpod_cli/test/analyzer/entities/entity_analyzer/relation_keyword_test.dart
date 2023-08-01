@@ -607,7 +607,9 @@ fields:
     );
   });
 
-  test('Given a class ', () {
+  group(
+      'Given a class with a relation to a protocol class with a table defined',
+      () {
     var collector = CodeGenerationCollector();
 
     var protocol1 = ProtocolSource(
@@ -653,8 +655,14 @@ fields:
 
     var classDefinition = definition1 as ClassDefinition;
 
-    expect(
-        classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then the parent table was set on the scalar field.', () {
+      expect(
+          classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    });
   });
 
   test(
