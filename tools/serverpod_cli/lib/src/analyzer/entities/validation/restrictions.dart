@@ -45,7 +45,7 @@ class Restrictions {
       ];
     }
 
-    var reservedClassNames = {'List', 'Map', 'String', 'DateTime'};
+    var reservedClassNames = const {'List', 'Map', 'String', 'DateTime'};
     if (reservedClassNames.contains(className)) {
       return [
         SourceSpanSeverityException(
