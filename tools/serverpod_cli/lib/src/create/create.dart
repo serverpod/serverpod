@@ -67,7 +67,8 @@ Future<bool> performCreate(
       await CommandLineTools.isDockerRunning();
 
   if ((!portsAvailable || !dockerConfigured) &&
-      template == ServerpodTemplateType.server) {
+      template == ServerpodTemplateType.server &&
+      !force) {
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod'
         ' project from running out of the box and without further '
@@ -109,9 +110,7 @@ Future<bool> performCreate(
         newParagraph: true,
       );
     }
-    if (!force) {
-      return false;
-    }
+    return false;
   }
 
   var dbPassword = generateRandomString();
