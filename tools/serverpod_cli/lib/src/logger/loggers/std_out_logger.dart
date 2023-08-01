@@ -27,13 +27,22 @@ class StdOutLogger extends Logger {
     bool newParagraph = false,
     LogType type = TextLogType.normal,
   }) {
-    _log(
-      message,
-      LogLevel.debug,
-      newParagraph,
-      type,
-      prefix: AnsiStyle.darkGray.wrap('DEBUG: '),
-    );
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.darkGray.wrap(message),
+        LogLevel.debug,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.debug,
+        newParagraph,
+        type,
+        prefix: 'DEBUG: ',
+      );
+    }
   }
 
   @override
@@ -51,13 +60,22 @@ class StdOutLogger extends Logger {
     bool newParagraph = false,
     LogType type = TextLogType.normal,
   }) {
-    _log(
-      message,
-      LogLevel.warning,
-      newParagraph,
-      type,
-      prefix: AnsiStyle.yellow.wrap('WARNING: '),
-    );
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.yellow.wrap(message),
+        LogLevel.warning,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.warning,
+        newParagraph,
+        type,
+        prefix: 'WARNING: ',
+      );
+    }
   }
 
   @override
@@ -67,16 +85,30 @@ class StdOutLogger extends Logger {
     StackTrace? stackTrace,
     LogType type = TextLogType.normal,
   }) {
-    _log(
-      message,
-      LogLevel.error,
-      newParagraph,
-      type,
-      prefix: AnsiStyle.red.wrap('ERROR: '),
-    );
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.red.wrap(message),
+        LogLevel.error,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.error,
+        newParagraph,
+        type,
+        prefix: 'ERROR: ',
+      );
+    }
 
     if (stackTrace != null) {
-      _log(stackTrace.toString(), LogLevel.error, newParagraph, type);
+      _log(
+        AnsiStyle.red.wrap(stackTrace.toString()),
+        LogLevel.error,
+        newParagraph,
+        type,
+      );
     }
   }
 
