@@ -80,8 +80,7 @@ class ClassYamlDefinition {
                 Keyword.api,
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.parent},
               ),
-            },
-          ),
+            },          ),
         },
       ),
       ValidateNode(

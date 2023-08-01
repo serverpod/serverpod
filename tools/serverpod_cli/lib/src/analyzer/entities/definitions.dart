@@ -36,7 +36,6 @@ class ClassDefinition extends SerializableEntityDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
-
   /// The fields of this class / exception.
   final List<SerializableEntityFieldDefinition> fields;
 
