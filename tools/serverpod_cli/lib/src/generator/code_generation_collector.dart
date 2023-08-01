@@ -49,7 +49,7 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     );
 
     for (var error in errors) {
-      log.sourceSpanException(error, newParagraph: true);
+      log.sourceSpanException(error);
     }
   }
 
