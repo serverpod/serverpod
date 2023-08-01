@@ -333,7 +333,15 @@ class Restrictions {
         );
       }
 
-      if (!StringValidators.isValidFieldName(node.value)) {
+      if (StringValidators.isInvalidInfoEnumValue(node.value)) {
+        return SourceSpanSeverityException(
+          'Enum values should be lowerCamelCase.',
+          node.span,
+          severity: SourceSpanSeverity.info,
+        );
+      }
+
+      if (!StringValidators.isValidEnumValue(node.value)) {
         return SourceSpanSeverityException(
           'Enum values must be lowerCamelCase.',
           node.span,
@@ -403,4 +411,8 @@ class Restrictions {
 
     return classes.firstWhere((c) => c != documentDefinition);
   }
+}
+
+enum Enum {
+  FULLCAPS,
 }
