@@ -193,6 +193,40 @@ fields:
     expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
   });
 
+  test(
+      'Given a class with a field with a self reference without a relation, then no scalar field reference is set.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  example: Example?
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(collector.errors, isEmpty);
+
+    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+  });
+
   group('Given a class with a field with a self relation', () {
     var collector = CodeGenerationCollector();
 
