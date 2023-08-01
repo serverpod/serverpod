@@ -316,17 +316,16 @@ class SerializableEntityAnalyzer {
     SerializableEntityFieldDefinition fieldDefinition,
     List<SerializableEntityDefinition> entityDefinitions,
   ) {
-    if (!fieldDefinition.isVirtualRelation) return;
+    var type = fieldDefinition.type;
+    if (!type.isList || type.generics.isEmpty) return;
 
-    var referenceClass = entityDefinitions
-        .cast<SerializableEntityDefinition?>()
-        .firstWhere((entity) {
-      return fieldDefinition.type.generics.any(
-        (type) => type.className == entity?.className,
-      );
-    }, orElse: () => null);
+    var referenceClassName = type.generics.first.className;
 
-    if (referenceClass == null) return;
+    var referenceClass =
+        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
+              (entity) => entity?.className == referenceClassName,
+              orElse: () => null,
+            );
 
     if (referenceClass is! ClassDefinition) return;
 

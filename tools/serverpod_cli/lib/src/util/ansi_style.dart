@@ -1,7 +1,7 @@
 import 'dart:io';
 
 bool? _ansiSupportedRef;
-bool get _ansiSupported {
+bool get ansiSupported {
   return _ansiSupportedRef ??= stdout.hasTerminal && stdout.supportsAnsiEscapes;
 }
 
@@ -26,7 +26,7 @@ enum AnsiStyle {
   /// Wraps text with ansi escape code for style if stdout has terminal and
   /// supports ansi escapes.
   String wrap(String text) {
-    if (!_ansiSupported) {
+    if (!ansiSupported) {
       return text;
     }
 

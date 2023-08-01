@@ -168,23 +168,21 @@ class EntityParser {
     var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
-    var isVirtualRelation = _isVirtualRelation(value);
-    var shouldAddScalar = isVirtualRelation && scalarFieldName != null;
-
     return [
-      if (shouldAddScalar)
+      if (scalarFieldName != null)
         SerializableEntityFieldDefinition(
-          name: _createScalarFieldName(fieldName),
+          name: scalarFieldName,
           scope: SerializableEntityFieldScope.all,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         scalarFieldName: scalarFieldName,
-        scope: isVirtualRelation ? SerializableEntityFieldScope.api : scope,
+        scope:
+            scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
         parentTable: parentTable,
-        isVirtualRelation: isVirtualRelation,
+        isVirtualRelation: _isVirtualRelation(value),
         documentation: fieldDocumentation,
       )
     ];
@@ -199,17 +197,12 @@ class EntityParser {
   }
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
-    if (!_isVirtualRelation(value)) return null;
-
+    if (!value.containsKey(Keyword.relation)) return null;
     var type = value.nodes[Keyword.type]?.value;
     if (type is! String) return null;
     if (AnalyzeChecker.isIdType(type)) return null;
     if (type.startsWith('List')) return null;
 
-    return _createScalarFieldName(fieldName);
-  }
-
-  static String _createScalarFieldName(String fieldName) {
     return '${fieldName}Id';
   }
 
@@ -258,6 +251,7 @@ class EntityParser {
 
     var type = documentContents.nodes[Keyword.type]?.value;
     if (AnalyzeChecker.isIdType(type)) return null;
+    if (type is! String) return null;
 
     return parent;
   }

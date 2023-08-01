@@ -276,6 +276,40 @@ fields:
     expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
   });
 
+  test(
+      'Given a class with a field with a self reference without a relation, then no scalar field reference is set.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  example: Example?
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(collector.errors, isEmpty);
+
+    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+  });
+
   group('Given a class with a field with a self relation', () {
     var collector = CodeGenerationCollector();
 
@@ -656,7 +690,9 @@ fields:
     );
   });
 
-  test('Given a class ', () {
+  group(
+      'Given a class with a relation to a protocol class with a table defined',
+      () {
     var collector = CodeGenerationCollector();
 
     var protocol1 = ProtocolSource(
@@ -702,8 +738,14 @@ fields:
 
     var classDefinition = definition1 as ClassDefinition;
 
-    expect(
-        classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then the parent table was set on the scalar field.', () {
+      expect(
+          classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    });
   });
 
   test(

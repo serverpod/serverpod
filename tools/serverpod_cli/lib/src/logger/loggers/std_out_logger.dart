@@ -27,13 +27,22 @@ class StdOutLogger extends Logger {
     bool newParagraph = false,
     LogType type = TextLogType.normal,
   }) {
-    _log(
-      message,
-      LogLevel.debug,
-      newParagraph,
-      type,
-      prefix: 'DEBUG: ',
-    );
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.darkGray.wrap(message),
+        LogLevel.debug,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.debug,
+        newParagraph,
+        type,
+        prefix: 'DEBUG: ',
+      );
+    }
   }
 
   @override
@@ -51,7 +60,22 @@ class StdOutLogger extends Logger {
     bool newParagraph = false,
     LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.warning, newParagraph, type, prefix: 'WARNING: ');
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.yellow.wrap(message),
+        LogLevel.warning,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.warning,
+        newParagraph,
+        type,
+        prefix: 'WARNING: ',
+      );
+    }
   }
 
   @override
@@ -61,10 +85,30 @@ class StdOutLogger extends Logger {
     StackTrace? stackTrace,
     LogType type = TextLogType.normal,
   }) {
-    _log(message, LogLevel.error, newParagraph, type, prefix: 'ERROR: ');
+    if (ansiSupported) {
+      _log(
+        AnsiStyle.red.wrap(message),
+        LogLevel.error,
+        newParagraph,
+        type,
+      );
+    } else {
+      _log(
+        message,
+        LogLevel.error,
+        newParagraph,
+        type,
+        prefix: 'ERROR: ',
+      );
+    }
 
     if (stackTrace != null) {
-      _log(stackTrace.toString(), LogLevel.error, newParagraph, type);
+      _log(
+        AnsiStyle.red.wrap(stackTrace.toString()),
+        LogLevel.error,
+        newParagraph,
+        type,
+      );
     }
   }
 
@@ -143,8 +187,6 @@ class StdOutLogger extends Logger {
         title: type.title,
       );
     } else if (type is TextLogType) {
-      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
-
       switch (type.style) {
         case TextLogStyle.command:
           message = '   ${AnsiStyle.cyan.wrap('\$')} $message';
@@ -169,6 +211,8 @@ class StdOutLogger extends Logger {
           message = AnsiStyle.darkGray.wrap(AnsiStyle.italic.wrap(message));
           break;
       }
+
+      message = _wrapText(message, wrapTextColumn ?? _defaultColumnWrap);
     }
 
     if (newParagraph) {
@@ -233,10 +277,32 @@ String _wrapText(String text, int columnWidth) {
   var textLines = text.split('\n');
   List<String> outLines = [];
   for (var line in textLines) {
-    outLines.add(line.wordWrap(width: columnWidth));
+    var leadingTrimChar = _tryGetLeadingTrimmableChar(line);
+    // wordWrap(...) uses trim as part of its implementation which removes all
+    // leading trimmable characters.
+    // In order to preserve them we temporarily replace the first char with a
+    // non trimmable character.
+    if (leadingTrimChar != null) {
+      line = '@${line.substring(1)}';
+    }
+
+    var wrappedLine = line.wordWrap(width: columnWidth);
+
+    if (leadingTrimChar != null) {
+      wrappedLine = '$leadingTrimChar${wrappedLine.substring(1)}';
+    }
+    outLines.add(wrappedLine);
   }
 
   return outLines.join('\n');
+}
+
+String? _tryGetLeadingTrimmableChar(String text) {
+  if (text.isNotEmpty && text.first.trim().isEmpty) {
+    return text.first;
+  }
+
+  return null;
 }
 
 /// Wraps the message in a box.

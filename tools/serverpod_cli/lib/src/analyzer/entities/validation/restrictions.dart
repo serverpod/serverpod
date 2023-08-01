@@ -45,7 +45,7 @@ class Restrictions {
       ];
     }
 
-    var reservedClassNames = {'List', 'Map', 'String', 'DateTime'};
+    var reservedClassNames = const {'List', 'Map', 'String', 'DateTime'};
     if (reservedClassNames.contains(className)) {
       return [
         SourceSpanSeverityException(
@@ -202,10 +202,20 @@ class Restrictions {
     String fieldName,
     SourceSpan? span,
   ) {
+    if (StringValidators.isInvalidFieldValueInfoSeverity(fieldName)) {
+      return [
+        SourceSpanSeverityException(
+          'Field names should be valid Dart variable names (e.g. camelCaseString).',
+          span,
+          severity: SourceSpanSeverity.info,
+        )
+      ];
+    }
+
     if (!StringValidators.isValidFieldName(fieldName)) {
       return [
         SourceSpanSeverityException(
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).',
+          'Field names must be valid Dart variable names (e.g. camelCaseString).',
           span,
         )
       ];
@@ -473,6 +483,14 @@ class Restrictions {
         return SourceSpanSeverityException(
           'The "values" property must be a list of strings.',
           node.span,
+        );
+      }
+
+      if (StringValidators.isInvalidFieldValueInfoSeverity(node.value)) {
+        return SourceSpanSeverityException(
+          'Enum values should be lowerCamelCase.',
+          node.span,
+          severity: SourceSpanSeverity.info,
         );
       }
 
