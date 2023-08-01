@@ -245,19 +245,19 @@ String _wrapText(String text, int columnWidth) {
   var textLines = text.split('\n');
   List<String> outLines = [];
   for (var line in textLines) {
-    var replaceFirstChar = _hasLeadingTrimCharacter(line);
+    var leadingTrimChar = _tryGetLeadingTrimmableChar(line);
     // wordWrap(...) uses trim as part of its implementation which removes all
     // leading trimmable characters.
     // In order to preserve them we temporarily replace the first char with a
     // non trimmable character.
-    if (replaceFirstChar) {
+    if (leadingTrimChar != null) {
       line = '@${line.substring(1)}';
     }
 
     var wrappedLine = line.wordWrap(width: columnWidth);
 
-    if (replaceFirstChar) {
-      wrappedLine = ' ${wrappedLine.substring(1)}';
+    if (leadingTrimChar != null) {
+      wrappedLine = '$leadingTrimChar${wrappedLine.substring(1)}';
     }
     outLines.add(wrappedLine);
   }
@@ -265,12 +265,12 @@ String _wrapText(String text, int columnWidth) {
   return outLines.join('\n');
 }
 
-bool _hasLeadingTrimCharacter(String text) {
+String? _tryGetLeadingTrimmableChar(String text) {
   if (text.isNotEmpty && text.first.trim().isEmpty) {
-    return true;
+    return text.first;
   }
 
-  return false;
+  return null;
 }
 
 /// Wraps the message in a box.
