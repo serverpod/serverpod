@@ -122,10 +122,11 @@ class StdOutLogger extends Logger {
       return await runner();
     }
 
+    _stopAnimationInProgress();
+
     if (newParagraph) _write('', LogLevel.info, newParagraph: newParagraph);
 
     var progress = Progress(message, stdout);
-    _stopAnimationInProgress();
     trackedAnimationInProgress = progress;
     bool success = await runner();
     trackedAnimationInProgress = null;
