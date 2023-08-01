@@ -169,18 +169,16 @@ class EntityParser {
     var isEnum = _parseIsEnumField(value);
 
     return [
-      if (_isVirtualRelation(value))
+      if (scalarField != null)
         SerializableEntityFieldDefinition(
-          name: _createScalarFieldName(fieldName),
+          name: scalarField,
           scope: SerializableEntityFieldScope.all,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         scalarFieldName: scalarField,
-        scope: _isVirtualRelation(value)
-            ? SerializableEntityFieldScope.api
-            : scope,
+        scope: scalarField != null ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
         parentTable: parentTable,
         documentation: fieldDocumentation,
@@ -197,22 +195,10 @@ class EntityParser {
   }
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
-    if (!_isVirtualRelation(value)) return null;
+    if (!value.containsKey(Keyword.relation)) return null;
     if (AnalyzeChecker.isIdType(value.nodes[Keyword.type]?.value)) return null;
 
-    return _createScalarFieldName(fieldName);
-  }
-
-  static String _createScalarFieldName(String fieldName) {
     return '${fieldName}Id';
-  }
-
-  static bool _isVirtualRelation(YamlMap documentContents) {
-    var isRelation = documentContents.containsKey(Keyword.relation);
-    if (!isRelation) return false;
-
-    var type = documentContents.nodes[Keyword.type]?.value;
-    return !AnalyzeChecker.isIdType(type);
   }
 
   static bool _isOptionalRelation(YamlMap documentContents) {
