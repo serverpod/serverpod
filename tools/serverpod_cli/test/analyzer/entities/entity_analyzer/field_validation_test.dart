@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -194,7 +195,7 @@ fields:
         '''
 class: Example
 fields:
-  InvalidFieldName: String
+  Invalid-Field-Name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         ['lib', 'src', 'protocol'],
@@ -207,10 +208,99 @@ fields:
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.first;
+      var error = collector.errors.first as SourceSpanSeverityException;
 
       expect(error.message,
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).');
+          'Field names must be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.error);
+    });
+
+    test(
+        'Given a class with a field key that is in UPPERCASE format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  UPPERCASE: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
+    });
+
+    test(
+        'Given a class with a field key that is in PascalCase format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  PascalCase: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
+    });
+
+    test(
+        'Given a class with a field key that is in snake_case format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  snake_case: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
     });
 
     test(

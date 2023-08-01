@@ -14,8 +14,23 @@ class StringValidators {
       RegExp(r'^[a-z0-9]+([-][a-z0-9]+)*$');
   static final _fullUpperCaseTester = RegExp(r'^[A-Z]+$');
 
-  static bool isValidFieldName(String name) =>
-      _camelCaseTester.hasMatch(name) || _snakeCaseTester.hasMatch(name);
+  static bool isValidFieldName(String name) {
+    if (name.length == 1) return true;
+    if (_camelCaseTester.hasMatch(name)) return true;
+    if (_camelCaseWithUppercaseTester.hasMatch(name)) return true;
+
+    return false;
+  }
+
+  static bool isInvalidFieldValueInfoSeverity(String name) {
+    if (isValidFieldName(name)) return false;
+
+    if (_fullUpperCaseTester.hasMatch(name)) return true;
+    if (_pascalCaseTester.hasMatch(name)) return true;
+    if (_snakeCaseTester.hasMatch(name)) return true;
+
+    return false;
+  }
 
   static bool isValidFieldType(String type) =>
       RegExp(r'^([a-zA-Z_:][a-zA-Z0-9_:]*\??)$').hasMatch(type);
@@ -30,24 +45,6 @@ class StringValidators {
 
   static bool isValidTagName(String name) =>
       _lowerCaseWithDashesTester.hasMatch(name);
-
-  static bool isValidEnumValue(String name) {
-    if (name.length == 1) return true;
-    if (_camelCaseTester.hasMatch(name)) return true;
-    if (_camelCaseWithUppercaseTester.hasMatch(name)) return true;
-
-    return false;
-  }
-
-  static bool isInvalidInfoEnumValue(String name) {
-    if (isValidEnumValue(name)) return false;
-
-    if (_fullUpperCaseTester.hasMatch(name)) return true;
-    if (_pascalCaseTester.hasMatch(name)) return true;
-    if (_snakeCaseTester.hasMatch(name)) return true;
-
-    return false;
-  }
 
   /// This function with regex, that will let you allow only name starting with smalls
   /// and contains only `_` special char and ending with smalls or numbers
