@@ -249,9 +249,7 @@ values:
     );
   });
 
-  test(
-      'Given a a value with a single uppercase char, no errors is given.',
-      () {
+  test('Given a a value with a single uppercase char, no errors is given.', () {
     var collector = CodeGenerationCollector();
     var protocol = ProtocolSource(
       '''
