@@ -252,6 +252,7 @@ class EntityParser {
 
     var type = documentContents.nodes[Keyword.type]?.value;
     if (AnalyzeChecker.isIdType(type)) return null;
+    if (type is! String) return null;
 
     return parent;
   }
