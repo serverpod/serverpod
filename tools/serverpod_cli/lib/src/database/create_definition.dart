@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:collection/collection.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
 DatabaseDefinition createDatabaseDefinitionFromEntities(
@@ -67,19 +66,25 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
-  return classDefinition.fields
+  var fields = classDefinition.fields
       .where((field) => field.relation is IdRelationDefinition)
-      .mapIndexed((i, field) {
+      .toList();
+
+  List<ForeignKeyDefinition> foreignKeys = [];
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i];
     var relation = field.relation as IdRelationDefinition;
-    return ForeignKeyDefinition(
+    foreignKeys.add(ForeignKeyDefinition(
       constraintName: '${classDefinition.tableName!}_fk_$i',
       columns: [field.name],
       referenceTable: relation.parentTable,
       referenceTableSchema: 'public',
       referenceColumns: ['id'],
       onDelete: ForeignKeyAction.cascade,
-    );
-  }).toList();
+    ));
+  }
+
+  return foreignKeys;
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {

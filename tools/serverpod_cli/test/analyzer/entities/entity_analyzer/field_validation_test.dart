@@ -1109,7 +1109,7 @@ fields:
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
         var relation = definition.fields.last.relation;
