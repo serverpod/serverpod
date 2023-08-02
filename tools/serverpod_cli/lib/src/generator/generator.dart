@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/generator/project_code_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// Analyze the server package and generate the code.
@@ -27,7 +27,8 @@ Future<bool> performGenerate({
 
   log.debug('Generating files for serializable entities.');
 
-  var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
+  var generatedEntityFiles =
+      await ProjectCodeGenerator.generateSerializableEntities(
     entities: entities,
     config: config,
     collector: collector,
@@ -59,7 +60,8 @@ Future<bool> performGenerate({
     entities: entities,
   );
 
-  var generatedProtocolFiles = await CodeGenerator.generateProtocolDefinition(
+  var generatedProtocolFiles =
+      await ProjectCodeGenerator.generateProtocolDefinition(
     protocolDefinition: protocolDefinition,
     config: config,
     collector: collector,
@@ -73,7 +75,7 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
-  await CodeGenerator.cleanPreviouslyGeneratedDartFiles(
+  await ProjectCodeGenerator.cleanPreviouslyGeneratedDartFiles(
     generatedFiles: <String>{
       ...generatedEntityFiles,
       ...generatedProtocolFiles
