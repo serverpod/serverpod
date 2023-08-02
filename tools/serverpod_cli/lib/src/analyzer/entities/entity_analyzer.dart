@@ -335,7 +335,7 @@ class SerializableEntityAnalyzer {
 
     if (referenceFields.isEmpty) return;
 
-    // Todo: Handle multiple references.
+    // TODO: Handle multiple references.
     fieldDefinition.referenceFieldName = referenceFields.first.name;
   }
 }
