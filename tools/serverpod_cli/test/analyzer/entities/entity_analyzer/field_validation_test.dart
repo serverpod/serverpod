@@ -16,7 +16,7 @@ void main() {
 class: Example
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -40,7 +40,7 @@ class: Example
 exception: Example
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -65,7 +65,7 @@ class: Example
 fields:
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -91,7 +91,7 @@ exception: Example
 fields:
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -117,7 +117,7 @@ class: Example
 fields: int
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -143,7 +143,7 @@ enum: Example
 fields:
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -172,7 +172,7 @@ fields:
   1: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -198,7 +198,7 @@ fields:
   Invalid-Field-Name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -227,7 +227,7 @@ fields:
   UPPERCASE: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -256,7 +256,7 @@ fields:
   PascalCase: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -285,7 +285,7 @@ fields:
   snake_case: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -314,7 +314,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -340,7 +340,7 @@ fields:
   name:
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -374,7 +374,7 @@ fields:
   name:
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -408,7 +408,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -436,7 +436,7 @@ fields:
   name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -469,7 +469,7 @@ fields:
   name: int
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -502,7 +502,7 @@ fields:
   name: bool
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -535,7 +535,7 @@ fields:
   name: double
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -568,7 +568,7 @@ fields:
   name: DateTime
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -601,7 +601,7 @@ fields:
   name: Uuid
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -634,7 +634,7 @@ fields:
   name: ByteData
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -667,7 +667,7 @@ fields:
   name: String?
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -705,7 +705,7 @@ fields:
   name: List<String>?
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -743,7 +743,7 @@ fields:
   name: List<String?>?
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -781,7 +781,7 @@ fields:
   name: ???
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -819,7 +819,7 @@ fields:
   name: String???
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -857,7 +857,7 @@ fields:
   name: List<String>
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -890,7 +890,7 @@ fields:
   name: Map<String, String>
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -923,7 +923,7 @@ fields:
   name: List<List<Map<String, int>>>
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -956,7 +956,7 @@ fields:
   name: module:auth:UserInfo
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -989,7 +989,7 @@ fields:
   name: invalid-type
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -1061,7 +1061,7 @@ fields:
   nameId: int, parent=
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
@@ -1096,7 +1096,7 @@ fields:
           parentId: int, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1131,7 +1131,7 @@ fields:
           parentId: int, parent = example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1166,7 +1166,7 @@ fields:
           parentId: int, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1202,7 +1202,7 @@ fields:
           name: int, parent=unknown_table
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1236,7 +1236,7 @@ fields:
           parentId: int, parent=example, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1269,7 +1269,7 @@ fields:
           parentId: int, parent=example
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1294,265 +1294,34 @@ fields:
     );
   });
 
-  group('Field scope tests', () {
-    test(
-      'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, database, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect(collector.errors.length, greaterThan(0));
-
-        var error = collector.errors.first;
-
-        expect(error.message,
-            'The field option "database" is defined more than once.');
-      },
-    );
-
-    test(
-      'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, api, api
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect(collector.errors.length, greaterThan(0));
-
-        var error = collector.errors.first;
-
-        expect(
-            error.message, 'The field option "api" is defined more than once.');
-      },
-    );
-
-    test(
-      'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, api, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect(collector.errors.length, greaterThan(1));
-
-        var error1 = collector.errors[0];
-        var error2 = collector.errors[1];
-
-        expect(error1.message,
-            'The "database" property is mutually exclusive with the "api" property.');
-        expect(error2.message,
-            'The "api" property is mutually exclusive with the "database" property.');
-      },
-    );
-
-    test(
-      'Given a class with a field with a complex datatype, then generate an entity with that datatype.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
+  test(
+    'Given a class with a field with a complex datatype, then generate an entity with that datatype.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
         class: Example
         fields:
           name: Map<String, String>
         ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
 
-        expect(
-            (definition as ClassDefinition).fields.first.type.className, 'Map');
-      },
-    );
-
-    test(
-      'Given a class with a field with no scope set, then the generated entity has the all scope.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        table: example
-        fields:
-          name: String
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect((definition as ClassDefinition).fields.last.scope,
-            SerializableEntityFieldScope.all);
-      },
-    );
-
-    test(
-      'Given a class with a field with the scope set to database, then the generated entity has the database scope.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        table: example
-        fields:
-          name: String, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect((definition as ClassDefinition).fields.last.scope,
-            SerializableEntityFieldScope.database);
-      },
-    );
-
-    test(
-      'Given a class with a field with the scope set to api, then the generated entity has the api scope.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-      class: Example
-      table: example
-      fields:
-        name: String, api
-      ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect((definition as ClassDefinition).fields.last.scope,
-            SerializableEntityFieldScope.api);
-      },
-    );
-
-    test(
-      'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
-      () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-      class: Example
-      table: example
-      fields:
-        nextId: int, parent=example, api
-      ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
-        );
-
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect(
-          collector.errors.length,
-          greaterThan(0),
-          reason: 'Expected an error, none was found.',
-        );
-        expect(
-          collector.errors.last.message,
-          'The "api" property is mutually exclusive with the "parent" property.',
-        );
-      },
-    );
-  });
+      expect(
+          (definition as ClassDefinition).fields.first.type.className, 'Map');
+    },
+  );
 
   group('Test id field.', () {
     test(
@@ -1567,7 +1336,7 @@ fields:
           id: int
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1601,7 +1370,7 @@ fields:
           name: String
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1631,7 +1400,7 @@ fields:
           name: String
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
-          ['lib', 'src', 'protocol'],
+          [],
         );
 
         var definition =
@@ -1661,7 +1430,7 @@ fields:
         customField: Map<String, CustomClass>
       ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
-        ['lib', 'src', 'protocol'],
+        [],
       );
 
       var definition =
