@@ -336,9 +336,11 @@ class Restrictions {
 
     String? parsedType = _extractReferenceClassName(field);
 
-    var classes = entityRelations?.classNames[parsedType];
+    var localEntityRelations = entityRelations;
+    if (localEntityRelations == null) return errors;
 
-    if (field.hasRelationPointer && (classes == null || classes.isEmpty)) {
+    var referenceClassExists = localEntityRelations.classNameExists(parsedType);
+    if (field.hasRelationPointer && !referenceClassExists) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
         span,
@@ -346,7 +348,8 @@ class Restrictions {
       return errors;
     }
 
-    if (field.hasRelationPointer && !_hasTableDefined(classes)) {
+    var referenceClasses = localEntityRelations.classNames[parsedType];
+    if (field.hasRelationPointer && !_hasTableDefined(referenceClasses)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
         span,
@@ -355,7 +358,7 @@ class Restrictions {
 
     if (!(field.type.isList)) return errors;
 
-    var referenceClass = classes?.first;
+    var referenceClass = referenceClasses?.first;
     if (referenceClass is! ClassDefinition) return errors;
 
     var referenceFields = referenceClass.fields.where((field) {
