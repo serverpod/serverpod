@@ -60,12 +60,13 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
 
         for (var field in tableInfo.fields) {
           // Check if a parent is not above the current table and not self-referencing
-          if (field.parentTable != null &&
-              field.parentTable != tableInfo.tableName &&
-              !visitedTableNames.contains(field.parentTable!)) {
+          var relation = field.relation;
+          if (relation is IdRelationDefinition &&
+              relation.parentTable != tableInfo.tableName &&
+              !visitedTableNames.contains(relation.parentTable)) {
             var tableToMove = tableInfo;
             for (int j = i; j < tableInfos.length; j++) {
-              if (tableInfos[j].tableName! == field.parentTable!) {
+              if (tableInfos[j].tableName! == relation.parentTable) {
                 // Move a table down the list, below its dependency
                 tableInfos.removeAt(i);
                 tableInfos.insert(j, tableToMove);
@@ -78,7 +79,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
               // We failed to move a table because the dependency is missing
               throw FormatException('The table "${tableInfo.tableName}" '
                   '(class "${tableInfo.className}" is referencing a table '
-                  'that doesn\'t exist (${field.parentTable}).)');
+                  'that doesn\'t exist (${relation.parentTable}).)');
             }
 
             break classInfoLoop;
@@ -136,11 +137,12 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
     // Foreign keys
     var fkIdx = 0;
     for (var field in classInfo.fields) {
-      if (field.parentTable != null) {
+      var relation = field.relation;
+      if (relation is IdRelationDefinition) {
         out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
         out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
         out += '    FOREIGN KEY("${field.name}")\n';
-        out += '      REFERENCES ${field.parentTable}(id)\n';
+        out += '      REFERENCES ${relation.parentTable}(id)\n';
         out += '        ON DELETE CASCADE;\n';
 
         fkIdx += 1;

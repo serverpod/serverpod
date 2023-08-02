@@ -168,20 +168,35 @@ class EntityParser {
     var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
+    RelationDefinition? relation;
+
+    if (parentTable != null) {
+      relation = IdRelationDefinition(
+        parentTable: parentTable,
+        referenceFieldName: 'id',
+      );
+    } else if (scalarFieldName != null) {
+      relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
+    } else if (typeResult.type.isList && _isRelation(value)) {
+      relation = UnresolvedListRelationDefinition();
+    }
+
     return [
       if (scalarFieldName != null)
         SerializableEntityFieldDefinition(
           name: scalarFieldName,
+          relation: UnresolvedIdRelationDefinition(
+            referenceFieldName: 'id',
+          ),
           scope: SerializableEntityFieldScope.all,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
-        scalarFieldName: scalarFieldName,
+        relation: relation,
         scope:
             scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
-        parentTable: parentTable,
         documentation: fieldDocumentation,
       )
     ];
@@ -203,6 +218,10 @@ class EntityParser {
     if (type.startsWith('List')) return null;
 
     return '${fieldName}Id';
+  }
+
+  static bool _isRelation(YamlMap documentContents) {
+    return documentContents.containsKey([Keyword.relation]);
   }
 
   static bool _isOptionalRelation(YamlMap documentContents) {

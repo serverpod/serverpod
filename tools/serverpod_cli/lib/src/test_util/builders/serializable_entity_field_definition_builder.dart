@@ -5,7 +5,7 @@ class FieldDefinitionBuilder {
   String _name;
   TypeDefinition _type;
   SerializableEntityFieldScope _scope;
-  String? _parentTable;
+  RelationDefinition? _relation;
   List<String>? _documentation;
 
   FieldDefinitionBuilder()
@@ -41,10 +41,14 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  FieldDefinitionBuilder withParentTable(
-    String? parentTable,
+  FieldDefinitionBuilder withRelationTo(
+    String parentTable,
+    String referenceFieldName,
   ) {
-    _parentTable = parentTable;
+    _relation = IdRelationDefinition(
+      parentTable: parentTable,
+      referenceFieldName: referenceFieldName,
+    );
     return this;
   }
 
@@ -60,7 +64,7 @@ class FieldDefinitionBuilder {
       name: _name,
       type: _type,
       scope: _scope,
-      parentTable: _parentTable,
+      relation: _relation,
       documentation: _documentation,
     );
   }
