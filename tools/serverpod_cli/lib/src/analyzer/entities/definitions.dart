@@ -102,8 +102,8 @@ class SerializableEntityFieldDefinition {
   /// If set references the column in the [parentTable] that this field should be joined on.
   String? referenceFieldName;
 
-  bool get hasRelationPointer => scalarFieldName != null || referenceFieldName != null;
-
+  bool get hasRelationPointer =>
+      scalarFieldName != null || referenceFieldName != null;
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
