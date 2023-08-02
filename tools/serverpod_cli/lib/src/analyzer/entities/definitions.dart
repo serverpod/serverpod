@@ -89,7 +89,9 @@ class SerializableEntityFieldDefinition {
   /// - [SerializableEntityFieldScope]
   final SerializableEntityFieldScope scope;
 
-  ///
+  /// If set the field is a relation to another table. The type of the relation
+  /// [IdRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
+  /// determines where and how the relation is stored.
   RelationDefinition? relation;
 
   /// Returns true, if this field has a relation pointer, meaning that there is
@@ -229,10 +231,13 @@ class ProtocolEnumValueDefinition {
 
 abstract class RelationDefinition {}
 
+/// Internal representation of an unresolved [ListRelationDefinition].
 class UnresolvedListRelationDefinition extends RelationDefinition {}
 
+/// Used for relations for fields of type [List] that has a reference pointer
+/// to another Objects field name that holds the id of this object.
 class ListRelationDefinition extends RelationDefinition {
-  /// References the column in the other object holding the id of this object.
+  /// References the field in the other object holding the id of this object.
   String referenceFieldName;
 
   ListRelationDefinition({
@@ -240,6 +245,8 @@ class ListRelationDefinition extends RelationDefinition {
   });
 }
 
+/// Used for relations for fields that point to another field that holds the id
+/// of another object.
 class ObjectRelationDefinition extends RelationDefinition {
   /// If this field is a complex datatype with a parent relation in the database,
   /// then [scalarFieldName] contains the name of the field with the foreign key.
@@ -250,6 +257,7 @@ class ObjectRelationDefinition extends RelationDefinition {
   });
 }
 
+/// Internal representation of an unresolved [IdRelationDefinition].
 class UnresolvedIdRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
@@ -259,6 +267,7 @@ class UnresolvedIdRelationDefinition extends RelationDefinition {
   });
 }
 
+/// Used for relations for fields that stores the id of another object.
 class IdRelationDefinition extends RelationDefinition {
   /// If this column should have a foreign key,
   /// then [parentTable] contains the referenced table.
