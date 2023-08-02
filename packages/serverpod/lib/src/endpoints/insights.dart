@@ -220,6 +220,18 @@ class InsightsEndpoint extends Endpoint {
     return databaseDefinition;
   }
 
+  /// Returns the target and live database definitions. See
+  /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
+  /// details.
+  Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
+    var target = await getTargetDatabaseDefinition(session);
+    var live = await getLiveDatabaseDefinition(session);
+    return DatabaseDefinitions(
+      target: target,
+      live: live,
+    );
+  }
+
   /// Exports raw data serialized in JSON from the database.
   Future<BulkData> fetchDatabaseBulkData(
     Session session, {

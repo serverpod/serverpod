@@ -19,14 +19,16 @@ import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
 import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
     as _i8;
-import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
+import 'package:serverpod_service_client/src/protocol/database/database_definitions.dart'
     as _i9;
-import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
+import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
     as _i10;
-import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
     as _i11;
-import 'dart:io' as _i12;
-import 'protocol.dart' as _i13;
+import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+    as _i12;
+import 'dart:io' as _i13;
+import 'protocol.dart' as _i14;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -162,14 +164,21 @@ class EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Future<_i9.DatabaseDefinitions> getDatabaseDefinitions() =>
+      caller.callServerEndpoint<_i9.DatabaseDefinitions>(
+        'insights',
+        'getDatabaseDefinitions',
+        {},
+      );
+
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i9.BulkData> fetchDatabaseBulkData({
+  _i2.Future<_i10.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
-    _i10.Filter? filter,
+    _i11.Filter? filter,
   }) =>
-      caller.callServerEndpoint<_i9.BulkData>(
+      caller.callServerEndpoint<_i10.BulkData>(
         'insights',
         'fetchDatabaseBulkData',
         {
@@ -182,8 +191,8 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
-  _i2.Future<_i11.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i11.BulkQueryResult>(
+  _i2.Future<_i12.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_i12.BulkQueryResult>(
         'insights',
         'runQueries',
         {'queries': queries},
@@ -208,11 +217,11 @@ class EndpointInsights extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i12.SecurityContext? context,
+    _i13.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i13.Protocol(),
+          _i14.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
