@@ -131,7 +131,7 @@ class Restrictions {
     if (definition is! ClassDefinition) return errors;
 
     var field = definition.findField(parentNodeName);
-    if (field == null) return [];
+    if (field == null) return errors;
 
     var type = field.type.className;
 
