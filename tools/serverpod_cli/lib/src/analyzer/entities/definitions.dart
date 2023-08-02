@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -263,8 +264,14 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// References the column in the [parentTable] that this field should be joined on.
   String referenceFieldName;
 
+  final ForeignKeyAction onDelete;
+
+  final ForeignKeyAction onUpdate;
+
   ForeignRelationDefinition({
     required this.parentTable,
     required this.referenceFieldName,
+    this.onDelete = ForeignKeyAction.cascade,
+    this.onUpdate = ForeignKeyAction.noAction,
   });
 }
