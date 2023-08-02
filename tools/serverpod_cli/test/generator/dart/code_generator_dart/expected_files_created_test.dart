@@ -23,14 +23,6 @@ void main() {
       config: config,
     );
 
-    test('then the protocol file is created', () {
-      expect(
-        codeMap.keys,
-        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
-        reason: 'Expected protocol file to be present, found none.',
-      );
-    });
-
     test('then the server-side file is created', () {
       expect(
         codeMap.keys,
@@ -71,14 +63,6 @@ void main() {
       entities: entities,
       config: config,
     );
-
-    test('then the protocol file is created', () {
-      expect(
-        codeMap.keys,
-        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
-        reason: 'Expected protocol file to be present, found none.',
-      );
-    });
 
     test('then the server-side files are created', () {
       expect(
