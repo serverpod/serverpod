@@ -1,3 +1,4 @@
+import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
@@ -349,6 +350,15 @@ class Restrictions {
     }
 
     var referenceClasses = localEntityRelations.classNames[parsedType];
+    var referenceClass = referenceClasses?.first;
+    if (referenceClass is! ClassDefinition && field.hasRelationPointer) {
+      errors.add(SourceSpanSeverityException(
+        'Only classes can be used in relations, "$parsedType" is not a class.',
+        span,
+      ));
+    }
+    if (referenceClass is! ClassDefinition) return errors;
+
     if (field.hasRelationPointer && !_hasTableDefined(referenceClasses)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
@@ -357,9 +367,6 @@ class Restrictions {
     }
 
     if (!(field.type.isList)) return errors;
-
-    var referenceClass = referenceClasses?.first;
-    if (referenceClass is! ClassDefinition) return errors;
 
     var referenceFields = referenceClass.fields.where((field) {
       return field.parentTable == def.tableName;

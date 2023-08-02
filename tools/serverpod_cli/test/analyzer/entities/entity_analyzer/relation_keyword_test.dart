@@ -791,6 +791,64 @@ fields:
   });
 
   test(
+      'Given a class with a relation to a protocol enum, then collect an error that the class does not exist.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: EnumParent?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+enum: EnumParent
+values:
+  - value1
+  - value2
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'Only classes can be used in relations, "EnumParent" is not a class.',
+    );
+  });
+
+  test(
       'Given a class with a relation to a protocol class without a table defined, then collect an error that the class does not have a table.',
       () {
     var collector = CodeGenerationCollector();
