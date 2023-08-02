@@ -142,10 +142,9 @@ abstract class _ColumnUnescaped<T> extends Column<T> {
   String encodeValueForQuery(T value) => value.toString();
 }
 
-/// A [Column] holding a [num].
-class _ColumnNum<T extends num> extends _ColumnUnescaped<T> {
-  /// Creates a new [_ColumnNum], this is typically done in generated code only.
-  _ColumnNum(String name) : super(name);
+abstract class _ColumnNum<T extends num> extends _ColumnUnescaped<T> {
+  /// Creates a new [_ColumnNum], this is called internally only.
+  _ColumnNum(super.columnName, {super.varcharLength});
 
   /// Creates an [Expression] checking if the value in the column is between
   /// a minimum and a maximum value (inclusive of the endpoints of the range).
