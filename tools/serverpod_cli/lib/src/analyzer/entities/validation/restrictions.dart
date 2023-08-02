@@ -1,4 +1,3 @@
-import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
