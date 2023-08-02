@@ -1,11 +1,8 @@
-import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/generator/dart/entities_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generator.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// A [CodeGenerator], that generates dart code.
 class DartCodeGenerator extends CodeGenerator {
@@ -87,26 +84,5 @@ class DartCodeGenerator extends CodeGenerator {
               [...config.generatedDartClientProtocolPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
-  }
-}
-
-extension on Library {
-  String generateCode() {
-    var code = accept(DartEmitter.scoped(useNullSafetySyntax: true)).toString();
-    try {
-      return DartFormatter().format('''
-/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
-/*   To generate run: "serverpod generate"    */
-
-// ignore_for_file: library_private_types_in_public_api
-// ignore_for_file: public_member_api_docs
-// ignore_for_file: implementation_imports
-
-$code
-''');
-    } on FormatterException catch (e) {
-      log.error(e.toString());
-    }
-    return code;
   }
 }
