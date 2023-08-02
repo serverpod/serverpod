@@ -65,6 +65,11 @@ class EnumDefinitionBuilder {
     return this;
   }
 
+  EnumDefinitionBuilder withValue(String value) {
+    _values.add(ProtocolEnumValueDefinition(value));
+    return this;
+  }
+
   EnumDefinitionBuilder withDocumentation(List<String>? documentation) {
     _documentation = documentation;
     return this;
