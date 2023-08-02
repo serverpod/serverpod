@@ -38,10 +38,6 @@ fields:
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
-    test('then the table is not set on relation field.', () {
-      var parent = classDefinition.findField('parent');
-      expect(parent?.parentTable, null);
-    });
 
     test('then the scope is set to api on the relation field.', () {
       var parent = classDefinition.findField('parent');
@@ -52,7 +48,12 @@ fields:
         'then a scalar field with the same name appended with Id is set on the relation field.',
         () {
       var parent = classDefinition.findField('parent');
-      expect(parent?.scalarFieldName, 'parentId');
+      var relation = parent?.relation;
+      expect(relation.runtimeType, ObjectRelationDefinition);
+      expect(
+        (relation as ObjectRelationDefinition).scalarFieldName,
+        'parentId',
+      );
     });
 
     test('then the class has a scalar field for the id.', () {
@@ -83,90 +84,20 @@ fields:
         'then the scalar field has the parent table set from the object reference.',
         () {
       var parent = classDefinition.findField('parentId');
-      expect(parent?.parentTable, 'example');
-    });
-  });
+      var relation = parent?.relation;
 
-  group(
-      'Given a class with a field with a self relation, then the parent table is set to the specified table name.',
-      () {
-    var collector = CodeGenerationCollector();
-
-    var protocol = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  parent: Example?, relation
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    );
-    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      [definition],
-    );
-
-    var classDefinition = definition as ClassDefinition;
-
-    test('then no errors are collected.', () {
-      expect(collector.errors, isEmpty);
-    });
-    test('then the table is not set on relation field.', () {
-      var parent = classDefinition.findField('parent');
-      expect(parent?.parentTable, null);
-    });
-
-    test('then the scope is set to api on the relation field.', () {
-      var parent = classDefinition.findField('parent');
-      expect(parent?.scope, SerializableEntityFieldScope.api);
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).parentTable, 'example');
     });
 
     test(
-        'then a scalar field with the same name appended with Id is set on the relation field.',
-        () {
-      var parent = classDefinition.findField('parent');
-      expect(parent?.scalarFieldName, 'parentId');
-    });
-
-    test('then the class has a scalar field for the id.', () {
-      var parentIdField = classDefinition.findField('parentId');
-
-      expect(
-        parentIdField,
-        isNotNull,
-        reason: 'Expected to find a field named parentId.',
-      );
-    });
-
-    test('then the scalar field has the global scope.', () {
-      var parent = classDefinition.findField('parentId');
-      expect(parent?.scope, SerializableEntityFieldScope.all);
-    });
-
-    test('then the scalar field type defaults to none nullable.', () {
-      var parent = classDefinition.findField('parentId');
-      expect(
-        parent?.type.nullable,
-        isFalse,
-        reason: 'Expected to be non-nullable.',
-      );
-    });
-
-    test(
-        'then the scalar field has the parent table set from the object reference.',
+        'then the scalar field has the reference field set to the relation id field.',
         () {
       var parent = classDefinition.findField('parentId');
-      expect(parent?.parentTable, 'example');
+      var relation = parent?.relation;
+
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
     });
   });
 
@@ -243,7 +174,7 @@ fields:
   });
 
   test(
-      'Given a class with a field without a relation, then no scalar field reference is set.',
+      'Given a class with a field without a relation, then no relation is set.',
       () {
     var collector = CodeGenerationCollector();
 
@@ -273,11 +204,11 @@ fields:
 
     expect(collector.errors, isEmpty);
 
-    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+    expect((definition as ClassDefinition).fields.last.relation, null);
   });
 
   test(
-      'Given a class with a field with a self reference without a relation, then no scalar field reference is set.',
+      'Given a class with a field with a self reference without a relation, then no relation is set.',
       () {
     var collector = CodeGenerationCollector();
 
@@ -307,7 +238,7 @@ fields:
 
     expect(collector.errors, isEmpty);
 
-    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+    expect((definition as ClassDefinition).fields.last.relation, null);
   });
 
   group('Given a class with a field with a self relation', () {
@@ -342,11 +273,16 @@ fields:
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
-    test('then the parent table is set to the specified table name.', () {
-      expect(
-        classDefinition.fields.last.parentTable,
-        'example',
-      );
+    test('then the relation is set with the parent table.', () {
+      var relation = classDefinition.fields.last.relation;
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).parentTable, 'example');
+    });
+
+    test('then the relation is set with the reference to the id.', () {
+      var relation = classDefinition.fields.last.relation;
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
     });
 
     test('then no scalar field is added', () {
@@ -742,9 +678,20 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
-    test('then the parent table was set on the scalar field.', () {
-      expect(
-          classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    test('then a relation with the parent table is set on the scalar field.',
+        () {
+      var relation = classDefinition.findField('parentId')?.relation;
+
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).parentTable, 'example_parent');
+    });
+
+    test('then a relation with the reference id is set on the scalar field.',
+        () {
+      var relation = classDefinition.findField('parentId')?.relation;
+
+      expect(relation.runtimeType, IdRelationDefinition);
+      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
     });
   });
 

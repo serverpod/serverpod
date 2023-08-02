@@ -1100,7 +1100,10 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
@@ -1109,8 +1112,10 @@ fields:
           [definition!],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, IdRelationDefinition);
+        expect((relation as IdRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1130,17 +1135,22 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, IdRelationDefinition);
+        expect((relation as IdRelationDefinition).parentTable, 'example');
       },
     );
 

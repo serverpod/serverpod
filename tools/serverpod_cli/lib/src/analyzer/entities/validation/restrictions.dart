@@ -135,7 +135,7 @@ class Restrictions {
 
     var type = field.type.className;
 
-    if (!AnalyzeChecker.isIdType(type) && field.hasRelationPointer) {
+    if (!AnalyzeChecker.isIdType(type)) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
@@ -327,7 +327,9 @@ class Restrictions {
     var field = def.findField(parentNodeName);
     if (field == null) return errors;
 
-    if (field.scalarFieldName != null && !type.endsWith('?')) {
+    if ((field.relation is ListRelationDefinition ||
+            field.relation is ObjectRelationDefinition) &&
+        !type.endsWith('?')) {
       errors.add(SourceSpanSeverityException(
         'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
         span,
@@ -368,7 +370,9 @@ class Restrictions {
     if (!(field.type.isList)) return errors;
 
     var referenceFields = referenceClass.fields.where((field) {
-      return field.parentTable == def.tableName;
+      var relation = field.relation;
+      if (relation is! IdRelationDefinition) return false;
+      return relation.parentTable == def.tableName;
     });
 
     if (referenceFields.isEmpty) {

@@ -72,11 +72,13 @@ fields:
     });
 
     test('then the reference field is set on the list relation.', () {
+      var relation = classDefinition.findField('employees')?.relation;
+
+      expect(relation.runtimeType, ListRelationDefinition);
       expect(
-        classDefinition.findField('employees')?.referenceFieldName,
+        (relation as ListRelationDefinition).referenceFieldName,
         'companyId',
-        reason: "Expected employees's referenceFieldName to be companyId, but "
-            "it was ${classDefinition.findField('employees')?.referenceFieldName}.",
+        reason: 'Expected the reference field to be set to "companyId".',
       );
     });
   });
