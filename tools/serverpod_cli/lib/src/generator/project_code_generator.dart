@@ -4,7 +4,8 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
+import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
@@ -13,7 +14,8 @@ import 'package:serverpod_cli/src/util/internal_error.dart';
 abstract class ProjectCodeGenerator {
   static final List<CodeGenerator> _generators = [
     const TemporaryProtocolGenerator(),
-    const DartCodeGenerator(),
+    const ServerCodeGenerator(),
+    const ClientCodeGenerator(),
     const LegacyPgsqlCodeGenerator(),
   ];
 

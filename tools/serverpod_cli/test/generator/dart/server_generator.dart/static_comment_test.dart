@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:test/test.dart';
 
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = DartCodeGenerator();
+const generator = ServerCodeGenerator();
 
 void main() {
   group('Given generated code', () {
