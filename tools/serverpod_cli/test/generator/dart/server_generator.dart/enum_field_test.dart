@@ -34,6 +34,11 @@ void main() {
           contains('enum Example with _i1.SerializableEntity {'));
     });
 
+    test('then generated enum imports server version of serverpod client', () {
+      expect(codeMap[expectedFileName],
+          contains("import 'package:serverpod/serverpod.dart' as"));
+    });
+
     test('then generated enum has static fromJson method', () {
       expect(codeMap[expectedFileName],
           contains('static Example? fromJson(int index)'));
