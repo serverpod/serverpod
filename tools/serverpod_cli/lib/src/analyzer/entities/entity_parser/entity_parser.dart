@@ -165,20 +165,21 @@ class EntityParser {
     );
     var scope = _parseClassFieldScope(value);
     var parentTable = _parseParentTable(value);
-    var scalarField = _parseScalarField(value, fieldName);
+    var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
     return [
-      if (scalarField != null)
+      if (scalarFieldName != null)
         SerializableEntityFieldDefinition(
-          name: scalarField,
+          name: scalarFieldName,
           scope: SerializableEntityFieldScope.all,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
-        scalarFieldName: scalarField,
-        scope: scalarField != null ? SerializableEntityFieldScope.api : scope,
+        scalarFieldName: scalarFieldName,
+        scope:
+            scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
         parentTable: parentTable,
         documentation: fieldDocumentation,
@@ -196,7 +197,10 @@ class EntityParser {
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
     if (!value.containsKey(Keyword.relation)) return null;
-    if (AnalyzeChecker.isIdType(value.nodes[Keyword.type]?.value)) return null;
+    var type = value.nodes[Keyword.type]?.value;
+    if (type is! String) return null;
+    if (AnalyzeChecker.isIdType(type)) return null;
+    if (type.startsWith('List')) return null;
 
     return '${fieldName}Id';
   }

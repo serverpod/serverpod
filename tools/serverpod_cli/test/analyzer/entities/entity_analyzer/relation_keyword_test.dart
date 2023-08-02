@@ -88,6 +88,89 @@ fields:
   });
 
   group(
+      'Given a class with a field with a self relation, then the parent table is set to the specified table name.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    var classDefinition = definition as ClassDefinition;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+    test('then the table is not set on relation field.', () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.parentTable, null);
+    });
+
+    test('then the scope is set to api on the relation field.', () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.scope, SerializableEntityFieldScope.api);
+    });
+
+    test(
+        'then a scalar field with the same name appended with Id is set on the relation field.',
+        () {
+      var parent = classDefinition.findField('parent');
+      expect(parent?.scalarFieldName, 'parentId');
+    });
+
+    test('then the class has a scalar field for the id.', () {
+      var parentIdField = classDefinition.findField('parentId');
+
+      expect(
+        parentIdField,
+        isNotNull,
+        reason: 'Expected to find a field named parentId.',
+      );
+    });
+
+    test('then the scalar field has the global scope.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.scope, SerializableEntityFieldScope.all);
+    });
+
+    test('then the scalar field type defaults to none nullable.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(
+        parent?.type.nullable,
+        isFalse,
+        reason: 'Expected to be non-nullable.',
+      );
+    });
+
+    test(
+        'then the scalar field has the parent table set from the object reference.',
+        () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.parentTable, 'example');
+    });
+  });
+
+  group(
       'Given a class with a self relation on a field with the class datatype where the relation is optional',
       () {
     var collector = CodeGenerationCollector();
@@ -704,6 +787,64 @@ fields:
     expect(
       collector.errors.first.message,
       'The class "InvalidClass" was not found in any protocol.',
+    );
+  });
+
+  test(
+      'Given a class with a relation to a protocol enum, then collect an error that the class does not exist.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: EnumParent?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+enum: EnumParent
+values:
+  - value1
+  - value2
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'Only classes can be used in relations, "EnumParent" is not a class.',
     );
   });
 

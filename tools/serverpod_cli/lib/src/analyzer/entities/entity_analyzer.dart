@@ -131,8 +131,13 @@ class SerializableEntityAnalyzer {
         _resolveProtocolReference(fieldDefinition, entityDefinitions);
         _resolveEnumType(fieldDefinition, entityDefinitions);
         _resolveScalarParentTableReference(
-          fieldDefinition,
           classDefinition,
+          fieldDefinition,
+          entityDefinitions,
+        );
+        _resolveRelationReferences(
+          classDefinition,
+          fieldDefinition,
           entityDefinitions,
         );
       }
@@ -284,15 +289,17 @@ class SerializableEntityAnalyzer {
   }
 
   static void _resolveScalarParentTableReference(
-    SerializableEntityFieldDefinition fieldDefinition,
     ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
     List<SerializableEntityDefinition> entityDefinitions,
   ) {
     if (fieldDefinition.scalarFieldName == null) return;
 
-    var referenceClass = entityDefinitions.cast().firstWhere(
-        (entity) => entity.className == fieldDefinition.type.className,
-        orElse: () => null);
+    var referenceClass = entityDefinitions
+        .cast<SerializableEntityDefinition?>()
+        .firstWhere(
+            (entity) => entity?.className == fieldDefinition.type.className,
+            orElse: () => null);
 
     if (referenceClass == null) return;
     if (referenceClass is! ClassDefinition) return;
@@ -302,5 +309,33 @@ class SerializableEntityAnalyzer {
     );
 
     scalarField?.parentTable = referenceClass.tableName;
+  }
+
+  static void _resolveRelationReferences(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var type = fieldDefinition.type;
+    if (!type.isList || type.generics.isEmpty) return;
+
+    var referenceClassName = type.generics.first.className;
+
+    var referenceClass =
+        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
+              (entity) => entity?.className == referenceClassName,
+              orElse: () => null,
+            );
+
+    if (referenceClass is! ClassDefinition) return;
+
+    var referenceFields = referenceClass.fields.where((field) {
+      return field.parentTable == classDefinition.tableName;
+    });
+
+    if (referenceFields.isEmpty) return;
+
+    // TODO: Handle multiple references.
+    fieldDefinition.referenceFieldName = referenceFields.first.name;
   }
 }

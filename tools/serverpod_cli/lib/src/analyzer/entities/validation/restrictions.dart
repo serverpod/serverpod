@@ -120,12 +120,62 @@ class Restrictions {
     ];
   }
 
-  List<SourceSpanSeverityException> validateTableIndexName(
-    dynamic indexName,
+  List<SourceSpanSeverityException> validateParentKey(
+    String parentNodeName,
+    String _,
     SourceSpan? span,
   ) {
-    if (indexName is! String ||
-        !StringValidators.isValidTableIndexName(indexName)) {
+    var errors = <SourceSpanSeverityException>[];
+    var definition = documentDefinition;
+
+    if (definition is! ClassDefinition) return errors;
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return errors;
+
+    var type = field.type.className;
+
+    if (!AnalyzeChecker.isIdType(type) && field.hasRelationPointer) {
+      errors.add(SourceSpanSeverityException(
+        'The "parent" property should be omitted on protocol relations.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateOptionalKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+    var definition = documentDefinition;
+
+    if (definition is! ClassDefinition) return errors;
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return errors;
+
+    var type = field.type.className;
+
+    if (AnalyzeChecker.isIdType(type)) {
+      errors.add(SourceSpanSeverityException(
+        'The "optional" property should be omitted on id fields.',
+        span,
+      ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateTableIndexName(
+    String parentNodeName,
+    String indexName,
+    SourceSpan? span,
+  ) {
+    if (!StringValidators.isValidTableIndexName(indexName)) {
       return [
         SourceSpanSeverityException(
           'Invalid format for index "$indexName", must follow the format lower_snake_case.',
@@ -148,7 +198,8 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateFieldName(
-    dynamic fieldName,
+    String parentNodeName,
+    String fieldName,
     SourceSpan? span,
   ) {
     if (StringValidators.isInvalidFieldValueInfoSeverity(fieldName)) {
@@ -194,23 +245,8 @@ class Restrictions {
     if (definition is! ClassDefinition) return errors;
 
     var field = definition.findField(parentNodeName);
-    var type = field?.type.className;
-
-    if (!AnalyzeChecker.isIdType(type) &&
-        AnalyzeChecker.isParentDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "parent" property should be omitted on protocol relations.',
-        span,
-      ));
-    }
-
-    if (AnalyzeChecker.isIdType(type) &&
-        AnalyzeChecker.isOptionalDefined(content)) {
-      errors.add(SourceSpanSeverityException(
-        'The "optional" property should be omitted on id fields.',
-        span,
-      ));
-    }
+    if (field == null) return errors;
+    var type = field.type.className;
 
     if (AnalyzeChecker.isIdType(type) &&
         !AnalyzeChecker.isParentDefined(content)) {
@@ -220,34 +256,7 @@ class Restrictions {
       ));
     }
 
-    var classes = entityRelations?.classNames[type];
-
-    if (!AnalyzeChecker.isIdType(type) &&
-        (classes == null || classes.isEmpty)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$type" was not found in any protocol.',
-        span,
-      ));
-      return errors;
-    }
-
-    if (!AnalyzeChecker.isIdType(type) && !_hasTableDefined(classes)) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$type" must have a "table" property defined to be used in a relation.',
-        span,
-      ));
-    }
-
     return errors;
-  }
-
-  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
-    var hasTable = classes
-        ?.whereType<ClassDefinition>()
-        .any((definition) => definition.tableName != null);
-    if (hasTable == null) return false;
-
-    return hasTable;
   }
 
   List<SourceSpanSeverityException> validateParentName(
@@ -313,15 +322,67 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ClassDefinition) {
-      var field = def.findField(parentNodeName);
+    if (def is! ClassDefinition) return errors;
 
-      if (field?.scalarFieldName != null && !type.endsWith('?')) {
-        errors.add(SourceSpanSeverityException(
-          'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
-          span,
-        ));
-      }
+    var field = def.findField(parentNodeName);
+    if (field == null) return errors;
+
+    if (field.scalarFieldName != null && !type.endsWith('?')) {
+      errors.add(SourceSpanSeverityException(
+        'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
+        span,
+      ));
+    }
+
+    String? parsedType = _extractReferenceClassName(field);
+
+    var localEntityRelations = entityRelations;
+    if (localEntityRelations == null) return errors;
+
+    var referenceClassExists = localEntityRelations.classNameExists(parsedType);
+    if (field.hasRelationPointer && !referenceClassExists) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" was not found in any protocol.',
+        span,
+      ));
+      return errors;
+    }
+
+    var referenceClasses = localEntityRelations.classNames[parsedType];
+    var referenceClass = referenceClasses?.first;
+    if (referenceClass is! ClassDefinition && field.hasRelationPointer) {
+      errors.add(SourceSpanSeverityException(
+        'Only classes can be used in relations, "$parsedType" is not a class.',
+        span,
+      ));
+    }
+    if (referenceClass is! ClassDefinition) return errors;
+
+    if (field.hasRelationPointer && !_hasTableDefined(referenceClasses)) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" must have a "table" property defined to be used in a relation.',
+        span,
+      ));
+    }
+
+    if (!(field.type.isList)) return errors;
+
+    var referenceFields = referenceClass.fields.where((field) {
+      return field.parentTable == def.tableName;
+    });
+
+    if (referenceFields.isEmpty) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" does not have a relation to this protocol.',
+        span,
+      ));
+    }
+
+    if (referenceFields.length > 1) {
+      errors.add(SourceSpanSeverityException(
+        'The class "$parsedType" has several reference fields, unable to resolve ambiguous relation.',
+        span,
+      ));
     }
 
     return errors;
@@ -390,6 +451,7 @@ class Restrictions {
   }
 
   List<SourceSpanSeverityException> validateRelationKey(
+    String parentNodeName,
     String relation,
     SourceSpan? span,
   ) {
@@ -508,5 +570,23 @@ class Restrictions {
     if (classes == null || classes.isEmpty) return null;
 
     return classes.firstWhere((c) => c != documentDefinition);
+  }
+
+  String? _extractReferenceClassName(SerializableEntityFieldDefinition? field) {
+    if (field == null) return null;
+    if (field.type.isList) {
+      return field.type.generics.first.className;
+    }
+
+    return field.type.className;
+  }
+
+  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
+    var hasTable = classes
+        ?.whereType<ClassDefinition>()
+        .any((definition) => definition.tableName != null);
+    if (hasTable == null) return false;
+
+    return hasTable;
   }
 }

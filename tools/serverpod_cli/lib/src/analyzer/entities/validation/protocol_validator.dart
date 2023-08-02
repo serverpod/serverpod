@@ -50,8 +50,14 @@ void validateYamlProtocol(
   String documentType,
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
-  CodeAnalysisCollector collector,
-) {
+  CodeAnalysisCollector collector, {
+  NodeContext? context,
+}) {
+  context ??= NodeContext(
+    documentType,
+    false,
+  );
+
   _collectInvalidKeyErrors(
     documentType,
     documentStructure,
@@ -61,13 +67,14 @@ void validateYamlProtocol(
 
   for (var node in documentStructure) {
     _collectKeyRestrictionErrors(
+      context,
       node,
       documentContents,
       collector,
     );
 
     _collectValueRestrictionErrors(
-      documentType,
+      context,
       node,
       documentContents,
       collector,
@@ -98,6 +105,7 @@ void validateYamlProtocol(
     );
 
     _collectNodesWithNestedNodesErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -207,6 +215,7 @@ void _collectDeprecatedKeyErrors(
 }
 
 void _collectKeyRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -216,6 +225,7 @@ void _collectKeyRestrictionErrors(
   if (node.key == Keyword.any) {
     for (var document in documentContents.nodes.entries) {
       var errors = node.keyRestriction?.call(
+        context.parentNodeName,
         document.key.toString(),
         document.key.span,
       );
@@ -226,6 +236,7 @@ void _collectKeyRestrictionErrors(
     }
   } else if (documentContents.containsKey(node.key)) {
     var errors = node.keyRestriction?.call(
+      context.parentNodeName,
       node.key,
       documentContents.key(node.key)?.span,
     );
@@ -237,7 +248,7 @@ void _collectKeyRestrictionErrors(
 }
 
 void _collectValueRestrictionErrors(
-  String parentNodeName,
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
@@ -246,7 +257,8 @@ void _collectValueRestrictionErrors(
     var content = documentContents[node.key];
     var span = documentContents.nodes[node.key]?.span;
 
-    var errors = node.valueRestriction?.call(parentNodeName, content, span);
+    var errors =
+        node.valueRestriction?.call(context.parentNodeName, content, span);
 
     if (errors != null) {
       collector.addErrors(errors);
@@ -255,6 +267,7 @@ void _collectValueRestrictionErrors(
 }
 
 void _collectNodesWithNestedNodesErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector, {
@@ -262,8 +275,9 @@ void _collectNodesWithNestedNodesErrors(
     String documentType,
     Set<ValidateNode> documentStructure,
     YamlMap documentContents,
-    CodeAnalysisCollector collector,
-  )? validateNestedNodes,
+    CodeAnalysisCollector collector, {
+    NodeContext? context,
+  })? validateNestedNodes,
 }) {
   if (node.nested.isEmpty) return;
 
@@ -286,11 +300,18 @@ void _collectNodesWithNestedNodesErrors(
       continue;
     }
 
+    var nodeKey = document.key.toString();
+
+    var nodeContext = context.shouldPropagateContext
+        ? context
+        : NodeContext(nodeKey, node.isContextualParentNode);
+
     validateNestedNodes?.call(
-      document.key.toString(),
+      nodeKey,
       node.nested,
       content,
       collector,
+      context: nodeContext,
     );
   }
 }

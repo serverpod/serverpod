@@ -99,6 +99,15 @@ class SerializableEntityFieldDefinition {
   /// then [scalarFieldName] contains the name of the field with the foreign key.
   final String? scalarFieldName;
 
+  /// If set references the column in the [parentTable] that this field should be joined on.
+  String? referenceFieldName;
+
+  /// Returns true, if this field has a relation pointer, meaning that there is
+  /// another field in the database that references this field or that this
+  /// field is a reference to another field.
+  bool get hasRelationPointer =>
+      scalarFieldName != null || referenceFieldName != null;
+
   /// The documentation of this field, line by line.
   final List<String>? documentation;
 
@@ -109,6 +118,7 @@ class SerializableEntityFieldDefinition {
     required this.scope,
     this.parentTable,
     this.scalarFieldName,
+    this.referenceFieldName,
     this.documentation,
   });
 
