@@ -102,9 +102,8 @@ class SerializableEntityFieldDefinition {
   /// If set references the column in the [parentTable] that this field should be joined on.
   String? referenceFieldName;
 
-  /// If set to true, this field is a relation to another table.
-  /// Defaults to false.
-  final bool isVirtualRelation;
+  bool get hasRelationPointer => scalarFieldName != null || referenceFieldName != null;
+
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
@@ -117,7 +116,6 @@ class SerializableEntityFieldDefinition {
     this.parentTable,
     this.scalarFieldName,
     this.referenceFieldName,
-    this.isVirtualRelation = false,
     this.documentation,
   });
 

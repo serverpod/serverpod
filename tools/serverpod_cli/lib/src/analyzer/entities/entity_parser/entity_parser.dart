@@ -182,7 +182,6 @@ class EntityParser {
             scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
         type: typeResult.type..isEnum = isEnum,
         parentTable: parentTable,
-        isVirtualRelation: _isVirtualRelation(value),
         documentation: fieldDocumentation,
       )
     ];
@@ -204,14 +203,6 @@ class EntityParser {
     if (type.startsWith('List')) return null;
 
     return '${fieldName}Id';
-  }
-
-  static bool _isVirtualRelation(YamlMap documentContents) {
-    var isRelation = documentContents.containsKey(Keyword.relation);
-    if (!isRelation) return false;
-
-    var type = documentContents.nodes[Keyword.type]?.value;
-    return !AnalyzeChecker.isIdType(type);
   }
 
   static bool _isOptionalRelation(YamlMap documentContents) {

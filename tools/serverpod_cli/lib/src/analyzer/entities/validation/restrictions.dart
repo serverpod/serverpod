@@ -135,7 +135,7 @@ class Restrictions {
 
     var type = field.type.className;
 
-    if (!AnalyzeChecker.isIdType(type) && field.isVirtualRelation) {
+    if (!AnalyzeChecker.isIdType(type) && field.hasRelationPointer) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
@@ -338,7 +338,7 @@ class Restrictions {
 
     var classes = entityRelations?.classNames[parsedType];
 
-    if (field.isVirtualRelation && (classes == null || classes.isEmpty)) {
+    if (field.hasRelationPointer && (classes == null || classes.isEmpty)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
         span,
@@ -346,19 +346,17 @@ class Restrictions {
       return errors;
     }
 
-    if (field.isVirtualRelation && !_hasTableDefined(classes)) {
+    if (field.hasRelationPointer && !_hasTableDefined(classes)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
         span,
       ));
     }
 
+    if (!(field.type.isList)) return errors;
+
     var referenceClass = classes?.first;
     if (referenceClass is! ClassDefinition) return errors;
-
-    if (!(field.type.isList && field.isVirtualRelation)) {
-      return errors;
-    }
 
     var referenceFields = referenceClass.fields.where((field) {
       return field.parentTable == def.tableName;

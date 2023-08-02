@@ -1189,7 +1189,7 @@ fields:
         class: Example
         table: example
         fields:
-          name: String, parent=unknown_table
+          name: int, parent=unknown_table
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
           ['lib', 'src', 'protocol'],
