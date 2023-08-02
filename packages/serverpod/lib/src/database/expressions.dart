@@ -104,7 +104,7 @@ abstract class Column<T> extends Expression {
   Expression inSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" IN '
-        '(${values.map(encodeValueForQuery).join(',')}})');
+        '(${values.map(encodeValueForQuery).join(',')})');
   }
 
   /// Creates an [Expression] checking if the value in the column is not equal
@@ -113,7 +113,7 @@ abstract class Column<T> extends Expression {
   Expression notInSet(Set<T> values) {
     assert(values.isNotEmpty);
     return Expression('"$columnName" NOT IN '
-        '(${values.map(encodeValueForQuery).join(',')}})');
+        '(${values.map(encodeValueForQuery).join(',')})');
   }
 
   /// Creates a new [Column], this is typically done in generated code only.
@@ -142,8 +142,30 @@ abstract class _ColumnUnescaped<T> extends Column<T> {
   String encodeValueForQuery(T value) => value.toString();
 }
 
+abstract class _ColumnNum<T extends num> extends _ColumnUnescaped<T> {
+  /// Creates a new [_ColumnNum], this is called internally only.
+  _ColumnNum(super.columnName, {super.varcharLength});
+
+  /// Creates an [Expression] checking if the value in the column is between
+  /// a minimum and a maximum value (inclusive of the endpoints of the range).
+  Expression between(T min, T max) {
+    assert(min <= max);
+    return Expression('"$columnName" BETWEEN '
+        '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
+  }
+
+  /// Creates an [Expression] checking if the value in the column is not between
+  /// a minimum and a maximum value (i.e. is strictly less than the minimum
+  /// or strictly greater than the maximum).
+  Expression notBetween(T min, T max) {
+    assert(min <= max);
+    return Expression('"$columnName" NOT BETWEEN '
+        '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
+  }
+}
+
 /// A [Column] holding an [int].
-class ColumnInt extends _ColumnUnescaped<int> {
+class ColumnInt extends _ColumnNum<int> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnInt(String name) : super(name);
 }
@@ -161,7 +183,7 @@ class ColumnEnum<E extends Enum> extends Column<E> {
 }
 
 /// A [Column] holding an [double].
-class ColumnDouble extends _ColumnUnescaped<double> {
+class ColumnDouble extends _ColumnNum<double> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDouble(String name) : super(name);
 }
