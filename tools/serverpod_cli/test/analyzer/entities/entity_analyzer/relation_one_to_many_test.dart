@@ -82,7 +82,7 @@ fields:
   });
 
   test(
-      'Given a class with a one to many relation but the one side has no relation defined then an error is collected that the reference class could not be found.',
+      'Given a class with a one to many relation but the one side has no relation defined but has an id field then an error is collected that the reference class could not be found.',
       () {
     var collector = CodeGenerationCollector();
 
