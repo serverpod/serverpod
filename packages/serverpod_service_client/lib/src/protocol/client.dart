@@ -164,6 +164,9 @@ class EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
+  /// Returns the target and live database definitions. See
+  /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
+  /// details.
   _i2.Future<_i9.DatabaseDefinitions> getDatabaseDefinitions() =>
       caller.callServerEndpoint<_i9.DatabaseDefinitions>(
         'insights',
