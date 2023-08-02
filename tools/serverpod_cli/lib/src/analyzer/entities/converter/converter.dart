@@ -105,10 +105,18 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       var key = nestedComponents.first;
       var stringifiedContent = nestedComponents.last;
 
-      var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
-      var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
+      if (stringifiedContent == '') {
+        return _createdYamlScalarNode(
+          key,
+          null,
+          keyValueSpan,
+        );
+      } else {
+        var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
+        var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
 
-      return _createYamlMapNode(key, nodeMap, keyValueSpan);
+        return _createYamlMapNode(key, nodeMap, keyValueSpan);
+      }
     }
 
     List<String> keyValuePair = stringifiedKeyValuePair.split('=');

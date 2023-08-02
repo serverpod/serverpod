@@ -25,7 +25,8 @@ class ValidateNode {
 
   /// If set, the value must match the restriction if an error is returned the
   /// value is considered invalid.
-  List<SourceSpanException>? Function(dynamic, SourceSpan?)? valueRestriction;
+  List<SourceSpanException>? Function(String, dynamic, SourceSpan?)?
+      valueRestriction;
 
   // A set of keys that are mutually exclusive with this key.
   late Set<String> mutuallyExclusiveKeys;
@@ -39,6 +40,10 @@ class ValidateNode {
   /// The order of key and key2 does not matter.
   /// Full example: nodeKey: firstValue, key=value, key2=value2.
   StringifiedNestedValues allowStringifiedNestedValue;
+
+  /// If true, the value can be an empty YamlMap.
+  /// I.E. no nested values are required to be specified.
+  bool allowEmptyNestedValue;
 
   /// Any nested nodes for this key, setting any node here means the expected
   /// value is a YamlMap, unless allowStringifiedNestedValue is true.
@@ -54,16 +59,12 @@ class ValidateNode {
     this.valueRestriction,
     this.mutuallyExclusiveKeys = const {},
     this.allowStringifiedNestedValue = const StringifiedNestedValues(),
+    this.allowEmptyNestedValue = false,
     this.nested = const {},
   }) {
     if (allowStringifiedNestedValue.isAllowed && nested.isEmpty) {
       throw ArgumentError(
           'allowStringifiedNestedValue can only be true if nested is not empty.');
-    }
-
-    if (key != Keyword.any && keyRestriction != null) {
-      throw ArgumentError(
-          'keyRestriction can only be set if key is ${Keyword.any}.');
     }
   }
 }

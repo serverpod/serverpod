@@ -43,6 +43,10 @@ void main(List<String> args) async {
 }
 
 Future<void> _main(List<String> args) async {
+  // Need to initialize logger before building command runner because we need
+  // the terminal column width that is accessed through the logger for proper
+  // formatted usage messages.
+  initializeLogger();
   var runner = buildCommandRunner();
   await runner.run(args);
 }

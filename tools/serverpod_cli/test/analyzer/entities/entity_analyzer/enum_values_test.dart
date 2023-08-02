@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -145,7 +146,7 @@ values:
       '''
 enum: ExampleEnum
 values:
-  - InvalidValue
+  - Invalid-Value
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
       ['lib', 'src', 'protocol'],
@@ -212,6 +213,204 @@ values:
     expect(
       error2.message,
       'Enum values must be unique.',
+    );
+  });
+
+  test(
+      'Given a a value with multiple uppercase chars after a lowercase, no errors is given.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - lowerCAPS
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors.',
+    );
+  });
+
+  test('Given a a value with a single uppercase char, no errors is given.', () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - M
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors.',
+    );
+  });
+
+  test(
+      'Given a a value with snake_case value, an error of info level is given.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - snake_case
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error with info.',
+    );
+
+    var error = collector.errors.first as SourceSpanSeverityException;
+
+    expect(
+      error.message,
+      'Enum values should be lowerCamelCase.',
+    );
+
+    expect(
+      error.severity,
+      SourceSpanSeverity.info,
+    );
+  });
+
+  test(
+      'Given a a value with PascalCase value, an error of info level is given.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - PascalCase
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error with info.',
+    );
+
+    var error = collector.errors.first as SourceSpanSeverityException;
+
+    expect(
+      error.message,
+      'Enum values should be lowerCamelCase.',
+    );
+
+    expect(
+      error.severity,
+      SourceSpanSeverity.info,
+    );
+  });
+
+  test('Given a a value with UPPERCASE value, an error of info level is given.',
+      () {
+    var collector = CodeGenerationCollector();
+    var protocol = ProtocolSource(
+      '''
+enum: ExampleEnum
+values:
+  - UPPERCASE
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      ['lib', 'src', 'protocol'],
+    );
+
+    var definition =
+        SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+            as EnumDefinition;
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error with info.',
+    );
+
+    var error = collector.errors.first as SourceSpanSeverityException;
+
+    expect(
+      error.message,
+      'Enum values should be lowerCamelCase.',
+    );
+
+    expect(
+      error.severity,
+      SourceSpanSeverity.info,
     );
   });
 

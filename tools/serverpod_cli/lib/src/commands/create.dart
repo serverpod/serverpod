@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/create/create.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 
@@ -33,7 +34,21 @@ class CreateCommand extends ServerpodCommand {
 
   @override
   Future<void> run() async {
-    var name = argResults!.arguments.last;
+    var rest = argResults?.rest;
+
+    if (rest == null || rest.isEmpty) {
+      log.error('Project name missing.');
+      printUsage();
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    if (rest.length > 1) {
+      log.error('Multiple project names specified, please specify only.');
+      printUsage();
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    var name = rest.last;
     var template = ServerpodTemplateType.tryParse(argResults!['template']);
     bool force = argResults!['force'];
 

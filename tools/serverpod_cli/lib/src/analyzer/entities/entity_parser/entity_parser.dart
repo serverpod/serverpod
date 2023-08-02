@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
@@ -5,9 +6,9 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import '../converter/converter.dart';
-import '../definitions.dart';
-import '../validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 
 class EntityParser {
   static SerializableEntityDefinition? serializeClassFile(
@@ -105,17 +106,12 @@ class EntityParser {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlMap) return [];
 
-    var parsedFields = fieldsNode.nodes.entries.map((fieldNode) {
+    var fields = fieldsNode.nodes.entries.expand((fieldNode) {
       return _parseEntityFieldDefinition(
         fieldNode,
         docsExtractor,
       );
-    });
-
-    var fields = parsedFields
-        .where((field) => field != null)
-        .cast<SerializableEntityFieldDefinition>()
-        .toList();
+    }).toList();
 
     if (hasTable) {
       fields = [
@@ -136,12 +132,12 @@ class EntityParser {
     return fields;
   }
 
-  static SerializableEntityFieldDefinition? _parseEntityFieldDefinition(
+  static List<SerializableEntityFieldDefinition> _parseEntityFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
   ) {
     var key = fieldNode.key;
-    if (key is! YamlScalar) return null;
+    if (key is! YamlScalar) return [];
 
     var nodeValue = fieldNode.value;
     var value = nodeValue.value;
@@ -152,15 +148,15 @@ class EntityParser {
         firstKey: Keyword.type,
       );
     }
-    if (value is! YamlMap) return null;
+    if (value is! YamlMap) return [];
 
     var fieldName = key.value;
-    if (fieldName is! String) return null;
+    if (fieldName is! String) return [];
 
     var typeNode = value.nodes[Keyword.type];
     var typeValue = typeNode?.value;
-    if (typeNode is! YamlScalar) return null;
-    if (typeValue is! String) return null;
+    if (typeNode is! YamlScalar) return [];
+    if (typeValue is! String) return [];
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
     var typeResult = parseAndAnalyzeType(
@@ -169,19 +165,57 @@ class EntityParser {
     );
     var scope = _parseClassFieldScope(value);
     var parentTable = _parseParentTable(value);
+    var scalarField = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
-    return SerializableEntityFieldDefinition(
-      name: fieldName,
-      scope: scope,
-      type: typeResult.type..isEnum = isEnum,
-      parentTable: parentTable,
-      documentation: fieldDocumentation,
-    );
+    return [
+      if (scalarField != null)
+        SerializableEntityFieldDefinition(
+          name: scalarField,
+          scope: SerializableEntityFieldScope.all,
+          type: _createScalarType(value),
+        ),
+      SerializableEntityFieldDefinition(
+        name: fieldName,
+        scalarFieldName: scalarField,
+        scope: scalarField != null ? SerializableEntityFieldScope.api : scope,
+        type: typeResult.type..isEnum = isEnum,
+        parentTable: parentTable,
+        documentation: fieldDocumentation,
+      )
+    ];
+  }
+
+  static TypeDefinition _createScalarType(YamlMap value) {
+    if (_isOptionalRelation(value)) {
+      return TypeDefinition.int.asNullable;
+    } else {
+      return TypeDefinition.int;
+    }
+  }
+
+  static String? _parseScalarField(YamlMap value, String fieldName) {
+    if (!value.containsKey(Keyword.relation)) return null;
+    if (AnalyzeChecker.isIdType(value.nodes[Keyword.type]?.value)) return null;
+
+    return '${fieldName}Id';
+  }
+
+  static bool _isOptionalRelation(YamlMap documentContents) {
+    var relation = documentContents.nodes[Keyword.relation];
+
+    if (relation is! YamlMap) return false;
+
+    var optional = relation.containsKey(Keyword.optional);
+
+    if (optional) return true;
+
+    return false;
   }
 
   static SerializableEntityFieldScope _parseClassFieldScope(
-      YamlMap documentContents) {
+    YamlMap documentContents,
+  ) {
     var database = documentContents.containsKey(Keyword.database);
     var api = documentContents.containsKey(Keyword.api);
 
@@ -200,7 +234,11 @@ class EntityParser {
     if (relationMap is! YamlMap) return null;
     parent = relationMap.nodes[Keyword.parent]?.value;
 
-    if (parent is! String) return null;
+    if (parent is String) return parent;
+
+    var type = documentContents.nodes[Keyword.type]?.value;
+    if (AnalyzeChecker.isIdType(type)) return null;
+    if (type is! String) return null;
 
     return parent;
   }

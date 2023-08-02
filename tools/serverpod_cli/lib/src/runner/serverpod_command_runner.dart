@@ -65,21 +65,18 @@ class ServerpodCommandRunner extends CommandRunner {
   final Analytics _analytics;
   final bool _productionMode;
   final Version _cliVersion;
-  final LoggerInit _onLoggerInit;
   final PreCommandEnvironmentCheck _onPreCommandEnvironmentCheck;
 
   ServerpodCommandRunner({
     required Analytics analytics,
     required bool productionMode,
     required Version cliVersion,
-    required LoggerInit onLoggerInit,
     required PreCommandEnvironmentCheck onPreCommandEnvironmentCheck,
     required String executableName,
     required String description,
   })  : _analytics = analytics,
         _productionMode = productionMode,
         _cliVersion = cliVersion,
-        _onLoggerInit = onLoggerInit,
         _onPreCommandEnvironmentCheck = onPreCommandEnvironmentCheck,
         super(executableName, description) {
     argParser.addFlag(
@@ -105,7 +102,6 @@ class ServerpodCommandRunner extends CommandRunner {
     Analytics analytics,
     bool productionMode,
     Version cliVersion, {
-    LoggerInit onLoggerInit = initializeLogger,
     PreCommandEnvironmentCheck onPreCommandEnvironmentCheck =
         _preCommandEnvironmentChecks,
   }) {
@@ -113,7 +109,6 @@ class ServerpodCommandRunner extends CommandRunner {
       analytics: analytics,
       productionMode: productionMode,
       cliVersion: cliVersion,
-      onLoggerInit: onLoggerInit,
       onPreCommandEnvironmentCheck: onPreCommandEnvironmentCheck,
       executableName: 'serverpod',
       description: 'Manage your serverpod app development',
@@ -133,7 +128,7 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
-    _initializeLogger(topLevelResults);
+    _setLogLevel(topLevelResults);
 
     await _onPreCommandEnvironmentCheck();
     await _preCommandPrints();
@@ -161,7 +156,7 @@ class ServerpodCommandRunner extends CommandRunner {
   ArgParser get argParser => _argParser;
   final ArgParser _argParser = ArgParser(usageLineLength: log.wrapTextColumn);
 
-  void _initializeLogger(ArgResults topLevelResults) {
+  void _setLogLevel(ArgResults topLevelResults) {
     var logLevel = LogLevel.info;
 
     if (topLevelResults[GlobalFlags.verbose]) {
@@ -170,7 +165,7 @@ class ServerpodCommandRunner extends CommandRunner {
       logLevel = LogLevel.nothing;
     }
 
-    _onLoggerInit(logLevel);
+    log.logLevel = logLevel;
   }
 
   Future<void> _preCommandPrints() async {

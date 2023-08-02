@@ -59,7 +59,7 @@ class MessageLogEntry extends _i1.TableRow {
   /// The id of the server that handled the message.
   String serverId;
 
-  /// The id of the message this entry is associcated with.
+  /// The id of the message this entry is associated with.
   int messageId;
 
   /// The entpoint this message is associated with.
@@ -308,7 +308,7 @@ class MessageLogEntryTable extends _i1.Table {
   /// The id of the server that handled the message.
   final serverId = _i1.ColumnString('serverId');
 
-  /// The id of the message this entry is associcated with.
+  /// The id of the message this entry is associated with.
   final messageId = _i1.ColumnInt('messageId');
 
   /// The entpoint this message is associated with.
