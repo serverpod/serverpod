@@ -103,7 +103,7 @@ class SerializableEntityFieldDefinition {
   String? referenceFieldName;
 
   /// Returns true, if this field has a relation pointer, meaning that there is
-  /// another field in the database that references this field or that this 
+  /// another field in the database that references this field or that this
   /// field is a reference to another field.
   bool get hasRelationPointer =>
       scalarFieldName != null || referenceFieldName != null;
