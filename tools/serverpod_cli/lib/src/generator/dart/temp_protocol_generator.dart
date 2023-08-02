@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/entities_lib
 
 /// A [CodeGenerator] that generates a temporary protocol.dart file required
 /// for analyzing the endpoints.
-class TemporaryProtocolGenerator extends CodeGenerator {
-  const TemporaryProtocolGenerator();
+class DartTemporaryProtocolGenerator extends CodeGenerator {
+  const DartTemporaryProtocolGenerator();
 
   @override
   Map<String, String> generateSerializableEntitiesCode({

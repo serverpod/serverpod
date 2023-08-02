@@ -11,11 +11,11 @@ import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 
-abstract class ProjectCodeGenerator {
+abstract class ServerpodCodeGenerator {
   static final List<CodeGenerator> _generators = [
-    const TemporaryProtocolGenerator(),
-    const ServerCodeGenerator(),
-    const ClientCodeGenerator(),
+    const DartTemporaryProtocolGenerator(),
+    const DartServerCodeGenerator(),
+    const DartClientCodeGenerator(),
     const LegacyPgsqlCodeGenerator(),
   ];
 

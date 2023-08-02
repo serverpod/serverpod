@@ -6,8 +6,8 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/library_gene
 
 /// A [CodeGenerator] that generates the server side dart code of a
 /// serverpod project.
-class ServerCodeGenerator extends CodeGenerator {
-  const ServerCodeGenerator();
+class DartServerCodeGenerator extends CodeGenerator {
+  const DartServerCodeGenerator();
 
   @override
   Map<String, String> generateSerializableEntitiesCode({

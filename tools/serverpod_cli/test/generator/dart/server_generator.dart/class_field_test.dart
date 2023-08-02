@@ -7,7 +7,7 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = ServerCodeGenerator();
+const generator = DartServerCodeGenerator();
 
 void main() {
   group('Given a class with a none nullable field', () {

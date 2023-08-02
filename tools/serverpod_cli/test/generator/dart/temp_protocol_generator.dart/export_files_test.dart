@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = TemporaryProtocolGenerator();
+const generator = DartTemporaryProtocolGenerator();
 
 void main() {
   group('Given a single class when generating the code', () {
