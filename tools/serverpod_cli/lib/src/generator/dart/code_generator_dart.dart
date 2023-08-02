@@ -88,19 +88,6 @@ class DartCodeGenerator extends CodeGenerator {
           clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
   }
-
-  @override
-  Future<List<String>> getDirectoriesRequiringCleaning(
-      {required ProtocolDefinition protocolDefinition,
-      required GeneratorConfig config}) async {
-    return [
-      p.joinAll(config.generatedServerProtocolPathParts),
-      p.joinAll(config.generatedDartClientProtocolPathParts),
-    ];
-  }
-
-  @override
-  List<String> get outputFileExtensions => ['.dart'];
 }
 
 extension on Library {

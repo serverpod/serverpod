@@ -152,16 +152,6 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
   }
 
   @override
-  Future<List<String>> getDirectoriesRequiringCleaning(
-      {required ProtocolDefinition protocolDefinition,
-      required GeneratorConfig config}) async {
-    return [];
-  }
-
-  @override
-  List<String> get outputFileExtensions => ['.pgsql'];
-
-  @override
   Map<String, String> generateProtocolCode(
       {required ProtocolDefinition protocolDefinition,
       required GeneratorConfig config}) {

@@ -73,7 +73,7 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
-  await CodeGenerator.cleanPreviouslyGeneratedFiles(
+  await CodeGenerator.cleanPreviouslyGeneratedDartFiles(
     generatedFiles: <String>{
       ...generatedEntityFiles,
       ...generatedProtocolFiles

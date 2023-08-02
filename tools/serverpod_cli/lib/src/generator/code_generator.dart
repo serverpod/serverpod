@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
@@ -43,20 +44,6 @@ abstract class CodeGenerator {
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   });
-
-  /// List all the directories, that may contain files, that should be cleaned.
-  /// For most [CodeGenerator]s, the output should just depend on [config].
-  ///
-  /// Relative paths start at the server package directory.
-  @protected
-  Future<List<String>> getDirectoriesRequiringCleaning({
-    required ProtocolDefinition protocolDefinition,
-    required GeneratorConfig config,
-  });
-
-  /// The file extensions, this generator uses when generating files.
-  @protected
-  List<String> get outputFileExtensions;
 
   /// The generators, that run on [generateAll].
   static const generators = [DartCodeGenerator(), LegacyPgsqlCodeGenerator()];
@@ -130,27 +117,38 @@ abstract class CodeGenerator {
   }
 
   /// Removes files from previous generation runs.
-  /// By removing old files that are not part of the [generatedFiles] in the
-  /// [CodeGenerator.getDirectoriesRequiringCleaning] for each [CodeGenerator].
-  static Future<void> cleanPreviouslyGeneratedFiles({
+  /// By removing old files that are not part of the [generatedFiles].
+  static Future<void> cleanPreviouslyGeneratedDartFiles({
     required Set<String> generatedFiles,
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   }) async {
     log.debug('Cleaning up old files.');
-    for (var generator in generators) {
-      var dirs = await generator.getDirectoriesRequiringCleaning(
-          protocolDefinition: protocolDefinition, config: config);
+    var dirs = _getDirectoriesRequiringCleaning(
+        protocolDefinition: protocolDefinition, config: config);
 
-      for (var dir in dirs) {
-        await _removeOldFilesInPath(
-          dir,
-          generatedFiles,
-          generator.outputFileExtensions,
-        );
-      }
+    for (var dir in dirs) {
+      await _removeOldFilesInPath(
+        dir,
+        generatedFiles,
+        ['.dart'],
+      );
     }
   }
+}
+
+/// List all the directories, that may contain files, that should be cleaned
+/// after code generation is complete.
+///
+/// Relative paths start at the server package directory.
+List<String> _getDirectoriesRequiringCleaning({
+  required ProtocolDefinition protocolDefinition,
+  required GeneratorConfig config,
+}) {
+  return [
+    p.joinAll(config.generatedServerProtocolPathParts),
+    p.joinAll(config.generatedDartClientProtocolPathParts),
+  ];
 }
 
 Future<void> _removeOldFilesInPath(
