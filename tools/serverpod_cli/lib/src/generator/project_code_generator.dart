@@ -96,7 +96,9 @@ abstract class ProjectCodeGenerator {
   }) async {
     log.debug('Cleaning up old files.');
     var dirs = _getDirectoriesRequiringCleaning(
-        protocolDefinition: protocolDefinition, config: config);
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
 
     for (var dir in dirs) {
       await _removeOldFilesInPath(

@@ -1,7 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import '../../shared.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
