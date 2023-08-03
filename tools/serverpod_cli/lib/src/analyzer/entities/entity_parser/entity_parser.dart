@@ -228,16 +228,21 @@ class EntityParser {
     return documentContents.containsKey(Keyword.relation);
   }
 
-  static bool _parseShouldPersist(YamlMap documentContents) {
-    var isApiDefined = documentContents.containsKey(Keyword.api);
-    if (isApiDefined) return false;
+  static bool _parseShouldPersist(YamlMap node) {
+    var isApi = _parseBooleanKey(node, Keyword.api);
+    if (isApi) return false;
+    if (!node.containsKey(Keyword.persist)) return true;
 
-    var persistValue = documentContents.nodes[Keyword.persist]?.value;
+    return _parseBooleanKey(node, Keyword.persist);
+  }
 
-    var persist = _parseBool(persistValue);
-    if (persist != null) return persist;
+  static bool _parseBooleanKey(YamlMap node, String key) {
+    var value = node.nodes[key]?.value;
+    var boolValue = _parseBool(value);
+    if (boolValue != null) return boolValue;
 
-    return true;
+    var containsKey = node.containsKey(key);
+    return containsKey;
   }
 
   static bool? _parseBool(dynamic value) {
@@ -249,22 +254,17 @@ class EntityParser {
     return null;
   }
 
-  static bool _isOptionalRelation(YamlMap documentContents) {
-    var relation = documentContents.nodes[Keyword.relation];
-
+  static bool _isOptionalRelation(YamlMap node) {
+    var relation = node.nodes[Keyword.relation];
     if (relation is! YamlMap) return false;
 
-    var optional = relation.containsKey(Keyword.optional);
-
-    if (optional) return true;
-
-    return false;
+    return _parseBooleanKey(relation, Keyword.optional);
   }
 
   static EntityFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
   ) {
-    var database = documentContents.containsKey(Keyword.database);
+    var database = _parseBooleanKey(documentContents, Keyword.database);
     if (database) return EntityFieldScopeDefinition.serverOnly;
 
     var scope = documentContents.nodes[Keyword.scope]?.value;

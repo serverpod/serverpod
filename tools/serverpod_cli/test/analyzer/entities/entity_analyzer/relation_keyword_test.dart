@@ -139,9 +139,52 @@ fields:
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
+
     test('then scalar field is nullable.', () {
       var parent = classDefinition.findField('parentId');
       expect(parent?.type.nullable, isTrue, reason: 'Expected to be nullable.');
+    });
+  });
+
+  group(
+      'Given a class with a self relation on a field with the class datatype where the relation is not optional',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: Example?, relation(!optional)
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol,
+    );
+    SerializableEntityAnalyzer.resolveEntityDependencies([definition!]);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol.yaml,
+      protocol.yamlSourceUri.path,
+      collector,
+      definition,
+      [definition],
+    );
+
+    var classDefinition = definition as ClassDefinition;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then scalar field is not nullable.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.type.nullable, isFalse,
+          reason: 'Expected to not be nullable.');
     });
   });
 

@@ -73,6 +73,70 @@ void main() {
     );
 
     test(
+      'Given a class with a field with a negated api keyword, then the generated entity should be persisted.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, !api
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          [],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition],
+        );
+
+        expect(
+          definition.fields.last.shouldPersist,
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'Given a class with a field with a negated database keyword, then the generated entity has the scope all.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, !database
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          [],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition],
+        );
+
+        expect(
+          definition.fields.last.scope,
+          EntityFieldScopeDefinition.all,
+        );
+      },
+    );
+
+    test(
       'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
       () {
         var collector = CodeGenerationCollector();
@@ -179,7 +243,7 @@ void main() {
         test('then the generated entity should not be persisted.', () {
           expect(
             definition.fields.last.shouldPersist,
-            false,
+            isFalse,
           );
         });
       },
