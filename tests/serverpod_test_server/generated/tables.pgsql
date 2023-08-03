@@ -153,6 +153,19 @@ ALTER TABLE ONLY "simple_data"
 
 
 --
+-- Class SimpleDateTime as table simple_datetime
+--
+
+CREATE TABLE "simple_datetime" (
+  "id" serial,
+  "dateTime" timestamp without time zone NOT NULL
+);
+
+ALTER TABLE ONLY "simple_datetime"
+  ADD CONSTRAINT simple_datetime_pkey PRIMARY KEY (id);
+
+
+--
 -- Class Types as table types
 --
 
