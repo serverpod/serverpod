@@ -321,15 +321,13 @@ class Restrictions {
       ));
     }
 
-    var def = documentDefinition;
-    if (def is! ClassDefinition) return errors;
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return errors;
 
-    var field = def.findField(parentNodeName);
-    if (field == null) return errors;
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null || !field.isSymbolicRelation) return errors;
 
-    if ((field.relation is ListRelationDefinition ||
-            field.relation is ObjectRelationDefinition) &&
-        !type.endsWith('?')) {
+    if (!type.endsWith('?')) {
       errors.add(SourceSpanSeverityException(
         'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
         span,
@@ -342,7 +340,7 @@ class Restrictions {
     if (localEntityRelations == null) return errors;
 
     var referenceClassExists = localEntityRelations.classNameExists(parsedType);
-    if (field.isSymbolicRelation && !referenceClassExists) {
+    if (!referenceClassExists) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
         span,
@@ -352,13 +350,14 @@ class Restrictions {
 
     var referenceClasses = localEntityRelations.classNames[parsedType];
     var referenceClass = referenceClasses?.first;
-    if (referenceClass is! ClassDefinition && field.isSymbolicRelation) {
+
+    if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
         'Only classes can be used in relations, "$parsedType" is not a class.',
         span,
       ));
+      return errors;
     }
-    if (referenceClass is! ClassDefinition) return errors;
 
     if (!_hasTableDefined(referenceClasses)) {
       errors.add(SourceSpanSeverityException(
@@ -372,7 +371,7 @@ class Restrictions {
     var referenceFields = referenceClass.fields.where((field) {
       var relation = field.relation;
       if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == def.tableName;
+      return relation.parentTable == classDefinition.tableName;
     });
 
     if (referenceFields.isEmpty) {

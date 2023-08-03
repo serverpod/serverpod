@@ -221,7 +221,7 @@ class EntityParser {
   }
 
   static bool _isRelation(YamlMap documentContents) {
-    return documentContents.containsKey([Keyword.relation]);
+    return documentContents.containsKey(Keyword.relation);
   }
 
   static bool _isOptionalRelation(YamlMap documentContents) {
