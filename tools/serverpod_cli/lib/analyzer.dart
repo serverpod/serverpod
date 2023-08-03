@@ -17,6 +17,7 @@ export 'src/analyzer/entities/definitions.dart'
         SerializableEntityFieldScope,
         SerializableEntityIndexDefinition,
         EnumDefinition;
+export 'src/database/migration.dart';
 export 'src/generator/types.dart' show TypeDefinition;
 export 'src/generator/generator_database_definition.dart';
 export 'src/migrations/generator.dart';
