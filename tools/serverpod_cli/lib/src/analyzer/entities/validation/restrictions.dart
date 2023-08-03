@@ -342,7 +342,7 @@ class Restrictions {
     if (localEntityRelations == null) return errors;
 
     var referenceClassExists = localEntityRelations.classNameExists(parsedType);
-    if (field.hasRelationPointer && !referenceClassExists) {
+    if (field.isSymbolicRelation && !referenceClassExists) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
         span,
@@ -352,7 +352,7 @@ class Restrictions {
 
     var referenceClasses = localEntityRelations.classNames[parsedType];
     var referenceClass = referenceClasses?.first;
-    if (referenceClass is! ClassDefinition && field.hasRelationPointer) {
+    if (referenceClass is! ClassDefinition && field.isSymbolicRelation) {
       errors.add(SourceSpanSeverityException(
         'Only classes can be used in relations, "$parsedType" is not a class.',
         span,
@@ -360,7 +360,7 @@ class Restrictions {
     }
     if (referenceClass is! ClassDefinition) return errors;
 
-    if (field.hasRelationPointer && !_hasTableDefined(referenceClasses)) {
+    if (!_hasTableDefined(referenceClasses)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
         span,
@@ -371,7 +371,7 @@ class Restrictions {
 
     var referenceFields = referenceClass.fields.where((field) {
       var relation = field.relation;
-      if (relation is! IdRelationDefinition) return false;
+      if (relation is! ForeignRelationDefinition) return false;
       return relation.parentTable == def.tableName;
     });
 

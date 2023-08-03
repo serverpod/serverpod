@@ -1114,8 +1114,8 @@ fields:
 
         var relation = definition.fields.last.relation;
 
-        expect(relation.runtimeType, IdRelationDefinition);
-        expect((relation as IdRelationDefinition).parentTable, 'example');
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect((relation as ForeignRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1149,8 +1149,8 @@ fields:
 
         var relation = definition.fields.last.relation;
 
-        expect(relation.runtimeType, IdRelationDefinition);
-        expect((relation as IdRelationDefinition).parentTable, 'example');
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect((relation as ForeignRelationDefinition).parentTable, 'example');
       },
     );
 

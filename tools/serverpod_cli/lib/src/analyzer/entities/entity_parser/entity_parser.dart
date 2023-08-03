@@ -171,7 +171,7 @@ class EntityParser {
     RelationDefinition? relation;
 
     if (parentTable != null) {
-      relation = IdRelationDefinition(
+      relation = ForeignRelationDefinition(
         parentTable: parentTable,
         referenceFieldName: 'id',
       );
@@ -185,7 +185,7 @@ class EntityParser {
       if (scalarFieldName != null)
         SerializableEntityFieldDefinition(
           name: scalarFieldName,
-          relation: UnresolvedIdRelationDefinition(
+          relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
           ),
           scope: SerializableEntityFieldScope.all,
