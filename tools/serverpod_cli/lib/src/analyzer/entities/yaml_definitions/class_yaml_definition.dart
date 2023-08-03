@@ -82,17 +82,23 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.persist,
+                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
               ),
               ValidateNode(
                 Keyword.database,
-                mutuallyExclusiveKeys: {Keyword.api, Keyword.scope},
+                mutuallyExclusiveKeys: {
+                  Keyword.api,
+                  Keyword.scope,
+                  Keyword.persist
+                },
               ),
               ValidateNode(
                 Keyword.api,
                 mutuallyExclusiveKeys: {
                   Keyword.database,
                   Keyword.scope,
-                  Keyword.parent
+                  Keyword.parent,
+                  Keyword.persist,
                 },
               ),
             },

@@ -398,8 +398,6 @@ void main() {
         [definition!],
       );
 
-      expect(collector.errors.length, greaterThan(0));
-
       expect(collector.errors.length, greaterThan(1));
 
       var error1 = collector.errors[0];
@@ -435,8 +433,6 @@ void main() {
         definition,
         [definition!],
       );
-
-      expect(collector.errors.length, greaterThan(0));
 
       expect(collector.errors.length, greaterThan(1));
 

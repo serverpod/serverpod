@@ -27,6 +27,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
   SourceSpan span, {
   String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
+  void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
 }) {
   var stringifiedNodes = _extractStringifiedNodes(content);
 
@@ -42,6 +43,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     stringifiedNodes.skip(startNodeIndex),
     content,
     span,
+    onNegatedKeyWithValue: onNegatedKeyWithValue,
     handleDeepNestedNodes: (nestedContent, nestedSpan) {
       // recursion
       return convertStringifiedNestedNodesToYamlMap(
@@ -102,6 +104,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
   Iterable<String> fieldOptions,
   String? content,
   SourceSpan span, {
+  void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
   required DeepNestedNodeHandler handleDeepNestedNodes,
 }) {
   if (content == null) return [];
@@ -134,6 +137,22 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 
     String key = keyValuePair.first;
     String? value = keyValuePair.length == 2 ? keyValuePair.last : null;
+
+    if (stringifiedKeyValuePair.contains('=') && key.startsWith('!')) {
+      onNegatedKeyWithValue?.call(
+        key,
+        _extractSubSpan(keyValueSpan.text, keyValueSpan, key),
+      );
+    }
+
+    if (!stringifiedKeyValuePair.contains('=')) {
+      if (key.startsWith('!')) {
+        key = key.substring(1);
+        value = 'false';
+      } else {
+        value = 'true';
+      }
+    }
 
     return _createdYamlScalarNode(
       key,
