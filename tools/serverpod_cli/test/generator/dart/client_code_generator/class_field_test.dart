@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
@@ -192,5 +193,87 @@ void main() {
         skip: maybeClassNamedExample == null
             ? 'Could not run test because $testClassName class was not found.'
             : false);
+  });
+
+  group(
+      'Given a class with a a non persistent all scoped field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withField(
+            SerializableEntityFieldDefinition(
+                name: 'title',
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.all,
+                shouldPersist: false),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test(
+      'then a class is generated with that class variable.',
+      () {
+        var exampleClass = maybeClassNamedExample!;
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+                name: 'title', type: 'String?'),
+            isTrue,
+            reason: 'Missing declaration for title field.');
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found'
+          : false,
+    );
+  });
+
+  group(
+      'Given a class with non persistent a server only scoped field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withField(
+            SerializableEntityFieldDefinition(
+                name: 'title',
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.serverOnly,
+                shouldPersist: false),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test(
+      'then class is NOT generated with that class variable.',
+      () {
+        var exampleClass = maybeClassNamedExample!;
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+                name: 'title', type: 'String?'),
+            isFalse,
+            reason: 'Field title should not be generated.');
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
   });
 }
