@@ -1100,17 +1100,22 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect((relation as ForeignRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1130,17 +1135,22 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect((relation as ForeignRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1189,7 +1199,7 @@ fields:
         class: Example
         table: example
         fields:
-          name: String, parent=unknown_table
+          name: int, parent=unknown_table
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
           ['lib', 'src', 'protocol'],

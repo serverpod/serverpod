@@ -130,9 +130,14 @@ class SerializableEntityAnalyzer {
       for (var fieldDefinition in classDefinition.fields) {
         _resolveProtocolReference(fieldDefinition, entityDefinitions);
         _resolveEnumType(fieldDefinition, entityDefinitions);
-        _resolveScalarParentTableReference(
-          fieldDefinition,
+        _resolveIdRelationTable(
           classDefinition,
+          fieldDefinition,
+          entityDefinitions,
+        );
+        _resolveListRelationReference(
+          classDefinition,
+          fieldDefinition,
           entityDefinitions,
         );
       }
@@ -283,24 +288,68 @@ class SerializableEntityAnalyzer {
             .any((e) => e.className == fieldDefinition.type.className);
   }
 
-  static void _resolveScalarParentTableReference(
-    SerializableEntityFieldDefinition fieldDefinition,
+  static void _resolveIdRelationTable(
     ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
     List<SerializableEntityDefinition> entityDefinitions,
   ) {
-    if (fieldDefinition.scalarFieldName == null) return;
+    var relation = fieldDefinition.relation;
+    if (relation is! ObjectRelationDefinition) return;
 
-    var referenceClass = entityDefinitions.cast().firstWhere(
-        (entity) => entity.className == fieldDefinition.type.className,
-        orElse: () => null);
+    var referenceClass = entityDefinitions
+        .cast<SerializableEntityDefinition?>()
+        .firstWhere(
+            (entity) => entity?.className == fieldDefinition.type.className,
+            orElse: () => null);
 
-    if (referenceClass == null) return;
     if (referenceClass is! ClassDefinition) return;
 
+    var tableName = referenceClass.tableName;
+    if (tableName is! String) return;
+
     var scalarField = classDefinition.findField(
-      fieldDefinition.scalarFieldName!,
+      relation.scalarFieldName,
     );
 
-    scalarField?.parentTable = referenceClass.tableName;
+    var scalarRelation = scalarField?.relation;
+    if (scalarField == null) return;
+    if (scalarRelation is! UnresolvedForeignRelationDefinition) return;
+
+    scalarField.relation = ForeignRelationDefinition(
+      parentTable: tableName,
+      referenceFieldName: scalarRelation.referenceFieldName,
+    );
+  }
+
+  static void _resolveListRelationReference(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var type = fieldDefinition.type;
+    if (!type.isList || type.generics.isEmpty) return;
+
+    var referenceClassName = type.generics.first.className;
+
+    var referenceClass =
+        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
+              (entity) => entity?.className == referenceClassName,
+              orElse: () => null,
+            );
+
+    if (referenceClass is! ClassDefinition) return;
+
+    var referenceFields = referenceClass.fields.where((field) {
+      var relation = field.relation;
+      if (relation is! ForeignRelationDefinition) return false;
+      return relation.parentTable == classDefinition.tableName;
+    });
+
+    if (referenceFields.isEmpty) return;
+
+    // TODO: Handle multiple references.
+    fieldDefinition.relation = ListRelationDefinition(
+      referenceFieldName: referenceFields.first.name,
+    );
   }
 }

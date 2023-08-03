@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
@@ -27,27 +27,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                       : null,
                 )
           ],
-          foreignKeys: [
-            for (var i = 0;
-                i <
-                    classDefinition.fields
-                        .where((field) => field.parentTable != null)
-                        .length;
-                i++)
-              () {
-                var column = classDefinition.fields
-                    .where((field) => field.parentTable != null)
-                    .toList()[i];
-                return ForeignKeyDefinition(
-                  constraintName: '${classDefinition.tableName!}_fk_$i',
-                  columns: [column.name],
-                  referenceTable: column.parentTable!,
-                  referenceTableSchema: 'public',
-                  referenceColumns: ['id'],
-                  onDelete: ForeignKeyAction.cascade,
-                );
-              }()
-          ],
+          foreignKeys: _createForeignKeys(classDefinition),
           indexes: [
             IndexDefinition(
               indexName: '${classDefinition.tableName!}_pkey',
@@ -83,6 +63,28 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
   _sortTableDefinitions(tables);
 
   return DatabaseDefinition(tables: tables);
+}
+
+List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
+  var fields = classDefinition.fields
+      .where((field) => field.relation is ForeignRelationDefinition)
+      .toList();
+
+  List<ForeignKeyDefinition> foreignKeys = [];
+  for (var i = 0; i < fields.length; i++) {
+    var field = fields[i];
+    var relation = field.relation as ForeignRelationDefinition;
+    foreignKeys.add(ForeignKeyDefinition(
+      constraintName: '${classDefinition.tableName!}_fk_$i',
+      columns: [field.name],
+      referenceTable: relation.parentTable,
+      referenceTableSchema: 'public',
+      referenceColumns: ['id'],
+      onDelete: ForeignKeyAction.cascade,
+    ));
+  }
+
+  return foreignKeys;
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {

@@ -1,4 +1,5 @@
-import 'package:serverpod_cli/src/generator/dart/code_generator_dart.dart';
+import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
@@ -7,7 +8,7 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = DartCodeGenerator();
+const generator = DartServerCodeGenerator();
 
 void main() {
   group('Given a single class when generating the code', () {
@@ -23,14 +24,6 @@ void main() {
       config: config,
     );
 
-    test('then the protocol file is created', () {
-      expect(
-        codeMap.keys,
-        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
-        reason: 'Expected protocol file to be present, found none.',
-      );
-    });
-
     test('then the server-side file is created', () {
       expect(
         codeMap.keys,
@@ -38,19 +31,26 @@ void main() {
         reason: 'Expected server-side file to be present, found none.',
       );
     });
+  });
 
-    test('then the client-side file is created', () {
+  group('Given a single enum when generating the code', () {
+    var entities = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    test('then the server-side file is created', () {
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
-        reason: 'Expected client-side file to be present, found none.',
+        contains(path.join('lib', 'src', 'generated', 'example.dart')),
+        reason: 'Expected server-side file to be present, found none.',
       );
     });
   });
@@ -64,21 +64,21 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
-          .build()
+          .build(),
+      EnumDefinitionBuilder()
+          .withClassName('Animal')
+          .withFileName('animal')
+          .build(),
+      EnumDefinitionBuilder()
+          .withClassName('Color')
+          .withFileName('color')
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
       entities: entities,
       config: config,
     );
-
-    test('then the protocol file is created', () {
-      expect(
-        codeMap.keys,
-        contains(path.join('lib', 'src', 'generated', 'protocol.dart')),
-        reason: 'Expected protocol file to be present, found none.',
-      );
-    });
 
     test('then the server-side files are created', () {
       expect(
@@ -92,39 +92,23 @@ void main() {
         contains(path.join('lib', 'src', 'generated', 'user.dart')),
         reason: 'Expected server-side file to be present, found none.',
       );
-    });
 
-    test('then the client-side files are created', () {
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
-        reason: 'Expected client-side file to be present, found none.',
+        contains(path.join('lib', 'src', 'generated', 'animal.dart')),
+        reason: 'Expected server-side file to be present, found none.',
       );
 
       expect(
         codeMap.keys,
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'user.dart',
-        )),
-        reason: 'Expected client-side file to be present, found none.',
+        contains(path.join('lib', 'src', 'generated', 'color.dart')),
+        reason: 'Expected server-side file to be present, found none.',
       );
     });
   });
 
   test(
-      'Given a server-side only class when generating the code then the client-side file is NOT created',
+      'Given a server-side only class when generating the code then the server-side file is created',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -141,17 +125,31 @@ void main() {
 
     expect(
       codeMap.keys,
-      isNot(
-        contains(path.join(
-          '..',
-          'example_project_client',
-          'lib',
-          'src',
-          'protocol',
-          'example.dart',
-        )),
-      ),
-      reason: 'Expected client-side file to NOT be present, found one.',
+      contains(path.join('lib', 'src', 'generated', 'example.dart')),
+      reason: 'Expected server-side file to be present, found none.',
+    );
+  });
+
+  test(
+      'Given a server-side only enum when generating the code then the server-side file is created',
+      () {
+    var entities = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withServerOnly(true)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    expect(
+      codeMap.keys,
+      contains(path.join('lib', 'src', 'generated', 'example.dart')),
+      reason: 'Expected server-side file to be present, found none.',
     );
   });
 }

@@ -13,6 +13,8 @@ class EntityRelations {
     indexNames = _createIndexNameMap(entities);
   }
 
+  bool classNameExists(name) => classNames[name]?.isNotEmpty == true;
+
   Map<String, List<SerializableEntityDefinition>> _createTableNameMap(
     List<SerializableEntityDefinition> entities,
   ) {

@@ -1,7 +1,9 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/generator/code_generator.dart';
+import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
 
 /// Analyze the server package and generate the code.
 Future<bool> performGenerate({
@@ -14,20 +16,23 @@ Future<bool> performGenerate({
   bool hasErrors = false;
 
   log.debug('Analyzing serializable entities in the protocol directory.');
-  var entities = await SerializableEntityAnalyzer.analyzeAllFiles(
-    collector: collector,
-    config: config,
-  );
+  var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-  if (collector.hasSeverErrors) {
-    hasErrors = true;
-  }
-  collector.printErrors();
-  collector.clearErrors();
+  var analyzer = StatefulAnalyzer(protocols, (uri, collector) {
+    collector.printErrors();
+
+    if (collector.hasSeverErrors) {
+      hasErrors = true;
+    }
+  });
+
+  analyzer.validateAll();
+  var entities = analyzer.validEntities;
 
   log.debug('Generating files for serializable entities.');
 
-  var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
+  var generatedEntityFiles =
+      await ServerpodCodeGenerator.generateSerializableEntities(
     entities: entities,
     config: config,
     collector: collector,
@@ -59,7 +64,8 @@ Future<bool> performGenerate({
     entities: entities,
   );
 
-  var generatedProtocolFiles = await CodeGenerator.generateProtocolDefinition(
+  var generatedProtocolFiles =
+      await ServerpodCodeGenerator.generateProtocolDefinition(
     protocolDefinition: protocolDefinition,
     config: config,
     collector: collector,
@@ -73,7 +79,7 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
-  await CodeGenerator.cleanPreviouslyGeneratedFiles(
+  await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
     generatedFiles: <String>{
       ...generatedEntityFiles,
       ...generatedProtocolFiles

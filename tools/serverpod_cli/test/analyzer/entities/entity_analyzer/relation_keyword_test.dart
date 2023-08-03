@@ -38,10 +38,6 @@ fields:
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
-    test('then the table is not set on relation field.', () {
-      var parent = classDefinition.findField('parent');
-      expect(parent?.parentTable, null);
-    });
 
     test('then the scope is set to api on the relation field.', () {
       var parent = classDefinition.findField('parent');
@@ -52,7 +48,12 @@ fields:
         'then a scalar field with the same name appended with Id is set on the relation field.',
         () {
       var parent = classDefinition.findField('parent');
-      expect(parent?.scalarFieldName, 'parentId');
+      var relation = parent?.relation;
+      expect(relation.runtimeType, ObjectRelationDefinition);
+      expect(
+        (relation as ObjectRelationDefinition).scalarFieldName,
+        'parentId',
+      );
     });
 
     test('then the class has a scalar field for the id.', () {
@@ -83,7 +84,20 @@ fields:
         'then the scalar field has the parent table set from the object reference.',
         () {
       var parent = classDefinition.findField('parentId');
-      expect(parent?.parentTable, 'example');
+      var relation = parent?.relation;
+
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable, 'example');
+    });
+
+    test(
+        'then the scalar field has the reference field set to the relation id field.',
+        () {
+      var parent = classDefinition.findField('parentId');
+      var relation = parent?.relation;
+
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
     });
   });
 
@@ -160,7 +174,7 @@ fields:
   });
 
   test(
-      'Given a class with a field without a relation, then no scalar field reference is set.',
+      'Given a class with a field without a relation, then no relation is set.',
       () {
     var collector = CodeGenerationCollector();
 
@@ -190,11 +204,11 @@ fields:
 
     expect(collector.errors, isEmpty);
 
-    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+    expect((definition as ClassDefinition).fields.last.relation, null);
   });
 
   test(
-      'Given a class with a field with a self reference without a relation, then no scalar field reference is set.',
+      'Given a class with a field with a self reference without a relation, then no relation is set.',
       () {
     var collector = CodeGenerationCollector();
 
@@ -224,7 +238,7 @@ fields:
 
     expect(collector.errors, isEmpty);
 
-    expect((definition as ClassDefinition).fields.last.scalarFieldName, null);
+    expect((definition as ClassDefinition).fields.last.relation, null);
   });
 
   group('Given a class with a field with a self relation', () {
@@ -259,11 +273,16 @@ fields:
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
-    test('then the parent table is set to the specified table name.', () {
-      expect(
-        classDefinition.fields.last.parentTable,
-        'example',
-      );
+    test('then the relation is set with the parent table.', () {
+      var relation = classDefinition.fields.last.relation;
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable, 'example');
+    });
+
+    test('then the relation is set with the reference to the id.', () {
+      var relation = classDefinition.fields.last.relation;
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
     });
 
     test('then no scalar field is added', () {
@@ -659,9 +678,143 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
-    test('then the parent table was set on the scalar field.', () {
-      expect(
-          classDefinition.findField('parentId')?.parentTable, 'example_parent');
+    test('then a relation with the parent table is set on the scalar field.',
+        () {
+      var relation = classDefinition.findField('parentId')?.relation;
+
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable,
+          'example_parent');
+    });
+
+    test('then a relation with the reference id is set on the scalar field.',
+        () {
+      var relation = classDefinition.findField('parentId')?.relation;
+
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
+    });
+  });
+
+  group('Given a class with a json field without a relation', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: ExampleParent
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var classDefinition = definition1 as ClassDefinition;
+
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no scalar field is created.', () {
+      var parentField = classDefinition.findField('parentId');
+
+      expect(parentField, isNull);
+    });
+
+    test('then no relation is set on the json field.', () {
+      var relation = classDefinition.findField('parent')?.relation;
+
+      expect(relation, isNull);
+    });
+  });
+
+  group('Given a class with a List json field without a relation', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: List<ExampleParent>
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var classDefinition = definition1 as ClassDefinition;
+
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no scalar field is created.', () {
+      var parentField = classDefinition.findField('parentId');
+
+      expect(parentField, isNull);
+    });
+
+    test('then no relation is set on the json field.', () {
+      var relation = classDefinition.findField('parent')?.relation;
+
+      expect(relation, isNull);
     });
   });
 
@@ -704,6 +857,64 @@ fields:
     expect(
       collector.errors.first.message,
       'The class "InvalidClass" was not found in any protocol.',
+    );
+  });
+
+  test(
+      'Given a class with a relation to a protocol enum, then collect an error that the class does not exist.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: EnumParent?, relation
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+enum: EnumParent
+values:
+  - value1
+  - value2
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(0),
+      reason: 'Expected an error',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'Only classes can be used in relations, "EnumParent" is not a class.',
     );
   });
 
