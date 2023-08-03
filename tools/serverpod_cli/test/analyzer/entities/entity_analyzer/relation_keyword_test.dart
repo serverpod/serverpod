@@ -683,7 +683,8 @@ fields:
       var relation = classDefinition.findField('parentId')?.relation;
 
       expect(relation.runtimeType, ForeignRelationDefinition);
-      expect((relation as ForeignRelationDefinition).parentTable, 'example_parent');
+      expect((relation as ForeignRelationDefinition).parentTable,
+          'example_parent');
     });
 
     test('then a relation with the reference id is set on the scalar field.',
