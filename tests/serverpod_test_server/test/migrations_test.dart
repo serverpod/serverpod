@@ -72,7 +72,6 @@ Future<void> testMigration({
   var migration = await generator.createMigration(
     force: force,
     tag: version,
-    verbose: true,
     priority: 2,
   );
   if (expectSuccess) {

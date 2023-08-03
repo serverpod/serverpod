@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validato
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
@@ -21,6 +22,16 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
 }
 
+class _ProtocolClassDefinitionSource {
+  final ProtocolSource protocolSource;
+  final SerializableEntityDefinition entityDefinition;
+
+  _ProtocolClassDefinitionSource({
+    required this.protocolSource,
+    required this.entityDefinition,
+  });
+}
+
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
   static const Set<String> _protocolClassTypes = {
@@ -31,64 +42,36 @@ class SerializableEntityAnalyzer {
 
   /// Analyze all yaml files in the protocol directory.
   static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
-    bool verbose = true,
     required CodeAnalysisCollector collector,
     required GeneratorConfig config,
   }) async {
     var protocols =
         await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-    var classDefinitions = _convertProtocolToEntityDefinitions(
+    var entityProtocolDefinitions = _createEntityProtocolDefinitions(
       protocols,
     );
 
-    for (var classDefinition in classDefinitions) {
+    var entityDefinitions = entityProtocolDefinitions
+        .map((definition) => definition.entityDefinition)
+        .toList();
+
+    resolveEntityDependencies(entityDefinitions);
+
+    for (var definition in entityProtocolDefinitions) {
       SerializableEntityAnalyzer.validateYamlDefinition(
-        classDefinition.yamlProtocol,
-        classDefinition.sourceFileName,
+        definition.protocolSource.yaml,
+        definition.entityDefinition.sourceFileName,
         collector,
-        classDefinition,
-        classDefinitions,
+        definition.entityDefinition,
+        entityDefinitions,
       );
     }
 
-    // Detect protocol references
-    for (var classDefinition in classDefinitions) {
-      if (classDefinition is ClassDefinition) {
-        for (var fieldDefinition in classDefinition.fields) {
-          fieldDefinition.type =
-              fieldDefinition.type.applyProtocolReferences(classDefinitions);
-        }
-      }
-    }
-
-    // Detect enum fields
-    for (var classDefinition in classDefinitions) {
-      if (classDefinition is ClassDefinition) {
-        for (var fieldDefinition in classDefinition.fields) {
-          if (fieldDefinition.type.url == 'protocol' &&
-              classDefinitions
-                  .whereType<EnumDefinition>()
-                  .any((e) => e.className == fieldDefinition.type.className)) {
-            fieldDefinition.type.isEnum = true;
-          }
-        }
-      }
-    }
-
-    return classDefinitions;
+    return entityDefinitions;
   }
 
-  static List<SerializableEntityDefinition> _convertProtocolToEntityDefinitions(
-      List<ProtocolSource> protocols) {
-    return protocols
-        .map((protocol) {
-          return SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        })
-        .whereType<SerializableEntityDefinition>()
-        .toList();
-  }
-
+  /// Best effort attempt to extract an entity definition from a yaml file.
   static SerializableEntityDefinition? extractEntityDefinition(
     ProtocolSource protocolSource,
   ) {
@@ -139,6 +122,29 @@ class SerializableEntityAnalyzer {
     }
   }
 
+  /// Resolves dependencies between entities, this method mutates the input.
+  static void resolveEntityDependencies(
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    entityDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+      for (var fieldDefinition in classDefinition.fields) {
+        _resolveProtocolReference(fieldDefinition, entityDefinitions);
+        _resolveEnumType(fieldDefinition, entityDefinitions);
+        _resolveIdRelationTable(
+          classDefinition,
+          fieldDefinition,
+          entityDefinitions,
+        );
+        _resolveListRelationReference(
+          classDefinition,
+          fieldDefinition,
+          entityDefinitions,
+        );
+      }
+    });
+  }
+
+  /// Validates a yaml file against an expected syntax for protocol files.
   static void validateYamlDefinition(
     String yaml,
     String sourceFileName,
@@ -238,5 +244,112 @@ class SerializableEntityAnalyzer {
     }
 
     return null;
+  }
+
+  static List<_ProtocolClassDefinitionSource> _createEntityProtocolDefinitions(
+      List<ProtocolSource> protocols) {
+    return protocols
+        .map((protocol) {
+          var entity = SerializableEntityAnalyzer.extractEntityDefinition(
+            protocol,
+          );
+
+          if (entity == null) return null;
+
+          return _ProtocolClassDefinitionSource(
+            protocolSource: protocol,
+            entityDefinition: entity,
+          );
+        })
+        .whereType<_ProtocolClassDefinitionSource>()
+        .toList();
+  }
+
+  static TypeDefinition _resolveProtocolReference(
+      SerializableEntityFieldDefinition fieldDefinition,
+      List<SerializableEntityDefinition> entityDefinitions) {
+    return fieldDefinition.type =
+        fieldDefinition.type.applyProtocolReferences(entityDefinitions);
+  }
+
+  static void _resolveEnumType(
+      SerializableEntityFieldDefinition fieldDefinition,
+      List<SerializableEntityDefinition> entityDefinitions) {
+    if (_isEnumField(fieldDefinition, entityDefinitions)) {
+      fieldDefinition.type.isEnum = true;
+    }
+  }
+
+  static bool _isEnumField(SerializableEntityFieldDefinition fieldDefinition,
+      List<SerializableEntityDefinition> entityDefinitions) {
+    return fieldDefinition.type.url == 'protocol' &&
+        entityDefinitions
+            .whereType<EnumDefinition>()
+            .any((e) => e.className == fieldDefinition.type.className);
+  }
+
+  static void _resolveIdRelationTable(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var relation = fieldDefinition.relation;
+    if (relation is! ObjectRelationDefinition) return;
+
+    var referenceClass = entityDefinitions
+        .cast<SerializableEntityDefinition?>()
+        .firstWhere(
+            (entity) => entity?.className == fieldDefinition.type.className,
+            orElse: () => null);
+
+    if (referenceClass is! ClassDefinition) return;
+
+    var tableName = referenceClass.tableName;
+    if (tableName is! String) return;
+
+    var scalarField = classDefinition.findField(
+      relation.scalarFieldName,
+    );
+
+    var scalarRelation = scalarField?.relation;
+    if (scalarField == null) return;
+    if (scalarRelation is! UnresolvedIdRelationDefinition) return;
+
+    scalarField.relation = IdRelationDefinition(
+      parentTable: tableName,
+      referenceFieldName: scalarRelation.referenceFieldName,
+    );
+  }
+
+  static void _resolveListRelationReference(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var type = fieldDefinition.type;
+    if (!type.isList || type.generics.isEmpty) return;
+
+    var referenceClassName = type.generics.first.className;
+
+    var referenceClass =
+        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
+              (entity) => entity?.className == referenceClassName,
+              orElse: () => null,
+            );
+
+    if (referenceClass is! ClassDefinition) return;
+
+    var referenceFields = referenceClass.fields.where((field) {
+      var relation = field.relation;
+      if (relation is! IdRelationDefinition) return false;
+      return relation.parentTable == classDefinition.tableName;
+    });
+
+    if (referenceFields.isEmpty) return;
+
+    // TODO: Handle multiple references.
+    fieldDefinition.relation = ListRelationDefinition(
+      referenceFieldName: referenceFields.first.name,
+    );
   }
 }

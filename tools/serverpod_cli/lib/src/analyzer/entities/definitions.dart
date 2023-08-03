@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/generator/types.dart';
 /// An abstract representation of a yaml file in the
 /// protocol directory.
 abstract class SerializableEntityDefinition {
-  final String yamlProtocol;
   final String fileName;
   final String sourceFileName;
   final String className;
@@ -13,7 +12,6 @@ abstract class SerializableEntityDefinition {
   final bool serverOnly;
 
   SerializableEntityDefinition({
-    required this.yamlProtocol,
     required this.fileName,
     required this.sourceFileName,
     required this.className,
@@ -56,7 +54,6 @@ class ClassDefinition extends SerializableEntityDefinition {
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
-    required super.yamlProtocol,
     required super.fileName,
     required super.sourceFileName,
     required super.className,
@@ -68,6 +65,12 @@ class ClassDefinition extends SerializableEntityDefinition {
     super.subDirParts,
     this.documentation,
   });
+
+  SerializableEntityFieldDefinition? findField(String name) {
+    return fields
+        .cast()
+        .firstWhere((element) => element.name == name, orElse: () => null);
+  }
 }
 
 /// Describes a single field of a [ClassDefinition].
@@ -86,11 +89,16 @@ class SerializableEntityFieldDefinition {
   /// - [SerializableEntityFieldScope]
   final SerializableEntityFieldScope scope;
 
-  /// If this column should have a foreign key,
-  /// then [parentTable] contains the referenced table.
-  /// For now, the foreign key only references the id column of the
-  /// [parentTable].
-  final String? parentTable;
+  /// If set the field is a relation to another table. The type of the relation
+  /// [IdRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
+  /// determines where and how the relation is stored.
+  RelationDefinition? relation;
+
+  /// Returns true, if this field has a relation pointer, meaning that there is
+  /// another field in the database that references this field or that this
+  /// field is a reference to another field.
+  bool get hasRelationPointer =>
+      relation != null && relation is! IdRelationDefinition;
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
@@ -100,7 +108,7 @@ class SerializableEntityFieldDefinition {
     required this.name,
     required this.type,
     required this.scope,
-    this.parentTable,
+    this.relation,
     this.documentation,
   });
 
@@ -199,7 +207,6 @@ class EnumDefinition extends SerializableEntityDefinition {
 
   /// Create a new [EnumDefinition].
   EnumDefinition({
-    required super.yamlProtocol,
     required super.fileName,
     required super.sourceFileName,
     required super.className,
@@ -220,4 +227,59 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
+}
+
+abstract class RelationDefinition {}
+
+/// Internal representation of an unresolved [ListRelationDefinition].
+class UnresolvedListRelationDefinition extends RelationDefinition {}
+
+/// Used for relations for fields of type [List] that has a reference pointer
+/// to another Objects field name that holds the id of this object.
+class ListRelationDefinition extends RelationDefinition {
+  /// References the field in the other object holding the id of this object.
+  String referenceFieldName;
+
+  ListRelationDefinition({
+    required this.referenceFieldName,
+  });
+}
+
+/// Used for relations for fields that point to another field that holds the id
+/// of another object.
+class ObjectRelationDefinition extends RelationDefinition {
+  /// If this field is a complex datatype with a parent relation in the database,
+  /// then [scalarFieldName] contains the name of the field with the foreign key.
+  final String scalarFieldName;
+
+  ObjectRelationDefinition({
+    required this.scalarFieldName,
+  });
+}
+
+/// Internal representation of an unresolved [IdRelationDefinition].
+class UnresolvedIdRelationDefinition extends RelationDefinition {
+  /// References the column in the unresolved [parentTable] that this field should be joined on.
+  String referenceFieldName;
+
+  UnresolvedIdRelationDefinition({
+    required this.referenceFieldName,
+  });
+}
+
+/// Used for relations for fields that stores the id of another object.
+class IdRelationDefinition extends RelationDefinition {
+  /// If this column should have a foreign key,
+  /// then [parentTable] contains the referenced table.
+  /// For now, the foreign key only references the id column of the
+  /// [parentTable].
+  String parentTable;
+
+  /// References the column in the [parentTable] that this field should be joined on.
+  String referenceFieldName;
+
+  IdRelationDefinition({
+    required this.parentTable,
+    required this.referenceFieldName,
+  });
 }

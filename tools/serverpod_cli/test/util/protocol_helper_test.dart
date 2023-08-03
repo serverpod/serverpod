@@ -114,7 +114,7 @@ void main() {
         var protocols =
             await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
-        expect(protocols.first.yaml, '''
+        expect(protocols.first.yaml.replaceAll('\r', ''), '''
 class: Test
 fields:
   name: String
