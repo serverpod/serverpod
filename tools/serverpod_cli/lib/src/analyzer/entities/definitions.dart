@@ -87,7 +87,9 @@ class SerializableEntityFieldDefinition {
   ///
   /// See also:
   /// - [SerializableEntityFieldScope]
-  final SerializableEntityFieldScope scope;
+  final EntityFieldScopeDefinition scope;
+
+  final bool shouldPersist;
 
   /// If set the field is a relation to another table. The type of the relation
   /// [ForeignRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
@@ -109,6 +111,7 @@ class SerializableEntityFieldDefinition {
     required this.name,
     required this.type,
     required this.scope,
+    required this.shouldPersist,
     this.relation,
     this.documentation,
   });
@@ -121,11 +124,7 @@ class SerializableEntityFieldDefinition {
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
     if (serverCode) return true;
-    if (scope == SerializableEntityFieldScope.all ||
-        scope == SerializableEntityFieldScope.api) {
-      return true;
-    }
-    return false;
+    return scope == EntityFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization.
@@ -135,11 +134,7 @@ class SerializableEntityFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    if (scope == SerializableEntityFieldScope.all ||
-        scope == SerializableEntityFieldScope.api) {
-      return true;
-    }
-    return false;
+    return scope == EntityFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization for the
@@ -151,25 +146,13 @@ class SerializableEntityFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeField]
   bool shouldSerializeFieldForDatabase(bool serverCode) {
-    assert(serverCode);
-    if (scope == SerializableEntityFieldScope.all ||
-        scope == SerializableEntityFieldScope.database) {
-      return true;
-    }
-    return false;
+    return shouldPersist;
   }
 }
 
-/// The scope where a field should be present.
-enum SerializableEntityFieldScope {
-  /// Only include the associated field in the database.
-  database,
-
-  /// Only include the associated field in the api.
-  api,
-
-  /// Include the associated field everywhere.
+enum EntityFieldScopeDefinition {
   all,
+  serverOnly,
 }
 
 /// The definition of an index for a file, that is also stored in the database.

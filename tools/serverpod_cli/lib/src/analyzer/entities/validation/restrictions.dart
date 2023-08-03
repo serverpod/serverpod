@@ -412,7 +412,7 @@ class Restrictions {
     var indexFields = convertIndexList(content);
 
     var validDatabaseFieldNames = fields
-        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .where((field) => field.shouldPersist)
         .fold(<String>{}, (output, field) => output..add(field.name));
 
     var missingFieldErrors = indexFields

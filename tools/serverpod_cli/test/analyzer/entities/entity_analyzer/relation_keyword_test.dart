@@ -39,9 +39,9 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
-    test('then the scope is set to api on the relation field.', () {
+    test('then the field should not persisted.', () {
       var parent = classDefinition.findField('parent');
-      expect(parent?.scope, SerializableEntityFieldScope.api);
+      expect(parent?.shouldPersist, isFalse);
     });
 
     test(
@@ -68,7 +68,12 @@ fields:
 
     test('then the scalar field has the global scope.', () {
       var parent = classDefinition.findField('parentId');
-      expect(parent?.scope, SerializableEntityFieldScope.all);
+      expect(parent?.scope, EntityFieldScopeDefinition.all);
+    });
+
+    test('then the scalar field should be persisted.', () {
+      var parent = classDefinition.findField('parentId');
+      expect(parent?.shouldPersist, isTrue);
     });
 
     test('then the scalar field type defaults to none nullable.', () {

@@ -4,8 +4,9 @@ import 'package:serverpod_cli/src/generator/types.dart';
 class FieldDefinitionBuilder {
   String _name;
   TypeDefinition _type;
-  SerializableEntityFieldScope _scope;
+  EntityFieldScopeDefinition _scope;
   RelationDefinition? _relation;
+  bool _shouldPersist;
   List<String>? _documentation;
 
   FieldDefinitionBuilder()
@@ -14,7 +15,8 @@ class FieldDefinitionBuilder {
           className: 'String',
           nullable: true,
         ),
-        _scope = SerializableEntityFieldScope.all;
+        _scope = EntityFieldScopeDefinition.all,
+        _shouldPersist = true;
 
   FieldDefinitionBuilder withName(String name) {
     _name = name;
@@ -35,9 +37,16 @@ class FieldDefinitionBuilder {
   }
 
   FieldDefinitionBuilder withScope(
-    SerializableEntityFieldScope scope,
+    EntityFieldScopeDefinition scope,
   ) {
     _scope = scope;
+    return this;
+  }
+
+  FieldDefinitionBuilder withShouldPersist(
+    bool shouldPersist,
+  ) {
+    _shouldPersist = shouldPersist;
     return this;
   }
 
@@ -65,6 +74,7 @@ class FieldDefinitionBuilder {
       type: _type,
       scope: _scope,
       relation: _relation,
+      shouldPersist: _shouldPersist,
       documentation: _documentation,
     );
   }

@@ -134,7 +134,7 @@ void main() {
         );
 
         expect((definition as ClassDefinition).fields.last.scope,
-            SerializableEntityFieldScope.all);
+            EntityFieldScopeDefinition.all);
       },
     );
 
@@ -164,10 +164,10 @@ void main() {
           [definition],
         );
 
-        test('then the generated entity has the database scope.', () {
+        test('then the generated entity has the serverOnly scope.', () {
           expect(
             definition.fields.last.scope,
-            SerializableEntityFieldScope.database,
+            EntityFieldScopeDefinition.serverOnly,
           );
         });
       },
@@ -206,10 +206,10 @@ void main() {
           expect(error.message, 'Api is deprecated, use "!persist" instead');
         });*/
 
-        test('then the generated entity has the api scope.', () {
+        test('then the generated entity should not be persisted.', () {
           expect(
-            definition.fields.last.scope,
-            SerializableEntityFieldScope.api,
+            definition.fields.last.shouldPersist,
+            false,
           );
         });
       },

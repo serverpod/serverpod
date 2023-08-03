@@ -118,7 +118,8 @@ class EntityParser {
         SerializableEntityFieldDefinition(
           name: 'id',
           type: TypeDefinition.int.asNullable,
-          scope: SerializableEntityFieldScope.all,
+          scope: EntityFieldScopeDefinition.all,
+          shouldPersist: true,
           documentation: [
             '/// The database id, set if the object has been inserted into the',
             '/// database or if it has been fetched from the database. Otherwise,',
@@ -163,8 +164,10 @@ class EntityParser {
       typeValue.replaceAll(' ', ''),
       sourceSpan: typeNode.span,
     );
+
     var scope = _parseClassFieldScope(value);
     var parentTable = _parseParentTable(value);
+    var shouldPersist = _parseShouldPersist(value);
     var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
@@ -188,14 +191,15 @@ class EntityParser {
           relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
           ),
-          scope: SerializableEntityFieldScope.all,
+          shouldPersist: true,
+          scope: scope,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         relation: relation,
-        scope:
-            scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
+        shouldPersist: scalarFieldName != null ? false : shouldPersist,
+        scope: scope,
         type: typeResult.type..isEnum = isEnum,
         documentation: fieldDocumentation,
       )
@@ -224,6 +228,11 @@ class EntityParser {
     return documentContents.containsKey(Keyword.relation);
   }
 
+  static bool _parseShouldPersist(YamlMap documentContents) {
+    var isApiDefined = documentContents.containsKey(Keyword.api);
+    return !isApiDefined;
+  }
+
   static bool _isOptionalRelation(YamlMap documentContents) {
     var relation = documentContents.nodes[Keyword.relation];
 
@@ -236,16 +245,12 @@ class EntityParser {
     return false;
   }
 
-  static SerializableEntityFieldScope _parseClassFieldScope(
+  static EntityFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
   ) {
     var database = documentContents.containsKey(Keyword.database);
-    var api = documentContents.containsKey(Keyword.api);
-
-    if (database) return SerializableEntityFieldScope.database;
-    if (api) return SerializableEntityFieldScope.api;
-
-    return SerializableEntityFieldScope.all;
+    if (database) return EntityFieldScopeDefinition.serverOnly;
+    return EntityFieldScopeDefinition.all;
   }
 
   static String? _parseParentTable(YamlMap documentContents) {
