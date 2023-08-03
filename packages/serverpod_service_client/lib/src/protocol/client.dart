@@ -19,8 +19,12 @@ import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
 import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
     as _i8;
-import 'dart:io' as _i9;
-import 'protocol.dart' as _i10;
+import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
+    as _i9;
+import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
+    as _i10;
+import 'dart:io' as _i11;
+import 'protocol.dart' as _i12;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -157,19 +161,29 @@ class EndpointInsights extends _i1.EndpointRef {
       );
 
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<String> fetchDatabaseBulkData({
+  _i2.Future<_i9.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
+    _i10.Filter? filter,
   }) =>
-      caller.callServerEndpoint<String>(
+      caller.callServerEndpoint<_i9.BulkData>(
         'insights',
         'fetchDatabaseBulkData',
         {
           'table': table,
           'startingId': startingId,
           'limit': limit,
+          'filter': filter,
         },
+      );
+
+  /// Returns the approximate number of rows in the provided [table].
+  _i2.Future<int> getDatabaseRowCount({required String table}) =>
+      caller.callServerEndpoint<int>(
+        'insights',
+        'getDatabaseRowCount',
+        {'table': table},
       );
 
   /// Executes SQL commands. Returns the number of rows affected.
@@ -183,11 +197,11 @@ class EndpointInsights extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i9.SecurityContext? context,
+    _i11.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i10.Protocol(),
+          _i12.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {

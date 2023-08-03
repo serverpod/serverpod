@@ -1,3 +1,4 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod/protocol.dart';
 
 /// Comparison methods for [DatabaseDefinition].
@@ -245,4 +246,103 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
         other.referenceTable == referenceTable &&
         other.referenceTableSchema == referenceTableSchema;
   }
+}
+
+/// SQL code generation methods for [Filter].
+extension FilterGenerator on Filter {
+  /// Generates a SQL WHERE clause from the filter.
+  String toQuery(TableDefinition tableDefinition) {
+    var expressions = <String>[];
+    for (var constraint in constraints) {
+      var columnDefinition = tableDefinition.findColumnNamed(constraint.column);
+      if (columnDefinition == null) {
+        throw Exception(
+          'Column "${constraint.column}" not found in table '
+          '"${tableDefinition.name}".',
+        );
+      }
+
+      var expression = constraint.toQuery(columnDefinition);
+      expressions.add('($expression)');
+    }
+
+    return expressions.join(' AND ');
+  }
+}
+
+/// SQL code generation methods for [FilterConstraint].
+extension FilterConstraintGenerator on FilterConstraint {
+  /// Generates a SQL WHERE clause from the filter constraint.
+  String toQuery(ColumnDefinition columnDefinition) {
+    assert(columnDefinition.name == column);
+
+    var columnType = columnDefinition.columnType;
+    String formattedValue;
+    if (columnType == ColumnType.integer ||
+        columnType == ColumnType.bigint ||
+        columnType == ColumnType.doublePrecision ||
+        columnType == ColumnType.boolean) {
+      formattedValue = value;
+    } else if (columnType == ColumnType.text) {
+      formattedValue = DatabasePoolManager.encoder.convert(value);
+    } else if (columnType == ColumnType.timestampWithoutTimeZone) {
+      if (type == FilterConstraintType.inThePast) {
+        formattedValue = _microsecondsToInterval(int.parse(value));
+      } else {
+        var dateTime = DateTime.tryParse(value);
+        if (dateTime != null) {
+          formattedValue = DatabasePoolManager.encoder.convert(dateTime);
+        } else {
+          formattedValue = 'NULL';
+        }
+      }
+    } else {
+      throw Exception(
+        'Unsupported column type ${columnDefinition.columnType} for column '
+        '"${columnDefinition.name}".',
+      );
+    }
+
+    switch (type) {
+      case FilterConstraintType.equals:
+        return '"$column" = $formattedValue';
+      case FilterConstraintType.notEquals:
+        return '"$column" != $formattedValue';
+      case FilterConstraintType.greaterThan:
+        return '"$column" > $formattedValue';
+      case FilterConstraintType.greaterThanOrEquals:
+        return '"$column" >= $formattedValue';
+      case FilterConstraintType.lessThan:
+        return '"$column" < $formattedValue';
+      case FilterConstraintType.lessThanOrEquals:
+        return '"$column" <= $formattedValue';
+      case FilterConstraintType.like:
+        return '"$column" LIKE $formattedValue';
+      case FilterConstraintType.notLike:
+        return '"$column" NOT LIKE $formattedValue';
+      case FilterConstraintType.iLike:
+        return '"$column" ILIKE $formattedValue';
+      case FilterConstraintType.notILike:
+        return '"$column" NOT ILIKE $formattedValue';
+      case FilterConstraintType.between:
+        return '"$column" BETWEEN $formattedValue AND $value2';
+      case FilterConstraintType.inThePast:
+        return '"$column" > (NOW() - $formattedValue)';
+      case FilterConstraintType.isNull:
+        return '"$column" IS NULL';
+      case FilterConstraintType.isNotNull:
+        return '"$column" IS NOT NULL';
+    }
+  }
+}
+
+String _microsecondsToInterval(int microseconds) {
+  var duration = Duration(microseconds: microseconds);
+  String interval = '${duration.inDays} days '
+      '${duration.inHours.remainder(24)} hours '
+      '${duration.inMinutes.remainder(60)} minutes '
+      '${duration.inSeconds.remainder(60)} seconds '
+      '${duration.inMilliseconds.remainder(1000)} milliseconds '
+      '${duration.inMicroseconds.remainder(1000)} microseconds';
+  return 'INTERVAL \'$interval\'';
 }

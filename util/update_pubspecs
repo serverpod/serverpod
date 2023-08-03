@@ -9,9 +9,18 @@ fi
 VERSION=`cat VERSION`
 VERSION=$VERSION | xargs
 
+BASE=`pwd`
+CLI_DIR=$BASE/tools/serverpod_cli
+CLI=$CLI_DIR/bin/serverpod_cli.dart
+
+echo "pub get cli"
+cd $CLI_DIR
+dart pub get
+cd $BASE
+
 echo "Update all pubspecs. Version is $VERSION."
 
-serverpod generate-pubspecs --version $VERSION --mode development
+dart $CLI generate-pubspecs --version $VERSION --mode development
 
 echo "Copying CHANGELOG.md"
 cp CHANGELOG.md packages/serverpod/CHANGELOG.md
@@ -20,6 +29,7 @@ cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_flutter/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_lints/CHANGELOG.md
 
 cp CHANGELOG.md templates/serverpod_templates/CHANGELOG.md
 cp CHANGELOG.md tools/serverpod_cli/CHANGELOG.md
@@ -50,6 +60,7 @@ cp README_subpackage.md packages/serverpod_serialization/README.md
 cp README_subpackage.md packages/serverpod_service_client/README.md
 cp README_subpackage.md packages/serverpod_shared/README.md
 cp README_subpackage.md packages/serverpod_flutter/README.md
+cp README_subpackage.md packages/serverpod_lints/README.md
 
 cp README_subpackage.md templates/serverpod_templates/README.md
 cp README_subpackage.md tools/serverpod_cli/README.md

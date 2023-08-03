@@ -1,0 +1,5 @@
+class: Filter
+fields:
+  name: String
+  table: String
+  constraints: List<FilterConstraint>

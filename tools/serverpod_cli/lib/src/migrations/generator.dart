@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 const _fileNameMigrationJson = 'migration.json';
@@ -106,7 +107,6 @@ class MigrationGenerator {
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
-    bool verbose = false,
     required int priority,
   }) async {
     var versionName = createVersionName(tag);
@@ -134,12 +134,12 @@ class MigrationGenerator {
     _printWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
-      print('Migration aborted. Use --force to ignore warnings.');
+      log.info('Migration aborted. Use --force to ignore warnings.');
       return null;
     }
 
     if (migration.isEmpty) {
-      print('No changes detected.');
+      log.info('No changes detected.');
       return null;
     }
 
@@ -158,7 +158,6 @@ class MigrationGenerator {
   Future<String?> repairMigration({
     String? tag,
     required bool force,
-    bool verbose = false,
     required String runMode,
   }) async {
     var client = ConfigInfo(runMode).createServiceClient();
@@ -194,7 +193,7 @@ class MigrationGenerator {
 
     _printWarnings(warnings);
     if (warnings.isNotEmpty && !force) {
-      print('Migration aborted. Use --force to ignore warnings.');
+      log.info('Migration aborted. Use --force to ignore warnings.');
       return null;
     }
 
@@ -210,21 +209,24 @@ class MigrationGenerator {
       }
     }
     if (migration.isEmpty && !versionsChanged) {
-      print('-- No changes detected.');
+      log.info('-- No changes detected.');
       return null;
     }
 
     // Output the migration.
     var sql = migration.toPgSql(versions: versions);
-    print(sql);
+    log.info(sql);
     return sql;
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
     if (warnings.isNotEmpty) {
-      print('Migration Warnings:');
+      log.warning('Migration Warnings:');
       for (var warning in warnings) {
-        print(' - ${warning.message}');
+        log.warning(
+          warning.message,
+          type: TextLogType.bullet,
+        );
       }
     }
   }

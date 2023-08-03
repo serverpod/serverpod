@@ -40,10 +40,6 @@ echo "\nserverpod_client"
 cd $BASE/packages/serverpod_client
 dart pub get
 
-echo "\nserverpod_relic"
-cd $BASE/packages/serverpod_relic
-dart pub get
-
 echo "\nserverpod_serialization"
 cd $BASE/packages/serverpod_serialization
 dart pub get

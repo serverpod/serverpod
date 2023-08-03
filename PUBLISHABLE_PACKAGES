@@ -1,3 +1,4 @@
+packages/serverpod_lints
 packages/serverpod_serialization
 packages/serverpod_client
 packages/serverpod_service_client

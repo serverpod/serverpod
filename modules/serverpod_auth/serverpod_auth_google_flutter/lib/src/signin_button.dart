@@ -48,6 +48,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
     required this.redirectUri,
+    super.key,
   });
 
   @override

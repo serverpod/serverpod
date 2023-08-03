@@ -1,0 +1,4 @@
+class: BulkData
+fields:
+  tableDefinition: TableDefinition
+  data: String
