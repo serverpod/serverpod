@@ -696,6 +696,128 @@ fields:
     });
   });
 
+  group('Given a class with a json field without a relation', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: ExampleParent
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var classDefinition = definition1 as ClassDefinition;
+
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no scalar field is created.', () {
+      var parentField = classDefinition.findField('parentId');
+
+      expect(parentField, isNull);
+    });
+
+    test('then no relation is set on the json field.', () {
+      var relation = classDefinition.findField('parent')?.relation;
+
+      expect(relation, isNull);
+    });
+  });
+
+  group('Given a class with a List json field without a relation', () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  parent: List<ExampleParent>
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: ExampleParent
+fields:
+  name: String
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var classDefinition = definition1 as ClassDefinition;
+
+    test('then no errors were detected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no scalar field is created.', () {
+      var parentField = classDefinition.findField('parentId');
+
+      expect(parentField, isNull);
+    });
+
+    test('then no relation is set on the json field.', () {
+      var relation = classDefinition.findField('parent')?.relation;
+
+      expect(relation, isNull);
+    });
+  });
+
   test(
       'Given a class with a relation referencing a none existent class then collect an error that the class was not found',
       () {
