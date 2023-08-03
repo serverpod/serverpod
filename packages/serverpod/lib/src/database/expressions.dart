@@ -142,13 +142,15 @@ abstract class _ColumnUnescaped<T> extends Column<T> {
   String encodeValueForQuery(T value) => value.toString();
 }
 
-abstract class _ColumnScalar<T> extends _ColumnUnescaped<T> {
-  /// Creates a new [_ColumnScalar], this is called internally only.
-  _ColumnScalar(super.columnName, {super.varcharLength});
+/// A [Column] holding a [num].
+class _ColumnNum<T extends num> extends _ColumnUnescaped<T> {
+  /// Creates a new [_ColumnNum], this is typically done in generated code only.
+  _ColumnNum(String name) : super(name);
 
   /// Creates an [Expression] checking if the value in the column is between
   /// a minimum and a maximum value (inclusive of the endpoints of the range).
   Expression between(T min, T max) {
+    assert(min <= max);
     return Expression('"$columnName" BETWEEN '
         '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
   }
@@ -157,31 +159,9 @@ abstract class _ColumnScalar<T> extends _ColumnUnescaped<T> {
   /// a minimum and a maximum value (i.e. is strictly less than the minimum
   /// or strictly greater than the maximum).
   Expression notBetween(T min, T max) {
+    assert(min <= max);
     return Expression('"$columnName" NOT BETWEEN '
         '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
-  }
-}
-
-/// A [Column] holding a [num].
-class _ColumnNum<T extends num> extends _ColumnScalar<T> {
-  /// Creates a new [_ColumnNum], this is typically done in generated code only.
-  _ColumnNum(String name) : super(name);
-
-  /// Creates an [Expression] checking if the value in the column is between
-  /// a minimum and a maximum value (inclusive of the endpoints of the range).
-  @override
-  Expression between(T min, T max) {
-    assert(min <= max);
-    return super.between(min, max);
-  }
-
-  /// Creates an [Expression] checking if the value in the column is not between
-  /// a minimum and a maximum value (i.e. is strictly less than the minimum
-  /// or strictly greater than the maximum).
-  @override
-  Expression notBetween(T min, T max) {
-    assert(min <= max);
-    return super.between(min, max);
   }
 }
 
@@ -244,26 +224,26 @@ class ColumnBool extends _ColumnUnescaped<bool> {
 
 /// A [Column] holding an [DateTime]. In the database it is stored as a
 /// timestamp without time zone.
-class ColumnDateTime extends _ColumnScalar<DateTime> {
+class ColumnDateTime extends _ColumnEscaped<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(String name) : super(name);
 
   /// Creates an [Expression] checking if the value in the column is between
   /// a minimum and a maximum [DateTime] (inclusive of the endpoints of the
   /// range).
-  @override
   Expression between(DateTime min, DateTime max) {
     assert(min.isBefore(max));
-    return super.between(min, max);
+    return Expression('"$columnName" BETWEEN '
+        '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is not between
   /// a minimum and a maximum [DateTime] (i.e. is strictly less than the minimum
   /// or strictly greater than the maximum).
-  @override
   Expression notBetween(DateTime min, DateTime max) {
     assert(min.isBefore(max));
-    return super.between(min, max);
+    return Expression('"$columnName" NOT BETWEEN '
+        '${encodeValueForQuery(min)} AND ${encodeValueForQuery(max)}');
   }
 
   /// Creates an [Expression] checking if the value in the column is strictly
