@@ -23,7 +23,68 @@ void main() {
     '$testClassFileName.dart',
   );
 
-  group('Given a class with a none nullable field', () {
+  group('Given empty class named $testClassName when generating code', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+
+    test('then generated class imports client version of serverpod.', () {
+      expect(
+          CompilationUnitHelpers.hasImportDirective(compilationUnit,
+              uri: 'package:serverpod_client/serverpod_client.dart'),
+          isTrue,
+          reason:
+              'Missing import of package:serverpod_client/serverpod_client.dart.');
+    });
+
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+
+    test('then class named $testClassName is generated.', () {
+      expect(maybeClassNamedExample, isNotNull,
+          reason: 'Missing definition for class named $testClassName.');
+    });
+
+    group('then class named $testClassName', () {
+      var exampleClass = maybeClassNamedExample!;
+      test('inherits from SerializableEntity.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+                name: 'SerializableEntity'),
+            isTrue,
+            reason: 'Missing extends clause for SerializableEntity.');
+      });
+
+      test('has fromJson factory.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
+                name: 'fromJson'),
+            isTrue,
+            reason: 'Missing declaration for fromJson factory.');
+      });
+
+      test('has toJson method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'toJson'),
+            isTrue,
+            reason: 'Missing declaration for toJson method.');
+      });
+    }, skip: maybeClassNamedExample == null);
+  });
+
+  group('Given a class with a none nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)

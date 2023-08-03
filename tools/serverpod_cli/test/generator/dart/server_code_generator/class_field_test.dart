@@ -17,7 +17,77 @@ void main() {
   var expectedFilePath =
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
 
-  group('Given a class with a none nullable field', () {
+  group('Given empty class named $testClassName when generating code', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    test('then generated class imports server version of serverpod.', () {
+      expect(
+          CompilationUnitHelpers.hasImportDirective(compilationUnit,
+              uri: 'package:serverpod/serverpod.dart'),
+          isTrue,
+          reason: 'Missing import of package:serverpod/serverpod.dart');
+    });
+
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test('then class named $testClassName is generated.', () {
+      expect(
+        maybeClassNamedExample,
+        isNotNull,
+        reason: 'Missing definition for class named $testClassName',
+      );
+    });
+
+    group('then class named $testClassName', () {
+      var exampleClass = maybeClassNamedExample!;
+      test('inherits from SerializableEntity.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+                name: 'SerializableEntity'),
+            isTrue,
+            reason: 'Missing extends clause for SerializableEntity.');
+      });
+
+      test('has fromJson factory.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
+                name: 'fromJson'),
+            isTrue,
+            reason: 'Missing declaration for fromJson factory.');
+      });
+
+      test('has toJson method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'toJson'),
+            isTrue,
+            reason: 'Missing declaration for toJson method');
+      });
+
+      test('has allToJson method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'allToJson'),
+            isTrue,
+            reason: 'Missing declaration for allToJson method.');
+      });
+    }, skip: maybeClassNamedExample == null);
+  });
+
+  group('Given a class with a none nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
@@ -59,7 +129,7 @@ void main() {
             : false);
   });
 
-  group('Given a class with a nullable field', () {
+  group('Given a class with a nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
