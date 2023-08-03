@@ -1,0 +1,204 @@
+{
+  "scopeName": "source.serverpod",
+  "patterns": [
+    {
+      "include": "#fields"
+    },
+    {
+      "include": "#indexes"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "entity.name.tag.yaml",
+      "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+    },
+    {
+      "include": "#basic_value_types"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=(class|exception|enum):\\s+)([a-zA-Z0-9_<>\\?,\\s]+>)(?=\\??,|\\s|$)"
+    },
+    {
+      "name": "entity.name.type.yaml",
+      "match": "\\b(?<=(class|exception|enum):\\s+)([a-zA-Z0-9_]+)(?=\\??$|\\??,|\\s|$)"
+    },
+    {
+      "name": "string.unquoted.yaml",
+      "match": "\\b(?<=:\\s*)([a-zA-Z0-9_-]+)\\b"
+    }
+  ],
+  "repository": {
+    "basic_value_types": {
+      "patterns": [
+        {
+          "name": "constant.numeric.yaml",
+          "match": "\\b-?[0-9]+(\\.[0-9]*)?(e-?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.language.boolean.yaml",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.yaml",
+          "match": "\\bnull\\b"
+        }
+      ]
+    },
+    "fields": {
+      "begin": "(fields)(:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "name": "keyword.operator.assignment.yaml",
+          "match": "="
+        },
+        {
+          "name": "punctuation.separator.comma.yaml",
+          "match": ","
+        },
+        {
+          "include": "#params"
+        },
+        {
+          "include": "#basic_value_types"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b(?<=\\(|,\\s*)([a-zA-Z0-9_-]+)(?=[,=]|\\s|\\))"
+        },
+        {
+          "name": "string.quoted.double.yaml",
+          "match": "\\b(?<==)([a-zA-Z0-9_-]+)(?=,|\\))"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=\\s*=\\s*)([a-zA-Z0-9_-]+)\\b"
+        },
+        {
+          "name": "entity.name.function.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\()"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+        },
+        {
+          "begin": "(:\\s*)([^\\s<]*)(<)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.separator.mapping.key-value.yaml"
+            },
+            "2": {
+              "name": "entity.name.type.yaml"
+            },
+            "3": {
+              "name": "punctuation.definition.type.begin.yaml"
+            }
+          },
+          "end": "(>)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.type.end.yaml"
+            }
+          },
+          "patterns": [
+            {
+              "match": "[^,>\\s?]+",
+              "name": "entity.name.type.yaml"
+            }
+          ]
+        },
+        {
+          "match": "(:\\s*)([^<\\s?]+)",
+          "captures": {
+            "1": {
+              "name": "punctuation.separator.mapping.key-value.yaml"
+            },
+            "2": {
+              "name": "entity.name.type.yaml"
+            }
+          }
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
+    "indexes": {
+      "begin": "(indexes)(:)(\\s*$)",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.tag.yaml"
+        },
+        "2": {
+          "name": "punctuation.separator.mapping.key-value.yaml"
+        }
+      },
+      "end": "(?=^\\S)",
+      "patterns": [
+        {
+          "include": "#params"
+        },
+        {
+          "include": "#basic_value_types"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+        },
+        {
+          "name": "string.unquoted.yaml",
+          "match": "\\b(?<=:\\s*|,\\s*)([a-zA-Z0-9_-]+)\\b"
+        }
+      ]
+    },
+    "params": {
+      "patterns": [
+        {
+          "name": "entity.name.variable.yaml",
+          "match": "(?<=^\\s{2}|\\t)\\b([a-zA-Z0-9_]+)(?=:\\s)"
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "match": "(###.*$)",
+          "captures": {
+            "0": {
+              "name": "comment.block.documentation.yaml"
+            }
+          }
+        },
+        {
+          "match": "(#.*$)",
+          "captures": {
+            "0": {
+              "name": "comment.line.yaml"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "uuid": "123e4567-e89b-12d3-a456-426655440000"
+}

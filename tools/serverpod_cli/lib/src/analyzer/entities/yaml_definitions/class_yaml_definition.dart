@@ -38,6 +38,7 @@ class ClassYamlDefinition {
               isAllowed: true,
               hasImplicitFirstKey: true,
             ),
+            isContextualParentNode: true,
             nested: {
               ValidateNode(
                 Keyword.type,
@@ -54,11 +55,20 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.relation,
+                keyRestriction: restrictions.validateRelationKey,
+                valueRestriction:
+                    restrictions.validateRelationInterdependencies,
                 mutuallyExclusiveKeys: {Keyword.parent},
+                allowEmptyNestedValue: true,
                 nested: {
                   ValidateNode(
                     Keyword.parent,
+                    keyRestriction: restrictions.validateParentKey,
                     valueRestriction: restrictions.validateParentName,
+                  ),
+                  ValidateNode(
+                    Keyword.optional,
+                    keyRestriction: restrictions.validateOptionalKey,
                   ),
                 },
               ),

@@ -7,9 +7,9 @@ fields:
   serverId: String
 
   ### Id of the session this entry is associated with.
-  sessionLogId: int, parent=serverpod_session_log
+  sessionLogId: int, relation(parent=serverpod_session_log)
 
-  ### The id of the message this entry is associcated with, if the query was
+  ### The id of the message this entry is associated with, if the query was
   ### executed in a streaming session.
   messageId: int?
 

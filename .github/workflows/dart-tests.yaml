@@ -75,17 +75,21 @@ jobs:
 
   unit_tests:
     name: Unit tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }} 
     strategy:
       matrix:
         flutter-version: ['3.7.0', '3.10.0']
+        os: [windows-latest, ubuntu-latest]
+        path: ['tools/serverpod_cli']
+
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Run unit tests
-        run: bash util/run_tests_unit
+      - name: Run unit tests 
+        run: dart test 
+        working-directory: ${{ matrix.path }}
 
   single_server_tests:
     name: Serverpod tests
