@@ -1,4 +1,4 @@
 class: ObjectWithParent
 table: object_with_parent
 fields:
-  other: int, parent=object_field_scopes
+  other: int, relation(parent=object_field_scopes)

@@ -14,14 +14,11 @@ class Copier {
 
   List<String> ignoreFileNames;
 
-  bool verbose;
-
   Copier({
     required this.srcDir,
     required this.dstDir,
     required this.replacements,
     required this.fileNameReplacements,
-    this.verbose = false,
     this.removePrefixes = const <String>[],
     this.ignoreFileNames = const <String>[],
   });
@@ -54,7 +51,7 @@ class Copier {
         _replace(p.join(relativePath, fileName), fileNameReplacements);
     log.debug(
       p.join(dstDir.path, relativePath, fileName),
-      style: const TextLogStyle(type: AbstractStyleType.bullet),
+      type: TextLogType.bullet,
     );
 
     var dstFile = File(p.join(dstDir.path, dstFileName));

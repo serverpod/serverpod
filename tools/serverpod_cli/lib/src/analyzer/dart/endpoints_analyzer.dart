@@ -65,7 +65,6 @@ class EndpointsAnalyzer {
   /// Analyze all files in the [endpointDirectory].
   /// Use [changedFiles] to mark files, that need reloading.
   Future<List<EndpointDefinition>> analyze({
-    required bool verbose,
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
   }) async {

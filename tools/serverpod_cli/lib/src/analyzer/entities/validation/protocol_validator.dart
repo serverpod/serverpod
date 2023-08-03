@@ -50,8 +50,14 @@ void validateYamlProtocol(
   String documentType,
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
-  CodeAnalysisCollector collector,
-) {
+  CodeAnalysisCollector collector, {
+  NodeContext? context,
+}) {
+  context ??= NodeContext(
+    documentType,
+    false,
+  );
+
   _collectInvalidKeyErrors(
     documentType,
     documentStructure,
@@ -61,12 +67,14 @@ void validateYamlProtocol(
 
   for (var node in documentStructure) {
     _collectKeyRestrictionErrors(
+      context,
       node,
       documentContents,
       collector,
     );
 
     _collectValueRestrictionErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -97,6 +105,7 @@ void validateYamlProtocol(
     );
 
     _collectNodesWithNestedNodesErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -176,6 +185,7 @@ void _collectMissingRequiredChildrenErrors(
 
   if (documentContents.containsKey(node.key) &&
       node.nested.isNotEmpty &&
+      !node.allowEmptyNestedValue &&
       content is! YamlMap) {
     collector.addError(SourceSpanSeverityException(
       'The "${node.key}" property must have at least one value.',
@@ -205,15 +215,31 @@ void _collectDeprecatedKeyErrors(
 }
 
 void _collectKeyRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
   if (node.keyRestriction == null) return;
 
-  for (var document in documentContents.nodes.entries) {
-    var errors =
-        node.keyRestriction?.call(document.key.toString(), document.key.span);
+  if (node.key == Keyword.any) {
+    for (var document in documentContents.nodes.entries) {
+      var errors = node.keyRestriction?.call(
+        context.parentNodeName,
+        document.key.toString(),
+        document.key.span,
+      );
+
+      if (errors != null) {
+        collector.addErrors(errors);
+      }
+    }
+  } else if (documentContents.containsKey(node.key)) {
+    var errors = node.keyRestriction?.call(
+      context.parentNodeName,
+      node.key,
+      documentContents.key(node.key)?.span,
+    );
 
     if (errors != null) {
       collector.addErrors(errors);
@@ -222,15 +248,17 @@ void _collectKeyRestrictionErrors(
 }
 
 void _collectValueRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  var content = documentContents[node.key];
-  var span = documentContents.nodes[node.key]?.span;
-
   if (documentContents.containsKey(node.key)) {
-    var errors = node.valueRestriction?.call(content, span);
+    var content = documentContents[node.key];
+    var span = documentContents.nodes[node.key]?.span;
+
+    var errors =
+        node.valueRestriction?.call(context.parentNodeName, content, span);
 
     if (errors != null) {
       collector.addErrors(errors);
@@ -239,6 +267,7 @@ void _collectValueRestrictionErrors(
 }
 
 void _collectNodesWithNestedNodesErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector, {
@@ -246,36 +275,16 @@ void _collectNodesWithNestedNodesErrors(
     String documentType,
     Set<ValidateNode> documentStructure,
     YamlMap documentContents,
-    CodeAnalysisCollector collector,
-  )? validateNestedNodes,
+    CodeAnalysisCollector collector, {
+    NodeContext? context,
+  })? validateNestedNodes,
 }) {
   if (node.nested.isEmpty) return;
 
   var documentNodes = _extractDocumentNodesToCheck(documentContents, node);
 
   for (var document in documentNodes) {
-    var contentNode = document.value;
-    var content = contentNode?.value;
-
-    if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
-      String? firstKey;
-
-      if (node.allowStringifiedNestedValue.hasImplicitFirstKey) {
-        firstKey = node.nested.first.key;
-      }
-
-      content = convertStringifiedNestedNodesToYamlMap(
-        content,
-        contentNode.span,
-        firstKey: firstKey,
-        onDuplicateKey: (key, span) {
-          collector.addError(SourceSpanSeverityException(
-            'The field option "$key" is defined more than once.',
-            span,
-          ));
-        },
-      );
-    }
+    var content = _extractNodeValue(document.value, node, collector);
 
     if (content is! YamlMap) {
       var requiredKeys =
@@ -291,13 +300,49 @@ void _collectNodesWithNestedNodesErrors(
       continue;
     }
 
+    var nodeKey = document.key.toString();
+
+    var nodeContext = context.shouldPropagateContext
+        ? context
+        : NodeContext(nodeKey, node.isContextualParentNode);
+
     validateNestedNodes?.call(
-      document.key.toString(),
+      nodeKey,
       node.nested,
       content,
       collector,
+      context: nodeContext,
     );
   }
+}
+
+dynamic _extractNodeValue(
+  YamlNode? contentNode,
+  ValidateNode node,
+  CodeAnalysisCollector collector,
+) {
+  var content = contentNode?.value;
+
+  if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
+    String? firstKey;
+
+    if (node.allowStringifiedNestedValue.hasImplicitFirstKey) {
+      firstKey = node.nested.first.key;
+    }
+
+    content = convertStringifiedNestedNodesToYamlMap(
+      content,
+      contentNode.span,
+      firstKey: firstKey,
+      onDuplicateKey: (key, span) {
+        collector.addError(SourceSpanSeverityException(
+          'The field option "$key" is defined more than once.',
+          span,
+        ));
+      },
+    );
+  }
+  return content;
 }
 
 String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
