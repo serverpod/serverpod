@@ -84,6 +84,30 @@ void main() {
     }, skip: maybeClassNamedExample == null);
   });
 
+  group('Given a class with documentation when generating code', () {
+    var documentation = [
+      '// This is an example documentation',
+      '// This is another example'
+    ];
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withDocumentation(documentation)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    test('then documentation is included in code.', () {
+      for (var comment in documentation) {
+        expect(codeMap[expectedFileName], contains(comment));
+      }
+    });
+  });
+
   group('Given a class with a none nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
