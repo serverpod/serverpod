@@ -59,7 +59,7 @@ class QueryLogEntry extends _i1.TableRow {
   /// Id of the session this entry is associated with.
   int sessionLogId;
 
-  /// The id of the message this entry is associcated with, if the query was
+  /// The id of the message this entry is associated with, if the query was
   /// executed in a streaming session.
   int? messageId;
 
@@ -308,7 +308,7 @@ class QueryLogEntryTable extends _i1.Table {
   /// Id of the session this entry is associated with.
   final sessionLogId = _i1.ColumnInt('sessionLogId');
 
-  /// The id of the message this entry is associcated with, if the query was
+  /// The id of the message this entry is associated with, if the query was
   /// executed in a streaming session.
   final messageId = _i1.ColumnInt('messageId');
 

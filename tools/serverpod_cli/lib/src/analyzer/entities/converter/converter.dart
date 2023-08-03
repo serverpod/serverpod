@@ -1,94 +1,202 @@
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 // ignore: implementation_imports
 import 'package:yaml/src/equality.dart';
 
+List<String> convertIndexList(String stringifiedFields) {
+  return stringifiedFields.split(',').map((field) => field.trim()).toList();
+}
+
+typedef DeepNestedNodeHandler = YamlMap Function(
+    String? content, SourceSpan span);
+
 YamlMap convertStringifiedNestedNodesToYamlMap(
   String? content,
-  YamlNode contentNode,
-  ValidateNode node, {
+  SourceSpan span, {
+  String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
 }) {
-  var options = _extractOptions(content);
+  var stringifiedNodes = _extractStringifiedNodes(content);
 
-  var initRawValue = options.isNotEmpty ? options.first : null;
+  Map<dynamic, YamlNode> initNodes = _extractInitialNode(
+    firstKey,
+    stringifiedNodes,
+    content,
+    span,
+  );
 
-  var fieldKeyValuePairs = _extractKeyValuePairs(options.skip(1));
+  var startNodeIndex = initNodes.length;
+  var fieldKeyValuePairs = _extractKeyValuePairs(
+    stringifiedNodes.skip(startNodeIndex),
+    content,
+    span,
+    handleDeepNestedNodes: (nestedContent, nestedSpan) {
+      // recursion
+      return convertStringifiedNestedNodesToYamlMap(
+        nestedContent,
+        nestedSpan,
+        onDuplicateKey: onDuplicateKey,
+      );
+    },
+  );
 
   var duplicates = _findDuplicateKeys(fieldKeyValuePairs);
   for (var duplicate in duplicates) {
-    onDuplicateKey?.call(duplicate, contentNode.span);
+    onDuplicateKey?.call(
+      duplicate,
+      _extractSubSpan(content, span, duplicate),
+    );
   }
 
-  Map<dynamic, YamlNode> initNodes = _createdYamlNode(
-    node.nested.first.key,
-    initRawValue,
-    contentNode.span,
+  Map<dynamic, YamlNode> internalNodes = fieldKeyValuePairs.fold(
+    initNodes,
+    (aggregate, pair) => {...aggregate, ...pair},
   );
 
-  Map<dynamic, YamlNode> internalNodes =
-      fieldKeyValuePairs.fold(initNodes, (aggregate, pair) {
-    var node = _createdYamlNode(
-      pair.key,
-      pair.value,
-      contentNode.span,
-    );
-    return {...aggregate, ...node};
-  });
-
-  // deepEqialsMap is needed to be able to compare YamlScala as keys
+  // deepEqualsMap is needed to be able to compare YamlScala as keys
   var nodes = deepEqualsMap<dynamic, YamlNode>();
   nodes.addAll(internalNodes);
 
-  return YamlMap.internal(nodes, contentNode.span, CollectionStyle.ANY);
+  return YamlMap.internal(nodes, span, CollectionStyle.ANY);
 }
 
-List<String> _extractOptions(String? input) {
+Map<dynamic, YamlNode> _extractInitialNode(
+  String? firstKey,
+  List<String> options,
+  String? content,
+  SourceSpan span,
+) {
+  if (firstKey == null) return {};
+
+  var initRawValue = options.isNotEmpty ? options.first : null;
+  return _createdYamlScalarNode(
+    firstKey,
+    initRawValue,
+    _extractSubSpan(content, span, initRawValue),
+  );
+}
+
+List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
-  // Split on comma, but not if the comma is inside < >
-  return input.split(RegExp(r',(?![^<]*>)')).map((e) => e.trim()).toList();
+  // Split on comma, but not if the comma is inside < > or ( )
+  return input
+      .split(RegExp(r',(?![^(]*\))(?![^<]*>)'))
+      .map((e) => e.trim())
+      .toList();
 }
 
-Iterable<MapEntry<String, dynamic>> _extractKeyValuePairs(
+Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
   Iterable<String> fieldOptions,
-) {
+  String? content,
+  SourceSpan span, {
+  required DeepNestedNodeHandler handleDeepNestedNodes,
+}) {
+  if (content == null) return [];
+
   var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
-    var keyValuePair = stringifiedKeyValuePair.split('=');
+    var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
-    var key = keyValuePair.first;
-    var value = keyValuePair.length == 2 ? keyValuePair.last : null;
+    if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
+      var nestedComponents =
+          stringifiedKeyValuePair.replaceAll(')', '').split('(');
 
-    return MapEntry(key, value);
+      var key = nestedComponents.first;
+      var stringifiedContent = nestedComponents.last;
+
+      if (stringifiedContent == '') {
+        return _createdYamlScalarNode(
+          key,
+          null,
+          keyValueSpan,
+        );
+      } else {
+        var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
+        var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
+
+        return _createYamlMapNode(key, nodeMap, keyValueSpan);
+      }
+    }
+
+    List<String> keyValuePair = stringifiedKeyValuePair.split('=');
+
+    String key = keyValuePair.first;
+    String? value = keyValuePair.length == 2 ? keyValuePair.last : null;
+
+    return _createdYamlScalarNode(
+      key,
+      value,
+      keyValueSpan,
+    );
   });
 
   return fieldPairs;
 }
 
-Set<String> _findDuplicateKeys(Iterable<MapEntry<String, dynamic>> list) {
+bool _hasNestedStringifiedValues(String stringifiedKeyValuePair) =>
+    stringifiedKeyValuePair.contains('(');
+
+SourceSpan _extractSubSpan(
+  String? content,
+  SourceSpan contentSpan,
+  String? subContent,
+) {
+  if (content == null) return contentSpan;
+  if (subContent == null) return contentSpan;
+
+  var start = _findStartIndex(content, subContent);
+  if (start == -1) return contentSpan;
+
+  var end = start + subContent.length;
+  return contentSpan.subspan(start, end);
+}
+
+int _findStartIndex(String fullString, String subString) {
+  if (subString == '') return fullString.length;
+  return fullString.lastIndexOf(subString);
+}
+
+Set<String> _findDuplicateKeys(Iterable<Map<YamlScalar, dynamic>> list) {
   var seenStrings = <String>{};
   var duplicates = <String>{};
 
   for (var pair in list) {
-    if (seenStrings.contains(pair.key)) {
-      duplicates.add(pair.key);
+    var v = pair.entries.first;
+    if (seenStrings.contains(v.key.value)) {
+      duplicates.add(v.key.value);
     } else {
-      seenStrings.add(pair.key);
+      seenStrings.add(v.key.value);
     }
   }
 
   return duplicates;
 }
 
-Map<dynamic, YamlNode> _createdYamlNode(
+Map<YamlScalar, YamlScalar> _createdYamlScalarNode(
   String rawKey,
-  dynamic rawValue,
+  String? rawValue,
   SourceSpan span,
 ) {
-  var key = YamlScalar.internalWithSpan(rawKey, span);
-  var value = YamlScalar.internalWithSpan(rawValue, span);
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
+
+  var trimmedValue = rawValue?.trim();
+  var valueSpan = _extractSubSpan(span.text, span, trimmedValue);
+  var value = YamlScalar.internalWithSpan(trimmedValue, valueSpan);
+
+  return {key: value};
+}
+
+Map<YamlScalar, YamlMap> _createYamlMapNode(
+  String rawKey,
+  YamlMap value,
+  SourceSpan span,
+) {
+  var trimmedKey = rawKey.trim();
+  var keySpan = _extractSubSpan(span.text, span, trimmedKey);
+  var key = YamlScalar.internalWithSpan(trimmedKey, keySpan);
 
   return {key: value};
 }

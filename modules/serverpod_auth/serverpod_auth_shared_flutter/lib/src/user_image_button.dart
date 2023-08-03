@@ -32,6 +32,7 @@ class UserImageButton extends StatefulWidget {
     this.elevation = 0,
     this.borderWidth = 0,
     this.borderColor = Colors.white,
+    super.key,
   });
 
   @override

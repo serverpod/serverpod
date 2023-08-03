@@ -1,10 +1,13 @@
 import 'dart:io';
 
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:source_span/source_span.dart';
 
 /// A [CodeAnalysisCollector] that also keeps track of generated files.
 class CodeGenerationCollector extends CodeAnalysisCollector {
   /// All the errors reported.
+  @override
   final List<SourceSpanException> errors = [];
 
   /// All the generated files reported.
@@ -39,7 +42,15 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     if (errors.isEmpty) {
       return;
     }
-    stdout.write(toString());
+
+    log.error(
+      'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.',
+      newParagraph: true,
+    );
+
+    for (var error in errors) {
+      log.sourceSpanException(error);
+    }
   }
 
   @override

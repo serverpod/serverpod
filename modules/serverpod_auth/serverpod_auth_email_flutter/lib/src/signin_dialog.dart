@@ -14,12 +14,21 @@ enum _Page {
   confirmPasswordReset,
 }
 
+/// A dialog for signing in with email and password.
 class SignInWithEmailDialog extends StatefulWidget {
+  /// A reference to the auth module as retrieved from the client object.
   final Caller caller;
+
+  /// Callback that is called when the user has successfully signed in.
   final VoidCallback onSignedIn;
+
+  /// The maximum length of the password.
   final int maxPasswordLength;
+
+  /// The minimum length of the password.
   final int minPasswordLength;
 
+  /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
     Key? key,
     required this.caller,
@@ -32,6 +41,7 @@ class SignInWithEmailDialog extends StatefulWidget {
   SignInWithEmailDialogState createState() => SignInWithEmailDialogState();
 }
 
+/// State for the sign in with email dialog.
 class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -564,6 +574,7 @@ class SignInWithEmailDialogState extends State<SignInWithEmailDialog> {
   }
 }
 
+/// Shows a dialog that allows the user to sign in with email.
 void showSignInWithEmailDialog({
   required BuildContext context,
   required Caller caller,

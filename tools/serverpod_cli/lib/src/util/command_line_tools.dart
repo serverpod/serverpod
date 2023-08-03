@@ -1,32 +1,47 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/logger/logger.dart';
 
-import 'print.dart';
 import 'windows.dart';
 
 class CommandLineTools {
-  static void dartPubGet(Directory dir) {
-    print('Running `dart pub get` in ${dir.path}');
+  static Future<bool> dartPubGet(Directory dir) async {
+    log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
+
     var cf = _CommandFormatter('dart', ['pub', 'get']);
-    var result = Process.runSync(
-      cf.command,
-      cf.args,
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: cf.command,
+      arguments: cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+
+    if (exitCode != 0) {
+      log.error('Failed to run `dart pub get` in ${dir.path}');
+      return false;
+    }
+
+    return true;
   }
 
-  static void flutterCreate(Directory dir) {
-    print('Running `flutter create .` in ${dir.path}');
+  static Future<bool> flutterCreate(Directory dir) async {
+    log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
+
     var cf = _CommandFormatter('flutter', ['create', '.']);
-    var result = Process.runSync(
-      cf.command,
-      cf.args,
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: cf.command,
+      arguments: cf.args,
       workingDirectory: dir.path,
     );
-    print(result.stdout);
+
+    if (exitCode != 0) {
+      log.error('Failed to run `flutter create .` in ${dir.path}');
+      return false;
+    }
+
+    return true;
   }
 
   static Future<bool> existsCommand(String command) async {
@@ -34,74 +49,86 @@ class CommandLineTools {
       var commandPath = WindowsUtil.commandPath(command);
       return commandPath != null;
     } else {
-      var result = await Process.run('which', [command]);
-      return result.exitCode == 0;
+      var exitCode = await _runProcessWithDefaultLogger(
+        executable: 'which',
+        arguments: [command],
+      );
+      return exitCode == 0;
     }
   }
 
   static Future<bool> isDockerRunning() async {
-    var result = await Process.run('docker', ['info']);
-    return result.exitCode == 0;
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'docker',
+      arguments: ['info'],
+    );
+    return exitCode == 0;
   }
 
-  static Future<void> createTables(Directory dir, String name) async {
+  static Future<bool> createTables(Directory dir, String name) async {
+    log.debug(
+      'If you run serverpod create for the first time, this can take '
+      'a few minutes as Docker is downloading the images for '
+      'Postgres. If you get stuck at this step, make sure that you '
+      'have the latest version of Docker Desktop and that it is '
+      'currently running.',
+      type: TextLogType.hint,
+    );
     var serverPath = p.join(dir.path, '${name}_server');
-    printww('Setting up Docker and default database tables in $serverPath');
-    printww(
-        'If you run serverpod create for the first time, this can take a few minutes as Docker is downloading the images for Postgres. If you get stuck at this step, make sure that you have the latest version of Docker Desktop and that it is currently running.');
-    late ProcessResult result;
+
     if (!Platform.isWindows) {
-      result = await Process.run(
-        'chmod',
-        ['u+x', 'setup-tables'],
+      await _runProcessWithDefaultLogger(
+        executable: 'chmod',
+        arguments: ['u+x', 'setup-tables'],
         workingDirectory: serverPath,
       );
-      print(result.stdout);
     }
 
-    var process = await Process.start(
-      /// Windows has an issue with running batch file directly without the
-      /// complete path.
-      /// Related ticket: https://github.com/dart-lang/sdk/issues/31291
-      Platform.isWindows
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: Platform.isWindows
           ? p.join(serverPath, 'setup-tables.cmd')
           : './setup-tables',
-      [],
       workingDirectory: serverPath,
     );
 
-    unawaited(stdout.addStream(process.stdout));
-    unawaited(stderr.addStream(process.stderr));
+    if (exitCode != 0) {
+      log.error('Failed to set up tables');
+    } else {
+      log.debug('Completed table setup');
+    }
 
-    var exitCode = await process.exitCode;
-    print('Completed table setup exit code: $exitCode');
-
-    print('Cleaning up');
-    result = await Process.run(
-      'rm',
-      ['setup-tables'],
+    log.debug('Cleaning up');
+    await _runProcessWithDefaultLogger(
+      executable: 'rm',
+      arguments: ['setup-tables'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
 
-    result = await Process.run(
-      'rm',
-      ['setup-tables.cmd'],
+    await _runProcessWithDefaultLogger(
+      executable: 'rm',
+      arguments: ['setup-tables.cmd'],
       workingDirectory: serverPath,
     );
-    print(result.stdout);
+
+    return exitCode == 0;
   }
 
-  static Future<void> cleanupForWindows(Directory dir, String name) async {
+  static Future<bool> cleanupForWindows(Directory dir, String name) async {
     var serverPath = p.join(dir.path, '${name}_server');
-    print('Cleaning up');
+    log.debug('Cleaning up');
     var file = File(p.join(serverPath, 'setup-tables'));
     try {
       await file.delete();
     } catch (e) {
-      print('Failed cleanup: $e');
-      print('file: $file');
+      log.error('Failed cleanup: $e');
+      log.error(
+        'file: $file',
+        type: const RawLogType(),
+      );
+      return false;
     }
+
+    return true;
   }
 }
 
@@ -117,4 +144,25 @@ class _CommandFormatter {
   String toString() {
     return 'CMD: $command ${args.join(' ')}';
   }
+}
+
+Future<int> _runProcessWithDefaultLogger({
+  required String executable,
+  String? workingDirectory,
+  List<String>? arguments,
+}) async {
+  var process = await Process.start(
+    executable,
+    arguments ?? [],
+    workingDirectory: workingDirectory,
+  );
+
+  process.stderr
+      .transform(utf8.decoder)
+      .listen((data) => log.debug(data, type: const RawLogType()));
+  process.stdout
+      .transform(utf8.decoder)
+      .listen((data) => log.debug(data, type: const RawLogType()));
+
+  return await process.exitCode;
 }

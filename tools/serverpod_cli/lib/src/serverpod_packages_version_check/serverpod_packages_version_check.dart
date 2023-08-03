@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
-import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 class ServerpodPackagesVersionCheckWarnings {
@@ -18,13 +17,16 @@ class ServerpodPackagesVersionCheckWarnings {
       'the Serverpod packages.';
 }
 
-List<SourceSpanException> performServerpodPackagesAndCliVersionCheck(
+List<SourceSpanSeverityException> performServerpodPackagesAndCliVersionCheck(
   Version cliVersion,
   Directory directory,
 ) {
-  List<SourceSpanException> accumulatedWarnings = [];
+  List<SourceSpanSeverityException> accumulatedWarnings = [];
 
-  var pubspecFiles = findPubspecsFiles(directory);
+  var pubspecFiles = findPubspecsFiles(
+    directory,
+    ignorePaths: ['vendor', 'serverpod'],
+  );
   if (pubspecFiles.isEmpty) {
     return accumulatedWarnings;
   }
@@ -39,20 +41,20 @@ List<SourceSpanException> performServerpodPackagesAndCliVersionCheck(
 
       accumulatedWarnings.addAll(warnings);
     } catch (e) {
-      throw Exception(
-          'Error while parsing pubspec file: ${pubspecFile.path}: $e');
+      // TODO: Log to debug output
+      // Failed to open or parse pubspec file
     }
   }
 
   return accumulatedWarnings;
 }
 
-List<SourceSpanException> _validateServerpodPackagesVersion(
+List<SourceSpanSeverityException> _validateServerpodPackagesVersion(
   Version version,
   Pubspec pubspec,
   YamlMap yamlPubspec,
 ) {
-  List<SourceSpanException> warnings = [];
+  List<SourceSpanSeverityException> warnings = [];
 
   var serverpodDependencies =
       _getHostedServerpodDependencies(pubspec.dependencies);
@@ -86,12 +88,12 @@ List<MapEntry<String, HostedDependency>> _getHostedServerpodDependencies(
   });
 }
 
-List<SourceSpanException> _validatePackageCompatibilities(
+List<SourceSpanSeverityException> _validatePackageCompatibilities(
   List<MapEntry<String, HostedDependency>> serverpodPackages,
   Version cliVersion,
   YamlMap packagesYaml,
 ) {
-  List<SourceSpanException> packageWarnings = [];
+  List<SourceSpanSeverityException> packageWarnings = [];
 
   for (var element in serverpodPackages) {
     var packageName = element.key;
@@ -99,22 +101,25 @@ List<SourceSpanException> _validatePackageCompatibilities(
     var packageYamlNode = packagesYaml.nodes[packageName];
 
     if (packageYamlNode == null) {
-      throw SourceSpanException(
+      throw SourceSpanSeverityException(
           'Could not find package "$packageName" in pubspec file.',
-          packagesYaml.span);
+          packagesYaml.span,
+          severity: SourceSpanSeverity.warning);
     }
 
     var packageVersion = package.version;
     if (!packageVersion.allowsAny(cliVersion)) {
-      packageWarnings.add(SourceSpanException(
+      packageWarnings.add(SourceSpanSeverityException(
           ServerpodPackagesVersionCheckWarnings.incompatibleVersion,
-          packageYamlNode.span));
+          packageYamlNode.span,
+          severity: SourceSpanSeverity.warning));
     }
 
     if (packageVersion is! Version) {
-      packageWarnings.add(SourceSpanException(
+      packageWarnings.add(SourceSpanSeverityException(
           ServerpodPackagesVersionCheckWarnings.approximateVersion(cliVersion),
-          packageYamlNode.span));
+          packageYamlNode.span,
+          severity: SourceSpanSeverity.warning));
     }
   }
 

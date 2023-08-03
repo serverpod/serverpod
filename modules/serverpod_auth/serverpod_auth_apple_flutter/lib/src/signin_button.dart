@@ -25,6 +25,7 @@ class SignInWithAppleButton extends StatefulWidget {
     this.onSignedIn,
     this.onFailure,
     this.style,
+    super.key,
   });
 
   @override

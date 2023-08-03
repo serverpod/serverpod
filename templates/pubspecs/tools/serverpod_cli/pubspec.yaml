@@ -14,7 +14,6 @@ dependencies:
   args: ^2.4.0
   ci: ^0.1.0
   code_builder: ^4.4.0
-  colorize: ^3.0.0
   dart_style: ^2.3.0
   http: ^0.13.5
   intl: ^0.17.0
@@ -38,11 +37,12 @@ dependencies:
   meta: ^1.8.0
   json_rpc_2: ^3.0.2
   stream_channel: ^2.1.1
-  lsp_server: ^0.1.0
+  lsp_server: ^0.2.0
   pub_semver: ^2.1.4
 
 dev_dependencies:
-  lints: ^2.0.1
+  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+    path: ../../packages/serverpod_lints
   test: ^1.24.2
 
 executables:

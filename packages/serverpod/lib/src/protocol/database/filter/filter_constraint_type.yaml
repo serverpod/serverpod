@@ -1,0 +1,16 @@
+enum: FilterConstraintType
+values:
+  - equals
+  - notEquals
+  - like
+  - iLike
+  - notLike
+  - notILike
+  - lessThan
+  - lessThanOrEquals
+  - greaterThan
+  - greaterThanOrEquals
+  - between
+  - inThePast
+  - isNull
+  - isNotNull

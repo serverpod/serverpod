@@ -41,6 +41,8 @@ class TypeDefinition {
     this.isEnum = false,
   });
 
+  bool get isList => className == 'List';
+
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
   factory TypeDefinition.mixedUrlAndClassName({

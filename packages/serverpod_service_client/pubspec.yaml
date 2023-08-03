@@ -18,4 +18,5 @@ dependencies:
   meta: ^1.8.0
 
 dev_dependencies:
-  lints: ^2.0.1
+  serverpod_lints: #1.1.0
+    path: ../serverpod_lints

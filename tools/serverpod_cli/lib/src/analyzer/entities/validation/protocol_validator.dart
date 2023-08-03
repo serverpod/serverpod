@@ -1,48 +1,48 @@
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:yaml/yaml.dart';
 
-import '../converter/converter.dart';
-import 'validate_node.dart';
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 
 /// Validates that only one top level entity type is defined.
-void validateTopLevelEntityType(
+List<SourceSpanSeverityException> validateTopLevelEntityType(
   YamlNode documentContents,
   Set<String> classTypes,
-  CodeAnalysisCollector collector,
 ) {
-  if (documentContents is! YamlMap) return;
+  if (documentContents is! YamlMap) return [];
 
   var typeNodes = _findNodesByKeys(
     documentContents,
     classTypes,
   );
 
-  if (typeNodes.length == 1) return;
+  if (typeNodes.length == 1) return [];
 
   if (typeNodes.isEmpty) {
-    collector.addError(SourceSpanException(
-      'No $classTypes type is defined.',
-      documentContents.span,
-    ));
-    return;
+    return [
+      SourceSpanSeverityException(
+        'No $classTypes type is defined.',
+        documentContents.span,
+      )
+    ];
   }
 
   var formattedKeys = _formatNodeKeys(typeNodes);
   var errors = typeNodes
       .skip(1)
       .map(
-        (e) => SourceSpanException(
+        (e) => SourceSpanSeverityException(
             'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
             documentContents.key(e.key.toString())?.span),
       )
       .toList();
 
-  collector.addErrors(errors);
+  return errors;
 }
 
-/// Recursivly validates a yaml document against a set of [ValidateNode]s.
+/// Recursively validates a yaml document against a set of [ValidateNode]s.
 /// The [documentType] represents the parent key of the [documentContents],
 /// in the initial processing this is expected to be the top level entity type
 /// we are checking. E.g. 'class', 'enum', 'exception', etc.
@@ -50,8 +50,14 @@ void validateYamlProtocol(
   String documentType,
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
-  CodeAnalysisCollector collector,
-) {
+  CodeAnalysisCollector collector, {
+  NodeContext? context,
+}) {
+  context ??= NodeContext(
+    documentType,
+    false,
+  );
+
   _collectInvalidKeyErrors(
     documentType,
     documentStructure,
@@ -60,6 +66,20 @@ void validateYamlProtocol(
   );
 
   for (var node in documentStructure) {
+    _collectKeyRestrictionErrors(
+      context,
+      node,
+      documentContents,
+      collector,
+    );
+
+    _collectValueRestrictionErrors(
+      context,
+      node,
+      documentContents,
+      collector,
+    );
+
     _collectMutuallyExclusiveKeyErrors(
       node,
       documentContents,
@@ -78,19 +98,14 @@ void validateYamlProtocol(
       collector,
     );
 
-    _collectKeyRestrictionErrors(
-      node,
-      documentContents,
-      collector,
-    );
-
-    _collectValueRestrictionErrors(
+    _collectDeprecatedKeyErrors(
       node,
       documentContents,
       collector,
     );
 
     _collectNodesWithNestedNodesErrors(
+      context,
       node,
       documentContents,
       collector,
@@ -108,7 +123,7 @@ void _collectInvalidKeyErrors(
   var validKeys = documentStructure.map((e) => e.key).toSet();
   for (var keyNode in documentContents.nodes.keys) {
     if (keyNode is! YamlScalar) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Key must be of type String.',
         keyNode.span,
       ));
@@ -116,14 +131,14 @@ void _collectInvalidKeyErrors(
 
     var key = keyNode.value;
     if (key is! String) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'Key must be of type String.',
         keyNode.span,
       ));
     }
 
     if (!(validKeys.contains(Keyword.any) || validKeys.contains(key))) {
-      collector.addError(SourceSpanException(
+      collector.addError(SourceSpanSeverityException(
         'The "$key" property is not allowed for $documentType type. Valid keys are $validKeys.',
         keyNode.span,
       ));
@@ -139,9 +154,9 @@ void _collectMutuallyExclusiveKeyErrors(
   if (_shouldCheckMutuallyExclusiveKeys(node, documentContents)) {
     for (var mutuallyExclusiveKey in node.mutuallyExclusiveKeys) {
       if (documentContents.containsKey(mutuallyExclusiveKey)) {
-        collector.addError(SourceSpanException(
+        collector.addError(SourceSpanSeverityException(
           'The "${node.key}" property is mutually exclusive with the "$mutuallyExclusiveKey" property.',
-          documentContents.nodes[node.key]?.span,
+          documentContents.key(node.key)?.span,
         ));
       }
     }
@@ -154,10 +169,9 @@ void _collectMissingRequiredKeyErrors(
   CodeAnalysisCollector collector,
 ) {
   if (_isMissingRequiredKey(node, documentContents)) {
-    collector.addError(SourceSpanException(
-      'No "${node.key}" property is defined.',
-      documentContents.nodes[node.key]?.span,
-    ));
+    collector.addError(SourceSpanSeverityException(
+        'No "${node.key}" property is defined.',
+        documentContents.nodes[node.key]?.span));
   }
 }
 
@@ -171,44 +185,89 @@ void _collectMissingRequiredChildrenErrors(
 
   if (documentContents.containsKey(node.key) &&
       node.nested.isNotEmpty &&
+      !node.allowEmptyNestedValue &&
       content is! YamlMap) {
-    collector.addError(SourceSpanException(
+    collector.addError(SourceSpanSeverityException(
       'The "${node.key}" property must have at least one value.',
       span,
     ));
   }
 }
 
+void _collectDeprecatedKeyErrors(
+  ValidateNode node,
+  YamlMap documentContents,
+  CodeAnalysisCollector collector,
+) {
+  if (node.isDeprecated && documentContents.containsKey(node.key)) {
+    var severity = SourceSpanSeverity.info;
+    if (node.isRemoved) {
+      severity = SourceSpanSeverity.error;
+    }
+
+    collector.addError(SourceSpanSeverityException(
+      'The "${node.key}" property is deprecated. ${node.alternativeUsageMessage}',
+      documentContents.key(node.key)?.span,
+      severity: severity,
+      tags: [SourceSpanTag.deprecated],
+    ));
+  }
+}
+
 void _collectKeyRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
   if (node.keyRestriction == null) return;
 
-  for (var document in documentContents.nodes.entries) {
-    node.keyRestriction?.call(
-      document.key.toString(),
-      document.key.span,
-      collector,
+  if (node.key == Keyword.any) {
+    for (var document in documentContents.nodes.entries) {
+      var errors = node.keyRestriction?.call(
+        context.parentNodeName,
+        document.key.toString(),
+        document.key.span,
+      );
+
+      if (errors != null) {
+        collector.addErrors(errors);
+      }
+    }
+  } else if (documentContents.containsKey(node.key)) {
+    var errors = node.keyRestriction?.call(
+      context.parentNodeName,
+      node.key,
+      documentContents.key(node.key)?.span,
     );
+
+    if (errors != null) {
+      collector.addErrors(errors);
+    }
   }
 }
 
 void _collectValueRestrictionErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector,
 ) {
-  var content = documentContents[node.key];
-  var span = documentContents.nodes[node.key]?.span;
-
   if (documentContents.containsKey(node.key)) {
-    node.valueRestriction?.call(content, span, collector);
+    var content = documentContents[node.key];
+    var span = documentContents.nodes[node.key]?.span;
+
+    var errors =
+        node.valueRestriction?.call(context.parentNodeName, content, span);
+
+    if (errors != null) {
+      collector.addErrors(errors);
+    }
   }
 }
 
 void _collectNodesWithNestedNodesErrors(
+  NodeContext context,
   ValidateNode node,
   YamlMap documentContents,
   CodeAnalysisCollector collector, {
@@ -216,37 +275,23 @@ void _collectNodesWithNestedNodesErrors(
     String documentType,
     Set<ValidateNode> documentStructure,
     YamlMap documentContents,
-    CodeAnalysisCollector collector,
-  )? validateNestedNodes,
+    CodeAnalysisCollector collector, {
+    NodeContext? context,
+  })? validateNestedNodes,
 }) {
   if (node.nested.isEmpty) return;
 
   var documentNodes = _extractDocumentNodesToCheck(documentContents, node);
 
   for (var document in documentNodes) {
-    var contentNode = document.value;
-    var content = contentNode?.value;
-
-    if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
-      content = convertStringifiedNestedNodesToYamlMap(
-        content,
-        contentNode,
-        node,
-        onDuplicateKey: (key, span) {
-          collector.addError(SourceSpanException(
-            'The field option "$key" is defined more than once.',
-            span,
-          ));
-        },
-      );
-    }
+    var content = _extractNodeValue(document.value, node, collector);
 
     if (content is! YamlMap) {
       var requiredKeys =
           node.nested.where((e) => e.isRequired).map((e) => e.key);
 
       if (requiredKeys.isNotEmpty) {
-        collector.addError(SourceSpanException(
+        collector.addError(SourceSpanSeverityException(
           'The "${document.key}" property is missing required keys $requiredKeys.',
           documentContents.span,
         ));
@@ -255,13 +300,49 @@ void _collectNodesWithNestedNodesErrors(
       continue;
     }
 
+    var nodeKey = document.key.toString();
+
+    var nodeContext = context.shouldPropagateContext
+        ? context
+        : NodeContext(nodeKey, node.isContextualParentNode);
+
     validateNestedNodes?.call(
-      document.key.toString(),
+      nodeKey,
       node.nested,
       content,
       collector,
+      context: nodeContext,
     );
   }
+}
+
+dynamic _extractNodeValue(
+  YamlNode? contentNode,
+  ValidateNode node,
+  CodeAnalysisCollector collector,
+) {
+  var content = contentNode?.value;
+
+  if (contentNode != null && _isStringifiedNode(contentNode, node, content)) {
+    String? firstKey;
+
+    if (node.allowStringifiedNestedValue.hasImplicitFirstKey) {
+      firstKey = node.nested.first.key;
+    }
+
+    content = convertStringifiedNestedNodesToYamlMap(
+      content,
+      contentNode.span,
+      firstKey: firstKey,
+      onDuplicateKey: (key, span) {
+        collector.addError(SourceSpanSeverityException(
+          'The field option "$key" is defined more than once.',
+          span,
+        ));
+      },
+    );
+  }
+  return content;
 }
 
 String _formatNodeKeys(Iterable<MapEntry<dynamic, YamlNode>> nodes) {
@@ -305,7 +386,7 @@ Iterable<MapEntry<dynamic, YamlNode?>> _extractDocumentNodesToCheck(
 }
 
 bool _isStringifiedNode(YamlNode? contentNode, ValidateNode node, content) {
-  if (!node.allowStringifiedNestedValue) return false;
+  if (!node.allowStringifiedNestedValue.isAllowed) return false;
 
   return (content is String || content == null);
 }
