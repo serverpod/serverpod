@@ -593,3 +593,36 @@ class Restrictions {
     return hasTable;
   }
 }
+
+class EnumValue<T extends Enum> {
+  List<T> enums;
+
+  EnumValue({
+    required this.enums,
+  });
+
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic enumValue,
+    SourceSpan? span,
+  ) {
+    var options = enums.map((v) => v.name);
+
+    var errors = <SourceSpanSeverityException>[
+      SourceSpanSeverityException(
+        '"$enumValue" is not a valid property. Valid properties are $options.',
+        span,
+      )
+    ];
+
+    if (enumValue is! String) return errors;
+
+    var isEnumValue = enums.any(
+      (e) => e.name.toLowerCase() == enumValue.toLowerCase(),
+    );
+
+    if (!isEnumValue) return errors;
+
+    return [];
+  }
+}

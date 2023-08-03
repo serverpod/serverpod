@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
@@ -73,12 +74,26 @@ class ClassYamlDefinition {
                 },
               ),
               ValidateNode(
+                Keyword.scope,
+                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
+                valueRestriction: EnumValue(
+                  enums: EntityFieldScopeDefinition.values,
+                ).validate,
+              ),
+              ValidateNode(
+                Keyword.persist,
+              ),
+              ValidateNode(
                 Keyword.database,
-                mutuallyExclusiveKeys: {Keyword.api},
+                mutuallyExclusiveKeys: {Keyword.api, Keyword.scope},
               ),
               ValidateNode(
                 Keyword.api,
-                mutuallyExclusiveKeys: {Keyword.database, Keyword.parent},
+                mutuallyExclusiveKeys: {
+                  Keyword.database,
+                  Keyword.scope,
+                  Keyword.parent
+                },
               ),
             },
           ),

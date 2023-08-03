@@ -56,54 +56,53 @@ fields:
       );
     });
 
+    var parentId = classDefinition.findField('parentId');
     test('then the class has a scalar field for the id.', () {
-      var parentIdField = classDefinition.findField('parentId');
-
       expect(
-        parentIdField,
+        parentId,
         isNotNull,
         reason: 'Expected to find a field named parentId.',
       );
     });
 
-    test('then the scalar field has the global scope.', () {
-      var parent = classDefinition.findField('parentId');
-      expect(parent?.scope, EntityFieldScopeDefinition.all);
-    });
+    group('', () {
+      test('then the scalar field has the global scope.', () {
+        expect(parentId?.scope, EntityFieldScopeDefinition.all);
+      });
 
-    test('then the scalar field should be persisted.', () {
-      var parent = classDefinition.findField('parentId');
-      expect(parent?.shouldPersist, isTrue);
-    });
+      test('then the scalar field should be persisted.', () {
+        expect(parentId?.shouldPersist, isTrue);
+      });
 
-    test('then the scalar field type defaults to none nullable.', () {
-      var parent = classDefinition.findField('parentId');
-      expect(
-        parent?.type.nullable,
-        isFalse,
-        reason: 'Expected to be non-nullable.',
-      );
-    });
+      test('then the scalar field type defaults to none nullable.', () {
+        expect(
+          parentId?.type.nullable,
+          isFalse,
+          reason: 'Expected to be non-nullable.',
+        );
+      });
 
-    test(
-        'then the scalar field has the parent table set from the object reference.',
-        () {
-      var parent = classDefinition.findField('parentId');
-      var relation = parent?.relation;
+      test(
+          'then the scalar field has the parent table set from the object reference.',
+          () {
+        var parent = classDefinition.findField('parentId');
+        var relation = parent?.relation;
 
-      expect(relation.runtimeType, ForeignRelationDefinition);
-      expect((relation as ForeignRelationDefinition).parentTable, 'example');
-    });
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect((relation as ForeignRelationDefinition).parentTable, 'example');
+      });
 
-    test(
-        'then the scalar field has the reference field set to the relation id field.',
-        () {
-      var parent = classDefinition.findField('parentId');
-      var relation = parent?.relation;
+      test(
+          'then the scalar field has the reference field set to the relation id field.',
+          () {
+        var parent = classDefinition.findField('parentId');
+        var relation = parent?.relation;
 
-      expect(relation.runtimeType, ForeignRelationDefinition);
-      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
-    });
+        expect(relation.runtimeType, ForeignRelationDefinition);
+        expect(
+            (relation as ForeignRelationDefinition).referenceFieldName, 'id');
+      });
+    }, skip: parentId == null);
   });
 
   group(

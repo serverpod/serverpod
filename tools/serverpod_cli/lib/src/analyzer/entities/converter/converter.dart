@@ -8,6 +8,17 @@ List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
+T convertToEnum<T extends Enum>({
+  required String value,
+  required T enumDefault,
+  required List<T> enumValues,
+}) {
+  return enumValues.firstWhere(
+    (v) => v.name.toLowerCase() == value.toLowerCase(),
+    orElse: () => enumDefault,
+  );
+}
+
 typedef DeepNestedNodeHandler = YamlMap Function(
     String? content, SourceSpan span);
 

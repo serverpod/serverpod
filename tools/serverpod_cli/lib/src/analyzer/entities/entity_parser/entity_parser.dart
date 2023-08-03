@@ -230,7 +230,23 @@ class EntityParser {
 
   static bool _parseShouldPersist(YamlMap documentContents) {
     var isApiDefined = documentContents.containsKey(Keyword.api);
-    return !isApiDefined;
+    if (isApiDefined) return false;
+
+    var persistValue = documentContents.nodes[Keyword.persist]?.value;
+
+    var persist = _parseBool(persistValue);
+    if (persist != null) return persist;
+
+    return true;
+  }
+
+  static bool? _parseBool(dynamic value) {
+    if (value is String) {
+      if (value.toLowerCase() == 'true') return true;
+      if (value.toLowerCase() == 'false') return false;
+    }
+
+    return null;
   }
 
   static bool _isOptionalRelation(YamlMap documentContents) {
@@ -250,7 +266,16 @@ class EntityParser {
   ) {
     var database = documentContents.containsKey(Keyword.database);
     if (database) return EntityFieldScopeDefinition.serverOnly;
-    return EntityFieldScopeDefinition.all;
+
+    var scope = documentContents.nodes[Keyword.scope]?.value;
+
+    if (scope is! String) return EntityFieldScopeDefinition.all;
+
+    return convertToEnum(
+      value: scope,
+      enumDefault: EntityFieldScopeDefinition.all,
+      enumValues: EntityFieldScopeDefinition.values,
+    );
   }
 
   static String? _parseParentTable(YamlMap documentContents) {
