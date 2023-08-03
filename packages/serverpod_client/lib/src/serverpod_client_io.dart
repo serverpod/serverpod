@@ -16,6 +16,7 @@ import 'serverpod_client_shared_private.dart';
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
   bool _initialized = false;
+  late Duration _timeout;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -24,12 +25,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
     dynamic context,
     super.authenticationKeyManager,
     super.logFailedCalls,
+    Duration? timeout,
   }) {
     assert(context == null || context is SecurityContext);
+    _timeout = timeout ?? const Duration(seconds: 20);
 
     // Setup client
     _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = const Duration(seconds: 20);
+    _httpClient.connectionTimeout = _timeout;
     // TODO: Generate working certificates
     _httpClient.badCertificateCallback =
         ((X509Certificate cert, String host, int port) {
@@ -69,7 +72,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       await request.flush();
 
-      var response = await request.close(); // done instead of close() ?
+      var response = await request
+          .close() // done instead of close() ?
+          .timeout(_timeout);
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
