@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 
 class _ProtocolState {
   ProtocolSource source;
+  List<SourceSpanException> errors = [];
   SerializableEntityDefinition? entity;
 
   _ProtocolState({
@@ -38,6 +39,13 @@ class StatefulAnalyzer {
     _validateAllProtocols();
     return _entities;
   }
+
+  /// Returns all valid entities in the state.
+  List<SerializableEntityDefinition> get validEntities => _protocolStates.values
+      .where((state) => state.errors.isEmpty)
+      .map((state) => state.entity)
+      .whereType<SerializableEntityDefinition>()
+      .toList();
 
   /// Runs the validation on a single protocol. The protocol must exist in the
   /// state, if not this returns the last validated state.
@@ -111,6 +119,12 @@ class StatefulAnalyzer {
         state.entity,
         _entities,
       );
+
+      if (collector.hasSeverErrors) {
+        state.errors = collector.errors;
+      } else {
+        state.errors = [];
+      }
 
       _onErrorsChangedNotifier?.call(
         Uri.file(state.source.yamlSourceUri.path),
