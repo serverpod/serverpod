@@ -15,8 +15,8 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter native apps).
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
+  final Duration timeout;
   bool _initialized = false;
-  late Duration _timeout;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -26,13 +26,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.authenticationKeyManager,
     super.logFailedCalls,
     Duration? timeout,
-  }) {
+  }) : timeout = timeout ?? const Duration(seconds: 20) {
     assert(context == null || context is SecurityContext);
-    _timeout = timeout ?? const Duration(seconds: 20);
 
     // Setup client
     _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = _timeout;
+    _httpClient.connectionTimeout = this.timeout;
     // TODO: Generate working certificates
     _httpClient.badCertificateCallback =
         ((X509Certificate cert, String host, int port) {
@@ -74,7 +73,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       var response = await request
           .close() // done instead of close() ?
-          .timeout(_timeout);
+          .timeout(timeout);
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
