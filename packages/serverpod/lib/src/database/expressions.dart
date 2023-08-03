@@ -186,26 +186,15 @@ class _ColumnNum<T extends num> extends _ColumnScalar<T> {
 }
 
 /// A [Column] holding an [int].
-class ColumnInt extends _ColumnScalar<int> {
+class ColumnInt extends _ColumnNum<int> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnInt(String name) : super(name);
+}
 
-  /// Creates an [Expression] checking if the value in the column is between
-  /// a minimum and a maximum value (inclusive of the endpoints of the range).
-  @override
-  Expression between(int min, int max) {
-    assert(min <= max);
-    return super.between(min, max);
-  }
-
-  /// Creates an [Expression] checking if the value in the column is not between
-  /// a minimum and a maximum value (i.e. is strictly less than the minimum
-  /// or strictly greater than the maximum).
-  @override
-  Expression notBetween(int min, int max) {
-    assert(min <= max);
-    return super.between(min, max);
-  }
+/// A [Column] holding an [double].
+class ColumnDouble extends _ColumnNum<double> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnDouble(String name) : super(name);
 }
 
 /// A [Column] holding an enum.
@@ -218,12 +207,6 @@ class ColumnEnum<E extends Enum> extends Column<E> {
   /// enums to String.
   @override
   String encodeValueForQuery(E value) => value.index.toString();
-}
-
-/// A [Column] holding an [double].
-class ColumnDouble extends _ColumnScalar<double> {
-  /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(String name) : super(name);
 }
 
 /// A [Column] holding an [String].
