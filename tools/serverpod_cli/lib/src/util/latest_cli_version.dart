@@ -1,27 +1,24 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
+import 'package:serverpod_cli/src/util/pub_api_client.dart';
 
 abstract class LatestCliVersionConstants {
-  static const pubDevUri = 'https://pub.dev/api/packages/serverpod_cli';
+  static const serverpodPackageName = 'serverpod_cli';
   static const badConnectionRetryTimeout = Duration(hours: 1);
   static const localStorageValidityTime = Duration(days: 1);
-  static const pubDevConnectionTimeout = Duration(seconds: 2);
 }
 
 /// Attempts to fetch the latest cli version from either local storage of pub.dev
 Future<Version?> tryFetchLatestValidCliVersion({
   localStorageService = const CliVersionStorageService(),
-  pubDevService = const PubDevService(),
+  PubDevService? pubDevService,
 }) async {
   var latestCliVersion = await localStorageService.fetchLatestCliVersion();
 
   if (latestCliVersion != null) return latestCliVersion;
 
-  latestCliVersion = await pubDevService.tryFetchAndStoreLatestVersion();
+  var service = pubDevService ?? PubDevService();
+  latestCliVersion = await service.tryFetchAndStoreLatestVersion();
 
   return latestCliVersion;
 }
@@ -44,18 +41,19 @@ class CliVersionStorageService {
 }
 
 class PubDevService {
-  final String? optionalLocalStoragePath;
-  final http.Client? client;
-  final Duration timeout;
+  final String? _optionalLocalStoragePath;
+  final PubApiClient _client;
 
-  const PubDevService({
-    this.optionalLocalStoragePath,
-    this.client,
-    this.timeout = LatestCliVersionConstants.pubDevConnectionTimeout,
-  });
+  PubDevService({
+    String? optionalLocalStoragePath,
+    PubApiClient? pubDevClient,
+  })  : _optionalLocalStoragePath = optionalLocalStoragePath,
+        _client = pubDevClient ?? PubApiClient();
 
   Future<Version?> tryFetchAndStoreLatestVersion() async {
-    var pubDevLatestVersion = await _tryFetchLatestCliVersion();
+    var pubDevLatestVersion = await _client.tryFetchLatestStableVersion(
+      LatestCliVersionConstants.serverpodPackageName,
+    );
 
     CliVersionData versionArtefact;
     Version? returnVersion;
@@ -73,24 +71,7 @@ class PubDevService {
     }
 
     await resourceManager.storeLatestCliVersion(versionArtefact,
-        localStoragePath: optionalLocalStoragePath);
+        localStoragePath: _optionalLocalStoragePath);
     return returnVersion;
-  }
-
-  Future<Version?> _tryFetchLatestCliVersion() async {
-    try {
-      var uri = Uri.parse(
-        LatestCliVersionConstants.pubDevUri,
-      );
-      var httpClient = client ?? http.Client();
-
-      var response = await httpClient.get(uri).timeout(timeout);
-      if (response.statusCode != HttpStatus.ok) return null;
-
-      Map<String, dynamic> map = jsonDecode(response.body);
-      return Version.parse(map['latest']['version']);
-    } catch (e) {
-      return null;
-    }
   }
 }

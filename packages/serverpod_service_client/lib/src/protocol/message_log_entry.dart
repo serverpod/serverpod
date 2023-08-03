@@ -62,7 +62,7 @@ class MessageLogEntry extends _i1.SerializableEntity {
   /// The id of the server that handled the message.
   String serverId;
 
-  /// The id of the message this entry is associcated with.
+  /// The id of the message this entry is associated with.
   int messageId;
 
   /// The entpoint this message is associated with.

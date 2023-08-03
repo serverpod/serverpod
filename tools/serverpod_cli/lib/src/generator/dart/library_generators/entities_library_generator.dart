@@ -1,7 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import '../shared.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -785,7 +785,6 @@ class SerializableEntityLibraryGenerator {
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
   Library generateTemporaryProtocol({
-    bool verbose = false,
     required List<SerializableEntityDefinition> entities,
   }) {
     var library = LibraryBuilder();

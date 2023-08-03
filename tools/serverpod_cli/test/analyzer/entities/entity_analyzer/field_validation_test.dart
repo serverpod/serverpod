@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -194,7 +195,7 @@ fields:
         '''
 class: Example
 fields:
-  InvalidFieldName: String
+  Invalid-Field-Name: String
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         ['lib', 'src', 'protocol'],
@@ -207,10 +208,99 @@ fields:
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.first;
+      var error = collector.errors.first as SourceSpanSeverityException;
 
       expect(error.message,
-          'Keys of "fields" Map must be valid Dart variable names (e.g. camelCaseString).');
+          'Field names must be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.error);
+    });
+
+    test(
+        'Given a class with a field key that is in UPPERCASE format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  UPPERCASE: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
+    });
+
+    test(
+        'Given a class with a field key that is in PascalCase format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  PascalCase: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
+    });
+
+    test(
+        'Given a class with a field key that is in snake_case format, collect an info that the keys needs to follow the dart convention.',
+        () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  snake_case: String
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        ['lib', 'src', 'protocol'],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(protocol.yaml,
+          protocol.yamlSourceUri.path, collector, definition, [definition!]);
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(error.message,
+          'Field names should be valid Dart variable names (e.g. camelCaseString).');
+
+      expect(error.severity, SourceSpanSeverity.info);
     });
 
     test(
@@ -917,6 +1007,45 @@ fields:
       expect(collector.errors.first.message,
           'The field has an invalid datatype "invalid-type".');
     });
+
+    test(
+        'Given a class with a field with a nested invalid dart syntax for the type, then collect an error that the type is invalid.',
+        () {
+      var collector = CodeGenerationCollector();
+
+      var protocol = ProtocolSource(
+        '''
+class: Example
+fields:
+  parent: Map<int, invalid-type>
+''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
+        protocol,
+      );
+
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error',
+      );
+
+      expect(
+        collector.errors.first.message,
+        'The field has an invalid datatype "Map<int, invalid-type>".',
+      );
+    });
   });
 
   group('Parent table tests', () {
@@ -971,17 +1100,22 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, IdRelationDefinition);
+        expect((relation as IdRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1001,17 +1135,22 @@ fields:
         );
 
         var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
+                as ClassDefinition;
+        var entities = [definition];
+        SerializableEntityAnalyzer.resolveEntityDependencies(entities);
         SerializableEntityAnalyzer.validateYamlDefinition(
           protocol.yaml,
           protocol.yamlSourceUri.path,
           collector,
           definition,
-          [definition!],
+          [definition],
         );
 
-        expect(
-            (definition as ClassDefinition).fields.last.parentTable, 'example');
+        var relation = definition.fields.last.relation;
+
+        expect(relation.runtimeType, IdRelationDefinition);
+        expect((relation as IdRelationDefinition).parentTable, 'example');
       },
     );
 
@@ -1060,7 +1199,7 @@ fields:
         class: Example
         table: example
         fields:
-          name: String, parent=unknown_table
+          name: int, parent=unknown_table
         ''',
           Uri(path: 'lib/src/protocol/example.yaml'),
           ['lib', 'src', 'protocol'],

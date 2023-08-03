@@ -14,7 +14,7 @@ class SourceFileWatcher {
     required this.config,
   });
 
-  Future<void> watch(bool verbose) async {
+  Future<void> watch() async {
     var watcherClasses = DirectoryWatcher(p.joinAll(config.libSourcePathParts));
     await for (WatchEvent event in watcherClasses.events) {
       if (event.path

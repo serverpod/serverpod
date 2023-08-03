@@ -10,6 +10,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/insights.dart' as _i2;
 import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
 import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
+import 'package:serverpod/src/generated/database/filter/filter.dart' as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -222,6 +223,11 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<int>(),
               nullable: false,
             ),
+            'filter': _i1.ParameterDescription(
+              name: 'filter',
+              type: _i1.getType<_i5.Filter?>(),
+              nullable: true,
+            ),
           },
           call: (
             _i1.Session session,
@@ -233,6 +239,26 @@ class Endpoints extends _i1.EndpointDispatch {
             table: params['table'],
             startingId: params['startingId'],
             limit: params['limit'],
+            filter: params['filter'],
+          ),
+        ),
+        'getDatabaseRowCount': _i1.MethodConnector(
+          name: 'getDatabaseRowCount',
+          params: {
+            'table': _i1.ParameterDescription(
+              name: 'table',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .getDatabaseRowCount(
+            session,
+            table: params['table'],
           ),
         ),
         'executeSql': _i1.MethodConnector(

@@ -13,7 +13,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
 	const serverOptions: ServerOptions = {
 		command: 'serverpod',
-		args: ['language-server', '--no-development-print'],
+		args: ['language-server', '--quiet'],
 		options: {},
 		transport: TransportKind.stdio
 	};

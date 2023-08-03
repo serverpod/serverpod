@@ -20,10 +20,26 @@ const _defaultPorts = <String, int>{
   'Redis server': 8091,
 };
 
-Future<void> performCreate(
+enum ServerpodTemplateType {
+  server('server'),
+  module('module');
+
+  final String name;
+  const ServerpodTemplateType(this.name);
+
+  static ServerpodTemplateType? tryParse(String text) {
+    for (var templateType in ServerpodTemplateType.values) {
+      if (templateType.name == text) {
+        return templateType;
+      }
+    }
+    return null;
+  }
+}
+
+Future<bool> performCreate(
   String name,
-  bool verbose,
-  String template,
+  ServerpodTemplateType template,
   bool force,
 ) async {
   // check if project name is valid
@@ -32,7 +48,7 @@ Future<void> performCreate(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return;
+    return false;
   }
   // Check we are set to create a new project
   var usedPorts = <String, int>{};
@@ -50,7 +66,9 @@ Future<void> performCreate(
   var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
       await CommandLineTools.isDockerRunning();
 
-  if ((!portsAvailable || !dockerConfigured) && template == 'server') {
+  if ((!portsAvailable || !dockerConfigured) &&
+      template == ServerpodTemplateType.server &&
+      !force) {
     var strIssue =
         'There are some issues with your setup that will prevent your Serverpod'
         ' project from running out of the box and without further '
@@ -70,22 +88,29 @@ Future<void> performCreate(
     log.error(strIssue);
 
     if (!portsAvailable) {
-      log.error(strIssuePorts, style: const TextLogStyle(newParagraph: true));
-      log.error('Ports in use:', style: const TextLogStyle(newParagraph: true));
+      log.error(
+        strIssuePorts,
+        newParagraph: true,
+      );
+      log.error(
+        'Ports in use:',
+        newParagraph: true,
+      );
       for (var serverDescription in usedPorts.keys) {
         var port = usedPorts[serverDescription]!;
         log.error(
           '$port: $serverDescription',
-          style: const TextLogStyle(type: AbstractStyleType.bullet),
+          type: TextLogType.bullet,
         );
       }
     }
     if (!dockerConfigured) {
-      log.error(strIssueDocker, style: const TextLogStyle(newParagraph: true));
+      log.error(
+        strIssueDocker,
+        newParagraph: true,
+      );
     }
-    if (!force) {
-      return;
-    }
+    return false;
   }
 
   var dbPassword = generateRandomString();
@@ -95,379 +120,436 @@ Future<void> performCreate(
   var awsName = name.replaceAll('_', '-');
   var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
-  var projectDir = Directory(p.join(Directory.current.path, name));
-  if (projectDir.existsSync()) {
+  var serverpodDirs = ServerpodDirectories(
+    projectDir: Directory(p.join(Directory.current.path, name)),
+    name: name,
+  );
+  if (serverpodDirs.projectDir.existsSync()) {
     log.error('Project $name already exists.');
-    return;
+    return false;
   }
 
-  log.info(
-    'Creating project $name.',
-    style: const TextLogStyle(newParagraph: true),
+  if (template == ServerpodTemplateType.server) {
+    log.info(
+      'Creating Serverpod project "$name".',
+      type: TextLogType.init,
+    );
+  } else if (template == ServerpodTemplateType.module) {
+    log.info(
+      'Creating Serverpod module "$name".',
+      type: TextLogType.init,
+    );
+  }
+
+  bool success = await log.progress(
+    'Creating project directories.',
+    () async {
+      _createProjectDirectories(template, serverpodDirs);
+      return true;
+    },
+    newParagraph: true,
   );
 
-  if (verbose) {
-    log.debug(
-      'Creating directory: ${projectDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
-      ),
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+      'Writing project files.',
+      () async {
+        _copyServerTemplates(
+          serverpodDirs,
+          name: name,
+          awsName: awsName,
+          randomAwsId: randomAwsId,
+          dbPassword: dbPassword,
+          dbProductionPassword: dbProductionPassword,
+          dbStagingPassword: dbStagingPassword,
+        );
+        return true;
+      },
     );
-  }
-  projectDir.createSync();
 
-  var serverDir = Directory(p.join(projectDir.path, '${name}_server'));
-  if (verbose) {
-    log.debug(
-      'Creating directory: ${serverDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
-      ),
-    );
-  }
-  serverDir.createSync();
+    success &= await log.progress('Getting server package dependencies.', () {
+      return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
+    });
+    success &= await log.progress('Getting client package dependencies.', () {
+      return CommandLineTools.dartPubGet(serverpodDirs.clientDir);
+    });
+    success &=
+        await log.progress('Getting Flutter app package dependencies.', () {
+      return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
+    });
 
-  var clientDir = Directory(p.join(projectDir.path, '${name}_client'));
-  if (verbose) {
-    log.debug(
-      'Creating directory: ${clientDir.path}',
-      style: const TextLogStyle(
-        type: AbstractStyleType.bullet,
-      ),
-    );
-  }
-
-  if (template == 'server') {
-    var flutterDir = Directory(p.join(projectDir.path, '${name}_flutter'));
-    if (verbose) {
-      log.debug(
-        'Creating directory: ${flutterDir.path}',
-        style: const TextLogStyle(
-          type: AbstractStyleType.bullet,
-        ),
-      );
+    if (dockerConfigured) {
+      if (Platform.isWindows) {
+        success &= await CommandLineTools.cleanupForWindows(
+          serverpodDirs.projectDir,
+          name,
+        );
+      } else {
+        success &= await log.progress(
+            'Downloading and configuring Docker image.',
+            () =>
+                CommandLineTools.createTables(serverpodDirs.projectDir, name));
+      }
     }
-    flutterDir.createSync();
-
-    var githubDir = Directory(p.join(projectDir.path, '.github'));
-    if (verbose) {
-      log.debug(
-        'Creating directory: ${githubDir.path}',
-        style: const TextLogStyle(
-          type: AbstractStyleType.bullet,
-        ),
-      );
-    }
-    githubDir.createSync();
-
-    // Copy server files
-    var copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'projectname_server')),
-      dstDir: serverDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'awsname',
-          replacement: awsName,
-        ),
-        Replacement(
-          slotName: 'randomawsid',
-          replacement: randomAwsId,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_DEVELOPMENT',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_STAGING',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'SERVICE_SECRET_PRODUCTION',
-          replacement: generateRandomString(),
-        ),
-        Replacement(
-          slotName: 'DB_PASSWORD',
-          replacement: dbPassword,
-        ),
-        Replacement(
-          slotName: 'DB_PRODUCTION_PASSWORD',
-          replacement: dbProductionPassword,
-        ),
-        Replacement(
-          slotName: 'DB_STAGING_PASSWORD',
-          replacement: dbStagingPassword,
-        ),
-        Replacement(
-          slotName: 'REDIS_PASSWORD',
-          replacement: generateRandomString(),
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-        Replacement(
-          slotName: 'gcloudignore',
-          replacement: '.gcloudignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-
-    // Copy client files
-    copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'projectname_client')),
-      dstDir: clientDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-
-    // Copy Flutter files
-    copier = Copier(
-      srcDir: Directory(p.join(
-          resourceManager.templateDirectory.path, 'projectname_flutter')),
-      dstDir: flutterDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: [
-        'path: ../../../packages/serverpod_flutter',
-      ],
-      ignoreFileNames: [
-        'pubspec.lock',
-        'ios',
-        'android',
-        'web',
-        'macos',
-        'build',
-      ],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-
-    copier = Copier(
-      srcDir:
-          Directory(p.join(resourceManager.templateDirectory.path, 'github')),
-      dstDir: githubDir,
-      replacements: [
-        Replacement(
-          slotName: 'projectname',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'awsname',
-          replacement: awsName,
-        ),
-        Replacement(
-          slotName: 'randomawsid',
-          replacement: randomAwsId,
-        ),
-      ],
-      fileNameReplacements: [],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-
-    CommandLineTools.dartPubGet(serverDir);
-    CommandLineTools.dartPubGet(clientDir);
-    CommandLineTools.flutterCreate(flutterDir);
-  } else if (template == 'module') {
-    // Copy server files
-    var copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'modulename_server')),
-      dstDir: serverDir,
-      replacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-
-    // Copy client files
-    copier = Copier(
-      srcDir: Directory(
-          p.join(resourceManager.templateDirectory.path, 'modulename_client')),
-      dstDir: clientDir,
-      replacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: '#--CONDITIONAL_COMMENT--#',
-          replacement: '',
-        ),
-        Replacement(
-          slotName: 'VERSION',
-          replacement: templateVersion,
-        ),
-      ],
-      fileNameReplacements: [
-        Replacement(
-          slotName: 'modulename',
-          replacement: name,
-        ),
-        Replacement(
-          slotName: 'gitignore',
-          replacement: '.gitignore',
-        ),
-      ],
-      removePrefixes: ['path'],
-      ignoreFileNames: ['pubspec.lock'],
-      verbose: verbose,
-    );
-    copier.copyFiles();
-  } else {
-    log.warning(
-        'Unknown template: $template (valid options are "server" or "module")');
+  } else if (template == ServerpodTemplateType.module) {
+    success &= await log.progress(
+        'Writing project files.',
+        () => Future(() {
+              _copyModuleTemplates(serverpodDirs, name: name);
+              return true;
+            }));
   }
 
-  if (dockerConfigured && template != 'module') {
-    if (Platform.isWindows) {
-      await CommandLineTools.cleanupForWindows(projectDir, name);
-      _logSuccessMessage();
-      log.info(
-        'cd .\\${p.join(name, '${name}_server')}\\',
-        style: const TextLogStyle(
-            type: AbstractStyleType.command, newParagraph: true),
-      );
-      log.info(
-        '.\\setup-tables.cmd',
-        style: const TextLogStyle(type: AbstractStyleType.command),
-      );
-      log.info(
-        'docker compose up --build --detach',
-        style: const TextLogStyle(type: AbstractStyleType.command),
-      );
-      log.info(
-        'dart .\\bin\\main.dart',
-        style: const TextLogStyle(type: AbstractStyleType.command),
-      );
-    } else {
-      // Create tables
-      await CommandLineTools.createTables(projectDir, name);
-      _logSuccessMessage();
-      log.info(
-        'cd ${p.join(name, '${name}_server')}',
-        style: const TextLogStyle(
-            type: AbstractStyleType.command, newParagraph: true),
-      );
-      log.info(
-        'docker compose up --build --detach',
-        style: const TextLogStyle(type: AbstractStyleType.command),
-      );
-      log.info(
-        'dart dart bin/main.dart',
-        style: const TextLogStyle(type: AbstractStyleType.command),
-      );
+  if (success || force) {
+    log.info(
+      'Serverpod created.',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
+
+    if (dockerConfigured && template == ServerpodTemplateType.server) {
+      _logStartInstructions(name);
     }
   }
+
+  return success;
 }
 
-void _logSuccessMessage() {
-  log.info('SERVERPOD CREATED 🥳',
-      style: const TextLogStyle(
-          newParagraph: true, type: AbstractStyleType.success));
+void _logStartInstructions(name) {
   log.info(
-    'All setup. You are ready to rock!',
-    style:
-        const TextLogStyle(newParagraph: true, type: AbstractStyleType.success),
+    'All setup. You are ready to rock! 🥳',
+    type: TextLogType.header,
   );
   log.info(
     'Start your Serverpod by running:',
-    style: const TextLogStyle(newParagraph: true),
+    type: TextLogType.header,
   );
+
+  if (Platform.isWindows) {
+    log.info(
+      'cd .\\${p.join(name, '${name}_server')}\\',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      '.\\setup-tables.cmd',
+      type: TextLogType.command,
+    );
+    log.info(
+      'docker compose up --build --detach',
+      type: TextLogType.command,
+    );
+    log.info(
+      'dart .\\bin\\main.dart',
+      type: TextLogType.command,
+    );
+  } else {
+    log.info(
+      'cd ${p.join(name, '${name}_server')}',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      'docker compose up --build --detach',
+      type: TextLogType.command,
+    );
+    log.info(
+      'dart dart bin/main.dart',
+      type: TextLogType.command,
+    );
+  }
+
+  log.info(' ');
+}
+
+class ServerpodDirectories {
+  final Directory projectDir;
+  final Directory serverDir;
+  final Directory clientDir;
+  final Directory flutterDir;
+  final Directory githubDir;
+
+  ServerpodDirectories({required this.projectDir, required String name})
+      : serverDir = Directory(p.join(projectDir.path, '${name}_server')),
+        clientDir = Directory(p.join(projectDir.path, '${name}_client')),
+        flutterDir = Directory(p.join(projectDir.path, '${name}_flutter')),
+        githubDir = Directory(p.join(projectDir.path, '.github'));
+}
+
+void _createProjectDirectories(
+  ServerpodTemplateType template,
+  ServerpodDirectories serverpodDirs,
+) {
+  _createDirectory(serverpodDirs.projectDir);
+  _createDirectory(serverpodDirs.serverDir);
+  _createDirectory(serverpodDirs.clientDir);
+
+  if (template == ServerpodTemplateType.server) {
+    _createDirectory(serverpodDirs.flutterDir);
+    _createDirectory(serverpodDirs.githubDir);
+  }
+}
+
+void _createDirectory(Directory dir) {
+  log.debug(
+    'Creating directory: ${dir.path}',
+    type: TextLogType.bullet,
+  );
+  dir.createSync();
+}
+
+void _copyServerTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  required String awsName,
+  required String randomAwsId,
+  required String dbPassword,
+  required String dbProductionPassword,
+  required String dbStagingPassword,
+}) {
+  log.debug('Copying server files');
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'awsname',
+        replacement: awsName,
+      ),
+      Replacement(
+        slotName: 'randomawsid',
+        replacement: randomAwsId,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'SERVICE_SECRET_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'DB_PASSWORD',
+        replacement: dbPassword,
+      ),
+      Replacement(
+        slotName: 'DB_PRODUCTION_PASSWORD',
+        replacement: dbProductionPassword,
+      ),
+      Replacement(
+        slotName: 'DB_STAGING_PASSWORD',
+        replacement: dbStagingPassword,
+      ),
+      Replacement(
+        slotName: 'REDIS_PASSWORD',
+        replacement: generateRandomString(),
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+      Replacement(
+        slotName: 'gcloudignore',
+        replacement: '.gcloudignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying client files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_client')),
+    dstDir: serverpodDirs.clientDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying Flutter files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_flutter')),
+    dstDir: serverpodDirs.flutterDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: [
+      'path: ../../../packages/serverpod_flutter',
+    ],
+    ignoreFileNames: [
+      'pubspec.lock',
+      'ios',
+      'android',
+      'web',
+      'macos',
+      'build',
+    ],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying .github files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'github')),
+    dstDir: serverpodDirs.githubDir,
+    replacements: [
+      Replacement(
+        slotName: 'projectname',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'awsname',
+        replacement: awsName,
+      ),
+      Replacement(
+        slotName: 'randomawsid',
+        replacement: randomAwsId,
+      ),
+    ],
+    fileNameReplacements: [],
+  );
+  copier.copyFiles();
+}
+
+void _copyModuleTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+}) {
+  log.debug('Copying server files', newParagraph: true);
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'modulename_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
+
+  log.debug('Copying client files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'modulename_client')),
+    dstDir: serverpodDirs.clientDir,
+    replacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: '#--CONDITIONAL_COMMENT--#',
+        replacement: '',
+      ),
+      Replacement(
+        slotName: 'VERSION',
+        replacement: templateVersion,
+      ),
+    ],
+    fileNameReplacements: [
+      Replacement(
+        slotName: 'modulename',
+        replacement: name,
+      ),
+      Replacement(
+        slotName: 'gitignore',
+        replacement: '.gitignore',
+      ),
+    ],
+    removePrefixes: ['path'],
+    ignoreFileNames: ['pubspec.lock'],
+  );
+  copier.copyFiles();
 }
