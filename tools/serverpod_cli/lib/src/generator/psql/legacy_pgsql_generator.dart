@@ -61,7 +61,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
         for (var field in tableInfo.fields) {
           // Check if a parent is not above the current table and not self-referencing
           var relation = field.relation;
-          if (relation is IdRelationDefinition &&
+          if (relation is ForeignRelationDefinition &&
               relation.parentTable != tableInfo.tableName &&
               !visitedTableNames.contains(relation.parentTable)) {
             var tableToMove = tableInfo;
@@ -138,7 +138,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
     var fkIdx = 0;
     for (var field in classInfo.fields) {
       var relation = field.relation;
-      if (relation is IdRelationDefinition) {
+      if (relation is ForeignRelationDefinition) {
         out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
         out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
         out += '    FOREIGN KEY("${field.name}")\n';

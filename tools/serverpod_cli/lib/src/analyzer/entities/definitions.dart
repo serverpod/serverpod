@@ -90,15 +90,16 @@ class SerializableEntityFieldDefinition {
   final SerializableEntityFieldScope scope;
 
   /// If set the field is a relation to another table. The type of the relation
-  /// [IdRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
+  /// [ForeignRelationDefinition], [ObjectRelationDefinition] or [ListRelationDefinition]
   /// determines where and how the relation is stored.
   RelationDefinition? relation;
 
-  /// Returns true, if this field has a relation pointer, meaning that there is
-  /// another field in the database that references this field or that this
-  /// field is a reference to another field.
-  bool get hasRelationPointer =>
-      relation != null && relation is! IdRelationDefinition;
+  /// Returns true, if this field has a relation pointer to/from another field
+  /// with relation type [ForeignRelationDefinition]. This means that this field
+  /// relation does not propagate to the database, but instead is managed by
+  /// the other field.
+  bool get isSymbolicRelation =>
+      relation != null && relation is! ForeignRelationDefinition;
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
@@ -257,18 +258,18 @@ class ObjectRelationDefinition extends RelationDefinition {
   });
 }
 
-/// Internal representation of an unresolved [IdRelationDefinition].
-class UnresolvedIdRelationDefinition extends RelationDefinition {
+/// Internal representation of an unresolved [ForeignRelationDefinition].
+class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
 
-  UnresolvedIdRelationDefinition({
+  UnresolvedForeignRelationDefinition({
     required this.referenceFieldName,
   });
 }
 
 /// Used for relations for fields that stores the id of another object.
-class IdRelationDefinition extends RelationDefinition {
+class ForeignRelationDefinition extends RelationDefinition {
   /// If this column should have a foreign key,
   /// then [parentTable] contains the referenced table.
   /// For now, the foreign key only references the id column of the
@@ -278,7 +279,7 @@ class IdRelationDefinition extends RelationDefinition {
   /// References the column in the [parentTable] that this field should be joined on.
   String referenceFieldName;
 
-  IdRelationDefinition({
+  ForeignRelationDefinition({
     required this.parentTable,
     required this.referenceFieldName,
   });

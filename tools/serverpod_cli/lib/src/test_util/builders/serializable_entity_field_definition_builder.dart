@@ -45,7 +45,7 @@ class FieldDefinitionBuilder {
     String parentTable,
     String referenceFieldName,
   ) {
-    _relation = IdRelationDefinition(
+    _relation = ForeignRelationDefinition(
       parentTable: parentTable,
       referenceFieldName: referenceFieldName,
     );

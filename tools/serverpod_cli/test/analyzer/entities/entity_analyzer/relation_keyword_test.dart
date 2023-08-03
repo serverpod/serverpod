@@ -86,8 +86,8 @@ fields:
       var parent = classDefinition.findField('parentId');
       var relation = parent?.relation;
 
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).parentTable, 'example');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable, 'example');
     });
 
     test(
@@ -96,8 +96,8 @@ fields:
       var parent = classDefinition.findField('parentId');
       var relation = parent?.relation;
 
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
     });
   });
 
@@ -275,14 +275,14 @@ fields:
     });
     test('then the relation is set with the parent table.', () {
       var relation = classDefinition.fields.last.relation;
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).parentTable, 'example');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable, 'example');
     });
 
     test('then the relation is set with the reference to the id.', () {
       var relation = classDefinition.fields.last.relation;
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
     });
 
     test('then no scalar field is added', () {
@@ -682,16 +682,16 @@ fields:
         () {
       var relation = classDefinition.findField('parentId')?.relation;
 
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).parentTable, 'example_parent');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).parentTable, 'example_parent');
     });
 
     test('then a relation with the reference id is set on the scalar field.',
         () {
       var relation = classDefinition.findField('parentId')?.relation;
 
-      expect(relation.runtimeType, IdRelationDefinition);
-      expect((relation as IdRelationDefinition).referenceFieldName, 'id');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+      expect((relation as ForeignRelationDefinition).referenceFieldName, 'id');
     });
   });
 
