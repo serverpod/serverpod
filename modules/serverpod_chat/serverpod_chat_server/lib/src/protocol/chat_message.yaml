@@ -15,16 +15,16 @@ fields:
   sender: int
 
   ### Information about the sender.
-  senderInfo: module:auth:UserInfoPublic?, api
+  senderInfo: module:auth:UserInfoPublic?, !persist
 
   ### True, if this message has been removed.
   removed: bool
 
   ### The client message id, used to track if a message has been delivered.
-  clientMessageId: int?, api
+  clientMessageId: int?, !persist
 
   ### True if the message has been sent.
-  sent: bool?, api
+  sent: bool?, !persist
 
   ### List of attachments associated with this message.
   attachments: List<ChatMessageAttachment>?

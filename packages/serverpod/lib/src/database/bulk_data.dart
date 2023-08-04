@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
@@ -104,6 +105,42 @@ class DatabaseBulkData {
     }
     var count = result.first.first as int;
     return max(count, 0);
+  }
+
+  /// Executes a series of queries and returns the last result as a
+  /// [BulkQueryResult].
+  static Future<BulkQueryResult> executeQueries({
+    required Database database,
+    required List<String> queries,
+  }) async {
+    var result =
+        await database.transaction<BulkQueryResult>((transaction) async {
+      var startTime = DateTime.now();
+      PostgreSQLResult? result;
+      int numAffectedRows = 0;
+
+      for (var query in queries) {
+        result = await database.query(query, transaction: transaction);
+        numAffectedRows += result.affectedRowCount;
+      }
+      result!;
+
+      var duration = DateTime.now().difference(startTime);
+
+      return BulkQueryResult(
+        headers: result.columnDescriptions
+            .map((e) => BulkQueryColumnDescription(
+                  name: e.columnName,
+                  table: e.tableName,
+                ))
+            .toList(),
+        data: SerializationManager.encode(result),
+        numAffectedRows: numAffectedRows,
+        duration: duration,
+      );
+    });
+
+    return result;
   }
 
   static Future<TableDefinition?> _getTargetTableDefinition(

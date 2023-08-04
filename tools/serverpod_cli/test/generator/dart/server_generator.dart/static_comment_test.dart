@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:test/test.dart';
 
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
@@ -15,6 +16,10 @@ void main() {
           .withClassName('Example')
           .withFileName('example')
           .withSimpleField('title', 'String')
+          .build(),
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
           .build()
     ];
 
