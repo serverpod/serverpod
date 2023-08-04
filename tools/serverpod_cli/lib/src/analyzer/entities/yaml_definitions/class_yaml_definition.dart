@@ -26,7 +26,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
+        valueRestriction: BooleanValue().validate,
       ),
       ValidateNode(
         Keyword.fields,
@@ -70,7 +70,7 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
-                    valueRestriction: BooleanValue().validateNullable,
+                    valueRestriction: BooleanValue().validate,
                   ),
                 },
               ),
@@ -84,12 +84,12 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.persist,
                 keyRestriction: restrictions.validatePersistKey,
-                valueRestriction: BooleanValue().validateNullable,
+                valueRestriction: BooleanValue().validate,
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
               ),
               ValidateNode(
                 Keyword.database,
-                valueRestriction: BooleanValue().validateNullable,
+                valueRestriction: BooleanValue().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.api,
                   Keyword.scope,
@@ -98,7 +98,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
-                valueRestriction: BooleanValue().validateNullable,
+                valueRestriction: BooleanValue().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.database,
                   Keyword.scope,
@@ -128,7 +128,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
-                valueRestriction: restrictions.validateBoolType,
+                valueRestriction: BooleanValue().validate,
               ),
             },
           )

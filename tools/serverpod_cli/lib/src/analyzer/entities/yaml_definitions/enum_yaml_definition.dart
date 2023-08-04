@@ -14,7 +14,7 @@ class EnumYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
+        valueRestriction: BooleanValue().validate,
       ),
       ValidateNode(
         Keyword.values,

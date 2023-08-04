@@ -105,21 +105,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateBoolType(
-    String parentNodeName,
-    dynamic content,
-    SourceSpan? span,
-  ) {
-    if (content is bool) return [];
-
-    return [
-      SourceSpanSeverityException(
-        'The property value must be a bool.',
-        span,
-      )
-    ];
-  }
-
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
@@ -645,21 +630,23 @@ class EnumValue<T extends Enum> {
 }
 
 class BooleanValue {
-  List<SourceSpanSeverityException> validateNullable(
+  List<SourceSpanSeverityException> validate(
     String parentNodeName,
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is! String) return [];
+    var errors = [
+      SourceSpanSeverityException(
+        'The value must be a boolean.',
+        span,
+      )
+    ];
+
+    if (value is! String) return errors;
 
     var boolValue = value.toLowerCase();
     if (!(boolValue == 'true' || boolValue == 'false')) {
-      return [
-        SourceSpanSeverityException(
-          'The value must be a boolean.',
-          span,
-        )
-      ];
+      return errors;
     }
 
     return [];

@@ -21,7 +21,7 @@ class ExceptionYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
+        valueRestriction: BooleanValue().validate,
       ),
       ValidateNode(
         Keyword.fields,
