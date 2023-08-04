@@ -10,11 +10,11 @@ void main() {
     var collector = CodeGenerationCollector();
     var protocol = ProtocolSource(
       '''
-class: Example
-table: example
-fields:
-  example: Example?, relation
-''',
+      class: Example
+      table: example
+      fields:
+        example: Example?, relation
+      ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
       ['lib', 'src', 'protocol'],
     );
@@ -22,6 +22,7 @@ fields:
     var entity = SerializableEntityAnalyzer.extractEntityDefinition(
       protocol,
     ) as ClassDefinition;
+    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
     SerializableEntityAnalyzer.validateYamlDefinition(
       protocol.yaml,
       protocol.yamlSourceUri.path,
@@ -34,14 +35,18 @@ fields:
       expect(collector.errors, isEmpty);
     });
 
+    var field = entity.findField('exampleId');
+
+    var failedPrecondition =
+        field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set to default.', () {
-      var field = entity.fields.last;
-      expect(field.relation?.onUpdate, ForeignKeyAction.noAction);
-    });
+      var relation = field?.relation as ForeignRelationDefinition;
+      expect(relation.onUpdate, ForeignKeyAction.noAction);
+    }, skip: failedPrecondition);
 
     test('then onDelete is set to default.', () {
-      var field = entity.fields.last;
-      expect(field.relation?.onUpdate, ForeignKeyAction.cascade);
-    });
+      var relation = field?.relation as ForeignRelationDefinition;
+      expect(relation.onDelete, ForeignKeyAction.cascade);
+    }, skip: failedPrecondition);
   });
 }

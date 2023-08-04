@@ -79,10 +79,9 @@ List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
       columns: [field.name],
       referenceTable: relation.parentTable,
       referenceTableSchema: 'public',
-      referenceColumns: ['id'],
-      onDelete: ForeignKeyAction.cascade,
-      //onDelete: field.relation?.onDelete,
-      //onUpdate: field.relation?.onUpdate,
+      referenceColumns: [relation.referenceFieldName],
+      onDelete: relation.onDelete,
+      onUpdate: relation.onUpdate,
     ));
   }
 
