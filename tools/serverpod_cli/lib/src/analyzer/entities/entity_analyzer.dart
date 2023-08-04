@@ -313,9 +313,9 @@ class SerializableEntityAnalyzer {
 
     var scalarRelation = scalarField?.relation;
     if (scalarField == null) return;
-    if (scalarRelation is! UnresolvedIdRelationDefinition) return;
+    if (scalarRelation is! UnresolvedForeignRelationDefinition) return;
 
-    scalarField.relation = IdRelationDefinition(
+    scalarField.relation = ForeignRelationDefinition(
       parentTable: tableName,
       referenceFieldName: scalarRelation.referenceFieldName,
     );
@@ -341,7 +341,7 @@ class SerializableEntityAnalyzer {
 
     var referenceFields = referenceClass.fields.where((field) {
       var relation = field.relation;
-      if (relation is! IdRelationDefinition) return false;
+      if (relation is! ForeignRelationDefinition) return false;
       return relation.parentTable == classDefinition.tableName;
     });
 

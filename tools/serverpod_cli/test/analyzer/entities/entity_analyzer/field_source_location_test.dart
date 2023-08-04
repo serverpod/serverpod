@@ -198,7 +198,8 @@ fields:
 class: Example
 table: example
 fields:
-  nameId: int, database,
+  nameId: int, !persist,
+               
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         ['lib', 'src', 'protocol'],
@@ -286,7 +287,7 @@ fields:
 class: Example
 table: example
 fields:
-  nameId: Invalid-Type, database
+  nameId: Invalid-Type, !persist
 ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         ['lib', 'src', 'protocol'],

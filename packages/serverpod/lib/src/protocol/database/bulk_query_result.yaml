@@ -1,0 +1,6 @@
+class: BulkQueryResult
+fields:
+  headers: List<BulkQueryColumnDescription>
+  data: String
+  numAffectedRows: int
+  duration: Duration
