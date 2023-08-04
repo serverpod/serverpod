@@ -211,6 +211,39 @@ void main() {
   );
 
   test(
+    'Given a class with a field with persist negated',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: Example?, relation(!optional=true)
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'Negating a key with a value is not allowed.');
+    },
+  );
+
+  test(
     'Given a class with a field with both the persist and api keywords, then collect an error that only one of them is allowed.',
     () {
       var collector = CodeGenerationCollector();

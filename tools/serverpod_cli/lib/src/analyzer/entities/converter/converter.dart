@@ -50,6 +50,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
         nestedContent,
         nestedSpan,
         onDuplicateKey: onDuplicateKey,
+        onNegatedKeyWithValue: onNegatedKeyWithValue,
       );
     },
   );
