@@ -178,7 +178,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist negated',
+    'Given a class with a field with a negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var collector = CodeGenerationCollector();
       var protocol = ProtocolSource(
@@ -211,7 +211,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist negated',
+    'Given a class with a field with a nested negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var collector = CodeGenerationCollector();
       var protocol = ProtocolSource(
@@ -244,12 +244,46 @@ void main() {
   );
 
   test(
+    'Given a class without a table but with a field with persist set, then collect an error that the field cannot be persisted without setting table.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        fields:
+          name: String, persist
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message,
+          'The "persist" property requires a table to be set on the class.');
+    },
+  );
+
+  test(
     'Given a class with a field with both the persist and api keywords, then collect an error that only one of them is allowed.',
     () {
       var collector = CodeGenerationCollector();
       var protocol = ProtocolSource(
         '''
         class: Example
+        table: example
         fields:
           name: String, persist, api
         ''',
@@ -290,6 +324,7 @@ void main() {
       var protocol = ProtocolSource(
         '''
         class: Example
+        table: example
         fields:
           name: String, persist, database
         ''',

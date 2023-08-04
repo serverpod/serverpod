@@ -471,6 +471,23 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validatePersistKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "persist" property requires a table to be set on the class.',
+          span,
+        )
+      ];
+    }
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateEnumValues(
     String parentNodeName,
     dynamic content,
