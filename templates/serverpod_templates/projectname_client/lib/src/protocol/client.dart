@@ -30,11 +30,15 @@ class Client extends _i1.ServerpodClient {
     String host, {
     _i3.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
+    Function(Object)? onFailedCall,
+    Function()? onSucceededCall,
   }) : super(
           host,
           _i4.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
+          onFailedCall: onFailedCall,
+          onSucceededCall: onSucceededCall,
         ) {
     example = EndpointExample(this);
   }
