@@ -21,8 +21,9 @@ import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
 import 'dart:typed_data' as _i8;
 
 /// Endpoint for handling admin functions.
-class _EndpointAdmin extends _i1.EndpointRef {
-  _EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointAdmin extends _i1.EndpointRef {
+  EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.admin';
@@ -34,11 +35,28 @@ class _EndpointAdmin extends _i1.EndpointRef {
         'getUserInfo',
         {'userId': userId},
       );
+
+  /// Marks a user as blocked so that they can't log in, and invalidates their
+  /// auth key so that they can't keep calling endpoints through their current
+  /// session.
+  _i2.Future<void> blockUser(int userId) => caller.callServerEndpoint<void>(
+        'serverpod_auth.admin',
+        'blockUser',
+        {'userId': userId},
+      );
+
+  /// Unblocks a user so that they can log in again.
+  _i2.Future<void> unblockUser(int userId) => caller.callServerEndpoint<void>(
+        'serverpod_auth.admin',
+        'unblockUser',
+        {'userId': userId},
+      );
 }
 
 /// Endpoint for handling Sign in with Apple.
-class _EndpointApple extends _i1.EndpointRef {
-  _EndpointApple(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointApple extends _i1.EndpointRef {
+  EndpointApple(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.apple';
@@ -54,8 +72,9 @@ class _EndpointApple extends _i1.EndpointRef {
 }
 
 /// Endpoint for handling Sign in with Google.
-class _EndpointEmail extends _i1.EndpointRef {
-  _EndpointEmail(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointEmail extends _i1.EndpointRef {
+  EndpointEmail(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.email';
@@ -155,8 +174,9 @@ class _EndpointEmail extends _i1.EndpointRef {
 }
 
 /// Endpoint for handling Sign in with Firebase.
-class _EndpointFirebase extends _i1.EndpointRef {
-  _EndpointFirebase(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointFirebase extends _i1.EndpointRef {
+  EndpointFirebase(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.firebase';
@@ -171,8 +191,9 @@ class _EndpointFirebase extends _i1.EndpointRef {
 }
 
 /// Endpoint for handling Sign in with Google.
-class _EndpointGoogle extends _i1.EndpointRef {
-  _EndpointGoogle(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointGoogle extends _i1.EndpointRef {
+  EndpointGoogle(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.google';
@@ -202,8 +223,9 @@ class _EndpointGoogle extends _i1.EndpointRef {
 }
 
 /// Endpoint for getting status for a signed in user and module configuration.
-class _EndpointStatus extends _i1.EndpointRef {
-  _EndpointStatus(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointStatus extends _i1.EndpointRef {
+  EndpointStatus(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.status';
@@ -241,8 +263,9 @@ class _EndpointStatus extends _i1.EndpointRef {
 }
 
 /// Endpoint with methods for managing the currently signed in user.
-class _EndpointUser extends _i1.EndpointRef {
-  _EndpointUser(_i1.EndpointCaller caller) : super(caller);
+/// {@category Endpoint}
+class EndpointUser extends _i1.EndpointRef {
+  EndpointUser(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_auth.user';
@@ -274,28 +297,28 @@ class _EndpointUser extends _i1.EndpointRef {
 
 class Caller extends _i1.ModuleEndpointCaller {
   Caller(_i1.ServerpodClientShared client) : super(client) {
-    admin = _EndpointAdmin(this);
-    apple = _EndpointApple(this);
-    email = _EndpointEmail(this);
-    firebase = _EndpointFirebase(this);
-    google = _EndpointGoogle(this);
-    status = _EndpointStatus(this);
-    user = _EndpointUser(this);
+    admin = EndpointAdmin(this);
+    apple = EndpointApple(this);
+    email = EndpointEmail(this);
+    firebase = EndpointFirebase(this);
+    google = EndpointGoogle(this);
+    status = EndpointStatus(this);
+    user = EndpointUser(this);
   }
 
-  late final _EndpointAdmin admin;
+  late final EndpointAdmin admin;
 
-  late final _EndpointApple apple;
+  late final EndpointApple apple;
 
-  late final _EndpointEmail email;
+  late final EndpointEmail email;
 
-  late final _EndpointFirebase firebase;
+  late final EndpointFirebase firebase;
 
-  late final _EndpointGoogle google;
+  late final EndpointGoogle google;
 
-  late final _EndpointStatus status;
+  late final EndpointStatus status;
 
-  late final _EndpointUser user;
+  late final EndpointUser user;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
