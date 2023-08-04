@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
 
 import '../server/session.dart';
@@ -218,7 +219,7 @@ class Database {
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  Future<List<List<dynamic>>> query(
+  Future<PostgreSQLResult> query(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,

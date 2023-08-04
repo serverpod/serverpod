@@ -1,0 +1,4 @@
+class: DatabaseDefinitions
+fields:
+  target: DatabaseDefinition
+  live: DatabaseDefinition

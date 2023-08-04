@@ -118,7 +118,8 @@ class EntityParser {
         SerializableEntityFieldDefinition(
           name: 'id',
           type: TypeDefinition.int.asNullable,
-          scope: SerializableEntityFieldScope.all,
+          scope: EntityFieldScopeDefinition.all,
+          shouldPersist: true,
           documentation: [
             '/// The database id, set if the object has been inserted into the',
             '/// database or if it has been fetched from the database. Otherwise,',
@@ -163,15 +164,17 @@ class EntityParser {
       typeValue.replaceAll(' ', ''),
       sourceSpan: typeNode.span,
     );
+
     var scope = _parseClassFieldScope(value);
     var parentTable = _parseParentTable(value);
+    var shouldPersist = _parseShouldPersist(value);
     var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
     RelationDefinition? relation;
 
     if (parentTable != null) {
-      relation = IdRelationDefinition(
+      relation = ForeignRelationDefinition(
         parentTable: parentTable,
         referenceFieldName: 'id',
       );
@@ -185,17 +188,18 @@ class EntityParser {
       if (scalarFieldName != null)
         SerializableEntityFieldDefinition(
           name: scalarFieldName,
-          relation: UnresolvedIdRelationDefinition(
+          relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
           ),
-          scope: SerializableEntityFieldScope.all,
+          shouldPersist: true,
+          scope: scope,
           type: _createScalarType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         relation: relation,
-        scope:
-            scalarFieldName != null ? SerializableEntityFieldScope.api : scope,
+        shouldPersist: scalarFieldName != null ? false : shouldPersist,
+        scope: scope,
         type: typeResult.type..isEnum = isEnum,
         documentation: fieldDocumentation,
       )
@@ -221,31 +225,57 @@ class EntityParser {
   }
 
   static bool _isRelation(YamlMap documentContents) {
-    return documentContents.containsKey([Keyword.relation]);
+    return documentContents.containsKey(Keyword.relation);
   }
 
-  static bool _isOptionalRelation(YamlMap documentContents) {
-    var relation = documentContents.nodes[Keyword.relation];
+  static bool _parseShouldPersist(YamlMap node) {
+    var isApi = _parseBooleanKey(node, Keyword.api);
+    if (isApi) return false;
+    if (!node.containsKey(Keyword.persist)) return true;
 
+    return _parseBooleanKey(node, Keyword.persist);
+  }
+
+  static bool _parseBooleanKey(YamlMap node, String key) {
+    var value = node.nodes[key]?.value;
+    var boolValue = _parseBool(value);
+    if (boolValue != null) return boolValue;
+
+    var containsKey = node.containsKey(key);
+    return containsKey;
+  }
+
+  static bool? _parseBool(dynamic value) {
+    if (value is String) {
+      if (value.toLowerCase() == 'true') return true;
+      if (value.toLowerCase() == 'false') return false;
+    }
+
+    return null;
+  }
+
+  static bool _isOptionalRelation(YamlMap node) {
+    var relation = node.nodes[Keyword.relation];
     if (relation is! YamlMap) return false;
 
-    var optional = relation.containsKey(Keyword.optional);
-
-    if (optional) return true;
-
-    return false;
+    return _parseBooleanKey(relation, Keyword.optional);
   }
 
-  static SerializableEntityFieldScope _parseClassFieldScope(
+  static EntityFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
   ) {
-    var database = documentContents.containsKey(Keyword.database);
-    var api = documentContents.containsKey(Keyword.api);
+    var database = _parseBooleanKey(documentContents, Keyword.database);
+    if (database) return EntityFieldScopeDefinition.serverOnly;
 
-    if (database) return SerializableEntityFieldScope.database;
-    if (api) return SerializableEntityFieldScope.api;
+    var scope = documentContents.nodes[Keyword.scope]?.value;
 
-    return SerializableEntityFieldScope.all;
+    if (scope is! String) return EntityFieldScopeDefinition.all;
+
+    return convertToEnum(
+      value: scope,
+      enumDefault: EntityFieldScopeDefinition.all,
+      enumValues: EntityFieldScopeDefinition.values,
+    );
   }
 
   static String? _parseParentTable(YamlMap documentContents) {

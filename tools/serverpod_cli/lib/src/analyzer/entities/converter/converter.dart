@@ -8,6 +8,17 @@ List<String> convertIndexList(String stringifiedFields) {
   return stringifiedFields.split(',').map((field) => field.trim()).toList();
 }
 
+T convertToEnum<T extends Enum>({
+  required String value,
+  required T enumDefault,
+  required List<T> enumValues,
+}) {
+  return enumValues.firstWhere(
+    (v) => v.name.toLowerCase() == value.toLowerCase(),
+    orElse: () => enumDefault,
+  );
+}
+
 typedef DeepNestedNodeHandler = YamlMap Function(
     String? content, SourceSpan span);
 
@@ -16,6 +27,7 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
   SourceSpan span, {
   String? firstKey,
   void Function(String key, SourceSpan? span)? onDuplicateKey,
+  void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
 }) {
   var stringifiedNodes = _extractStringifiedNodes(content);
 
@@ -31,12 +43,14 @@ YamlMap convertStringifiedNestedNodesToYamlMap(
     stringifiedNodes.skip(startNodeIndex),
     content,
     span,
+    onNegatedKeyWithValue: onNegatedKeyWithValue,
     handleDeepNestedNodes: (nestedContent, nestedSpan) {
       // recursion
       return convertStringifiedNestedNodesToYamlMap(
         nestedContent,
         nestedSpan,
         onDuplicateKey: onDuplicateKey,
+        onNegatedKeyWithValue: onNegatedKeyWithValue,
       );
     },
   );
@@ -91,6 +105,7 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
   Iterable<String> fieldOptions,
   String? content,
   SourceSpan span, {
+  void Function(String key, SourceSpan? span)? onNegatedKeyWithValue,
   required DeepNestedNodeHandler handleDeepNestedNodes,
 }) {
   if (content == null) return [];
@@ -123,6 +138,22 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 
     String key = keyValuePair.first;
     String? value = keyValuePair.length == 2 ? keyValuePair.last : null;
+
+    if (stringifiedKeyValuePair.contains('=') && key.startsWith('!')) {
+      onNegatedKeyWithValue?.call(
+        key,
+        _extractSubSpan(keyValueSpan.text, keyValueSpan, key),
+      );
+    }
+
+    if (!stringifiedKeyValuePair.contains('=')) {
+      if (key.startsWith('!')) {
+        key = key.substring(1);
+        value = 'false';
+      } else {
+        value = 'true';
+      }
+    }
 
     return _createdYamlScalarNode(
       key,

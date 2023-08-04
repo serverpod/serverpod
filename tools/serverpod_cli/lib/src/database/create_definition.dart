@@ -67,13 +67,13 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
   var fields = classDefinition.fields
-      .where((field) => field.relation is IdRelationDefinition)
+      .where((field) => field.relation is ForeignRelationDefinition)
       .toList();
 
   List<ForeignKeyDefinition> foreignKeys = [];
   for (var i = 0; i < fields.length; i++) {
     var field = fields[i];
-    var relation = field.relation as IdRelationDefinition;
+    var relation = field.relation as ForeignRelationDefinition;
     foreignKeys.add(ForeignKeyDefinition(
       constraintName: '${classDefinition.tableName!}_fk_$i',
       columns: [field.name],
