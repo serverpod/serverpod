@@ -14,6 +14,7 @@ class Keyword {
   static const String parent = 'parent';
   static const String relation = 'relation';
   static const String onUpdate = 'onUpdate';
+  static const String onDelete = 'onDelete';
   static const String api = 'api';
   static const String database = 'database';
   static const String optional = 'optional';

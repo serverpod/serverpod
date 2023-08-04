@@ -66,6 +66,7 @@ class FieldDefinitionBuilder {
       parentTable: parentTable,
       referenceFieldName: referenceFieldName,
       onUpdate: ForeignKeyAction.noAction,
+      onDelete: ForeignKeyAction.cascade,
     );
     return this;
   }

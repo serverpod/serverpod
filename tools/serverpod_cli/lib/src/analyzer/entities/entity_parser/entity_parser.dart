@@ -174,13 +174,23 @@ class EntityParser {
     var isEnum = _parseIsEnumField(value);
 
     RelationDefinition? relation;
-    var onUpdate = _parseOnUpdate(value);
+    var onDelete = _parseDatabaseAction(
+      Keyword.onDelete,
+      ForeignKeyAction.cascade,
+      value,
+    );
+    var onUpdate = _parseDatabaseAction(
+      Keyword.onUpdate,
+      ForeignKeyAction.noAction,
+      value,
+    );
 
     if (parentTable != null) {
       relation = ForeignRelationDefinition(
         parentTable: parentTable,
         referenceFieldName: 'id',
         onUpdate: onUpdate,
+        onDelete: onDelete,
       );
     } else if (scalarFieldName != null) {
       relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
@@ -195,6 +205,7 @@ class EntityParser {
           relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
             onUpdate: onUpdate,
+            onDelete: onDelete,
           ),
           shouldPersist: true,
           scope: scope,
@@ -229,14 +240,17 @@ class EntityParser {
     return '${fieldName}Id';
   }
 
-  static ForeignKeyAction _parseOnUpdate(YamlMap value) {
-    var onUpdateDefault = ForeignKeyAction.noAction;
-    var onUpdate = _parseRelationNode(value, Keyword.onUpdate)?.value;
-    if (onUpdate is! String) return onUpdateDefault;
+  static ForeignKeyAction _parseDatabaseAction(
+    String key,
+    ForeignKeyAction defaultValue,
+    YamlMap node,
+  ) {
+    var action = _parseRelationNode(node, key)?.value;
+    if (action is! String) return defaultValue;
 
     return convertToEnum(
-      value: onUpdate,
-      enumDefault: onUpdateDefault,
+      value: action,
+      enumDefault: defaultValue,
       enumValues: ForeignKeyAction.values,
     );
   }

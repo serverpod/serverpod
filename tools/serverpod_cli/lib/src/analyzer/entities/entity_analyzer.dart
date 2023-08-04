@@ -319,6 +319,7 @@ class SerializableEntityAnalyzer {
       parentTable: tableName,
       referenceFieldName: scalarRelation.referenceFieldName,
       onUpdate: scalarRelation.onUpdate,
+      onDelete: scalarRelation.onDelete,
     );
   }
 

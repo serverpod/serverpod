@@ -77,6 +77,12 @@ class ClassYamlDefinition {
                     ).validate,
                   ),
                   ValidateNode(
+                    Keyword.onDelete,
+                    valueRestriction: EnumValueRestriction(
+                      enums: ForeignKeyAction.values,
+                    ).validate,
+                  ),
+                  ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
                     valueRestriction: BooleanValueRestriction().validate,

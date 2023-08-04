@@ -248,13 +248,13 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
 
-  //final ForeignKeyAction onDelete;
+  final ForeignKeyAction onDelete;
 
   final ForeignKeyAction onUpdate;
 
   UnresolvedForeignRelationDefinition({
     required this.referenceFieldName,
-    //required this.onDelete,
+    required this.onDelete,
     required this.onUpdate,
   });
 }
@@ -277,7 +277,7 @@ class ForeignRelationDefinition extends RelationDefinition {
   ForeignRelationDefinition({
     required this.parentTable,
     required this.referenceFieldName,
-    this.onDelete = ForeignKeyAction.cascade,
+    required this.onDelete,
     required this.onUpdate,
   });
 }
