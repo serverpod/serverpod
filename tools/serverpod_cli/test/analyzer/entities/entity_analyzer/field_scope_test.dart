@@ -162,13 +162,29 @@ void main() {
 
         expect(collector.errors.length, greaterThan(1));
 
-        var error1 = collector.errors[0];
-        var error2 = collector.errors[1];
+        var message1 = 'The "api" property is mutually exclusive with the '
+            '"database" property.';
+        var message2 = 'The "database" property is mutually exclusive with the '
+            '"api" property.';
 
-        expect(error1.message,
-            'The "database" property is mutually exclusive with the "api" property.');
-        expect(error2.message,
-            'The "api" property is mutually exclusive with the "database" property.');
+        var hasDatabaseError = collector.errors.any(
+          (error) => error.message == message1,
+        );
+
+        var hasApiError = collector.errors.any(
+          (error) => error.message == message2,
+        );
+
+        expect(
+          hasDatabaseError,
+          isTrue,
+          reason: 'Expected error message: $message1',
+        );
+        expect(
+          hasApiError,
+          isTrue,
+          reason: 'Expected error message: $message2',
+        );
       },
     );
 
@@ -197,6 +213,14 @@ void main() {
           definition,
           [definition],
         );
+
+        test('then a deprecated info is collected.', () {
+          expect(collector.errors.length, greaterThan(0));
+          var error = collector.errors.first;
+
+          expect(error.message,
+              'The "database" property is deprecated. Use "scope=serverOnly" instead.');
+        });
 
         test('then the generated entity has the serverOnly scope.', () {
           expect(
