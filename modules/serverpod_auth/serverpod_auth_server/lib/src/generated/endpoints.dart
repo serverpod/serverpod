@@ -86,7 +86,43 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['userId'],
           ),
-        )
+        ),
+        'banUser': _i1.MethodConnector(
+          name: 'banUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint).banUser(
+            session,
+            params['userId'],
+          ),
+        ),
+        'unbanUser': _i1.MethodConnector(
+          name: 'unbanUser',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['admin'] as _i2.AdminEndpoint).unbanUser(
+            session,
+            params['userId'],
+          ),
+        ),
       },
     );
     connectors['apple'] = _i1.EndpointConnector(
