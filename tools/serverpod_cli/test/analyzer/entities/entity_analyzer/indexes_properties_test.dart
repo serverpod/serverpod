@@ -315,7 +315,7 @@ indexes:
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.first;
+      var error = collector.errors.last;
 
       expect(
         error.message,

@@ -98,6 +98,8 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
+                isDeprecated: true,
+                alternativeUsageMessage: 'Use "!persist" instead.',
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.database,

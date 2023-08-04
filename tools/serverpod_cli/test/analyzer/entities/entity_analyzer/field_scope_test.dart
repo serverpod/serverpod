@@ -233,6 +233,14 @@ void main() {
           [definition],
         );
 
+        test('then a deprecated info is collected.', () {
+          expect(collector.errors.length, greaterThan(0));
+          var error = collector.errors.first;
+
+          expect(error.message,
+              'The "api" property is deprecated. Use "!persist" instead.');
+        });
+
         test('then the generated entity should not be persisted.', () {
           expect(
             definition.fields.last.shouldPersist,
@@ -336,10 +344,15 @@ void main() {
           greaterThan(0),
           reason: 'Expected an error, none was found.',
         );
-        expect(
-          collector.errors.last.message,
-          'The "api" property is mutually exclusive with the "parent" property.',
+
+        var message =
+            'The "api" property is mutually exclusive with the "parent" property.';
+
+        var hasError = collector.errors.any(
+          (error) => error.message == message,
         );
+
+        expect(hasError, isTrue, reason: 'Expected error message: $message');
       },
     );
   });
