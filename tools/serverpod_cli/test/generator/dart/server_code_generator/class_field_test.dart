@@ -599,4 +599,39 @@ void main() {
           : false,
     );
   });
+
+  group('Given exception class when generating code', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withIsException(true)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test(
+      'then class implements SerializableException.',
+      () {
+        var exampleClass = maybeClassNamedExample!;
+        expect(
+            CompilationUnitHelpers.hasImplementsClause(exampleClass,
+                name: 'SerializableException'),
+            isTrue,
+            reason: 'Class should implement SerializableException.');
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
+  });
 }
