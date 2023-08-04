@@ -233,13 +233,6 @@ void main() {
           [definition],
         );
 
-        /*test('then a deprecated info is collected.', () {
-          expect(collector.errors.length, greaterThan(0));
-          var error = collector.errors.first;
-
-          expect(error.message, 'Api is deprecated, use "!persist" instead');
-        });*/
-
         test('then the generated entity should not be persisted.', () {
           expect(
             definition.fields.last.shouldPersist,
