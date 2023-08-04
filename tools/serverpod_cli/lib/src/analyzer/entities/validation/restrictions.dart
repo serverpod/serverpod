@@ -596,10 +596,10 @@ class Restrictions {
   }
 }
 
-class EnumValue<T extends Enum> {
+class EnumValueRestriction<T extends Enum> {
   List<T> enums;
 
-  EnumValue({
+  EnumValueRestriction({
     required this.enums,
   });
 
@@ -629,7 +629,7 @@ class EnumValue<T extends Enum> {
   }
 }
 
-class BooleanValue {
+class BooleanValueRestriction {
   List<SourceSpanSeverityException> validate(
     String parentNodeName,
     dynamic value,

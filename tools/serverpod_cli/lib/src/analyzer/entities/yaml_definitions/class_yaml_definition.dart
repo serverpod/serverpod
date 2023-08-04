@@ -26,7 +26,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: BooleanValue().validate,
+        valueRestriction: BooleanValueRestriction().validate,
       ),
       ValidateNode(
         Keyword.fields,
@@ -70,26 +70,26 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
-                    valueRestriction: BooleanValue().validate,
+                    valueRestriction: BooleanValueRestriction().validate,
                   ),
                 },
               ),
               ValidateNode(
                 Keyword.scope,
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
-                valueRestriction: EnumValue(
+                valueRestriction: EnumValueRestriction(
                   enums: EntityFieldScopeDefinition.values,
                 ).validate,
               ),
               ValidateNode(
                 Keyword.persist,
                 keyRestriction: restrictions.validatePersistKey,
-                valueRestriction: BooleanValue().validate,
+                valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
               ),
               ValidateNode(
                 Keyword.database,
-                valueRestriction: BooleanValue().validate,
+                valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.api,
                   Keyword.scope,
@@ -98,7 +98,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
-                valueRestriction: BooleanValue().validate,
+                valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.database,
                   Keyword.scope,
@@ -128,7 +128,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
-                valueRestriction: BooleanValue().validate,
+                valueRestriction: BooleanValueRestriction().validate,
               ),
             },
           )
