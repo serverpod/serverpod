@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
@@ -84,5 +85,24 @@ void main() {
         expect(foreignKey.onUpdate, ForeignKeyAction.setNull);
       }, skip: failedPrecondition);
     }, skip: failedPrecondition);
+
+    group('when generating sql code', () {
+      // TODO: fix this, not sure what this does or why it is not set in the
+      // definition creator ?! But code generator crashes without it.
+      databaseDefinition.priority = 1;
+
+      var sql = databaseDefinition.toPgSql(
+        version: 'version',
+        module: 'mock',
+      );
+
+      test('then on delete is set.', () {
+        expect(sql.contains('ON DELETE SET NULL;'), isTrue);
+      });
+
+      test('then on update is set.', () {
+        expect(sql.contains('ON UPDATE SET NULL;'), isTrue);
+      });
+    });
   });
 }
