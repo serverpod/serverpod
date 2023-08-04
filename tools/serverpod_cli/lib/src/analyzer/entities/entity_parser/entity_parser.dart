@@ -220,7 +220,7 @@ class EntityParser {
   }
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
-    if (!value.containsKey(Keyword.relation)) return null;
+    if (!_isRelation(value)) return null;
     var type = value.nodes[Keyword.type]?.value;
     if (type is! String) return null;
     if (AnalyzeChecker.isIdType(type)) return null;
@@ -305,18 +305,10 @@ class EntityParser {
     var parent = documentContents.nodes[Keyword.parent]?.value;
     if (parent is String) return parent;
 
-    var relationMap = documentContents.nodes[Keyword.relation];
-
-    if (relationMap is! YamlMap) return null;
-    parent = relationMap.nodes[Keyword.parent]?.value;
-
+    parent = _parseRelationNode(documentContents, Keyword.parent)?.value;
     if (parent is String) return parent;
 
-    var type = documentContents.nodes[Keyword.type]?.value;
-    if (AnalyzeChecker.isIdType(type)) return null;
-    if (type is! String) return null;
-
-    return parent;
+    return null;
   }
 
   static bool _parseIsEnumField(YamlMap documentContents) {
