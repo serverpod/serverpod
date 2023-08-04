@@ -315,7 +315,7 @@ indexes:
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.first;
+      var error = collector.errors.last;
 
       expect(
         error.message,
@@ -510,7 +510,7 @@ indexes:
 
     expect(collector.errors.length, greaterThan(0));
     var error = collector.errors.first;
-    expect(error.message, 'The property value must be a bool.');
+    expect(error.message, 'The value must be a boolean.');
   });
 
   test(

@@ -10,7 +10,7 @@ fields:
   hash: String
 
   ### The key sent to the server to authenticate.
-  key: String?, api
+  key: String?, !persist
 
   ### The scopes this key provides access to.
   scopeNames: List<String>

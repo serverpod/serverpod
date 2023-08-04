@@ -594,7 +594,7 @@ Current type was $T''');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<List<dynamic>>> query(
+  Future<PostgreSQLResult> query(
     String query, {
     required Session session,
     int? timeoutInSeconds,
