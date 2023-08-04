@@ -105,21 +105,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateBoolType(
-    String parentNodeName,
-    dynamic content,
-    SourceSpan? span,
-  ) {
-    if (content is bool) return [];
-
-    return [
-      SourceSpanSeverityException(
-        'The property value must be a bool.',
-        span,
-      )
-    ];
-  }
-
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
@@ -321,15 +306,13 @@ class Restrictions {
       ));
     }
 
-    var def = documentDefinition;
-    if (def is! ClassDefinition) return errors;
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return errors;
 
-    var field = def.findField(parentNodeName);
-    if (field == null) return errors;
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null || !field.isSymbolicRelation) return errors;
 
-    if ((field.relation is ListRelationDefinition ||
-            field.relation is ObjectRelationDefinition) &&
-        !type.endsWith('?')) {
+    if (!type.endsWith('?')) {
       errors.add(SourceSpanSeverityException(
         'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
         span,
@@ -342,7 +325,7 @@ class Restrictions {
     if (localEntityRelations == null) return errors;
 
     var referenceClassExists = localEntityRelations.classNameExists(parsedType);
-    if (field.hasRelationPointer && !referenceClassExists) {
+    if (!referenceClassExists) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
         span,
@@ -352,15 +335,16 @@ class Restrictions {
 
     var referenceClasses = localEntityRelations.classNames[parsedType];
     var referenceClass = referenceClasses?.first;
-    if (referenceClass is! ClassDefinition && field.hasRelationPointer) {
+
+    if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
         'Only classes can be used in relations, "$parsedType" is not a class.',
         span,
       ));
+      return errors;
     }
-    if (referenceClass is! ClassDefinition) return errors;
 
-    if (field.hasRelationPointer && !_hasTableDefined(referenceClasses)) {
+    if (!_hasTableDefined(referenceClasses)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
         span,
@@ -371,8 +355,8 @@ class Restrictions {
 
     var referenceFields = referenceClass.fields.where((field) {
       var relation = field.relation;
-      if (relation is! IdRelationDefinition) return false;
-      return relation.parentTable == def.tableName;
+      if (relation is! ForeignRelationDefinition) return false;
+      return relation.parentTable == classDefinition.tableName;
     });
 
     if (referenceFields.isEmpty) {
@@ -413,7 +397,7 @@ class Restrictions {
     var indexFields = convertIndexList(content);
 
     var validDatabaseFieldNames = fields
-        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .where((field) => field.shouldPersist)
         .fold(<String>{}, (output, field) => output..add(field.name));
 
     var missingFieldErrors = indexFields
@@ -469,6 +453,23 @@ class Restrictions {
       ];
     }
 
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validatePersistKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "persist" property requires a table to be set on the class.',
+          span,
+        )
+      ];
+    }
     return [];
   }
 
@@ -592,5 +593,64 @@ class Restrictions {
     if (hasTable == null) return false;
 
     return hasTable;
+  }
+}
+
+class EnumValueRestriction<T extends Enum> {
+  List<T> enums;
+
+  EnumValueRestriction({
+    required this.enums,
+  });
+
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic enumValue,
+    SourceSpan? span,
+  ) {
+    var options = enums.map((v) => v.name);
+
+    var errors = <SourceSpanSeverityException>[
+      SourceSpanSeverityException(
+        '"$enumValue" is not a valid property. Valid properties are $options.',
+        span,
+      )
+    ];
+
+    if (enumValue is! String) return errors;
+
+    var isEnumValue = enums.any(
+      (e) => e.name.toLowerCase() == enumValue.toLowerCase(),
+    );
+
+    if (!isEnumValue) return errors;
+
+    return [];
+  }
+}
+
+class BooleanValueRestriction {
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is bool) return [];
+
+    var errors = [
+      SourceSpanSeverityException(
+        'The value must be a boolean.',
+        span,
+      )
+    ];
+
+    if (value is! String) return errors;
+
+    var boolValue = value.toLowerCase();
+    if (!(boolValue == 'true' || boolValue == 'false')) {
+      return errors;
+    }
+
+    return [];
   }
 }
