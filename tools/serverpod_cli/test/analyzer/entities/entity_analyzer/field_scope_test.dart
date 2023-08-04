@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -214,13 +215,19 @@ void main() {
           [definition],
         );
 
-        test('then a deprecated info is collected.', () {
-          expect(collector.errors.length, greaterThan(0));
-          var error = collector.errors.first;
-
-          expect(error.message,
-              'The "database" property is deprecated. Use "scope=serverOnly" instead.');
+        test('then an error is reported', () {
+          expect(collector.errors, isNotEmpty);
         });
+
+        test('then an deprecated error message is reported.', () {
+          var error = collector.errors.first as SourceSpanSeverityException;
+          expect(
+            error.message,
+            'The "database" property is deprecated. Use "scope=serverOnly" instead.',
+          );
+
+          expect(error.severity, SourceSpanSeverity.info);
+        }, skip: collector.errors.isEmpty);
 
         test('then the generated entity has the serverOnly scope.', () {
           expect(
@@ -257,13 +264,19 @@ void main() {
           [definition],
         );
 
-        test('then a deprecated info is collected.', () {
-          expect(collector.errors.length, greaterThan(0));
-          var error = collector.errors.first;
-
-          expect(error.message,
-              'The "api" property is deprecated. Use "!persist" instead.');
+        test('then an error is reported', () {
+          expect(collector.errors, isNotEmpty);
         });
+
+        test('then an deprecated error message is reported.', () {
+          var error = collector.errors.first as SourceSpanSeverityException;
+          expect(
+            error.message,
+            'The "api" property is deprecated. Use "!persist" instead.',
+          );
+
+          expect(error.severity, SourceSpanSeverity.info);
+        }, skip: collector.errors.isEmpty);
 
         test('then the generated entity should not be persisted.', () {
           expect(
