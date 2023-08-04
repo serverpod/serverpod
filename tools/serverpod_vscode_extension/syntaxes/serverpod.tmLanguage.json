@@ -77,14 +77,6 @@
           "include": "#basic_value_types"
         },
         {
-          "name": "entity.name.tag.yaml",
-          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*=)"
-        },
-        {
-          "name": "entity.name.tag.yaml",
-          "match": "\\b(?<=\\(|,\\s*)([a-zA-Z0-9_-]+)(?=[,=]|\\s|\\))"
-        },
-        {
           "name": "string.quoted.double.yaml",
           "match": "\\b(?<==)([a-zA-Z0-9_-]+)(?=,|\\))"
         },
@@ -98,7 +90,11 @@
         },
         {
           "name": "entity.name.tag.yaml",
-          "match": "\\b([a-zA-Z0-9_-]+)(?=\\s*:)"
+          "match": "\\b(!?[a-zA-Z0-9_-]+)(?=\\s*[:=]|$)"
+        },
+        {
+          "name": "entity.name.tag.yaml",
+          "match": "\\b(!?[a-zA-Z0-9_-]+)(?=\\s*[,\\)]|$)"
         },
         {
           "begin": "(:\\s*)([^\\s<]*)(<)",
@@ -127,7 +123,7 @@
           ]
         },
         {
-          "match": "(:\\s*)([^<\\s?]+)",
+          "match": "(:\\s*)([^,<\\s?]+)",
           "captures": {
             "1": {
               "name": "punctuation.separator.mapping.key-value.yaml"

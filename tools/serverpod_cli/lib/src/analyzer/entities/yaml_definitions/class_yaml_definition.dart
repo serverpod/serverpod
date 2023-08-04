@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
@@ -25,7 +26,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.serverOnly,
-        valueRestriction: restrictions.validateBoolType,
+        valueRestriction: BooleanValueRestriction().validate,
       ),
       ValidateNode(
         Keyword.fields,
@@ -69,16 +70,41 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
+                    valueRestriction: BooleanValueRestriction().validate,
                   ),
                 },
               ),
               ValidateNode(
+                Keyword.scope,
+                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
+                valueRestriction: EnumValueRestriction(
+                  enums: EntityFieldScopeDefinition.values,
+                ).validate,
+              ),
+              ValidateNode(
+                Keyword.persist,
+                keyRestriction: restrictions.validatePersistKey,
+                valueRestriction: BooleanValueRestriction().validate,
+                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
+              ),
+              ValidateNode(
                 Keyword.database,
-                mutuallyExclusiveKeys: {Keyword.api},
+                valueRestriction: BooleanValueRestriction().validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.api,
+                  Keyword.scope,
+                  Keyword.persist
+                },
               ),
               ValidateNode(
                 Keyword.api,
-                mutuallyExclusiveKeys: {Keyword.database, Keyword.parent},
+                valueRestriction: BooleanValueRestriction().validate,
+                mutuallyExclusiveKeys: {
+                  Keyword.database,
+                  Keyword.scope,
+                  Keyword.parent,
+                  Keyword.persist,
+                },
               ),
             },
           ),
@@ -102,7 +128,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.unique,
-                valueRestriction: restrictions.validateBoolType,
+                valueRestriction: BooleanValueRestriction().validate,
               ),
             },
           )

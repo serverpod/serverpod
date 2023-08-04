@@ -107,8 +107,8 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
       // Skip id field as it is already added
       if (field.name == 'id') continue;
 
-      // Skip fields that are API only
-      if (field.scope == SerializableEntityFieldScope.api) continue;
+      // Skip fields that should not be persisted
+      if (!field.shouldPersist) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';

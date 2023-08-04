@@ -129,7 +129,7 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The property value must be a bool.');
+      expect(error.message, 'The value must be a boolean.');
     });
 
     test(
@@ -163,7 +163,7 @@ fields:
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The property value must be a bool.');
+      expect(error.message, 'The value must be a boolean.');
     });
   });
 

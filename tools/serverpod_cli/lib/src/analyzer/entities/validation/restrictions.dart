@@ -105,21 +105,6 @@ class Restrictions {
     return [];
   }
 
-  List<SourceSpanSeverityException> validateBoolType(
-    String parentNodeName,
-    dynamic content,
-    SourceSpan? span,
-  ) {
-    if (content is bool) return [];
-
-    return [
-      SourceSpanSeverityException(
-        'The property value must be a bool.',
-        span,
-      )
-    ];
-  }
-
   List<SourceSpanSeverityException> validateParentKey(
     String parentNodeName,
     String _,
@@ -412,7 +397,7 @@ class Restrictions {
     var indexFields = convertIndexList(content);
 
     var validDatabaseFieldNames = fields
-        .where((field) => field.scope != SerializableEntityFieldScope.api)
+        .where((field) => field.shouldPersist)
         .fold(<String>{}, (output, field) => output..add(field.name));
 
     var missingFieldErrors = indexFields
@@ -468,6 +453,23 @@ class Restrictions {
       ];
     }
 
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validatePersistKey(
+    String parentNodeName,
+    String relation,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.tableName == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "persist" property requires a table to be set on the class.',
+          span,
+        )
+      ];
+    }
     return [];
   }
 
@@ -591,5 +593,64 @@ class Restrictions {
     if (hasTable == null) return false;
 
     return hasTable;
+  }
+}
+
+class EnumValueRestriction<T extends Enum> {
+  List<T> enums;
+
+  EnumValueRestriction({
+    required this.enums,
+  });
+
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic enumValue,
+    SourceSpan? span,
+  ) {
+    var options = enums.map((v) => v.name);
+
+    var errors = <SourceSpanSeverityException>[
+      SourceSpanSeverityException(
+        '"$enumValue" is not a valid property. Valid properties are $options.',
+        span,
+      )
+    ];
+
+    if (enumValue is! String) return errors;
+
+    var isEnumValue = enums.any(
+      (e) => e.name.toLowerCase() == enumValue.toLowerCase(),
+    );
+
+    if (!isEnumValue) return errors;
+
+    return [];
+  }
+}
+
+class BooleanValueRestriction {
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is bool) return [];
+
+    var errors = [
+      SourceSpanSeverityException(
+        'The value must be a boolean.',
+        span,
+      )
+    ];
+
+    if (value is! String) return errors;
+
+    var boolValue = value.toLowerCase();
+    if (!(boolValue == 'true' || boolValue == 'false')) {
+      return errors;
+    }
+
+    return [];
   }
 }
