@@ -135,9 +135,11 @@ void _collectInvalidKeyErrors(
         'Key must be of type String.',
         keyNode.span,
       ));
+      continue;
     }
 
-    if (!(validKeys.contains(Keyword.any) || validKeys.contains(key))) {
+    var parsedKey = key.startsWith('!') ? key.substring(1) : key;
+    if (!(validKeys.contains(Keyword.any) || validKeys.contains(parsedKey))) {
       collector.addError(SourceSpanSeverityException(
         'The "$key" property is not allowed for $documentType type. Valid keys are $validKeys.',
         keyNode.span,
@@ -337,6 +339,12 @@ dynamic _extractNodeValue(
       onDuplicateKey: (key, span) {
         collector.addError(SourceSpanSeverityException(
           'The field option "$key" is defined more than once.',
+          span,
+        ));
+      },
+      onNegatedKeyWithValue: (key, span) {
+        collector.addError(SourceSpanSeverityException(
+          'Negating a key with a value is not allowed.',
           span,
         ));
       },
