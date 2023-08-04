@@ -635,6 +635,8 @@ class BooleanValueRestriction {
     dynamic value,
     SourceSpan? span,
   ) {
+    if (value is bool) return [];
+
     var errors = [
       SourceSpanSeverityException(
         'The value must be a boolean.',

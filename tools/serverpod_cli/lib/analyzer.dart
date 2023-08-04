@@ -14,7 +14,7 @@ export 'src/analyzer/entities/definitions.dart'
         SerializableEntityDefinition,
         ClassDefinition,
         SerializableEntityFieldDefinition,
-        SerializableEntityFieldScope,
+        EntityFieldScopeDefinition,
         SerializableEntityIndexDefinition,
         EnumDefinition;
 export 'src/generator/types.dart' show TypeDefinition;
