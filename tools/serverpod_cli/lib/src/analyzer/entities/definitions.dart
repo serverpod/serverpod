@@ -86,7 +86,7 @@ class SerializableEntityFieldDefinition {
   /// in a certain context.
   ///
   /// See also:
-  /// - [SerializableEntityFieldScope]
+  /// - [EntityFieldScopeDefinition]
   final EntityFieldScopeDefinition scope;
 
   final bool shouldPersist;
@@ -150,6 +150,7 @@ class SerializableEntityFieldDefinition {
   }
 }
 
+/// The scope of a field.
 enum EntityFieldScopeDefinition {
   all,
   serverOnly,
