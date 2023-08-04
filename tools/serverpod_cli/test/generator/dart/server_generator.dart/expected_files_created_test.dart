@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
@@ -32,6 +33,28 @@ void main() {
     });
   });
 
+  group('Given a single enum when generating the code', () {
+    var entities = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    test('then the server-side file is created', () {
+      expect(
+        codeMap.keys,
+        contains(path.join('lib', 'src', 'generated', 'example.dart')),
+        reason: 'Expected server-side file to be present, found none.',
+      );
+    });
+  });
+
   group('Given a multiple classes when generating the code', () {
     var entities = [
       ClassDefinitionBuilder()
@@ -41,7 +64,15 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName('User')
           .withFileName('user')
-          .build()
+          .build(),
+      EnumDefinitionBuilder()
+          .withClassName('Animal')
+          .withFileName('animal')
+          .build(),
+      EnumDefinitionBuilder()
+          .withClassName('Color')
+          .withFileName('color')
+          .build(),
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
@@ -61,6 +92,18 @@ void main() {
         contains(path.join('lib', 'src', 'generated', 'user.dart')),
         reason: 'Expected server-side file to be present, found none.',
       );
+
+      expect(
+        codeMap.keys,
+        contains(path.join('lib', 'src', 'generated', 'animal.dart')),
+        reason: 'Expected server-side file to be present, found none.',
+      );
+
+      expect(
+        codeMap.keys,
+        contains(path.join('lib', 'src', 'generated', 'color.dart')),
+        reason: 'Expected server-side file to be present, found none.',
+      );
     });
   });
 
@@ -69,6 +112,29 @@ void main() {
       () {
     var entities = [
       ClassDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withServerOnly(true)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    expect(
+      codeMap.keys,
+      contains(path.join('lib', 'src', 'generated', 'example.dart')),
+      reason: 'Expected server-side file to be present, found none.',
+    );
+  });
+
+  test(
+      'Given a server-side only enum when generating the code then the server-side file is created',
+      () {
+    var entities = [
+      EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .withServerOnly(true)

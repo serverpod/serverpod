@@ -61,7 +61,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
         for (var field in tableInfo.fields) {
           // Check if a parent is not above the current table and not self-referencing
           var relation = field.relation;
-          if (relation is IdRelationDefinition &&
+          if (relation is ForeignRelationDefinition &&
               relation.parentTable != tableInfo.tableName &&
               !visitedTableNames.contains(relation.parentTable)) {
             var tableToMove = tableInfo;
@@ -107,8 +107,8 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
       // Skip id field as it is already added
       if (field.name == 'id') continue;
 
-      // Skip fields that are API only
-      if (field.scope == SerializableEntityFieldScope.api) continue;
+      // Skip fields that should not be persisted
+      if (!field.shouldPersist) continue;
 
       var nullable = field.type.nullable ? '' : ' NOT NULL';
       out += ',\n  "${field.name}" ${field.type.databaseType}$nullable';
@@ -138,7 +138,7 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
     var fkIdx = 0;
     for (var field in classInfo.fields) {
       var relation = field.relation;
-      if (relation is IdRelationDefinition) {
+      if (relation is ForeignRelationDefinition) {
         out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
         out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
         out += '    FOREIGN KEY("${field.name}")\n';
