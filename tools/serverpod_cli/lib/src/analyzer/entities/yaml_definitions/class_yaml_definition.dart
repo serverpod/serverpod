@@ -83,6 +83,7 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.persist,
                 keyRestriction: restrictions.validatePersistKey,
+                valueRestriction: BooleanValue().validateNullable,
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
               ),
               ValidateNode(

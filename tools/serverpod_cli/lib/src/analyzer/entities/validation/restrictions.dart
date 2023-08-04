@@ -643,3 +643,25 @@ class EnumValue<T extends Enum> {
     return [];
   }
 }
+
+class BooleanValue {
+  List<SourceSpanSeverityException> validateNullable(
+    String parentNodeName,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is! String) return [];
+
+    var boolValue = value.toLowerCase();
+    if (!(boolValue == 'true' || boolValue == 'false')) {
+      return [
+        SourceSpanSeverityException(
+          'The value must be a boolean (true, false).',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+}

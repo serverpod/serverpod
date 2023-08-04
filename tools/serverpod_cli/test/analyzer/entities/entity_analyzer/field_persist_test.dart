@@ -277,6 +277,39 @@ void main() {
   );
 
   test(
+    'Given a class with a field with the persist key set to a none boolean value, then collect a warning that the value must be a bool.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String, persist=INVALID
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'The value must be a boolean (true, false).');
+    },
+  );
+
+  test(
     'Given a class with a field with both the persist and api keywords, then collect an error that only one of them is allowed.',
     () {
       var collector = CodeGenerationCollector();
