@@ -89,6 +89,8 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.database,
+                isDeprecated: true,
+                alternativeUsageMessage: 'Use "scope=serverOnly" instead.',
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.api,
@@ -98,6 +100,8 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
+                isDeprecated: true,
+                alternativeUsageMessage: 'Use "!persist" instead.',
                 valueRestriction: BooleanValueRestriction().validate,
                 mutuallyExclusiveKeys: {
                   Keyword.database,

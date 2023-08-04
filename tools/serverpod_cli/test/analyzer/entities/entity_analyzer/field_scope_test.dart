@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -162,13 +163,29 @@ void main() {
 
         expect(collector.errors.length, greaterThan(1));
 
-        var error1 = collector.errors[0];
-        var error2 = collector.errors[1];
+        var message1 = 'The "api" property is mutually exclusive with the '
+            '"database" property.';
+        var message2 = 'The "database" property is mutually exclusive with the '
+            '"api" property.';
 
-        expect(error1.message,
-            'The "database" property is mutually exclusive with the "api" property.');
-        expect(error2.message,
-            'The "api" property is mutually exclusive with the "database" property.');
+        var hasDatabaseError = collector.errors.any(
+          (error) => error.message == message1,
+        );
+
+        var hasApiError = collector.errors.any(
+          (error) => error.message == message2,
+        );
+
+        expect(
+          hasDatabaseError,
+          isTrue,
+          reason: 'Expected error message: $message1',
+        );
+        expect(
+          hasApiError,
+          isTrue,
+          reason: 'Expected error message: $message2',
+        );
       },
     );
 
@@ -197,6 +214,20 @@ void main() {
           definition,
           [definition],
         );
+
+        test('then an error is reported', () {
+          expect(collector.errors, isNotEmpty);
+        });
+
+        test('then an deprecated error message is reported.', () {
+          var error = collector.errors.first as SourceSpanSeverityException;
+          expect(
+            error.message,
+            'The "database" property is deprecated. Use "scope=serverOnly" instead.',
+          );
+
+          expect(error.severity, SourceSpanSeverity.info);
+        }, skip: collector.errors.isEmpty);
 
         test('then the generated entity has the serverOnly scope.', () {
           expect(
@@ -232,6 +263,20 @@ void main() {
           definition,
           [definition],
         );
+
+        test('then an error is reported', () {
+          expect(collector.errors, isNotEmpty);
+        });
+
+        test('then an deprecated error message is reported.', () {
+          var error = collector.errors.first as SourceSpanSeverityException;
+          expect(
+            error.message,
+            'The "api" property is deprecated. Use "!persist" instead.',
+          );
+
+          expect(error.severity, SourceSpanSeverity.info);
+        }, skip: collector.errors.isEmpty);
 
         test('then the generated entity should not be persisted.', () {
           expect(
@@ -336,10 +381,15 @@ void main() {
           greaterThan(0),
           reason: 'Expected an error, none was found.',
         );
-        expect(
-          collector.errors.last.message,
-          'The "api" property is mutually exclusive with the "parent" property.',
+
+        var message =
+            'The "api" property is mutually exclusive with the "parent" property.';
+
+        var hasError = collector.errors.any(
+          (error) => error.message == message,
         );
+
+        expect(hasError, isTrue, reason: 'Expected error message: $message');
       },
     );
   });
