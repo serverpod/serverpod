@@ -105,6 +105,56 @@ void main() {
       }
     });
   });
+
+  group('Given a class with table name when generating code', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName('example')
+          .withTableName('example_table')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: 'Example');
+    group(',', () {
+      var exampleClass = maybeClassNamedExample!;
+      test('then generated class still inherits from SerializableEntity', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+                name: 'SerializableEntity'),
+            isTrue,
+            reason: 'Missing extends clause for SerializableEntity');
+      });
+
+      test('then generated class has id in constructor', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
+                name: null, parameters: ['this.id']),
+            isTrue,
+            reason: 'Missing declaration for Example constructor');
+      });
+
+      test('then a class is generated with id field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+                name: 'id', type: 'int?'),
+            isTrue,
+            reason: 'Declaration for id field was should be generated');
+        expect(codeMap[expectedFileName], contains('int? id;'));
+      });
+    },
+        skip: maybeClassNamedExample == null
+            ? 'Could not run test because Example class was not found'
+            : false);
+  });
+
   group('Given a class with a none nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
