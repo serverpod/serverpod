@@ -351,4 +351,5 @@ class SerializableEntityAnalyzer {
     fieldDefinition.relation = ListRelationDefinition(
       referenceFieldName: referenceFields.first.name,
     );
+  }
 }
