@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 
 class FieldDefinitionBuilder {
   String _name;
@@ -24,11 +24,26 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withPrimaryKey() {
+    _name = 'id';
+    _type = TypeDefinition.int;
+
+    return this;
+  }
+
   FieldDefinitionBuilder withTypeDefinition(
     String className, [
     bool nullable = false,
   ]) {
     _type = TypeDefinition(className: className, nullable: nullable);
+    return this;
+  }
+
+  FieldDefinitionBuilder withIdType([bool isNullable = false]) {
+    _type = TypeDefinition.int;
+    if (isNullable) {
+      _type = _type.asNullable;
+    }
     return this;
   }
 
@@ -62,12 +77,10 @@ class FieldDefinitionBuilder {
     String parentTable,
     String referenceFieldName,
   ) {
-    _relation = ForeignRelationDefinition(
-      parentTable: parentTable,
-      referenceFieldName: referenceFieldName,
-      onUpdate: ForeignKeyAction.noAction,
-      onDelete: ForeignKeyAction.cascade,
-    );
+    _relation = ForeignRelationDefinitionBuilder()
+        .withParentTable(parentTable)
+        .withReferenceFieldName(referenceFieldName)
+        .build();
     return this;
   }
 

@@ -79,7 +79,7 @@ List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
       columns: [field.name],
       referenceTable: relation.parentTable,
       referenceTableSchema: 'public',
-      referenceColumns: [relation.referenceFieldName],
+      referenceColumns: ['id'],
       onDelete: relation.onDelete,
       onUpdate: relation.onUpdate,
     ));
