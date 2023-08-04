@@ -244,6 +244,39 @@ void main() {
   );
 
   test(
+    'Given a class with a field with the optional key set to an invalid value, then collect an error that value must be a boolean.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: Example?, relation(optional=INVALID)
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [definition!],
+      );
+
+      expect(collector.errors.length, greaterThan(0));
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'The value must be a boolean.');
+    },
+  );
+
+  test(
     'Given a class without a table but with a field with persist set, then collect an error that the field cannot be persisted without setting table.',
     () {
       var collector = CodeGenerationCollector();
@@ -305,7 +338,7 @@ void main() {
 
       var error = collector.errors.first;
 
-      expect(error.message, 'The value must be a boolean (true, false).');
+      expect(error.message, 'The value must be a boolean.');
     },
   );
 

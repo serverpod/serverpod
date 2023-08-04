@@ -250,6 +250,70 @@ void main() {
     );
 
     test(
+      'Given a class with a field with database set to an invalid value, then collect an error that the value must be a bool.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, database=INVALID
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          [],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message, 'The value must be a boolean.');
+      },
+    );
+
+    test(
+      'Given a class with a field with api set to an invalid value, then collect an error that the value must be a bool.',
+      () {
+        var collector = CodeGenerationCollector();
+        var protocol = ProtocolSource(
+          '''
+        class: Example
+        fields:
+          name: String, api=INVALID
+        ''',
+          Uri(path: 'lib/src/protocol/example.yaml'),
+          [],
+        );
+
+        var definition =
+            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+        SerializableEntityAnalyzer.validateYamlDefinition(
+          protocol.yaml,
+          protocol.yamlSourceUri.path,
+          collector,
+          definition,
+          [definition!],
+        );
+
+        expect(collector.errors.length, greaterThan(0));
+
+        var error = collector.errors.first;
+
+        expect(error.message, 'The value must be a boolean.');
+      },
+    );
+
+    test(
       'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
       () {
         var collector = CodeGenerationCollector();

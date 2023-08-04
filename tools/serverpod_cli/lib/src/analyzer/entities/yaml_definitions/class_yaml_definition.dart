@@ -70,6 +70,7 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
+                    valueRestriction: BooleanValue().validateNullable,
                   ),
                 },
               ),
@@ -88,6 +89,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.database,
+                valueRestriction: BooleanValue().validateNullable,
                 mutuallyExclusiveKeys: {
                   Keyword.api,
                   Keyword.scope,
@@ -96,6 +98,7 @@ class ClassYamlDefinition {
               ),
               ValidateNode(
                 Keyword.api,
+                valueRestriction: BooleanValue().validateNullable,
                 mutuallyExclusiveKeys: {
                   Keyword.database,
                   Keyword.scope,

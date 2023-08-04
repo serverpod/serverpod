@@ -656,7 +656,7 @@ class BooleanValue {
     if (!(boolValue == 'true' || boolValue == 'false')) {
       return [
         SourceSpanSeverityException(
-          'The value must be a boolean (true, false).',
+          'The value must be a boolean.',
           span,
         )
       ];
