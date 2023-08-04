@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE "channel" (
-  "id" serial,
+  "id" bigserial,
   "name" text NOT NULL,
   "channel" text NOT NULL
 );

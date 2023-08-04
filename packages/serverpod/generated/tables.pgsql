@@ -3,8 +3,8 @@
 --
 
 CREATE TABLE "serverpod_auth_key" (
-  "id" serial,
-  "userId" integer NOT NULL,
+  "id" bigserial,
+  "userId" bigint NOT NULL,
   "hash" text NOT NULL,
   "scopeNames" json NOT NULL,
   "method" text NOT NULL
@@ -21,7 +21,7 @@ CREATE INDEX serverpod_auth_key_userId_idx ON "serverpod_auth_key" USING btree (
 --
 
 CREATE TABLE "serverpod_cloud_storage" (
-  "id" serial,
+  "id" bigserial,
   "storageId" text NOT NULL,
   "path" text NOT NULL,
   "addedTime" timestamp without time zone NOT NULL,
@@ -42,7 +42,7 @@ CREATE INDEX serverpod_cloud_storage_expiration ON "serverpod_cloud_storage" USI
 --
 
 CREATE TABLE "serverpod_cloud_storage_direct_upload" (
-  "id" serial,
+  "id" bigserial,
   "storageId" text NOT NULL,
   "path" text NOT NULL,
   "expiration" timestamp without time zone NOT NULL,
@@ -60,7 +60,7 @@ CREATE UNIQUE INDEX serverpod_cloud_storage_direct_upload_storage_path ON "serve
 --
 
 CREATE TABLE "serverpod_future_call" (
-  "id" serial,
+  "id" bigserial,
   "name" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "serializedObject" text,
@@ -81,13 +81,13 @@ CREATE INDEX serverpod_future_call_identifier_idx ON "serverpod_future_call" USI
 --
 
 CREATE TABLE "serverpod_health_connection_info" (
-  "id" serial,
+  "id" bigserial,
   "serverId" text NOT NULL,
   "timestamp" timestamp without time zone NOT NULL,
-  "active" integer NOT NULL,
-  "closing" integer NOT NULL,
-  "idle" integer NOT NULL,
-  "granularity" integer NOT NULL
+  "active" bigint NOT NULL,
+  "closing" bigint NOT NULL,
+  "idle" bigint NOT NULL,
+  "granularity" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_health_connection_info"
@@ -101,13 +101,13 @@ CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON "serverpod
 --
 
 CREATE TABLE "serverpod_health_metric" (
-  "id" serial,
+  "id" bigserial,
   "name" text NOT NULL,
   "serverId" text NOT NULL,
   "timestamp" timestamp without time zone NOT NULL,
   "isHealthy" boolean NOT NULL,
   "value" double precision NOT NULL,
-  "granularity" integer NOT NULL
+  "granularity" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_health_metric"
@@ -121,7 +121,7 @@ CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_m
 --
 
 CREATE TABLE "serverpod_method" (
-  "id" serial,
+  "id" bigserial,
   "endpoint" text NOT NULL,
   "method" text NOT NULL
 );
@@ -137,8 +137,8 @@ CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON "serverpod_method" U
 --
 
 CREATE TABLE "serverpod_readwrite_test" (
-  "id" serial,
-  "number" integer NOT NULL
+  "id" bigserial,
+  "number" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_readwrite_test"
@@ -150,7 +150,7 @@ ALTER TABLE ONLY "serverpod_readwrite_test"
 --
 
 CREATE TABLE "serverpod_runtime_settings" (
-  "id" serial,
+  "id" bigserial,
   "logSettings" json NOT NULL,
   "logSettingsOverrides" json NOT NULL,
   "logServiceCalls" boolean NOT NULL,
@@ -166,18 +166,18 @@ ALTER TABLE ONLY "serverpod_runtime_settings"
 --
 
 CREATE TABLE "serverpod_session_log" (
-  "id" serial,
+  "id" bigserial,
   "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
   "module" text,
   "endpoint" text,
   "method" text,
   "duration" double precision,
-  "numQueries" integer,
+  "numQueries" bigint,
   "slow" boolean,
   "error" text,
   "stackTrace" text,
-  "authenticatedUserId" integer,
+  "authenticatedUserId" bigint,
   "isOpen" boolean,
   "touched" timestamp without time zone NOT NULL
 );
@@ -195,17 +195,17 @@ CREATE INDEX serverpod_session_log_isopen_idx ON "serverpod_session_log" USING b
 --
 
 CREATE TABLE "serverpod_query_log" (
-  "id" serial,
+  "id" bigserial,
   "serverId" text NOT NULL,
-  "sessionLogId" integer NOT NULL,
-  "messageId" integer,
+  "sessionLogId" bigint NOT NULL,
+  "messageId" bigint,
   "query" text NOT NULL,
   "duration" double precision NOT NULL,
-  "numRows" integer,
+  "numRows" bigint,
   "error" text,
   "stackTrace" text,
   "slow" boolean NOT NULL,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_query_log"
@@ -224,17 +224,17 @@ ALTER TABLE ONLY "serverpod_query_log"
 --
 
 CREATE TABLE "serverpod_message_log" (
-  "id" serial,
-  "sessionLogId" integer NOT NULL,
+  "id" bigserial,
+  "sessionLogId" bigint NOT NULL,
   "serverId" text NOT NULL,
-  "messageId" integer NOT NULL,
+  "messageId" bigint NOT NULL,
   "endpoint" text NOT NULL,
   "messageName" text NOT NULL,
   "duration" double precision NOT NULL,
   "error" text,
   "stackTrace" text,
   "slow" boolean NOT NULL,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_message_log"
@@ -251,17 +251,17 @@ ALTER TABLE ONLY "serverpod_message_log"
 --
 
 CREATE TABLE "serverpod_log" (
-  "id" serial,
-  "sessionLogId" integer NOT NULL,
-  "messageId" integer,
+  "id" bigserial,
+  "sessionLogId" bigint NOT NULL,
+  "messageId" bigint,
   "reference" text,
   "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
-  "logLevel" integer NOT NULL,
+  "logLevel" bigint NOT NULL,
   "message" text NOT NULL,
   "error" text,
   "stackTrace" text,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_log"
