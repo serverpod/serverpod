@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class FieldDefinitionBuilder {
   String _name;
@@ -50,6 +51,13 @@ class FieldDefinitionBuilder {
     return this;
   }
 
+  FieldDefinitionBuilder withRelation(
+    RelationDefinition relation,
+  ) {
+    _relation = relation;
+    return this;
+  }
+
   FieldDefinitionBuilder withRelationTo(
     String parentTable,
     String referenceFieldName,
@@ -57,6 +65,7 @@ class FieldDefinitionBuilder {
     _relation = ForeignRelationDefinition(
       parentTable: parentTable,
       referenceFieldName: referenceFieldName,
+      onUpdate: ForeignKeyAction.noAction,
     );
     return this;
   }

@@ -3,6 +3,8 @@ import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
+
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -172,11 +174,13 @@ class EntityParser {
     var isEnum = _parseIsEnumField(value);
 
     RelationDefinition? relation;
+    var onUpdate = _parseOnUpdate(value);
 
     if (parentTable != null) {
       relation = ForeignRelationDefinition(
         parentTable: parentTable,
         referenceFieldName: 'id',
+        onUpdate: onUpdate,
       );
     } else if (scalarFieldName != null) {
       relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
@@ -190,6 +194,7 @@ class EntityParser {
           name: scalarFieldName,
           relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
+            onUpdate: onUpdate,
           ),
           shouldPersist: true,
           scope: scope,
@@ -222,6 +227,24 @@ class EntityParser {
     if (type.startsWith('List')) return null;
 
     return '${fieldName}Id';
+  }
+
+  static ForeignKeyAction _parseOnUpdate(YamlMap value) {
+    var onUpdateDefault = ForeignKeyAction.noAction;
+    var onUpdate = _parseRelationNode(value, Keyword.onUpdate)?.value;
+    if (onUpdate is! String) return onUpdateDefault;
+
+    return convertToEnum(
+      value: onUpdate,
+      enumDefault: onUpdateDefault,
+      enumValues: ForeignKeyAction.values,
+    );
+  }
+
+  static YamlNode? _parseRelationNode(YamlMap node, String key) {
+    var relation = node.nodes[Keyword.relation]?.value;
+    if (relation is! YamlMap) return null;
+    return relation.nodes[key];
   }
 
   static bool _isRelation(YamlMap documentContents) {
