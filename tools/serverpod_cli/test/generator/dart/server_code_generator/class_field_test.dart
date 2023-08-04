@@ -112,6 +112,329 @@ void main() {
     });
   });
 
+  group('Given a class with table name when generating code', () {
+    var tableName = 'example_table';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+
+    test('then class named $testClassName is generated.', () {
+      expect(
+        maybeClassNamedExample,
+        isNotNull,
+        reason: 'Missing definition for class named $testClassName.',
+      );
+    });
+
+    group('then class named $testClassName', () {
+      var exampleClass = maybeClassNamedExample!;
+      test('inherits from TableRow.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+                name: 'TableRow'),
+            isTrue,
+            reason: 'Missing extends clause for TableRow.');
+      });
+
+      test('has id in constructor passed to super.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
+                name: null, parameters: ['int? id'], superArguments: ['id']),
+            isTrue,
+            reason:
+                'Missing declaration for $testClassName constructor with nullable id field passed to super.');
+      });
+
+      test('has static Singleton instance.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+                name: 't',
+                isFinal: true,
+                isStatic: true,
+                initializerMethod: '${testClassName}Table'),
+            isTrue,
+            reason: 'Missing declaration for ${testClassName}Table singleton.');
+      });
+
+      test('has "tableName" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'tableName'),
+            isTrue,
+            reason: 'Missing declaration for "tableName" method.');
+      });
+
+      test('is NOT generated with id field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+                name: 'id'),
+            isFalse,
+            reason: 'Declaration for id field should not be generated.');
+      });
+
+      test('has toJsonForDatabase method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'toJsonForDatabase'),
+            isTrue,
+            reason: 'Missing declaration for toJsonForDatabase method.');
+      });
+
+      test('has setColumn method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'setColumn'),
+            isTrue,
+            reason: 'Missing declaration for setColumn method.');
+      });
+
+      test('has a static "find" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'find', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "find" method.');
+      });
+
+      test('has static "findSingleRow" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'findSingleRow', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "findSingleRow" method.');
+      });
+
+      test('has findById static method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'findById', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "findById" method.');
+      });
+
+      test('has static "delete" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'delete', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "delete" method.');
+      });
+
+      test('has static "deleteRow" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'deleteRow', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration static "deleteRow" method.');
+      });
+
+      test('has static "update" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'update', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "update" method.');
+      });
+
+      test('has static "insert" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'insert', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "insert" method.');
+      });
+
+      test('has static "count" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+                name: 'count', isStatic: true),
+            isTrue,
+            reason: 'Missing declaration for static "count" method.');
+      });
+    }, skip: maybeClassNamedExample == null);
+
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    test('then class named ${testClassName}Table is generated.', () {
+      expect(
+        maybeClassNamedExampleTable,
+        isNotNull,
+        reason: 'Missing definition for class named ${testClassName}Table',
+      );
+    });
+    group('then class named ${testClassName}Table', () {
+      var exampleTableClass = maybeClassNamedExampleTable!;
+      test('inherits from Table.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleTableClass,
+                name: 'Table'),
+            isTrue,
+            reason: 'Missing extends clause for Table.');
+      });
+
+      test('has empty constructor that passes table name to super.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(exampleTableClass,
+                name: null,
+                parameters: [],
+                superArguments: ['tableName: \'$tableName\'']),
+            isTrue,
+            reason:
+                'Missing declaration for $testClassName constructor with nullable id field passed to super.');
+      });
+
+      test('has "columns" method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
+                name: 'columns'),
+            isTrue,
+            reason: 'Missing declaration for "columns" getter.');
+      });
+    }, skip: maybeClassNamedExampleTable == null);
+
+    test(
+        'then top level variable t$testClassName marked deprecated is generated.',
+        () {
+      expect(
+          CompilationUnitHelpers.hasTopLevelVariableDeclaration(compilationUnit,
+              name: 't$testClassName', annotations: ['Deprecated']),
+          isTrue,
+          reason:
+              'Missing top level variable declaration for "t$testClassName" marked deprecated.');
+    });
+
+    test('then type alias ${testClassName}ExpressionBuilder is generated.', () {
+      expect(
+          CompilationUnitHelpers.hasTypeAliasDeclaration(compilationUnit,
+              name: '${testClassName}ExpressionBuilder'),
+          isTrue,
+          reason:
+              'Missing type alias for "${testClassName}ExpressionBuilder".');
+    });
+  });
+
+  group(
+      'Given a class with table name and persistent field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withField(
+            SerializableEntityFieldDefinition(
+                name: 'title',
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.all,
+                shouldPersist: true),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    group('then class named ${testClassName}Table', () {
+      test('has class variable for field.', () {
+        var exampleTableClass = maybeClassNamedExampleTable!;
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleTableClass,
+                name: 'title', isFinal: true),
+            isTrue,
+            reason: 'Missing declaration for title field.');
+      });
+
+      test('has field included in columns.', () {
+        var exampleTableClass = maybeClassNamedExampleTable!;
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
+                name: 'columns', functionExpression: '[id, title]'),
+            isTrue,
+            reason: 'Missing title field in columns.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found'
+            : false);
+  });
+
+  group(
+      'Given a class with table name and NON persistent field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withField(
+            SerializableEntityFieldDefinition(
+                name: 'title',
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.all,
+                shouldPersist: false),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    group('then class named ${testClassName}Table', () {
+      test(
+        'does NOT have class variable for field.',
+        () {
+          var exampleTableClass = maybeClassNamedExampleTable!;
+          expect(
+              CompilationUnitHelpers.hasFieldDeclaration(exampleTableClass,
+                  name: 'title', isFinal: true),
+              isFalse,
+              reason: 'Should not have declaration for title field.');
+        },
+      );
+
+      test('does NOT have field included in columns.', () {
+        var exampleTableClass = maybeClassNamedExampleTable!;
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
+                name: 'columns', functionExpression: '[id]'),
+            isTrue,
+            reason: 'Should not include field in columns.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
+  });
+
   group('Given a class with a none nullable field when generating code', () {
     var entities = [
       ClassDefinitionBuilder()
