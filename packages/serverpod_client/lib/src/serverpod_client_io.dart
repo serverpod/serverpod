@@ -15,7 +15,7 @@ import 'serverpod_client_shared_private.dart';
 /// (for Flutter native apps).
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
-  final Duration timeout;
+  Duration timeout;
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
