@@ -54,6 +54,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
 //      print('host: $host');
 //      print('port: $port');
 //      return false;
+      if (logFailedCalls) {
+        print('Failed to verify server certificate');
+      }
       _onFailedCall?.call(Exception('Failed to verify server certificate'));
       return true;
     });
@@ -123,6 +126,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
       _onSucceededCall?.call();
       return result;
     }, onError: (e) {
+      if (logFailedCalls) {
+        print('Request failed with response code: ${response.statusCode}');
+        print('$e');
+      }
       _onFailedCall?.call(e);
     });
     return completer.future;
