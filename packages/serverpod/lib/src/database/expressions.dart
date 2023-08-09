@@ -358,6 +358,22 @@ class Constant extends Expression {
   }
 }
 
+/// A relation between two tables.
+class TableRelation {
+  /// Column in the foreign table.
+  final Column foreignColumn;
+
+  /// Column in the referencing table.
+  final Column column;
+
+  /// Creates a new [TableRelation]. Typically, this is done only by generated
+  /// code.
+  TableRelation({
+    required this.foreignColumn,
+    required this.column,
+  });
+}
+
 /// Represents a database table.
 class Table {
   /// Name of the table as used in the database.
@@ -370,6 +386,12 @@ class Table {
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({required this.tableName, List<Column>? columns}) {
     _columns = columns;
+  }
+
+  /// Returns [TableRelation] for the given [relationField]. If no relation
+  /// exists, returns null.
+  TableRelation? getRelation(String relationField) {
+    return null;
   }
 
   @override
