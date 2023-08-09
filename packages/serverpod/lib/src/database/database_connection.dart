@@ -111,11 +111,13 @@ class DatabaseConnection {
     int id, {
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
     var result = await find<T>(
       where: Expression('id = $id'),
       session: session,
       transaction: transaction,
+      include: include,
     );
     if (result.isEmpty) return null;
     return result[0];
@@ -132,6 +134,7 @@ class DatabaseConnection {
     bool useCache = true,
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
     assert(orderByList == null || orderBy == null);
     var table = session.serverpod.serializationManager.getTableForType(T);
@@ -195,6 +198,7 @@ Current type was $T''');
     bool useCache = true,
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
     var result = await find<T>(
       where: where,
@@ -205,6 +209,7 @@ Current type was $T''');
       offset: offset,
       session: session,
       transaction: transaction,
+      include: include,
     );
 
     if (result.isEmpty) {
@@ -738,4 +743,14 @@ class Transaction {
   /// The Postgresql execution context associated with a running transaction.
   final PostgreSQLExecutionContext postgresContext;
   Transaction._(this.postgresContext);
+}
+
+/// Defines what tables to join when querying a table.
+abstract class Include {
+  /// Map containing the relation field name as key and the [Include] object
+  /// for the foreign table as value.
+  Map<String, Include?> get includes;
+
+  /// Accessor for the [Table] this include is for.
+  Table get table;
 }
