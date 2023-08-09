@@ -1,0 +1,4 @@
+class: Town
+table: town
+fields:
+  name: String

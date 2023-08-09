@@ -1,4 +1,31 @@
 --
+-- Class Citizen as table citizen
+--
+
+CREATE TABLE "citizen" (
+  "id" serial,
+  "name" text NOT NULL,
+  "companyId" integer NOT NULL,
+  "oldCompanyId" integer
+);
+
+ALTER TABLE ONLY "citizen"
+  ADD CONSTRAINT citizen_pkey PRIMARY KEY (id);
+
+--
+-- Class Company as table company
+--
+
+CREATE TABLE "company" (
+  "id" serial,
+  "name" text NOT NULL,
+  "townId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "company"
+  ADD CONSTRAINT company_pkey PRIMARY KEY (id);
+
+--
 -- Class ObjectFieldScopes as table object_field_scopes
 --
 
@@ -133,6 +160,18 @@ ALTER TABLE ONLY "simple_data"
   ADD CONSTRAINT simple_data_pkey PRIMARY KEY (id);
 
 --
+-- Class Town as table town
+--
+
+CREATE TABLE "town" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "town"
+  ADD CONSTRAINT town_pkey PRIMARY KEY (id);
+
+--
 -- Class Types as table types
 --
 
@@ -150,6 +189,31 @@ CREATE TABLE "types" (
 
 ALTER TABLE ONLY "types"
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
+
+--
+-- Foreign relations for "citizen" table
+--
+
+ALTER TABLE ONLY "citizen"
+  ADD CONSTRAINT citizen_fk_0
+    FOREIGN KEY("companyId")
+      REFERENCES company(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "citizen"
+  ADD CONSTRAINT citizen_fk_1
+    FOREIGN KEY("oldCompanyId")
+      REFERENCES company(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "company" table
+--
+
+ALTER TABLE ONLY "company"
+  ADD CONSTRAINT company_fk_0
+    FOREIGN KEY("townId")
+      REFERENCES town(id)
+        ON DELETE CASCADE;
 
 --
 -- Foreign relations for "object_with_parent" table
