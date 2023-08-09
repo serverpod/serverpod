@@ -120,6 +120,7 @@ class EmailCreateAccountRequest extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailCreateAccountRequestInclude? include,
   }) async {
     return session.db.find<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -130,6 +131,7 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -141,6 +143,7 @@ class EmailCreateAccountRequest extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailCreateAccountRequestInclude? include,
   }) async {
     return session.db.findSingleRow<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -149,14 +152,19 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<EmailCreateAccountRequest?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<EmailCreateAccountRequest>(id);
+    int id, {
+    EmailCreateAccountRequestInclude? include,
+  }) async {
+    return session.db.findById<EmailCreateAccountRequest>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -256,3 +264,12 @@ class EmailCreateAccountRequestTable extends _i1.Table {
 @Deprecated('Use EmailCreateAccountRequestTable.t instead.')
 EmailCreateAccountRequestTable tEmailCreateAccountRequest =
     EmailCreateAccountRequestTable();
+
+class EmailCreateAccountRequestInclude extends _i1.Include {
+  EmailCreateAccountRequestInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailCreateAccountRequest.t;
+}

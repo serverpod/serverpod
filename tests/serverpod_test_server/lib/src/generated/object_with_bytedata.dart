@@ -83,6 +83,7 @@ class ObjectWithByteData extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithByteDataInclude? include,
   }) async {
     return session.db.find<ObjectWithByteData>(
       where: where != null ? where(ObjectWithByteData.t) : null,
@@ -93,6 +94,7 @@ class ObjectWithByteData extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -104,6 +106,7 @@ class ObjectWithByteData extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithByteDataInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithByteData>(
       where: where != null ? where(ObjectWithByteData.t) : null,
@@ -112,14 +115,19 @@ class ObjectWithByteData extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ObjectWithByteData?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithByteData>(id);
+    int id, {
+    ObjectWithByteDataInclude? include,
+  }) async {
+    return session.db.findById<ObjectWithByteData>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -204,3 +212,12 @@ class ObjectWithByteDataTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithByteDataTable.t instead.')
 ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
+
+class ObjectWithByteDataInclude extends _i1.Include {
+  ObjectWithByteDataInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithByteData.t;
+}

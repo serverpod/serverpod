@@ -192,6 +192,7 @@ class LogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    LogEntryInclude? include,
   }) async {
     return session.db.find<LogEntry>(
       where: where != null ? where(LogEntry.t) : null,
@@ -202,6 +203,7 @@ class LogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -213,6 +215,7 @@ class LogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    LogEntryInclude? include,
   }) async {
     return session.db.findSingleRow<LogEntry>(
       where: where != null ? where(LogEntry.t) : null,
@@ -221,14 +224,19 @@ class LogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<LogEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<LogEntry>(id);
+    int id, {
+    LogEntryInclude? include,
+  }) async {
+    return session.db.findById<LogEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -349,3 +357,12 @@ class LogEntryTable extends _i1.Table {
 
 @Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();
+
+class LogEntryInclude extends _i1.Include {
+  LogEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => LogEntry.t;
+}

@@ -95,6 +95,7 @@ class Channel extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ChannelInclude? include,
   }) async {
     return session.db.find<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -105,6 +106,7 @@ class Channel extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -116,6 +118,7 @@ class Channel extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ChannelInclude? include,
   }) async {
     return session.db.findSingleRow<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -124,14 +127,19 @@ class Channel extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<Channel?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Channel>(id);
+    int id, {
+    ChannelInclude? include,
+  }) async {
+    return session.db.findById<Channel>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -220,3 +228,12 @@ class ChannelTable extends _i1.Table {
 
 @Deprecated('Use ChannelTable.t instead.')
 ChannelTable tChannel = ChannelTable();
+
+class ChannelInclude extends _i1.Include {
+  ChannelInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => Channel.t;
+}

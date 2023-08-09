@@ -85,6 +85,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ReadWriteTestEntryInclude? include,
   }) async {
     return session.db.find<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -95,6 +96,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -106,6 +108,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ReadWriteTestEntryInclude? include,
   }) async {
     return session.db.findSingleRow<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -114,14 +117,19 @@ class ReadWriteTestEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ReadWriteTestEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ReadWriteTestEntry>(id);
+    int id, {
+    ReadWriteTestEntryInclude? include,
+  }) async {
+    return session.db.findById<ReadWriteTestEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -207,3 +215,12 @@ class ReadWriteTestEntryTable extends _i1.Table {
 
 @Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
+
+class ReadWriteTestEntryInclude extends _i1.Include {
+  ReadWriteTestEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ReadWriteTestEntry.t;
+}

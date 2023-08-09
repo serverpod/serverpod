@@ -122,6 +122,7 @@ class RuntimeSettings extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    RuntimeSettingsInclude? include,
   }) async {
     return session.db.find<RuntimeSettings>(
       where: where != null ? where(RuntimeSettings.t) : null,
@@ -132,6 +133,7 @@ class RuntimeSettings extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -143,6 +145,7 @@ class RuntimeSettings extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    RuntimeSettingsInclude? include,
   }) async {
     return session.db.findSingleRow<RuntimeSettings>(
       where: where != null ? where(RuntimeSettings.t) : null,
@@ -151,14 +154,19 @@ class RuntimeSettings extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<RuntimeSettings?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<RuntimeSettings>(id);
+    int id, {
+    RuntimeSettingsInclude? include,
+  }) async {
+    return session.db.findById<RuntimeSettings>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -256,3 +264,12 @@ class RuntimeSettingsTable extends _i1.Table {
 
 @Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
+
+class RuntimeSettingsInclude extends _i1.Include {
+  RuntimeSettingsInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => RuntimeSettings.t;
+}

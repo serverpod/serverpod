@@ -93,6 +93,7 @@ class ObjectWithIndex extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithIndexInclude? include,
   }) async {
     return session.db.find<ObjectWithIndex>(
       where: where != null ? where(ObjectWithIndex.t) : null,
@@ -103,6 +104,7 @@ class ObjectWithIndex extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -114,6 +116,7 @@ class ObjectWithIndex extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithIndexInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithIndex>(
       where: where != null ? where(ObjectWithIndex.t) : null,
@@ -122,14 +125,19 @@ class ObjectWithIndex extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ObjectWithIndex?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithIndex>(id);
+    int id, {
+    ObjectWithIndexInclude? include,
+  }) async {
+    return session.db.findById<ObjectWithIndex>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -217,3 +225,12 @@ class ObjectWithIndexTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithIndexTable.t instead.')
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
+
+class ObjectWithIndexInclude extends _i1.Include {
+  ObjectWithIndexInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithIndex.t;
+}

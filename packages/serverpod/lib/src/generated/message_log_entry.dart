@@ -192,6 +192,7 @@ class MessageLogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    MessageLogEntryInclude? include,
   }) async {
     return session.db.find<MessageLogEntry>(
       where: where != null ? where(MessageLogEntry.t) : null,
@@ -202,6 +203,7 @@ class MessageLogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -213,6 +215,7 @@ class MessageLogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    MessageLogEntryInclude? include,
   }) async {
     return session.db.findSingleRow<MessageLogEntry>(
       where: where != null ? where(MessageLogEntry.t) : null,
@@ -221,14 +224,19 @@ class MessageLogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<MessageLogEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<MessageLogEntry>(id);
+    int id, {
+    MessageLogEntryInclude? include,
+  }) async {
+    return session.db.findById<MessageLogEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -352,3 +360,12 @@ class MessageLogEntryTable extends _i1.Table {
 
 @Deprecated('Use MessageLogEntryTable.t instead.')
 MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
+
+class MessageLogEntryInclude extends _i1.Include {
+  MessageLogEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => MessageLogEntry.t;
+}

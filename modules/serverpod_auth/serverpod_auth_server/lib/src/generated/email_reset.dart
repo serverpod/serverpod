@@ -108,6 +108,7 @@ class EmailReset extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailResetInclude? include,
   }) async {
     return session.db.find<EmailReset>(
       where: where != null ? where(EmailReset.t) : null,
@@ -118,6 +119,7 @@ class EmailReset extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -129,6 +131,7 @@ class EmailReset extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailResetInclude? include,
   }) async {
     return session.db.findSingleRow<EmailReset>(
       where: where != null ? where(EmailReset.t) : null,
@@ -137,14 +140,19 @@ class EmailReset extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<EmailReset?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<EmailReset>(id);
+    int id, {
+    EmailResetInclude? include,
+  }) async {
+    return session.db.findById<EmailReset>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -237,3 +245,12 @@ class EmailResetTable extends _i1.Table {
 
 @Deprecated('Use EmailResetTable.t instead.')
 EmailResetTable tEmailReset = EmailResetTable();
+
+class EmailResetInclude extends _i1.Include {
+  EmailResetInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailReset.t;
+}

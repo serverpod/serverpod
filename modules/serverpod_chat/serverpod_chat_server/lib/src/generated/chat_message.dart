@@ -170,6 +170,7 @@ class ChatMessage extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ChatMessageInclude? include,
   }) async {
     return session.db.find<ChatMessage>(
       where: where != null ? where(ChatMessage.t) : null,
@@ -180,6 +181,7 @@ class ChatMessage extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -191,6 +193,7 @@ class ChatMessage extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ChatMessageInclude? include,
   }) async {
     return session.db.findSingleRow<ChatMessage>(
       where: where != null ? where(ChatMessage.t) : null,
@@ -199,14 +202,19 @@ class ChatMessage extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ChatMessage?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ChatMessage>(id);
+    int id, {
+    ChatMessageInclude? include,
+  }) async {
+    return session.db.findById<ChatMessage>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -312,3 +320,12 @@ class ChatMessageTable extends _i1.Table {
 
 @Deprecated('Use ChatMessageTable.t instead.')
 ChatMessageTable tChatMessage = ChatMessageTable();
+
+class ChatMessageInclude extends _i1.Include {
+  ChatMessageInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ChatMessage.t;
+}

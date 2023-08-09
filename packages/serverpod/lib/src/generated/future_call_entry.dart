@@ -131,6 +131,7 @@ class FutureCallEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    FutureCallEntryInclude? include,
   }) async {
     return session.db.find<FutureCallEntry>(
       where: where != null ? where(FutureCallEntry.t) : null,
@@ -141,6 +142,7 @@ class FutureCallEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -152,6 +154,7 @@ class FutureCallEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    FutureCallEntryInclude? include,
   }) async {
     return session.db.findSingleRow<FutureCallEntry>(
       where: where != null ? where(FutureCallEntry.t) : null,
@@ -160,14 +163,19 @@ class FutureCallEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<FutureCallEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<FutureCallEntry>(id);
+    int id, {
+    FutureCallEntryInclude? include,
+  }) async {
+    return session.db.findById<FutureCallEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -269,3 +277,12 @@ class FutureCallEntryTable extends _i1.Table {
 
 @Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();
+
+class FutureCallEntryInclude extends _i1.Include {
+  FutureCallEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => FutureCallEntry.t;
+}

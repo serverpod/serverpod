@@ -109,6 +109,7 @@ class EmailFailedSignIn extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailFailedSignInInclude? include,
   }) async {
     return session.db.find<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -119,6 +120,7 @@ class EmailFailedSignIn extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -130,6 +132,7 @@ class EmailFailedSignIn extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    EmailFailedSignInInclude? include,
   }) async {
     return session.db.findSingleRow<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -138,14 +141,19 @@ class EmailFailedSignIn extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<EmailFailedSignIn?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<EmailFailedSignIn>(id);
+    int id, {
+    EmailFailedSignInInclude? include,
+  }) async {
+    return session.db.findById<EmailFailedSignIn>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -239,3 +247,12 @@ class EmailFailedSignInTable extends _i1.Table {
 
 @Deprecated('Use EmailFailedSignInTable.t instead.')
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
+
+class EmailFailedSignInInclude extends _i1.Include {
+  EmailFailedSignInInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailFailedSignIn.t;
+}

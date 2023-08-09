@@ -119,6 +119,7 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CloudStorageDirectUploadEntryInclude? include,
   }) async {
     return session.db.find<CloudStorageDirectUploadEntry>(
       where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
@@ -129,6 +130,7 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -140,6 +142,7 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CloudStorageDirectUploadEntryInclude? include,
   }) async {
     return session.db.findSingleRow<CloudStorageDirectUploadEntry>(
       where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
@@ -148,14 +151,19 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<CloudStorageDirectUploadEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<CloudStorageDirectUploadEntry>(id);
+    int id, {
+    CloudStorageDirectUploadEntryInclude? include,
+  }) async {
+    return session.db.findById<CloudStorageDirectUploadEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -255,3 +263,12 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
 @Deprecated('Use CloudStorageDirectUploadEntryTable.t instead.')
 CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();
+
+class CloudStorageDirectUploadEntryInclude extends _i1.Include {
+  CloudStorageDirectUploadEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => CloudStorageDirectUploadEntry.t;
+}
