@@ -148,16 +148,34 @@ Current type was $T''');
     where ??= Expression('TRUE');
 
     var tableName = table.tableName;
-    var query = 'SELECT * FROM $tableName WHERE $where';
+    var selectQuery = 'SELECT ';
+    var columns = table.columns;
+    for (var index = 0; index < table.columns.length; index++) {
+      var column = columns[index];
+      selectQuery += '${index == 0 ? '' : ', '}$tableName.${column.toString()}';
+    }
+
+    var joinQuery = '';
+    if (include != null) {
+      var queryFromIncludes =
+          _createQueryFromIncludes(include, table, tableName);
+      selectQuery += queryFromIncludes.select;
+      joinQuery += queryFromIncludes.join;
+    }
+
+    var query = '$selectQuery FROM $tableName $joinQuery';
+
+    query += 'WHERE $where';
+
     if (orderBy != null) {
-      query += ' ORDER BY $orderBy';
+      query += ' ORDER BY $tableName.$orderBy';
       if (orderDescending) query += ' DESC';
     } else if (orderByList != null) {
       assert(orderByList.isNotEmpty);
 
       var strList = <String>[];
       for (var order in orderByList) {
-        strList.add(order.toString());
+        strList.add('$tableName.${order.toString()}');
       }
 
       query += ' ORDER BY ${strList.join(',')}';
@@ -178,7 +196,20 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        var rawTableRow = rawRow[tableName];
+        if (rawTableRow == null) continue;
+
+        if (include != null) {
+          rawTableRow = _resolveRowDataHierarchy(
+            include,
+            table,
+            rawRow,
+            rawTableRow,
+            tableName,
+          );
+        }
+
+        list.add(_formatTableRow<T>(tableName, rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -187,6 +218,81 @@ Current type was $T''');
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
     return list.cast<T>();
+  }
+
+  Map<String, dynamic> _resolveRowDataHierarchy(
+    Include include,
+    Table table,
+    Map<String, Map<String, dynamic>> rawRow,
+    Map<String, dynamic> parentTableRow,
+    String prefix,
+  ) {
+    include.includes.forEach((relationField, relationInclude) {
+      if (relationInclude == null) return;
+
+      var rawRelationTableRow = rawRow[relationInclude.table.tableName];
+      if (rawRelationTableRow == null) return;
+
+      var includePrefix = _createIncludePrefix(prefix, relationField);
+
+      var nonPrefixedRelationTableRow = <String, dynamic>{};
+      for (var column in relationInclude.table.columns) {
+        var columnName = column.columnName;
+        var includePrefixedColumnName = '$includePrefix.${column.columnName}';
+
+        var columnData = rawRelationTableRow[includePrefixedColumnName];
+        if (columnData != null) {
+          nonPrefixedRelationTableRow[columnName] =
+              rawRelationTableRow[includePrefixedColumnName];
+        }
+      }
+
+      if (nonPrefixedRelationTableRow.isNotEmpty) {
+        parentTableRow[relationField] = _resolveRowDataHierarchy(
+          relationInclude,
+          relationInclude.table,
+          rawRow,
+          nonPrefixedRelationTableRow,
+          includePrefix,
+        );
+      }
+    });
+
+    return parentTableRow;
+  }
+
+  _IncludeQueryStrings _createQueryFromIncludes(
+    Include include,
+    Table table,
+    String prefix,
+  ) {
+    String select = '';
+    String join = '';
+    include.includes.forEach((relationField, relationInclude) {
+      if (relationInclude == null) return;
+
+      var relation = table.getRelation(relationField);
+      if (relation == null) return;
+
+      var includePrefix = _createIncludePrefix(prefix, relationField);
+      for (var column in relationInclude.table.columns) {
+        select +=
+            ', $includePrefix.${column.toString()} AS "$includePrefix.${column.columnName}"';
+      }
+
+      join +=
+          'LEFT JOIN ${relationInclude.table.tableName} AS $includePrefix ON $prefix.${relation.column} = $includePrefix.${relation.foreignColumn} ';
+      var queryFromIncludes = _createQueryFromIncludes(
+          relationInclude, relationInclude.table, '${prefix}_$relationField');
+      join += queryFromIncludes.join;
+      select += queryFromIncludes.select;
+    });
+
+    return _IncludeQueryStrings(select: select, join: join);
+  }
+
+  String _createIncludePrefix(String prefix, String relationField) {
+    return '${prefix}_$relationField';
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -221,10 +327,10 @@ Current type was $T''');
 
   //TODO: is this still needed?
   T? _formatTableRow<T extends TableRow>(
-      String tableName, Map<String, dynamic>? rawRow) {
+      String tableName, Map<String, dynamic> rawRow) {
     var data = <String, dynamic>{};
 
-    for (var columnName in rawRow!.keys) {
+    for (var columnName in rawRow.keys) {
       var value = rawRow[columnName];
 
       if (value is DateTime) {
@@ -452,7 +558,9 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        var rawTableRow = rawRow[tableName];
+        if (rawTableRow == null) continue;
+        list.add(_formatTableRow<T>(tableName, rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -713,6 +821,13 @@ Current type was $T''');
       retryIf: retryIf,
     );
   }
+}
+
+class _IncludeQueryStrings {
+  final String select;
+  final String join;
+
+  _IncludeQueryStrings({required this.select, required this.join});
 }
 
 /// A function performing a transaction, passed to the transaction method.
