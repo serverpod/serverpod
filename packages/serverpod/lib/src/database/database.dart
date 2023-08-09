@@ -33,12 +33,14 @@ class Database {
   Future<T?> findById<T extends TableRow>(
     int id, {
     Transaction? transaction,
+    Include? include,
   }) async {
     var conn = await databaseConnection;
     return await conn.findById<T>(
       id,
       session: session,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -55,6 +57,7 @@ class Database {
     bool orderDescending = false,
     bool useCache = true,
     Transaction? transaction,
+    Include? include,
   }) async {
     var conn = await databaseConnection;
 
@@ -68,6 +71,7 @@ class Database {
       useCache: useCache,
       session: session,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -81,6 +85,7 @@ class Database {
     bool orderDescending = false,
     bool useCache = true,
     Transaction? transaction,
+    Include? include,
   }) async {
     var conn = await databaseConnection;
 
@@ -92,6 +97,7 @@ class Database {
       useCache: useCache,
       session: session,
       transaction: transaction,
+      include: include,
     );
   }
 

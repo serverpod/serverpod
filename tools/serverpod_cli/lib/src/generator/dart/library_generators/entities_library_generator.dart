@@ -301,6 +301,13 @@ class SerializableEntityLibraryGenerator {
                       ..url = 'package:serverpod/serverpod.dart')
                     ..name = 'transaction'
                     ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Include'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'include'
+                    ..named = true),
                 ])
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
@@ -320,6 +327,7 @@ class SerializableEntityLibraryGenerator {
                       'orderDescending': refer('orderDescending'),
                       'useCache': refer('useCache'),
                       'transaction': refer('transaction'),
+                      'include': refer('include'),
                     }, [
                       refer(className)
                     ])
@@ -382,6 +390,13 @@ class SerializableEntityLibraryGenerator {
                       ..url = 'package:serverpod/serverpod.dart')
                     ..name = 'transaction'
                     ..named = true),
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Include'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'include'
+                    ..named = true),
                 ])
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
@@ -399,6 +414,7 @@ class SerializableEntityLibraryGenerator {
                       'orderDescending': refer('orderDescending'),
                       'useCache': refer('useCache'),
                       'transaction': refer('transaction'),
+                      'include': refer('include'),
                     }, [
                       refer(className)
                     ])
@@ -427,11 +443,21 @@ class SerializableEntityLibraryGenerator {
                     ..type = refer('int')
                     ..name = 'id'),
                 ])
+                ..optionalParameters.add(
+                  Parameter((p) => p
+                    ..type = TypeReference((b) => b
+                      ..isNullable = true
+                      ..symbol = 'Include'
+                      ..url = 'package:serverpod/serverpod.dart')
+                    ..name = 'include'
+                    ..named = true),
+                )
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
                     .property('db')
                     .property('findById')
-                    .call([refer('id')], {}, [refer(className)])
+                    .call([refer('id')], {'include': refer('include')},
+                        [refer(className)])
                     .returned
                     .statement));
 
