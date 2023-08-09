@@ -26,6 +26,7 @@ dart test test/websocket_test.dart
 dart test test/types_test.dart
 dart test test/migrations_test.dart
 dart test test/exception_test.dart
+dart test test/relation_test.dart
 
 #echo "### Running unit tests"
 #cd ../../packages/serverpod
