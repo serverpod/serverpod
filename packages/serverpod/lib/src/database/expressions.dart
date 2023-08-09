@@ -621,6 +621,12 @@ class Table {
     _columns = columns;
   }
 
+  /// Returns [TableColumnRelation] for the given [relationField]. If no relation
+  /// exists, returns null.
+  Table? getRelationTable(String relationField) {
+    return null;
+  }
+
   @override
   String toString() {
     var str = '$tableName\n';
