@@ -88,68 +88,6 @@ List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {
 }
 
 void _sortTableDefinitions(List<TableDefinition> tables) {
-  // First sort by name to make sure that we get consistent output
+  // Sort by name to make sure that we get consistent output
   tables.sort((a, b) => a.name.compareTo(b.name));
-
-  // Force to run at least one time
-  var movedEntry = true;
-
-  // Move tables with dependencies down the list until all dependencies are
-  // resolved
-  while (movedEntry) {
-    movedEntry = false;
-    var visitedTableNames = <String>{};
-
-    // Iterate from the top of the list
-    tableLoop:
-    for (int i = 0; i < tables.length; i++) {
-      var table = tables[i];
-
-      for (var field in table.columns) {
-        // Find parent, if any
-        String? parent;
-        if (table.foreignKeys.isNotEmpty) {
-          for (var key in table.foreignKeys) {
-            if (key.columns.length != 1) {
-              throw FormatException(
-                'Serverpod does not support foreign keys with multiple column '
-                'references for table "${table.name}"',
-              );
-            }
-            assert(key.columns.length == 1);
-            if (field.name == key.columns.first) {
-              parent = key.referenceTable;
-              break;
-            }
-          }
-        }
-
-        // Check if a parent is not above the current table and not self-referencing
-        if (parent != null &&
-            parent != table.name &&
-            !visitedTableNames.contains(parent)) {
-          var tableToMove = table;
-          for (int j = i; j < tables.length; j++) {
-            if (tables[j].name == parent) {
-              // Move a table down the list, below its dependency
-              tables.removeAt(i);
-              tables.insert(j, tableToMove);
-              movedEntry = true;
-              break;
-            }
-          }
-
-          if (!movedEntry) {
-            // We failed to move a table because the dependency is missing
-            throw FormatException('The table "${table.name}" '
-                '(class "${table.dartName}" is referencing a table '
-                'that doesn\'t exist ($parent).)');
-          }
-
-          break tableLoop;
-        }
-      }
-      visitedTableNames.add(table.name);
-    }
-  }
 }
