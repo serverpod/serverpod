@@ -205,17 +205,30 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   }) {
     String out = '';
 
+    var tableCreation = '';
+    var foreignRelations = '';
+    for (var table in tables) {
+      tableCreation += '--\n';
+      tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
+      tableCreation += '--\n';
+      tableCreation += table.tableCreationToPgsql();
+      if (table.foreignKeys.isNotEmpty) {
+        foreignRelations += '--\n';
+        foreignRelations += '-- Foreign relations for "${table.name}" table\n';
+        foreignRelations += '--\n';
+        foreignRelations += table.foreignRelationToPgsql();
+      }
+    }
+
     // Start transaction
     out += 'BEGIN;\n';
     out += '\n';
 
-    for (var table in tables) {
-      out += '--\n';
-      out += '-- Class ${table.dartName} as table ${table.name}\n';
-      out += '--\n';
-      out += table.toPgSql();
-      out += '\n';
-    }
+    // Create tables
+    out += tableCreation;
+
+    // Create foreign relations
+    out += foreignRelations;
 
     out += _sqlStoreMigrationVersion(
       module: module,
@@ -231,7 +244,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 }
 
 extension TableDefinitionPgSqlGeneration on TableDefinition {
-  String toPgSql() {
+  String tableCreationToPgsql() {
     String out = '';
 
     // Table
@@ -263,13 +276,19 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
       }
     }
 
+    out += '\n';
+
+    return out;
+  }
+
+  String foreignRelationToPgsql() {
+    var out = '';
+
+    if (foreignKeys.isEmpty) return out;
+
     // Foreign keys
-    if (foreignKeys.isNotEmpty) {
-      out += '\n';
-      out += '-- Foreign keys\n';
-      for (var key in foreignKeys) {
-        out += key.toPgSql(tableName: name);
-      }
+    for (var key in foreignKeys) {
+      out += key.toPgSql(tableName: name);
     }
 
     out += '\n';
@@ -375,9 +394,14 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     out += 'BEGIN;\n';
     out += '\n';
 
+    var foreignKeyActions = '';
     for (var action in actions) {
       out += action.toPgSql();
+      foreignKeyActions += action.foreignRelationToSql();
     }
+
+    // Append all foreign key operations at the end
+    out += foreignKeyActions;
 
     for (var module in versions.keys) {
       var version = versions[module]!;
@@ -411,7 +435,7 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += '-- ACTION CREATE TABLE\n';
         out += '--\n';
-        out += createTable!.toPgSql();
+        out += createTable!.tableCreationToPgsql();
         break;
       case DatabaseMigrationActionType.alterTable:
         out += '--\n';
@@ -420,6 +444,19 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += alterTable!.toPgSql();
         break;
     }
+
+    return out;
+  }
+
+  String foreignRelationToSql() {
+    var out = '';
+
+    if (createTable == null) return out;
+
+    out += '--\n';
+    out += '-- ACTION CREATE FOREIGN KEY\n';
+    out += '--\n';
+    out += createTable!.foreignRelationToPgsql();
 
     return out;
   }
