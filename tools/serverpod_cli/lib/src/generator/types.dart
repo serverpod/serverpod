@@ -106,6 +106,7 @@ class TypeDefinition {
     bool? nullable,
     List<String> subDirParts = const [],
     required GeneratorConfig config,
+    String? typeSuffix,
   }) {
     return TypeReference(
       (t) {
@@ -161,7 +162,7 @@ class TypeDefinition {
           t.url = url;
         }
         t.isNullable = nullable ?? this.nullable;
-        t.symbol = className;
+        t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
         t.types.addAll(generics.map((e) => e.reference(
               serverCode,
               subDirParts: subDirParts,

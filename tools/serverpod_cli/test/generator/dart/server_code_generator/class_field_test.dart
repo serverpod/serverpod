@@ -389,6 +389,29 @@ void main() {
           reason:
               'Missing type alias for "${testClassName}ExpressionBuilder".');
     });
+
+    test('then a class named ${testClassName}Include is generated.', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
+              name: '${testClassName}Include'),
+          isTrue,
+          reason: 'Missing class named ${testClassName}Include.');
+    });
+
+    test(
+        'then the class named ${testClassName}Table does NOT have getRelation method.',
+        () {
+      expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'getRelation'),
+          isFalse,
+          reason:
+              'Declaration for getRelation method should not be generated.');
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
   });
 
   group(
@@ -506,6 +529,94 @@ void main() {
             isTrue,
             reason: 'Should not include field in columns.');
       });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleInclude =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Include');
+
+    group('then the class named ${testClassName}Include', () {
+      var exampleIncludeClass = maybeClassNamedExampleInclude!;
+      test('inherits from Include.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(exampleIncludeClass,
+                name: 'Include'),
+            isTrue,
+            reason: 'Missing extends clause for Include.');
+      });
+      test('has named parameter for field in constructor.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+                exampleIncludeClass,
+                name: null,
+                parameters: ['this.company']),
+            isTrue,
+            reason:
+                'Missing constructor with named parameter for field in ${testClassName}Include.');
+      });
+
+      test('has field as nullable class variable.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(exampleIncludeClass,
+                name: 'company', isNullable: true, type: 'CompanyInclude?'),
+            isTrue,
+            reason:
+                'Missing declaration for company field in ${testClassName}Include.');
+      });
+      test('has an includes method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleIncludeClass,
+                name: 'includes'),
+            isTrue,
+            reason: 'Missing declaration for includes method.');
+      });
+
+      test('has a table method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(exampleIncludeClass,
+                name: 'table', functionExpression: 'Example.t'),
+            isTrue,
+            reason: 'Missing declaration for table method.');
+      });
+    },
+        skip: maybeClassNamedExampleInclude == null
+            ? 'Could not run test because ${testClassName}Include class was not found.'
+            : false);
+
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    test('then the class named ${testClassName}Table has a getRelation method.',
+        () {
+      expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'getRelation'),
+          isTrue,
+          reason: 'Missing declaration for getRelation method.');
     },
         skip: maybeClassNamedExampleTable == null
             ? 'Could not run test because ${testClassName}Table class was not found.'

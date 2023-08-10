@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
@@ -302,8 +303,7 @@ class SerializableEntityLibraryGenerator {
                   Parameter((p) => p
                     ..type = TypeReference((b) => b
                       ..isNullable = true
-                      ..symbol = 'Include'
-                      ..url = 'package:serverpod/serverpod.dart')
+                      ..symbol = '${className}Include')
                     ..name = 'include'
                     ..named = true),
                 ])
@@ -391,8 +391,7 @@ class SerializableEntityLibraryGenerator {
                   Parameter((p) => p
                     ..type = TypeReference((b) => b
                       ..isNullable = true
-                      ..symbol = 'Include'
-                      ..url = 'package:serverpod/serverpod.dart')
+                      ..symbol = '${className}Include')
                     ..name = 'include'
                     ..named = true),
                 ])
@@ -445,8 +444,7 @@ class SerializableEntityLibraryGenerator {
                   Parameter((p) => p
                     ..type = TypeReference((b) => b
                       ..isNullable = true
-                      ..symbol = 'Include'
-                      ..url = 'package:serverpod/serverpod.dart')
+                      ..symbol = '${className}Include')
                     ..name = 'include'
                     ..named = true),
                 )
@@ -741,6 +739,69 @@ class SerializableEntityLibraryGenerator {
                       refer(field.name)
                 ]).code,
             ));
+
+            // getRelation method if we have relation fields
+            var objectRelationFields =
+                fields.where((f) => f.relation is ObjectRelationDefinition);
+            if (objectRelationFields.isNotEmpty) {
+              c.methods.add(Method(
+                (m) => m
+                  ..annotations.add(refer('override'))
+                  ..returns = TypeReference((t) => t
+                    ..symbol = 'TableRelation?'
+                    ..url = 'package:serverpod/serverpod.dart')
+                  ..name = 'getRelation'
+                  ..requiredParameters.add(
+                    Parameter(
+                      (p) => p
+                        ..type = refer('String')
+                        ..name = 'relationField',
+                    ),
+                  )
+                  ..body = (BlockBuilder()
+                        ..statements.addAll([
+                          for (var objectRelationField in objectRelationFields)
+                            Block.of([
+                              Code(
+                                  'if (relationField == ${literalString(objectRelationField.name)}) {'),
+                              lazyCode(() {
+                                var objectRelation = objectRelationField
+                                    .relation as ObjectRelationDefinition;
+                                var foreignRelationField = fields.firstWhere(
+                                    (f) =>
+                                        f.name ==
+                                            objectRelation.scalarFieldName &&
+                                        f.relation
+                                            is ForeignRelationDefinition);
+                                var foreignRelation = foreignRelationField
+                                    .relation as ForeignRelationDefinition;
+                                return refer('TableRelation',
+                                        serverpodUrl(serverCode))
+                                    .call([], {
+                                      'foreignColumn': objectRelationField.type
+                                          .reference(
+                                            serverCode,
+                                            subDirParts:
+                                                classDefinition.subDirParts,
+                                            config: config,
+                                            nullable: false,
+                                          )
+                                          .property('t')
+                                          .property(foreignRelation
+                                              .referenceFieldName),
+                                      'column':
+                                          refer(foreignRelationField.name),
+                                    })
+                                    .returned
+                                    .statement;
+                              }),
+                              const Code('}'),
+                            ]),
+                          const Code('return null;'),
+                        ]))
+                      .build(),
+              ));
+            }
           }));
 
           // Create instance of table
@@ -750,6 +811,71 @@ class SerializableEntityLibraryGenerator {
             ..name = 't$className'
             ..type = refer('${className}Table')
             ..assignment = refer('${className}Table').call([]).code));
+
+          // Includes class definition
+          library.body.add(Class(((c) {
+            c.extend = refer('Include', 'package:serverpod/serverpod.dart');
+            c.name = '${className}Include';
+            var objectRelationFields = fields
+                .where((f) => f.relation is ObjectRelationDefinition)
+                .toList();
+
+            // Add constructor
+            c.constructors.add(Constructor((constructor) {
+              for (var field in objectRelationFields) {
+                constructor.optionalParameters.add(Parameter(
+                  (p) => p
+                    ..name = field.name
+                    ..named = true
+                    ..toThis = true,
+                ));
+              }
+            }));
+
+            // Add field declarations
+            for (var field in objectRelationFields) {
+              c.fields.add(Field((f) => f
+                ..name = field.name
+                ..type = field.type.reference(
+                  serverCode,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                  typeSuffix: 'Include',
+                )));
+            }
+
+            // Add includes getter
+            c.methods.add(Method(
+              (m) => m
+                ..annotations.add(refer('override'))
+                ..returns = TypeReference((t) => t
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    refer('String'),
+                    refer('Include?', 'package:serverpod/serverpod.dart'),
+                  ]))
+                ..name = 'includes'
+                ..lambda = true
+                ..type = MethodType.getter
+                ..body = literalMap({
+                  for (var field in objectRelationFields)
+                    literalString(field.name): refer(field.name)
+                }).code,
+            ));
+
+            // Add table getter
+            c.methods.add(Method(
+              (m) => m
+                ..annotations.add(refer('override'))
+                ..returns = TypeReference((t) => t
+                  ..symbol = 'Table'
+                  ..url = serverpodUrl(serverCode))
+                ..name = 'table'
+                ..lambda = true
+                ..type = MethodType.getter
+                ..body = refer('$className.t').code,
+            ));
+          })));
         }
       },
     );
