@@ -100,6 +100,27 @@ class ClassDefinitionBuilder {
     return this;
   }
 
+  ClassDefinitionBuilder withObjectRelationField(
+      String fieldName, String className, String parentTable) {
+    _fields.addAll([
+      SerializableEntityFieldDefinition(
+          name: fieldName,
+          type: TypeDefinition(className: className, nullable: true),
+          scope: EntityFieldScopeDefinition.all,
+          shouldPersist: false,
+          relation:
+              ObjectRelationDefinition(scalarFieldName: '${fieldName}Id')),
+      SerializableEntityFieldDefinition(
+          name: '${fieldName}Id',
+          type: TypeDefinition.int,
+          scope: EntityFieldScopeDefinition.all,
+          shouldPersist: true,
+          relation: ForeignRelationDefinition(
+              parentTable: parentTable, referenceFieldName: 'id')),
+    ]);
+    return this;
+  }
+
   ClassDefinitionBuilder withFields(
     List<SerializableEntityFieldDefinition> fields,
   ) {
