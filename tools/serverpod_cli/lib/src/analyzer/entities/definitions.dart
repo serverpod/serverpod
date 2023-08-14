@@ -154,6 +154,7 @@ class SerializableEntityFieldDefinition {
 enum EntityFieldScopeDefinition {
   all,
   serverOnly,
+  none,
 }
 
 /// The definition of an index for a file, that is also stored in the database.
