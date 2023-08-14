@@ -96,11 +96,11 @@ void main() {
         module: 'mock',
       );
 
-      test('then on delete is set.', () {
+      test('then on delete is set to set null.', () {
         expect(sql.contains('ON DELETE SET NULL;'), isTrue);
       });
 
-      test('then on update is set.', () {
+      test('then on update is set to set null.', () {
         expect(sql.contains('ON UPDATE SET NULL;'), isTrue);
       });
     });

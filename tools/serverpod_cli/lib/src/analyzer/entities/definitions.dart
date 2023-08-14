@@ -281,3 +281,7 @@ class ForeignRelationDefinition extends RelationDefinition {
     required this.onUpdate,
   });
 }
+
+const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
+
+const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;

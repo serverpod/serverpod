@@ -39,14 +39,14 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to default.', () {
+    test('then onUpdate is set to the default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, ForeignKeyAction.noAction);
+      expect(relation.onUpdate, onUpdateDefault);
     }, skip: noneFieldRelation);
 
-    test('then onDelete is set to default.', () {
+    test('then onDelete is set to the default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, ForeignKeyAction.cascade);
+      expect(relation.onDelete, onDeleteDefault);
     }, skip: noneFieldRelation);
   });
 
@@ -84,7 +84,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set.', () {
+    test('then onUpdate is set to cascade.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.cascade);
     }, skip: noneFieldRelation);
@@ -125,7 +125,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set.', () {
+    test('then onUpdate is set to no action.', () {
       var relation = field?.relation as ForeignRelationDefinition;
 
       expect(relation.onUpdate, ForeignKeyAction.noAction);
@@ -167,7 +167,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set.', () {
+    test('then onUpdate is set to restrict.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.restrict);
     }, skip: noneFieldRelation);
@@ -207,7 +207,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set.', () {
+    test('then onUpdate is set to set null.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.setNull);
     }, skip: noneFieldRelation);
@@ -248,7 +248,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set.', () {
+    test('then onUpdate is set to set default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.setDefault);
     }, skip: noneFieldRelation);
@@ -324,7 +324,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set.', () {
+    test('then onDelete is set to cascade.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.cascade);
     }, skip: noneFieldRelation);
@@ -364,7 +364,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set.', () {
+    test('then onDelete is set to no action.', () {
       var relation = field?.relation as ForeignRelationDefinition;
 
       expect(relation.onDelete, ForeignKeyAction.noAction);
@@ -405,7 +405,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set.', () {
+    test('then onDelete is set to restrict.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.restrict);
     }, skip: noneFieldRelation);
@@ -444,7 +444,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set.', () {
+    test('then onDelete is set to set null.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.setNull);
     }, skip: noneFieldRelation);
@@ -484,7 +484,7 @@ void main() {
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set.', () {
+    test('then onDelete is set to set default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.setDefault);
     }, skip: noneFieldRelation);
