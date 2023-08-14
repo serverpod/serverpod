@@ -374,15 +374,21 @@ extension ForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
 
     var refColumsFmt = referenceColumns.map((e) => '"$e"');
 
-    var delete = onDelete != null ? onDelete?.toPgSqlAction() : 'CASCADE';
-    var update = onUpdate != null ? onUpdate?.toPgSqlAction() : 'NO ACTION';
+    String? delete = onDelete?.toPgSqlAction();
+    String? update = onUpdate?.toPgSqlAction();
 
     out += 'ALTER TABLE ONLY "$tableName"\n';
     out += '    ADD CONSTRAINT "$constraintName"\n';
     out += '    FOREIGN KEY("${columns.join(', ')}")\n';
     out += '    REFERENCES "$referenceTable"(${refColumsFmt.join(', ')})\n';
-    out += '    ON DELETE $delete;\n';
-    out += '    ON UPDATE $update;\n';
+
+    if (delete != null) {
+      out += '    ON DELETE $delete;\n';
+    }
+
+    if (update != null) {
+      out += '    ON UPDATE $update;\n';
+    }
 
     return out;
   }
