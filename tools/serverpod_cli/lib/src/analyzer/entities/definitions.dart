@@ -123,8 +123,8 @@ class SerializableEntityFieldDefinition {
   /// - [shouldSerializeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
-    if (serverCode) return true;
-    return scope == EntityFieldScopeDefinition.all;
+    return scope == EntityFieldScopeDefinition.all ||
+        (serverCode && scope == EntityFieldScopeDefinition.serverOnly);
   }
 
   /// Returns true, if this field should be added to the serialization.
