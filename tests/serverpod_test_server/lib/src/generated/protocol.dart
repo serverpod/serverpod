@@ -412,7 +412,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'object_field_scopes',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
@@ -462,7 +462,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'object_with_self_parent',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
