@@ -58,10 +58,9 @@ void main() {
     });
 
     group('then class named $testClassName', () {
-      var exampleClass = maybeClassNamedExample!;
       test('inherits from SerializableEntity.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+            CompilationUnitHelpers.hasExtendsClause(maybeClassNamedExample!,
                 name: 'SerializableEntity'),
             isTrue,
             reason: 'Missing extends clause for SerializableEntity.');
@@ -69,7 +68,8 @@ void main() {
 
       test('has fromJson factory.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
+            CompilationUnitHelpers.hasConstructorDeclaration(
+                maybeClassNamedExample!,
                 name: 'fromJson'),
             isTrue,
             reason: 'Missing declaration for fromJson factory.');
@@ -77,7 +77,7 @@ void main() {
 
       test('has toJson method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleClass,
+            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
                 name: 'toJson'),
             isTrue,
             reason: 'Missing declaration for toJson method.');
@@ -127,10 +127,9 @@ void main() {
         compilationUnit,
         name: testClassName);
     group('then class named $testClassName', () {
-      var exampleClass = maybeClassNamedExample!;
       test('still inherits from SerializableEntity.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(exampleClass,
+            CompilationUnitHelpers.hasExtendsClause(maybeClassNamedExample!,
                 name: 'SerializableEntity'),
             isTrue,
             reason: 'Missing extends clause for SerializableEntity.');
@@ -138,15 +137,17 @@ void main() {
 
       test('has id in constructor.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
-                name: null, parameters: ['this.id']),
+            CompilationUnitHelpers.hasConstructorDeclaration(
+                maybeClassNamedExample!,
+                name: null,
+                parameters: ['this.id']),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
       test('is generated with id field.', () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
                 name: 'id', type: 'int?'),
             isTrue,
             reason: 'Declaration for id field was should be generated.');
@@ -177,18 +178,19 @@ void main() {
         name: testClassName);
 
     group('then class name $testClassName', () {
-      var exampleClass = maybeClassNamedExample!;
       test('has field as required in constructor.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
-                name: null, parameters: ['required this.title']),
+            CompilationUnitHelpers.hasConstructorDeclaration(
+                maybeClassNamedExample!,
+                name: null,
+                parameters: ['required this.title']),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
       test('has that class variable.', () {
         expect(
-          CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+          CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
               name: 'title', type: 'String'),
           isTrue,
           reason: 'Missing declaration for title field.',
@@ -220,18 +222,19 @@ void main() {
         name: testClassName);
 
     group('then class named $testClassName', () {
-      var exampleClass = maybeClassNamedExample!;
       test('has field in constructor.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(exampleClass,
-                name: null, parameters: ['this.title']),
+            CompilationUnitHelpers.hasConstructorDeclaration(
+                maybeClassNamedExample!,
+                name: null,
+                parameters: ['this.title']),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
       test('has that class variable.', () {
         expect(
-          CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+          CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
               name: 'title', type: 'String?'),
           isTrue,
           reason: 'Missing declaration for title field.',
@@ -271,9 +274,8 @@ void main() {
     test(
       'then a class is generated with that class variable.',
       () {
-        var exampleClass = maybeClassNamedExample!;
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
                 name: 'title', type: 'String?'),
             isTrue,
             reason: 'Missing declaration for title field.');
@@ -312,9 +314,8 @@ void main() {
     test(
       'then class is NOT generated with that class variable.',
       () {
-        var exampleClass = maybeClassNamedExample!;
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(exampleClass,
+            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
                 name: 'title', type: 'String?'),
             isFalse,
             reason: 'Field title should not be generated.');
@@ -347,9 +348,8 @@ void main() {
     test(
       'then class implements SerializableException.',
       () {
-        var exampleClass = maybeClassNamedExample!;
         expect(
-            CompilationUnitHelpers.hasImplementsClause(exampleClass,
+            CompilationUnitHelpers.hasImplementsClause(maybeClassNamedExample!,
                 name: 'SerializableException'),
             isTrue,
             reason: 'Class should implement SerializableException.');
