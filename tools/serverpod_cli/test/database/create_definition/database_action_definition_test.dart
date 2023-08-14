@@ -44,7 +44,7 @@ void main() {
 
     var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
 
-    var failedPrecondition = databaseDefinition.tables.isEmpty;
+    var tablesDoNotExist = databaseDefinition.tables.isEmpty;
     test('then a foreign relation exists.', () {
       var table = databaseDefinition.tables.first;
       expect(
@@ -52,12 +52,12 @@ void main() {
         isNotEmpty,
         reason: 'Expected a foreign relation to exists.',
       );
-    }, skip: failedPrecondition);
+    }, skip: tablesDoNotExist);
 
     group(' ', () {
       var table = databaseDefinition.tables.first;
 
-      var failedPrecondition =
+      var foreignKeyDoNotExist =
           databaseDefinition.tables.first.foreignKeys.isEmpty;
 
       test('then the foreign key references is a self reference.', () {
@@ -68,7 +68,7 @@ void main() {
 
         var referenceColumn = foreignKey.referenceColumns.first;
         expect(referenceColumn, 'id');
-      }, skip: failedPrecondition);
+      }, skip: foreignKeyDoNotExist);
 
       test(
           'then generate a database definition with onDelete set on the foreign key.',
@@ -76,15 +76,15 @@ void main() {
         var foreignKey = table.foreignKeys.first;
 
         expect(foreignKey.onDelete, ForeignKeyAction.setNull);
-      }, skip: failedPrecondition);
+      }, skip: foreignKeyDoNotExist);
 
       test(
           'then generate a database definition with onUpdate set on the foreign key.',
           () {
         var foreignKey = table.foreignKeys.first;
         expect(foreignKey.onUpdate, ForeignKeyAction.setNull);
-      }, skip: failedPrecondition);
-    }, skip: failedPrecondition);
+      }, skip: foreignKeyDoNotExist);
+    }, skip: tablesDoNotExist);
 
     group('when generating sql code', () {
       // TODO: fix this, not sure what this does or why it is not set in the

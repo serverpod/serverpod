@@ -37,17 +37,17 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set to default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.noAction);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
 
     test('then onDelete is set to default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.cascade);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group('Given a class with onUpdate database action explicitly set to Cascade',
@@ -82,12 +82,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.cascade);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -123,13 +123,13 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
 
       expect(relation.onUpdate, ForeignKeyAction.noAction);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -165,12 +165,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.restrict);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group('Given a class with onUpdate database action explicitly set to SetNull',
@@ -205,12 +205,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.setNull);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -246,12 +246,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onUpdate, ForeignKeyAction.setDefault);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   test(
@@ -322,12 +322,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onDelete is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.cascade);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -362,13 +362,13 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onDelete is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
 
       expect(relation.onDelete, ForeignKeyAction.noAction);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -403,12 +403,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onDelete is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.restrict);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group('Given a class with onDelete database action explicitly set to SetNull',
@@ -442,12 +442,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onDelete is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.setNull);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   group(
@@ -482,12 +482,12 @@ void main() {
 
     var field = entity.findField('exampleId');
 
-    var failedPrecondition =
+    var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onDelete is set.', () {
       var relation = field?.relation as ForeignRelationDefinition;
       expect(relation.onDelete, ForeignKeyAction.setDefault);
-    }, skip: failedPrecondition);
+    }, skip: noneFieldRelation);
   });
 
   test(
