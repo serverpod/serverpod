@@ -63,10 +63,6 @@ void main() {
         [definition!],
       );
 
-      /*test('then no errors are collected', () {
-        expect(collector.errors, isEmpty);
-      });*/
-
       test('then the generated entity should be persisted', () {
         expect(
           (definition as ClassDefinition).fields.last.shouldPersist,
