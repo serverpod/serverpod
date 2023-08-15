@@ -7,12 +7,11 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String name,
   }) {
-    for (var declaration in unit.declarations.whereType<TypeAlias>()) {
-      if (declaration.name.toString() == name) {
-        return declaration;
-      }
-    }
-    return null;
+    var aliasDeclaration = unit.declarations
+        .whereType<TypeAlias>()
+        .where((declaration) => declaration.name.toString() == name);
+
+    return aliasDeclaration.isNotEmpty ? aliasDeclaration.first : null;
   }
 
   /// Returns `true` if the [unit] contains a type alias with the given [name].
@@ -27,12 +26,11 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String name,
   }) {
-    for (var declaration in unit.declarations.whereType<ClassDeclaration>()) {
-      if (declaration.name.toString() == name) {
-        return declaration;
-      }
-    }
-    return null;
+    var declaration = unit.declarations
+        .whereType<ClassDeclaration>()
+        .where((declaration) => declaration.name.toString() == name);
+
+    return declaration.isNotEmpty ? declaration.first : null;
   }
 
   /// Returns `true` if the [unit] contains a class with the given [name].
@@ -53,23 +51,13 @@ abstract class CompilationUnitHelpers {
     required String name,
     List<String>? annotations,
   }) {
-    for (var declaration
-        in unit.declarations.whereType<TopLevelVariableDeclaration>()) {
-      for (var variable in declaration.variables.variables) {
-        if (variable.name.toString() == name) {
-          if (annotations != null &&
-              !(declaration.metadata
-                      .where((annotation) =>
-                          annotations.contains(annotation.name.name))
-                      .length ==
-                  annotations.length)) {
-            continue;
-          }
-          return declaration;
-        }
-      }
-    }
-    return null;
+    var topLevelDeclarations = unit.declarations
+        .whereType<TopLevelVariableDeclaration>()
+        .where((declaration) => declaration._hasMatchingVariable(name))
+        .where(
+            (declaration) => declaration._hasMatchingAnnotations(annotations));
+
+    return topLevelDeclarations.isNotEmpty ? topLevelDeclarations.first : null;
   }
 
   /// Returns `true` if the [unit] contains a top level variable declaration
@@ -82,12 +70,13 @@ abstract class CompilationUnitHelpers {
     required String name,
     List<String>? annotations,
   }) {
-    return tryFindTopLevelVariableDeclaration(
-          unit,
-          name: name,
-          annotations: annotations,
-        ) !=
-        null;
+    var maybeDeclaration = tryFindTopLevelVariableDeclaration(
+      unit,
+      name: name,
+      annotations: annotations,
+    );
+
+    return maybeDeclaration != null;
   }
 
   /// Return [ImportDirective] if the [unit] contains an import directive with
@@ -96,12 +85,11 @@ abstract class CompilationUnitHelpers {
     CompilationUnit unit, {
     required String uri,
   }) {
-    for (var directive in unit.directives.whereType<ImportDirective>()) {
-      if (directive.uri.stringValue == uri) {
-        return directive;
-      }
-    }
-    return null;
+    var directives = unit.directives
+        .whereType<ImportDirective>()
+        .where((directive) => directive.uri.stringValue == uri);
+
+    return directives.isNotEmpty ? directives.first : null;
   }
 
   /// Returns `true` if the [unit] contains an import directive with the given
@@ -124,11 +112,7 @@ abstract class CompilationUnitHelpers {
       return false;
     }
 
-    if (extendsClause.superclass.name2.toString() == name) {
-      return true;
-    }
-
-    return false;
+    return extendsClause.superclass.name2.toString() == name;
   }
 
   /// Returns `true` if the [classDeclaration] has an implements clause with
@@ -142,12 +126,10 @@ abstract class CompilationUnitHelpers {
       return false;
     }
 
-    for (var type in implementsClause.interfaces) {
-      if (type.name2.toString() == name) {
-        return true;
-      }
-    }
-    return false;
+    var matchingImplementsClauses = implementsClause.interfaces
+        .where((type) => type.name2.toString() == name);
+
+    return matchingImplementsClauses.isNotEmpty;
   }
 
   /// Returns [ConstructorDeclaration] if the class has a constructor with the
@@ -164,32 +146,13 @@ abstract class CompilationUnitHelpers {
     List<String>? parameters,
     List<String>? superArguments,
   }) {
-    for (var member
-        in classDeclaration.members.whereType<ConstructorDeclaration>()) {
-      if (member.name?.toString() == name) {
-        if (parameters != null &&
-            !(member.parameters.parameters
-                    .where((p) => parameters.contains(p.toString()))
-                    .length ==
-                parameters.length)) {
-          continue;
-        }
+    var members = classDeclaration.members
+        .whereType<ConstructorDeclaration>()
+        .where((member) => member.name?.toString() == name)
+        .where((member) => member._hasMatchingParameters(parameters))
+        .where((member) => member._hasMatchingSuperArguments(superArguments));
 
-        if (superArguments != null &&
-            !(member.initializers
-                    .whereType<SuperConstructorInvocation>()
-                    .map((e) => e.argumentList.arguments)
-                    .expand((e) => e)
-                    .where((e) => superArguments.contains(e.toString()))
-                    .length ==
-                superArguments.length)) {
-          continue;
-        }
-
-        return member;
-      }
-    }
-    return null;
+    return members.isNotEmpty ? members.first : null;
   }
 
   /// Returns `true` if the class has a constructor with the given name and
@@ -206,13 +169,14 @@ abstract class CompilationUnitHelpers {
     List<String>? parameters,
     List<String>? superArguments,
   }) {
-    return tryFindConstructorDeclaration(
-          classDeclaration,
-          name: name,
-          parameters: parameters,
-          superArguments: superArguments,
-        ) !=
-        null;
+    var maybeDeclaration = tryFindConstructorDeclaration(
+      classDeclaration,
+      name: name,
+      parameters: parameters,
+      superArguments: superArguments,
+    );
+
+    return maybeDeclaration != null;
   }
 
   /// Returns [MethodDeclaration] if the class has a method with the given
@@ -227,24 +191,14 @@ abstract class CompilationUnitHelpers {
     bool? isStatic,
     String? functionExpression,
   }) {
-    for (var member
-        in classDeclaration.members.whereType<MethodDeclaration>()) {
-      if (member.name.toString() == name) {
-        if (isStatic != null && member.isStatic != isStatic) {
-          continue;
-        }
+    var member = classDeclaration.members
+        .whereType<MethodDeclaration>()
+        .where((member) => member.name.toString() == name)
+        .where((member) => member._hasMatchingStatic(isStatic))
+        .where((member) =>
+            member._hasMatchingFunctionExpression(functionExpression));
 
-        if (functionExpression != null &&
-            !(member.body is ExpressionFunctionBody &&
-                (member.body as ExpressionFunctionBody).expression.toString() ==
-                    functionExpression)) {
-          continue;
-        }
-
-        return member;
-      }
-    }
-    return null;
+    return member.isNotEmpty ? member.first : null;
   }
 
   /// Returns `true` if the class has a method with the given [name].
@@ -258,13 +212,14 @@ abstract class CompilationUnitHelpers {
     bool? isStatic,
     String? functionExpression,
   }) {
-    return tryFindMethodDeclaration(
-          classDeclaration,
-          name: name,
-          isStatic: isStatic,
-          functionExpression: functionExpression,
-        ) !=
-        null;
+    var maybeDeclaration = tryFindMethodDeclaration(
+      classDeclaration,
+      name: name,
+      isStatic: isStatic,
+      functionExpression: functionExpression,
+    );
+
+    return maybeDeclaration != null;
   }
 
   /// Returns [FieldDeclaration] if the class has a field with the given [name],
@@ -283,34 +238,16 @@ abstract class CompilationUnitHelpers {
     bool? isFinal,
     String? initializerMethod,
   }) {
-    for (var member in classDeclaration.members.whereType<FieldDeclaration>()) {
-      if (member.fields.variables
-          .any((variable) => variable.name.toString() == name)) {
-        if (type != null && member.fields.type?.toString() != type) {
-          continue;
-        }
+    var member = classDeclaration.members
+        .whereType<FieldDeclaration>()
+        .where((member) => member._hasMatchingVariable(name))
+        .where((member) => member._hasMatchingType(type))
+        .where((member) => member._hasMatchingStatic(isStatic))
+        .where((member) => member._hasMatchingFinal(isFinal))
+        .where((member) =>
+            member._hasMatchingInitializerMethod(initializerMethod));
 
-        if (isStatic != null && member.isStatic != isStatic) {
-          continue;
-        }
-
-        if (isFinal != null && member.fields.isFinal != isFinal) {
-          continue;
-        }
-
-        if (initializerMethod != null &&
-            !(member.fields.variables
-                .map((variable) => variable.initializer)
-                .whereType<MethodInvocation>()
-                .any((initializer) =>
-                    initializer.methodName.toString() == initializerMethod))) {
-          continue;
-        }
-
-        return member;
-      }
-    }
-    return null;
+    return member.isNotEmpty ? member.first : null;
   }
 
   /// Returns `true` if the class has a field with the given [name].
@@ -329,14 +266,126 @@ abstract class CompilationUnitHelpers {
     bool? isFinal,
     String? initializerMethod,
   }) {
-    return tryFindFieldDeclaration(
-          classDeclaration,
-          name: name,
-          type: type,
-          isStatic: isStatic,
-          isFinal: isFinal,
-          initializerMethod: initializerMethod,
-        ) !=
-        null;
+    var maybeDeclaration = tryFindFieldDeclaration(
+      classDeclaration,
+      name: name,
+      type: type,
+      isStatic: isStatic,
+      isFinal: isFinal,
+      initializerMethod: initializerMethod,
+    );
+
+    return maybeDeclaration != null;
+  }
+}
+
+extension _TopLevelVariableDeclarationExtensions
+    on TopLevelVariableDeclaration {
+  bool _hasMatchingVariable(String name) {
+    return variables.variables
+        .any((variable) => variable.name.toString() == name);
+  }
+
+  bool _hasMatchingAnnotations(List<String>? annotations) {
+    if (annotations == null) {
+      return true;
+    }
+
+    var matchingAnnotations = metadata
+        .where((annotation) => annotations.contains(annotation.name.name));
+
+    return matchingAnnotations.length == annotations.length;
+  }
+}
+
+extension _ConstructorDeclarationExtensions on ConstructorDeclaration {
+  bool _hasMatchingParameters(List<String>? parameters) {
+    if (parameters == null) {
+      return true;
+    }
+
+    var memberParameters = this.parameters.parameters;
+    var matchingParameters =
+        memberParameters.where((p) => parameters.contains(p.toString()));
+
+    return matchingParameters.length == parameters.length;
+  }
+
+  bool _hasMatchingSuperArguments(List<String>? superArguments) {
+    if (superArguments == null) {
+      return true;
+    }
+
+    var memberSuperArguments = initializers
+        .whereType<SuperConstructorInvocation>()
+        .map((e) => e.argumentList.arguments)
+        .first;
+
+    var matchingSuperArguments = memberSuperArguments
+        .where((e) => superArguments.contains(e.toString()));
+
+    return matchingSuperArguments.length == superArguments.length;
+  }
+}
+
+extension _MethodDeclarationExtensions on MethodDeclaration {
+  bool _hasMatchingStatic(bool? isStatic) {
+    if (isStatic == null) {
+      return true;
+    }
+
+    return this.isStatic == isStatic;
+  }
+
+  bool _hasMatchingFunctionExpression(String? functionExpression) {
+    if (functionExpression == null) {
+      return true;
+    }
+
+    return body is ExpressionFunctionBody &&
+        (body as ExpressionFunctionBody).expression.toString() ==
+            functionExpression;
+  }
+}
+
+extension _FieldDeclarationExtensions on FieldDeclaration {
+  bool _hasMatchingVariable(String name) {
+    return fields.variables.any((variable) => variable.name.toString() == name);
+  }
+
+  bool _hasMatchingStatic(bool? isStatic) {
+    if (isStatic == null) {
+      return true;
+    }
+
+    return this.isStatic == isStatic;
+  }
+
+  bool _hasMatchingType(String? type) {
+    if (type == null) {
+      return true;
+    }
+
+    return fields.type?.toString() == type;
+  }
+
+  bool _hasMatchingFinal(bool? isFinal) {
+    if (isFinal == null) {
+      return true;
+    }
+
+    return fields.isFinal == isFinal;
+  }
+
+  bool _hasMatchingInitializerMethod(String? initializerMethod) {
+    if (initializerMethod == null) {
+      return true;
+    }
+
+    return fields.variables
+        .map((variable) => variable.initializer)
+        .whereType<MethodInvocation>()
+        .any((initializer) =>
+            initializer.methodName.toString() == initializerMethod);
   }
 }
