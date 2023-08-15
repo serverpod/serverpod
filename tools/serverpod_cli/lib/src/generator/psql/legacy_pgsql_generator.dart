@@ -96,8 +96,10 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
   String _generateForeignKeys(ClassDefinition classInfo) {
     var out = '';
 
-    var relationFields = classInfo.fields.where((field) =>
-        field.relation != null && field.relation is ForeignRelationDefinition);
+    var relationFields = classInfo.fields.where((field) {
+      return field.relation != null &&
+          field.relation is ForeignRelationDefinition;
+    });
 
     if (relationFields.isEmpty) return out;
 
