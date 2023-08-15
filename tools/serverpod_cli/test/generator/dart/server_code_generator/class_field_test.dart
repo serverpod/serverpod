@@ -392,8 +392,10 @@ void main() {
 
     test('then a class named ${testClassName}Include is generated.', () {
       expect(
-          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
-              name: '${testClassName}Include'),
+          CompilationUnitHelpers.hasClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}Include',
+          ),
           isTrue,
           reason: 'Missing class named ${testClassName}Include.');
     });
@@ -403,8 +405,9 @@ void main() {
         () {
       expect(
           CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
-              name: 'getRelation'),
+            maybeClassNamedExampleTable!,
+            name: 'getRelation',
+          ),
           isFalse,
           reason:
               'Declaration for getRelation method should not be generated.');
@@ -554,24 +557,29 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExampleInclude =
-        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
-            name: '${testClassName}Include');
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Include',
+    );
 
     group('then the class named ${testClassName}Include', () {
       var exampleIncludeClass = maybeClassNamedExampleInclude!;
       test('inherits from Include.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(exampleIncludeClass,
-                name: 'Include'),
+            CompilationUnitHelpers.hasExtendsClause(
+              exampleIncludeClass,
+              name: 'Include',
+            ),
             isTrue,
             reason: 'Missing extends clause for Include.');
       });
       test('has named parameter for field in constructor.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-                exampleIncludeClass,
-                name: null,
-                parameters: ['this.company']),
+              exampleIncludeClass,
+              name: null,
+              parameters: ['this.company'],
+            ),
             isTrue,
             reason:
                 'Missing constructor with named parameter for field in ${testClassName}Include.');
@@ -579,24 +587,33 @@ void main() {
 
       test('has field as nullable class variable.', () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(exampleIncludeClass,
-                name: 'company', isNullable: true, type: 'CompanyInclude?'),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              exampleIncludeClass,
+              name: 'company',
+              isNullable: true,
+              type: 'CompanyInclude?',
+            ),
             isTrue,
             reason:
                 'Missing declaration for company field in ${testClassName}Include.');
       });
       test('has an includes method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleIncludeClass,
-                name: 'includes'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeClass,
+              name: 'includes',
+            ),
             isTrue,
             reason: 'Missing declaration for includes method.');
       });
 
       test('has a table method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleIncludeClass,
-                name: 'table', functionExpression: 'Example.t'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeClass,
+              name: 'table',
+              functionExpression: 'Example.t',
+            ),
             isTrue,
             reason: 'Missing declaration for table method.');
       });
@@ -606,15 +623,18 @@ void main() {
             : false);
 
     var maybeClassNamedExampleTable =
-        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
-            name: '${testClassName}Table');
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
 
     test('then the class named ${testClassName}Table has a getRelation method.',
         () {
       expect(
           CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
-              name: 'getRelation'),
+            maybeClassNamedExampleTable!,
+            name: 'getRelation',
+          ),
           isTrue,
           reason: 'Missing declaration for getRelation method.');
     },

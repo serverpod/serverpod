@@ -102,7 +102,10 @@ class ClassDefinitionBuilder {
   }
 
   ClassDefinitionBuilder withObjectRelationField(
-      String fieldName, String className, String parentTable) {
+    String fieldName,
+    String className,
+    String parentTable,
+  ) {
     _fields.addAll([
       FieldDefinitionBuilder()
           .withName(fieldName)

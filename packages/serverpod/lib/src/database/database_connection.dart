@@ -149,16 +149,19 @@ Current type was $T''');
 
     var tableName = table.tableName;
     var selectQuery = 'SELECT ';
-    var columns = table.columns;
-    for (var index = 0; index < table.columns.length; index++) {
-      var column = columns[index];
-      selectQuery += '${index == 0 ? '' : ', '}$tableName.${column.toString()}';
-    }
+
+    var columns =
+        table.columns.map((column) => '$tableName.${column.toString()}');
+
+    selectQuery += columns.join(', ');
 
     var joinQuery = '';
     if (include != null) {
-      var queryFromIncludes =
-          _createQueryFromIncludes(include, table, tableName);
+      var queryFromIncludes = _createQueryFromIncludes(
+        include,
+        table,
+        tableName,
+      );
       selectQuery += queryFromIncludes.select;
       joinQuery += queryFromIncludes.join;
     }
@@ -173,17 +176,15 @@ Current type was $T''');
     } else if (orderByList != null) {
       assert(orderByList.isNotEmpty);
 
-      var strList = <String>[];
-      for (var order in orderByList) {
-        strList.add('$tableName.${order.toString()}');
-      }
+      var orderByListWithTable =
+          orderByList.map((order) => '$tableName.${order.toString()}');
 
-      query += ' ORDER BY ${strList.join(',')}';
+      query += ' ORDER BY ${orderByListWithTable.join(',')}';
     }
     if (limit != null) query += ' LIMIT $limit';
     if (offset != null) query += ' OFFSET $offset';
 
-    List<TableRow?> list = <TableRow>[];
+    List<TableRow?> formattedTableRows = <TableRow>[];
     try {
       var context = transaction != null
           ? transaction.postgresContext
@@ -209,15 +210,16 @@ Current type was $T''');
           );
         }
 
-        list.add(_formatTableRow<T>(tableName, rawTableRow));
+        formattedTableRows.add(_formatTableRow<T>(tableName, rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
       rethrow;
     }
 
-    _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list.cast<T>();
+    _logQuery(session, query, startTime,
+        numRowsAffected: formattedTableRows.length);
+    return formattedTableRows.cast<T>();
   }
 
   Map<String, dynamic> _resolveRowDataHierarchy(
@@ -283,7 +285,10 @@ Current type was $T''');
       join +=
           'LEFT JOIN ${relationInclude.table.tableName} AS $includePrefix ON $prefix.${relation.column} = $includePrefix.${relation.foreignColumn} ';
       var queryFromIncludes = _createQueryFromIncludes(
-          relationInclude, relationInclude.table, '${prefix}_$relationField');
+        relationInclude,
+        relationInclude.table,
+        '${prefix}_$relationField',
+      );
       join += queryFromIncludes.join;
       select += queryFromIncludes.select;
     });

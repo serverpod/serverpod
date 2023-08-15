@@ -41,28 +41,28 @@ void main() async {
   group(
       'Given entities with nested relations when fetching all citizens including related data ordered by id',
       () {
-    test('then the correct number of citizens are returned.', () {
+    test('then predefined number of citizens are returned.', () {
       expect(citizensWithDeepIncludes.length, 2);
     });
 
     group('then first citizen fetched', () {
-      test('has correct name.', () {
+      test('has Alex as name.', () {
         expect(citizensWithDeepIncludes[0].name, 'Alex');
       });
 
-      test('has correct company.', () {
+      test('has Serverpod as company.', () {
         expect(citizensWithDeepIncludes[0].company?.name, 'Serverpod');
       });
 
-      test('has correct company town.', () {
+      test('has Stockholm as company town.', () {
         expect(citizensWithDeepIncludes[0].company?.town?.name, 'Stockholm');
       });
 
-      test('has correct oldCompany.', () {
+      test('has Systemair as oldCompany.', () {
         expect(citizensWithDeepIncludes[0].oldCompany?.name, 'Systemair');
       });
 
-      test('has correct oldCompany town.', () {
+      test('has Skinnskatteberg as oldCompany town.', () {
         expect(citizensWithDeepIncludes[0].oldCompany?.town?.name,
             'Skinnskatteberg');
       });
@@ -72,15 +72,15 @@ void main() async {
             : false);
 
     group('then second citizen fetched', () {
-      test('has correct name.', () {
+      test('has Isak as name.', () {
         expect(citizensWithDeepIncludes[1].name, 'Isak');
       });
 
-      test('has correct company.', () {
+      test('has Serverpod as company.', () {
         expect(citizensWithDeepIncludes[1].company?.name, 'Serverpod');
       });
 
-      test('has correct company town.', () {
+      test('has Stockholm as company town.', () {
         expect(citizensWithDeepIncludes[1].company?.town?.name, 'Stockholm');
       });
 
@@ -96,12 +96,12 @@ void main() async {
   group(
       'Given entities with nested relations when shallow fetching all citizens ordered by id',
       () {
-    test('Then the correct number of citizens are returned', () {
+    test('then predefined number of citizens are returned.', () {
       expect(citizensShallow.length, 2);
     });
 
     group('then first citizen fetched', () {
-      test('has correct name.', () {
+      test('has Alex as name.', () {
         expect(citizensShallow[0].name, 'Alex');
       });
 
@@ -118,7 +118,7 @@ void main() async {
             : false);
 
     group('then second citizen fetched', () {
-      test('has correct name.', () {
+      test('has Isak as name.', () {
         expect(citizensShallow[1].name, 'Isak');
       });
 
