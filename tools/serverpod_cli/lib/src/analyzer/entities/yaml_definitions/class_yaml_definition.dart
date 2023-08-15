@@ -49,7 +49,9 @@ class ClassYamlDefinition {
               ValidateNode(
                 Keyword.parent,
                 isDeprecated: true,
-                mutuallyExclusiveKeys: {Keyword.relation},
+                mutuallyExclusiveKeys: {
+                  Keyword.relation,
+                },
                 alternativeUsageMessage:
                     'Use the relation keyword instead. E.g. relation(parent=parent_table)',
                 valueRestriction: restrictions.validateParentName,
@@ -85,7 +87,12 @@ class ClassYamlDefinition {
                 Keyword.persist,
                 keyRestriction: restrictions.validatePersistKey,
                 valueRestriction: BooleanValueRestriction().validate,
-                mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
+                mutuallyExclusiveKeys: {
+                  Keyword.database,
+                  Keyword.api,
+                  Keyword.relation,
+                  Keyword.parent,
+                },
               ),
               ValidateNode(
                 Keyword.database,

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -61,10 +62,6 @@ void main() {
         definition,
         [definition!],
       );
-
-      test('then no errors are collected', () {
-        expect(collector.errors, isEmpty);
-      });
 
       test('then the generated entity should be persisted', () {
         expect(
@@ -174,6 +171,117 @@ void main() {
           isFalse,
         );
       });
+    },
+  );
+
+  test(
+    'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: Example?, !persist, relation
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.resolveEntityDependencies([entity!]);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        entity,
+        [entity],
+      );
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The "persist" property is mutually exclusive with the "relation" property.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: int?, !persist, parent=example
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.resolveEntityDependencies([entity!]);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        entity,
+        [entity],
+      );
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.last;
+
+      expect(
+        error.message,
+        'The "persist" property is mutually exclusive with the "parent" property.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with a field with a persist key set to true, then collect an info that the keyword is unnecessary.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: Example?, persist
+        ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.resolveEntityDependencies([entity!]);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        entity,
+        [entity],
+      );
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+
+      expect(
+        error.message,
+        'Fields are persisted by default, the property can be removed.',
+      );
+
+      expect(error.severity, SourceSpanSeverity.hint);
+      expect(error.tags?.first, SourceSpanTag.unnecessary);
     },
   );
 
@@ -336,7 +444,7 @@ void main() {
 
       expect(collector.errors.length, greaterThan(0));
 
-      var error = collector.errors.first;
+      var error = collector.errors.last;
 
       expect(error.message, 'The value must be a boolean.');
     },
@@ -392,7 +500,7 @@ void main() {
         class: Example
         table: example
         fields:
-          name: String, persist, database
+          name: String, !persist, database
         ''',
         Uri(path: 'lib/src/protocol/example.yaml'),
         [],

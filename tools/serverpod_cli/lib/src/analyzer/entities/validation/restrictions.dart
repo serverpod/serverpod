@@ -462,15 +462,28 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is ClassDefinition && definition.tableName == null) {
-      return [
-        SourceSpanSeverityException(
-          'The "persist" property requires a table to be set on the class.',
-          span,
-        )
-      ];
+    if (definition is! ClassDefinition) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (definition.tableName == null) {
+      errors.add(SourceSpanSeverityException(
+        'The "persist" property requires a table to be set on the class.',
+        span,
+      ));
     }
-    return [];
+
+    var field = definition.findField(parentNodeName);
+    if (definition.tableName != null && field?.shouldPersist != false) {
+      errors.add(SourceSpanSeverityException(
+        'Fields are persisted by default, the property can be removed.',
+        span,
+        severity: SourceSpanSeverity.hint,
+        tags: [SourceSpanTag.unnecessary],
+      ));
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> validateEnumValues(
