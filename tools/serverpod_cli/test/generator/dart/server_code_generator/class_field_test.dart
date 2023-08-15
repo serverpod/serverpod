@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
+import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
@@ -35,16 +36,19 @@ void main() {
 
     test('then generated class imports server version of serverpod.', () {
       expect(
-          CompilationUnitHelpers.hasImportDirective(compilationUnit,
-              uri: 'package:serverpod/serverpod.dart'),
+          CompilationUnitHelpers.hasImportDirective(
+            compilationUnit,
+            uri: 'package:serverpod/serverpod.dart',
+          ),
           isTrue,
           reason: 'Missing import of package:serverpod/serverpod.dart');
     });
 
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
-    test('then class named $testClassName is generated.', () {
+      compilationUnit,
+      name: testClassName,
+    );
+    test('then a class named $testClassName is generated.', () {
       expect(
         maybeClassNamedExample,
         isNotNull,
@@ -52,36 +56,43 @@ void main() {
       );
     });
 
-    group('then class named $testClassName', () {
+    group('then the class named $testClassName', () {
       test('inherits from SerializableEntity.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(maybeClassNamedExample!,
-                name: 'SerializableEntity'),
+            CompilationUnitHelpers.hasExtendsClause(
+              maybeClassNamedExample!,
+              name: 'SerializableEntity',
+            ),
             isTrue,
             reason: 'Missing extends clause for SerializableEntity.');
       });
 
-      test('has fromJson factory.', () {
+      test('has a fromJson factory.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: 'fromJson'),
+              maybeClassNamedExample!,
+              name: 'fromJson',
+            ),
             isTrue,
             reason: 'Missing declaration for fromJson factory.');
       });
 
-      test('has toJson method.', () {
+      test('has a toJson method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'toJson'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'toJson',
+            ),
             isTrue,
             reason: 'Missing declaration for toJson method');
       });
 
-      test('has allToJson method.', () {
+      test('has a allToJson method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'allToJson'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'allToJson',
+            ),
             isTrue,
             reason: 'Missing declaration for allToJson method.');
       });
@@ -128,10 +139,11 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+      compilationUnit,
+      name: testClassName,
+    );
 
-    test('then class named $testClassName is generated.', () {
+    test('then a class named $testClassName is generated.', () {
       expect(
         maybeClassNamedExample,
         isNotNull,
@@ -139,11 +151,13 @@ void main() {
       );
     });
 
-    group('then class named $testClassName', () {
+    group('then the class named $testClassName', () {
       test('inherits from TableRow.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(maybeClassNamedExample!,
-                name: 'TableRow'),
+            CompilationUnitHelpers.hasExtendsClause(
+              maybeClassNamedExample!,
+              name: 'TableRow',
+            ),
             isTrue,
             reason: 'Missing extends clause for TableRow.');
       });
@@ -151,161 +165,204 @@ void main() {
       test('has id in constructor passed to super.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: null,
-                parameters: ['int? id'],
-                superArguments: ['id']),
+              maybeClassNamedExample!,
+              name: null,
+              parameters: ['int? id'],
+              superArguments: ['id'],
+            ),
             isTrue,
             reason:
                 'Missing declaration for $testClassName constructor with nullable id field passed to super.');
       });
 
-      test('has static Singleton instance.', () {
+      test('has a static Singleton instance.', () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-                name: 't',
-                isFinal: true,
-                isStatic: true,
-                initializerMethod: '${testClassName}Table'),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 't',
+              isFinal: true,
+              isStatic: true,
+              initializerMethod: '${testClassName}Table',
+            ),
             isTrue,
             reason: 'Missing declaration for ${testClassName}Table singleton.');
       });
 
-      test('has "tableName" method.', () {
+      test('has a tableName method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'tableName'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'tableName',
+            ),
             isTrue,
-            reason: 'Missing declaration for "tableName" method.');
+            reason: 'Missing declaration for tableName method.');
       });
 
       test('is NOT generated with id field.', () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-                name: 'id'),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'id',
+            ),
             isFalse,
             reason: 'Declaration for id field should not be generated.');
       });
 
-      test('has toJsonForDatabase method.', () {
+      test('has a toJsonForDatabase method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'toJsonForDatabase'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'toJsonForDatabase',
+            ),
             isTrue,
             reason: 'Missing declaration for toJsonForDatabase method.');
       });
 
-      test('has setColumn method.', () {
+      test('has a setColumn method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'setColumn'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'setColumn',
+            ),
             isTrue,
             reason: 'Missing declaration for setColumn method.');
       });
 
-      test('has a static "find" method.', () {
+      test('has a static find method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'find', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'find',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "find" method.');
+            reason: 'Missing declaration for static find method.');
       });
 
-      test('has static "findSingleRow" method.', () {
+      test('has a static findSingleRow method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'findSingleRow', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'findSingleRow',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "findSingleRow" method.');
+            reason: 'Missing declaration for static findSingleRow method.');
       });
 
-      test('has findById static method.', () {
+      test('has a findById static method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'findById', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'findById',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "findById" method.');
+            reason: 'Missing declaration for static findById method.');
       });
 
-      test('has static "delete" method.', () {
+      test('has a static delete method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'delete', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'delete',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "delete" method.');
+            reason: 'Missing declaration for static delete method.');
       });
 
-      test('has static "deleteRow" method.', () {
+      test('has a static deleteRow method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'deleteRow', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'deleteRow',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration static "deleteRow" method.');
+            reason: 'Missing declaration static deleteRow method.');
       });
 
-      test('has static "update" method.', () {
+      test('has a static update method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'update', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'update',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "update" method.');
+            reason: 'Missing declaration for static update method.');
       });
 
-      test('has static "insert" method.', () {
+      test('has a static insert method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'insert', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'insert',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "insert" method.');
+            reason: 'Missing declaration for static insert method.');
       });
 
-      test('has static "count" method.', () {
+      test('has a static count method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(maybeClassNamedExample!,
-                name: 'count', isStatic: true),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'count',
+              isStatic: true,
+            ),
             isTrue,
-            reason: 'Missing declaration for static "count" method.');
+            reason: 'Missing declaration for static count method.');
       });
     }, skip: maybeClassNamedExample == null);
 
     var maybeClassNamedExampleTable =
-        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
-            name: '${testClassName}Table');
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
 
-    test('then class named ${testClassName}Table is generated.', () {
+    test('then a class named ${testClassName}Table is generated.', () {
       expect(
         maybeClassNamedExampleTable,
         isNotNull,
         reason: 'Missing definition for class named ${testClassName}Table',
       );
     });
-    group('then class named ${testClassName}Table', () {
+    group('then the class named ${testClassName}Table', () {
       var exampleTableClass = maybeClassNamedExampleTable!;
       test('inherits from Table.', () {
         expect(
-            CompilationUnitHelpers.hasExtendsClause(exampleTableClass,
-                name: 'Table'),
+            CompilationUnitHelpers.hasExtendsClause(
+              exampleTableClass,
+              name: 'Table',
+            ),
             isTrue,
             reason: 'Missing extends clause for Table.');
       });
 
-      test('has empty constructor that passes table name to super.', () {
+      test('has an empty constructor that passes table name to super.', () {
         expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(exampleTableClass,
-                name: null,
-                parameters: [],
-                superArguments: ['tableName: \'$tableName\'']),
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              exampleTableClass,
+              name: null,
+              parameters: [],
+              superArguments: ['tableName: \'$tableName\''],
+            ),
             isTrue,
             reason:
                 'Missing declaration for $testClassName constructor with nullable id field passed to super.');
       });
 
-      test('has "columns" method.', () {
+      test('has a columns method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
-                name: 'columns'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleTableClass,
+              name: 'columns',
+            ),
             isTrue,
-            reason: 'Missing declaration for "columns" getter.');
+            reason: 'Missing declaration for columns getter.');
       });
     }, skip: maybeClassNamedExampleTable == null);
 
@@ -313,8 +370,11 @@ void main() {
         'then top level variable t$testClassName marked deprecated is generated.',
         () {
       expect(
-          CompilationUnitHelpers.hasTopLevelVariableDeclaration(compilationUnit,
-              name: 't$testClassName', annotations: ['Deprecated']),
+          CompilationUnitHelpers.hasTopLevelVariableDeclaration(
+            compilationUnit,
+            name: 't$testClassName',
+            annotations: ['Deprecated'],
+          ),
           isTrue,
           reason:
               'Missing top level variable declaration for "t$testClassName" marked deprecated.');
@@ -322,8 +382,10 @@ void main() {
 
     test('then type alias ${testClassName}ExpressionBuilder is generated.', () {
       expect(
-          CompilationUnitHelpers.hasTypeAliasDeclaration(compilationUnit,
-              name: '${testClassName}ExpressionBuilder'),
+          CompilationUnitHelpers.hasTypeAliasDeclaration(
+            compilationUnit,
+            name: '${testClassName}ExpressionBuilder',
+          ),
           isTrue,
           reason:
               'Missing type alias for "${testClassName}ExpressionBuilder".');
@@ -339,11 +401,12 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .withField(
-            SerializableEntityFieldDefinition(
-                name: 'title',
-                type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.all,
-                shouldPersist: true),
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.all)
+                .withShouldPersist(true)
+                .build(),
           )
           .build()
     ];
@@ -355,15 +418,20 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExampleTable =
-        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
-            name: '${testClassName}Table');
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
 
-    group('then class named ${testClassName}Table', () {
+    group('then the class named ${testClassName}Table', () {
       test('has class variable for field.', () {
         var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(exampleTableClass,
-                name: 'title', isFinal: true),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              exampleTableClass,
+              name: 'title',
+              isFinal: true,
+            ),
             isTrue,
             reason: 'Missing declaration for title field.');
       });
@@ -371,8 +439,11 @@ void main() {
       test('has field included in columns.', () {
         var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
-                name: 'columns', functionExpression: '[id, title]'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleTableClass,
+              name: 'columns',
+              functionExpression: '[id, title]',
+            ),
             isTrue,
             reason: 'Missing title field in columns.');
       });
@@ -391,11 +462,12 @@ void main() {
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .withField(
-            SerializableEntityFieldDefinition(
-                name: 'title',
-                type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.all,
-                shouldPersist: false),
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.all)
+                .withShouldPersist(false)
+                .build(),
           )
           .build()
     ];
@@ -407,17 +479,22 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExampleTable =
-        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
-            name: '${testClassName}Table');
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
 
-    group('then class named ${testClassName}Table', () {
+    group('then the class named ${testClassName}Table', () {
       test(
         'does NOT have class variable for field.',
         () {
           var exampleTableClass = maybeClassNamedExampleTable!;
           expect(
-              CompilationUnitHelpers.hasFieldDeclaration(exampleTableClass,
-                  name: 'title', isFinal: true),
+              CompilationUnitHelpers.hasFieldDeclaration(
+                exampleTableClass,
+                name: 'title',
+                isFinal: true,
+              ),
               isFalse,
               reason: 'Should not have declaration for title field.');
         },
@@ -426,8 +503,11 @@ void main() {
       test('does NOT have field included in columns.', () {
         var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(exampleTableClass,
-                name: 'columns', functionExpression: '[id]'),
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleTableClass,
+              name: 'columns',
+              functionExpression: '[id]',
+            ),
             isTrue,
             reason: 'Should not include field in columns.');
       });
@@ -453,23 +533,28 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
-    group('then class name $testClassName', () {
+      compilationUnit,
+      name: testClassName,
+    );
+    group('then the class named $testClassName', () {
       test('has field as required in constructor.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: null,
-                parameters: ['required this.title']),
+              maybeClassNamedExample!,
+              name: null,
+              parameters: ['required this.title'],
+            ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
       test('has that class variable.', () {
         expect(
-          CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-              name: 'title', type: 'String'),
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExample!,
+            name: 'title',
+            type: 'String',
+          ),
           isTrue,
           reason: 'Missing declaration for title field.',
         );
@@ -496,23 +581,28 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
-    group('then class named $testClassName', () {
+      compilationUnit,
+      name: testClassName,
+    );
+    group('then the class named $testClassName', () {
       test('has field in constructor.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-                maybeClassNamedExample!,
-                name: null,
-                parameters: ['this.title']),
+              maybeClassNamedExample!,
+              name: null,
+              parameters: ['this.title'],
+            ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
       });
 
       test('has that class variable.', () {
         expect(
-          CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-              name: 'title', type: 'String?'),
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExample!,
+            name: 'title',
+            type: 'String?',
+          ),
           isTrue,
           reason: 'Missing declaration for title field.',
         );
@@ -529,11 +619,11 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
-            SerializableEntityFieldDefinition(
-                name: 'title',
-                type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.all,
-                shouldPersist: false),
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.all)
+                .build(),
           )
           .build()
     ];
@@ -545,14 +635,18 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+      compilationUnit,
+      name: testClassName,
+    );
     test(
       'then a class is generated with that class variable.',
       () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-                name: 'title', type: 'String?'),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'title',
+              type: 'String?',
+            ),
             isTrue,
             reason: 'Missing declaration for title field');
       },
@@ -568,12 +662,11 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
-            SerializableEntityFieldDefinition(
-              name: 'title',
-              type: TypeDefinition(className: 'String', nullable: true),
-              scope: EntityFieldScopeDefinition.serverOnly,
-              shouldPersist: false,
-            ),
+            FieldDefinitionBuilder()
+                .withName('title')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.serverOnly)
+                .build(),
           )
           .build()
     ];
@@ -585,14 +678,18 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+      compilationUnit,
+      name: testClassName,
+    );
     test(
       'then a class is generated with that class variable.',
       () {
         expect(
-            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
-                name: 'title', type: 'String?'),
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'title',
+              type: 'String?',
+            ),
             isTrue,
             reason: 'Missing declaration for title field.');
       },
@@ -619,14 +716,17 @@ void main() {
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
     var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
-        compilationUnit,
-        name: testClassName);
+      compilationUnit,
+      name: testClassName,
+    );
     test(
       'then class implements SerializableException.',
       () {
         expect(
-            CompilationUnitHelpers.hasImplementsClause(maybeClassNamedExample!,
-                name: 'SerializableException'),
+            CompilationUnitHelpers.hasImplementsClause(
+              maybeClassNamedExample!,
+              name: 'SerializableException',
+            ),
             isTrue,
             reason: 'Class should implement SerializableException.');
       },
