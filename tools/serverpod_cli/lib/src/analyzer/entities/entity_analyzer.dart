@@ -226,13 +226,9 @@ class SerializableEntityAnalyzer {
         errorListener: collector,
         recover: true,
       );
-    } catch (error) {
-      if (error is YamlException) {
-        collector?.errors.add(error);
-        return null;
-      } else {
-        rethrow;
-      }
+    } on YamlException catch (error) {
+      collector?.errors.add(error);
+      return null;
     }
 
     var documentContents = document.contents;
