@@ -1459,4 +1459,42 @@ fields:
       );
     },
   );
+
+  test(
+    'Given a class with a duplicated field name, then an error is collected.',
+    () {
+      var collector = CodeGenerationCollector();
+      var protocol = ProtocolSource(
+        '''
+      class: Example
+      fields:
+        duplicatedField: String
+        duplicatedField: String
+      ''',
+        Uri(path: 'lib/src/protocol/example.yaml'),
+        [],
+      );
+
+      var definition =
+          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
+      SerializableEntityAnalyzer.validateYamlDefinition(
+        protocol.yaml,
+        protocol.yamlSourceUri.path,
+        collector,
+        definition,
+        [],
+      );
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'Duplicate mapping key.',
+      );
+
+     
+    },
+  );
 }

@@ -218,12 +218,22 @@ class SerializableEntityAnalyzer {
     String sourceFileName, [
     ErrorCollector? collector,
   ]) {
-    YamlDocument document = loadYamlDocument(
-      yaml,
-      sourceUrl: Uri.file(sourceFileName),
-      errorListener: collector,
-      recover: true,
-    );
+    YamlDocument document;
+    try {
+      document = loadYamlDocument(
+        yaml,
+        sourceUrl: Uri.file(sourceFileName),
+        errorListener: collector,
+        recover: true,
+      );
+    } catch (error) {
+      if (error is YamlException) {
+        collector?.errors.add(error);
+        return null;
+      } else {
+        rethrow;
+      }
+    }
 
     var documentContents = document.contents;
     if (documentContents is! YamlMap) return null;
