@@ -92,7 +92,6 @@ ALTER TABLE ONLY "company"
 
       test('has foreign key creation for town after citizen table is created.',
           () {
-        print(pgsqlFile);
         var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "citizen"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "town"
