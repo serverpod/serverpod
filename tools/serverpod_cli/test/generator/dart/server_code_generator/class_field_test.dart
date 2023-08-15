@@ -331,11 +331,10 @@ void main() {
       );
     });
     group('then the class named ${testClassName}Table', () {
-      var exampleTableClass = maybeClassNamedExampleTable!;
       test('inherits from Table.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: 'Table',
             ),
             isTrue,
@@ -345,7 +344,7 @@ void main() {
       test('has an empty constructor that passes table name to super.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: null,
               parameters: [],
               superArguments: ['tableName: \'$tableName\''],
@@ -358,7 +357,7 @@ void main() {
       test('has a columns method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: 'columns',
             ),
             isTrue,
@@ -425,10 +424,9 @@ void main() {
 
     group('then the class named ${testClassName}Table', () {
       test('has class variable for field.', () {
-        var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: 'title',
               isFinal: true,
             ),
@@ -437,10 +435,9 @@ void main() {
       });
 
       test('has field included in columns.', () {
-        var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: 'columns',
               functionExpression: '[id, title]',
             ),
@@ -488,10 +485,9 @@ void main() {
       test(
         'does NOT have class variable for field.',
         () {
-          var exampleTableClass = maybeClassNamedExampleTable!;
           expect(
               CompilationUnitHelpers.hasFieldDeclaration(
-                exampleTableClass,
+                maybeClassNamedExampleTable!,
                 name: 'title',
                 isFinal: true,
               ),
@@ -501,10 +497,9 @@ void main() {
       );
 
       test('does NOT have field included in columns.', () {
-        var exampleTableClass = maybeClassNamedExampleTable!;
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              exampleTableClass,
+              maybeClassNamedExampleTable!,
               name: 'columns',
               functionExpression: '[id]',
             ),
