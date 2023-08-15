@@ -197,18 +197,18 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        var rawTableRow = rawRow[tableName];
-        if (rawTableRow == null) continue;
-
-        if (include != null) {
-          rawTableRow = _resolveRowDataHierarchy(
+        Map<String, dynamic>? rawTableRow;
+        if (include == null) {
+          rawTableRow = rawRow[tableName];
+        } else {
+          rawTableRow = _resolveNestedRowData(
             include,
-            table,
             rawRow,
-            rawTableRow,
-            tableName,
+            tableAsPrefix: true,
           );
         }
+
+        if (rawTableRow == null) continue;
 
         formattedTableRows.add(_formatTableRow<T>(tableName, rawTableRow));
       }
@@ -217,50 +217,72 @@ Current type was $T''');
       rethrow;
     }
 
-    _logQuery(session, query, startTime,
-        numRowsAffected: formattedTableRows.length);
+    _logQuery(
+      session,
+      query,
+      startTime,
+      numRowsAffected: formattedTableRows.length,
+    );
     return formattedTableRows.cast<T>();
   }
 
-  Map<String, dynamic> _resolveRowDataHierarchy(
+  Map<String, dynamic>? _resolveNestedRowData(
     Include include,
-    Table table,
-    Map<String, Map<String, dynamic>> rawRow,
-    Map<String, dynamic> parentTableRow,
-    String prefix,
-  ) {
+    Map<String, Map<String, dynamic>> rawRow, {
+    String prefix = '',
+    bool tableAsPrefix = false,
+  }) {
+    // Resolve this object.
+    var rawTableRow = rawRow[include.table.tableName];
+    if (rawTableRow == null) return null;
+
+    var resolvedTableRow = _createColumnMapFromPrefixedColumns(
+      include.table.columns,
+      prefix,
+      rawTableRow,
+    );
+
+    if (resolvedTableRow.isEmpty) {
+      return null;
+    }
+
+    // Resolve all includes for the object.
     include.includes.forEach((relationField, relationInclude) {
       if (relationInclude == null) return;
 
-      var rawRelationTableRow = rawRow[relationInclude.table.tableName];
-      if (rawRelationTableRow == null) return;
+      var includePrefix = _createIncludePrefix(
+        tableAsPrefix ? include.table.tableName : prefix,
+        relationField,
+      );
 
-      var includePrefix = _createIncludePrefix(prefix, relationField);
-
-      var nonPrefixedRelationTableRow = <String, dynamic>{};
-      for (var column in relationInclude.table.columns) {
-        var columnName = column.columnName;
-        var includePrefixedColumnName = '$includePrefix.${column.columnName}';
-
-        var columnData = rawRelationTableRow[includePrefixedColumnName];
-        if (columnData != null) {
-          nonPrefixedRelationTableRow[columnName] =
-              rawRelationTableRow[includePrefixedColumnName];
-        }
-      }
-
-      if (nonPrefixedRelationTableRow.isNotEmpty) {
-        parentTableRow[relationField] = _resolveRowDataHierarchy(
-          relationInclude,
-          relationInclude.table,
-          rawRow,
-          nonPrefixedRelationTableRow,
-          includePrefix,
-        );
-      }
+      resolvedTableRow[relationField] = _resolveNestedRowData(
+        relationInclude,
+        rawRow,
+        prefix: includePrefix,
+      );
     });
 
-    return parentTableRow;
+    return resolvedTableRow;
+  }
+
+  Map<String, dynamic> _createColumnMapFromPrefixedColumns(
+    List<Column> columns,
+    String includePrefix,
+    Map<String, dynamic> rawTableRow,
+  ) {
+    var prefix = includePrefix.isNotEmpty ? '$includePrefix.' : '';
+
+    var columnMap = <String, dynamic>{};
+    for (var column in columns) {
+      var prefixedColumnName = '$prefix${column.columnName}';
+
+      var columnData = rawTableRow[prefixedColumnName];
+      if (columnData != null) {
+        columnMap[column.columnName] = columnData;
+      }
+    }
+
+    return columnMap;
   }
 
   _IncludeQueryStrings _createQueryFromIncludes(
@@ -287,7 +309,7 @@ Current type was $T''');
       var queryFromIncludes = _createQueryFromIncludes(
         relationInclude,
         relationInclude.table,
-        '${prefix}_$relationField',
+        includePrefix,
       );
       join += queryFromIncludes.join;
       select += queryFromIncludes.select;
@@ -296,8 +318,11 @@ Current type was $T''');
     return _IncludeQueryStrings(select: select, join: join);
   }
 
-  String _createIncludePrefix(String prefix, String relationField) {
-    return '${prefix}_$relationField';
+  String _createIncludePrefix(
+    String prefix,
+    String field,
+  ) {
+    return '${prefix}_$field';
   }
 
   /// For most cases use the corresponding method in [Database] instead.
