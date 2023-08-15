@@ -132,7 +132,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'company',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
@@ -187,7 +187,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'town',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
@@ -242,7 +242,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'citizen',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )

@@ -55,9 +55,11 @@ ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
     FOREIGN KEY("companyId")
     REFERENCES "company"("id")
-    ON DELETE CASCADE;
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 ''');
 
+        expect(createCompanyIndex, isNot(-1));
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
 
@@ -69,9 +71,11 @@ ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town"("id")
-    ON DELETE CASCADE;
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 ''');
 
+        expect(createCompanyIndex, isNot(-1));
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
 
@@ -83,9 +87,11 @@ ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
     FOREIGN KEY("mayorId")
     REFERENCES "citizen"("id")
-    ON DELETE CASCADE;
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 ''');
 
+        expect(createCompanyIndex, isNot(-1));
         expect(createCompanyIndex, lessThan(createForeignKeyForCitizenIndex));
       });
     },
