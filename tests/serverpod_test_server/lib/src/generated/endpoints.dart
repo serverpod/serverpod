@@ -545,6 +545,25 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['citizen'] as _i5.CitizenEndpoint)
                   .getAllWithDeepIncludes(session),
         ),
+        'findWithIncludesWhereNameIs': _i1.MethodConnector(
+          name: 'findWithIncludesWhereNameIs',
+          params: {
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['citizen'] as _i5.CitizenEndpoint)
+                  .findWithIncludesWhereNameIs(
+            session,
+            params['name'],
+          ),
+        ),
         'insert': _i1.MethodConnector(
           name: 'insert',
           params: {

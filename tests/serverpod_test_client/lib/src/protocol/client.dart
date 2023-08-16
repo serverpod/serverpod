@@ -197,6 +197,13 @@ class EndpointCitizen extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Future<List<_i6.Citizen>> findWithIncludesWhereNameIs(String name) =>
+      caller.callServerEndpoint<List<_i6.Citizen>>(
+        'citizen',
+        'findWithIncludesWhereNameIs',
+        {'name': name},
+      );
+
   _i2.Future<int> insert(_i6.Citizen citizen) => caller.callServerEndpoint<int>(
         'citizen',
         'insert',

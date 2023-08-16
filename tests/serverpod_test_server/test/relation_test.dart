@@ -134,4 +134,15 @@ void main() async {
             ? 'Unexpected number of citizens.'
             : false);
   });
+
+  group(
+      'Given entities with nested relations when filtering on fields with shared name in relations',
+      () {
+    test('then filter is applied to outer entity.', () async {
+      var citizen = await client.citizen.findWithIncludesWhereNameIs('Alex');
+      expect(citizen, isNotEmpty);
+      expect(citizen.length, equals(1));
+      expect(citizen.first.name, equals('Alex'));
+    });
+  });
 }

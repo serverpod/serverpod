@@ -17,6 +17,21 @@ class CitizenEndpoint extends Endpoint {
     );
   }
 
+  Future<List<Citizen>> findWithIncludesWhereNameIs(
+    Session session,
+    String name,
+  ) async {
+    return await Citizen.find(
+      session,
+      orderBy: Citizen.t.id,
+      where: (c) => c.name.equals(name),
+      include: CitizenInclude(
+        company: CompanyInclude(town: TownInclude()),
+        oldCompany: CompanyInclude(town: TownInclude()),
+      ),
+    );
+  }
+
   Future<int> insert(Session session, Citizen citizen) async {
     await Citizen.insert(session, citizen);
     return citizen.id!;
