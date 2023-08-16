@@ -609,7 +609,7 @@ void main() {
   });
 
   group(
-      'Given a class with a non persistent all scoped field when generating code',
+      'Given a class with a non persistent field with scope all when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -654,7 +654,7 @@ void main() {
   });
 
   group(
-      'Given a class with a non persistent serverOnly scoped field when generating code',
+      'Given a class with a non persistent field with scope serverOnly when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -699,7 +699,7 @@ void main() {
   });
 
   group(
-      'Given a class with a non persistent none scoped field when generating code',
+      'Given a class with a non persistent field with scope none when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
