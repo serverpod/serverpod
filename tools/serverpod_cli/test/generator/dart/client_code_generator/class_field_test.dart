@@ -273,7 +273,7 @@ void main() {
   });
 
   group(
-      'Given a class with a non persistent all scoped field when generating code',
+      'Given a class with a non persistent field with scope all when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -317,7 +317,7 @@ void main() {
   });
 
   group(
-      'Given a class with non persistent a server only scoped field when generating code',
+      'Given a class with a non persistent field with scope server only when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -352,6 +352,46 @@ void main() {
               name: 'title',
               type: 'String?',
             ),
+            isFalse,
+            reason: 'Field title should not be generated.');
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
+  });
+
+  group(
+      'Given a class with a non persistent field with scope none when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withField(
+            SerializableEntityFieldDefinition(
+                name: 'title',
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.none,
+                shouldPersist: false),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFileName]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test(
+      'then class is NOT generated with that class variable.',
+      () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
+                name: 'title', type: 'String?'),
             isFalse,
             reason: 'Field title should not be generated.');
       },

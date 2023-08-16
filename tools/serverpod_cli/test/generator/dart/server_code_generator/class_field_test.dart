@@ -608,7 +608,9 @@ void main() {
             : false);
   });
 
-  group('Given a class with an all scoped field when generating code', () {
+  group(
+      'Given a class with a non persistent field with scope all when generating code',
+      () {
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
@@ -651,7 +653,9 @@ void main() {
     );
   });
 
-  group('Given a class with a database scoped field when generating code', () {
+  group(
+      'Given a class with a non persistent field with scope serverOnly when generating code',
+      () {
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
@@ -687,6 +691,48 @@ void main() {
             ),
             isTrue,
             reason: 'Missing declaration for title field.');
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
+  });
+
+  group(
+      'Given a class with a non persistent field with scope none when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withField(
+            SerializableEntityFieldDefinition(
+              name: 'title',
+              type: TypeDefinition(className: 'String', nullable: true),
+              scope: EntityFieldScopeDefinition.none,
+              shouldPersist: false,
+            ),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName);
+    test(
+      'then a class is NOT generated with that class variable.',
+      () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(maybeClassNamedExample!,
+                name: 'title', type: 'String?'),
+            isFalse,
+            reason: 'Found declaration for field that should not exist.');
       },
       skip: maybeClassNamedExample == null
           ? 'Could not run test because $testClassName class was not found.'
