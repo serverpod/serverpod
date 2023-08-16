@@ -145,7 +145,6 @@ Current type was $T''');
     table = table!;
 
     var startTime = DateTime.now();
-    where ??= Expression('TRUE');
 
     var tableName = table.tableName;
     var selectQuery = 'SELECT ';
@@ -168,7 +167,10 @@ Current type was $T''');
 
     var query = '$selectQuery FROM $tableName $joinQuery';
 
-    query += 'WHERE $where';
+    where ??= Expression('TRUE');
+    var tablePrefixedWhereExpression =
+        _createTablePrefixedWhereExpression(table.columns, where, tableName);
+    query += 'WHERE $tablePrefixedWhereExpression';
 
     if (orderBy != null) {
       query += ' ORDER BY $tableName.$orderBy';
@@ -323,6 +325,17 @@ Current type was $T''');
     String field,
   ) {
     return '${prefix}_$field';
+  }
+
+  String _createTablePrefixedWhereExpression(
+    List<Column> columns,
+    Expression where,
+    String tableName,
+  ) {
+    var regExpMatchingAllColumns = RegExp(
+        columns.map((column) => RegExp.escape(column.toString())).join('|'));
+    return where.toString().replaceAllMapped(
+        regExpMatchingAllColumns, (match) => '$tableName.${match.group(0)}');
   }
 
   /// For most cases use the corresponding method in [Database] instead.
