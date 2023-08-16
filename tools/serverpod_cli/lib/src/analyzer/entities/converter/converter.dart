@@ -110,7 +110,13 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
 }) {
   if (content == null) return [];
 
-  var fieldPairs = fieldOptions.map((stringifiedKeyValuePair) {
+  List<Map<YamlScalar, YamlNode>> fieldPairs = [];
+
+  // This must be a for loop and can never be converted to a map.
+  // There seems to be some type of bug (in dart?) that causes the loop
+  // to run several times if done with a map. There is also different behaviors
+  // between debug and normal runtime.
+  for (var stringifiedKeyValuePair in fieldOptions) {
     var keyValueSpan = _extractSubSpan(content, span, stringifiedKeyValuePair);
 
     if (_hasNestedStringifiedValues(stringifiedKeyValuePair)) {
@@ -121,16 +127,18 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       var stringifiedContent = nestedComponents.last;
 
       if (stringifiedContent == '') {
-        return _createdYamlScalarNode(
+        fieldPairs.add(_createdYamlScalarNode(
           key,
           null,
           keyValueSpan,
-        );
+        ));
+        continue;
       } else {
         var nestedSpan = _extractSubSpan(content, span, stringifiedContent);
         var nodeMap = handleDeepNestedNodes(stringifiedContent, nestedSpan);
 
-        return _createYamlMapNode(key, nodeMap, keyValueSpan);
+        fieldPairs.add(_createYamlMapNode(key, nodeMap, keyValueSpan));
+        continue;
       }
     }
 
@@ -155,12 +163,13 @@ Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
       }
     }
 
-    return _createdYamlScalarNode(
+    fieldPairs.add(_createdYamlScalarNode(
       key,
       value,
       keyValueSpan,
-    );
-  });
+    ));
+    continue;
+  }
 
   return fieldPairs;
 }
