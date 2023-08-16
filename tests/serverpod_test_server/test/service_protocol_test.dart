@@ -365,7 +365,8 @@ void main() {
         expect(
             table.foreignKeys.first.constraintName, 'object_with_parent_fk_0');
         expect(table.foreignKeys.first.referenceTable, 'object_field_scopes');
-        expect(table.foreignKeys.first.onUpdate, isNull);
+        expect(table.foreignKeys.first.onUpdate,
+            service.ForeignKeyAction.noAction);
         expect(
             table.foreignKeys.first.onDelete, service.ForeignKeyAction.cascade);
         expect(table.foreignKeys.first.matchType, isNull);

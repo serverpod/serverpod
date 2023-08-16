@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class ClassYamlDefinition {
   late Set<ValidateNode> documentStructure;
@@ -68,6 +69,18 @@ class ClassYamlDefinition {
                     Keyword.parent,
                     keyRestriction: restrictions.validateParentKey,
                     valueRestriction: restrictions.validateParentName,
+                  ),
+                  ValidateNode(
+                    Keyword.onUpdate,
+                    valueRestriction: EnumValueRestriction(
+                      enums: ForeignKeyAction.values,
+                    ).validate,
+                  ),
+                  ValidateNode(
+                    Keyword.onDelete,
+                    valueRestriction: EnumValueRestriction(
+                      enums: ForeignKeyAction.values,
+                    ).validate,
                   ),
                   ValidateNode(
                     Keyword.optional,

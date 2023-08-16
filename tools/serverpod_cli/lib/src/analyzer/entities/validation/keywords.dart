@@ -13,6 +13,8 @@ class Keyword {
   static const String unique = 'unique';
   static const String parent = 'parent';
   static const String relation = 'relation';
+  static const String onUpdate = 'onUpdate';
+  static const String onDelete = 'onDelete';
   static const String api = 'api';
   static const String database = 'database';
   static const String optional = 'optional';
@@ -20,5 +22,5 @@ class Keyword {
   static const String persist = 'persist';
 
   /// Special keyword to allow keys to be any string.
-  static const String any = 'any';
+  static const String any = '#any';
 }

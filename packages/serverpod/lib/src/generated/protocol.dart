@@ -733,7 +733,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'serverpod_session_log',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
@@ -849,7 +849,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'serverpod_session_log',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )
@@ -1013,7 +1013,7 @@ class Protocol extends _i1.SerializationManagerServer {
           referenceTable: 'serverpod_session_log',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: null,
+          onUpdate: _i2.ForeignKeyAction.noAction,
           onDelete: _i2.ForeignKeyAction.cascade,
           matchType: null,
         )

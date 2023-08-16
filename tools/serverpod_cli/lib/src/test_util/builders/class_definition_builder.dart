@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -103,20 +104,23 @@ class ClassDefinitionBuilder {
   ClassDefinitionBuilder withObjectRelationField(
       String fieldName, String className, String parentTable) {
     _fields.addAll([
-      SerializableEntityFieldDefinition(
-          name: fieldName,
-          type: TypeDefinition(className: className, nullable: true),
-          scope: EntityFieldScopeDefinition.all,
-          shouldPersist: false,
-          relation:
-              ObjectRelationDefinition(scalarFieldName: '${fieldName}Id')),
-      SerializableEntityFieldDefinition(
-          name: '${fieldName}Id',
-          type: TypeDefinition.int,
-          scope: EntityFieldScopeDefinition.all,
-          shouldPersist: true,
-          relation: ForeignRelationDefinition(
-              parentTable: parentTable, referenceFieldName: 'id')),
+      FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition(className, true)
+          .withShouldPersist(false)
+          .withRelation(ObjectRelationDefinition(
+            scalarFieldName: '${fieldName}Id',
+          ))
+          .build(),
+      FieldDefinitionBuilder()
+          .withName('${fieldName}Id')
+          .withIdType()
+          .withShouldPersist(true)
+          .withRelation(ForeignRelationDefinitionBuilder()
+              .withParentTable(parentTable)
+              .withReferenceFieldName('id')
+              .build())
+          .build(),
     ]);
     return this;
   }

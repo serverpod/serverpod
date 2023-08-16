@@ -3,6 +3,8 @@ import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
+
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -172,11 +174,23 @@ class EntityParser {
     var isEnum = _parseIsEnumField(value);
 
     RelationDefinition? relation;
+    var onDelete = _parseDatabaseAction(
+      Keyword.onDelete,
+      ForeignKeyAction.cascade,
+      value,
+    );
+    var onUpdate = _parseDatabaseAction(
+      Keyword.onUpdate,
+      ForeignKeyAction.noAction,
+      value,
+    );
 
     if (parentTable != null) {
       relation = ForeignRelationDefinition(
         parentTable: parentTable,
         referenceFieldName: 'id',
+        onUpdate: onUpdate,
+        onDelete: onDelete,
       );
     } else if (scalarFieldName != null) {
       relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
@@ -190,6 +204,8 @@ class EntityParser {
           name: scalarFieldName,
           relation: UnresolvedForeignRelationDefinition(
             referenceFieldName: 'id',
+            onUpdate: onUpdate,
+            onDelete: onDelete,
           ),
           shouldPersist: true,
           scope: scope,
@@ -215,13 +231,34 @@ class EntityParser {
   }
 
   static String? _parseScalarField(YamlMap value, String fieldName) {
-    if (!value.containsKey(Keyword.relation)) return null;
+    if (!_isRelation(value)) return null;
     var type = value.nodes[Keyword.type]?.value;
     if (type is! String) return null;
     if (AnalyzeChecker.isIdType(type)) return null;
     if (type.startsWith('List')) return null;
 
     return '${fieldName}Id';
+  }
+
+  static ForeignKeyAction _parseDatabaseAction(
+    String key,
+    ForeignKeyAction defaultValue,
+    YamlMap node,
+  ) {
+    var action = _parseRelationNode(node, key)?.value;
+    if (action is! String) return defaultValue;
+
+    return convertToEnum(
+      value: action,
+      enumDefault: defaultValue,
+      enumValues: ForeignKeyAction.values,
+    );
+  }
+
+  static YamlNode? _parseRelationNode(YamlMap node, String key) {
+    var relation = node.nodes[Keyword.relation]?.value;
+    if (relation is! YamlMap) return null;
+    return relation.nodes[key];
   }
 
   static bool _isRelation(YamlMap documentContents) {
@@ -282,18 +319,10 @@ class EntityParser {
     var parent = documentContents.nodes[Keyword.parent]?.value;
     if (parent is String) return parent;
 
-    var relationMap = documentContents.nodes[Keyword.relation];
-
-    if (relationMap is! YamlMap) return null;
-    parent = relationMap.nodes[Keyword.parent]?.value;
-
+    parent = _parseRelationNode(documentContents, Keyword.parent)?.value;
     if (parent is String) return parent;
 
-    var type = documentContents.nodes[Keyword.type]?.value;
-    if (AnalyzeChecker.isIdType(type)) return null;
-    if (type is! String) return null;
-
-    return parent;
+    return null;
   }
 
   static bool _parseIsEnumField(YamlMap documentContents) {

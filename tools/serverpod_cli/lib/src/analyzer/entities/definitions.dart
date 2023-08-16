@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -248,8 +249,14 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
 
+  final ForeignKeyAction onDelete;
+
+  final ForeignKeyAction onUpdate;
+
   UnresolvedForeignRelationDefinition({
     required this.referenceFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
 
@@ -264,8 +271,18 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// References the column in the [parentTable] that this field should be joined on.
   String referenceFieldName;
 
+  final ForeignKeyAction onDelete;
+
+  final ForeignKeyAction onUpdate;
+
   ForeignRelationDefinition({
     required this.parentTable,
     required this.referenceFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
+
+const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
+
+const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;

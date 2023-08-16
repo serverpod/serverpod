@@ -324,6 +324,8 @@ class SerializableEntityAnalyzer {
     scalarField.relation = ForeignRelationDefinition(
       parentTable: tableName,
       referenceFieldName: scalarRelation.referenceFieldName,
+      onUpdate: scalarRelation.onUpdate,
+      onDelete: scalarRelation.onDelete,
     );
   }
 
