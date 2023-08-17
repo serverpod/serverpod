@@ -168,27 +168,31 @@ class EntityParser {
     );
 
     var scope = _parseClassFieldScope(value);
-    var parentTable = _parseParentTable(value);
     var shouldPersist = _parseShouldPersist(value);
-    var scalarFieldName = _parseScalarField(value, fieldName);
     var isEnum = _parseIsEnumField(value);
 
-    RelationDefinition? relation;
+    var parentTable = _parseParentTable(value);
+    var scalarFieldName = _parseScalarField(value, fieldName);
+    var manualScalarField = _parseManualScalarField(value);
+
     var onDelete = _parseDatabaseAction(
       Keyword.onDelete,
-      ForeignKeyAction.cascade,
+      onDeleteDefault,
       value,
     );
     var onUpdate = _parseDatabaseAction(
       Keyword.onUpdate,
-      ForeignKeyAction.noAction,
+      onUpdateDefault,
       value,
     );
 
+    var referenceFieldName = 'id';
+
+    RelationDefinition? relation;
     if (parentTable != null) {
       relation = ForeignRelationDefinition(
         parentTable: parentTable,
-        referenceFieldName: 'id',
+        referenceFieldName: referenceFieldName,
         onUpdate: onUpdate,
         onDelete: onDelete,
       );
@@ -196,6 +200,13 @@ class EntityParser {
       relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
     } else if (typeResult.type.isList && _isRelation(value)) {
       relation = UnresolvedListRelationDefinition();
+    } else if (manualScalarField != null) {
+      relation = UnresolvedObjectRelationDefinition(
+        scalarFieldName: manualScalarField,
+        referenceFieldName: referenceFieldName,
+        onUpdate: onUpdate,
+        onDelete: onDelete,
+      );
     }
 
     return [
@@ -203,7 +214,7 @@ class EntityParser {
         SerializableEntityFieldDefinition(
           name: scalarFieldName,
           relation: UnresolvedForeignRelationDefinition(
-            referenceFieldName: 'id',
+            referenceFieldName: referenceFieldName,
             onUpdate: onUpdate,
             onDelete: onDelete,
           ),
@@ -214,7 +225,9 @@ class EntityParser {
       SerializableEntityFieldDefinition(
         name: fieldName,
         relation: relation,
-        shouldPersist: scalarFieldName != null ? false : shouldPersist,
+        shouldPersist: scalarFieldName != null || manualScalarField != null
+            ? false
+            : shouldPersist,
         scope: scope,
         type: typeResult.type..isEnum = isEnum,
         documentation: fieldDocumentation,
@@ -230,12 +243,37 @@ class EntityParser {
     }
   }
 
+  static bool _isListType(YamlMap value) {
+    var type = value.nodes[Keyword.type]?.value;
+    if (type is! String) return false;
+    return type.startsWith('List');
+  }
+
+  static bool _isIdType(YamlMap value) {
+    var type = value.nodes[Keyword.type]?.value;
+    if (type is! String) return false;
+    return AnalyzeChecker.isIdType(type);
+  }
+
+  static String? _parseManualScalarField(YamlMap value) {
+    if (!_isRelation(value)) return null;
+    if (_isIdType(value)) return null;
+    if (_isListType(value)) return null;
+
+    var scalarFieldNode = _parseRelationNode(value, Keyword.field);
+    var scalarField = scalarFieldNode?.value;
+
+    if (scalarField is! String) return null;
+    return scalarField;
+  }
+
   static String? _parseScalarField(YamlMap value, String fieldName) {
     if (!_isRelation(value)) return null;
-    var type = value.nodes[Keyword.type]?.value;
-    if (type is! String) return null;
-    if (AnalyzeChecker.isIdType(type)) return null;
-    if (type.startsWith('List')) return null;
+    if (_isIdType(value)) return null;
+    if (_isListType(value)) return null;
+
+    var field = _parseRelationNode(value, Keyword.field);
+    if (field != null) return null;
 
     return '${fieldName}Id';
   }

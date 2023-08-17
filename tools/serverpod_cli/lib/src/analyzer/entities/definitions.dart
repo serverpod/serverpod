@@ -244,6 +244,23 @@ class ObjectRelationDefinition extends RelationDefinition {
   });
 }
 
+class UnresolvedObjectRelationDefinition extends RelationDefinition {
+  final String scalarFieldName;
+
+  final String referenceFieldName;
+
+  final ForeignKeyAction onDelete;
+
+  final ForeignKeyAction onUpdate;
+
+  UnresolvedObjectRelationDefinition({
+    required this.scalarFieldName,
+    required this.referenceFieldName,
+    required this.onDelete,
+    required this.onUpdate,
+  });
+}
+
 /// Internal representation of an unresolved [ForeignRelationDefinition].
 class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.

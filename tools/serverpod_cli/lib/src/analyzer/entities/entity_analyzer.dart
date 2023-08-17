@@ -130,7 +130,7 @@ class SerializableEntityAnalyzer {
       for (var fieldDefinition in classDefinition.fields) {
         _resolveProtocolReference(fieldDefinition, entityDefinitions);
         _resolveEnumType(fieldDefinition, entityDefinitions);
-        _resolveIdRelationTable(
+        _resolveObjectAndIdRelations(
           classDefinition,
           fieldDefinition,
           entityDefinitions,
@@ -292,6 +292,46 @@ class SerializableEntityAnalyzer {
         entityDefinitions
             .whereType<EnumDefinition>()
             .any((e) => e.className == fieldDefinition.type.className);
+  }
+
+  static void _resolveObjectAndIdRelations(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    // order of execution matters here.
+    _resolveObjectRelationReference(
+      classDefinition,
+      fieldDefinition,
+      entityDefinitions,
+    );
+    _resolveIdRelationTable(
+      classDefinition,
+      fieldDefinition,
+      entityDefinitions,
+    );
+  }
+
+  static void _resolveObjectRelationReference(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var relation = fieldDefinition.relation;
+    if (relation is! UnresolvedObjectRelationDefinition) return;
+
+    fieldDefinition.relation = ObjectRelationDefinition(
+      scalarFieldName: relation.scalarFieldName,
+    );
+
+    var field = classDefinition.findField(relation.scalarFieldName);
+    if (field == null) return;
+
+    field.relation = UnresolvedForeignRelationDefinition(
+      referenceFieldName: relation.referenceFieldName,
+      onUpdate: relation.onUpdate,
+      onDelete: relation.onDelete,
+    );
   }
 
   static void _resolveIdRelationTable(

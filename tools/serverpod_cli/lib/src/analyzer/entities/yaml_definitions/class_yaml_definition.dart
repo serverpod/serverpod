@@ -71,6 +71,11 @@ class ClassYamlDefinition {
                     valueRestriction: restrictions.validateParentName,
                   ),
                   ValidateNode(
+                    Keyword.field,
+                    keyRestriction: restrictions.validateRelationFieldKey,
+                    valueRestriction: restrictions.validateRelationFieldName,
+                  ),
+                  ValidateNode(
                     Keyword.onUpdate,
                     valueRestriction: EnumValueRestriction(
                       enums: ForeignKeyAction.values,

@@ -219,6 +219,83 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateRelationFieldKey(
+    String parentNodeName,
+    String fieldName,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+
+    if (classDefinition is! ClassDefinition) return [];
+
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null) return [];
+
+    if (field.type.isList) {
+      return [
+        SourceSpanSeverityException(
+          'The "field" property can only be used on an object relation.',
+          span,
+        )
+      ];
+    }
+
+    if (AnalyzeChecker.isIdType(field.type.className)) {
+      return [
+        SourceSpanSeverityException(
+          'The "field" property can only be used on an object relation.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateRelationFieldName(
+    String parentNodeName,
+    dynamic fieldName,
+    SourceSpan? span,
+  ) {
+    if (fieldName is! String) return [];
+
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return [];
+
+    var field = classDefinition.findField(fieldName);
+    if (field == null) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$fieldName" was not found in the class.',
+          span,
+        )
+      ];
+    }
+
+    var relation = field.relation;
+    if (relation is! ForeignRelationDefinition) return [];
+
+    var parentClasses = entityRelations?.tableNames[relation.parentTable];
+
+    if (parentClasses == null || parentClasses.isEmpty) return [];
+
+    var parentClass = parentClasses.first;
+    if (parentClass is! ClassDefinition) return [];
+
+    var referenceField = parentClass.findField(relation.referenceFieldName);
+
+    if (field.type.className != referenceField?.type.className) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$fieldName" is of type "${field.type.className}" but reference field "${relation.referenceFieldName}" is of type "${referenceField?.type.className}".',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateRelationInterdependencies(
     String parentNodeName,
     dynamic content,
