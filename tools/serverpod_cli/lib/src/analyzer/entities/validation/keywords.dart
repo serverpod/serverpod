@@ -13,6 +13,7 @@ class Keyword {
   static const String unique = 'unique';
   static const String parent = 'parent';
   static const String relation = 'relation';
+  static const String field = 'field';
   static const String onUpdate = 'onUpdate';
   static const String onDelete = 'onDelete';
   static const String api = 'api';

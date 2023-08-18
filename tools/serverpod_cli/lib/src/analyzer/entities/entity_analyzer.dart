@@ -130,7 +130,7 @@ class SerializableEntityAnalyzer {
       for (var fieldDefinition in classDefinition.fields) {
         _resolveProtocolReference(fieldDefinition, entityDefinitions);
         _resolveEnumType(fieldDefinition, entityDefinitions);
-        _resolveIdRelationTable(
+        _resolveObjectAndIdRelations(
           classDefinition,
           fieldDefinition,
           entityDefinitions,
@@ -294,7 +294,47 @@ class SerializableEntityAnalyzer {
             .any((e) => e.className == fieldDefinition.type.className);
   }
 
-  static void _resolveIdRelationTable(
+  static void _resolveObjectAndIdRelations(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    // order of execution matters here.
+    _resolveObjectRelationReference(
+      classDefinition,
+      fieldDefinition,
+      entityDefinitions,
+    );
+    _resolveForeignRelationDefinition(
+      classDefinition,
+      fieldDefinition,
+      entityDefinitions,
+    );
+  }
+
+  static void _resolveObjectRelationReference(
+    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var relation = fieldDefinition.relation;
+    if (relation is! UnresolvedObjectRelationDefinition) return;
+
+    fieldDefinition.relation = ObjectRelationDefinition(
+      fieldName: relation.fieldName,
+    );
+
+    var field = classDefinition.findField(relation.fieldName);
+    if (field == null) return;
+
+    field.relation = UnresolvedForeignRelationDefinition(
+      referenceFieldName: relation.foreignFieldName,
+      onUpdate: relation.onUpdate,
+      onDelete: relation.onDelete,
+    );
+  }
+
+  static void _resolveForeignRelationDefinition(
     ClassDefinition classDefinition,
     SerializableEntityFieldDefinition fieldDefinition,
     List<SerializableEntityDefinition> entityDefinitions,
@@ -313,19 +353,19 @@ class SerializableEntityAnalyzer {
     var tableName = referenceClass.tableName;
     if (tableName is! String) return;
 
-    var scalarField = classDefinition.findField(
-      relation.scalarFieldName,
+    var relationField = classDefinition.findField(
+      relation.fieldName,
     );
 
-    var scalarRelation = scalarField?.relation;
-    if (scalarField == null) return;
-    if (scalarRelation is! UnresolvedForeignRelationDefinition) return;
+    var fieldRelation = relationField?.relation;
+    if (relationField == null) return;
+    if (fieldRelation is! UnresolvedForeignRelationDefinition) return;
 
-    scalarField.relation = ForeignRelationDefinition(
+    relationField.relation = ForeignRelationDefinition(
       parentTable: tableName,
-      referenceFieldName: scalarRelation.referenceFieldName,
-      onUpdate: scalarRelation.onUpdate,
-      onDelete: scalarRelation.onDelete,
+      foreignFieldName: fieldRelation.referenceFieldName,
+      onUpdate: fieldRelation.onUpdate,
+      onDelete: fieldRelation.onDelete,
     );
   }
 
@@ -347,17 +387,17 @@ class SerializableEntityAnalyzer {
 
     if (referenceClass is! ClassDefinition) return;
 
-    var referenceFields = referenceClass.fields.where((field) {
+    var foreignFields = referenceClass.fields.where((field) {
       var relation = field.relation;
       if (relation is! ForeignRelationDefinition) return false;
       return relation.parentTable == classDefinition.tableName;
     });
 
-    if (referenceFields.isEmpty) return;
+    if (foreignFields.isEmpty) return;
 
     // TODO: Handle multiple references.
     fieldDefinition.relation = ListRelationDefinition(
-      referenceFieldName: referenceFields.first.name,
+      foreignFieldName: foreignFields.first.name,
     );
   }
 }

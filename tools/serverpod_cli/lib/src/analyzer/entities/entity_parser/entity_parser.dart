@@ -168,61 +168,129 @@ class EntityParser {
     );
 
     var scope = _parseClassFieldScope(value);
-    var parentTable = _parseParentTable(value);
     var shouldPersist = _parseShouldPersist(value);
-    var scalarFieldName = _parseScalarField(value, fieldName);
-    var isEnum = _parseIsEnumField(value);
 
-    RelationDefinition? relation;
-    var onDelete = _parseDatabaseAction(
-      Keyword.onDelete,
-      ForeignKeyAction.cascade,
+    var referenceFieldName = 'id';
+    String relationName = _parseFieldRelationName(value, fieldName);
+
+    RelationDefinition? relation = _parseRelation(
+      fieldName,
+      referenceFieldName,
+      typeResult,
       value,
     );
-    var onUpdate = _parseDatabaseAction(
-      Keyword.onUpdate,
-      ForeignKeyAction.noAction,
-      value,
-    );
-
-    if (parentTable != null) {
-      relation = ForeignRelationDefinition(
-        parentTable: parentTable,
-        referenceFieldName: 'id',
-        onUpdate: onUpdate,
-        onDelete: onDelete,
-      );
-    } else if (scalarFieldName != null) {
-      relation = ObjectRelationDefinition(scalarFieldName: scalarFieldName);
-    } else if (typeResult.type.isList && _isRelation(value)) {
-      relation = UnresolvedListRelationDefinition();
-    }
 
     return [
-      if (scalarFieldName != null)
+      if (_shouldCreateRelationField(relation))
         SerializableEntityFieldDefinition(
-          name: scalarFieldName,
-          relation: UnresolvedForeignRelationDefinition(
-            referenceFieldName: 'id',
-            onUpdate: onUpdate,
-            onDelete: onDelete,
+          name: relationName,
+          relation: _createUnresolvedForeignRelationDefinition(
+            value,
+            referenceFieldName,
           ),
           shouldPersist: true,
           scope: scope,
-          type: _createScalarType(value),
+          type: _createRelationFieldType(value),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         relation: relation,
-        shouldPersist: scalarFieldName != null ? false : shouldPersist,
+        shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
         scope: scope,
-        type: typeResult.type..isEnum = isEnum,
+        type: typeResult.type,
         documentation: fieldDocumentation,
       )
     ];
   }
 
-  static TypeDefinition _createScalarType(YamlMap value) {
+  static UnresolvedForeignRelationDefinition
+      _createUnresolvedForeignRelationDefinition(
+    YamlMap node,
+    String referenceFieldName,
+  ) {
+    var onDelete = _parseOnDelete(node);
+    var onUpdate = _parseOnUpdate(node);
+
+    return UnresolvedForeignRelationDefinition(
+      referenceFieldName: referenceFieldName,
+      onUpdate: onUpdate,
+      onDelete: onDelete,
+    );
+  }
+
+  static bool _shouldNeverPersist(RelationDefinition? relation) {
+    if (relation is ObjectRelationDefinition) return true;
+    if (relation is UnresolvedListRelationDefinition) return true;
+    if (relation is UnresolvedObjectRelationDefinition) return true;
+    return false;
+  }
+
+  static bool _shouldCreateRelationField(
+    RelationDefinition? relation,
+  ) {
+    return relation is ObjectRelationDefinition;
+  }
+
+  static RelationDefinition? _parseRelation(
+    String fieldName,
+    String referenceFieldName,
+    TypeParseResult typeResult,
+    YamlMap node,
+  ) {
+    if (!_isRelation(node)) return null;
+
+    if (typeResult.type.isList) {
+      return UnresolvedListRelationDefinition();
+    }
+
+    var parentTable = _parseParentTable(node);
+
+    var onDelete = _parseOnDelete(node);
+    var onUpdate = _parseOnUpdate(node);
+
+    if (parentTable != null) {
+      return ForeignRelationDefinition(
+        parentTable: parentTable,
+        foreignFieldName: referenceFieldName,
+        onUpdate: onUpdate,
+        onDelete: onDelete,
+      );
+    }
+
+    var relationFieldName = _parseFieldRelationName(node, fieldName);
+
+    if (_containsRelationKey(node, Keyword.field)) {
+      return UnresolvedObjectRelationDefinition(
+        fieldName: relationFieldName,
+        foreignFieldName: referenceFieldName,
+        onUpdate: onUpdate,
+        onDelete: onDelete,
+      );
+    }
+
+    if (!_isIdType(node)) {
+      return ObjectRelationDefinition(fieldName: relationFieldName);
+    }
+
+    return null;
+  }
+
+  static bool _containsRelationKey(YamlMap value, String key) {
+    var relationNode = value.nodes[Keyword.relation]?.value;
+    if (relationNode is! YamlMap) return false;
+    return relationNode.containsKey(key);
+  }
+
+  static String _parseFieldRelationName(YamlMap value, String fieldName) {
+    var relationFieldNode = _parseRelationNode(value, Keyword.field);
+    var relationField = relationFieldNode?.value;
+
+    if (relationField is String) return relationField;
+
+    return '${fieldName}Id';
+  }
+
+  static TypeDefinition _createRelationFieldType(YamlMap value) {
     if (_isOptionalRelation(value)) {
       return TypeDefinition.int.asNullable;
     } else {
@@ -230,14 +298,26 @@ class EntityParser {
     }
   }
 
-  static String? _parseScalarField(YamlMap value, String fieldName) {
-    if (!_isRelation(value)) return null;
+  static bool _isIdType(YamlMap value) {
     var type = value.nodes[Keyword.type]?.value;
-    if (type is! String) return null;
-    if (AnalyzeChecker.isIdType(type)) return null;
-    if (type.startsWith('List')) return null;
+    if (type is! String) return false;
+    return AnalyzeChecker.isIdType(type);
+  }
 
-    return '${fieldName}Id';
+  static ForeignKeyAction _parseOnUpdate(YamlMap node) {
+    return _parseDatabaseAction(
+      Keyword.onUpdate,
+      onUpdateDefault,
+      node,
+    );
+  }
+
+  static ForeignKeyAction _parseOnDelete(YamlMap node) {
+    return _parseDatabaseAction(
+      Keyword.onDelete,
+      onDeleteDefault,
+      node,
+    );
   }
 
   static ForeignKeyAction _parseDatabaseAction(
@@ -262,6 +342,7 @@ class EntityParser {
   }
 
   static bool _isRelation(YamlMap documentContents) {
+    if (documentContents.containsKey(Keyword.parent)) return true;
     return documentContents.containsKey(Keyword.relation);
   }
 
@@ -323,10 +404,6 @@ class EntityParser {
     if (parent is String) return parent;
 
     return null;
-  }
-
-  static bool _parseIsEnumField(YamlMap documentContents) {
-    return documentContents.containsKey(Keyword.enumType);
   }
 
   static List<SerializableEntityIndexDefinition>? _parseIndexes(

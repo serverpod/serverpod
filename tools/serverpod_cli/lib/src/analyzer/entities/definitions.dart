@@ -225,22 +225,42 @@ class UnresolvedListRelationDefinition extends RelationDefinition {}
 /// to another Objects field name that holds the id of this object.
 class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
-  String referenceFieldName;
+  String foreignFieldName;
 
   ListRelationDefinition({
-    required this.referenceFieldName,
+    required this.foreignFieldName,
   });
 }
 
 /// Used for relations for fields that point to another field that holds the id
 /// of another object.
 class ObjectRelationDefinition extends RelationDefinition {
-  /// If this field is a complex datatype with a parent relation in the database,
-  /// then [scalarFieldName] contains the name of the field with the foreign key.
-  final String scalarFieldName;
+  /// References the field in the current object that points to the foreign table.
+  final String fieldName;
 
   ObjectRelationDefinition({
-    required this.scalarFieldName,
+    required this.fieldName,
+  });
+}
+
+class UnresolvedObjectRelationDefinition extends RelationDefinition {
+  /// References the field in the current object that points to the foreign table.
+  final String fieldName;
+
+  /// References the column in the unresolved [parentTable] that this field should be joined on.
+  final String foreignFieldName;
+
+  /// On delete behavior in the database.
+  final ForeignKeyAction onDelete;
+
+  /// On update behavior in the database.
+  final ForeignKeyAction onUpdate;
+
+  UnresolvedObjectRelationDefinition({
+    required this.fieldName,
+    required this.foreignFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
 
@@ -249,8 +269,10 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
 
+  /// On delete behavior in the database.
   final ForeignKeyAction onDelete;
 
+  /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
   UnresolvedForeignRelationDefinition({
@@ -269,15 +291,17 @@ class ForeignRelationDefinition extends RelationDefinition {
   String parentTable;
 
   /// References the column in the [parentTable] that this field should be joined on.
-  String referenceFieldName;
+  String foreignFieldName;
 
+  /// On delete behavior in the database.
   final ForeignKeyAction onDelete;
 
+  /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
   ForeignRelationDefinition({
     required this.parentTable,
-    required this.referenceFieldName,
+    required this.foreignFieldName,
     required this.onDelete,
     required this.onUpdate,
   });
