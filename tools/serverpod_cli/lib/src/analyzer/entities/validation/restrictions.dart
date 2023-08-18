@@ -272,6 +272,15 @@ class Restrictions {
       ];
     }
 
+    if (!field.shouldPersist) {
+      return [
+        SourceSpanSeverityException(
+          'The field "$fieldName" is not persisted and cannot be used in a relation.',
+          span,
+        )
+      ];
+    }
+
     var relation = field.relation;
     if (relation is! ForeignRelationDefinition) return [];
 

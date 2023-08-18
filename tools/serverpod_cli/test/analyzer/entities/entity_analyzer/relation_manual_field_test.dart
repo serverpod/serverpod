@@ -339,4 +339,63 @@ fields:
       expect(span?.end.column, 35 + 'myParentId'.length);
     }, skip: errors.isEmpty);
   });
+
+  group(
+      'Given a class with a relation pointing to a field that is set to not persist',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Example
+table: example
+fields:
+  myParentId: int, !persist
+  parent: Example?, relation(field=myParentId)
+''',
+      Uri(path: 'lib/src/protocol/example.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var entities = [definition1!];
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error message reports that the field has a mismatching type to the reference.',
+        () {
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The field "myParentId" is not persisted and cannot be used in a relation.',
+      );
+    }, skip: errors.isEmpty);
+
+    test('then the error is reported at the field key location.', () {
+      var span = collector.errors.first.span;
+
+      expect(span?.start.line, 4);
+      expect(span?.start.column, 35);
+
+      expect(span?.end.line, 4);
+      expect(span?.end.column, 35 + 'myParentId'.length);
+    }, skip: errors.isEmpty);
+  });
 }
