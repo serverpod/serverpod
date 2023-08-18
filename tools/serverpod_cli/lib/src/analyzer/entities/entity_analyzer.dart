@@ -305,7 +305,7 @@ class SerializableEntityAnalyzer {
       fieldDefinition,
       entityDefinitions,
     );
-    _resolveIdRelationTable(
+    _resolveForeignRelationDefinition(
       classDefinition,
       fieldDefinition,
       entityDefinitions,
