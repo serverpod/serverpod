@@ -321,14 +321,14 @@ class SerializableEntityAnalyzer {
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
     fieldDefinition.relation = ObjectRelationDefinition(
-      scalarFieldName: relation.scalarFieldName,
+      fieldName: relation.fieldName,
     );
 
-    var field = classDefinition.findField(relation.scalarFieldName);
+    var field = classDefinition.findField(relation.fieldName);
     if (field == null) return;
 
     field.relation = UnresolvedForeignRelationDefinition(
-      referenceFieldName: relation.referenceFieldName,
+      referenceFieldName: relation.foreignFieldName,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
     );
@@ -353,19 +353,19 @@ class SerializableEntityAnalyzer {
     var tableName = referenceClass.tableName;
     if (tableName is! String) return;
 
-    var scalarField = classDefinition.findField(
-      relation.scalarFieldName,
+    var relationField = classDefinition.findField(
+      relation.fieldName,
     );
 
-    var scalarRelation = scalarField?.relation;
-    if (scalarField == null) return;
-    if (scalarRelation is! UnresolvedForeignRelationDefinition) return;
+    var fieldRelation = relationField?.relation;
+    if (relationField == null) return;
+    if (fieldRelation is! UnresolvedForeignRelationDefinition) return;
 
-    scalarField.relation = ForeignRelationDefinition(
+    relationField.relation = ForeignRelationDefinition(
       parentTable: tableName,
-      referenceFieldName: scalarRelation.referenceFieldName,
-      onUpdate: scalarRelation.onUpdate,
-      onDelete: scalarRelation.onDelete,
+      foreignFieldName: fieldRelation.referenceFieldName,
+      onUpdate: fieldRelation.onUpdate,
+      onDelete: fieldRelation.onDelete,
     );
   }
 
@@ -387,17 +387,17 @@ class SerializableEntityAnalyzer {
 
     if (referenceClass is! ClassDefinition) return;
 
-    var referenceFields = referenceClass.fields.where((field) {
+    var foreignFields = referenceClass.fields.where((field) {
       var relation = field.relation;
       if (relation is! ForeignRelationDefinition) return false;
       return relation.parentTable == classDefinition.tableName;
     });
 
-    if (referenceFields.isEmpty) return;
+    if (foreignFields.isEmpty) return;
 
     // TODO: Handle multiple references.
     fieldDefinition.relation = ListRelationDefinition(
-      referenceFieldName: referenceFields.first.name,
+      foreignFieldName: foreignFields.first.name,
     );
   }
 }

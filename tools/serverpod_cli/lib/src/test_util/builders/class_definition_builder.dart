@@ -109,7 +109,7 @@ class ClassDefinitionBuilder {
           .withTypeDefinition(className, true)
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
-            scalarFieldName: '${fieldName}Id',
+            fieldName: '${fieldName}Id',
           ))
           .build(),
       FieldDefinitionBuilder()

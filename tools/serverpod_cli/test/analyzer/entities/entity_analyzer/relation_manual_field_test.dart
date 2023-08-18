@@ -70,7 +70,7 @@ fields:
       var relation = exampleClass.findField('parent')?.relation;
       expect(relation.runtimeType, ObjectRelationDefinition);
       expect(
-        (relation as ObjectRelationDefinition).scalarFieldName,
+        (relation as ObjectRelationDefinition).fieldName,
         'myParentId',
       );
     });
