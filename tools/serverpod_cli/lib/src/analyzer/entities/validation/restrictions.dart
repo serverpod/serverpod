@@ -291,12 +291,12 @@ class Restrictions {
     var parentClass = parentClasses.first;
     if (parentClass is! ClassDefinition) return [];
 
-    var referenceField = parentClass.findField(relation.foriegnFieldName);
+    var referenceField = parentClass.findField(relation.foreignFieldName);
 
     if (field.type.className != referenceField?.type.className) {
       return [
         SourceSpanSeverityException(
-          'The field "$fieldName" is of type "${field.type.className}" but reference field "${relation.foriegnFieldName}" is of type "${referenceField?.type.className}".',
+          'The field "$fieldName" is of type "${field.type.className}" but reference field "${relation.foreignFieldName}" is of type "${referenceField?.type.className}".',
           span,
         )
       ];

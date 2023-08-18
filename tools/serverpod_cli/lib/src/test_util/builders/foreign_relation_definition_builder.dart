@@ -31,7 +31,7 @@ class ForeignRelationDefinitionBuilder {
   ForeignRelationDefinition build() {
     return ForeignRelationDefinition(
       parentTable: parentTable,
-      foriegnFieldName: referenceFieldName,
+      foreignFieldName: referenceFieldName,
       onDelete: onDelete,
       onUpdate: onUpdate,
     );

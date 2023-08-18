@@ -99,8 +99,7 @@ fields:
         var relation = parent?.relation;
 
         expect(relation.runtimeType, ForeignRelationDefinition);
-        expect(
-            (relation as ForeignRelationDefinition).foreignFieldName, 'id');
+        expect((relation as ForeignRelationDefinition).foreignFieldName, 'id');
       });
     }, skip: parentId == null);
   });
