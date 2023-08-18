@@ -67,6 +67,7 @@ class ClassYamlDefinition {
                 nested: {
                   ValidateNode(
                     Keyword.parent,
+                    mutuallyExclusiveKeys: {Keyword.name},
                     keyRestriction: restrictions.validateParentKey,
                     valueRestriction: restrictions.validateParentName,
                   ),
@@ -91,6 +92,11 @@ class ClassYamlDefinition {
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
                     valueRestriction: BooleanValueRestriction().validate,
+                  ),
+                  ValidateNode(
+                    Keyword.name,
+                    mutuallyExclusiveKeys: {Keyword.parent},
+                    valueRestriction: StringValueRestriction().validate,
                   ),
                 },
               ),

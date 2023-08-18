@@ -328,6 +328,7 @@ class SerializableEntityAnalyzer {
     if (field == null) return;
 
     field.relation = UnresolvedForeignRelationDefinition(
+      name: relation.name,
       referenceFieldName: relation.foreignFieldName,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
@@ -362,6 +363,7 @@ class SerializableEntityAnalyzer {
     if (fieldRelation is! UnresolvedForeignRelationDefinition) return;
 
     relationField.relation = ForeignRelationDefinition(
+      name: fieldRelation.name,
       parentTable: tableName,
       foreignFieldName: fieldRelation.referenceFieldName,
       onUpdate: fieldRelation.onUpdate,
@@ -374,9 +376,12 @@ class SerializableEntityAnalyzer {
     SerializableEntityFieldDefinition fieldDefinition,
     List<SerializableEntityDefinition> entityDefinitions,
   ) {
-    var type = fieldDefinition.type;
-    if (!type.isList || type.generics.isEmpty) return;
+    var relation = fieldDefinition.relation;
+    if (relation is! UnresolvedListRelationDefinition) {
+      return;
+    }
 
+    var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
     var referenceClass =
@@ -387,17 +392,45 @@ class SerializableEntityAnalyzer {
 
     if (referenceClass is! ClassDefinition) return;
 
-    var foreignFields = referenceClass.fields.where((field) {
-      var relation = field.relation;
-      if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == classDefinition.tableName;
-    });
+    var tableName = classDefinition.tableName;
+    if (tableName == null) return;
 
-    if (foreignFields.isEmpty) return;
+    if (relation.name == null) {
+      var foreignFieldName =
+          '_${classDefinition.tableName}_${fieldDefinition.name}_${classDefinition.tableName}Id';
 
-    // TODO: Handle multiple references.
-    fieldDefinition.relation = ListRelationDefinition(
-      foreignFieldName: foreignFields.first.name,
-    );
+      var autoRelationName = 'auto_relation_$foreignFieldName';
+
+      referenceClass.fields.add(SerializableEntityFieldDefinition(
+          name: foreignFieldName,
+          type: TypeDefinition.int.asNullable,
+          scope: EntityFieldScopeDefinition.none,
+          shouldPersist: true,
+          relation: ForeignRelationDefinition(
+            name: autoRelationName,
+            parentTable: tableName,
+            foreignFieldName: 'id',
+          )));
+
+      fieldDefinition.relation = ListRelationDefinition(
+        name: autoRelationName,
+        foreignFieldName: foreignFieldName,
+      );
+    } else {
+      var foreignFields = referenceClass.fields.where((field) {
+        var fieldRelation = field.relation;
+        if (fieldRelation is! ForeignRelationDefinition) return false;
+        return fieldRelation.parentTable == classDefinition.tableName &&
+            fieldRelation.name == relation.name;
+      });
+
+      if (foreignFields.isNotEmpty) {
+        // TODO: Handle multiple references.
+        fieldDefinition.relation = ListRelationDefinition(
+          name: relation.name,
+          foreignFieldName: foreignFields.first.name,
+        );
+      }
+    }
   }
 }

@@ -216,10 +216,16 @@ class ProtocolEnumValueDefinition {
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
 }
 
-abstract class RelationDefinition {}
+abstract class RelationDefinition {
+  String? name;
+
+  RelationDefinition(this.name);
+}
 
 /// Internal representation of an unresolved [ListRelationDefinition].
-class UnresolvedListRelationDefinition extends RelationDefinition {}
+class UnresolvedListRelationDefinition extends RelationDefinition {
+  UnresolvedListRelationDefinition({String? name}) : super(name);
+}
 
 /// Used for relations for fields of type [List] that has a reference pointer
 /// to another Objects field name that holds the id of this object.
@@ -228,8 +234,9 @@ class ListRelationDefinition extends RelationDefinition {
   String foreignFieldName;
 
   ListRelationDefinition({
+    String? name,
     required this.foreignFieldName,
-  });
+  }) : super(name);
 }
 
 /// Used for relations for fields that point to another field that holds the id
@@ -240,7 +247,7 @@ class ObjectRelationDefinition extends RelationDefinition {
 
   ObjectRelationDefinition({
     required this.fieldName,
-  });
+  }): super(null); // TODO ???
 }
 
 class UnresolvedObjectRelationDefinition extends RelationDefinition {
@@ -257,11 +264,12 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   final ForeignKeyAction onUpdate;
 
   UnresolvedObjectRelationDefinition({
+    String? name,
     required this.fieldName,
     required this.foreignFieldName,
     required this.onDelete,
     required this.onUpdate,
-  });
+  }) : super(name);
 }
 
 /// Internal representation of an unresolved [ForeignRelationDefinition].
@@ -276,10 +284,11 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
   final ForeignKeyAction onUpdate;
 
   UnresolvedForeignRelationDefinition({
+    String? name,
     required this.referenceFieldName,
     required this.onDelete,
     required this.onUpdate,
-  });
+  }) : super(name);
 }
 
 /// Used for relations for fields that stores the id of another object.
@@ -300,11 +309,12 @@ class ForeignRelationDefinition extends RelationDefinition {
   final ForeignKeyAction onUpdate;
 
   ForeignRelationDefinition({
+    String? name,
     required this.parentTable,
     required this.foreignFieldName,
-    required this.onDelete,
-    required this.onUpdate,
-  });
+    this.onDelete = onDeleteDefault,
+    this.onUpdate = onUpdateDefault,
+  }) : super(name);
 }
 
 const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;

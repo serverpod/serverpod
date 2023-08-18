@@ -439,22 +439,23 @@ class Restrictions {
 
     if (!(field.type.isList)) return errors;
 
-    var referenceFields = referenceClass.fields.where((field) {
-      var relation = field.relation;
+    var referenceFields = referenceClass.fields.where((referenceField) {
+      var relation = referenceField.relation;
       if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == classDefinition.tableName;
+      return relation.parentTable == classDefinition.tableName &&
+          relation.name == field.relation?.name;
     });
 
     if (referenceFields.isEmpty) {
       errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" does not have a relation to this protocol.',
+        'There is no named relation with name "${field.relation?.name}" on the class "$parsedType".',
         span,
       ));
     }
 
     if (referenceFields.length > 1) {
       errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" has several reference fields, unable to resolve ambiguous relation.',
+        'Unable to resolve ambiguous relation, there are several named relations with name "${field.relation?.name}" on the class "$parsedType".',
         span,
       ));
     }
@@ -692,6 +693,25 @@ class Restrictions {
     if (hasTable == null) return false;
 
     return hasTable;
+  }
+}
+
+class StringValueRestriction {
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    return [];
   }
 }
 

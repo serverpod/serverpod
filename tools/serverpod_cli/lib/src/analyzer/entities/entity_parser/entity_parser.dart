@@ -143,20 +143,20 @@ class EntityParser {
     if (key is! YamlScalar) return [];
 
     var nodeValue = fieldNode.value;
-    var value = nodeValue.value;
-    if (value is String) {
-      value = convertStringifiedNestedNodesToYamlMap(
-        value,
+    var node = nodeValue.value;
+    if (node is String) {
+      node = convertStringifiedNestedNodesToYamlMap(
+        node,
         nodeValue.span,
         firstKey: Keyword.type,
       );
     }
-    if (value is! YamlMap) return [];
+    if (node is! YamlMap) return [];
 
     var fieldName = key.value;
     if (fieldName is! String) return [];
 
-    var typeNode = value.nodes[Keyword.type];
+    var typeNode = node.nodes[Keyword.type];
     var typeValue = typeNode?.value;
     if (typeNode is! YamlScalar) return [];
     if (typeValue is! String) return [];
@@ -167,30 +167,32 @@ class EntityParser {
       sourceSpan: typeNode.span,
     );
 
-    var scope = _parseClassFieldScope(value);
-    var shouldPersist = _parseShouldPersist(value);
+    var scope = _parseClassFieldScope(node);
+    var shouldPersist = _parseShouldPersist(node);
 
-    var referenceFieldName = 'id';
-    String relationName = _parseFieldRelationName(value, fieldName);
+    var foreignRelationFieldName = 'id';
+    String? relationName = _parseRelationName(node);
+    String relationFieldName = _parseFieldRelationName(node, fieldName);
 
     RelationDefinition? relation = _parseRelation(
       fieldName,
-      referenceFieldName,
+      foreignRelationFieldName,
       typeResult,
-      value,
+      node,
     );
 
     return [
       if (_shouldCreateRelationField(relation))
         SerializableEntityFieldDefinition(
-          name: relationName,
+          name: relationFieldName,
           relation: _createUnresolvedForeignRelationDefinition(
-            value,
-            referenceFieldName,
+            node,
+            relationName,
+            foreignRelationFieldName,
           ),
           shouldPersist: true,
           scope: scope,
-          type: _createRelationFieldType(value),
+          type: _createRelationFieldType(node),
         ),
       SerializableEntityFieldDefinition(
         name: fieldName,
@@ -206,12 +208,14 @@ class EntityParser {
   static UnresolvedForeignRelationDefinition
       _createUnresolvedForeignRelationDefinition(
     YamlMap node,
+    String? relationName,
     String referenceFieldName,
   ) {
     var onDelete = _parseOnDelete(node);
     var onUpdate = _parseOnUpdate(node);
 
     return UnresolvedForeignRelationDefinition(
+      name: relationName,
       referenceFieldName: referenceFieldName,
       onUpdate: onUpdate,
       onDelete: onDelete,
@@ -239,8 +243,10 @@ class EntityParser {
   ) {
     if (!_isRelation(node)) return null;
 
+    String? relationName = _parseRelationName(node);
+
     if (typeResult.type.isList) {
-      return UnresolvedListRelationDefinition();
+      return UnresolvedListRelationDefinition(name: relationName);
     }
 
     var parentTable = _parseParentTable(node);
@@ -250,6 +256,7 @@ class EntityParser {
 
     if (parentTable != null) {
       return ForeignRelationDefinition(
+        name: relationName,
         parentTable: parentTable,
         foreignFieldName: referenceFieldName,
         onUpdate: onUpdate,
@@ -261,6 +268,7 @@ class EntityParser {
 
     if (_containsRelationKey(node, Keyword.field)) {
       return UnresolvedObjectRelationDefinition(
+        name: relationName,
         fieldName: relationFieldName,
         foreignFieldName: referenceFieldName,
         onUpdate: onUpdate,
@@ -273,6 +281,14 @@ class EntityParser {
     }
 
     return null;
+  }
+
+  static String? _parseRelationName(YamlMap node) {
+    var relationNameNode = _parseRelationNode(node, Keyword.name);
+
+    if (relationNameNode?.value is! String) return null;
+
+    return relationNameNode?.value;
   }
 
   static bool _containsRelationKey(YamlMap value, String key) {
