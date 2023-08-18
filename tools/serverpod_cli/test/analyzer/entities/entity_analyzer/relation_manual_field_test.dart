@@ -261,7 +261,7 @@ fields:
     });
 
     test(
-        'then the error message reports that the field keyword cannot be used on a List relation.',
+        'then the error message reports that the field keyword cannot be used on an id relation.',
         () {
       var error = collector.errors.first;
       expect(
