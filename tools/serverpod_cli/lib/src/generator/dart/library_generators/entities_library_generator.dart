@@ -754,7 +754,7 @@ class SerializableEntityLibraryGenerator {
           if (serializeEnumValuesAsStrings) {
             e.fields.add(Field(
               (f) => f
-                ..name = 'nameToValue'
+                ..name = '_nameToValue'
                 ..static = true
                 ..modifier = FieldModifier.final$
                 ..assignment = Code('<String, $enumName>'
@@ -770,7 +770,7 @@ class SerializableEntityLibraryGenerator {
               ..name = serializeEnumValuesAsStrings ? 'name' : 'index'
               ..type = refer(serializeEnumValuesAsStrings ? 'String' : 'int')))
             ..body = serializeEnumValuesAsStrings
-                ? const Code('return nameToValue[name];')
+                ? const Code('return _nameToValue[name];')
                 : (BlockBuilder()
                       ..statements.addAll([
                         const Code('switch(index){'),
