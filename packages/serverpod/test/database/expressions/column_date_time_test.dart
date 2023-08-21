@@ -54,5 +54,25 @@ void main() {
       expect(comparisonExpression.toString(),
           '"$columnName" != \'"1991-05-28T00:00:00.000Z"\'');
     });
+
+    test(
+        'when checking if expression is between date time values then output is between expression.',
+        () {
+      var comparisonExpression = expression.between(
+          DateTime.utc(1991, 5, 28), DateTime.utc(1991, 5, 29));
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" BETWEEN \'"1991-05-28T00:00:00.000Z"\' AND \'"1991-05-29T00:00:00.000Z"\'');
+    });
+
+    test(
+        'when checking if expression is NOT between date time values then output is NOT between expression.',
+        () {
+      var comparisonExpression = expression.notBetween(
+          DateTime.utc(1991, 5, 28), DateTime.utc(1991, 5, 29));
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT BETWEEN \'"1991-05-28T00:00:00.000Z"\' AND \'"1991-05-29T00:00:00.000Z"\'');
+    });
   });
 }
