@@ -1072,6 +1072,189 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['basicDatabase'] as _i8.BasicDatabase)
                   .deleteAllInTypes(session),
         ),
+        'createSimpleDateTimeTestData': _i1.MethodConnector(
+          name: 'createSimpleDateTimeTestData',
+          params: {
+            'numberOfYears': _i1.ParameterDescription(
+              name: 'numberOfYears',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'firstYear': _i1.ParameterDescription(
+              name: 'firstYear',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .createSimpleDateTimeTestData(
+            session,
+            numberOfYears: params['numberOfYears'],
+            firstYear: params['firstYear'],
+          ),
+        ),
+        'findSimpleDateTimeRowsBefore': _i1.MethodConnector(
+          name: 'findSimpleDateTimeRowsBefore',
+          params: {
+            'dateTime': _i1.ParameterDescription(
+              name: 'dateTime',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDateTimeRowsBefore(
+            session,
+            params['dateTime'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDateTimeRowsAfter': _i1.MethodConnector(
+          name: 'findSimpleDateTimeRowsAfter',
+          params: {
+            'dateTime': _i1.ParameterDescription(
+              name: 'dateTime',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDateTimeRowsAfter(
+            session,
+            params['dateTime'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDateTimeRowsEqualsOrBefore': _i1.MethodConnector(
+          name: 'findSimpleDateTimeRowsEqualsOrBefore',
+          params: {
+            'dateTime': _i1.ParameterDescription(
+              name: 'dateTime',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDateTimeRowsEqualsOrBefore(
+            session,
+            params['dateTime'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDateTimeRowsEqualsOrAfter': _i1.MethodConnector(
+          name: 'findSimpleDateTimeRowsEqualsOrAfter',
+          params: {
+            'dateTime': _i1.ParameterDescription(
+              name: 'dateTime',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDateTimeRowsEqualsOrAfter(
+            session,
+            params['dateTime'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'deleteAllSimpleDateTimeTestData': _i1.MethodConnector(
+          name: 'deleteAllSimpleDateTimeTestData',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .deleteAllSimpleDateTimeTestData(session),
+        ),
         'createSimpleTestData': _i1.MethodConnector(
           name: 'createSimpleTestData',
           params: {
@@ -1181,6 +1364,166 @@ class Endpoints extends _i1.EndpointDispatch {
                   .findSimpleDataRowsLessThan(
             session,
             params['num'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDataRowsInSet': _i1.MethodConnector(
+          name: 'findSimpleDataRowsInSet',
+          params: {
+            'setList': _i1.ParameterDescription(
+              name: 'setList',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDataRowsInSet(
+            session,
+            params['setList'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDataRowsNotInSet': _i1.MethodConnector(
+          name: 'findSimpleDataRowsNotInSet',
+          params: {
+            'setList': _i1.ParameterDescription(
+              name: 'setList',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDataRowsNotInSet(
+            session,
+            params['setList'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDataRowsBetween': _i1.MethodConnector(
+          name: 'findSimpleDataRowsBetween',
+          params: {
+            'min': _i1.ParameterDescription(
+              name: 'min',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'max': _i1.ParameterDescription(
+              name: 'max',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDataRowsBetween(
+            session,
+            params['min'],
+            params['max'],
+            params['offset'],
+            params['limit'],
+            params['descending'],
+          ),
+        ),
+        'findSimpleDataRowsNotBetween': _i1.MethodConnector(
+          name: 'findSimpleDataRowsNotBetween',
+          params: {
+            'min': _i1.ParameterDescription(
+              name: 'min',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'max': _i1.ParameterDescription(
+              name: 'max',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'descending': _i1.ParameterDescription(
+              name: 'descending',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i8.BasicDatabase)
+                  .findSimpleDataRowsNotBetween(
+            session,
+            params['min'],
+            params['max'],
             params['offset'],
             params['limit'],
             params['descending'],
