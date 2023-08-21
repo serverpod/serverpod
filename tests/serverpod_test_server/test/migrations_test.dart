@@ -166,7 +166,6 @@ void main() {
   var serviceClient = Client(
     serviceServerUrl,
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
-    headerManager: CustomHeaderManager(),
   );
 
   group('Migrations', () {
