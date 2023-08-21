@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'auth_key_manager.dart';
+import 'header_manager.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
@@ -24,11 +25,13 @@ abstract class ServerpodClient extends ServerpodClientShared {
     SerializationManager serializationManager, {
     dynamic context,
     AuthenticationKeyManager? authenticationKeyManager,
+    HeaderManager? headerManager,
     bool logFailedCalls = true,
   }) : super(
           host,
           serializationManager,
           authenticationKeyManager: authenticationKeyManager,
+          headerManager: headerManager,
           logFailedCalls: logFailedCalls,
         ) {
     assert(context == null || context is SecurityContext);
@@ -68,6 +71,16 @@ abstract class ServerpodClient extends ServerpodClientShared {
       var url = Uri.parse('$host$endpoint');
 
       var request = await _httpClient.postUrl(url);
+
+      if (headerManager != null) {
+        var headers = await headerManager!.get();
+        if (headers != null) {
+          for (var header in headers.entries) {
+            request.headers.add(header.key, header.value);
+          }
+        }
+      }
+
       request.headers.contentType =
           ContentType('application', 'json', charset: 'utf-8');
       request.contentLength = utf8.encode(body).length;

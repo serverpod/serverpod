@@ -15,6 +15,7 @@ void main() {
   var serviceClient = service.Client(
     serviceServerUrl,
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
+    headerManager: CustomHeaderManager(),
   );
 
   group('Logging', () {
@@ -582,4 +583,11 @@ class ServiceKeyManager extends AuthenticationKeyManager {
 
 List<List<bool>> performIteration(List<List<bool>> board) {
   return [];
+}
+
+class CustomHeaderManager extends HeaderManager {
+  @override
+  Future<Map<String, String>?> get() async {
+    return {'x-header': 'value'};
+  }
 }

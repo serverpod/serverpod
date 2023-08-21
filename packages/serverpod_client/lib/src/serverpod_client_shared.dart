@@ -72,6 +72,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// in.
   final AuthenticationKeyManager? authenticationKeyManager;
 
+  /// Optional [HeaderManager] if any custom headers should added to the request
+  final HeaderManager? headerManager;
+
   /// Looks up module callers by their name. Overridden by generated code.
   Map<String, ModuleEndpointCaller> get moduleLookup;
 
@@ -122,6 +125,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.serializationManager, {
     dynamic context,
     this.authenticationKeyManager,
+    this.headerManager,
     this.logFailedCalls = true,
     this.streamingConnectionTimeout = const Duration(seconds: 5),
   }) {

@@ -1351,11 +1351,13 @@ class Client extends _i1.ServerpodClient {
     String host, {
     _i18.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
+    _i1.HeaderManager? headerManager,
   }) : super(
           host,
           _i19.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
+          headerManager: headerManager,
         ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);

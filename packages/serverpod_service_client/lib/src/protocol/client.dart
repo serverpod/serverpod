@@ -222,11 +222,13 @@ class Client extends _i1.ServerpodClient {
     String host, {
     _i13.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
+    _i1.HeaderManager? headerManager,
   }) : super(
           host,
           _i14.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
+          headerManager: headerManager,
         ) {
     insights = EndpointInsights(this);
   }
