@@ -50,5 +50,23 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" != 10');
     });
+
+    test(
+        'when checking if expression is between int values then output is between expression.',
+        () {
+      var comparisonExpression = expression.between(10, 20);
+
+      expect(
+          comparisonExpression.toString(), '"$columnName" BETWEEN 10 AND 20');
+    });
+
+    test(
+        'when checking if expression is NOT between int value then output is NOT between expression.',
+        () {
+      var comparisonExpression = expression.notBetween(10, 20);
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT BETWEEN 10 AND 20');
+    });
   });
 }

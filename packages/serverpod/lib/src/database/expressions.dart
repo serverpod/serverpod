@@ -207,6 +207,31 @@ class _IsNotNullExpression extends Expression {
   }
 }
 
+abstract class _MinMaxExpression extends Expression {
+  Expression min;
+  Expression max;
+
+  _MinMaxExpression(super.expression, this.min, this.max);
+}
+
+class _BetweenExpression extends _MinMaxExpression {
+  _BetweenExpression(super.expression, super.min, super.max);
+
+  @override
+  String toString() {
+    return '$expression BETWEEN $min AND $max';
+  }
+}
+
+class _NotBetweenExpression extends _MinMaxExpression {
+  _NotBetweenExpression(super.expression, super.min, super.max);
+
+  @override
+  String toString() {
+    return '$expression NOT BETWEEN $min AND $max';
+  }
+}
+
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
 abstract class Column<T> extends Expression {
@@ -268,6 +293,16 @@ abstract class _ColumnNum<T extends num>
   /// Applies encoding to value before it is sent to the database.
   @override
   Expression encodeValueForQuery(value) => Expression(value);
+
+  Expression between(T min, T max) {
+    return _BetweenExpression(
+        this, encodeValueForQuery(min), encodeValueForQuery(max));
+  }
+
+  Expression notBetween(T min, T max) {
+    return _NotBetweenExpression(
+        this, encodeValueForQuery(min), encodeValueForQuery(max));
+  }
 }
 
 /// A [Column] holding an [int].
