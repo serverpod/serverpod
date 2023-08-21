@@ -294,11 +294,15 @@ abstract class _ColumnNum<T extends num>
   @override
   Expression encodeValueForQuery(value) => Expression(value);
 
+  /// Creates an [Expression] checking if the value in the column is between
+  /// the [min], [max] values.
   Expression between(T min, T max) {
     return _BetweenExpression(
         this, encodeValueForQuery(min), encodeValueForQuery(max));
   }
 
+  /// Creates an [Expression] checking if the value in the column is NOT between
+  /// the [min], [max] values.
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
         this, encodeValueForQuery(min), encodeValueForQuery(max));
@@ -384,6 +388,20 @@ class ColumnBool extends _ColumnWithDefaultOperations<bool> {
 class ColumnDateTime extends _ColumnWithDefaultOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(String name) : super(name);
+
+  /// Creates an [Expression] checking if the value in the column is between
+  /// the [min], [max] values.
+  Expression between(DateTime min, DateTime max) {
+    return _BetweenExpression(
+        this, encodeValueForQuery(min), encodeValueForQuery(max));
+  }
+
+  /// Creates an [Expression] checking if the value in the column is NOT between
+  /// the [min], [max] values.
+  Expression notBetween(DateTime min, DateTime max) {
+    return _NotBetweenExpression(
+        this, encodeValueForQuery(min), encodeValueForQuery(max));
+  }
 }
 
 /// A [Column] holding [ByteData].
