@@ -68,5 +68,22 @@ void main() {
       expect(comparisonExpression.toString(),
           '"$columnName" NOT BETWEEN 10 AND 20');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<int>{10, 11, 12});
+
+      expect(comparisonExpression.toString(), '"$columnName" IN (10, 11, 12)');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<int>{10, 11, 12});
+
+      expect(
+          comparisonExpression.toString(), '"$columnName" NOT IN (10, 11, 12)');
+    });
   });
 }

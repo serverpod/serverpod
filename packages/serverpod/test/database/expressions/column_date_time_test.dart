@@ -74,5 +74,31 @@ void main() {
       expect(comparisonExpression.toString(),
           '"$columnName" NOT BETWEEN \'"1991-05-28T00:00:00.000Z"\' AND \'"1991-05-29T00:00:00.000Z"\'');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<DateTime>{
+        DateTime.utc(1991, 5, 28),
+        DateTime.utc(1991, 5, 29),
+        DateTime.utc(1991, 5, 30),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" IN (\'"1991-05-28T00:00:00.000Z"\', \'"1991-05-29T00:00:00.000Z"\', \'"1991-05-30T00:00:00.000Z"\')');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<DateTime>{
+        DateTime.utc(1991, 5, 28),
+        DateTime.utc(1991, 5, 29),
+        DateTime.utc(1991, 5, 30),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT IN (\'"1991-05-28T00:00:00.000Z"\', \'"1991-05-29T00:00:00.000Z"\', \'"1991-05-30T00:00:00.000Z"\')');
+    });
   });
 }

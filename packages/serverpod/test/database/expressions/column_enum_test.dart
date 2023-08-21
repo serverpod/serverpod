@@ -56,5 +56,29 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" != 1');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<TestEnum>{
+        TestEnum.red,
+        TestEnum.blue,
+        TestEnum.green,
+      });
+
+      expect(comparisonExpression.toString(), '"$columnName" IN (0, 1, 2)');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<TestEnum>{
+        TestEnum.red,
+        TestEnum.blue,
+        TestEnum.green,
+      });
+
+      expect(comparisonExpression.toString(), '"$columnName" NOT IN (0, 1, 2)');
+    });
   });
 }

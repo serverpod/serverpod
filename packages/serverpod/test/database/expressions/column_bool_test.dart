@@ -59,5 +59,22 @@ void main() {
       expect(comparisonExpression.toString(),
           '"$columnName" IS DISTINCT FROM true');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<bool>{true, false});
+
+      expect(comparisonExpression.toString(), '"$columnName" IN (true, false)');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<bool>{true, false});
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT IN (true, false)');
+    });
   });
 }
