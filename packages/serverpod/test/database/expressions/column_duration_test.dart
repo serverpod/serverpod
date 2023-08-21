@@ -52,5 +52,31 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" != \'36000000\'');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<Duration>{
+        const Duration(hours: 10),
+        const Duration(hours: 11),
+        const Duration(hours: 12),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" IN (\'36000000\', \'39600000\', \'43200000\')');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<Duration>{
+        const Duration(hours: 10),
+        const Duration(hours: 11),
+        const Duration(hours: 12),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT IN (\'36000000\', \'39600000\', \'43200000\')');
+    });
   });
 }

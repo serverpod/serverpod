@@ -67,5 +67,23 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" ILIKE \'test\'');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<String>{'a', 'b', 'c'});
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" IN (\'a\', \'b\', \'c\')');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<String>{'a', 'b', 'c'});
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT IN (\'a\', \'b\', \'c\')');
+    });
   });
 }

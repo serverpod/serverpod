@@ -232,6 +232,35 @@ class _NotBetweenExpression extends _MinMaxExpression {
   }
 }
 
+class _SetExpression extends Expression {
+  List<Expression> values;
+
+  _SetExpression(super.expression, this.values);
+
+  String expressionSetToQueryString() {
+    var valueList = values.join(', ');
+    return '($valueList)';
+  }
+}
+
+class _InSetExpression extends _SetExpression {
+  _InSetExpression(super.expression, super.values);
+
+  @override
+  String toString() {
+    return '$expression IN ${expressionSetToQueryString()}';
+  }
+}
+
+class _NotInSetExpression extends _SetExpression {
+  _NotInSetExpression(super.expression, super.values);
+
+  @override
+  String toString() {
+    return '$expression NOT IN ${expressionSetToQueryString()}';
+  }
+}
+
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
 abstract class Column<T> extends Expression {
@@ -283,6 +312,24 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
     }
 
     return _NotEqualsExpression(this, encodeValueForQuery(value));
+  }
+
+  /// Creates and [Expression] checking if the value in the column is included
+  /// in the specified set of values.
+  Expression inSet(Set<T> values) {
+    var valuesAsExpressions =
+        values.map((e) => encodeValueForQuery(e)).toList();
+
+    return _InSetExpression(this, valuesAsExpressions);
+  }
+
+  /// Creates and [Expression] checking if the value in the column is NOT
+  /// included in the specified set of values.
+  Expression notInSet(Set<T> values) {
+    var valuesAsExpressions =
+        values.map((e) => encodeValueForQuery(e)).toList();
+
+    return _NotInSetExpression(this, valuesAsExpressions);
   }
 }
 
@@ -344,6 +391,24 @@ class ColumnEnum<E extends Enum> extends Column<E> {
     }
 
     return _NotEqualsExpression(this, Expression(value.index));
+  }
+
+  /// Creates and [Expression] checking if the value in the column is included
+  /// in the specified set of values.
+  Expression inSet(Set<E> values) {
+    List<Expression> valuesAsExpressions =
+        values.map((e) => Expression(e.index)).toList();
+
+    return _InSetExpression(this, valuesAsExpressions);
+  }
+
+  /// Creates and [Expression] checking if the value in the column is NOT
+  /// included in the specified set of values.
+  Expression notInSet(Set<E> values) {
+    List<Expression> valuesAsExpressions =
+        values.map((e) => Expression(e.index)).toList();
+
+    return _NotInSetExpression(this, valuesAsExpressions);
   }
 }
 

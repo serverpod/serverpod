@@ -52,5 +52,31 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" != \'testuuid\'');
     });
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = expression.inSet(<UuidValue>{
+        UuidValue('testUuid1', false /* Disable validation for test */),
+        UuidValue('testUuid2', false /* Disable validation for test */),
+        UuidValue('testUuid3', false /* Disable validation for test */),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = expression.notInSet(<UuidValue>{
+        UuidValue('testUuid1', false /* Disable validation for test */),
+        UuidValue('testUuid2', false /* Disable validation for test */),
+        UuidValue('testUuid3', false /* Disable validation for test */),
+      });
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+    });
   });
 }
