@@ -1,0 +1,7 @@
+### Just some simple data.
+class: SimpleDateTime
+table: simple_date_time
+fields:
+  # No Documentation (1)
+  ### The only field of [SimpleDateTime]
+  dateTime: DateTime
