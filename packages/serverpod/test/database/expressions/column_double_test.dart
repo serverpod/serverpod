@@ -51,5 +51,23 @@ void main() {
 
       expect(comparisonExpression.toString(), '"$columnName" != 10.0');
     });
+
+    test(
+        'when checking if expression is between double values then output is between expression.',
+        () {
+      var comparisonExpression = expression.between(10.0, 20.0);
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" BETWEEN 10.0 AND 20.0');
+    });
+
+    test(
+        'when checking if expression is NOT between double value then output is NOT between expression.',
+        () {
+      var comparisonExpression = expression.notBetween(10.0, 20.0);
+
+      expect(comparisonExpression.toString(),
+          '"$columnName" NOT BETWEEN 10.0 AND 20.0');
+    });
   });
 }
