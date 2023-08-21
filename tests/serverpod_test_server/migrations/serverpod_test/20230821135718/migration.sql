@@ -70,13 +70,6 @@ CREATE TABLE "object_with_parent" (
     "other" integer NOT NULL
 );
 
--- Foreign keys
-ALTER TABLE ONLY "object_with_parent"
-    ADD CONSTRAINT "object_with_parent_fk_0"
-    FOREIGN KEY("other")
-    REFERENCES "object_field_scopes"("id")
-    ON DELETE CASCADE;
-
 --
 -- ACTION CREATE TABLE
 --
@@ -84,13 +77,6 @@ CREATE TABLE "object_with_self_parent" (
     "id" serial PRIMARY KEY,
     "other" integer
 );
-
--- Foreign keys
-ALTER TABLE ONLY "object_with_self_parent"
-    ADD CONSTRAINT "object_with_self_parent_fk_0"
-    FOREIGN KEY("other")
-    REFERENCES "object_with_self_parent"("id")
-    ON DELETE CASCADE;
 
 --
 -- ACTION CREATE TABLE
@@ -112,6 +98,14 @@ CREATE TABLE "simple_data" (
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "simple_date_time" (
+    "id" serial PRIMARY KEY,
+    "dateTime" timestamp without time zone NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "types" (
     "id" serial PRIMARY KEY,
     "anInt" integer,
@@ -125,12 +119,62 @@ CREATE TABLE "types" (
 );
 
 --
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "object_with_parent"
+    ADD CONSTRAINT "object_with_parent_fk_0"
+    FOREIGN KEY("other")
+    REFERENCES "object_field_scopes"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "object_with_self_parent"
+    ADD CONSTRAINT "object_with_self_parent_fk_0"
+    FOREIGN KEY("other")
+    REFERENCES "object_with_self_parent"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
+-- ACTION CREATE FOREIGN KEY
+--
+--
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230529141146', 2, now())
+    VALUES ('serverpod_test', '20230821135718', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230529141146', "priority" = 2;
+    DO UPDATE SET "version" = '20230821135718', "priority" = 2;
 
 
 COMMIT;
