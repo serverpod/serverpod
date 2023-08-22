@@ -10,6 +10,7 @@ fi
 # Add projects that has unit tests here
 declare -a projectPaths=(
     "tools/serverpod_cli" 
+    "packages/serverpod" 
 )
 
 exit_code=0
