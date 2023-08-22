@@ -21,6 +21,9 @@ class Expression<T> {
     return '$_expression';
   }
 
+  /// Returns a list of all [Expression]s in the tree.
+  List<Expression> get nodes => [this];
+
   /// Database AND operator.
   Expression operator &(dynamic other) {
     if (other is Expression) {
@@ -92,6 +95,9 @@ abstract class _TwoPartExpression extends Expression {
   Expression other;
 
   _TwoPartExpression(super.expression, this.other);
+
+  @override
+  List<Expression> get nodes => [..._expression.nodes, ...other.nodes];
 }
 
 class _AndExpression extends _TwoPartExpression {
@@ -216,6 +222,10 @@ abstract class _MinMaxExpression extends Expression {
   Expression max;
 
   _MinMaxExpression(super.expression, this.min, this.max);
+
+  @override
+  List<Expression> get nodes =>
+      [..._expression.nodes, ...min.nodes, ...max.nodes];
 }
 
 class _BetweenExpression extends _MinMaxExpression {
@@ -240,6 +250,10 @@ class _SetExpression extends Expression {
   List<Expression> values;
 
   _SetExpression(super.expression, this.values);
+
+  @override
+  List<Expression> get nodes =>
+      [..._expression.nodes, ...values.expand((value) => value.nodes)];
 
   String _expressionSetToQueryString() {
     var valueList = values.join(', ');
