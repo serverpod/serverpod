@@ -9,7 +9,6 @@ CREATE TABLE "object_field_scopes" (
     "database" text
 );
 
-
 --
 -- Class ObjectWithByteData as table object_with_bytedata
 --
@@ -18,7 +17,6 @@ CREATE TABLE "object_with_bytedata" (
     "byteData" bytea NOT NULL
 );
 
-
 --
 -- Class ObjectWithDuration as table object_with_duration
 --
@@ -26,7 +24,6 @@ CREATE TABLE "object_with_duration" (
     "id" serial PRIMARY KEY,
     "duration" bigint NOT NULL
 );
-
 
 --
 -- Class ObjectWithEnum as table object_with_enum
@@ -40,7 +37,6 @@ CREATE TABLE "object_with_enum" (
     "enumListList" json NOT NULL
 );
 
-
 --
 -- Class ObjectWithIndex as table object_with_index
 --
@@ -52,7 +48,6 @@ CREATE TABLE "object_with_index" (
 
 -- Indexes
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
-
 
 --
 -- Class ObjectWithObject as table object_with_object
@@ -67,7 +62,6 @@ CREATE TABLE "object_with_object" (
     "nullableListWithNullableData" json
 );
 
-
 --
 -- Class ObjectWithParent as table object_with_parent
 --
@@ -76,14 +70,6 @@ CREATE TABLE "object_with_parent" (
     "other" integer NOT NULL
 );
 
--- Foreign keys
-ALTER TABLE ONLY "object_with_parent"
-    ADD CONSTRAINT "object_with_parent_fk_0"
-    FOREIGN KEY("other")
-    REFERENCES "object_field_scopes"("id")
-    ON DELETE CASCADE;
-
-
 --
 -- Class ObjectWithSelfParent as table object_with_self_parent
 --
@@ -91,14 +77,6 @@ CREATE TABLE "object_with_self_parent" (
     "id" serial PRIMARY KEY,
     "other" integer
 );
-
--- Foreign keys
-ALTER TABLE ONLY "object_with_self_parent"
-    ADD CONSTRAINT "object_with_self_parent_fk_0"
-    FOREIGN KEY("other")
-    REFERENCES "object_with_self_parent"("id")
-    ON DELETE CASCADE;
-
 
 --
 -- Class ObjectWithUuid as table object_with_uuid
@@ -109,7 +87,6 @@ CREATE TABLE "object_with_uuid" (
     "uuidNullable" uuid
 );
 
-
 --
 -- Class SimpleData as table simple_data
 --
@@ -118,6 +95,13 @@ CREATE TABLE "simple_data" (
     "num" integer NOT NULL
 );
 
+--
+-- Class SimpleDateTime as table simple_date_time
+--
+CREATE TABLE "simple_date_time" (
+    "id" serial PRIMARY KEY,
+    "dateTime" timestamp without time zone NOT NULL
+);
 
 --
 -- Class Types as table types
@@ -134,14 +118,33 @@ CREATE TABLE "types" (
     "aUuid" uuid
 );
 
+--
+-- Foreign relations for "object_with_parent" table
+--
+ALTER TABLE ONLY "object_with_parent"
+    ADD CONSTRAINT "object_with_parent_fk_0"
+    FOREIGN KEY("other")
+    REFERENCES "object_field_scopes"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "object_with_self_parent" table
+--
+ALTER TABLE ONLY "object_with_self_parent"
+    ADD CONSTRAINT "object_with_self_parent_fk_0"
+    FOREIGN KEY("other")
+    REFERENCES "object_with_self_parent"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 --
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230529141146', 2, now())
+    VALUES ('serverpod_test', '20230821135718', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230529141146', "priority" = 2;
+    DO UPDATE SET "version" = '20230821135718', "priority" = 2;
 
 
 COMMIT;
