@@ -341,12 +341,14 @@ void main() {
             reason: 'Missing extends clause for Table.');
       });
 
-      test('has an empty constructor that passes table name to super.', () {
+      test(
+          'has constructor taking query prefix and table relations and passes table name to super.',
+          () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExampleTable!,
               name: null,
-              parameters: [],
+              parameters: ['super.queryPrefix', 'super.tableRelations'],
               superArguments: ['tableName: \'$tableName\''],
             ),
             isTrue,
@@ -429,6 +431,7 @@ void main() {
               maybeClassNamedExampleTable!,
               name: 'title',
               isFinal: true,
+              isLate: true,
             ),
             isTrue,
             reason: 'Missing declaration for title field.');
@@ -775,5 +778,52 @@ void main() {
           ? 'Could not run test because $testClassName class was not found.'
           : false,
     );
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    group('then the class named ${testClassName}Table', () {
+      test('has private field for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+                maybeClassNamedExampleTable!,
+                type: 'CompanyTable?',
+                name: '_company'),
+            isTrue,
+            reason: 'Missing private field declaration for relation table.');
+      });
+
+      test('has getter method for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+                maybeClassNamedExampleTable!,
+                name: 'company'),
+            isTrue,
+            reason: 'Missing declaration for relation table getter.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
   });
 }

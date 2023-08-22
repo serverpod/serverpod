@@ -1,7 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -671,18 +673,62 @@ class SerializableEntityLibraryGenerator {
             c.name = '${className}Table';
             c.extend = refer('Table', serverpodUrl(serverCode));
             c.constructors.add(Constructor((constructor) {
+              constructor.optionalParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'queryPrefix'
+                    ..toSuper = true
+                    ..named = true,
+                ),
+              );
+              constructor.optionalParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'tableRelations'
+                    ..toSuper = true
+                    ..named = true,
+                ),
+              );
               constructor.initializers.add(refer('super')
                   .call([], {'tableName': literalString(tableName)}).code);
+
+              constructor.body = Block.of([
+                for (var field in fields.where((field) =>
+                    field.shouldSerializeFieldForDatabase(serverCode)))
+                  refer(field.name)
+                      .assign(TypeReference((t) => t
+                        ..symbol = field.type.columnType
+                        ..url = 'package:serverpod/serverpod.dart'
+                        ..types.addAll(field.type.isEnum
+                            ? [
+                                field.type.reference(
+                                  serverCode,
+                                  nullable: false,
+                                  subDirParts: classDefinition.subDirParts,
+                                  config: config,
+                                )
+                              ]
+                            : [])).call([
+                        literalString(field.name)
+                      ], {
+                        'queryPrefix': refer('super').property('queryPrefix'),
+                        'tableRelations':
+                            refer('super').property('tableRelations')
+                      }))
+                      .statement,
+              ]);
             }));
 
-            // Column descriptions
+            // Column fields
             for (var field in fields) {
+              // Simple column field
               if (field.shouldSerializeFieldForDatabase(serverCode)) {
                 c.fields.add(Field((f) => f
+                  ..late = true
                   ..modifier = FieldModifier.final$
                   ..name = field.name
                   ..docs.addAll(field.documentation ?? [])
-                  ..assignment = TypeReference((t) => t
+                  ..type = TypeReference((t) => t
                     ..symbol = field.type.columnType
                     ..url = 'package:serverpod/serverpod.dart'
                     ..types.addAll(field.type.isEnum
@@ -694,7 +740,104 @@ class SerializableEntityLibraryGenerator {
                               config: config,
                             )
                           ]
-                        : [])).call([literalString(field.name)]).code));
+                        : []))));
+              } else if (field.relation is ObjectRelationDefinition) {
+                // Complex relation fields
+                var objectRelation = field.relation as ObjectRelationDefinition;
+                var foreignRelationField = fields
+                    .cast<SerializableEntityFieldDefinition?>()
+                    .firstWhere(
+                        (f) =>
+                            f?.name == objectRelation.fieldName &&
+                            f?.relation is ForeignRelationDefinition,
+                        orElse: () => null);
+
+                if (foreignRelationField == null) {
+                  log.error(
+                      'Could not find foreign relation field ${objectRelation.fieldName} for ${field.name} in ${classDefinition.className}.');
+                  continue;
+                }
+
+                var foreignRelation =
+                    foreignRelationField.relation as ForeignRelationDefinition;
+
+                // Add internal nullable table field
+                c.fields.add(Field((f) => f
+                  ..name = '_${field.name}'
+                  ..docs.addAll(field.documentation ?? [])
+                  ..type = field.type.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                    nullable: true,
+                    typeSuffix: 'Table',
+                  )));
+
+                // Add getter method for relation table that creates the table
+                c.methods.add(Method((m) => m
+                  ..name = field.name
+                  ..type = MethodType.getter
+                  ..returns = field.type.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                    nullable: false,
+                    typeSuffix: 'Table',
+                  )
+                  ..body = Block.of([
+                    Code('if (_${field.name} != null) return _${field.name}!;'),
+                    refer('_${field.name}')
+                        .assign(refer('createRelationTable',
+                                'package:serverpod/serverpod.dart')
+                            .call([], {
+                          'queryPrefix': refer('queryPrefix'),
+                          'fieldName': literalString(field.name),
+                          'foreignTableName': field.type
+                              .reference(
+                                serverCode,
+                                subDirParts: classDefinition.subDirParts,
+                                config: config,
+                                nullable: false,
+                              )
+                              .property('t')
+                              .property('tableName'),
+                          'column': refer(foreignRelationField.name),
+                          'foreignColumnName': field.type
+                              .reference(
+                                serverCode,
+                                subDirParts: classDefinition.subDirParts,
+                                config: config,
+                                nullable: false,
+                              )
+                              .property('t')
+                              .property(foreignRelation.foreignFieldName)
+                              .property('columnName'),
+                          'createTable': Method((m) => m
+                            ..requiredParameters.addAll([
+                              Parameter((p) => p..name = 'relationQueryPrefix'),
+                              Parameter(
+                                  (p) => p..name = 'foreignTableRelation'),
+                            ])
+                            ..lambda = true
+                            ..body = field.type
+                                .reference(
+                              serverCode,
+                              subDirParts: classDefinition.subDirParts,
+                              config: config,
+                              nullable: false,
+                              typeSuffix: 'Table',
+                            )
+                                .call([], {
+                              'queryPrefix': refer('relationQueryPrefix'),
+                              'tableRelations': literalList([
+                                refer('tableRelations').nullSafeSpread,
+                                refer('foreignTableRelation'),
+                              ]),
+                            }).code).closure
+                        }))
+                        .statement,
+                    Code('return _${field.name}!;'),
+                  ])));
               }
             }
 
