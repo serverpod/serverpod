@@ -433,6 +433,10 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Append all foreign key operations at the end
     out += foreignKeyActions;
 
+    if (versions.isNotEmpty) {
+      out += '\n';
+    }
+
     for (var module in versions.keys) {
       var version = versions[module]!;
       out += _sqlStoreMigrationVersion(
@@ -568,7 +572,7 @@ String _sqlStoreMigrationVersion({
 }) {
   String out = '';
   out += '--\n';
-  out += '-- MIGRATION VERSION\n';
+  out += '-- MIGRATION VERSION FOR $module\n';
   out += '--\n';
   out += 'INSERT INTO "serverpod_migrations" '
       '("module", "version", "priority", "timestamp")\n';

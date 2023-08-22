@@ -5,6 +5,7 @@ import 'package:serverpod/protocol.dart';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../generated/protocol.dart' as internal;
 import 'extensions.dart';
@@ -61,16 +62,10 @@ class MigrationManager {
     installedVersions.addAll(versions);
 
     // Get available migrations
-    var migrationDirectory = Directory(
-      path.join(Directory.current.path, 'migrations'),
-    );
-    var migrationModules = await _listAvailableModules(
-      directory: migrationDirectory,
-    );
+    var migrationModules = MigrationVersions.listAvailableModules();
 
     for (var module in migrationModules) {
-      availableVersions[module] = await _listMigrationVersions(
-        directory: migrationDirectory,
+      availableVersions[module] = MigrationVersions.listVersions(
         module: module,
       );
     }
@@ -111,7 +106,7 @@ class MigrationManager {
   /// Lists all available modules in the migrations directory.
   List<String> get availableModules => availableVersions.keys.toList();
 
-  /// Returns the latest version of the given module from aviailable migrations.
+  /// Returns the latest version of the given module from available migrations.
   String getLatestVersion(String module) {
     var versions = availableVersions[module];
     if (versions == null || versions.isEmpty) {
@@ -210,45 +205,6 @@ class MigrationManager {
         stderr.writeln('Failed to apply definition $latest on $module');
         stderr.writeln('$e');
       }
-    }
-  }
-
-  Future<List<String>> _listAvailableModules({
-    required Directory directory,
-  }) async {
-    try {
-      var modules = <String>[];
-      var entities = directory.listSync();
-      for (var entity in entities) {
-        if (entity is Directory) {
-          modules.add(path.basename(entity.path));
-        }
-      }
-      modules.sort();
-      return modules;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Future<List<String>> _listMigrationVersions({
-    required Directory directory,
-    required String module,
-  }) async {
-    try {
-      var versionDir = Directory(path.join(directory.path, module));
-
-      var versions = <String>[];
-      var entities = versionDir.listSync();
-      for (var entity in entities) {
-        if (entity is Directory) {
-          versions.add(path.basename(entity.path));
-        }
-      }
-      versions.sort();
-      return versions;
-    } catch (e) {
-      return [];
     }
   }
 }

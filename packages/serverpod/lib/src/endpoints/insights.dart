@@ -5,6 +5,7 @@ import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
@@ -224,12 +225,37 @@ class InsightsEndpoint extends Endpoint {
   /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
-    var target = await getTargetDatabaseDefinition(session);
-    var live = await getLiveDatabaseDefinition(session);
-    return DatabaseDefinitions(
-      target: target,
-      live: live,
-    );
+    try {
+      var target = await getTargetDatabaseDefinition(session);
+      var live = await getLiveDatabaseDefinition(session);
+      var installedMigrations =
+          await DatabaseAnalyzer.getInstalledMigrationVersions(session.db);
+
+      var modules = MigrationVersions.listAvailableModules();
+
+      var latestAvailableMigrations = <DatabaseMigrationVersion>[];
+
+      for (var module in modules) {
+        var version =
+            Serverpod.instance!.migrationManager.getLatestVersion(module);
+        latestAvailableMigrations.add(
+          DatabaseMigrationVersion(
+            module: module,
+            version: version,
+          ),
+        );
+      }
+
+      return DatabaseDefinitions(
+        target: target,
+        live: live,
+        installedMigrations: installedMigrations,
+        latestAvailableMigrations: latestAvailableMigrations,
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   /// Exports raw data serialized in JSON from the database.
