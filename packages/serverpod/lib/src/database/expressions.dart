@@ -241,7 +241,7 @@ class _SetExpression extends Expression {
 
   _SetExpression(super.expression, this.values);
 
-  String expressionSetToQueryString() {
+  String _expressionSetToQueryString() {
     var valueList = values.join(', ');
     return '($valueList)';
   }
@@ -252,7 +252,7 @@ class _InSetExpression extends _SetExpression {
 
   @override
   String toString() {
-    return '$_expression IN ${expressionSetToQueryString()}';
+    return '$_expression IN ${_expressionSetToQueryString()}';
   }
 }
 
@@ -261,7 +261,7 @@ class _NotInSetExpression extends _SetExpression {
 
   @override
   String toString() {
-    return '$_expression NOT IN ${expressionSetToQueryString()}';
+    return '$_expression NOT IN ${_expressionSetToQueryString()}';
   }
 }
 
@@ -296,7 +296,7 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
   _ColumnWithDefaultOperations(super.columnName, {super.varcharLength});
 
   /// Applies encoding to value before it is sent to the database.
-  Expression encodeValueForQuery(dynamic value) => EscapedExpression(value);
+  Expression _encodeValueForQuery(dynamic value) => EscapedExpression(value);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -305,7 +305,7 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
       return _IsNullExpression(this);
     }
 
-    return _EqualsExpression(this, encodeValueForQuery(value));
+    return _EqualsExpression(this, _encodeValueForQuery(value));
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
@@ -315,14 +315,14 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
       return _IsNotNullExpression(this);
     }
 
-    return _NotEqualsExpression(this, encodeValueForQuery(value));
+    return _NotEqualsExpression(this, _encodeValueForQuery(value));
   }
 
   /// Creates and [Expression] checking if the value in the column is included
   /// in the specified set of values.
   Expression inSet(Set<T> values) {
     var valuesAsExpressions =
-        values.map((e) => encodeValueForQuery(e)).toList();
+        values.map((e) => _encodeValueForQuery(e)).toList();
 
     return _InSetExpression(this, valuesAsExpressions);
   }
@@ -331,7 +331,7 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
   /// included in the specified set of values.
   Expression notInSet(Set<T> values) {
     var valuesAsExpressions =
-        values.map((e) => encodeValueForQuery(e)).toList();
+        values.map((e) => _encodeValueForQuery(e)).toList();
 
     return _NotInSetExpression(this, valuesAsExpressions);
   }
@@ -341,22 +341,21 @@ abstract class _ColumnNum<T extends num>
     extends _ColumnWithDefaultOperations<T> {
   _ColumnNum(super.columnName);
 
-  /// Applies encoding to value before it is sent to the database.
   @override
-  Expression encodeValueForQuery(value) => Expression(value);
+  Expression _encodeValueForQuery(value) => Expression(value);
 
   /// Creates an [Expression] checking if the value in the column is between
   /// the [min], [max] values.
   Expression between(T min, T max) {
     return _BetweenExpression(
-        this, encodeValueForQuery(min), encodeValueForQuery(max));
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 
   /// Creates an [Expression] checking if the value in the column is NOT between
   /// the [min], [max] values.
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
-        this, encodeValueForQuery(min), encodeValueForQuery(max));
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 }
 
@@ -441,9 +440,8 @@ class ColumnBool extends _ColumnWithDefaultOperations<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnBool(String name) : super(name);
 
-  /// Applies encoding to value before it is sent to the database.
   @override
-  Expression encodeValueForQuery(value) => Expression(value);
+  Expression _encodeValueForQuery(value) => Expression(value);
 
   /// Creates an [Expression] checking if the value in the column is distinct
   /// from the specified value.
@@ -462,14 +460,14 @@ class ColumnDateTime extends _ColumnWithDefaultOperations<DateTime> {
   /// the [min], [max] values.
   Expression between(DateTime min, DateTime max) {
     return _BetweenExpression(
-        this, encodeValueForQuery(min), encodeValueForQuery(max));
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 
   /// Creates an [Expression] checking if the value in the column is NOT between
   /// the [min], [max] values.
   Expression notBetween(DateTime min, DateTime max) {
     return _NotBetweenExpression(
-        this, encodeValueForQuery(min), encodeValueForQuery(max));
+        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 }
 
