@@ -3,18 +3,22 @@ import 'dart:typed_data';
 import 'package:serverpod/serverpod.dart';
 
 /// A database [Expression].
-class Expression {
-  /// The [dynamic] representation of the [Expression]. Note that the precedence
-  /// of operators may not be what you think, so always use parentheses to make
-  /// sure that that expressions are executed in the correct order.
-  final dynamic expression;
+class Expression<T> {
+  final T _expression;
+
+  /// Retrieves expression as a string.
+  @Deprecated('Use toString instead')
+  String get expression => toString();
 
   /// Creates a new [Expression].
-  Expression(this.expression);
+  /// Note that the precedence of operators may not be what you think, so
+  /// always use parentheses to make sure that that expressions are executed
+  /// in the correct order.
+  Expression(this._expression);
 
   @override
   String toString() {
-    return '$expression';
+    return '$_expression';
   }
 
   /// Database AND operator.
@@ -80,7 +84,7 @@ class EscapedExpression extends Expression {
 
   @override
   String toString() {
-    return DatabasePoolManager.encoder.convert(expression);
+    return DatabasePoolManager.encoder.convert(_expression);
   }
 }
 
@@ -95,7 +99,7 @@ class _AndExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression AND $other)';
+    return '($_expression AND $other)';
   }
 }
 
@@ -104,7 +108,7 @@ class _OrExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression OR $other)';
+    return '($_expression OR $other)';
   }
 }
 
@@ -113,7 +117,7 @@ class _EqualsExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '$expression = $other';
+    return '$_expression = $other';
   }
 }
 
@@ -122,7 +126,7 @@ class _NotEqualsExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '$expression != $other';
+    return '$_expression != $other';
   }
 }
 
@@ -131,7 +135,7 @@ class _GreaterThanExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression > $other)';
+    return '($_expression > $other)';
   }
 }
 
@@ -140,7 +144,7 @@ class _GreaterOrEqualExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression >= $other)';
+    return '($_expression >= $other)';
   }
 }
 
@@ -149,7 +153,7 @@ class _LessThanExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression < $other)';
+    return '($_expression < $other)';
   }
 }
 
@@ -158,7 +162,7 @@ class _LessThanOrEqualExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '($expression <= $other)';
+    return '($_expression <= $other)';
   }
 }
 
@@ -167,7 +171,7 @@ class _LikeExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '$expression LIKE $other';
+    return '$_expression LIKE $other';
   }
 }
 
@@ -176,7 +180,7 @@ class _ILikeExpression extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '$expression ILIKE $other';
+    return '$_expression ILIKE $other';
   }
 }
 
@@ -185,7 +189,7 @@ class _IsDistinctFrom extends _TwoPartExpression {
 
   @override
   String toString() {
-    return '$expression IS DISTINCT FROM $other';
+    return '$_expression IS DISTINCT FROM $other';
   }
 }
 
@@ -194,7 +198,7 @@ class _IsNullExpression extends Expression {
 
   @override
   String toString() {
-    return '$expression IS NULL';
+    return '$_expression IS NULL';
   }
 }
 
@@ -203,7 +207,7 @@ class _IsNotNullExpression extends Expression {
 
   @override
   String toString() {
-    return '$expression IS NOT NULL';
+    return '$_expression IS NOT NULL';
   }
 }
 
@@ -219,7 +223,7 @@ class _BetweenExpression extends _MinMaxExpression {
 
   @override
   String toString() {
-    return '$expression BETWEEN $min AND $max';
+    return '$_expression BETWEEN $min AND $max';
   }
 }
 
@@ -228,7 +232,7 @@ class _NotBetweenExpression extends _MinMaxExpression {
 
   @override
   String toString() {
-    return '$expression NOT BETWEEN $min AND $max';
+    return '$_expression NOT BETWEEN $min AND $max';
   }
 }
 
@@ -248,7 +252,7 @@ class _InSetExpression extends _SetExpression {
 
   @override
   String toString() {
-    return '$expression IN ${expressionSetToQueryString()}';
+    return '$_expression IN ${expressionSetToQueryString()}';
   }
 }
 
@@ -257,7 +261,7 @@ class _NotInSetExpression extends _SetExpression {
 
   @override
   String toString() {
-    return '$expression NOT IN ${expressionSetToQueryString()}';
+    return '$_expression NOT IN ${expressionSetToQueryString()}';
   }
 }
 
@@ -284,7 +288,7 @@ abstract class Column<T> extends Expression {
 
   @override
   String toString() {
-    return '$expression';
+    return '$_expression';
   }
 }
 
