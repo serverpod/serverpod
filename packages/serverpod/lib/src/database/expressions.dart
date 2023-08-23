@@ -297,6 +297,9 @@ abstract class Column<T> extends Expression {
   /// Query prefix for the [Column].
   final String queryPrefix;
 
+  /// Query alias for the [Column].
+  String get queryAlias => '$queryPrefix.$_columnName';
+
   /// Table relations for the [Column].
   final List<TableRelation>? tableRelations;
 
@@ -311,7 +314,11 @@ abstract class Column<T> extends Expression {
 
   @override
   String toString() {
-    return '$_expression';
+    if (queryPrefix.isEmpty) {
+      return '"$_columnName"';
+    }
+
+    return '$queryPrefix.$_expression';
   }
 }
 
