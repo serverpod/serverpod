@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -32,7 +33,7 @@ class DatabaseConnection {
   Future<List<String>> getTableNames() async {
     List<String> tableNames = <String>[];
 
-    var query = 'SELECT * FROM pg_catalog.pg_tables';
+    var query = SelectQueryBuilder(table: 'pg_catalog.pg_tables').build();
     var result = await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
@@ -50,8 +51,11 @@ class DatabaseConnection {
 
   /// Returns a description for a table in the database.
   Future<Table?> getTableDescription(String tableName) async {
-    var query =
-        'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
+    var query = SelectQueryBuilder(table: 'INFORMATION_SCHEMA.COLUMNS')
+        .withSelectFields(
+            ['column_name', 'data_type', 'character_maximum_length'])
+        .withWhere(Expression('table_name =\'$tableName\''))
+        .build();
     var result = await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
@@ -142,26 +146,20 @@ Current type was $T''');
     table = table!;
 
     var startTime = DateTime.now();
-    where ??= Expression('TRUE');
+
+    if (orderBy != null) {
+      // If order by is set then order by list is overriden.
+      // TODO: Only expose order by list in interface.
+      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
+    }
 
     var tableName = table.tableName;
-    var query = 'SELECT * FROM $tableName WHERE $where';
-    if (orderBy != null) {
-      query += ' ORDER BY $orderBy';
-      if (orderDescending) query += ' DESC';
-    } else if (orderByList != null) {
-      assert(orderByList.isNotEmpty);
-
-      var strList = <String>[];
-      for (var order in orderByList) {
-        strList.add(order.toString());
-      }
-
-      query += ' ORDER BY ${strList.join(',')}';
-    }
-    if (limit != null) query += ' LIMIT $limit';
-    if (offset != null) query += ' OFFSET $offset';
-
+    var query = SelectQueryBuilder(table: tableName)
+        .withWhere(where)
+        .withOrderBy(orderByList)
+        .withLimit(limit)
+        .withOffset(offset)
+        .build();
     List<TableRow?> list = <TableRow>[];
     try {
       var context = transaction != null
@@ -522,6 +520,7 @@ Current type was $T''');
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       query =
           'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
+
       var result = await postgresConnection.query(
         query,
         allowReuse: false,
@@ -549,8 +548,10 @@ Current type was $T''');
       {required Session session}) async {
     // Check so that the file is saved, but not
     var startTime = DateTime.now();
-    var query =
-        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
+    var query = SelectQueryBuilder(table: 'serverpod_cloud_storage')
+        .withSelectFields(['verified'])
+        .withWhere(Expression('"storageId"=@storageId AND path=@path'))
+        .build();
     try {
       var result = await postgresConnection.query(
         query,
