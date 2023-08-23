@@ -399,7 +399,7 @@ Current type was $T''');
 
     var tableName = table.tableName;
 
-    var query = 'DELETE FROM $tableName WHERE $where';
+    var query = DeleteQueryBuilder(table: tableName).withWhere(where).build();
 
     try {
       var context = transaction != null
@@ -431,7 +431,10 @@ Current type was $T''');
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
-    var query = 'DELETE FROM $tableName WHERE $where RETURNING *';
+    var query = DeleteQueryBuilder(table: tableName)
+        .withWhere(where)
+        .withReturnAll()
+        .build();
 
     List<TableRow?> list = <TableRow>[];
     try {
@@ -465,7 +468,9 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
+    var query = DeleteQueryBuilder(table: row.tableName)
+        .withWhere(Expression('id = ${row.id}'))
+        .build();
 
     try {
       var context = transaction != null
