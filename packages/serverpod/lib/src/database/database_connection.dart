@@ -254,11 +254,12 @@ Current type was $T''');
 
     var startTime = DateTime.now();
 
-    where ??= Expression('TRUE');
-
     var tableName = table.tableName;
-    var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
-    if (limit != null) query += ' LIMIT $limit';
+    var query = CountQueryBuilder(table: tableName)
+        .withCountAlias('c')
+        .withWhere(where)
+        .withLimit(limit)
+        .build();
 
     try {
       var context = transaction != null
