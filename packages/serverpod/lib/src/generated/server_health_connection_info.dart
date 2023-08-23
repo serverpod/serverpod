@@ -249,32 +249,70 @@ typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
     ServerHealthConnectionInfoTable);
 
 class ServerHealthConnectionInfoTable extends _i1.Table {
-  ServerHealthConnectionInfoTable()
-      : super(tableName: 'serverpod_health_connection_info');
+  ServerHealthConnectionInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_health_connection_info') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    timestamp = _i1.ColumnDateTime(
+      'timestamp',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    active = _i1.ColumnInt(
+      'active',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    closing = _i1.ColumnInt(
+      'closing',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    idle = _i1.ColumnInt(
+      'idle',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    granularity = _i1.ColumnInt(
+      'granularity',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The server associated with this connection info.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  final timestamp = _i1.ColumnDateTime('timestamp');
+  late final _i1.ColumnDateTime timestamp;
 
   /// Number of active connections currently open.
-  final active = _i1.ColumnInt('active');
+  late final _i1.ColumnInt active;
 
   /// Number of connections currently closing.
-  final closing = _i1.ColumnInt('closing');
+  late final _i1.ColumnInt closing;
 
   /// Number of connections currently idle.
-  final idle = _i1.ColumnInt('idle');
+  late final _i1.ColumnInt idle;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final granularity = _i1.ColumnInt('granularity');
+  late final _i1.ColumnInt granularity;
 
   @override
   List<_i1.Column> get columns => [

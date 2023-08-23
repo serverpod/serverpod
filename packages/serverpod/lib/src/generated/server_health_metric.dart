@@ -249,31 +249,70 @@ typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
     ServerHealthMetricTable);
 
 class ServerHealthMetricTable extends _i1.Table {
-  ServerHealthMetricTable() : super(tableName: 'serverpod_health_metric');
+  ServerHealthMetricTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_health_metric') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    name = _i1.ColumnString(
+      'name',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    timestamp = _i1.ColumnDateTime(
+      'timestamp',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    isHealthy = _i1.ColumnBool(
+      'isHealthy',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    value = _i1.ColumnDouble(
+      'value',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    granularity = _i1.ColumnInt(
+      'granularity',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The name of the metric.
-  final name = _i1.ColumnString('name');
+  late final _i1.ColumnString name;
 
   /// The server associated with this metric.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  final timestamp = _i1.ColumnDateTime('timestamp');
+  late final _i1.ColumnDateTime timestamp;
 
   /// True if the metric is healthy.
-  final isHealthy = _i1.ColumnBool('isHealthy');
+  late final _i1.ColumnBool isHealthy;
 
   /// The value of the metric.
-  final value = _i1.ColumnDouble('value');
+  late final _i1.ColumnDouble value;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final granularity = _i1.ColumnInt('granularity');
+  late final _i1.ColumnInt granularity;
 
   @override
   List<_i1.Column> get columns => [

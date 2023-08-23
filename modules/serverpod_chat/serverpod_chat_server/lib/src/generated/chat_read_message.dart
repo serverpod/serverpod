@@ -211,21 +211,45 @@ typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
     ChatReadMessageTable);
 
 class ChatReadMessageTable extends _i1.Table {
-  ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
+  ChatReadMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_chat_read_message') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    lastReadMessageId = _i1.ColumnInt(
+      'lastReadMessageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The channel this that has been read.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   /// The id of the user that read the messages.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The id of the last read message.
-  final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
+  late final _i1.ColumnInt lastReadMessageId;
 
   @override
   List<_i1.Column> get columns => [

@@ -209,21 +209,45 @@ class UserImage extends _i1.TableRow {
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 class UserImageTable extends _i1.Table {
-  UserImageTable() : super(tableName: 'serverpod_user_image');
+  UserImageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_user_image') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    version = _i1.ColumnInt(
+      'version',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    url = _i1.ColumnString(
+      'url',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The id of the user.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  final version = _i1.ColumnInt('version');
+  late final _i1.ColumnInt version;
 
   /// The URL to the image.
-  final url = _i1.ColumnString('url');
+  late final _i1.ColumnString url;
 
   @override
   List<_i1.Column> get columns => [

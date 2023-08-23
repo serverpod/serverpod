@@ -198,18 +198,37 @@ class MethodInfo extends _i1.TableRow {
 typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
 class MethodInfoTable extends _i1.Table {
-  MethodInfoTable() : super(tableName: 'serverpod_method');
+  MethodInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_method') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    endpoint = _i1.ColumnString(
+      'endpoint',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    method = _i1.ColumnString(
+      'method',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The endpoint of this method.
-  final endpoint = _i1.ColumnString('endpoint');
+  late final _i1.ColumnString endpoint;
 
   /// The name of this method.
-  final method = _i1.ColumnString('method');
+  late final _i1.ColumnString method;
 
   @override
   List<_i1.Column> get columns => [

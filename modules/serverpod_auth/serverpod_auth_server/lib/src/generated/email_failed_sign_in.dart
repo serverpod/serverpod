@@ -212,21 +212,45 @@ typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
     EmailFailedSignInTable);
 
 class EmailFailedSignInTable extends _i1.Table {
-  EmailFailedSignInTable() : super(tableName: 'serverpod_email_failed_sign_in');
+  EmailFailedSignInTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_failed_sign_in') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    ipAddress = _i1.ColumnString(
+      'ipAddress',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// Email attempting to sign in with.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The time of the sign in attempt.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The IP address of the sign in attempt.
-  final ipAddress = _i1.ColumnString('ipAddress');
+  late final _i1.ColumnString ipAddress;
 
   @override
   List<_i1.Column> get columns => [

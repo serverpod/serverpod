@@ -187,15 +187,29 @@ typedef SimpleDateTimeExpressionBuilder = _i1.Expression Function(
     SimpleDateTimeTable);
 
 class SimpleDateTimeTable extends _i1.Table {
-  SimpleDateTimeTable() : super(tableName: 'simple_date_time');
+  SimpleDateTimeTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'simple_date_time') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    dateTime = _i1.ColumnDateTime(
+      'dateTime',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The only field of [SimpleDateTime]
-  final dateTime = _i1.ColumnDateTime('dateTime');
+  late final _i1.ColumnDateTime dateTime;
 
   @override
   List<_i1.Column> get columns => [

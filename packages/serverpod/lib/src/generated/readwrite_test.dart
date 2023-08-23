@@ -188,15 +188,29 @@ typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
     ReadWriteTestEntryTable);
 
 class ReadWriteTestEntryTable extends _i1.Table {
-  ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
+  ReadWriteTestEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_readwrite_test') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    number = _i1.ColumnInt(
+      'number',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// A random number, to verify that the write/read was performed correctly.
-  final number = _i1.ColumnInt('number');
+  late final _i1.ColumnInt number;
 
   @override
   List<_i1.Column> get columns => [

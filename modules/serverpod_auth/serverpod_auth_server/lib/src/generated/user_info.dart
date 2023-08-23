@@ -275,37 +275,86 @@ class UserInfo extends _i1.TableRow {
 typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
 
 class UserInfoTable extends _i1.Table {
-  UserInfoTable() : super(tableName: 'serverpod_user_info');
+  UserInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_user_info') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userIdentifier = _i1.ColumnString(
+      'userIdentifier',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userName = _i1.ColumnString(
+      'userName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    fullName = _i1.ColumnString(
+      'fullName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    created = _i1.ColumnDateTime(
+      'created',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    imageUrl = _i1.ColumnString(
+      'imageUrl',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    scopeNames = _i1.ColumnSerializable(
+      'scopeNames',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    blocked = _i1.ColumnBool(
+      'blocked',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
-  final userIdentifier = _i1.ColumnString('userIdentifier');
+  late final _i1.ColumnString userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  final userName = _i1.ColumnString('userName');
+  late final _i1.ColumnString userName;
 
   /// The full name of the user.
-  final fullName = _i1.ColumnString('fullName');
+  late final _i1.ColumnString fullName;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The time when this user was created.
-  final created = _i1.ColumnDateTime('created');
+  late final _i1.ColumnDateTime created;
 
   /// A URL to the user's avatar.
-  final imageUrl = _i1.ColumnString('imageUrl');
+  late final _i1.ColumnString imageUrl;
 
   /// List of scopes that this user can access.
-  final scopeNames = _i1.ColumnSerializable('scopeNames');
+  late final _i1.ColumnSerializable scopeNames;
 
   /// True if the user is blocked from signing in.
-  final blocked = _i1.ColumnBool('blocked');
+  late final _i1.ColumnBool blocked;
 
   @override
   List<_i1.Column> get columns => [

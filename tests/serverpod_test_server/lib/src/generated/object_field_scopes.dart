@@ -201,16 +201,35 @@ typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
     ObjectFieldScopesTable);
 
 class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
+  ObjectFieldScopesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_field_scopes') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    normal = _i1.ColumnString(
+      'normal',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    database = _i1.ColumnString(
+      'database',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
-  final normal = _i1.ColumnString('normal');
+  late final _i1.ColumnString normal;
 
-  final database = _i1.ColumnString('database');
+  late final _i1.ColumnString database;
 
   @override
   List<_i1.Column> get columns => [

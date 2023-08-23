@@ -197,18 +197,37 @@ class Channel extends _i1.TableRow {
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
 class ChannelTable extends _i1.Table {
-  ChannelTable() : super(tableName: 'channel');
+  ChannelTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'channel') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    name = _i1.ColumnString(
+      'name',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The name of the channel.
-  final name = _i1.ColumnString('name');
+  late final _i1.ColumnString name;
 
   /// The id of the channel.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   @override
   List<_i1.Column> get columns => [

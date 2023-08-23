@@ -294,42 +294,101 @@ class LogEntry extends _i1.TableRow {
 typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
 
 class LogEntryTable extends _i1.Table {
-  LogEntryTable() : super(tableName: 'serverpod_log');
+  LogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_log') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    reference = _i1.ColumnString(
+      'reference',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logLevel = _i1.ColumnEnum<_i2.LogLevel>(
+      'logLevel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    message = _i1.ColumnString(
+      'message',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    error = _i1.ColumnString(
+      'error',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
   /// The id of the session this log entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
   /// The message id this entry is associated with, if in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// Currently unused.
-  final reference = _i1.ColumnString('reference');
+  late final _i1.ColumnString reference;
 
   /// The id of the server which created this log entry.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// Timpstamp of this log entry.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.
-  final logLevel = _i1.ColumnEnum<_i2.LogLevel>('logLevel');
+  late final _i1.ColumnEnum<_i2.LogLevel> logLevel;
 
   /// The logging message.
-  final message = _i1.ColumnString('message');
+  late final _i1.ColumnString message;
 
   /// Optional error associated with this log entry.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// Optional stack trace associated with this log entry.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// The order of this log entry, used for sorting.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [

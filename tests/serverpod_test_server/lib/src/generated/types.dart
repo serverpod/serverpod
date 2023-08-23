@@ -261,28 +261,77 @@ class Types extends _i1.TableRow {
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
-  TypesTable() : super(tableName: 'types');
+  TypesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'types') {
+    id = _i1.ColumnInt(
+      'id',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    anInt = _i1.ColumnInt(
+      'anInt',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aBool = _i1.ColumnBool(
+      'aBool',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDouble = _i1.ColumnDouble(
+      'aDouble',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDateTime = _i1.ColumnDateTime(
+      'aDateTime',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aString = _i1.ColumnString(
+      'aString',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aByteData = _i1.ColumnByteData(
+      'aByteData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDuration = _i1.ColumnDuration(
+      'aDuration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aUuid = _i1.ColumnUuid(
+      'aUuid',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt id;
 
-  final anInt = _i1.ColumnInt('anInt');
+  late final _i1.ColumnInt anInt;
 
-  final aBool = _i1.ColumnBool('aBool');
+  late final _i1.ColumnBool aBool;
 
-  final aDouble = _i1.ColumnDouble('aDouble');
+  late final _i1.ColumnDouble aDouble;
 
-  final aDateTime = _i1.ColumnDateTime('aDateTime');
+  late final _i1.ColumnDateTime aDateTime;
 
-  final aString = _i1.ColumnString('aString');
+  late final _i1.ColumnString aString;
 
-  final aByteData = _i1.ColumnByteData('aByteData');
+  late final _i1.ColumnByteData aByteData;
 
-  final aDuration = _i1.ColumnDuration('aDuration');
+  late final _i1.ColumnDuration aDuration;
 
-  final aUuid = _i1.ColumnUuid('aUuid');
+  late final _i1.ColumnUuid aUuid;
 
   @override
   List<_i1.Column> get columns => [
