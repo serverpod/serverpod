@@ -225,37 +225,32 @@ class InsightsEndpoint extends Endpoint {
   /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
-    try {
-      var target = await getTargetDatabaseDefinition(session);
-      var live = await getLiveDatabaseDefinition(session);
-      var installedMigrations =
-          await DatabaseAnalyzer.getInstalledMigrationVersions(session.db);
+    var target = await getTargetDatabaseDefinition(session);
+    var live = await getLiveDatabaseDefinition(session);
+    var installedMigrations =
+        await DatabaseAnalyzer.getInstalledMigrationVersions(session.db);
 
-      var modules = MigrationVersions.listAvailableModules();
+    var modules = MigrationVersions.listAvailableModules();
 
-      var latestAvailableMigrations = <DatabaseMigrationVersion>[];
+    var latestAvailableMigrations = <DatabaseMigrationVersion>[];
 
-      for (var module in modules) {
-        var version =
-            Serverpod.instance!.migrationManager.getLatestVersion(module);
-        latestAvailableMigrations.add(
-          DatabaseMigrationVersion(
-            module: module,
-            version: version,
-          ),
-        );
-      }
-
-      return DatabaseDefinitions(
-        target: target,
-        live: live,
-        installedMigrations: installedMigrations,
-        latestAvailableMigrations: latestAvailableMigrations,
+    for (var module in modules) {
+      var version =
+          Serverpod.instance!.migrationManager.getLatestVersion(module);
+      latestAvailableMigrations.add(
+        DatabaseMigrationVersion(
+          module: module,
+          version: version,
+        ),
       );
-    } catch (e) {
-      print(e);
-      rethrow;
     }
+
+    return DatabaseDefinitions(
+      target: target,
+      live: live,
+      installedMigrations: installedMigrations,
+      latestAvailableMigrations: latestAvailableMigrations,
+    );
   }
 
   /// Exports raw data serialized in JSON from the database.
