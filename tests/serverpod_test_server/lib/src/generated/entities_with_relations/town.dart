@@ -100,6 +100,7 @@ class Town extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    TownInclude? include,
   }) async {
     return session.db.find<Town>(
       where: where != null ? where(Town.t) : null,
@@ -110,6 +111,7 @@ class Town extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -121,6 +123,7 @@ class Town extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    TownInclude? include,
   }) async {
     return session.db.findSingleRow<Town>(
       where: where != null ? where(Town.t) : null,
@@ -129,14 +132,19 @@ class Town extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<Town?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Town>(id);
+    int id, {
+    TownInclude? include,
+  }) async {
+    return session.db.findById<Town>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -263,7 +271,25 @@ class TownTable extends _i1.Table {
         name,
         mayorId,
       ];
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'mayor') {
+      return mayor;
+    }
+    return null;
+  }
 }
 
 @Deprecated('Use TownTable.t instead.')
 TownTable tTown = TownTable();
+
+class TownInclude extends _i1.Include {
+  TownInclude({this.mayor});
+
+  _i2.CitizenInclude? mayor;
+
+  @override
+  Map<String, _i1.Include?> get includes => {'mayor': mayor};
+  @override
+  _i1.Table get table => Town.t;
+}

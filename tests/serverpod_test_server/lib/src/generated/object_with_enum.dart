@@ -127,6 +127,7 @@ class ObjectWithEnum extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithEnumInclude? include,
   }) async {
     return session.db.find<ObjectWithEnum>(
       where: where != null ? where(ObjectWithEnum.t) : null,
@@ -137,6 +138,7 @@ class ObjectWithEnum extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -148,6 +150,7 @@ class ObjectWithEnum extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithEnumInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithEnum>(
       where: where != null ? where(ObjectWithEnum.t) : null,
@@ -156,14 +159,19 @@ class ObjectWithEnum extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ObjectWithEnum?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithEnum>(id);
+    int id, {
+    ObjectWithEnumInclude? include,
+  }) async {
+    return session.db.findById<ObjectWithEnum>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -294,3 +302,12 @@ class ObjectWithEnumTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithEnumTable.t instead.')
 ObjectWithEnumTable tObjectWithEnum = ObjectWithEnumTable();
+
+class ObjectWithEnumInclude extends _i1.Include {
+  ObjectWithEnumInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithEnum.t;
+}

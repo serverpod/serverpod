@@ -173,6 +173,7 @@ class UserInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    UserInfoInclude? include,
   }) async {
     return session.db.find<UserInfo>(
       where: where != null ? where(UserInfo.t) : null,
@@ -183,6 +184,7 @@ class UserInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -194,6 +196,7 @@ class UserInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    UserInfoInclude? include,
   }) async {
     return session.db.findSingleRow<UserInfo>(
       where: where != null ? where(UserInfo.t) : null,
@@ -202,14 +205,19 @@ class UserInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<UserInfo?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<UserInfo>(id);
+    int id, {
+    UserInfoInclude? include,
+  }) async {
+    return session.db.findById<UserInfo>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -372,3 +380,12 @@ class UserInfoTable extends _i1.Table {
 
 @Deprecated('Use UserInfoTable.t instead.')
 UserInfoTable tUserInfo = UserInfoTable();
+
+class UserInfoInclude extends _i1.Include {
+  UserInfoInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => UserInfo.t;
+}

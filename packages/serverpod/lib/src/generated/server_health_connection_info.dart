@@ -146,6 +146,7 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ServerHealthConnectionInfoInclude? include,
   }) async {
     return session.db.find<ServerHealthConnectionInfo>(
       where: where != null ? where(ServerHealthConnectionInfo.t) : null,
@@ -156,6 +157,7 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -167,6 +169,7 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ServerHealthConnectionInfoInclude? include,
   }) async {
     return session.db.findSingleRow<ServerHealthConnectionInfo>(
       where: where != null ? where(ServerHealthConnectionInfo.t) : null,
@@ -175,14 +178,19 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ServerHealthConnectionInfo?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ServerHealthConnectionInfo>(id);
+    int id, {
+    ServerHealthConnectionInfoInclude? include,
+  }) async {
+    return session.db.findById<ServerHealthConnectionInfo>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -329,3 +337,12 @@ class ServerHealthConnectionInfoTable extends _i1.Table {
 @Deprecated('Use ServerHealthConnectionInfoTable.t instead.')
 ServerHealthConnectionInfoTable tServerHealthConnectionInfo =
     ServerHealthConnectionInfoTable();
+
+class ServerHealthConnectionInfoInclude extends _i1.Include {
+  ServerHealthConnectionInfoInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ServerHealthConnectionInfo.t;
+}

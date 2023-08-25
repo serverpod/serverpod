@@ -107,6 +107,7 @@ class UserImage extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    UserImageInclude? include,
   }) async {
     return session.db.find<UserImage>(
       where: where != null ? where(UserImage.t) : null,
@@ -117,6 +118,7 @@ class UserImage extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -128,6 +130,7 @@ class UserImage extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    UserImageInclude? include,
   }) async {
     return session.db.findSingleRow<UserImage>(
       where: where != null ? where(UserImage.t) : null,
@@ -136,14 +139,19 @@ class UserImage extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<UserImage?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<UserImage>(id);
+    int id, {
+    UserImageInclude? include,
+  }) async {
+    return session.db.findById<UserImage>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -260,3 +268,12 @@ class UserImageTable extends _i1.Table {
 
 @Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();
+
+class UserImageInclude extends _i1.Include {
+  UserImageInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => UserImage.t;
+}

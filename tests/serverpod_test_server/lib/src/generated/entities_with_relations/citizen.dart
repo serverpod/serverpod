@@ -118,6 +118,7 @@ class Citizen extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CitizenInclude? include,
   }) async {
     return session.db.find<Citizen>(
       where: where != null ? where(Citizen.t) : null,
@@ -128,6 +129,7 @@ class Citizen extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -139,6 +141,7 @@ class Citizen extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CitizenInclude? include,
   }) async {
     return session.db.findSingleRow<Citizen>(
       where: where != null ? where(Citizen.t) : null,
@@ -147,14 +150,19 @@ class Citizen extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<Citizen?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Citizen>(id);
+    int id, {
+    CitizenInclude? include,
+  }) async {
+    return session.db.findById<Citizen>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -314,7 +322,36 @@ class CitizenTable extends _i1.Table {
         companyId,
         oldCompanyId,
       ];
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'company') {
+      return company;
+    }
+    if (relationField == 'oldCompany') {
+      return oldCompany;
+    }
+    return null;
+  }
 }
 
 @Deprecated('Use CitizenTable.t instead.')
 CitizenTable tCitizen = CitizenTable();
+
+class CitizenInclude extends _i1.Include {
+  CitizenInclude({
+    this.company,
+    this.oldCompany,
+  });
+
+  _i2.CompanyInclude? company;
+
+  _i2.CompanyInclude? oldCompany;
+
+  @override
+  Map<String, _i1.Include?> get includes => {
+        'company': company,
+        'oldCompany': oldCompany,
+      };
+  @override
+  _i1.Table get table => Citizen.t;
+}

@@ -81,6 +81,7 @@ class ObjectWithSelfParent extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithSelfParentInclude? include,
   }) async {
     return session.db.find<ObjectWithSelfParent>(
       where: where != null ? where(ObjectWithSelfParent.t) : null,
@@ -91,6 +92,7 @@ class ObjectWithSelfParent extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -102,6 +104,7 @@ class ObjectWithSelfParent extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithSelfParentInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithSelfParent>(
       where: where != null ? where(ObjectWithSelfParent.t) : null,
@@ -110,14 +113,19 @@ class ObjectWithSelfParent extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ObjectWithSelfParent?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithSelfParent>(id);
+    int id, {
+    ObjectWithSelfParentInclude? include,
+  }) async {
+    return session.db.findById<ObjectWithSelfParent>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -216,3 +224,12 @@ class ObjectWithSelfParentTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithSelfParentTable.t instead.')
 ObjectWithSelfParentTable tObjectWithSelfParent = ObjectWithSelfParentTable();
+
+class ObjectWithSelfParentInclude extends _i1.Include {
+  ObjectWithSelfParentInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithSelfParent.t;
+}

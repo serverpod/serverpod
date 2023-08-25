@@ -84,6 +84,7 @@ class SimpleDateTime extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    SimpleDateTimeInclude? include,
   }) async {
     return session.db.find<SimpleDateTime>(
       where: where != null ? where(SimpleDateTime.t) : null,
@@ -94,6 +95,7 @@ class SimpleDateTime extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -105,6 +107,7 @@ class SimpleDateTime extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    SimpleDateTimeInclude? include,
   }) async {
     return session.db.findSingleRow<SimpleDateTime>(
       where: where != null ? where(SimpleDateTime.t) : null,
@@ -113,14 +116,19 @@ class SimpleDateTime extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<SimpleDateTime?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<SimpleDateTime>(id);
+    int id, {
+    SimpleDateTimeInclude? include,
+  }) async {
+    return session.db.findById<SimpleDateTime>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -220,3 +228,12 @@ class SimpleDateTimeTable extends _i1.Table {
 
 @Deprecated('Use SimpleDateTimeTable.t instead.')
 SimpleDateTimeTable tSimpleDateTime = SimpleDateTimeTable();
+
+class SimpleDateTimeInclude extends _i1.Include {
+  SimpleDateTimeInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => SimpleDateTime.t;
+}

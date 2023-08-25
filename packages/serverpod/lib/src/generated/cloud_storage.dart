@@ -144,6 +144,7 @@ class CloudStorageEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CloudStorageEntryInclude? include,
   }) async {
     return session.db.find<CloudStorageEntry>(
       where: where != null ? where(CloudStorageEntry.t) : null,
@@ -154,6 +155,7 @@ class CloudStorageEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -165,6 +167,7 @@ class CloudStorageEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CloudStorageEntryInclude? include,
   }) async {
     return session.db.findSingleRow<CloudStorageEntry>(
       where: where != null ? where(CloudStorageEntry.t) : null,
@@ -173,14 +176,19 @@ class CloudStorageEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<CloudStorageEntry?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<CloudStorageEntry>(id);
+    int id, {
+    CloudStorageEntryInclude? include,
+  }) async {
+    return session.db.findById<CloudStorageEntry>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -325,3 +333,12 @@ class CloudStorageEntryTable extends _i1.Table {
 
 @Deprecated('Use CloudStorageEntryTable.t instead.')
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
+
+class CloudStorageEntryInclude extends _i1.Include {
+  CloudStorageEntryInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => CloudStorageEntry.t;
+}

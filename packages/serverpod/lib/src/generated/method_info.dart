@@ -96,6 +96,7 @@ class MethodInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    MethodInfoInclude? include,
   }) async {
     return session.db.find<MethodInfo>(
       where: where != null ? where(MethodInfo.t) : null,
@@ -106,6 +107,7 @@ class MethodInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -117,6 +119,7 @@ class MethodInfo extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    MethodInfoInclude? include,
   }) async {
     return session.db.findSingleRow<MethodInfo>(
       where: where != null ? where(MethodInfo.t) : null,
@@ -125,14 +128,19 @@ class MethodInfo extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<MethodInfo?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<MethodInfo>(id);
+    int id, {
+    MethodInfoInclude? include,
+  }) async {
+    return session.db.findById<MethodInfo>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -240,3 +248,12 @@ class MethodInfoTable extends _i1.Table {
 
 @Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();
+
+class MethodInfoInclude extends _i1.Include {
+  MethodInfoInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => MethodInfo.t;
+}

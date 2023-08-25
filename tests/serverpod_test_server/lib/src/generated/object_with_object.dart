@@ -140,6 +140,7 @@ class ObjectWithObject extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithObjectInclude? include,
   }) async {
     return session.db.find<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -150,6 +151,7 @@ class ObjectWithObject extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -161,6 +163,7 @@ class ObjectWithObject extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    ObjectWithObjectInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -169,14 +172,19 @@ class ObjectWithObject extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<ObjectWithObject?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithObject>(id);
+    int id, {
+    ObjectWithObjectInclude? include,
+  }) async {
+    return session.db.findById<ObjectWithObject>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -315,3 +323,12 @@ class ObjectWithObjectTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithObjectTable.t instead.')
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();
+
+class ObjectWithObjectInclude extends _i1.Include {
+  ObjectWithObjectInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithObject.t;
+}

@@ -159,6 +159,7 @@ class Types extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    TypesInclude? include,
   }) async {
     return session.db.find<Types>(
       where: where != null ? where(Types.t) : null,
@@ -169,6 +170,7 @@ class Types extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -180,6 +182,7 @@ class Types extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    TypesInclude? include,
   }) async {
     return session.db.findSingleRow<Types>(
       where: where != null ? where(Types.t) : null,
@@ -188,14 +191,19 @@ class Types extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   static Future<Types?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Types>(id);
+    int id, {
+    TypesInclude? include,
+  }) async {
+    return session.db.findById<Types>(
+      id,
+      include: include,
+    );
   }
 
   static Future<int> delete(
@@ -349,3 +357,12 @@ class TypesTable extends _i1.Table {
 
 @Deprecated('Use TypesTable.t instead.')
 TypesTable tTypes = TypesTable();
+
+class TypesInclude extends _i1.Include {
+  TypesInclude();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => Types.t;
+}
