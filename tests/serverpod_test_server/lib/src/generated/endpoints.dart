@@ -1823,6 +1823,26 @@ class Endpoints extends _i1.EndpointDispatch {
             townName: params['townName'],
           ),
         ),
+        'citizenFindAll': _i1.MethodConnector(
+          name: 'citizenFindAll',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .citizenFindAll(session),
+        ),
+        'citizenFindAllWithDeepIncludes': _i1.MethodConnector(
+          name: 'citizenFindAllWithDeepIncludes',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .citizenFindAllWithDeepIncludes(session),
+        ),
         'citizenInsert': _i1.MethodConnector(
           name: 'citizenInsert',
           params: {

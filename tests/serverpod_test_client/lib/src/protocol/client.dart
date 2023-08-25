@@ -784,6 +784,21 @@ class EndpointRelation extends _i1.EndpointRef {
         {'townName': townName},
       );
 
+  _i2.Future<List<_i14.Citizen>> citizenFindAll() =>
+      caller.callServerEndpoint<List<_i14.Citizen>>(
+        'relation',
+        'citizenFindAll',
+        {},
+      );
+
+  /// Includes company and oldCompany and their respective towns
+  _i2.Future<List<_i14.Citizen>> citizenFindAllWithDeepIncludes() =>
+      caller.callServerEndpoint<List<_i14.Citizen>>(
+        'relation',
+        'citizenFindAllWithDeepIncludes',
+        {},
+      );
+
   _i2.Future<int?> citizenInsert(_i14.Citizen citizen) =>
       caller.callServerEndpoint<int?>(
         'relation',
