@@ -14,22 +14,23 @@ class _UsingQuery {
 
 class SelectQueryBuilder {
   final String _table;
-  String _fields;
+  List<String> _fields;
   List<Order>? _orderByList;
   int? _limit;
   int? _offset;
   Expression? _where;
+  Include? _include;
 
   SelectQueryBuilder({required table})
       : _table = table,
-        _fields = '*';
+        _fields = ['*'];
 
   String build() {
-    var join = _buildJoinQuery(where: _where, orderBy: _orderByList);
+    var join = _buildJoinQuery(
+        where: _where, orderBy: _orderByList, include: _include);
 
-    var query = 'SELECT ';
-    query += '$_fields ';
-    query += 'FROM $_table';
+    var query = _buildSelectQuery(_fields, _include);
+    query += ' FROM $_table';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
     if (_orderByList != null) {
@@ -38,11 +39,12 @@ class SelectQueryBuilder {
     }
     if (_limit != null) query += ' LIMIT $_limit';
     if (_offset != null) query += ' OFFSET $_offset';
+
     return query;
   }
 
   SelectQueryBuilder withSelectFields(List<String> fields) {
-    _fields = fields.join(', ');
+    _fields = fields;
     return this;
   }
 
@@ -67,6 +69,11 @@ class SelectQueryBuilder {
 
   SelectQueryBuilder withWhere(Expression? where) {
     _where = where;
+    return this;
+  }
+
+  SelectQueryBuilder withInclude(Include? include) {
+    _include = include;
     return this;
   }
 }
@@ -143,7 +150,61 @@ class DeleteQueryBuilder {
   }
 }
 
-String? _buildJoinQuery({Expression? where, List<Order>? orderBy}) {
+String _buildSelectQuery(List<String> fields, Include? include) {
+  var selectQueryFields = fields;
+
+  if (include != null) {
+    selectQueryFields.addAll(gatherIncludeFields(include));
+  }
+
+  return 'SELECT ${selectQueryFields.join(', ')}';
+}
+
+List<String> gatherIncludeFields(Include? include) {
+  if (include == null) {
+    return [];
+  }
+
+  var includeTables = _gatherIncludeTables(include, include.table);
+
+  LinkedHashSet<String> fields = LinkedHashSet();
+  for (var table in includeTables) {
+    for (var column in table.columns) {
+      fields.add('$column AS "${column.queryAlias}"');
+    }
+  }
+
+  return fields.toList();
+}
+
+List<Table> _gatherIncludeTables(Include? include, Table table) {
+  List<Table> tables = [];
+  if (include == null) {
+    return tables;
+  }
+
+  include.includes.forEach((relationField, relationInclude) {
+    // Get table from include
+    var relationTable = table.getRelationTable(relationField);
+    if (relationTable == null) {
+      return;
+    }
+
+    tables.add(relationTable);
+
+    var tablesFromInclude =
+        _gatherIncludeTables(relationInclude, relationTable);
+    tables.addAll(tablesFromInclude);
+  });
+
+  return tables;
+}
+
+String? _buildJoinQuery({
+  Expression? where,
+  List<Order>? orderBy,
+  Include? include,
+}) {
   LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
   if (where != null) {
     tableRelations.addAll(_gatherTableRelations(where));
@@ -153,6 +214,10 @@ String? _buildJoinQuery({Expression? where, List<Order>? orderBy}) {
     for (var order in orderBy) {
       tableRelations.addAll(_gatherTableRelations(order.column));
     }
+  }
+
+  if (include != null) {
+    tableRelations.addAll(_gatherIncludeTableRelations(include));
   }
 
   if (tableRelations.isEmpty) {
@@ -189,6 +254,22 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
   }
 
   return joins;
+}
+
+LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
+  Include include,
+) {
+  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  var includeTables = _gatherIncludeTables(include, include.table);
+  var tablesWithTableRelations =
+      includeTables.where((table) => table.tableRelations != null);
+  for (var table in tablesWithTableRelations) {
+    for (var tableRelation in table.tableRelations!) {
+      tableRelations[tableRelation.tableNameWithQueryPrefix] = tableRelation;
+    }
+  }
+
+  return tableRelations;
 }
 
 String _joinStatementFromTableRelations(

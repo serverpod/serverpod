@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/database_query.dart';
+import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -158,11 +159,15 @@ Current type was $T''');
 
     var tableName = table.tableName;
     var query = SelectQueryBuilder(table: tableName)
+        .withSelectFields(
+            table.columns.map((column) => column.toString()).toList())
         .withWhere(where)
         .withOrderBy(orderByList)
         .withLimit(limit)
         .withOffset(offset)
+        .withInclude(include)
         .build();
+
     List<TableRow?> list = <TableRow>[];
     try {
       var context = transaction != null
@@ -176,7 +181,10 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        var rawTableRow = resolvePrefixedQueryRow(table, rawRow,
+            include: include, lookupWithColumnName: true);
+
+        list.add(_formatTableRow<T>(tableName, rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
