@@ -178,4 +178,105 @@ void main() async {
       expect(removedRows, 4);
     });
   });
+
+  group(
+      'Given entities with nested relations when fetching citizens with deep includes.',
+      () {
+    late List<Citizen> citizensWithDeepIncludes;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      citizensWithDeepIncludes =
+          await client.relation.citizenFindAllWithDeepIncludes();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+
+    test('then all citizens are returned.', () {
+      expect(citizensWithDeepIncludes.length, 6);
+    });
+
+    group('then first citizen fetched', () {
+      test('has Alex as name.', () {
+        expect(citizensWithDeepIncludes[0].name, 'Alex');
+      });
+
+      test('has Serverpod as company.', () {
+        expect(citizensWithDeepIncludes[0].company?.name, 'Serverpod');
+      });
+
+      test('has Stockholm as company town.', () {
+        expect(citizensWithDeepIncludes[0].company?.town?.name, 'Stockholm');
+      });
+
+      test('has Systemair as oldCompany.', () {
+        expect(citizensWithDeepIncludes[0].oldCompany?.name, 'Systemair');
+      });
+
+      test('has Skinnskatteberg as oldCompany town.', () {
+        expect(citizensWithDeepIncludes[0].oldCompany?.town?.name,
+            'Skinnskatteberg');
+      });
+    });
+
+    group('then second citizen fetched', () {
+      test('has Isak as name.', () {
+        expect(citizensWithDeepIncludes[1].name, 'Isak');
+      });
+
+      test('has Serverpod as company.', () {
+        expect(citizensWithDeepIncludes[1].company?.name, 'Serverpod');
+      });
+
+      test('has Stockholm as company town.', () {
+        expect(citizensWithDeepIncludes[1].company?.town?.name, 'Stockholm');
+      });
+
+      test('does NOT have oldCompany.', () {
+        expect(citizensWithDeepIncludes[1].oldCompany, isNull);
+      });
+    });
+  });
+
+  group(
+      'Given entities with nested relations when fetching all citizens without includes',
+      () {
+    late List<Citizen> citizensWithoutIncludes;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      citizensWithoutIncludes = await client.relation.citizenFindAll();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+    test('then predefined number of citizens are returned.', () {
+      expect(citizensWithoutIncludes.length, 6);
+    });
+
+    group('then first citizen fetched', () {
+      test('has Alex as name.', () {
+        expect(citizensWithoutIncludes[0].name, 'Alex');
+      });
+
+      test('does NOT have company.', () {
+        expect(citizensWithoutIncludes[0].company, isNull);
+      });
+
+      test('does NOT have oldCompany.', () {
+        expect(citizensWithoutIncludes[0].oldCompany, isNull);
+      });
+    });
+
+    group('then second citizen fetched', () {
+      test('has Isak as name.', () {
+        expect(citizensWithoutIncludes[1].name, 'Isak');
+      });
+
+      test('does NOT have company.', () {
+        expect(citizensWithoutIncludes[1].company, isNull);
+      });
+
+      test('does NOT have oldCompany.', () {
+        expect(citizensWithoutIncludes[1].oldCompany, isNull);
+      });
+    });
+  });
 }
