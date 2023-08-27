@@ -115,17 +115,17 @@ CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_m
 --
 
 CREATE TABLE "serverpod_log" (
-  "id" serial,
-  "sessionLogId" integer NOT NULL,
-  "messageId" integer,
+  "id" bigserial,
+  "sessionLogId" bigint NOT NULL,
+  "messageId" bigint,
   "reference" text,
   "serverId" text NOT NULL,
   "time" timestamp without time zone NOT NULL,
-  "logLevel" integer NOT NULL,
+  "logLevel" bigint NOT NULL,
   "message" text NOT NULL,
   "error" text,
   "stackTrace" text,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_log"
@@ -138,17 +138,17 @@ CREATE INDEX serverpod_log_sessionLogId_idx ON "serverpod_log" USING btree ("ses
 --
 
 CREATE TABLE "serverpod_message_log" (
-  "id" serial,
-  "sessionLogId" integer NOT NULL,
+  "id" bigserial,
+  "sessionLogId" bigint NOT NULL,
   "serverId" text NOT NULL,
-  "messageId" integer NOT NULL,
+  "messageId" bigint NOT NULL,
   "endpoint" text NOT NULL,
   "messageName" text NOT NULL,
   "duration" double precision NOT NULL,
   "error" text,
   "stackTrace" text,
   "slow" boolean NOT NULL,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_message_log"
@@ -174,17 +174,17 @@ CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON "serverpod_method" U
 --
 
 CREATE TABLE "serverpod_query_log" (
-  "id" serial,
+  "id" bigserial,
   "serverId" text NOT NULL,
-  "sessionLogId" integer NOT NULL,
-  "messageId" integer,
+  "sessionLogId" bigint NOT NULL,
+  "messageId" bigint,
   "query" text NOT NULL,
   "duration" double precision NOT NULL,
-  "numRows" integer,
+  "numRows" bigint,
   "error" text,
   "stackTrace" text,
   "slow" boolean NOT NULL,
-  "order" integer NOT NULL
+  "order" bigint NOT NULL
 );
 
 ALTER TABLE ONLY "serverpod_query_log"
@@ -251,27 +251,8 @@ CREATE INDEX serverpod_session_log_isopen_idx ON "serverpod_session_log" USING b
 -- Foreign relations for "serverpod_log" table
 --
 
-CREATE TABLE "serverpod_query_log" (
-  "id" bigserial,
-  "serverId" text NOT NULL,
-  "sessionLogId" bigint NOT NULL,
-  "messageId" bigint,
-  "query" text NOT NULL,
-  "duration" double precision NOT NULL,
-  "numRows" bigint,
-  "error" text,
-  "stackTrace" text,
-  "slow" boolean NOT NULL,
-  "order" bigint NOT NULL
-);
-
-ALTER TABLE ONLY "serverpod_query_log"
-  ADD CONSTRAINT serverpod_query_log_pkey PRIMARY KEY (id);
-
-CREATE INDEX serverpod_query_log_sessionLogId_idx ON "serverpod_query_log" USING btree ("sessionLogId");
-
-ALTER TABLE ONLY "serverpod_query_log"
-  ADD CONSTRAINT serverpod_query_log_fk_0
+ALTER TABLE ONLY "serverpod_log"
+  ADD CONSTRAINT serverpod_log_fk_0
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
         ON DELETE CASCADE;
@@ -279,23 +260,6 @@ ALTER TABLE ONLY "serverpod_query_log"
 --
 -- Foreign relations for "serverpod_message_log" table
 --
-
-CREATE TABLE "serverpod_message_log" (
-  "id" bigserial,
-  "sessionLogId" bigint NOT NULL,
-  "serverId" text NOT NULL,
-  "messageId" bigint NOT NULL,
-  "endpoint" text NOT NULL,
-  "messageName" text NOT NULL,
-  "duration" double precision NOT NULL,
-  "error" text,
-  "stackTrace" text,
-  "slow" boolean NOT NULL,
-  "order" bigint NOT NULL
-);
-
-ALTER TABLE ONLY "serverpod_message_log"
-  ADD CONSTRAINT serverpod_message_log_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY "serverpod_message_log"
   ADD CONSTRAINT serverpod_message_log_fk_0
@@ -307,32 +271,8 @@ ALTER TABLE ONLY "serverpod_message_log"
 -- Foreign relations for "serverpod_query_log" table
 --
 
-<<<<<<< HEAD
-CREATE TABLE "serverpod_log" (
-  "id" bigserial,
-  "sessionLogId" bigint NOT NULL,
-  "messageId" bigint,
-  "reference" text,
-  "serverId" text NOT NULL,
-  "time" timestamp without time zone NOT NULL,
-  "logLevel" bigint NOT NULL,
-  "message" text NOT NULL,
-  "error" text,
-  "stackTrace" text,
-  "order" bigint NOT NULL
-);
-
-ALTER TABLE ONLY "serverpod_log"
-  ADD CONSTRAINT serverpod_log_pkey PRIMARY KEY (id);
-
-CREATE INDEX serverpod_log_sessionLogId_idx ON "serverpod_log" USING btree ("sessionLogId");
-
-ALTER TABLE ONLY "serverpod_log"
-  ADD CONSTRAINT serverpod_log_fk_0
-=======
 ALTER TABLE ONLY "serverpod_query_log"
   ADD CONSTRAINT serverpod_query_log_fk_0
->>>>>>> main
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
         ON DELETE CASCADE;

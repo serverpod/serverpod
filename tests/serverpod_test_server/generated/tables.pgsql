@@ -137,7 +137,7 @@ ALTER TABLE ONLY "simple_data"
 --
 
 CREATE TABLE "simple_date_time" (
-  "id" serial,
+  "id" bigserial,
   "dateTime" timestamp without time zone NOT NULL
 );
 
