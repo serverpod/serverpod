@@ -254,7 +254,7 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
     log.info(
-      'dart dart bin/main.dart',
+      'dart bin/main.dart',
       type: TextLogType.command,
     );
   }

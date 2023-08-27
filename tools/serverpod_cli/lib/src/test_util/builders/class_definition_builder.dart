@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -97,6 +98,30 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withField(SerializableEntityFieldDefinition field) {
     _fields.add(field);
+    return this;
+  }
+
+  ClassDefinitionBuilder withObjectRelationField(
+      String fieldName, String className, String parentTable) {
+    _fields.addAll([
+      FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition(className, true)
+          .withShouldPersist(false)
+          .withRelation(ObjectRelationDefinition(
+            fieldName: '${fieldName}Id',
+          ))
+          .build(),
+      FieldDefinitionBuilder()
+          .withName('${fieldName}Id')
+          .withIdType()
+          .withShouldPersist(true)
+          .withRelation(ForeignRelationDefinitionBuilder()
+              .withParentTable(parentTable)
+              .withReferenceFieldName('id')
+              .build())
+          .build(),
+    ]);
     return this;
   }
 

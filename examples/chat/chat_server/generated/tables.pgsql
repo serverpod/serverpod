@@ -11,4 +11,3 @@ CREATE TABLE "channel" (
 ALTER TABLE ONLY "channel"
   ADD CONSTRAINT channel_pkey PRIMARY KEY (id);
 
-
