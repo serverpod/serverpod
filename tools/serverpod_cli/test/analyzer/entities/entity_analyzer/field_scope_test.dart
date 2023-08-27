@@ -433,6 +433,7 @@ void main() {
       fields:
         name: String, scope=serverOnly
         example: String, scope=all
+        town: String, scope=none
       ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
       [],
@@ -456,15 +457,22 @@ void main() {
 
     test('then the generated entity has the scope.', () {
       expect(
-        definition.fields.first.scope,
+        definition.fields[0].scope,
         EntityFieldScopeDefinition.serverOnly,
       );
     });
 
     test('then the generated entity has the scope.', () {
       expect(
-        definition.fields.last.scope,
+        definition.fields[1].scope,
         EntityFieldScopeDefinition.all,
+      );
+    });
+
+    test('then the generated entity has the scope.', () {
+      expect(
+        definition.fields[2].scope,
+        EntityFieldScopeDefinition.none,
       );
     });
   });
@@ -503,7 +511,7 @@ void main() {
 
     expect(
       collector.errors.first.message,
-      '"" is not a valid property. Valid properties are (all, serverOnly).',
+      '"" is not a valid property. Valid properties are (all, serverOnly, none).',
     );
   });
 
@@ -541,7 +549,7 @@ void main() {
 
     expect(
       collector.errors.first.message,
-      '"InvalidScope" is not a valid property. Valid properties are (all, serverOnly).',
+      '"InvalidScope" is not a valid property. Valid properties are (all, serverOnly, none).',
     );
   });
 
