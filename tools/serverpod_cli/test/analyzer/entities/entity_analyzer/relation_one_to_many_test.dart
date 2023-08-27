@@ -76,7 +76,7 @@ fields:
 
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
-        (relation as ListRelationDefinition).referenceFieldName,
+        (relation as ListRelationDefinition).foreignFieldName,
         'companyId',
         reason: 'Expected the reference field to be set to "companyId".',
       );
