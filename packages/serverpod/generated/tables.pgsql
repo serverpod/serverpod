@@ -15,7 +15,6 @@ ALTER TABLE ONLY "serverpod_auth_key"
 
 CREATE INDEX serverpod_auth_key_userId_idx ON "serverpod_auth_key" USING btree ("userId");
 
-
 --
 -- Class CloudStorageEntry as table serverpod_cloud_storage
 --
@@ -36,7 +35,6 @@ ALTER TABLE ONLY "serverpod_cloud_storage"
 CREATE UNIQUE INDEX serverpod_cloud_storage_path_idx ON "serverpod_cloud_storage" USING btree ("storageId", "path");
 CREATE INDEX serverpod_cloud_storage_expiration ON "serverpod_cloud_storage" USING btree ("expiration");
 
-
 --
 -- Class CloudStorageDirectUploadEntry as table serverpod_cloud_storage_direct_upload
 --
@@ -53,7 +51,6 @@ ALTER TABLE ONLY "serverpod_cloud_storage_direct_upload"
   ADD CONSTRAINT serverpod_cloud_storage_direct_upload_pkey PRIMARY KEY (id);
 
 CREATE UNIQUE INDEX serverpod_cloud_storage_direct_upload_storage_path ON "serverpod_cloud_storage_direct_upload" USING btree ("storageId", "path");
-
 
 --
 -- Class FutureCallEntry as table serverpod_future_call
@@ -75,7 +72,6 @@ CREATE INDEX serverpod_future_call_time_idx ON "serverpod_future_call" USING btr
 CREATE INDEX serverpod_future_call_serverId_idx ON "serverpod_future_call" USING btree ("serverId");
 CREATE INDEX serverpod_future_call_identifier_idx ON "serverpod_future_call" USING btree ("identifier");
 
-
 --
 -- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
 --
@@ -94,7 +90,6 @@ ALTER TABLE ONLY "serverpod_health_connection_info"
   ADD CONSTRAINT serverpod_health_connection_info_pkey PRIMARY KEY (id);
 
 CREATE UNIQUE INDEX serverpod_health_connection_info_timestamp_idx ON "serverpod_health_connection_info" USING btree ("timestamp", "serverId", "granularity");
-
 
 --
 -- Class ServerHealthMetric as table serverpod_health_metric
@@ -115,6 +110,49 @@ ALTER TABLE ONLY "serverpod_health_metric"
 
 CREATE UNIQUE INDEX serverpod_health_metric_timestamp_idx ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name", "granularity");
 
+--
+-- Class LogEntry as table serverpod_log
+--
+
+CREATE TABLE "serverpod_log" (
+  "id" serial,
+  "sessionLogId" integer NOT NULL,
+  "messageId" integer,
+  "reference" text,
+  "serverId" text NOT NULL,
+  "time" timestamp without time zone NOT NULL,
+  "logLevel" integer NOT NULL,
+  "message" text NOT NULL,
+  "error" text,
+  "stackTrace" text,
+  "order" integer NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_log"
+  ADD CONSTRAINT serverpod_log_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_log_sessionLogId_idx ON "serverpod_log" USING btree ("sessionLogId");
+
+--
+-- Class MessageLogEntry as table serverpod_message_log
+--
+
+CREATE TABLE "serverpod_message_log" (
+  "id" serial,
+  "sessionLogId" integer NOT NULL,
+  "serverId" text NOT NULL,
+  "messageId" integer NOT NULL,
+  "endpoint" text NOT NULL,
+  "messageName" text NOT NULL,
+  "duration" double precision NOT NULL,
+  "error" text,
+  "stackTrace" text,
+  "slow" boolean NOT NULL,
+  "order" integer NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_message_log"
+  ADD CONSTRAINT serverpod_message_log_pkey PRIMARY KEY (id);
 
 --
 -- Class MethodInfo as table serverpod_method
@@ -131,6 +169,28 @@ ALTER TABLE ONLY "serverpod_method"
 
 CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON "serverpod_method" USING btree ("endpoint", "method");
 
+--
+-- Class QueryLogEntry as table serverpod_query_log
+--
+
+CREATE TABLE "serverpod_query_log" (
+  "id" serial,
+  "serverId" text NOT NULL,
+  "sessionLogId" integer NOT NULL,
+  "messageId" integer,
+  "query" text NOT NULL,
+  "duration" double precision NOT NULL,
+  "numRows" integer,
+  "error" text,
+  "stackTrace" text,
+  "slow" boolean NOT NULL,
+  "order" integer NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_query_log"
+  ADD CONSTRAINT serverpod_query_log_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_query_log_sessionLogId_idx ON "serverpod_query_log" USING btree ("sessionLogId");
 
 --
 -- Class ReadWriteTestEntry as table serverpod_readwrite_test
@@ -143,7 +203,6 @@ CREATE TABLE "serverpod_readwrite_test" (
 
 ALTER TABLE ONLY "serverpod_readwrite_test"
   ADD CONSTRAINT serverpod_readwrite_test_pkey PRIMARY KEY (id);
-
 
 --
 -- Class RuntimeSettings as table serverpod_runtime_settings
@@ -159,7 +218,6 @@ CREATE TABLE "serverpod_runtime_settings" (
 
 ALTER TABLE ONLY "serverpod_runtime_settings"
   ADD CONSTRAINT serverpod_runtime_settings_pkey PRIMARY KEY (id);
-
 
 --
 -- Class SessionLogEntry as table serverpod_session_log
@@ -189,9 +247,8 @@ CREATE INDEX serverpod_session_log_serverid_idx ON "serverpod_session_log" USING
 CREATE INDEX serverpod_session_log_touched_idx ON "serverpod_session_log" USING btree ("touched");
 CREATE INDEX serverpod_session_log_isopen_idx ON "serverpod_session_log" USING btree ("isOpen");
 
-
 --
--- Class QueryLogEntry as table serverpod_query_log
+-- Foreign relations for "serverpod_log" table
 --
 
 CREATE TABLE "serverpod_query_log" (
@@ -220,7 +277,7 @@ ALTER TABLE ONLY "serverpod_query_log"
         ON DELETE CASCADE;
 
 --
--- Class MessageLogEntry as table serverpod_message_log
+-- Foreign relations for "serverpod_message_log" table
 --
 
 CREATE TABLE "serverpod_message_log" (
@@ -247,9 +304,10 @@ ALTER TABLE ONLY "serverpod_message_log"
         ON DELETE CASCADE;
 
 --
--- Class LogEntry as table serverpod_log
+-- Foreign relations for "serverpod_query_log" table
 --
 
+<<<<<<< HEAD
 CREATE TABLE "serverpod_log" (
   "id" bigserial,
   "sessionLogId" bigint NOT NULL,
@@ -271,6 +329,10 @@ CREATE INDEX serverpod_log_sessionLogId_idx ON "serverpod_log" USING btree ("ses
 
 ALTER TABLE ONLY "serverpod_log"
   ADD CONSTRAINT serverpod_log_fk_0
+=======
+ALTER TABLE ONLY "serverpod_query_log"
+  ADD CONSTRAINT serverpod_query_log_fk_0
+>>>>>>> main
     FOREIGN KEY("sessionLogId")
       REFERENCES serverpod_session_log(id)
         ON DELETE CASCADE;

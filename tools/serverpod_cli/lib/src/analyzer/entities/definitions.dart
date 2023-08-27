@@ -1,6 +1,7 @@
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
@@ -123,8 +124,8 @@ class SerializableEntityFieldDefinition {
   /// - [shouldSerializeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
-    if (serverCode) return true;
-    return scope == EntityFieldScopeDefinition.all;
+    return scope == EntityFieldScopeDefinition.all ||
+        (serverCode && scope == EntityFieldScopeDefinition.serverOnly);
   }
 
   /// Returns true, if this field should be added to the serialization.
@@ -154,6 +155,7 @@ class SerializableEntityFieldDefinition {
 enum EntityFieldScopeDefinition {
   all,
   serverOnly,
+  none,
 }
 
 /// The definition of an index for a file, that is also stored in the database.
@@ -223,22 +225,42 @@ class UnresolvedListRelationDefinition extends RelationDefinition {}
 /// to another Objects field name that holds the id of this object.
 class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
-  String referenceFieldName;
+  String foreignFieldName;
 
   ListRelationDefinition({
-    required this.referenceFieldName,
+    required this.foreignFieldName,
   });
 }
 
 /// Used for relations for fields that point to another field that holds the id
 /// of another object.
 class ObjectRelationDefinition extends RelationDefinition {
-  /// If this field is a complex datatype with a parent relation in the database,
-  /// then [scalarFieldName] contains the name of the field with the foreign key.
-  final String scalarFieldName;
+  /// References the field in the current object that points to the foreign table.
+  final String fieldName;
 
   ObjectRelationDefinition({
-    required this.scalarFieldName,
+    required this.fieldName,
+  });
+}
+
+class UnresolvedObjectRelationDefinition extends RelationDefinition {
+  /// References the field in the current object that points to the foreign table.
+  final String fieldName;
+
+  /// References the column in the unresolved [parentTable] that this field should be joined on.
+  final String foreignFieldName;
+
+  /// On delete behavior in the database.
+  final ForeignKeyAction onDelete;
+
+  /// On update behavior in the database.
+  final ForeignKeyAction onUpdate;
+
+  UnresolvedObjectRelationDefinition({
+    required this.fieldName,
+    required this.foreignFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
 
@@ -247,8 +269,16 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String referenceFieldName;
 
+  /// On delete behavior in the database.
+  final ForeignKeyAction onDelete;
+
+  /// On update behavior in the database.
+  final ForeignKeyAction onUpdate;
+
   UnresolvedForeignRelationDefinition({
     required this.referenceFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
 
@@ -261,10 +291,22 @@ class ForeignRelationDefinition extends RelationDefinition {
   String parentTable;
 
   /// References the column in the [parentTable] that this field should be joined on.
-  String referenceFieldName;
+  String foreignFieldName;
+
+  /// On delete behavior in the database.
+  final ForeignKeyAction onDelete;
+
+  /// On update behavior in the database.
+  final ForeignKeyAction onUpdate;
 
   ForeignRelationDefinition({
     required this.parentTable,
-    required this.referenceFieldName,
+    required this.foreignFieldName,
+    required this.onDelete,
+    required this.onUpdate,
   });
 }
+
+const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
+
+const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;

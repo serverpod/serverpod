@@ -23,74 +23,30 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
   }
 
   String _generate(List<SerializableEntityDefinition> entities) {
-    var out = '';
-
     var tableInfoList = entities.toList();
     tableInfoList.removeWhere(
       (element) => (element is! ClassDefinition) || element.tableName == null,
     );
     _sortClassInfos(tableInfoList.cast());
 
+    var tableCreation = '';
+    var foreignRelations = '';
     for (var tableInfo in tableInfoList) {
       if (tableInfo is ClassDefinition && tableInfo.tableName != null) {
-        out += _generatePgsql(tableInfo);
+        tableCreation += _generateTables(tableInfo);
+        foreignRelations += _generateForeignKeys(tableInfo);
       }
     }
 
-    return out;
+    return tableCreation + foreignRelations;
   }
 
   void _sortClassInfos(List<ClassDefinition> tableInfos) {
-    // First sort by name to make sure that we get consistant output
+    // Sort by name to make sure that we get consistent output
     tableInfos.sort((a, b) => a.tableName!.compareTo(b.tableName!));
-
-    // Force to run at least one time
-    var movedEntry = true;
-
-    // Move tables with dependencies down the list until all dependencies are
-    // resolved
-    while (movedEntry) {
-      movedEntry = false;
-      var visitedTableNames = <String>{};
-
-      // Iterate from the top of the list
-      classInfoLoop:
-      for (int i = 0; i < tableInfos.length; i++) {
-        var tableInfo = tableInfos[i];
-
-        for (var field in tableInfo.fields) {
-          // Check if a parent is not above the current table and not self-referencing
-          var relation = field.relation;
-          if (relation is ForeignRelationDefinition &&
-              relation.parentTable != tableInfo.tableName &&
-              !visitedTableNames.contains(relation.parentTable)) {
-            var tableToMove = tableInfo;
-            for (int j = i; j < tableInfos.length; j++) {
-              if (tableInfos[j].tableName! == relation.parentTable) {
-                // Move a table down the list, below its dependency
-                tableInfos.removeAt(i);
-                tableInfos.insert(j, tableToMove);
-                movedEntry = true;
-                break;
-              }
-            }
-
-            if (!movedEntry) {
-              // We failed to move a table because the dependency is missing
-              throw FormatException('The table "${tableInfo.tableName}" '
-                  '(class "${tableInfo.className}" is referencing a table '
-                  'that doesn\'t exist (${relation.parentTable}).)');
-            }
-
-            break classInfoLoop;
-          }
-        }
-        visitedTableNames.add(tableInfo.tableName!);
-      }
-    }
   }
 
-  String _generatePgsql(ClassDefinition classInfo) {
+  String _generateTables(ClassDefinition classInfo) {
     var out = '';
 
     // Header
@@ -134,19 +90,36 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
       out += '\n';
     }
 
+    return out;
+  }
+
+  String _generateForeignKeys(ClassDefinition classInfo) {
+    var out = '';
+
+    var relationFields = classInfo.fields.where((field) {
+      return field.relation != null &&
+          field.relation is ForeignRelationDefinition;
+    });
+
+    if (relationFields.isEmpty) return out;
+
+    // Header
+    out += '--\n';
+    out += '-- Foreign relations for "${classInfo.tableName}" table\n';
+    out += '--\n';
+    out += '\n';
+
     // Foreign keys
     var fkIdx = 0;
-    for (var field in classInfo.fields) {
-      var relation = field.relation;
-      if (relation is ForeignRelationDefinition) {
-        out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
-        out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
-        out += '    FOREIGN KEY("${field.name}")\n';
-        out += '      REFERENCES ${relation.parentTable}(id)\n';
-        out += '        ON DELETE CASCADE;\n';
+    for (var field in relationFields) {
+      var relation = field.relation as ForeignRelationDefinition;
+      out += 'ALTER TABLE ONLY "${classInfo.tableName}"\n';
+      out += '  ADD CONSTRAINT ${classInfo.tableName}_fk_$fkIdx\n';
+      out += '    FOREIGN KEY("${field.name}")\n';
+      out += '      REFERENCES ${relation.parentTable}(id)\n';
+      out += '        ON DELETE CASCADE;\n';
 
-        fkIdx += 1;
-      }
+      fkIdx += 1;
     }
 
     out += '\n';
