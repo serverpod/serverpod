@@ -190,17 +190,19 @@ List<Table> _gatherIncludeTables(Include? include, Table table) {
   }
 
   include.includes.forEach((relationField, relationInclude) {
+    if (relationInclude == null) {
+      return;
+    }
+
     // Get table from include
     var relationTable = table.getRelationTable(relationField);
     if (relationTable == null) {
       return;
     }
 
-    tables.add(relationTable);
-
     var tablesFromInclude =
         _gatherIncludeTables(relationInclude, relationTable);
-    tables.addAll(tablesFromInclude);
+    tables.addAll([relationTable, ...tablesFromInclude]);
   });
 
   return tables;
