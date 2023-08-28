@@ -34,7 +34,7 @@ class DatabaseConnection {
   Future<List<String>> getTableNames() async {
     List<String> tableNames = <String>[];
 
-    var query = SelectQueryBuilder(table: 'pg_catalog.pg_tables').build();
+    var query = 'SELECT * FROM pg_catalog.pg_tables';
     var result = await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
@@ -52,11 +52,8 @@ class DatabaseConnection {
 
   /// Returns a description for a table in the database.
   Future<Table?> getTableDescription(String tableName) async {
-    var query = SelectQueryBuilder(table: 'INFORMATION_SCHEMA.COLUMNS')
-        .withSelectFields(
-            ['column_name', 'data_type', 'character_maximum_length'])
-        .withWhere(Expression('table_name =\'$tableName\''))
-        .build();
+    var query =
+        'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
     var result = await postgresConnection.mappedResultsQuery(
       query,
       allowReuse: false,
@@ -159,8 +156,7 @@ Current type was $T''');
 
     var tableName = table.tableName;
     var query = SelectQueryBuilder(table: tableName)
-        .withSelectFields(
-            table.columns.map((column) => column.toString()).toList())
+        .withSelectFields(table.columns)
         .withWhere(where)
         .withOrderBy(orderByList)
         .withLimit(limit)
@@ -181,8 +177,11 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        var rawTableRow = resolvePrefixedQueryRow(table, rawRow,
-            include: include, lookupWithColumnName: true);
+        var rawTableRow = resolvePrefixedQueryRow(
+          table,
+          rawRow,
+          include: include,
+        );
 
         list.add(_formatTableRow<T>(tableName, rawTableRow));
       }
@@ -567,10 +566,8 @@ Current type was $T''');
       {required Session session}) async {
     // Check so that the file is saved, but not
     var startTime = DateTime.now();
-    var query = SelectQueryBuilder(table: 'serverpod_cloud_storage')
-        .withSelectFields(['verified'])
-        .withWhere(Expression('"storageId"=@storageId AND path=@path'))
-        .build();
+    var query =
+        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
     try {
       var result = await postgresConnection.query(
         query,

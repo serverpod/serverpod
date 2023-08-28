@@ -7,16 +7,14 @@ import 'package:serverpod/src/database/table_relation.dart';
 
 class SelectQueryBuilder {
   final String _table;
-  List<String> _fields;
+  List<Column>? _fields;
   List<Order>? _orderByList;
   int? _limit;
   int? _offset;
   Expression? _where;
   Include? _include;
 
-  SelectQueryBuilder({required table})
-      : _table = table,
-        _fields = ['*'];
+  SelectQueryBuilder({required table}) : _table = table;
 
   String build() {
     var join = _buildJoinQuery(
@@ -36,7 +34,11 @@ class SelectQueryBuilder {
     return query;
   }
 
-  SelectQueryBuilder withSelectFields(List<String> fields) {
+  SelectQueryBuilder withSelectFields(List<Column>? fields) {
+    if (fields == null || fields.isEmpty) {
+      return this;
+    }
+
     _fields = fields;
     return this;
   }
@@ -150,31 +152,35 @@ class DeleteQueryBuilder {
   }
 }
 
-String _buildSelectQuery(List<String> fields, Include? include) {
-  var selectQueryFields = fields;
+String _buildSelectQuery(List<Column>? fields, Include? include) {
+  List<Column> selectColumns = fields ?? [];
 
   if (include != null) {
-    selectQueryFields.addAll(gatherIncludeFields(include));
+    selectColumns.addAll(gatherIncludeColumns(include));
   }
 
-  return 'SELECT ${selectQueryFields.join(', ')}';
+  if (selectColumns.isEmpty) {
+    return 'SELECT *';
+  }
+
+  return _selectStatementFromColumns(selectColumns);
 }
 
-List<String> gatherIncludeFields(Include? include) {
+List<Column> gatherIncludeColumns(Include? include) {
   if (include == null) {
     return [];
   }
 
   var includeTables = _gatherIncludeTables(include, include.table);
 
-  LinkedHashSet<String> fields = LinkedHashSet();
+  LinkedHashMap<String, Column> fields = LinkedHashMap();
   for (var table in includeTables) {
     for (var column in table.columns) {
-      fields.add('$column AS "${column.queryAlias}"');
+      fields['$column'] = column;
     }
   }
 
-  return fields.toList();
+  return fields.values.toList();
 }
 
 List<Table> _gatherIncludeTables(Include? include, Table table) {
@@ -282,6 +288,14 @@ String _joinStatementFromTableRelations(
         '= ${tableRelation.column}');
   }
   return joinStatements.join(' ');
+}
+
+String _selectStatementFromColumns(List<Column> columns) {
+  List<String> selectStatements = [];
+  for (var column in columns) {
+    selectStatements.add('$column AS "${column.queryAlias}"');
+  }
+  return 'SELECT ${selectStatements.join(', ')}';
 }
 
 _UsingQuery _usingQueryFromTableRelations(

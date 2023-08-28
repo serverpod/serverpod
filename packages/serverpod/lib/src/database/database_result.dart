@@ -5,16 +5,14 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Table table,
   Map<String, Map<String, dynamic>> rawRow, {
   Include? include,
-  bool lookupWithColumnName = false,
 }) {
   // Resolve this object.
   var rawTableRow = rawRow[table.tableName];
   if (rawTableRow == null) return null;
 
-  var resolvedTableRow = _createColumnMapFromPrefixedColumns(
+  var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
     table.columns,
     rawTableRow,
-    lookupWithColumnName,
   );
 
   if (resolvedTableRow.isEmpty) {
@@ -38,16 +36,13 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   return resolvedTableRow;
 }
 
-Map<String, dynamic> _createColumnMapFromPrefixedColumns(
+Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
   List<Column> columns,
   Map<String, dynamic> rawTableRow,
-  lookupWithColumnName,
 ) {
   var columnMap = <String, dynamic>{};
   for (var column in columns) {
-    var columnData = lookupWithColumnName
-        ? rawTableRow[column.columnName]
-        : rawTableRow[column.queryAlias];
+    var columnData = rawTableRow[column.queryAlias];
     if (columnData != null) {
       columnMap[column.columnName] = columnData;
     }

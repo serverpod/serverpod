@@ -13,11 +13,16 @@ void main() {
 
     test('when query with specific fields is built then output selects fields.',
         () {
-      var fields = ['id', 'name', 'age'];
+      var fields = [
+        ColumnString('id', queryPrefix: 'citizen'),
+        ColumnString('name', queryPrefix: 'citizen'),
+        ColumnString('age', queryPrefix: 'citizen'),
+      ];
       var query =
           SelectQueryBuilder(table: 'citizen').withSelectFields(fields).build();
 
-      expect(query, 'SELECT id, name, age FROM citizen');
+      expect(query,
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM citizen');
     });
 
     test(
@@ -144,7 +149,11 @@ void main() {
       var queryPrefix = 'citizen_company_';
       var queryPrefixForColumn = 'citizen_company_company';
       var query = SelectQueryBuilder(table: table)
-          .withSelectFields(['id', 'name', 'age'])
+          .withSelectFields([
+            ColumnString('id', queryPrefix: 'citizen'),
+            ColumnString('name', queryPrefix: 'citizen'),
+            ColumnString('age', queryPrefix: 'citizen'),
+          ])
           .withWhere(ColumnString('name',
               queryPrefix: queryPrefixForColumn,
               tableRelations: [
@@ -162,7 +171,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT id, name, age FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY "id" DESC LIMIT 10 OFFSET 5');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY "id" DESC LIMIT 10 OFFSET 5');
     });
   });
 
