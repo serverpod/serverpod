@@ -315,7 +315,7 @@ abstract class Column<T> extends Expression {
   @override
   String toString() {
     if (queryPrefix.isEmpty) {
-      return '"$_columnName"';
+      return '$_expression';
     }
 
     return '$queryPrefix.$_expression';

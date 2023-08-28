@@ -1,12 +1,12 @@
-import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
-
-@internal
 
 /// Prepares a query result for serverpod serialization.
 Map<String, dynamic>? resolvePrefixedQueryRow(
-    Table table, Map<String, Map<String, dynamic>> rawRow,
-    {Include? include, bool lookupWithColumnName = false}) {
+  Table table,
+  Map<String, Map<String, dynamic>> rawRow, {
+  Include? include,
+  bool lookupWithColumnName = false,
+}) {
   // Resolve this object.
   var rawTableRow = rawRow[table.tableName];
   if (rawTableRow == null) return null;

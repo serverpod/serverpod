@@ -5,13 +5,6 @@ import 'dart:collection';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
-class _UsingQuery {
-  final String using;
-  final String where;
-
-  _UsingQuery({required this.using, required this.where});
-}
-
 class SelectQueryBuilder {
   final String _table;
   List<String> _fields;
@@ -120,6 +113,13 @@ class CountQueryBuilder {
     if (_limit != null) query += ' LIMIT $_limit';
     return query;
   }
+}
+
+class _UsingQuery {
+  final String using;
+  final String where;
+
+  _UsingQuery({required this.using, required this.where});
 }
 
 class DeleteQueryBuilder {
@@ -244,10 +244,10 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
     Expression expression) {
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
-  var columnsWithObjectRelations = expression.nodes
+  var columnsWithTableRelations = expression.nodes
       .whereType<Column>()
       .where((column) => column.tableRelations != null);
-  for (var column in columnsWithObjectRelations) {
+  for (var column in columnsWithTableRelations) {
     for (var tableRelation in column.tableRelations!) {
       joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
     }
