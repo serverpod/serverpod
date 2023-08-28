@@ -279,4 +279,60 @@ void main() async {
       });
     });
   });
+
+  group(
+      'Given entities with nested relations when fetching all citizens with shallow includes',
+      () {
+    late List<Citizen> citizensWithShallowIncludes;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      citizensWithShallowIncludes =
+          await client.relation.citizenFindAllWithShallowIncludes();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+    test('then predefined number of citizens are returned.', () {
+      expect(citizensWithShallowIncludes.length, 6);
+    });
+
+    group('then first citizen fetched', () {
+      test('has Alex as name.', () {
+        expect(citizensWithShallowIncludes[0].name, 'Alex');
+      });
+
+      test('has Serverpod as company.', () {
+        expect(citizensWithShallowIncludes[0].company?.name, 'Serverpod');
+      });
+
+      test('does NOT have company town.', () {
+        expect(citizensWithShallowIncludes[0].company?.town, isNull);
+      });
+
+      test('has Systemair as oldCompany.', () {
+        expect(citizensWithShallowIncludes[0].oldCompany?.name, 'Systemair');
+      });
+
+      test('does NOT have oldCompany town.', () {
+        expect(citizensWithShallowIncludes[0].oldCompany?.town, isNull);
+      });
+    });
+
+    group('then second citizen fetched', () {
+      test('has Isak as name.', () {
+        expect(citizensWithShallowIncludes[1].name, 'Isak');
+      });
+
+      test('has Serverpod as company.', () {
+        expect(citizensWithShallowIncludes[1].company?.name, 'Serverpod');
+      });
+
+      test('does NOT have company town.', () {
+        expect(citizensWithShallowIncludes[1].company?.town, isNull);
+      });
+
+      test('does NOT have oldCompany.', () {
+        expect(citizensWithShallowIncludes[1].oldCompany, isNull);
+      });
+    });
+  });
 }

@@ -78,6 +78,20 @@ class RelationEndpoint extends Endpoint {
     );
   }
 
+  /// Includes company and oldCompany
+  Future<List<Citizen>> citizenFindAllWithShallowIncludes(
+    Session session,
+  ) async {
+    return await Citizen.find(
+      session,
+      orderBy: Citizen.t.id,
+      include: CitizenInclude(
+        company: CompanyInclude(),
+        oldCompany: CompanyInclude(),
+      ),
+    );
+  }
+
   Future<int?> citizenInsert(Session session, Citizen citizen) async {
     await Citizen.insert(session, citizen);
     return citizen.id;
