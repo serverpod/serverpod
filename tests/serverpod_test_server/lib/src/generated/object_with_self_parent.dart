@@ -81,7 +81,6 @@ class ObjectWithSelfParent extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithSelfParentInclude? include,
   }) async {
     return session.db.find<ObjectWithSelfParent>(
       where: where != null ? where(ObjectWithSelfParent.t) : null,
@@ -92,7 +91,6 @@ class ObjectWithSelfParent extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -104,7 +102,6 @@ class ObjectWithSelfParent extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithSelfParentInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithSelfParent>(
       where: where != null ? where(ObjectWithSelfParent.t) : null,
@@ -113,19 +110,14 @@ class ObjectWithSelfParent extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<ObjectWithSelfParent?> findById(
     _i1.Session session,
-    int id, {
-    ObjectWithSelfParentInclude? include,
-  }) async {
-    return session.db.findById<ObjectWithSelfParent>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<ObjectWithSelfParent>(id);
   }
 
   static Future<int> delete(

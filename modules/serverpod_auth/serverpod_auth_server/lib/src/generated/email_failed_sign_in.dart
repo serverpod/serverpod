@@ -109,7 +109,6 @@ class EmailFailedSignIn extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailFailedSignInInclude? include,
   }) async {
     return session.db.find<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -120,7 +119,6 @@ class EmailFailedSignIn extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -132,7 +130,6 @@ class EmailFailedSignIn extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailFailedSignInInclude? include,
   }) async {
     return session.db.findSingleRow<EmailFailedSignIn>(
       where: where != null ? where(EmailFailedSignIn.t) : null,
@@ -141,19 +138,14 @@ class EmailFailedSignIn extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<EmailFailedSignIn?> findById(
     _i1.Session session,
-    int id, {
-    EmailFailedSignInInclude? include,
-  }) async {
-    return session.db.findById<EmailFailedSignIn>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<EmailFailedSignIn>(id);
   }
 
   static Future<int> delete(

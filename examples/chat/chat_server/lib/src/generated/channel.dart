@@ -95,7 +95,6 @@ class Channel extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ChannelInclude? include,
   }) async {
     return session.db.find<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -106,7 +105,6 @@ class Channel extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -118,7 +116,6 @@ class Channel extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ChannelInclude? include,
   }) async {
     return session.db.findSingleRow<Channel>(
       where: where != null ? where(Channel.t) : null,
@@ -127,19 +124,14 @@ class Channel extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<Channel?> findById(
     _i1.Session session,
-    int id, {
-    ChannelInclude? include,
-  }) async {
-    return session.db.findById<Channel>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<Channel>(id);
   }
 
   static Future<int> delete(

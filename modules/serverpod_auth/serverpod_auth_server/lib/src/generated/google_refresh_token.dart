@@ -96,7 +96,6 @@ class GoogleRefreshToken extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    GoogleRefreshTokenInclude? include,
   }) async {
     return session.db.find<GoogleRefreshToken>(
       where: where != null ? where(GoogleRefreshToken.t) : null,
@@ -107,7 +106,6 @@ class GoogleRefreshToken extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -119,7 +117,6 @@ class GoogleRefreshToken extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    GoogleRefreshTokenInclude? include,
   }) async {
     return session.db.findSingleRow<GoogleRefreshToken>(
       where: where != null ? where(GoogleRefreshToken.t) : null,
@@ -128,19 +125,14 @@ class GoogleRefreshToken extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<GoogleRefreshToken?> findById(
     _i1.Session session,
-    int id, {
-    GoogleRefreshTokenInclude? include,
-  }) async {
-    return session.db.findById<GoogleRefreshToken>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<GoogleRefreshToken>(id);
   }
 
   static Future<int> delete(

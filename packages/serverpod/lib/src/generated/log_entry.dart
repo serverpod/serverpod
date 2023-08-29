@@ -192,7 +192,6 @@ class LogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    LogEntryInclude? include,
   }) async {
     return session.db.find<LogEntry>(
       where: where != null ? where(LogEntry.t) : null,
@@ -203,7 +202,6 @@ class LogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -215,7 +213,6 @@ class LogEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    LogEntryInclude? include,
   }) async {
     return session.db.findSingleRow<LogEntry>(
       where: where != null ? where(LogEntry.t) : null,
@@ -224,19 +221,14 @@ class LogEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<LogEntry?> findById(
     _i1.Session session,
-    int id, {
-    LogEntryInclude? include,
-  }) async {
-    return session.db.findById<LogEntry>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<LogEntry>(id);
   }
 
   static Future<int> delete(

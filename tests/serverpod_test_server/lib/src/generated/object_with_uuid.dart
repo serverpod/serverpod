@@ -93,7 +93,6 @@ class ObjectWithUuid extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithUuidInclude? include,
   }) async {
     return session.db.find<ObjectWithUuid>(
       where: where != null ? where(ObjectWithUuid.t) : null,
@@ -104,7 +103,6 @@ class ObjectWithUuid extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -116,7 +114,6 @@ class ObjectWithUuid extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithUuidInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithUuid>(
       where: where != null ? where(ObjectWithUuid.t) : null,
@@ -125,19 +122,14 @@ class ObjectWithUuid extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<ObjectWithUuid?> findById(
     _i1.Session session,
-    int id, {
-    ObjectWithUuidInclude? include,
-  }) async {
-    return session.db.findById<ObjectWithUuid>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<ObjectWithUuid>(id);
   }
 
   static Future<int> delete(

@@ -120,7 +120,6 @@ class EmailCreateAccountRequest extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailCreateAccountRequestInclude? include,
   }) async {
     return session.db.find<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -131,7 +130,6 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -143,7 +141,6 @@ class EmailCreateAccountRequest extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailCreateAccountRequestInclude? include,
   }) async {
     return session.db.findSingleRow<EmailCreateAccountRequest>(
       where: where != null ? where(EmailCreateAccountRequest.t) : null,
@@ -152,19 +149,14 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<EmailCreateAccountRequest?> findById(
     _i1.Session session,
-    int id, {
-    EmailCreateAccountRequestInclude? include,
-  }) async {
-    return session.db.findById<EmailCreateAccountRequest>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<EmailCreateAccountRequest>(id);
   }
 
   static Future<int> delete(

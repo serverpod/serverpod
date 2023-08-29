@@ -146,7 +146,6 @@ class ServerHealthMetric extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ServerHealthMetricInclude? include,
   }) async {
     return session.db.find<ServerHealthMetric>(
       where: where != null ? where(ServerHealthMetric.t) : null,
@@ -157,7 +156,6 @@ class ServerHealthMetric extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -169,7 +167,6 @@ class ServerHealthMetric extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ServerHealthMetricInclude? include,
   }) async {
     return session.db.findSingleRow<ServerHealthMetric>(
       where: where != null ? where(ServerHealthMetric.t) : null,
@@ -178,19 +175,14 @@ class ServerHealthMetric extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<ServerHealthMetric?> findById(
     _i1.Session session,
-    int id, {
-    ServerHealthMetricInclude? include,
-  }) async {
-    return session.db.findById<ServerHealthMetric>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<ServerHealthMetric>(id);
   }
 
   static Future<int> delete(

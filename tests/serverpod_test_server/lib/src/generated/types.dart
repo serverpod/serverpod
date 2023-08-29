@@ -159,7 +159,6 @@ class Types extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    TypesInclude? include,
   }) async {
     return session.db.find<Types>(
       where: where != null ? where(Types.t) : null,
@@ -170,7 +169,6 @@ class Types extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -182,7 +180,6 @@ class Types extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    TypesInclude? include,
   }) async {
     return session.db.findSingleRow<Types>(
       where: where != null ? where(Types.t) : null,
@@ -191,19 +188,14 @@ class Types extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<Types?> findById(
     _i1.Session session,
-    int id, {
-    TypesInclude? include,
-  }) async {
-    return session.db.findById<Types>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<Types>(id);
   }
 
   static Future<int> delete(

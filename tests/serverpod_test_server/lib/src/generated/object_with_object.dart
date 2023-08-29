@@ -140,7 +140,6 @@ class ObjectWithObject extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithObjectInclude? include,
   }) async {
     return session.db.find<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -151,7 +150,6 @@ class ObjectWithObject extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -163,7 +161,6 @@ class ObjectWithObject extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ObjectWithObjectInclude? include,
   }) async {
     return session.db.findSingleRow<ObjectWithObject>(
       where: where != null ? where(ObjectWithObject.t) : null,
@@ -172,19 +169,14 @@ class ObjectWithObject extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<ObjectWithObject?> findById(
     _i1.Session session,
-    int id, {
-    ObjectWithObjectInclude? include,
-  }) async {
-    return session.db.findById<ObjectWithObject>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<ObjectWithObject>(id);
   }
 
   static Future<int> delete(

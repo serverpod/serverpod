@@ -131,7 +131,6 @@ class FutureCallEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    FutureCallEntryInclude? include,
   }) async {
     return session.db.find<FutureCallEntry>(
       where: where != null ? where(FutureCallEntry.t) : null,
@@ -142,7 +141,6 @@ class FutureCallEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -154,7 +152,6 @@ class FutureCallEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    FutureCallEntryInclude? include,
   }) async {
     return session.db.findSingleRow<FutureCallEntry>(
       where: where != null ? where(FutureCallEntry.t) : null,
@@ -163,19 +160,14 @@ class FutureCallEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<FutureCallEntry?> findById(
     _i1.Session session,
-    int id, {
-    FutureCallEntryInclude? include,
-  }) async {
-    return session.db.findById<FutureCallEntry>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<FutureCallEntry>(id);
   }
 
   static Future<int> delete(

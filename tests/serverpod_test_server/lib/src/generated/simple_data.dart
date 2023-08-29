@@ -85,7 +85,6 @@ class SimpleData extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    SimpleDataInclude? include,
   }) async {
     return session.db.find<SimpleData>(
       where: where != null ? where(SimpleData.t) : null,
@@ -96,7 +95,6 @@ class SimpleData extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -108,7 +106,6 @@ class SimpleData extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    SimpleDataInclude? include,
   }) async {
     return session.db.findSingleRow<SimpleData>(
       where: where != null ? where(SimpleData.t) : null,
@@ -117,19 +114,14 @@ class SimpleData extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<SimpleData?> findById(
     _i1.Session session,
-    int id, {
-    SimpleDataInclude? include,
-  }) async {
-    return session.db.findById<SimpleData>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<SimpleData>(id);
   }
 
   static Future<int> delete(

@@ -127,7 +127,6 @@ class AuthKey extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    AuthKeyInclude? include,
   }) async {
     return session.db.find<AuthKey>(
       where: where != null ? where(AuthKey.t) : null,
@@ -138,7 +137,6 @@ class AuthKey extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -150,7 +148,6 @@ class AuthKey extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    AuthKeyInclude? include,
   }) async {
     return session.db.findSingleRow<AuthKey>(
       where: where != null ? where(AuthKey.t) : null,
@@ -159,19 +156,14 @@ class AuthKey extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<AuthKey?> findById(
     _i1.Session session,
-    int id, {
-    AuthKeyInclude? include,
-  }) async {
-    return session.db.findById<AuthKey>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<AuthKey>(id);
   }
 
   static Future<int> delete(

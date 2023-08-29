@@ -85,7 +85,6 @@ class ReadWriteTestEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ReadWriteTestEntryInclude? include,
   }) async {
     return session.db.find<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -96,7 +95,6 @@ class ReadWriteTestEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -108,7 +106,6 @@ class ReadWriteTestEntry extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    ReadWriteTestEntryInclude? include,
   }) async {
     return session.db.findSingleRow<ReadWriteTestEntry>(
       where: where != null ? where(ReadWriteTestEntry.t) : null,
@@ -117,19 +114,14 @@ class ReadWriteTestEntry extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<ReadWriteTestEntry?> findById(
     _i1.Session session,
-    int id, {
-    ReadWriteTestEntryInclude? include,
-  }) async {
-    return session.db.findById<ReadWriteTestEntry>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<ReadWriteTestEntry>(id);
   }
 
   static Future<int> delete(

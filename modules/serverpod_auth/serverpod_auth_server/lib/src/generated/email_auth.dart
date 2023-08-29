@@ -107,7 +107,6 @@ class EmailAuth extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailAuthInclude? include,
   }) async {
     return session.db.find<EmailAuth>(
       where: where != null ? where(EmailAuth.t) : null,
@@ -118,7 +117,6 @@ class EmailAuth extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
@@ -130,7 +128,6 @@ class EmailAuth extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    EmailAuthInclude? include,
   }) async {
     return session.db.findSingleRow<EmailAuth>(
       where: where != null ? where(EmailAuth.t) : null,
@@ -139,19 +136,14 @@ class EmailAuth extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
-      include: include,
     );
   }
 
   static Future<EmailAuth?> findById(
     _i1.Session session,
-    int id, {
-    EmailAuthInclude? include,
-  }) async {
-    return session.db.findById<EmailAuth>(
-      id,
-      include: include,
-    );
+    int id,
+  ) async {
+    return session.db.findById<EmailAuth>(id);
   }
 
   static Future<int> delete(
