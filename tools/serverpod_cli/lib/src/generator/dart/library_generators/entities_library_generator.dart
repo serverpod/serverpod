@@ -33,6 +33,8 @@ class SerializableEntityLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
+    var objectRelationFields =
+        fields.where((field) => field.relation is ObjectRelationDefinition);
 
     var library = Library(
       (library) {
@@ -301,12 +303,13 @@ class SerializableEntityLibraryGenerator {
                       ..url = 'package:serverpod/serverpod.dart')
                     ..name = 'transaction'
                     ..named = true),
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = '${className}Include')
-                    ..name = 'include'
-                    ..named = true),
+                  if (objectRelationFields.isNotEmpty)
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = '${className}Include')
+                      ..name = 'include'
+                      ..named = true),
                 ])
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
@@ -326,7 +329,8 @@ class SerializableEntityLibraryGenerator {
                       'orderDescending': refer('orderDescending'),
                       'useCache': refer('useCache'),
                       'transaction': refer('transaction'),
-                      'include': refer('include'),
+                      if (objectRelationFields.isNotEmpty)
+                        'include': refer('include'),
                     }, [
                       refer(className)
                     ])
@@ -389,12 +393,13 @@ class SerializableEntityLibraryGenerator {
                       ..url = 'package:serverpod/serverpod.dart')
                     ..name = 'transaction'
                     ..named = true),
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = '${className}Include')
-                    ..name = 'include'
-                    ..named = true),
+                  if (objectRelationFields.isNotEmpty)
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = '${className}Include')
+                      ..name = 'include'
+                      ..named = true),
                 ])
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
@@ -412,7 +417,8 @@ class SerializableEntityLibraryGenerator {
                       'orderDescending': refer('orderDescending'),
                       'useCache': refer('useCache'),
                       'transaction': refer('transaction'),
-                      'include': refer('include'),
+                      if (objectRelationFields.isNotEmpty)
+                        'include': refer('include'),
                     }, [
                       refer(className)
                     ])
@@ -441,20 +447,27 @@ class SerializableEntityLibraryGenerator {
                     ..type = refer('int')
                     ..name = 'id'),
                 ])
-                ..optionalParameters.add(
-                  Parameter((p) => p
-                    ..type = TypeReference((b) => b
-                      ..isNullable = true
-                      ..symbol = '${className}Include')
-                    ..name = 'include'
-                    ..named = true),
-                )
+                ..optionalParameters.addAll([
+                  if (objectRelationFields.isNotEmpty)
+                    Parameter((p) => p
+                      ..type = TypeReference((b) => b
+                        ..isNullable = true
+                        ..symbol = '${className}Include')
+                      ..name = 'include'
+                      ..named = true),
+                ])
                 ..modifier = MethodModifier.async
                 ..body = refer('session')
                     .property('db')
                     .property('findById')
-                    .call([refer('id')], {'include': refer('include')},
-                        [refer(className)])
+                    .call(
+                      [refer('id')],
+                      {
+                        if (objectRelationFields.isNotEmpty)
+                          'include': refer('include'),
+                      },
+                      [refer(className)],
+                    )
                     .returned
                     .statement));
 
