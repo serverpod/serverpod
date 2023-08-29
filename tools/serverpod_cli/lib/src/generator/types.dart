@@ -43,6 +43,8 @@ class TypeDefinition {
 
   bool get isList => className == 'List';
 
+  bool get isId => className == 'int';
+
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
   factory TypeDefinition.mixedUrlAndClassName({

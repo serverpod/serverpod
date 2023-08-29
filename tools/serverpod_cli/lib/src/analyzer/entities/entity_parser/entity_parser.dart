@@ -1,4 +1,3 @@
-import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
@@ -170,30 +169,13 @@ class EntityParser {
     var scope = _parseClassFieldScope(node);
     var shouldPersist = _parseShouldPersist(node);
 
-    var foreignRelationFieldName = 'id';
-    String? relationName = _parseRelationName(node);
-    String relationFieldName = _parseFieldRelationName(node, fieldName);
-
     RelationDefinition? relation = _parseRelation(
       fieldName,
-      foreignRelationFieldName,
       typeResult,
       node,
     );
 
     return [
-      if (_shouldCreateRelationField(relation))
-        SerializableEntityFieldDefinition(
-          name: relationFieldName,
-          relation: _createUnresolvedForeignRelationDefinition(
-            node,
-            relationName,
-            foreignRelationFieldName,
-          ),
-          shouldPersist: true,
-          scope: scope,
-          type: _createRelationFieldType(node),
-        ),
       SerializableEntityFieldDefinition(
         name: fieldName,
         relation: relation,
@@ -205,23 +187,6 @@ class EntityParser {
     ];
   }
 
-  static UnresolvedForeignRelationDefinition
-      _createUnresolvedForeignRelationDefinition(
-    YamlMap node,
-    String? relationName,
-    String referenceFieldName,
-  ) {
-    var onDelete = _parseOnDelete(node);
-    var onUpdate = _parseOnUpdate(node);
-
-    return UnresolvedForeignRelationDefinition(
-      name: relationName,
-      referenceFieldName: referenceFieldName,
-      onUpdate: onUpdate,
-      onDelete: onDelete,
-    );
-  }
-
   static bool _shouldNeverPersist(RelationDefinition? relation) {
     if (relation is ObjectRelationDefinition) return true;
     if (relation is UnresolvedListRelationDefinition) return true;
@@ -229,58 +194,44 @@ class EntityParser {
     return false;
   }
 
-  static bool _shouldCreateRelationField(
-    RelationDefinition? relation,
-  ) {
-    return relation is ObjectRelationDefinition;
-  }
-
   static RelationDefinition? _parseRelation(
     String fieldName,
-    String referenceFieldName,
     TypeParseResult typeResult,
     YamlMap node,
   ) {
     if (!_isRelation(node)) return null;
 
-    String? relationName = _parseRelationName(node);
-
-    if (typeResult.type.isList) {
-      return UnresolvedListRelationDefinition(name: relationName);
-    }
+    var relationName = _parseRelationName(node);
 
     var parentTable = _parseParentTable(node);
+    var relationFieldName = _parseFieldRelationName(node, fieldName);
 
     var onDelete = _parseOnDelete(node);
     var onUpdate = _parseOnUpdate(node);
 
-    if (parentTable != null) {
+    var optionalRelation = _isOptionalRelation(node);
+
+    if (typeResult.type.isList) {
+      return UnresolvedListRelationDefinition(name: relationName);
+    } else if (typeResult.type.isId && parentTable != null) {
       return ForeignRelationDefinition(
         name: relationName,
         parentTable: parentTable,
-        foreignFieldName: referenceFieldName,
+        foreignFieldName: defaultPrimaryKeyName,
         onUpdate: onUpdate,
         onDelete: onDelete,
       );
-    }
-
-    var relationFieldName = _parseFieldRelationName(node, fieldName);
-
-    if (_containsRelationKey(node, Keyword.field)) {
+    } else if (!typeResult.type.isId) {
       return UnresolvedObjectRelationDefinition(
         name: relationName,
         fieldName: relationFieldName,
-        foreignFieldName: referenceFieldName,
         onUpdate: onUpdate,
         onDelete: onDelete,
+        optionalRelation: optionalRelation,
       );
+    } else {
+      return null;
     }
-
-    if (!_isIdType(node)) {
-      return ObjectRelationDefinition(fieldName: relationFieldName);
-    }
-
-    return null;
   }
 
   static String? _parseRelationName(YamlMap node) {
@@ -291,33 +242,13 @@ class EntityParser {
     return relationNameNode?.value;
   }
 
-  static bool _containsRelationKey(YamlMap value, String key) {
-    var relationNode = value.nodes[Keyword.relation]?.value;
-    if (relationNode is! YamlMap) return false;
-    return relationNode.containsKey(key);
-  }
-
-  static String _parseFieldRelationName(YamlMap value, String fieldName) {
+  static String? _parseFieldRelationName(YamlMap value, String fieldName) {
     var relationFieldNode = _parseRelationNode(value, Keyword.field);
     var relationField = relationFieldNode?.value;
 
-    if (relationField is String) return relationField;
+    if (relationField is! String) return null;
 
-    return '${fieldName}Id';
-  }
-
-  static TypeDefinition _createRelationFieldType(YamlMap value) {
-    if (_isOptionalRelation(value)) {
-      return TypeDefinition.int.asNullable;
-    } else {
-      return TypeDefinition.int;
-    }
-  }
-
-  static bool _isIdType(YamlMap value) {
-    var type = value.nodes[Keyword.type]?.value;
-    if (type is! String) return false;
-    return AnalyzeChecker.isIdType(type);
+    return relationField;
   }
 
   static ForeignKeyAction _parseOnUpdate(YamlMap node) {

@@ -39,7 +39,7 @@ class ClassDefinition extends SerializableEntityDefinition {
   final String? tableName;
 
   /// The fields of this class / exception.
-  final List<SerializableEntityFieldDefinition> fields;
+  List<SerializableEntityFieldDefinition> fields;
 
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
@@ -242,20 +242,29 @@ class ListRelationDefinition extends RelationDefinition {
 /// Used for relations for fields that point to another field that holds the id
 /// of another object.
 class ObjectRelationDefinition extends RelationDefinition {
-  /// References the field in the current object that points to the foreign table.
-  final String fieldName;
+  /// If this column should have a foreign key,
+  /// then [parentTable] contains the referenced table.
+  /// For now, the foreign key only references the id column of the
+  /// [parentTable].
+  String parentTable;
 
-  ObjectRelationDefinition({
-    required this.fieldName,
-  }): super(null); // TODO ???
-}
-
-class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// References the field in the current object that points to the foreign table.
   final String fieldName;
 
   /// References the column in the unresolved [parentTable] that this field should be joined on.
-  final String foreignFieldName;
+  String foreignFieldName;
+
+  ObjectRelationDefinition({
+    String? name,
+    required this.parentTable,
+    required this.fieldName,
+    required this.foreignFieldName,
+  }) : super(name);
+}
+
+class UnresolvedObjectRelationDefinition extends RelationDefinition {
+  /// References the field in the current object that points to the foreign table.
+  final String? fieldName;
 
   /// On delete behavior in the database.
   final ForeignKeyAction onDelete;
@@ -263,19 +272,22 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
+  /// Only used for implicit relations, toggles if the relation id is nullable.
+  bool optionalRelation;
+
   UnresolvedObjectRelationDefinition({
     String? name,
     required this.fieldName,
-    required this.foreignFieldName,
     required this.onDelete,
     required this.onUpdate,
+    this.optionalRelation = false,
   }) : super(name);
 }
 
 /// Internal representation of an unresolved [ForeignRelationDefinition].
 class UnresolvedForeignRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
-  String referenceFieldName;
+  String foreignFieldName;
 
   /// On delete behavior in the database.
   final ForeignKeyAction onDelete;
@@ -285,7 +297,7 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
 
   UnresolvedForeignRelationDefinition({
     String? name,
-    required this.referenceFieldName,
+    required this.foreignFieldName,
     required this.onDelete,
     required this.onUpdate,
   }) : super(name);
@@ -320,3 +332,5 @@ class ForeignRelationDefinition extends RelationDefinition {
 const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
+
+const String defaultPrimaryKeyName = 'id';

@@ -12,11 +12,11 @@ void main() {
 
     var protocol1 = ProtocolSource(
       '''
-class: Employee
-table: employee
+class: User
+table: user
 fields:
-  companyId: int
-  company: Company?, relation(name=company_ceo, field=companyId)
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
       [],
@@ -24,10 +24,10 @@ fields:
 
     var protocol2 = ProtocolSource(
       '''
-class: Company
-table: company
+class: Address
+table: address
 fields:
-  ceo: Employee?, relation(name=company_ceo)
+  user: User?, relation(name=user_address)
 ''',
       Uri(path: 'lib/src/protocol/example.yaml'),
       [],
@@ -60,8 +60,8 @@ fields:
       entities,
     );
 
-    var employeeDefinition = definition1 as ClassDefinition;
-    var companyDefinition = definition2 as ClassDefinition;
+    var userDefinition = definition1 as ClassDefinition;
+    var addressDefinition = definition2 as ClassDefinition;
 
     var errors = collector.errors;
 
@@ -73,31 +73,56 @@ fields:
         'then no id field was created for the side without the field pointer defined.',
         () {
       expect(
-        companyDefinition.findField('ceoId'),
+        addressDefinition.findField('userId'),
         isNull,
-        reason: 'Expected ceoId to not exist as a field, but it did.',
+        reason: 'Expected userId to not exist as a field, but it did.',
       );
     }, skip: errors.isNotEmpty);
 
-    /* TODO should not be an ObjectRelationDefinition but a new type??? or we add foreign + local field, where local would be ID on this side.
-    test('then...', () {
-      var relation = classDefinition.findField('ceo')?.relation;
-      expect(
-        relation.runtimeType,
-        ObjectRelationDefinition,
-        reason: 'Expected the relation to be an ObjectRelationDefinition.',
-      );
-    });*/
+    group('then the user relation', () {
+      var relation = addressDefinition.findField('user')?.relation;
 
-    test('then the defined companyId field exists.', () {
+      test('has the relation name set', () {
+        expect(relation?.name, 'user_address');
+      });
+      test('is an ObjectRelationDefinition', () {
+        expect(
+          relation.runtimeType,
+          ObjectRelationDefinition,
+          reason: 'Expected the relation to be an ObjectRelationDefinition.',
+        );
+      });
+
+      test('has the parent table is set', () {
+        var validateRelation = relation as ObjectRelationDefinition;
+
+        expect(validateRelation.parentTable, 'user');
+      }, skip: relation is! ObjectRelationDefinition);
+
+      test(
+          'has the foreignFieldName defined to the foreign key field on the other side.',
+          () {
+        var validateRelation = relation as ObjectRelationDefinition;
+
+        expect(validateRelation.foreignFieldName, 'addressId');
+      }, skip: relation is! ObjectRelationDefinition);
+
+      test('has the fieldName defined to the primary key on this side.', () {
+        var validateRelation = relation as ObjectRelationDefinition;
+
+        expect(validateRelation.fieldName, 'id');
+      }, skip: relation is! ObjectRelationDefinition);
+    });
+
+    test('then the defined addressId field exists.', () {
       expect(
-        employeeDefinition.findField('companyId'),
+        userDefinition.findField('addressId'),
         isNotNull,
       );
     }, skip: errors.isNotEmpty);
 
-    group('then a relation is defined on the companyId', () {
-      var relation = employeeDefinition.findField('companyId')?.relation;
+    group('then a relation is defined on the addressId', () {
+      var relation = userDefinition.findField('addressId')?.relation;
 
       test('and has the relation type ForeignRelation', () {
         expect(
@@ -115,12 +140,12 @@ fields:
         );
       }, skip: relation is! ForeignRelationDefinition);
 
-      test('and the parent table is set to company', () {
+      test('and the parent table is set to address', () {
         var foreignRelation = relation as ForeignRelationDefinition;
 
         expect(
           foreignRelation.parentTable,
-          'company',
+          'address',
         );
       }, skip: relation is! ForeignRelationDefinition);
 
@@ -130,98 +155,23 @@ fields:
 
         expect(
           foreignRelation.name,
-          'company_ceo',
+          'user_address',
         );
       }, skip: relation is! ForeignRelationDefinition);
     });
 
     group('then the company field has a relation', () {
-      var relation = employeeDefinition.findField('company')?.relation;
+      var relation = userDefinition.findField('address')?.relation;
       test('of ObjectRelation type', () {
         expect(
           relation.runtimeType,
           ObjectRelationDefinition,
         );
       });
+
+      test('with out a name for the relation', () {
+        expect(relation?.name, isNull);
+      }, skip: relation is! ObjectRelationDefinition);
     });
-  });
-
-  group(
-      'Given a class with a named object relation on both sides without a field references',
-      () {
-    var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: Company?, relation(name=company_ceo)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  ceo: Employee?, relation(name=company_ceo)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
-    var errors = collector.errors;
-
-    test('then an error is collected.', () {
-      expect(errors, isNotEmpty);
-    });
-
-    test(
-        'then the error messages tells the user the relation is ambiguous and the field references should be used.',
-        () {
-      expect(
-        errors.first.message,
-        'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=company_ceo, field=companyId)',
-      );
-    }, skip: errors.isEmpty);
-
-    test(
-        'then the error messages tells the user the relation is ambiguous and the field references should be used.',
-        () {
-      expect(
-        errors.first.message,
-        'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=company_ceo, field=ceoId)',
-      );
-    }, skip: errors.isEmpty);
   });
 }
