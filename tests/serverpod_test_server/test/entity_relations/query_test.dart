@@ -49,9 +49,6 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
-    test('then expected entities are returned.', () {
-      expect(citizensWithCompanyServerpod.length, 2);
-    });
 
     test('then expected entities are returned.', () {
       var citizenNames = citizensWithCompanyServerpod.map((e) => e.name);
@@ -69,9 +66,6 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
-    test('then expected entities are returned.', () {
-      expect(citizensOrderedByCompanyName.length, 6);
-    });
 
     test('then entities returned are in expected order.', () {
       var citizenNames = citizensOrderedByCompanyName.map((e) => e.name);
@@ -90,9 +84,6 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
-    test('then expected number of entities are returned.', () {
-      expect(citizensOrderedByCompanyTownName.length, 6);
-    });
 
     test('then entities returned are in expected order.', () {
       var citizenNames = citizensOrderedByCompanyTownName.map((e) => e.name);
@@ -113,9 +104,6 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
-    test('then expected number of entities are returned.', () {
-      expect(citizensWithCompanyTownStockholm.length, 4);
-    });
 
     test('then expected entities are returned.', () {
       var citizenNames = citizensWithCompanyTownStockholm.map((e) => e.name);
@@ -128,6 +116,7 @@ void main() async {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
+
     test('then expected number of entities are removed.', () async {
       var removedRows = await client.relation.citizenDeleteWhereCompanyNameIs(
         companyName: 'Serverpod',
@@ -142,11 +131,13 @@ void main() async {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
+
     test('then expected number of entities are removed.', () async {
       var removedRows =
           await client.relation.citizenDeleteWhereCompanyTownNameIs(
         townName: 'Stockholm',
       );
+
       expect(removedRows, 4);
     });
   });
@@ -156,11 +147,13 @@ void main() async {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
-    test('then expected number of entities are removed.', () async {
-      var removedRows = await client.relation.citizenCountWhereCompanyNameIs(
+
+    test('then expected number of entities are found.', () async {
+      var entitiesFound = await client.relation.citizenCountWhereCompanyNameIs(
         companyName: 'Serverpod',
       );
-      expect(removedRows, 2);
+
+      expect(entitiesFound, 2);
     });
   });
 
@@ -170,12 +163,14 @@ void main() async {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
-    test('then expected number of entities are removed.', () async {
-      var removedRows =
+
+    test('then expected number of entities are found.', () async {
+      var entitiesFound =
           await client.relation.citizenCountWhereCompanyTownNameIs(
         townName: 'Stockholm',
       );
-      expect(removedRows, 4);
+
+      expect(entitiesFound, 4);
     });
   });
 
@@ -247,6 +242,7 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
+
     test('then predefined number of citizens are returned.', () {
       expect(citizensWithoutIncludes.length, 6);
     });
@@ -291,6 +287,7 @@ void main() async {
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
+
     test('then predefined number of citizens are returned.', () {
       expect(citizensWithShallowIncludes.length, 6);
     });
