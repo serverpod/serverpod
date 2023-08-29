@@ -38,16 +38,16 @@ void main() {
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var expression1 = Expression('test expression 1');
-      var expression2 = Expression('test expression 2');
+      var expression1 = Expression('TRUE = TRUE');
+      var expression2 = Expression('FALSE = FALSE');
       var combinedExpression = expression1 & expression2;
 
       var query = SelectQueryBuilder(table: 'citizen')
           .withWhere(combinedExpression)
           .build();
 
-      expect(query,
-          'SELECT * FROM citizen WHERE (test expression 1 AND test expression 2)');
+      expect(
+          query, 'SELECT * FROM citizen WHERE (TRUE = TRUE AND FALSE = FALSE)');
     });
 
     test(
