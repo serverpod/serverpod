@@ -8,7 +8,7 @@ import 'package:serverpod/src/database/table_relation.dart';
 class SelectQueryBuilder {
   final String _table;
   List<Column>? _fields;
-  List<Order>? _orderByList;
+  List<Order>? _orderBy;
   int? _limit;
   int? _offset;
   Expression? _where;
@@ -17,16 +17,16 @@ class SelectQueryBuilder {
   SelectQueryBuilder({required table}) : _table = table;
 
   String build() {
-    var join = _buildJoinQuery(
-        where: _where, orderBy: _orderByList, include: _include);
+    var join =
+        _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
 
     var query = _buildSelectQuery(_fields, _include);
     query += ' FROM $_table';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
-    if (_orderByList != null) {
+    if (_orderBy != null) {
       query +=
-          ' ORDER BY ${_orderByList?.map((order) => order.toString()).join(', ')}';
+          ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
     }
     if (_limit != null) query += ' LIMIT $_limit';
     if (_offset != null) query += ' OFFSET $_offset';
@@ -35,20 +35,12 @@ class SelectQueryBuilder {
   }
 
   SelectQueryBuilder withSelectFields(List<Column>? fields) {
-    if (fields == null || fields.isEmpty) {
-      return this;
-    }
-
     _fields = fields;
     return this;
   }
 
-  SelectQueryBuilder withOrderBy(List<Order>? orderByList) {
-    if (orderByList == null || orderByList.isEmpty) {
-      return this;
-    }
-
-    _orderByList = orderByList;
+  SelectQueryBuilder withOrderBy(List<Order>? orderBy) {
+    _orderBy = orderBy;
     return this;
   }
 
@@ -153,11 +145,7 @@ class DeleteQueryBuilder {
 }
 
 String _buildSelectQuery(List<Column>? fields, Include? include) {
-  List<Column> selectColumns = fields ?? [];
-
-  if (include != null) {
-    selectColumns.addAll(gatherIncludeColumns(include));
-  }
+  var selectColumns = [...?fields, ..._gatherIncludeColumns(include)];
 
   if (selectColumns.isEmpty) {
     return 'SELECT *';
@@ -166,7 +154,7 @@ String _buildSelectQuery(List<Column>? fields, Include? include) {
   return _selectStatementFromColumns(selectColumns);
 }
 
-List<Column> gatherIncludeColumns(Include? include) {
+List<Column> _gatherIncludeColumns(Include? include) {
   if (include == null) {
     return [];
   }
