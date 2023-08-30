@@ -1,12 +1,7 @@
-import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/expressions.dart';
 
-class _TempColumn extends Column<String> {
-  _TempColumn(super.columnName, {super.queryPrefix});
-}
-
 /// Records the relation between two tables.
-@internal
+/// This is typically only used internally by the serverpod framework.
 class TableRelation {
   /// Name of table.
   final String tableName;
@@ -33,7 +28,7 @@ class TableRelation {
     return TableRelation(
       tableName: foreignTableName,
       foreignTableColumn: column,
-      column: _TempColumn(
+      column: ColumnString(
         foreignColumnName,
         queryPrefix: '$relationQueryPrefix$foreignTableName',
       ),
