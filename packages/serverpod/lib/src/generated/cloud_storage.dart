@@ -241,36 +241,69 @@ class CloudStorageEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CloudStorageEntryInclude include() {
+    return CloudStorageEntryInclude._();
+  }
 }
 
 typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
     CloudStorageEntryTable);
 
 class CloudStorageEntryTable extends _i1.Table {
-  CloudStorageEntryTable() : super(tableName: 'serverpod_cloud_storage');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  CloudStorageEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_cloud_storage') {
+    storageId = _i1.ColumnString(
+      'storageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    path = _i1.ColumnString(
+      'path',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    addedTime = _i1.ColumnDateTime(
+      'addedTime',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    expiration = _i1.ColumnDateTime(
+      'expiration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    byteData = _i1.ColumnByteData(
+      'byteData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    verified = _i1.ColumnBool(
+      'verified',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The storageId, typically `public` or `private`.
-  final storageId = _i1.ColumnString('storageId');
+  late final _i1.ColumnString storageId;
 
   /// The path where the file is stored.
-  final path = _i1.ColumnString('path');
+  late final _i1.ColumnString path;
 
   /// The time when the file was added.
-  final addedTime = _i1.ColumnDateTime('addedTime');
+  late final _i1.ColumnDateTime addedTime;
 
   /// The time at which the file expires and can be deleted.
-  final expiration = _i1.ColumnDateTime('expiration');
+  late final _i1.ColumnDateTime expiration;
 
   /// The actual data of the uploaded file.
-  final byteData = _i1.ColumnByteData('byteData');
+  late final _i1.ColumnByteData byteData;
 
   /// True if the file has been verified as uploaded.
-  final verified = _i1.ColumnBool('verified');
+  late final _i1.ColumnBool verified;
 
   @override
   List<_i1.Column> get columns => [
@@ -286,3 +319,12 @@ class CloudStorageEntryTable extends _i1.Table {
 
 @Deprecated('Use CloudStorageEntryTable.t instead.')
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
+
+class CloudStorageEntryInclude extends _i1.Include {
+  CloudStorageEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => CloudStorageEntry.t;
+}

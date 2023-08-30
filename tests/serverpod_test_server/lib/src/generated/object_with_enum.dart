@@ -224,28 +224,56 @@ class ObjectWithEnum extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithEnumInclude include() {
+    return ObjectWithEnumInclude._();
+  }
 }
 
 typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
     ObjectWithEnumTable);
 
 class ObjectWithEnumTable extends _i1.Table {
-  ObjectWithEnumTable() : super(tableName: 'object_with_enum');
+  ObjectWithEnumTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_enum') {
+    testEnum = _i1.ColumnEnum<_i2.TestEnum>(
+      'testEnum',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableEnum = _i1.ColumnEnum<_i2.TestEnum>(
+      'nullableEnum',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    enumList = _i1.ColumnSerializable(
+      'enumList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableEnumList = _i1.ColumnSerializable(
+      'nullableEnumList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    enumListList = _i1.ColumnSerializable(
+      'enumListList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnEnum<_i2.TestEnum> testEnum;
 
-  final testEnum = _i1.ColumnEnum<_i2.TestEnum>('testEnum');
+  late final _i1.ColumnEnum<_i2.TestEnum> nullableEnum;
 
-  final nullableEnum = _i1.ColumnEnum<_i2.TestEnum>('nullableEnum');
+  late final _i1.ColumnSerializable enumList;
 
-  final enumList = _i1.ColumnSerializable('enumList');
+  late final _i1.ColumnSerializable nullableEnumList;
 
-  final nullableEnumList = _i1.ColumnSerializable('nullableEnumList');
-
-  final enumListList = _i1.ColumnSerializable('enumListList');
+  late final _i1.ColumnSerializable enumListList;
 
   @override
   List<_i1.Column> get columns => [
@@ -260,3 +288,12 @@ class ObjectWithEnumTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithEnumTable.t instead.')
 ObjectWithEnumTable tObjectWithEnum = ObjectWithEnumTable();
+
+class ObjectWithEnumInclude extends _i1.Include {
+  ObjectWithEnumInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithEnum.t;
+}

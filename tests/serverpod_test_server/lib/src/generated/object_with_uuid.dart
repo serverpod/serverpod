@@ -190,22 +190,35 @@ class ObjectWithUuid extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithUuidInclude include() {
+    return ObjectWithUuidInclude._();
+  }
 }
 
 typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
     ObjectWithUuidTable);
 
 class ObjectWithUuidTable extends _i1.Table {
-  ObjectWithUuidTable() : super(tableName: 'object_with_uuid');
+  ObjectWithUuidTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_uuid') {
+    uuid = _i1.ColumnUuid(
+      'uuid',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    uuidNullable = _i1.ColumnUuid(
+      'uuidNullable',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnUuid uuid;
 
-  final uuid = _i1.ColumnUuid('uuid');
-
-  final uuidNullable = _i1.ColumnUuid('uuidNullable');
+  late final _i1.ColumnUuid uuidNullable;
 
   @override
   List<_i1.Column> get columns => [
@@ -217,3 +230,12 @@ class ObjectWithUuidTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithUuidTable.t instead.')
 ObjectWithUuidTable tObjectWithUuid = ObjectWithUuidTable();
+
+class ObjectWithUuidInclude extends _i1.Include {
+  ObjectWithUuidInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithUuid.t;
+}

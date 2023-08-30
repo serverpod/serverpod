@@ -195,22 +195,35 @@ class ObjectFieldScopes extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectFieldScopesInclude include() {
+    return ObjectFieldScopesInclude._();
+  }
 }
 
 typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
     ObjectFieldScopesTable);
 
 class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
+  ObjectFieldScopesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_field_scopes') {
+    normal = _i1.ColumnString(
+      'normal',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    database = _i1.ColumnString(
+      'database',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnString normal;
 
-  final normal = _i1.ColumnString('normal');
-
-  final database = _i1.ColumnString('database');
+  late final _i1.ColumnString database;
 
   @override
   List<_i1.Column> get columns => [
@@ -222,3 +235,12 @@ class ObjectFieldScopesTable extends _i1.Table {
 
 @Deprecated('Use ObjectFieldScopesTable.t instead.')
 ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
+
+class ObjectFieldScopesInclude extends _i1.Include {
+  ObjectFieldScopesInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectFieldScopes.t;
+}

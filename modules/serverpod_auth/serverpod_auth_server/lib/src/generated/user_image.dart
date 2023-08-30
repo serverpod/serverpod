@@ -204,26 +204,44 @@ class UserImage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static UserImageInclude include() {
+    return UserImageInclude._();
+  }
 }
 
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 class UserImageTable extends _i1.Table {
-  UserImageTable() : super(tableName: 'serverpod_user_image');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  UserImageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_user_image') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    version = _i1.ColumnInt(
+      'version',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    url = _i1.ColumnString(
+      'url',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  final version = _i1.ColumnInt('version');
+  late final _i1.ColumnInt version;
 
   /// The URL to the image.
-  final url = _i1.ColumnString('url');
+  late final _i1.ColumnString url;
 
   @override
   List<_i1.Column> get columns => [
@@ -236,3 +254,12 @@ class UserImageTable extends _i1.Table {
 
 @Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();
+
+class UserImageInclude extends _i1.Include {
+  UserImageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => UserImage.t;
+}

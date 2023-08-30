@@ -216,31 +216,53 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CloudStorageDirectUploadEntryInclude include() {
+    return CloudStorageDirectUploadEntryInclude._();
+  }
 }
 
 typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
     Function(CloudStorageDirectUploadEntryTable);
 
 class CloudStorageDirectUploadEntryTable extends _i1.Table {
-  CloudStorageDirectUploadEntryTable()
-      : super(tableName: 'serverpod_cloud_storage_direct_upload');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  CloudStorageDirectUploadEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_cloud_storage_direct_upload') {
+    storageId = _i1.ColumnString(
+      'storageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    path = _i1.ColumnString(
+      'path',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    expiration = _i1.ColumnDateTime(
+      'expiration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    authKey = _i1.ColumnString(
+      'authKey',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The storageId, typically `public` or `private`.
-  final storageId = _i1.ColumnString('storageId');
+  late final _i1.ColumnString storageId;
 
   /// The path where the file is stored.
-  final path = _i1.ColumnString('path');
+  late final _i1.ColumnString path;
 
   /// The expiration time of when the file can be uploaded.
-  final expiration = _i1.ColumnDateTime('expiration');
+  late final _i1.ColumnDateTime expiration;
 
   /// Access key for retrieving a private file.
-  final authKey = _i1.ColumnString('authKey');
+  late final _i1.ColumnString authKey;
 
   @override
   List<_i1.Column> get columns => [
@@ -255,3 +277,12 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
 @Deprecated('Use CloudStorageDirectUploadEntryTable.t instead.')
 CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();
+
+class CloudStorageDirectUploadEntryInclude extends _i1.Include {
+  CloudStorageDirectUploadEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => CloudStorageDirectUploadEntry.t;
+}

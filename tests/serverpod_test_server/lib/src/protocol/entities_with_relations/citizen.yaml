@@ -1,0 +1,6 @@
+class: Citizen
+table: citizen
+fields:
+  name: String
+  company: Company?, relation
+  oldCompany: Company?, relation(optional)

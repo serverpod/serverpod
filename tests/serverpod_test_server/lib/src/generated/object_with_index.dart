@@ -190,22 +190,35 @@ class ObjectWithIndex extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithIndexInclude include() {
+    return ObjectWithIndexInclude._();
+  }
 }
 
 typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
     ObjectWithIndexTable);
 
 class ObjectWithIndexTable extends _i1.Table {
-  ObjectWithIndexTable() : super(tableName: 'object_with_index');
+  ObjectWithIndexTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_index') {
+    indexed = _i1.ColumnInt(
+      'indexed',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    indexed2 = _i1.ColumnInt(
+      'indexed2',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt indexed;
 
-  final indexed = _i1.ColumnInt('indexed');
-
-  final indexed2 = _i1.ColumnInt('indexed2');
+  late final _i1.ColumnInt indexed2;
 
   @override
   List<_i1.Column> get columns => [
@@ -217,3 +230,12 @@ class ObjectWithIndexTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithIndexTable.t instead.')
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
+
+class ObjectWithIndexInclude extends _i1.Include {
+  ObjectWithIndexInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithIndex.t;
+}

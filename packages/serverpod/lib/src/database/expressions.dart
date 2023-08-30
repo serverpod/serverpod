@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/table_relation.dart';
 
 /// A database [Expression].
 class Expression<T> {
@@ -20,6 +21,9 @@ class Expression<T> {
   String toString() {
     return '$_expression';
   }
+
+  /// Returns a list of all [Expression]s in the tree.
+  List<Expression> get nodes => [this];
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
@@ -92,6 +96,9 @@ abstract class _TwoPartExpression extends Expression {
   Expression other;
 
   _TwoPartExpression(super.expression, this.other);
+
+  @override
+  List<Expression> get nodes => [..._expression.nodes, ...other.nodes];
 }
 
 class _AndExpression extends _TwoPartExpression {
@@ -216,6 +223,10 @@ abstract class _MinMaxExpression extends Expression {
   Expression max;
 
   _MinMaxExpression(super.expression, this.min, this.max);
+
+  @override
+  List<Expression> get nodes =>
+      [..._expression.nodes, ...min.nodes, ...max.nodes];
 }
 
 class _BetweenExpression extends _MinMaxExpression {
@@ -240,6 +251,10 @@ class _SetExpression extends Expression {
   List<Expression> values;
 
   _SetExpression(super.expression, this.values);
+
+  @override
+  List<Expression> get nodes =>
+      [..._expression.nodes, ...values.expand((value) => value.nodes)];
 
   String _expressionSetToQueryString() {
     var valueList = values.join(', ');
@@ -279,21 +294,41 @@ abstract class Column<T> extends Expression {
   /// Name of the [Column].
   String get columnName => _columnName;
 
+  /// Query prefix for the [Column].
+  final String queryPrefix;
+
+  /// Query alias for the [Column].
+  String get queryAlias => '$queryPrefix.$_columnName';
+
+  /// Table relations for the [Column].
+  final List<TableRelation>? tableRelations;
+
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
     this._columnName, {
     this.varcharLength,
+    this.queryPrefix = '',
+    this.tableRelations,
   })  : type = T,
         super('"$_columnName"');
 
   @override
   String toString() {
-    return '$_expression';
+    if (queryPrefix.isEmpty) {
+      return '$_expression';
+    }
+
+    return '$queryPrefix.$_expression';
   }
 }
 
 abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
-  _ColumnWithDefaultOperations(super.columnName, {super.varcharLength});
+  _ColumnWithDefaultOperations(
+    super.columnName, {
+    super.varcharLength,
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   /// Applies encoding to value before it is sent to the database.
   Expression _encodeValueForQuery(dynamic value) => EscapedExpression(value);
@@ -339,7 +374,11 @@ abstract class _ColumnWithDefaultOperations<T> extends Column<T> {
 
 abstract class _ColumnNum<T extends num>
     extends _ColumnWithDefaultOperations<T> {
-  _ColumnNum(super.columnName);
+  _ColumnNum(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value);
@@ -362,19 +401,31 @@ abstract class _ColumnNum<T extends num>
 /// A [Column] holding an [int].
 class ColumnInt extends _ColumnNum<int> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(String name) : super(name);
+  ColumnInt(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 }
 
 /// A [Column] holding an [double].
 class ColumnDouble extends _ColumnNum<double> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(String name) : super(name);
+  ColumnDouble(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 }
 
 /// A [Column] holding an enum.
 class ColumnEnum<E extends Enum> extends Column<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(String name) : super(name);
+  ColumnEnum(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -418,8 +469,12 @@ class ColumnEnum<E extends Enum> extends Column<E> {
 /// A [Column] holding an [String].
 class ColumnString extends _ColumnWithDefaultOperations<String> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnString(String name, {int? varcharLength})
-      : super(name, varcharLength: varcharLength);
+  ColumnString(
+    super.columnName, {
+    super.varcharLength,
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value. See Postgresql docs for more info on the LIKE operator.
@@ -438,7 +493,11 @@ class ColumnString extends _ColumnWithDefaultOperations<String> {
 /// A [Column] holding an [bool].
 class ColumnBool extends _ColumnWithDefaultOperations<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(String name) : super(name);
+  ColumnBool(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value);
@@ -454,7 +513,11 @@ class ColumnBool extends _ColumnWithDefaultOperations<bool> {
 /// timestamp without time zone.
 class ColumnDateTime extends _ColumnWithDefaultOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(String name) : super(name);
+  ColumnDateTime(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
   /// Creates an [Expression] checking if the value in the column is between
   /// the [min], [max] values.
@@ -474,26 +537,42 @@ class ColumnDateTime extends _ColumnWithDefaultOperations<DateTime> {
 /// A [Column] holding [ByteData].
 class ColumnByteData extends Column<ByteData> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnByteData(String name) : super(name);
+  ColumnByteData(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 }
 
 /// A [Column] holding [Duration].
 class ColumnDuration extends _ColumnWithDefaultOperations<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDuration(String name) : super(name);
+  ColumnDuration(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 }
 
 /// A [Column] holding [UuidValue].
 class ColumnUuid extends _ColumnWithDefaultOperations<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnUuid(String name) : super(name);
+  ColumnUuid(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 }
 
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable extends Column<String> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(String name) : super(name);
+  ColumnSerializable(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
 
 // TODO: Add comparisons and possibly other operations
 }
@@ -521,14 +600,40 @@ class Constant extends Expression {
 class Table {
   /// Name of the table as used in the database.
   final String tableName;
+
+  /// The database id.
+  late final ColumnInt id;
+
   late List<Column>? _columns;
 
   /// List of [Column] used by the table.
   List<Column> get columns => _columns!;
 
+  /// Query prefix for [Column]s of the table.
+  final String queryPrefix;
+
+  /// Table relations for [Column]s of the table.
+  final List<TableRelation>? tableRelations;
+
   /// Creates a new [Table]. Typically, this is done only by generated code.
-  Table({required this.tableName, List<Column>? columns}) {
+  Table({
+    required this.tableName,
+    List<Column>? columns,
+    queryPrefix = '',
+    this.tableRelations,
+  }) : queryPrefix = '$queryPrefix$tableName' {
     _columns = columns;
+    id = ColumnInt(
+      'id',
+      queryPrefix: this.queryPrefix,
+      tableRelations: tableRelations,
+    );
+  }
+
+  /// Returns [TableColumnRelation] for the given [relationField]. If no relation
+  /// exists, returns null.
+  Table? getRelationTable(String relationField) {
+    return null;
   }
 
   @override
@@ -539,4 +644,40 @@ class Table {
     }
     return str;
   }
+}
+
+String _buildRelationQueryPrefix(String queryPrefix, String field) {
+  return '${queryPrefix}_${field}_';
+}
+
+/// Creates a new [Table] based on a relation between two tables.
+/// Information is contained in the table required to query the fields of the
+/// table.
+T createRelationTable<T>({
+  required String queryPrefix,
+  required String fieldName,
+  required String foreignTableName,
+  required Column column,
+  required String foreignColumnName,
+  required T Function(
+    String relationQueryPrefix,
+    TableRelation foreignTableRelation,
+  ) createTable,
+}) {
+  var relationQueryPrefix = _buildRelationQueryPrefix(
+    queryPrefix,
+    fieldName,
+  );
+
+  var foreignTableRelation = TableRelation.foreign(
+    foreignTableName: foreignTableName,
+    column: column,
+    foreignColumnName: foreignColumnName,
+    relationQueryPrefix: relationQueryPrefix,
+  );
+
+  return createTable(
+    relationQueryPrefix,
+    foreignTableRelation,
+  );
 }

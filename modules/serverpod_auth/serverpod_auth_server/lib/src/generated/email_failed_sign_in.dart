@@ -206,27 +206,45 @@ class EmailFailedSignIn extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailFailedSignInInclude include() {
+    return EmailFailedSignInInclude._();
+  }
 }
 
 typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
     EmailFailedSignInTable);
 
 class EmailFailedSignInTable extends _i1.Table {
-  EmailFailedSignInTable() : super(tableName: 'serverpod_email_failed_sign_in');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailFailedSignInTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_failed_sign_in') {
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    ipAddress = _i1.ColumnString(
+      'ipAddress',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Email attempting to sign in with.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The time of the sign in attempt.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The IP address of the sign in attempt.
-  final ipAddress = _i1.ColumnString('ipAddress');
+  late final _i1.ColumnString ipAddress;
 
   @override
   List<_i1.Column> get columns => [
@@ -239,3 +257,12 @@ class EmailFailedSignInTable extends _i1.Table {
 
 @Deprecated('Use EmailFailedSignInTable.t instead.')
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
+
+class EmailFailedSignInInclude extends _i1.Include {
+  EmailFailedSignInInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailFailedSignIn.t;
+}

@@ -205,27 +205,45 @@ class ChatReadMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChatReadMessageInclude include() {
+    return ChatReadMessageInclude._();
+  }
 }
 
 typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
     ChatReadMessageTable);
 
 class ChatReadMessageTable extends _i1.Table {
-  ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChatReadMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_chat_read_message') {
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    lastReadMessageId = _i1.ColumnInt(
+      'lastReadMessageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The channel this that has been read.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   /// The id of the user that read the messages.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The id of the last read message.
-  final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
+  late final _i1.ColumnInt lastReadMessageId;
 
   @override
   List<_i1.Column> get columns => [
@@ -238,3 +256,12 @@ class ChatReadMessageTable extends _i1.Table {
 
 @Deprecated('Use ChatReadMessageTable.t instead.')
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
+
+class ChatReadMessageInclude extends _i1.Include {
+  ChatReadMessageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ChatReadMessage.t;
+}

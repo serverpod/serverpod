@@ -217,31 +217,53 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailCreateAccountRequestInclude include() {
+    return EmailCreateAccountRequestInclude._();
+  }
 }
 
 typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
     EmailCreateAccountRequestTable);
 
 class EmailCreateAccountRequestTable extends _i1.Table {
-  EmailCreateAccountRequestTable()
-      : super(tableName: 'serverpod_email_create_request');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailCreateAccountRequestTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_create_request') {
+    userName = _i1.ColumnString(
+      'userName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    hash = _i1.ColumnString(
+      'hash',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    verificationCode = _i1.ColumnString(
+      'verificationCode',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The name of the user.
-  final userName = _i1.ColumnString('userName');
+  late final _i1.ColumnString userName;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// Hash of the user's requested password.
-  final hash = _i1.ColumnString('hash');
+  late final _i1.ColumnString hash;
 
   /// The verification code sent to the user.
-  final verificationCode = _i1.ColumnString('verificationCode');
+  late final _i1.ColumnString verificationCode;
 
   @override
   List<_i1.Column> get columns => [
@@ -256,3 +278,12 @@ class EmailCreateAccountRequestTable extends _i1.Table {
 @Deprecated('Use EmailCreateAccountRequestTable.t instead.')
 EmailCreateAccountRequestTable tEmailCreateAccountRequest =
     EmailCreateAccountRequestTable();
+
+class EmailCreateAccountRequestInclude extends _i1.Include {
+  EmailCreateAccountRequestInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailCreateAccountRequest.t;
+}

@@ -192,23 +192,36 @@ class Channel extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChannelInclude include() {
+    return ChannelInclude._();
+  }
 }
 
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
 class ChannelTable extends _i1.Table {
-  ChannelTable() : super(tableName: 'channel');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChannelTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'channel') {
+    name = _i1.ColumnString(
+      'name',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The name of the channel.
-  final name = _i1.ColumnString('name');
+  late final _i1.ColumnString name;
 
   /// The id of the channel.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   @override
   List<_i1.Column> get columns => [
@@ -220,3 +233,12 @@ class ChannelTable extends _i1.Table {
 
 @Deprecated('Use ChannelTable.t instead.')
 ChannelTable tChannel = ChannelTable();
+
+class ChannelInclude extends _i1.Include {
+  ChannelInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => Channel.t;
+}

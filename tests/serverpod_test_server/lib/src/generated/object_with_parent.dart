@@ -178,20 +178,28 @@ class ObjectWithParent extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithParentInclude include() {
+    return ObjectWithParentInclude._();
+  }
 }
 
 typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
     ObjectWithParentTable);
 
 class ObjectWithParentTable extends _i1.Table {
-  ObjectWithParentTable() : super(tableName: 'object_with_parent');
+  ObjectWithParentTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_parent') {
+    other = _i1.ColumnInt(
+      'other',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
-
-  final other = _i1.ColumnInt('other');
+  late final _i1.ColumnInt other;
 
   @override
   List<_i1.Column> get columns => [
@@ -202,3 +210,12 @@ class ObjectWithParentTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithParentTable.t instead.')
 ObjectWithParentTable tObjectWithParent = ObjectWithParentTable();
+
+class ObjectWithParentInclude extends _i1.Include {
+  ObjectWithParentInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithParent.t;
+}

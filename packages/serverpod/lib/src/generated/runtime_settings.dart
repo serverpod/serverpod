@@ -219,30 +219,53 @@ class RuntimeSettings extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static RuntimeSettingsInclude include() {
+    return RuntimeSettingsInclude._();
+  }
 }
 
 typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
     RuntimeSettingsTable);
 
 class RuntimeSettingsTable extends _i1.Table {
-  RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  RuntimeSettingsTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_runtime_settings') {
+    logSettings = _i1.ColumnSerializable(
+      'logSettings',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logSettingsOverrides = _i1.ColumnSerializable(
+      'logSettingsOverrides',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logServiceCalls = _i1.ColumnBool(
+      'logServiceCalls',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logMalformedCalls = _i1.ColumnBool(
+      'logMalformedCalls',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Log settings.
-  final logSettings = _i1.ColumnSerializable('logSettings');
+  late final _i1.ColumnSerializable logSettings;
 
   /// List of log setting overrides.
-  final logSettingsOverrides = _i1.ColumnSerializable('logSettingsOverrides');
+  late final _i1.ColumnSerializable logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
-  final logServiceCalls = _i1.ColumnBool('logServiceCalls');
+  late final _i1.ColumnBool logServiceCalls;
 
   /// True if malformed calls should be logged.
-  final logMalformedCalls = _i1.ColumnBool('logMalformedCalls');
+  late final _i1.ColumnBool logMalformedCalls;
 
   @override
   List<_i1.Column> get columns => [
@@ -256,3 +279,12 @@ class RuntimeSettingsTable extends _i1.Table {
 
 @Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
+
+class RuntimeSettingsInclude extends _i1.Include {
+  RuntimeSettingsInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => RuntimeSettings.t;
+}
