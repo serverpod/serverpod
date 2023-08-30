@@ -71,9 +71,9 @@ class RelationEndpoint extends Endpoint {
     return await Citizen.find(
       session,
       orderBy: Citizen.t.id,
-      include: CitizenInclude(
-        company: CompanyInclude(town: TownInclude()),
-        oldCompany: CompanyInclude(town: TownInclude()),
+      include: Citizen.include(
+        company: Company.include(town: Town.include()),
+        oldCompany: Company.include(town: Town.include()),
       ),
     );
   }
@@ -85,9 +85,9 @@ class RelationEndpoint extends Endpoint {
     return await Citizen.find(
       session,
       orderBy: Citizen.t.id,
-      include: CitizenInclude(
-        company: CompanyInclude(),
-        oldCompany: CompanyInclude(),
+      include: Citizen.include(
+        company: Company.include(),
+        oldCompany: Company.include(),
       ),
     );
   }

@@ -8,8 +8,8 @@ void main() {
       var query = SelectQueryBuilder(table: Citizen.t.tableName)
           .withSelectFields(Citizen.t.columns)
           .withInclude(
-            CitizenInclude(
-              company: CompanyInclude(),
+            Citizen.include(
+              company: Company.include(),
             ),
           )
           .build();
