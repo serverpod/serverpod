@@ -332,4 +332,28 @@ void main() async {
       });
     });
   });
+
+  group('Given entities with relations when finding by id with includes', () {
+    late List<Citizen>? allCitizens;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      allCitizens = await client.relation.citizenFindAll();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+
+    test('then retrieved citizen is same as expected.', () async {
+      expect(allCitizens, isNotNull);
+      expect(allCitizens!.length, greaterThan(1));
+      var secondCitizen = allCitizens![1];
+
+      var citizenById =
+          await client.relation.citizenFindByIdWithIncludes(secondCitizen.id!);
+
+      expect(citizenById, isNotNull);
+      expect(citizenById!.id, secondCitizen.id);
+      expect(citizenById.name, secondCitizen.name);
+      expect(citizenById.companyId, secondCitizen.companyId);
+    });
+  });
 }

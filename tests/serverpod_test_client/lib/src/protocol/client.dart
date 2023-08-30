@@ -807,6 +807,13 @@ class EndpointRelation extends _i1.EndpointRef {
         {},
       );
 
+  _i2.Future<_i14.Citizen?> citizenFindByIdWithIncludes(int id) =>
+      caller.callServerEndpoint<_i14.Citizen?>(
+        'relation',
+        'citizenFindByIdWithIncludes',
+        {'id': id},
+      );
+
   _i2.Future<int?> citizenInsert(_i14.Citizen citizen) =>
       caller.callServerEndpoint<int?>(
         'relation',

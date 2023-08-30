@@ -92,6 +92,11 @@ class RelationEndpoint extends Endpoint {
     );
   }
 
+  Future<Citizen?> citizenFindByIdWithIncludes(Session session, int id) async {
+    return await Citizen.findById(session, id,
+        include: Citizen.include(company: Company.include()));
+  }
+
   Future<int?> citizenInsert(Session session, Citizen citizen) async {
     await Citizen.insert(session, citizen);
     return citizen.id;

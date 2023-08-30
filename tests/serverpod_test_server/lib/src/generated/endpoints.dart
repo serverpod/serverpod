@@ -1853,6 +1853,25 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['relation'] as _i10.RelationEndpoint)
                   .citizenFindAllWithShallowIncludes(session),
         ),
+        'citizenFindByIdWithIncludes': _i1.MethodConnector(
+          name: 'citizenFindByIdWithIncludes',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .citizenFindByIdWithIncludes(
+            session,
+            params['id'],
+          ),
+        ),
         'citizenInsert': _i1.MethodConnector(
           name: 'citizenInsert',
           params: {
