@@ -115,7 +115,7 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
-    Table table = _getTableOrAssert<T>(session, operation: 'findById');
+    var table = _getTableOrAssert<T>(session, operation: 'findById');
     var result = await find<T>(
       where: table.id.equals(id),
       session: session,
@@ -140,7 +140,7 @@ class DatabaseConnection {
     Include? include,
   }) async {
     assert(orderByList == null || orderBy == null);
-    Table table = _getTableOrAssert<T>(session, operation: 'find');
+    var table = _getTableOrAssert<T>(session, operation: 'find');
 
     var startTime = DateTime.now();
 
@@ -188,15 +188,6 @@ class DatabaseConnection {
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
     return list.cast<T>();
-  }
-
-  Table _getTableOrAssert<T>(Session session, {required String operation}) {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
-Current type was $T''');
-    return table!;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -262,7 +253,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert(session, operation: 'count');
+    var table = _getTableOrAssert<T>(session, operation: 'count');
 
     var startTime = DateTime.now();
 
@@ -400,7 +391,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert(session, operation: 'delete');
+    var table = _getTableOrAssert<T>(session, operation: 'delete');
 
     var startTime = DateTime.now();
 
@@ -428,7 +419,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = _getTableOrAssert(session, operation: 'deleteAndReturn');
+    var table = _getTableOrAssert<T>(session, operation: 'deleteAndReturn');
 
     var startTime = DateTime.now();
 
@@ -486,6 +477,15 @@ Current type was $T''');
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
+  }
+
+  Table _getTableOrAssert<T>(Session session, {required String operation}) {
+    var table = session.serverpod.serializationManager.getTableForType(T);
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
+Current type was $T''');
+    return table!;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
