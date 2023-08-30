@@ -78,12 +78,14 @@ class ClassYamlDefinition {
                   ),
                   ValidateNode(
                     Keyword.onUpdate,
+                    keyRestriction: restrictions.validateDatabaseActionKey,
                     valueRestriction: EnumValueRestriction(
                       enums: ForeignKeyAction.values,
                     ).validate,
                   ),
                   ValidateNode(
                     Keyword.onDelete,
+                    keyRestriction: restrictions.validateDatabaseActionKey,
                     valueRestriction: EnumValueRestriction(
                       enums: ForeignKeyAction.values,
                     ).validate,

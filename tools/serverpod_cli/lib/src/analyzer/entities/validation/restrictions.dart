@@ -130,6 +130,32 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateDatabaseActionKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var relation = field.relation;
+    if (relation == null) return [];
+
+    if (!relation.isForeignKeyOrigin) {
+      return [
+        SourceSpanSeverityException(
+          'The "$key" property can only be set on the side holding the foreign key.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateOptionalKey(
     String parentNodeName,
     String _,
