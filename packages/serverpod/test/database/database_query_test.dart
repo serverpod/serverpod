@@ -8,7 +8,7 @@ void main() {
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = SelectQueryBuilder(table: 'citizen').build();
 
-      expect(query, 'SELECT * FROM citizen');
+      expect(query, 'SELECT * FROM "citizen"');
     });
 
     test('when query with specific fields is built then output selects fields.',
@@ -22,7 +22,7 @@ void main() {
           SelectQueryBuilder(table: 'citizen').withSelectFields(fields).build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM citizen');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen"');
     });
 
     test(
@@ -32,7 +32,7 @@ void main() {
           .withWhere(Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT * FROM citizen WHERE "test"=@test');
+      expect(query, 'SELECT * FROM "citizen" WHERE "test"=@test');
     });
 
     test(
@@ -46,8 +46,8 @@ void main() {
           .withWhere(combinedExpression)
           .build();
 
-      expect(
-          query, 'SELECT * FROM citizen WHERE (TRUE = TRUE AND FALSE = FALSE)');
+      expect(query,
+          'SELECT * FROM "citizen" WHERE (TRUE = TRUE AND FALSE = FALSE)');
     });
 
     test(
@@ -58,7 +58,7 @@ void main() {
       var query =
           SelectQueryBuilder(table: 'citizen').withOrderBy([order]).build();
 
-      expect(query, 'SELECT * FROM citizen ORDER BY "id"');
+      expect(query, 'SELECT * FROM "citizen" ORDER BY "id"');
     });
 
     test(
@@ -73,20 +73,21 @@ void main() {
       var query =
           SelectQueryBuilder(table: 'citizen').withOrderBy(orders).build();
 
-      expect(query, 'SELECT * FROM citizen ORDER BY "id", "name" DESC, "age"');
+      expect(
+          query, 'SELECT * FROM "citizen" ORDER BY "id", "name" DESC, "age"');
     });
 
     test('when query with limit is built then output is query with limit.', () {
       var query = SelectQueryBuilder(table: 'citizen').withLimit(10).build();
 
-      expect(query, 'SELECT * FROM citizen LIMIT 10');
+      expect(query, 'SELECT * FROM "citizen" LIMIT 10');
     });
 
     test('when query with offset is built then output is query with offset.',
         () {
       var query = SelectQueryBuilder(table: 'citizen').withOffset(10).build();
 
-      expect(query, 'SELECT * FROM citizen OFFSET 10');
+      expect(query, 'SELECT * FROM "citizen" OFFSET 10');
     });
 
     test(
@@ -109,7 +110,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
     });
 
     test(
@@ -140,7 +141,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN citizen AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
     });
 
     test('when all properties configured is built then output is valid SQL.',
@@ -171,7 +172,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY "id" DESC LIMIT 10 OFFSET 5');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY "id" DESC LIMIT 10 OFFSET 5');
     });
   });
 
@@ -179,21 +180,21 @@ void main() {
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = CountQueryBuilder(table: 'citizen').build();
 
-      expect(query, 'SELECT COUNT(*) FROM citizen');
+      expect(query, 'SELECT COUNT(*) FROM "citizen"');
     });
     test('when query with alias is built then count result has defined alias.',
         () {
       var query =
           CountQueryBuilder(table: 'citizen').withCountAlias('c').build();
 
-      expect(query, 'SELECT COUNT(*) AS c FROM citizen');
+      expect(query, 'SELECT COUNT(*) AS c FROM "citizen"');
     });
 
     test('when query with field is built then count is based on that field.',
         () {
       var query = CountQueryBuilder(table: 'citizen').withField('age').build();
 
-      expect(query, 'SELECT COUNT(age) FROM citizen');
+      expect(query, 'SELECT COUNT(age) FROM "citizen"');
     });
 
     test(
@@ -203,14 +204,14 @@ void main() {
           .withWhere(Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT COUNT(*) FROM citizen WHERE "test"=@test');
+      expect(query, 'SELECT COUNT(*) FROM "citizen" WHERE "test"=@test');
     });
 
     test('when query with limit is built then output is a query with limit.',
         () {
       var query = CountQueryBuilder(table: 'citizen').withLimit(10).build();
 
-      expect(query, 'SELECT COUNT(*) FROM citizen LIMIT 10');
+      expect(query, 'SELECT COUNT(*) FROM "citizen" LIMIT 10');
     });
 
     test(
@@ -233,7 +234,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
     });
 
     test(
@@ -264,7 +265,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN citizen AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
     });
 
     test(
@@ -290,7 +291,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(age) AS c FROM citizen LEFT JOIN company AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
+          'SELECT COUNT(age) AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
     });
   });
 
@@ -298,7 +299,7 @@ void main() {
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = DeleteQueryBuilder(table: 'citizen').build();
 
-      expect(query, 'DELETE FROM citizen');
+      expect(query, 'DELETE FROM "citizen"');
     });
 
     test(
@@ -308,14 +309,14 @@ void main() {
           .withWhere(Expression('"test"=@test'))
           .build();
 
-      expect(query, 'DELETE FROM citizen WHERE "test"=@test');
+      expect(query, 'DELETE FROM "citizen" WHERE "test"=@test');
     });
 
     test('when query returning all is built then output is a return all query.',
         () {
       var query = DeleteQueryBuilder(table: 'citizen').withReturnAll().build();
 
-      expect(query, 'DELETE FROM citizen RETURNING *');
+      expect(query, 'DELETE FROM "citizen" RETURNING *');
     });
 
     test(
@@ -338,7 +339,7 @@ void main() {
           .build();
 
       expect(query,
-          'DELETE FROM citizen USING company AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id"');
+          'DELETE FROM "citizen" USING "company" AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id"');
     });
 
     test(
@@ -369,7 +370,7 @@ void main() {
           .build();
 
       expect(query,
-          'DELETE FROM citizen USING company AS citizen_company_company, citizen AS citizen_company_company_ceo_citizen WHERE citizen_company_company_ceo_citizen."name" = \'Alex\' AND citizen."companyId" = citizen_company_company."id" AND citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id"');
+          'DELETE FROM "citizen" USING "company" AS citizen_company_company, "citizen" AS citizen_company_company_ceo_citizen WHERE citizen_company_company_ceo_citizen."name" = \'Alex\' AND citizen."companyId" = citizen_company_company."id" AND citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id"');
     });
 
     test(
@@ -393,7 +394,7 @@ void main() {
           .build();
 
       expect(query,
-          'DELETE FROM citizen USING company AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id" RETURNING *');
+          'DELETE FROM "citizen" USING "company" AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id" RETURNING *');
     });
   });
 }

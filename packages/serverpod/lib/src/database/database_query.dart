@@ -26,7 +26,7 @@ class SelectQueryBuilder {
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
 
     var query = _buildSelectQuery(_fields, _include);
-    query += ' FROM $_table';
+    query += ' FROM "$_table"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
     if (_orderBy != null) {
@@ -132,7 +132,7 @@ class CountQueryBuilder {
 
     var query = 'SELECT COUNT($_field)';
     if (_alias != null) query += ' AS $_alias';
-    query += ' FROM $_table';
+    query += ' FROM "$_table"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
     if (_limit != null) query += ' LIMIT $_limit';
@@ -176,7 +176,7 @@ class DeleteQueryBuilder {
   String build() {
     var using = _buildUsingQuery(where: _where);
 
-    var query = 'DELETE FROM $_table';
+    var query = 'DELETE FROM "$_table"';
     if (using != null) query += ' USING ${using.using}';
     if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
@@ -313,7 +313,7 @@ String _joinStatementFromTableRelations(
     LinkedHashMap<String, TableRelation> tableRelations) {
   List<String> joinStatements = [];
   for (var tableRelation in tableRelations.values) {
-    joinStatements.add('LEFT JOIN ${tableRelation.tableName} '
+    joinStatements.add('LEFT JOIN "${tableRelation.tableName}" '
         'AS ${tableRelation.tableNameWithQueryPrefix} '
         'ON ${tableRelation.foreignTableColumn} '
         '= ${tableRelation.column}');
@@ -335,7 +335,7 @@ _UsingQuery _usingQueryFromTableRelations(
   List<String> whereStatements = [];
   for (var tableRelation in tableRelations.values) {
     usingStatements.add(
-        '${tableRelation.tableName} AS ${tableRelation.tableNameWithQueryPrefix}');
+        '"${tableRelation.tableName}" AS ${tableRelation.tableNameWithQueryPrefix}');
     whereStatements
         .add('${tableRelation.foreignTableColumn} = ${tableRelation.column}');
   }
