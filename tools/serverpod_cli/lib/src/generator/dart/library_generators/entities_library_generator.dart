@@ -691,6 +691,37 @@ class SerializableEntityLibraryGenerator {
                     ])
                     .returned
                     .statement));
+
+              // include
+              classBuilder.methods.add(Method(
+                (m) => m
+                  ..static = true
+                  ..name = 'include'
+                  ..returns =
+                      TypeReference((r) => r..symbol = '${className}Include')
+                  ..optionalParameters.addAll([
+                    for (var field in objectRelationFields)
+                      Parameter(
+                        (p) => p
+                          ..type = field.type.reference(
+                            serverCode,
+                            subDirParts: classDefinition.subDirParts,
+                            config: config,
+                            typeSuffix: 'Include',
+                          )
+                          ..name = field.name
+                          ..named = true,
+                      ),
+                  ])
+                  ..body = refer('${className}Include')
+                      .property('_')
+                      .call([], {
+                        for (var field in objectRelationFields)
+                          field.name: refer(field.name),
+                      })
+                      .returned
+                      .statement,
+              ));
             }
           }
         }));
@@ -952,6 +983,7 @@ class SerializableEntityLibraryGenerator {
 
             // Add constructor
             c.constructors.add(Constructor((constructor) {
+              constructor.name = '_';
               for (var field in objectRelationFields) {
                 constructor.optionalParameters.add(Parameter(
                   (p) => p

@@ -315,6 +315,17 @@ void main() {
             isTrue,
             reason: 'Missing declaration for static count method.');
       });
+
+      test('has a static include method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'include',
+              isStatic: true,
+            ),
+            isTrue,
+            reason: 'Missing declaration for static include method.');
+      });
     }, skip: maybeClassNamedExample == null);
 
     var maybeClassNamedExampleTable =
