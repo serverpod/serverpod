@@ -53,28 +53,40 @@ void main() {
     test(
         'when query with single order by is built then output is single order by query.',
         () {
-      Order order = Order(column: ColumnString('id'), orderDescending: false);
+      var table = 'citizen';
+      Order order = Order(
+          column: ColumnString('id', queryPrefix: table),
+          orderDescending: false);
 
-      var query =
-          SelectQueryBuilder(table: 'citizen').withOrderBy([order]).build();
+      var query = SelectQueryBuilder(table: table).withOrderBy([order]).build();
 
-      expect(query, 'SELECT * FROM "citizen" ORDER BY "id"');
+      expect(query, 'SELECT * FROM "citizen" ORDER BY citizen."id"');
     });
 
     test(
         'when query with multiple order by is built then output is query with multiple order by requirements.',
         () {
+      var table = 'citizen';
       var orders = [
-        Order(column: ColumnString('id'), orderDescending: false),
-        Order(column: ColumnString('name'), orderDescending: true),
-        Order(column: ColumnString('age'), orderDescending: false)
+        Order(
+          column: ColumnString('id', queryPrefix: table),
+          orderDescending: false,
+        ),
+        Order(
+          column: ColumnString('name', queryPrefix: table),
+          orderDescending: true,
+        ),
+        Order(
+          column: ColumnString('age', queryPrefix: table),
+          orderDescending: false,
+        )
       ];
 
       var query =
           SelectQueryBuilder(table: 'citizen').withOrderBy(orders).build();
 
-      expect(
-          query, 'SELECT * FROM "citizen" ORDER BY "id", "name" DESC, "age"');
+      expect(query,
+          'SELECT * FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
     });
 
     test('when query with limit is built then output is query with limit.', () {
@@ -151,9 +163,9 @@ void main() {
       var queryPrefixForColumn = 'citizen_company_company';
       var query = SelectQueryBuilder(table: table)
           .withSelectFields([
-            ColumnString('id', queryPrefix: 'citizen'),
-            ColumnString('name', queryPrefix: 'citizen'),
-            ColumnString('age', queryPrefix: 'citizen'),
+            ColumnString('id', queryPrefix: table),
+            ColumnString('name', queryPrefix: table),
+            ColumnString('age', queryPrefix: table),
           ])
           .withWhere(ColumnString('name',
               queryPrefix: queryPrefixForColumn,
@@ -165,14 +177,53 @@ void main() {
                   relationQueryPrefix: queryPrefix,
                 )
               ]).equals('Serverpod'))
-          .withOrderBy(
-              [Order(column: ColumnString('id'), orderDescending: true)])
+          .withOrderBy([
+            Order(
+                column: ColumnString('id', queryPrefix: table),
+                orderDescending: true)
+          ])
           .withLimit(10)
           .withOffset(5)
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY "id" DESC LIMIT 10 OFFSET 5');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
+    });
+
+    test(
+        'when column where expression has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var queryBuilder = SelectQueryBuilder(table: table).withWhere(
+          ColumnString('name', queryPrefix: differentTable)
+              .equals('Serverpod'));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+          )));
+    });
+
+    test('when order by has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var queryBuilder = SelectQueryBuilder(table: table).withOrderBy(
+          [Order(column: ColumnString('name', queryPrefix: differentTable))]);
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company."name".'),
+          )));
     });
   });
 
@@ -293,6 +344,25 @@ void main() {
       expect(query,
           'SELECT COUNT(age) AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
     });
+
+    test(
+        'when column where expression has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var queryBuilder = CountQueryBuilder(table: table).withWhere(
+          ColumnString('name', queryPrefix: differentTable)
+              .equals('Serverpod'));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+          )));
+    });
   });
 
   group('Given DeleteQueryBuilder', () {
@@ -395,6 +465,25 @@ void main() {
 
       expect(query,
           'DELETE FROM "citizen" USING "company" AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id" RETURNING *');
+    });
+
+    test(
+        'when column where expression has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var queryBuilder = DeleteQueryBuilder(table: table).withWhere(
+          ColumnString('name', queryPrefix: differentTable)
+              .equals('Serverpod'));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+          )));
     });
   });
 }
