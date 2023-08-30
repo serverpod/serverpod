@@ -127,6 +127,7 @@ class CountQueryBuilder {
     return this;
   }
 
+  /// Builds the SQL query.
   String build() {
     var join = _buildJoinQuery(where: _where);
 

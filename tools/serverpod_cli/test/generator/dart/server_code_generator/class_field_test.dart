@@ -587,11 +587,11 @@ void main() {
             isTrue,
             reason: 'Missing extends clause for Include.');
       });
-      test('has named parameter for field in constructor.', () {
+      test('has named parameter for field in private constructor.', () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               exampleIncludeClass,
-              name: null,
+              name: '_',
               parameters: ['this.company'],
             ),
             isTrue,
