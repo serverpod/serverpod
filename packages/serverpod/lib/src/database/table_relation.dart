@@ -1,7 +1,9 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/expressions.dart';
 
 /// Records the relation between two tables.
 /// This is typically only used internally by the serverpod framework.
+@internal
 class TableRelation {
   /// Name of table.
   final String tableName;

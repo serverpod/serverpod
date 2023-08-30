@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
@@ -8,6 +9,7 @@ import 'package:serverpod/src/database/table_relation.dart';
 ///
 /// The query builder simplifies the process supporting order by,
 /// where expressions and includes for table relations.
+@internal
 class SelectQueryBuilder {
   final String _table;
   List<Column>? _fields;
@@ -88,6 +90,7 @@ class SelectQueryBuilder {
 ///
 /// The query builder simplifies the process of supporting where expressions
 /// for table relations.
+@internal
 class CountQueryBuilder {
   final String _table;
   String? _alias;
@@ -150,6 +153,7 @@ class _UsingQuery {
 }
 
 /// Builds a SQL query for a delete statement.
+@internal
 class DeleteQueryBuilder {
   final String _table;
   bool? _returnAll;
