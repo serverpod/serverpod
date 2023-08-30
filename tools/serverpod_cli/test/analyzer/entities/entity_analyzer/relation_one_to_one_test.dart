@@ -18,7 +18,7 @@ fields:
   addressId: int
   address: Address?, relation(name=user_address, field=addressId)
 ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
+      Uri(path: 'lib/src/protocol/user.yaml'),
       [],
     );
 
@@ -29,7 +29,7 @@ table: address
 fields:
   user: User?, relation(name=user_address)
 ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
+      Uri(path: 'lib/src/protocol/address.yaml'),
       [],
     );
 
@@ -173,5 +173,149 @@ fields:
         expect(relation?.name, isNull);
       }, skip: relation is! ObjectRelationDefinition);
     });
+  });
+
+  group(
+      'Given a class with a named object relation on both sides without a field references',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  address: Address?, relation(name=user_address)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: User?, relation(name=user_address)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages tells the user the relation is ambiguous and the field references should be used.',
+        () {
+      expect(
+        errors.first.message,
+        'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=user_address, field=addressId)',
+      );
+
+      expect(
+        errors.last.message,
+        'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=user_address, field=userId)',
+      );
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a one to one relation where the relationship is only named on one side',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  address: Address?, relation(name=user_address)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: User?, relation
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+    test('then an error is collected', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a named relation on the other side.',
+        () {
+      expect(
+        errors.first.message,
+        'There is no named relation with name "user_address" on the class "Address".',
+      );
+    }, skip: errors.isEmpty);
   });
 }

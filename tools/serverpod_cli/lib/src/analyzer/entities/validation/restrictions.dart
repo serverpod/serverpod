@@ -437,29 +437,6 @@ class Restrictions {
       ));
     }
 
-    if (!(field.type.isList)) return errors;
-
-    var referenceFields = referenceClass.fields.where((referenceField) {
-      var relation = referenceField.relation;
-      if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == classDefinition.tableName &&
-          relation.name == field.relation?.name;
-    });
-
-    if (referenceFields.isEmpty) {
-      errors.add(SourceSpanSeverityException(
-        'There is no named relation with name "${field.relation?.name}" on the class "$parsedType".',
-        span,
-      ));
-    }
-
-    if (referenceFields.length > 1) {
-      errors.add(SourceSpanSeverityException(
-        'Unable to resolve ambiguous relation, there are several named relations with name "${field.relation?.name}" on the class "$parsedType".',
-        span,
-      ));
-    }
-
     return errors;
   }
 
@@ -571,6 +548,85 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> validateRelationName(
+    String parentNodeName,
+    dynamic name,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    if (name is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var localEntityRelations = entityRelations;
+    if (localEntityRelations == null) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var relation = field.relation;
+    if (relation == null) return [];
+
+    var relationName = relation.name;
+    if (relationName == null) return [];
+
+    if (relation.isForeignKeyOrigin) return [];
+
+    var foreignClassName = _extractReferenceClassName(field);
+    if (foreignClassName == null) return [];
+
+    var foreignClasses = localEntityRelations.classNames[foreignClassName];
+    if (foreignClasses == null || foreignClasses.isEmpty) return [];
+
+    var foreignClass = foreignClasses.first;
+    if (foreignClass is! ClassDefinition) return [];
+
+    var foreignFields = foreignClass.fields.where((referenceField) {
+      var referenceRelation = referenceField.relation;
+      return referenceRelation?.name == relationName;
+    });
+
+    if (foreignFields.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'There is no named relation with name "$relationName" on the class "$foreignClassName".',
+          span,
+        )
+      ];
+    }
+
+    if (foreignFields.length > 1) {
+      return [
+        SourceSpanSeverityException(
+          'Unable to resolve ambiguous relation, there are several named relations with name "$relationName" on the class "$foreignClassName".',
+          span,
+        )
+      ];
+    }
+
+    var isForeignFieldForeignKeyOrigin = foreignFields.any(
+      (element) => element.relation?.isForeignKeyOrigin == true,
+    );
+
+    if (!isForeignFieldForeignKeyOrigin && !relation.isForeignKeyOrigin) {
+      return [
+        SourceSpanSeverityException(
+          'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          span,
+        )
+      ];
+    }
+
+    return [];
   }
 
   List<SourceSpanSeverityException> validateEnumValues(

@@ -96,7 +96,7 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.name,
                     mutuallyExclusiveKeys: {Keyword.parent},
-                    valueRestriction: StringValueRestriction().validate,
+                    valueRestriction: restrictions.validateRelationName,
                   ),
                 },
               ),

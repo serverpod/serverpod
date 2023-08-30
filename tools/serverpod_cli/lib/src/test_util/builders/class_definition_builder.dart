@@ -102,17 +102,20 @@ class ClassDefinitionBuilder {
   }
 
   ClassDefinitionBuilder withObjectRelationField(
-      String fieldName, String className, String parentTable) {
+    String fieldName,
+    String className,
+    String parentTable,
+  ) {
     _fields.addAll([
       FieldDefinitionBuilder()
           .withName(fieldName)
           .withTypeDefinition(className, true)
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
-            parentTable: parentTable,
-            fieldName: '${fieldName}Id',
-            foreignFieldName: 'id',
-          ))
+              parentTable: parentTable,
+              fieldName: '${fieldName}Id',
+              foreignFieldName: 'id',
+              isForeignKeyOrigin: true))
           .build(),
       FieldDefinitionBuilder()
           .withName('${fieldName}Id')

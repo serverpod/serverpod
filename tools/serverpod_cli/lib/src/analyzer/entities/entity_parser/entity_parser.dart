@@ -227,6 +227,7 @@ class EntityParser {
         fieldName: relationFieldName,
         onUpdate: onUpdate,
         onDelete: onDelete,
+        isForeignKeyOrigin: relationFieldName != null,
         optionalRelation: optionalRelation,
       );
     } else {

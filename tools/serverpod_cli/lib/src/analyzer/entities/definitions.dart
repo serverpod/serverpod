@@ -219,12 +219,14 @@ class ProtocolEnumValueDefinition {
 abstract class RelationDefinition {
   String? name;
 
-  RelationDefinition(this.name);
+  bool isForeignKeyOrigin;
+
+  RelationDefinition(this.name, this.isForeignKeyOrigin);
 }
 
 /// Internal representation of an unresolved [ListRelationDefinition].
 class UnresolvedListRelationDefinition extends RelationDefinition {
-  UnresolvedListRelationDefinition({String? name}) : super(name);
+  UnresolvedListRelationDefinition({String? name}) : super(name, false);
 }
 
 /// Used for relations for fields of type [List] that has a reference pointer
@@ -236,7 +238,7 @@ class ListRelationDefinition extends RelationDefinition {
   ListRelationDefinition({
     String? name,
     required this.foreignFieldName,
-  }) : super(name);
+  }) : super(name, false);
 }
 
 /// Used for relations for fields that point to another field that holds the id
@@ -259,7 +261,8 @@ class ObjectRelationDefinition extends RelationDefinition {
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
-  }) : super(name);
+    required bool isForeignKeyOrigin,
+  }) : super(name, isForeignKeyOrigin);
 }
 
 class UnresolvedObjectRelationDefinition extends RelationDefinition {
@@ -280,8 +283,9 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
     required this.fieldName,
     required this.onDelete,
     required this.onUpdate,
+    required bool isForeignKeyOrigin,
     this.optionalRelation = false,
-  }) : super(name);
+  }) : super(name, isForeignKeyOrigin);
 }
 
 /// Internal representation of an unresolved [ForeignRelationDefinition].
@@ -300,7 +304,7 @@ class UnresolvedForeignRelationDefinition extends RelationDefinition {
     required this.foreignFieldName,
     required this.onDelete,
     required this.onUpdate,
-  }) : super(name);
+  }) : super(name, true);
 }
 
 /// Used for relations for fields that stores the id of another object.
@@ -326,7 +330,7 @@ class ForeignRelationDefinition extends RelationDefinition {
     required this.foreignFieldName,
     this.onDelete = onDeleteDefault,
     this.onUpdate = onUpdateDefault,
-  }) : super(name);
+  }) : super(name, true);
 }
 
 const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;

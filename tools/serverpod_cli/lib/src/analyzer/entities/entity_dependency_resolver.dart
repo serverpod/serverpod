@@ -114,6 +114,7 @@ class EntityDependencyResolver {
       parentTable: tableName,
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignField.name,
+      isForeignKeyOrigin: relation.isForeignKeyOrigin
     );
   }
 
@@ -151,6 +152,7 @@ class EntityDependencyResolver {
       parentTable: tableName,
       fieldName: '${fieldDefinition.name}Id',
       foreignFieldName: defaultPrimaryKeyName,
+      isForeignKeyOrigin: true
     );
   }
 
@@ -176,6 +178,7 @@ class EntityDependencyResolver {
       parentTable: tableName,
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
+      isForeignKeyOrigin: true
     );
   }
 
