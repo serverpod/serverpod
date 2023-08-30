@@ -600,6 +600,10 @@ class Constant extends Expression {
 class Table {
   /// Name of the table as used in the database.
   final String tableName;
+
+  /// The database id.
+  late final ColumnInt id;
+
   late List<Column>? _columns;
 
   /// List of [Column] used by the table.
@@ -619,6 +623,11 @@ class Table {
     this.tableRelations,
   }) : queryPrefix = '$queryPrefix$tableName' {
     _columns = columns;
+    id = ColumnInt(
+      'id',
+      queryPrefix: this.queryPrefix,
+      tableRelations: tableRelations,
+    );
   }
 
   /// Returns [TableColumnRelation] for the given [relationField]. If no relation

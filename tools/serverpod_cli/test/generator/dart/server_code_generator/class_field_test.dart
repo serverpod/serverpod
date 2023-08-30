@@ -376,6 +376,27 @@ void main() {
             isTrue,
             reason: 'Missing declaration for columns getter.');
       });
+
+      test('does NOT have getRelationTable method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'getRelationTable',
+            ),
+            isFalse,
+            reason:
+                'Declaration for getRelationTable method should not be generated.');
+      });
+
+      test('does NOT have id field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'id',
+            ),
+            isFalse,
+            reason: 'Declaration for id field should not be generated.');
+      });
     }, skip: maybeClassNamedExampleTable == null);
 
     test(
@@ -412,22 +433,6 @@ void main() {
           isTrue,
           reason: 'Missing class named ${testClassName}Include.');
     });
-
-    test(
-        'then the class named ${testClassName}Table does NOT have getRelationTable method.',
-        () {
-      expect(
-          CompilationUnitHelpers.hasMethodDeclaration(
-            maybeClassNamedExampleTable!,
-            name: 'getRelationTable',
-          ),
-          isFalse,
-          reason:
-              'Declaration for getRelationTable method should not be generated.');
-    },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
-            : false);
   });
 
   group(

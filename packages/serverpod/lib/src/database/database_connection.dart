@@ -115,8 +115,9 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
+    Table table = _getTableOrAssert<T>(session, operation: 'findById');
     var result = await find<T>(
-      where: Expression('id = $id'),
+      where: table.id.equals(id),
       session: session,
       transaction: transaction,
       include: include,
@@ -139,12 +140,7 @@ class DatabaseConnection {
     Include? include,
   }) async {
     assert(orderByList == null || orderBy == null);
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.find<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    Table table = _getTableOrAssert<T>(session, operation: 'find');
 
     var startTime = DateTime.now();
 
@@ -192,6 +188,15 @@ Current type was $T''');
 
     _logQuery(session, query, startTime, numRowsAffected: list.length);
     return list.cast<T>();
+  }
+
+  Table _getTableOrAssert<T>(Session session, {required String operation}) {
+    var table = session.serverpod.serializationManager.getTableForType(T);
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
+Current type was $T''');
+    return table!;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -257,12 +262,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. numRows = await session.db.count<MyTableClass>();
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert(session, operation: 'count');
 
     var startTime = DateTime.now();
 
@@ -400,12 +400,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert(session, operation: 'delete');
 
     var startTime = DateTime.now();
 
@@ -433,12 +428,7 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.deleteAndReturn<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert(session, operation: 'deleteAndReturn');
 
     var startTime = DateTime.now();
 

@@ -762,34 +762,36 @@ class SerializableEntityLibraryGenerator {
               constructor.body = Block.of([
                 for (var field in fields.where((field) =>
                     field.shouldSerializeFieldForDatabase(serverCode)))
-                  refer(field.name)
-                      .assign(TypeReference((t) => t
-                        ..symbol = field.type.columnType
-                        ..url = 'package:serverpod/serverpod.dart'
-                        ..types.addAll(field.type.isEnum
-                            ? [
-                                field.type.reference(
-                                  serverCode,
-                                  nullable: false,
-                                  subDirParts: classDefinition.subDirParts,
-                                  config: config,
-                                )
-                              ]
-                            : [])).call([
-                        literalString(field.name)
-                      ], {
-                        'queryPrefix': refer('super').property('queryPrefix'),
-                        'tableRelations':
-                            refer('super').property('tableRelations')
-                      }))
-                      .statement,
+                  if (!(field.name == 'id' && serverCode))
+                    refer(field.name)
+                        .assign(TypeReference((t) => t
+                          ..symbol = field.type.columnType
+                          ..url = 'package:serverpod/serverpod.dart'
+                          ..types.addAll(field.type.isEnum
+                              ? [
+                                  field.type.reference(
+                                    serverCode,
+                                    nullable: false,
+                                    subDirParts: classDefinition.subDirParts,
+                                    config: config,
+                                  )
+                                ]
+                              : [])).call([
+                          literalString(field.name)
+                        ], {
+                          'queryPrefix': refer('super').property('queryPrefix'),
+                          'tableRelations':
+                              refer('super').property('tableRelations')
+                        }))
+                        .statement,
               ]);
             }));
 
             // Column fields
             for (var field in fields) {
               // Simple column field
-              if (field.shouldSerializeFieldForDatabase(serverCode)) {
+              if (field.shouldSerializeFieldForDatabase(serverCode) &&
+                  !(field.name == 'id' && serverCode)) {
                 c.fields.add(Field((f) => f
                   ..late = true
                   ..modifier = FieldModifier.final$
