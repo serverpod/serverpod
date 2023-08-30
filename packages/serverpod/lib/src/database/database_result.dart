@@ -1,6 +1,7 @@
 import 'package:serverpod/database.dart';
 
 /// Prepares a query result for serverpod serialization.
+/// This is typically only used internally by the serverpod framework.
 Map<String, dynamic>? resolvePrefixedQueryRow(
   Table table,
   Map<String, Map<String, dynamic>> rawRow, {

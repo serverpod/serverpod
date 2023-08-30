@@ -1,10 +1,13 @@
-// ignore_for_file: public_member_api_docs
-
 import 'dart:collection';
 
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
+/// Builds a SQL query for a select statement.
+/// This is typically only used internally by the serverpod framework.
+///
+/// The query builder simplifies the process supporting order by,
+/// where expressions and includes for table relations.
 class SelectQueryBuilder {
   final String _table;
   List<Column>? _fields;
@@ -14,8 +17,10 @@ class SelectQueryBuilder {
   Expression? _where;
   Include? _include;
 
+  /// Creates a new [SelectQueryBuilder].
   SelectQueryBuilder({required table}) : _table = table;
 
+  /// Builds the SQL query.
   String build() {
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
@@ -34,37 +39,55 @@ class SelectQueryBuilder {
     return query;
   }
 
+  /// Sets the fields that should be selected by the query.
+  /// If no fields are set, all fields will be selected.
   SelectQueryBuilder withSelectFields(List<Column>? fields) {
     _fields = fields;
     return this;
   }
 
+  /// Sets the order by for the query.
+  ///
+  /// If order by includes columns from a relation, the relation will be joined
+  /// in the query.
   SelectQueryBuilder withOrderBy(List<Order>? orderBy) {
     _orderBy = orderBy;
     return this;
   }
 
+  /// Sets the limit for the query.
   SelectQueryBuilder withLimit(int? limit) {
     _limit = limit;
     return this;
   }
 
+  /// Sets the offset for the query.
   SelectQueryBuilder withOffset(int? offset) {
     _offset = offset;
     return this;
   }
 
+  /// Sets the where expression for the query.
+  ///
+  /// If the where expression includes columns from a relation, the relation
+  /// will be joined in the query.
   SelectQueryBuilder withWhere(Expression? where) {
     _where = where;
     return this;
   }
 
+  /// Sets the include for the query.
   SelectQueryBuilder withInclude(Include? include) {
     _include = include;
     return this;
   }
 }
 
+/// Builds a SQL query for a count statement.
+/// This is typically only used internally by the serverpod framework.
+///
+/// The query builder simplifies the process of supporting where expressions
+/// for table relations.
 class CountQueryBuilder {
   final String _table;
   String? _alias;
@@ -72,25 +95,33 @@ class CountQueryBuilder {
   int? _limit;
   Expression? _where;
 
+  /// Creates a new [CountQueryBuilder].
   CountQueryBuilder({required table})
       : _table = table,
         _field = '*';
 
+  /// Sets the alias for the count query.
   CountQueryBuilder withCountAlias(String alias) {
     _alias = alias;
     return this;
   }
 
+  /// Sets the field to count.
   CountQueryBuilder withField(String field) {
     _field = field;
     return this;
   }
 
+  /// Sets the limit for the query.
   CountQueryBuilder withLimit(int? limit) {
     _limit = limit;
     return this;
   }
 
+  /// Sets the where expression for the query.
+  ///
+  /// If the where expression includes columns from a relation, the relation
+  /// will be joined in the query.
   CountQueryBuilder withWhere(Expression? where) {
     _where = where;
     return this;
@@ -109,6 +140,7 @@ class CountQueryBuilder {
   }
 }
 
+/// Helper class for building the Using part of a delete query.
 class _UsingQuery {
   final String using;
   final String where;
@@ -116,22 +148,31 @@ class _UsingQuery {
   _UsingQuery({required this.using, required this.where});
 }
 
+/// Builds a SQL query for a delete statement.
 class DeleteQueryBuilder {
   final String _table;
-  bool? returnAll;
+  bool? _returnAll;
   Expression? _where;
+
+  /// Creates a new [DeleteQueryBuilder].
   DeleteQueryBuilder({required table}) : _table = table;
 
+  /// Determines if "RETURNING *" should be added to the query.
   DeleteQueryBuilder withReturnAll() {
-    returnAll = true;
+    _returnAll = true;
     return this;
   }
 
+  /// Sets the where expression for the query.
+  ///
+  /// If the where expression includes columns from a relation, the relation
+  /// will be added to the query with a using statement.
   DeleteQueryBuilder withWhere(Expression? where) {
     _where = where;
     return this;
   }
 
+  /// Builds the SQL query.
   String build() {
     var using = _buildUsingQuery(where: _where);
 
@@ -139,7 +180,7 @@ class DeleteQueryBuilder {
     if (using != null) query += ' USING ${using.using}';
     if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
-    if (returnAll != null) query += ' RETURNING *';
+    if (_returnAll != null) query += ' RETURNING *';
     return query;
   }
 }
