@@ -181,6 +181,10 @@ class SimpleDateTime extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static SimpleDateTimeInclude include() {
+    return SimpleDateTimeInclude._();
+  }
 }
 
 typedef SimpleDateTimeExpressionBuilder = _i1.Expression Function(
@@ -222,7 +226,7 @@ class SimpleDateTimeTable extends _i1.Table {
 SimpleDateTimeTable tSimpleDateTime = SimpleDateTimeTable();
 
 class SimpleDateTimeInclude extends _i1.Include {
-  SimpleDateTimeInclude();
+  SimpleDateTimeInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

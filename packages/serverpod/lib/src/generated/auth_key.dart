@@ -224,6 +224,10 @@ class AuthKey extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static AuthKeyInclude include() {
+    return AuthKeyInclude._();
+  }
 }
 
 typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
@@ -292,7 +296,7 @@ class AuthKeyTable extends _i1.Table {
 AuthKeyTable tAuthKey = AuthKeyTable();
 
 class AuthKeyInclude extends _i1.Include {
-  AuthKeyInclude();
+  AuthKeyInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

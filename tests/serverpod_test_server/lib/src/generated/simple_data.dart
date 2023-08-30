@@ -182,6 +182,10 @@ class SimpleData extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static SimpleDataInclude include() {
+    return SimpleDataInclude._();
+  }
 }
 
 typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
@@ -224,7 +228,7 @@ class SimpleDataTable extends _i1.Table {
 SimpleDataTable tSimpleData = SimpleDataTable();
 
 class SimpleDataInclude extends _i1.Include {
-  SimpleDataInclude();
+  SimpleDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

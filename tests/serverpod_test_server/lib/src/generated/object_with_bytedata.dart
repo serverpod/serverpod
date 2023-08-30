@@ -180,6 +180,10 @@ class ObjectWithByteData extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithByteDataInclude include() {
+    return ObjectWithByteDataInclude._();
+  }
 }
 
 typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
@@ -220,7 +224,7 @@ class ObjectWithByteDataTable extends _i1.Table {
 ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
 
 class ObjectWithByteDataInclude extends _i1.Include {
-  ObjectWithByteDataInclude();
+  ObjectWithByteDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

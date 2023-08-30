@@ -228,6 +228,10 @@ class FutureCallEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static FutureCallEntryInclude include() {
+    return FutureCallEntryInclude._();
+  }
 }
 
 typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
@@ -305,7 +309,7 @@ class FutureCallEntryTable extends _i1.Table {
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();
 
 class FutureCallEntryInclude extends _i1.Include {
-  FutureCallEntryInclude();
+  FutureCallEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

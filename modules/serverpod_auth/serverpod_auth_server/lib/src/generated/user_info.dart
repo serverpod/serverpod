@@ -270,6 +270,10 @@ class UserInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static UserInfoInclude include() {
+    return UserInfoInclude._();
+  }
 }
 
 typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
@@ -374,7 +378,7 @@ class UserInfoTable extends _i1.Table {
 UserInfoTable tUserInfo = UserInfoTable();
 
 class UserInfoInclude extends _i1.Include {
-  UserInfoInclude();
+  UserInfoInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

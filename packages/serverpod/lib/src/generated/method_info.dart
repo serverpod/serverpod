@@ -193,6 +193,10 @@ class MethodInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static MethodInfoInclude include() {
+    return MethodInfoInclude._();
+  }
 }
 
 typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
@@ -242,7 +246,7 @@ class MethodInfoTable extends _i1.Table {
 MethodInfoTable tMethodInfo = MethodInfoTable();
 
 class MethodInfoInclude extends _i1.Include {
-  MethodInfoInclude();
+  MethodInfoInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

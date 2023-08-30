@@ -243,6 +243,10 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ServerHealthConnectionInfoInclude include() {
+    return ServerHealthConnectionInfoInclude._();
+  }
 }
 
 typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
@@ -331,7 +335,7 @@ ServerHealthConnectionInfoTable tServerHealthConnectionInfo =
     ServerHealthConnectionInfoTable();
 
 class ServerHealthConnectionInfoInclude extends _i1.Include {
-  ServerHealthConnectionInfoInclude();
+  ServerHealthConnectionInfoInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

@@ -289,6 +289,10 @@ class QueryLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static QueryLogEntryInclude include() {
+    return QueryLogEntryInclude._();
+  }
 }
 
 typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
@@ -413,7 +417,7 @@ class QueryLogEntryTable extends _i1.Table {
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();
 
 class QueryLogEntryInclude extends _i1.Include {
-  QueryLogEntryInclude();
+  QueryLogEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

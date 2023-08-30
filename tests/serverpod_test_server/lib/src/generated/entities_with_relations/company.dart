@@ -205,6 +205,10 @@ class Company extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CompanyInclude include({_i2.TownInclude? town}) {
+    return CompanyInclude._(town: town);
+  }
 }
 
 typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
@@ -284,7 +288,7 @@ class CompanyTable extends _i1.Table {
 CompanyTable tCompany = CompanyTable();
 
 class CompanyInclude extends _i1.Include {
-  CompanyInclude({this.town});
+  CompanyInclude._({this.town});
 
   _i2.TownInclude? town;
 

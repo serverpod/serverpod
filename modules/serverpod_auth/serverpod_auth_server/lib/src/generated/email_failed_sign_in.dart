@@ -206,6 +206,10 @@ class EmailFailedSignIn extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailFailedSignInInclude include() {
+    return EmailFailedSignInInclude._();
+  }
 }
 
 typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
@@ -265,7 +269,7 @@ class EmailFailedSignInTable extends _i1.Table {
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
 
 class EmailFailedSignInInclude extends _i1.Include {
-  EmailFailedSignInInclude();
+  EmailFailedSignInInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

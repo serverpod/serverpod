@@ -190,6 +190,10 @@ class ObjectWithUuid extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithUuidInclude include() {
+    return ObjectWithUuidInclude._();
+  }
 }
 
 typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
@@ -238,7 +242,7 @@ class ObjectWithUuidTable extends _i1.Table {
 ObjectWithUuidTable tObjectWithUuid = ObjectWithUuidTable();
 
 class ObjectWithUuidInclude extends _i1.Include {
-  ObjectWithUuidInclude();
+  ObjectWithUuidInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

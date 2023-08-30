@@ -182,6 +182,10 @@ class ReadWriteTestEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ReadWriteTestEntryInclude include() {
+    return ReadWriteTestEntryInclude._();
+  }
 }
 
 typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
@@ -223,7 +227,7 @@ class ReadWriteTestEntryTable extends _i1.Table {
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
 
 class ReadWriteTestEntryInclude extends _i1.Include {
-  ReadWriteTestEntryInclude();
+  ReadWriteTestEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

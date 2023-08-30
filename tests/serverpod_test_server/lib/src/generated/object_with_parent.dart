@@ -178,6 +178,10 @@ class ObjectWithParent extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithParentInclude include() {
+    return ObjectWithParentInclude._();
+  }
 }
 
 typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
@@ -218,7 +222,7 @@ class ObjectWithParentTable extends _i1.Table {
 ObjectWithParentTable tObjectWithParent = ObjectWithParentTable();
 
 class ObjectWithParentInclude extends _i1.Include {
-  ObjectWithParentInclude();
+  ObjectWithParentInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

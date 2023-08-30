@@ -217,6 +217,10 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailCreateAccountRequestInclude include() {
+    return EmailCreateAccountRequestInclude._();
+  }
 }
 
 typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
@@ -286,7 +290,7 @@ EmailCreateAccountRequestTable tEmailCreateAccountRequest =
     EmailCreateAccountRequestTable();
 
 class EmailCreateAccountRequestInclude extends _i1.Include {
-  EmailCreateAccountRequestInclude();
+  EmailCreateAccountRequestInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

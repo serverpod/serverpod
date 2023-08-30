@@ -289,6 +289,10 @@ class MessageLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static MessageLogEntryInclude include() {
+    return MessageLogEntryInclude._();
+  }
 }
 
 typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
@@ -413,7 +417,7 @@ class MessageLogEntryTable extends _i1.Table {
 MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
 
 class MessageLogEntryInclude extends _i1.Include {
-  MessageLogEntryInclude();
+  MessageLogEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

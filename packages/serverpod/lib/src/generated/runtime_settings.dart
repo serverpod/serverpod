@@ -219,6 +219,10 @@ class RuntimeSettings extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static RuntimeSettingsInclude include() {
+    return RuntimeSettingsInclude._();
+  }
 }
 
 typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
@@ -287,7 +291,7 @@ class RuntimeSettingsTable extends _i1.Table {
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
 
 class RuntimeSettingsInclude extends _i1.Include {
-  RuntimeSettingsInclude();
+  RuntimeSettingsInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

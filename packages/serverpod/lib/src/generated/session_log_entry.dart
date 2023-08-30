@@ -328,6 +328,10 @@ class SessionLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static SessionLogEntryInclude include() {
+    return SessionLogEntryInclude._();
+  }
 }
 
 typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
@@ -481,7 +485,7 @@ class SessionLogEntryTable extends _i1.Table {
 SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
 
 class SessionLogEntryInclude extends _i1.Include {
-  SessionLogEntryInclude();
+  SessionLogEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

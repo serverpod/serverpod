@@ -205,6 +205,10 @@ class Town extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static TownInclude include({_i2.CitizenInclude? mayor}) {
+    return TownInclude._(mayor: mayor);
+  }
 }
 
 typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
@@ -284,7 +288,7 @@ class TownTable extends _i1.Table {
 TownTable tTown = TownTable();
 
 class TownInclude extends _i1.Include {
-  TownInclude({this.mayor});
+  TownInclude._({this.mayor});
 
   _i2.CitizenInclude? mayor;
 

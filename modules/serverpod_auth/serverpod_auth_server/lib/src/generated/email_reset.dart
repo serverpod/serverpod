@@ -205,6 +205,10 @@ class EmailReset extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailResetInclude include() {
+    return EmailResetInclude._();
+  }
 }
 
 typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
@@ -263,7 +267,7 @@ class EmailResetTable extends _i1.Table {
 EmailResetTable tEmailReset = EmailResetTable();
 
 class EmailResetInclude extends _i1.Include {
-  EmailResetInclude();
+  EmailResetInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

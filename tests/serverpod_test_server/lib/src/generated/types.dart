@@ -256,6 +256,10 @@ class Types extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static TypesInclude include() {
+    return TypesInclude._();
+  }
 }
 
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
@@ -351,7 +355,7 @@ class TypesTable extends _i1.Table {
 TypesTable tTypes = TypesTable();
 
 class TypesInclude extends _i1.Include {
-  TypesInclude();
+  TypesInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

@@ -195,6 +195,10 @@ class ObjectFieldScopes extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectFieldScopesInclude include() {
+    return ObjectFieldScopesInclude._();
+  }
 }
 
 typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
@@ -243,7 +247,7 @@ class ObjectFieldScopesTable extends _i1.Table {
 ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
 
 class ObjectFieldScopesInclude extends _i1.Include {
-  ObjectFieldScopesInclude();
+  ObjectFieldScopesInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

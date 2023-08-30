@@ -179,6 +179,10 @@ class ObjectWithDuration extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithDurationInclude include() {
+    return ObjectWithDurationInclude._();
+  }
 }
 
 typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
@@ -219,7 +223,7 @@ class ObjectWithDurationTable extends _i1.Table {
 ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
 
 class ObjectWithDurationInclude extends _i1.Include {
-  ObjectWithDurationInclude();
+  ObjectWithDurationInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

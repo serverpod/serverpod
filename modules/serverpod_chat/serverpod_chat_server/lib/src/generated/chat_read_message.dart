@@ -205,6 +205,10 @@ class ChatReadMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChatReadMessageInclude include() {
+    return ChatReadMessageInclude._();
+  }
 }
 
 typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
@@ -264,7 +268,7 @@ class ChatReadMessageTable extends _i1.Table {
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
 
 class ChatReadMessageInclude extends _i1.Include {
-  ChatReadMessageInclude();
+  ChatReadMessageInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

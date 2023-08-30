@@ -243,6 +243,10 @@ class ServerHealthMetric extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ServerHealthMetricInclude include() {
+    return ServerHealthMetricInclude._();
+  }
 }
 
 typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
@@ -330,7 +334,7 @@ class ServerHealthMetricTable extends _i1.Table {
 ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
 
 class ServerHealthMetricInclude extends _i1.Include {
-  ServerHealthMetricInclude();
+  ServerHealthMetricInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

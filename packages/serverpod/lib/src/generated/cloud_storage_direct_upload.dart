@@ -216,6 +216,10 @@ class CloudStorageDirectUploadEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CloudStorageDirectUploadEntryInclude include() {
+    return CloudStorageDirectUploadEntryInclude._();
+  }
 }
 
 typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
@@ -285,7 +289,7 @@ CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();
 
 class CloudStorageDirectUploadEntryInclude extends _i1.Include {
-  CloudStorageDirectUploadEntryInclude();
+  CloudStorageDirectUploadEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

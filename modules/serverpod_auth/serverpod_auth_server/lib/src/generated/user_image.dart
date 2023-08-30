@@ -204,6 +204,10 @@ class UserImage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static UserImageInclude include() {
+    return UserImageInclude._();
+  }
 }
 
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
@@ -262,7 +266,7 @@ class UserImageTable extends _i1.Table {
 UserImageTable tUserImage = UserImageTable();
 
 class UserImageInclude extends _i1.Include {
-  UserImageInclude();
+  UserImageInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

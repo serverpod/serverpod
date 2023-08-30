@@ -241,6 +241,10 @@ class CloudStorageEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CloudStorageEntryInclude include() {
+    return CloudStorageEntryInclude._();
+  }
 }
 
 typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
@@ -327,7 +331,7 @@ class CloudStorageEntryTable extends _i1.Table {
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
 
 class CloudStorageEntryInclude extends _i1.Include {
-  CloudStorageEntryInclude();
+  CloudStorageEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

@@ -192,6 +192,10 @@ class Channel extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChannelInclude include() {
+    return ChannelInclude._();
+  }
 }
 
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
@@ -241,7 +245,7 @@ class ChannelTable extends _i1.Table {
 ChannelTable tChannel = ChannelTable();
 
 class ChannelInclude extends _i1.Include {
-  ChannelInclude();
+  ChannelInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

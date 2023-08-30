@@ -224,6 +224,10 @@ class ObjectWithEnum extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithEnumInclude include() {
+    return ObjectWithEnumInclude._();
+  }
 }
 
 typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
@@ -296,7 +300,7 @@ class ObjectWithEnumTable extends _i1.Table {
 ObjectWithEnumTable tObjectWithEnum = ObjectWithEnumTable();
 
 class ObjectWithEnumInclude extends _i1.Include {
-  ObjectWithEnumInclude();
+  ObjectWithEnumInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

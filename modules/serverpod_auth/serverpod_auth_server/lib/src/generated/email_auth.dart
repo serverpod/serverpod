@@ -204,6 +204,10 @@ class EmailAuth extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailAuthInclude include() {
+    return EmailAuthInclude._();
+  }
 }
 
 typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
@@ -262,7 +266,7 @@ class EmailAuthTable extends _i1.Table {
 EmailAuthTable tEmailAuth = EmailAuthTable();
 
 class EmailAuthInclude extends _i1.Include {
-  EmailAuthInclude();
+  EmailAuthInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

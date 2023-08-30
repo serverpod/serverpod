@@ -193,6 +193,10 @@ class GoogleRefreshToken extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static GoogleRefreshTokenInclude include() {
+    return GoogleRefreshTokenInclude._();
+  }
 }
 
 typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
@@ -243,7 +247,7 @@ class GoogleRefreshTokenTable extends _i1.Table {
 GoogleRefreshTokenTable tGoogleRefreshToken = GoogleRefreshTokenTable();
 
 class GoogleRefreshTokenInclude extends _i1.Include {
-  GoogleRefreshTokenInclude();
+  GoogleRefreshTokenInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

@@ -223,6 +223,16 @@ class Citizen extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static CitizenInclude include({
+    _i2.CompanyInclude? company,
+    _i2.CompanyInclude? oldCompany,
+  }) {
+    return CitizenInclude._(
+      company: company,
+      oldCompany: oldCompany,
+    );
+  }
 }
 
 typedef CitizenExpressionBuilder = _i1.Expression Function(CitizenTable);
@@ -338,7 +348,7 @@ class CitizenTable extends _i1.Table {
 CitizenTable tCitizen = CitizenTable();
 
 class CitizenInclude extends _i1.Include {
-  CitizenInclude({
+  CitizenInclude._({
     this.company,
     this.oldCompany,
   });

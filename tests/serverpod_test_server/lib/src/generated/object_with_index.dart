@@ -190,6 +190,10 @@ class ObjectWithIndex extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithIndexInclude include() {
+    return ObjectWithIndexInclude._();
+  }
 }
 
 typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
@@ -238,7 +242,7 @@ class ObjectWithIndexTable extends _i1.Table {
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
 
 class ObjectWithIndexInclude extends _i1.Include {
-  ObjectWithIndexInclude();
+  ObjectWithIndexInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};

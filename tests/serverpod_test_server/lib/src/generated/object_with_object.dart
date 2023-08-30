@@ -237,6 +237,10 @@ class ObjectWithObject extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithObjectInclude include() {
+    return ObjectWithObjectInclude._();
+  }
 }
 
 typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
@@ -317,7 +321,7 @@ class ObjectWithObjectTable extends _i1.Table {
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();
 
 class ObjectWithObjectInclude extends _i1.Include {
-  ObjectWithObjectInclude();
+  ObjectWithObjectInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
