@@ -34,6 +34,9 @@ class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
     );
   }
 
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
   int? id;
 
   /// The storageId, typically `public` or `private`.
