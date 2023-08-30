@@ -110,12 +110,11 @@ class EntityDependencyResolver {
       String tableName,
       SerializableEntityFieldDefinition foreignField) {
     fieldDefinition.relation = ObjectRelationDefinition(
-      name: relation.name,
-      parentTable: tableName,
-      fieldName: defaultPrimaryKeyName,
-      foreignFieldName: foreignField.name,
-      isForeignKeyOrigin: relation.isForeignKeyOrigin
-    );
+        name: relation.name,
+        parentTable: tableName,
+        fieldName: defaultPrimaryKeyName,
+        foreignFieldName: foreignField.name,
+        isForeignKeyOrigin: relation.isForeignKeyOrigin);
   }
 
   static void _resolveImplicitDefinedRelation(
@@ -149,11 +148,10 @@ class EntityDependencyResolver {
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
-      parentTable: tableName,
-      fieldName: '${fieldDefinition.name}Id',
-      foreignFieldName: defaultPrimaryKeyName,
-      isForeignKeyOrigin: true
-    );
+        parentTable: tableName,
+        fieldName: '${fieldDefinition.name}Id',
+        foreignFieldName: defaultPrimaryKeyName,
+        isForeignKeyOrigin: true);
   }
 
   static void _resolveManualDefinedRelation(
@@ -175,11 +173,10 @@ class EntityDependencyResolver {
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
-      parentTable: tableName,
-      fieldName: relationFieldName,
-      foreignFieldName: defaultPrimaryKeyName,
-      isForeignKeyOrigin: true
-    );
+        parentTable: tableName,
+        fieldName: relationFieldName,
+        foreignFieldName: defaultPrimaryKeyName,
+        isForeignKeyOrigin: true);
   }
 
   static SerializableEntityFieldDefinition? _findForeignFieldByRelationName(

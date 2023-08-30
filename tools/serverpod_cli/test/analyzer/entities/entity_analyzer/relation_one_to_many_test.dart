@@ -85,7 +85,7 @@ fields:
         'companyId',
         reason: 'Expected the reference field to be set to "companyId".',
       );
-    }, skip: errors.isNotEmpty );
+    }, skip: errors.isNotEmpty);
   });
 
   group(
