@@ -257,11 +257,6 @@ class ServerHealthMetricTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_health_metric') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     name = _i1.ColumnString(
       'name',
       queryPrefix: super.queryPrefix,
@@ -293,11 +288,6 @@ class ServerHealthMetricTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   /// The name of the metric.
   late final _i1.ColumnString name;

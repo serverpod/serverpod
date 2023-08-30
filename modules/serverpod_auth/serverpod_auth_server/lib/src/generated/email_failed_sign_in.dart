@@ -220,11 +220,6 @@ class EmailFailedSignInTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_email_failed_sign_in') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     email = _i1.ColumnString(
       'email',
       queryPrefix: super.queryPrefix,
@@ -241,11 +236,6 @@ class EmailFailedSignInTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   /// Email attempting to sign in with.
   late final _i1.ColumnString email;

@@ -206,11 +206,6 @@ class MethodInfoTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_method') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     endpoint = _i1.ColumnString(
       'endpoint',
       queryPrefix: super.queryPrefix,
@@ -222,11 +217,6 @@ class MethodInfoTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   /// The endpoint of this method.
   late final _i1.ColumnString endpoint;

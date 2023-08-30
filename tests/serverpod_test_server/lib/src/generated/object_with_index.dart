@@ -204,11 +204,6 @@ class ObjectWithIndexTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_index') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     indexed = _i1.ColumnInt(
       'indexed',
       queryPrefix: super.queryPrefix,
@@ -220,11 +215,6 @@ class ObjectWithIndexTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   late final _i1.ColumnInt indexed;
 

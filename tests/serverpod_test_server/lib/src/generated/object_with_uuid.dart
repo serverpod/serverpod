@@ -204,11 +204,6 @@ class ObjectWithUuidTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_uuid') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     uuid = _i1.ColumnUuid(
       'uuid',
       queryPrefix: super.queryPrefix,
@@ -220,11 +215,6 @@ class ObjectWithUuidTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   late final _i1.ColumnUuid uuid;
 

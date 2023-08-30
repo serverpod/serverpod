@@ -283,11 +283,6 @@ class UserInfoTable extends _i1.Table {
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_user_info') {
-    id = _i1.ColumnInt(
-      'id',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
       queryPrefix: super.queryPrefix,
@@ -329,11 +324,6 @@ class UserInfoTable extends _i1.Table {
       tableRelations: super.tableRelations,
     );
   }
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  late final _i1.ColumnInt id;
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
