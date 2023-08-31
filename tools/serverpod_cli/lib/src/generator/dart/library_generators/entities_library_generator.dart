@@ -837,213 +837,236 @@ class SerializableEntityLibraryGenerator {
     return Class((c) {
       c.name = '${className}Table';
       c.extend = refer('Table', serverpodUrl(serverCode));
-      c.constructors.add(Constructor((constructor) {
-        constructor.optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..name = 'queryPrefix'
-              ..toSuper = true
-              ..named = true,
-          ),
-        );
-        constructor.optionalParameters.add(
-          Parameter(
-            (p) => p
-              ..name = 'tableRelations'
-              ..toSuper = true
-              ..named = true,
-          ),
-        );
-        constructor.initializers.add(refer('super')
-            .call([], {'tableName': literalString(tableName)}).code);
 
-        constructor.body = Block.of([
-          for (var field in fields.where(
-              (field) => field.shouldSerializeFieldForDatabase(serverCode)))
-            if (!(field.name == 'id' && serverCode))
-              refer(field.name)
-                  .assign(TypeReference((t) => t
-                    ..symbol = field.type.columnType
-                    ..url = 'package:serverpod/serverpod.dart'
-                    ..types.addAll(field.type.isEnum
-                        ? [
-                            field.type.reference(
-                              serverCode,
-                              nullable: false,
-                              subDirParts: classDefinition.subDirParts,
-                              config: config,
-                            )
-                          ]
-                        : [])).call([
-                    literalString(field.name)
-                  ], {
-                    'queryPrefix': refer('super').property('queryPrefix'),
-                    'tableRelations': refer('super').property('tableRelations')
-                  }))
-                  .statement,
-        ]);
-      }));
+      c.constructors.add(_buildEntityTableClassConstructor(
+          tableName, fields, classDefinition));
 
-      // Column fields
-      for (var field in fields) {
-        // Simple column field
-        if (field.shouldSerializeFieldForDatabase(serverCode) &&
-            !(field.name == 'id' && serverCode)) {
-          c.fields.add(Field((f) => f
-            ..late = true
-            ..modifier = FieldModifier.final$
-            ..name = field.name
-            ..docs.addAll(field.documentation ?? [])
-            ..type = TypeReference((t) => t
-              ..symbol = field.type.columnType
-              ..url = 'package:serverpod/serverpod.dart'
-              ..types.addAll(field.type.isEnum
-                  ? [
-                      field.type.reference(
-                        serverCode,
-                        nullable: false,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      )
-                    ]
-                  : []))));
-        } else if (field.relation is ObjectRelationDefinition) {
-          // Complex relation fields
-          var objectRelation = field.relation as ObjectRelationDefinition;
+      // TODO - Fields and getters should be separated
+      _buildEntityTableClassFieldsAndGetters(fields, c, classDefinition);
 
-          // Add internal nullable table field
-          c.fields.add(Field((f) => f
-            ..name = '_${field.name}'
-            ..docs.addAll(field.documentation ?? [])
-            ..type = field.type.reference(
-              serverCode,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-              nullable: true,
-              typeSuffix: 'Table',
-            )));
+      c.methods.add(_buildEntityTableClassColumnGetter(fields));
 
-          // Add getter method for relation table that creates the table
-          c.methods.add(Method((m) => m
-            ..name = field.name
-            ..type = MethodType.getter
-            ..returns = field.type.reference(
-              serverCode,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-              nullable: false,
-              typeSuffix: 'Table',
-            )
-            ..body = Block.of([
-              Code('if (_${field.name} != null) return _${field.name}!;'),
-              refer('_${field.name}')
-                  .assign(refer('createRelationTable',
-                          'package:serverpod/serverpod.dart')
-                      .call([], {
-                    'queryPrefix': refer('queryPrefix'),
-                    'fieldName': literalString(field.name),
-                    'foreignTableName': field.type
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
-                        .property('t')
-                        .property('tableName'),
-                    'column': refer(objectRelation.fieldName),
-                    'foreignColumnName': field.type
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
-                        .property('t')
-                        .property(objectRelation.foreignFieldName)
-                        .property('columnName'),
-                    'createTable': Method((m) => m
-                      ..requiredParameters.addAll([
-                        Parameter((p) => p..name = 'relationQueryPrefix'),
-                        Parameter((p) => p..name = 'foreignTableRelation'),
-                      ])
-                      ..lambda = true
-                      ..body = field.type
-                          .reference(
-                        serverCode,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                        nullable: false,
-                        typeSuffix: 'Table',
-                      )
-                          .call([], {
-                        'queryPrefix': refer('relationQueryPrefix'),
-                        'tableRelations': literalList([
-                          refer('tableRelations').nullSafeSpread,
-                          refer('foreignTableRelation'),
-                        ]),
-                      }).code).closure
-                  }))
-                  .statement,
-              Code('return _${field.name}!;'),
-            ])));
-        }
-      }
-
-      // List of column values
-      c.methods.add(Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = TypeReference((t) => t
-            ..symbol = 'List'
-            ..types.add(refer('Column', 'package:serverpod/serverpod.dart')))
-          ..name = 'columns'
-          ..lambda = true
-          ..type = MethodType.getter
-          ..body = literalList([
-            for (var field in fields)
-              if (field.shouldSerializeFieldForDatabase(serverCode))
-                refer(field.name)
-          ]).code,
-      ));
-
-      // getRelation method if we have relation fields
       var objectRelationFields =
           fields.where((f) => f.relation is ObjectRelationDefinition);
       if (objectRelationFields.isNotEmpty) {
-        c.methods.add(Method(
-          (m) => m
-            ..annotations.add(refer('override'))
-            ..returns = TypeReference((t) => t
-              ..symbol = 'Table'
-              ..isNullable = true
-              ..url = 'package:serverpod/serverpod.dart')
-            ..name = 'getRelationTable'
-            ..requiredParameters.add(
-              Parameter(
-                (p) => p
-                  ..type = refer('String')
-                  ..name = 'relationField',
-              ),
-            )
-            ..body = (BlockBuilder()
-                  ..statements.addAll([
-                    for (var objectRelationField in objectRelationFields)
-                      Block.of([
-                        Code(
-                            'if (relationField == ${literalString(objectRelationField.name)}) {'),
-                        lazyCode(() {
-                          return refer(objectRelationField.name)
-                              .returned
-                              .statement;
-                        }),
-                        const Code('}'),
-                      ]),
-                    const Code('return null;'),
-                  ]))
-                .build(),
-        ));
+        c.methods
+            .add(_buildEntityTableClassGetRelationTable(objectRelationFields));
       }
+    });
+  }
+
+  Method _buildEntityTableClassGetRelationTable(
+      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Table'
+          ..isNullable = true
+          ..url = 'package:serverpod/serverpod.dart')
+        ..name = 'getRelationTable'
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..type = refer('String')
+              ..name = 'relationField',
+          ),
+        )
+        ..body = (BlockBuilder()
+              ..statements.addAll([
+                for (var objectRelationField in objectRelationFields)
+                  Block.of([
+                    Code(
+                        'if (relationField == ${literalString(objectRelationField.name)}) {'),
+                    lazyCode(() {
+                      return refer(objectRelationField.name).returned.statement;
+                    }),
+                    const Code('}'),
+                  ]),
+                const Code('return null;'),
+              ]))
+            .build(),
+    );
+  }
+
+  Method _buildEntityTableClassColumnGetter(
+      List<SerializableEntityFieldDefinition> fields) {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'List'
+          ..types.add(refer('Column', 'package:serverpod/serverpod.dart')))
+        ..name = 'columns'
+        ..lambda = true
+        ..type = MethodType.getter
+        ..body = literalList([
+          for (var field in fields)
+            if (field.shouldSerializeFieldForDatabase(serverCode))
+              refer(field.name)
+        ]).code,
+    );
+  }
+
+  void _buildEntityTableClassFieldsAndGetters(
+      List<SerializableEntityFieldDefinition> fields,
+      ClassBuilder c,
+      ClassDefinition classDefinition) {
+    for (var field in fields) {
+      // Simple column field
+      if (field.shouldSerializeFieldForDatabase(serverCode) &&
+          !(field.name == 'id' && serverCode)) {
+        c.fields.add(Field((f) => f
+          ..late = true
+          ..modifier = FieldModifier.final$
+          ..name = field.name
+          ..docs.addAll(field.documentation ?? [])
+          ..type = TypeReference((t) => t
+            ..symbol = field.type.columnType
+            ..url = 'package:serverpod/serverpod.dart'
+            ..types.addAll(field.type.isEnum
+                ? [
+                    field.type.reference(
+                      serverCode,
+                      nullable: false,
+                      subDirParts: classDefinition.subDirParts,
+                      config: config,
+                    )
+                  ]
+                : []))));
+      } else if (field.relation is ObjectRelationDefinition) {
+        // Complex relation fields
+        var objectRelation = field.relation as ObjectRelationDefinition;
+
+        // Add internal nullable table field
+        c.fields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..docs.addAll(field.documentation ?? [])
+          ..type = field.type.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'Table',
+          )));
+
+        // Add getter method for relation table that creates the table
+        c.methods.add(Method((m) => m
+          ..name = field.name
+          ..type = MethodType.getter
+          ..returns = field.type.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: false,
+            typeSuffix: 'Table',
+          )
+          ..body = Block.of([
+            Code('if (_${field.name} != null) return _${field.name}!;'),
+            refer('_${field.name}')
+                .assign(refer('createRelationTable',
+                        'package:serverpod/serverpod.dart')
+                    .call([], {
+                  'queryPrefix': refer('queryPrefix'),
+                  'fieldName': literalString(field.name),
+                  'foreignTableName': field.type
+                      .reference(
+                        serverCode,
+                        subDirParts: classDefinition.subDirParts,
+                        config: config,
+                        nullable: false,
+                      )
+                      .property('t')
+                      .property('tableName'),
+                  'column': refer(objectRelation.fieldName),
+                  'foreignColumnName': field.type
+                      .reference(
+                        serverCode,
+                        subDirParts: classDefinition.subDirParts,
+                        config: config,
+                        nullable: false,
+                      )
+                      .property('t')
+                      .property(objectRelation.foreignFieldName)
+                      .property('columnName'),
+                  'createTable': Method((m) => m
+                    ..requiredParameters.addAll([
+                      Parameter((p) => p..name = 'relationQueryPrefix'),
+                      Parameter((p) => p..name = 'foreignTableRelation'),
+                    ])
+                    ..lambda = true
+                    ..body = field.type
+                        .reference(
+                      serverCode,
+                      subDirParts: classDefinition.subDirParts,
+                      config: config,
+                      nullable: false,
+                      typeSuffix: 'Table',
+                    )
+                        .call([], {
+                      'queryPrefix': refer('relationQueryPrefix'),
+                      'tableRelations': literalList([
+                        refer('tableRelations').nullSafeSpread,
+                        refer('foreignTableRelation'),
+                      ]),
+                    }).code).closure
+                }))
+                .statement,
+            Code('return _${field.name}!;'),
+          ])));
+      }
+    }
+  }
+
+  Constructor _buildEntityTableClassConstructor(
+      String tableName,
+      List<SerializableEntityFieldDefinition> fields,
+      ClassDefinition classDefinition) {
+    return Constructor((constructor) {
+      constructor.optionalParameters.add(
+        Parameter(
+          (p) => p
+            ..name = 'queryPrefix'
+            ..toSuper = true
+            ..named = true,
+        ),
+      );
+      constructor.optionalParameters.add(
+        Parameter(
+          (p) => p
+            ..name = 'tableRelations'
+            ..toSuper = true
+            ..named = true,
+        ),
+      );
+      constructor.initializers.add(refer('super')
+          .call([], {'tableName': literalString(tableName)}).code);
+
+      constructor.body = Block.of([
+        for (var field in fields.where(
+            (field) => field.shouldSerializeFieldForDatabase(serverCode)))
+          if (!(field.name == 'id' && serverCode))
+            refer(field.name)
+                .assign(TypeReference((t) => t
+                  ..symbol = field.type.columnType
+                  ..url = 'package:serverpod/serverpod.dart'
+                  ..types.addAll(field.type.isEnum
+                      ? [
+                          field.type.reference(
+                            serverCode,
+                            nullable: false,
+                            subDirParts: classDefinition.subDirParts,
+                            config: config,
+                          )
+                        ]
+                      : [])).call([
+                  literalString(field.name)
+                ], {
+                  'queryPrefix': refer('super').property('queryPrefix'),
+                  'tableRelations': refer('super').property('tableRelations')
+                }))
+                .statement,
+      ]);
     });
   }
 
