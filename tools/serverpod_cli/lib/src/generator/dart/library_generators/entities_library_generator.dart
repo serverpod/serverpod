@@ -1089,63 +1089,84 @@ class SerializableEntityLibraryGenerator {
       var objectRelationFields =
           fields.where((f) => f.relation is ObjectRelationDefinition).toList();
 
-      // Add constructor
-      c.constructors.add(Constructor((constructor) {
-        constructor.name = '_';
-        for (var field in objectRelationFields) {
-          constructor.optionalParameters.add(Parameter(
-            (p) => p
-              ..name = field.name
-              ..named = true
-              ..toThis = true,
-          ));
-        }
-      }));
+      c.constructors
+          .add(_buildEntityIncludeClassConstructor(objectRelationFields));
 
-      // Add field declarations
-      for (var field in objectRelationFields) {
-        c.fields.add(Field((f) => f
-          ..name = field.name
-          ..type = field.type.reference(
-            serverCode,
-            subDirParts: classDefinition.subDirParts,
-            config: config,
-            typeSuffix: 'Include',
-          )));
-      }
+      c.fields.addAll(_buildEntityIncludeClassFields(
+          objectRelationFields, classDefinition));
 
-      // Add includes getter
-      c.methods.add(Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = TypeReference((t) => t
-            ..symbol = 'Map'
-            ..types.addAll([
-              refer('String'),
-              refer('Include?', 'package:serverpod/serverpod.dart'),
-            ]))
-          ..name = 'includes'
-          ..lambda = true
-          ..type = MethodType.getter
-          ..body = literalMap({
-            for (var field in objectRelationFields)
-              literalString(field.name): refer(field.name)
-          }).code,
-      ));
-
-      // Add table getter
-      c.methods.add(Method(
-        (m) => m
-          ..annotations.add(refer('override'))
-          ..returns = TypeReference((t) => t
-            ..symbol = 'Table'
-            ..url = serverpodUrl(serverCode))
-          ..name = 'table'
-          ..lambda = true
-          ..type = MethodType.getter
-          ..body = refer('$className.t').code,
-      ));
+      c.methods.addAll([
+        _buildEntityIncludeClassIncludesGetter(objectRelationFields),
+        _buildEntityIncludeClassTableGetter(className),
+      ]);
     }));
+  }
+
+  Method _buildEntityIncludeClassTableGetter(String className) {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Table'
+          ..url = serverpodUrl(serverCode))
+        ..name = 'table'
+        ..lambda = true
+        ..type = MethodType.getter
+        ..body = refer('$className.t').code,
+    );
+  }
+
+  Method _buildEntityIncludeClassIncludesGetter(
+      List<SerializableEntityFieldDefinition> objectRelationFields) {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('String'),
+            refer('Include?', 'package:serverpod/serverpod.dart'),
+          ]))
+        ..name = 'includes'
+        ..lambda = true
+        ..type = MethodType.getter
+        ..body = literalMap({
+          for (var field in objectRelationFields)
+            literalString(field.name): refer(field.name)
+        }).code,
+    );
+  }
+
+  List<Field> _buildEntityIncludeClassFields(
+      List<SerializableEntityFieldDefinition> objectRelationFields,
+      ClassDefinition classDefinition) {
+    List<Field> entityIncludeClassFields = [];
+    for (var field in objectRelationFields) {
+      entityIncludeClassFields.add(Field((f) => f
+        ..name = field.name
+        ..type = field.type.reference(
+          serverCode,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
+          typeSuffix: 'Include',
+        )));
+    }
+    return entityIncludeClassFields;
+  }
+
+  Constructor _buildEntityIncludeClassConstructor(
+      List<SerializableEntityFieldDefinition> objectRelationFields) {
+    return Constructor((constructor) {
+      constructor.name = '_';
+      for (var field in objectRelationFields) {
+        constructor.optionalParameters.add(Parameter(
+          (p) => p
+            ..name = field.name
+            ..named = true
+            ..toThis = true,
+        ));
+      }
+    });
   }
 
   /// Handle enums for [generateEntityLibrary]
