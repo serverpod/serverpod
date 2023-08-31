@@ -250,6 +250,221 @@ fields:
     }, skip: errors.isEmpty);
   });
 
+  test(
+      'Given a class with a one to one relation where the relationship is ambiguous then an error is collected that the reference cannot be resolved.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Company
+table: company
+fields:
+  addressId: int
+  address: Address?, relation(name=company_address, field=addressId)
+  oldAddressId: int
+  oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  company: Company?, relation(name=company_address)
+''',
+      Uri(path: 'lib/src/protocol/company.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was found.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'Unable to resolve ambiguous relation, there are several named relations with name "company_address" on the class "Company".',
+    );
+  });
+
+  test(
+      'Given a class with a one to one relation where the relationship is ambiguous where the field names are the same in both models then an error is collected that the reference cannot be resolved.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Company
+table: company
+fields:
+  addressCompany: int
+  address: Address?, relation(name=company_address, field=addressCompany)
+  oldAddressId: int
+  oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  addressCompany: Company?, relation(name=company_address)
+''',
+      Uri(path: 'lib/src/protocol/company.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was found.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'Unable to resolve ambiguous relation, there are several named relations with name "company_address" on the class "Company".',
+    );
+  });
+
+  test(
+      'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: Company
+table: company
+fields:
+  addressId: int
+  address: Address?, relation(name=company_address, field=addressId)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  addressCompanyId: int
+  addressCompany: Company?, relation(name=company_address, field=addressCompanyId)
+''',
+      Uri(path: 'lib/src/protocol/company.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    expect(
+      collector.errors.length,
+      greaterThan(1),
+      reason: 'Expected an error but none was found.',
+    );
+
+    expect(
+      collector.errors.first.message,
+      'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
+    );
+
+    expect(
+      collector.errors.last.message,
+      'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
+    );
+  });
+
   group(
       'Given a class with a one to one relation where the relationship is only named on one side',
       () {
