@@ -78,6 +78,29 @@ class RelationEndpoint extends Endpoint {
     );
   }
 
+  /// Includes the address
+  Future<List<Citizen>> citizenFindAllWithNamedRelationNoneOriginSide(
+    Session session,
+  ) async {
+    return await Citizen.find(
+      session,
+      orderBy: Citizen.t.id,
+      include: Citizen.include(
+        address: Address.include(),
+      ),
+    );
+  }
+
+  Future<List<Address>> addressFindAll(Session session) async {
+    return await Address.find(
+      session,
+      orderBy: Address.t.id,
+      include: Address.include(
+        inhabitant: Citizen.include(),
+      ),
+    );
+  }
+
   /// Includes company and oldCompany
   Future<List<Citizen>> citizenFindAllWithShallowIncludes(
     Session session,
@@ -97,6 +120,18 @@ class RelationEndpoint extends Endpoint {
         include: Citizen.include(company: Company.include()));
   }
 
+  Future<List<Post>> findAllPostsIncludingNextAndPrevious(
+    Session session,
+  ) async {
+    return await Post.find(
+      session,
+      include: Post.include(
+        previous: Post.include(),
+        next: Post.include(),
+      ),
+    );
+  }
+
   Future<int?> citizenInsert(Session session, Citizen citizen) async {
     await Citizen.insert(session, citizen);
     return citizen.id;
@@ -112,6 +147,16 @@ class RelationEndpoint extends Endpoint {
     return town.id;
   }
 
+  Future<int?> addressInsert(Session session, Address address) async {
+    await Address.insert(session, address);
+    return address.id;
+  }
+
+  Future<int?> postInsert(Session session, Post post) async {
+    await Post.insert(session, post);
+    return post.id;
+  }
+
   Future<int> deleteAll(Session session) async {
     var townDeletions =
         await Town.delete(session, where: (_) => Constant(true));
@@ -119,7 +164,15 @@ class RelationEndpoint extends Endpoint {
         await Company.delete(session, where: (_) => Constant(true));
     var citizenDeletions =
         await Citizen.delete(session, where: (_) => Constant(true));
+    var addressDeletions =
+        await Address.delete(session, where: (_) => Constant(true));
+    var postDeletions =
+        await Post.delete(session, where: (_) => Constant(true));
 
-    return townDeletions + companyDeletions + citizenDeletions;
+    return townDeletions +
+        companyDeletions +
+        citizenDeletions +
+        addressDeletions +
+        postDeletions;
   }
 }

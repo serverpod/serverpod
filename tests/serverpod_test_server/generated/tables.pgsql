@@ -1,4 +1,17 @@
 --
+-- Class Address as table address
+--
+
+CREATE TABLE "address" (
+  "id" serial,
+  "street" text NOT NULL,
+  "inhabitantId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "address"
+  ADD CONSTRAINT address_pkey PRIMARY KEY (id);
+
+--
 -- Class Citizen as table citizen
 --
 
@@ -148,6 +161,19 @@ ALTER TABLE ONLY "object_with_uuid"
   ADD CONSTRAINT object_with_uuid_pkey PRIMARY KEY (id);
 
 --
+-- Class Post as table post
+--
+
+CREATE TABLE "post" (
+  "id" serial,
+  "content" text NOT NULL,
+  "nextId" integer
+);
+
+ALTER TABLE ONLY "post"
+  ADD CONSTRAINT post_pkey PRIMARY KEY (id);
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -204,6 +230,16 @@ ALTER TABLE ONLY "types"
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
 
 --
+-- Foreign relations for "address" table
+--
+
+ALTER TABLE ONLY "address"
+  ADD CONSTRAINT address_fk_0
+    FOREIGN KEY("inhabitantId")
+      REFERENCES citizen(id)
+        ON DELETE CASCADE;
+
+--
 -- Foreign relations for "citizen" table
 --
 
@@ -246,6 +282,16 @@ ALTER TABLE ONLY "object_with_self_parent"
   ADD CONSTRAINT object_with_self_parent_fk_0
     FOREIGN KEY("other")
       REFERENCES object_with_self_parent(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "post" table
+--
+
+ALTER TABLE ONLY "post"
+  ADD CONSTRAINT post_fk_0
+    FOREIGN KEY("nextId")
+      REFERENCES post(id)
         ON DELETE CASCADE;
 
 --
