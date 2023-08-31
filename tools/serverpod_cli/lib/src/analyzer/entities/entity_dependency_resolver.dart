@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
@@ -73,7 +74,9 @@ class EntityDependencyResolver {
     if (tableName is! String) return;
 
     var foreignField = _findForeignFieldByRelationName(
+      classDefinition,
       referenceClass,
+      fieldDefinition.name,
       relation.name,
     );
 
@@ -94,7 +97,7 @@ class EntityDependencyResolver {
         relation,
         tableName,
       );
-    } else if (foreignField != null && foreignField.type.isId) {
+    } else if (foreignField != null) {
       _resolveNamedForeignObjectRelation(
         fieldDefinition,
         relation,
@@ -105,15 +108,27 @@ class EntityDependencyResolver {
   }
 
   static void _resolveNamedForeignObjectRelation(
-      SerializableEntityFieldDefinition fieldDefinition,
-      UnresolvedObjectRelationDefinition relation,
-      String tableName,
-      SerializableEntityFieldDefinition foreignField) {
+    SerializableEntityFieldDefinition fieldDefinition,
+    UnresolvedObjectRelationDefinition relation,
+    String tableName,
+    SerializableEntityFieldDefinition foreignField,
+  ) {
+    String? foreignFieldName;
+
+    var foreignRelation = foreignField.relation;
+    if (foreignRelation is UnresolvedObjectRelationDefinition) {
+      foreignFieldName = foreignRelation.fieldName;
+    } else if (foreignRelation is ForeignRelationDefinition) {
+      foreignFieldName = foreignField.name;
+    }
+
+    if (foreignFieldName == null) return;
+
     fieldDefinition.relation = ObjectRelationDefinition(
         name: relation.name,
         parentTable: tableName,
         fieldName: defaultPrimaryKeyName,
-        foreignFieldName: foreignField.name,
+        foreignFieldName: foreignFieldName,
         isForeignKeyOrigin: relation.isForeignKeyOrigin);
   }
 
@@ -180,18 +195,20 @@ class EntityDependencyResolver {
   }
 
   static SerializableEntityFieldDefinition? _findForeignFieldByRelationName(
-    ClassDefinition referenceClass,
+    ClassDefinition classDefinition,
+    ClassDefinition foreignClass,
+    String fieldName,
     String? relationName,
   ) {
-    if (relationName == null) return null;
+    var foreignFields = AnalyzeChecker.filterRelationByName(
+      classDefinition,
+      foreignClass,
+      fieldName,
+      relationName,
+    );
+    if (foreignFields.isEmpty) return null;
 
-    var foreignField = referenceClass.fields
-        .cast<SerializableEntityFieldDefinition?>()
-        .firstWhere(
-          (element) => element?.relation?.name == relationName,
-          orElse: () => null,
-        );
-    return foreignField;
+    return foreignFields.first;
   }
 
   static void _injectForeignRelationField(
@@ -200,7 +217,7 @@ class EntityDependencyResolver {
     SerializableEntityFieldDefinition foreignRelationField,
   ) {
     var insertIndex = max(
-      classDefinition.fields.indexOf(fieldDefinition) - 1,
+      classDefinition.fields.indexOf(fieldDefinition),
       0,
     );
     classDefinition.fields = [

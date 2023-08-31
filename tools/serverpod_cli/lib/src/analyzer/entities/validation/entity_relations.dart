@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 
 /// A collection of all parsed entities, and their potential collisions.
@@ -163,17 +164,12 @@ class EntityRelations {
     var foreignClass = foreignClasses.first;
     if (foreignClass is! ClassDefinition) return [];
 
-    Iterable<SerializableEntityFieldDefinition> fields = foreignClass.fields;
-
-    if (foreignClass.tableName == classDefinition.tableName) {
-      fields = fields.where((referenceField) {
-        return referenceField.name != relationField.name;
-      });
-    }
-
-    return fields.where((referenceField) {
-      return referenceField.relation?.name == relationName;
-    }).toList();
+    return AnalyzeChecker.filterRelationByName(
+      classDefinition,
+      foreignClass,
+      relationField.name,
+      relationName,
+    );
   }
 
   SerializableEntityFieldDefinition? _extractRelationField(
@@ -192,27 +188,6 @@ class EntityRelations {
     }
 
     return null;
-  }
-
-  String? _extractRelationName(
-    ClassDefinition classDefinition,
-    RelationDefinition relationDefinition,
-  ) {
-    var relationName = relationDefinition.name;
-
-    if (!relationDefinition.isForeignKeyOrigin) {
-      return relationName;
-    }
-
-    if (relationDefinition is ObjectRelationDefinition) {
-      var foreignKeyField = classDefinition.findField(
-        relationDefinition.fieldName,
-      );
-
-      relationName = foreignKeyField?.relation?.name;
-    }
-
-    return relationName;
   }
 
   bool _isKeyGloballyUnique(

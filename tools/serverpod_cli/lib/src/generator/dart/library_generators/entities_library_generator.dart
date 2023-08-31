@@ -3,7 +3,6 @@ import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -813,22 +812,6 @@ class SerializableEntityLibraryGenerator {
               } else if (field.relation is ObjectRelationDefinition) {
                 // Complex relation fields
                 var objectRelation = field.relation as ObjectRelationDefinition;
-                var foreignRelationField = fields
-                    .cast<SerializableEntityFieldDefinition?>()
-                    .firstWhere(
-                        (f) =>
-                            f?.name == objectRelation.fieldName &&
-                            f?.relation is ForeignRelationDefinition,
-                        orElse: () => null);
-
-                if (foreignRelationField == null) {
-                  log.error(
-                      'Could not find foreign relation field ${objectRelation.fieldName} for ${field.name} in ${classDefinition.className}.');
-                  continue;
-                }
-
-                var foreignRelation =
-                    foreignRelationField.relation as ForeignRelationDefinition;
 
                 // Add internal nullable table field
                 c.fields.add(Field((f) => f
@@ -870,7 +853,7 @@ class SerializableEntityLibraryGenerator {
                               )
                               .property('t')
                               .property('tableName'),
-                          'column': refer(foreignRelationField.name),
+                          'column': refer(objectRelation.fieldName),
                           'foreignColumnName': field.type
                               .reference(
                                 serverCode,
@@ -879,7 +862,7 @@ class SerializableEntityLibraryGenerator {
                                 nullable: false,
                               )
                               .property('t')
-                              .property(foreignRelation.foreignFieldName)
+                              .property(objectRelation.foreignFieldName)
                               .property('columnName'),
                           'createTable': Method((m) => m
                             ..requiredParameters.addAll([
