@@ -527,7 +527,7 @@ void main() {
   });
 
   group(
-      'Given a class with a named object relation on both sides with with onDelete defined on the side not holding the foreign key',
+      'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
       () {
     var collector = CodeGenerationCollector();
 
