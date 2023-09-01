@@ -374,29 +374,29 @@ void main() async {
   group(
       'Given entities with a named relation when fetching from the none origin side',
       () {
-    late List<Citizen> citizenWithAddress;
+    late List<Citizen> citizensIncludingAddress;
     setUpAll(() async {
       await _createTestDatabase(client);
-      citizensIncludingAdress =
+      citizensIncludingAddress =
           await client.relation.citizenFindAllWithNamedRelationNoneOriginSide();
     });
 
     tearDownAll(() async => await client.relation.deleteAll());
 
     test('then the citizenWithAddress is not empty', () {
-      expect(citizenWithAddress, isNotEmpty);
+      expect(citizensIncludingAddress, isNotEmpty);
     });
 
     test('then alex citizen has an address object returned', () async {
-      expect(citizenWithAddress.first.address, isNotNull);
+      expect(citizensIncludingAddress.first.address, isNotNull);
     });
 
     test('then isak citizen has an address object returned', () async {
-      expect(citizenWithAddress[1].address, isNotNull);
+      expect(citizensIncludingAddress[1].address, isNotNull);
     });
 
     test('then lina citizen has no address object returned', () async {
-      expect(citizenWithAddress[2].address, isNull);
+      expect(citizensIncludingAddress[2].address, isNull);
     });
   });
 
