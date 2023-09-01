@@ -169,7 +169,7 @@ fields:
         );
       });
 
-      test('with out a name for the relation', () {
+      test('without a name for the relation', () {
         expect(relation?.name, isNull);
       }, skip: relation is! ObjectRelationDefinition);
     });
