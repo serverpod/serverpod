@@ -102,6 +102,13 @@ fields:
         expect((relation as ForeignRelationDefinition).foreignFieldName, 'id');
       });
     }, skip: parentId == null);
+
+    test(
+        'then the order of the generated field comes before the relation field but after the id.',
+        () {
+      var fieldNames = classDefinition.fields.map((e) => e.name);
+      expect(fieldNames, ['id', 'parentId', 'parent']);
+    });
   });
 
   group(
