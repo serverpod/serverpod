@@ -610,7 +610,7 @@ fields:
   });
 
   group(
-      'Given a class with a named object relation on both sides with with onUpdate defined on the side not holding the foreign key',
+      'Given a class with a named object relation on both sides with onUpdate defined on the side not holding the foreign key',
       () {
     var collector = CodeGenerationCollector();
 
