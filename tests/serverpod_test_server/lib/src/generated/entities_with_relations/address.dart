@@ -279,12 +279,14 @@ class AddressTable extends _i1.Table {
 AddressTable tAddress = AddressTable();
 
 class AddressInclude extends _i1.Include {
-  AddressInclude._({this.inhabitant});
+  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
+    _inhabitant = inhabitant;
+  }
 
-  _i2.CitizenInclude? inhabitant;
+  _i2.CitizenInclude? _inhabitant;
 
   @override
-  Map<String, _i1.Include?> get includes => {'inhabitant': inhabitant};
+  Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
   @override
   _i1.Table get table => Address.t;
 }

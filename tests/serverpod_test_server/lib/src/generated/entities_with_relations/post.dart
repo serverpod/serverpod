@@ -321,18 +321,21 @@ PostTable tPost = PostTable();
 
 class PostInclude extends _i1.Include {
   PostInclude._({
-    this.previous,
-    this.next,
-  });
+    _i2.PostInclude? previous,
+    _i2.PostInclude? next,
+  }) {
+    _previous = previous;
+    _next = next;
+  }
 
-  _i2.PostInclude? previous;
+  _i2.PostInclude? _previous;
 
-  _i2.PostInclude? next;
+  _i2.PostInclude? _next;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'previous': previous,
-        'next': next,
+        'previous': _previous,
+        'next': _next,
       };
   @override
   _i1.Table get table => Post.t;
