@@ -13,6 +13,7 @@ class Citizen extends _i1.SerializableEntity {
   Citizen({
     this.id,
     required this.name,
+    this.address,
     required this.companyId,
     this.company,
     this.oldCompanyId,
@@ -26,6 +27,8 @@ class Citizen extends _i1.SerializableEntity {
     return Citizen(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      address: serializationManager
+          .deserialize<_i2.Address?>(jsonSerialization['address']),
       companyId:
           serializationManager.deserialize<int>(jsonSerialization['companyId']),
       company: serializationManager
@@ -44,6 +47,8 @@ class Citizen extends _i1.SerializableEntity {
 
   String name;
 
+  _i2.Address? address;
+
   int companyId;
 
   _i2.Company? company;
@@ -57,6 +62,7 @@ class Citizen extends _i1.SerializableEntity {
     return {
       'id': id,
       'name': name,
+      'address': address,
       'companyId': companyId,
       'company': company,
       'oldCompanyId': oldCompanyId,

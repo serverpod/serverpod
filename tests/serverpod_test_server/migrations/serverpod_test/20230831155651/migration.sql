@@ -3,6 +3,15 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "address" (
+    "id" serial PRIMARY KEY,
+    "street" text NOT NULL,
+    "inhabitantId" integer NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "citizen" (
     "id" serial PRIMARY KEY,
     "name" text NOT NULL,
@@ -22,11 +31,30 @@ CREATE TABLE "company" (
 --
 -- ACTION CREATE TABLE
 --
+CREATE TABLE "post" (
+    "id" serial PRIMARY KEY,
+    "content" text NOT NULL,
+    "nextId" integer
+);
+
+--
+-- ACTION CREATE TABLE
+--
 CREATE TABLE "town" (
     "id" serial PRIMARY KEY,
     "name" text NOT NULL,
     "mayorId" integer
 );
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
+ALTER TABLE ONLY "address"
+    ADD CONSTRAINT "address_fk_0"
+    FOREIGN KEY("inhabitantId")
+    REFERENCES "citizen"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 --
 -- ACTION CREATE FOREIGN KEY
@@ -57,6 +85,16 @@ ALTER TABLE ONLY "company"
 --
 -- ACTION CREATE FOREIGN KEY
 --
+ALTER TABLE ONLY "post"
+    ADD CONSTRAINT "post_fk_0"
+    FOREIGN KEY("nextId")
+    REFERENCES "post"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- ACTION CREATE FOREIGN KEY
+--
 ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
     FOREIGN KEY("mayorId")
@@ -68,9 +106,9 @@ ALTER TABLE ONLY "town"
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230823073808', 2, now())
+    VALUES ('serverpod_test', '20230831155651', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230823073808', "priority" = 2;
+    DO UPDATE SET "version" = '20230831155651', "priority" = 2;
 
 
 COMMIT;

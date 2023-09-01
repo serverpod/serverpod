@@ -525,4 +525,308 @@ void main() {
       '"Invalid" is not a valid property. Valid properties are (setNull, setDefault, restrict, noAction, cascade).',
     );
   });
+
+  group(
+      'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: User?, relation(name=user_address, onDelete=SetNull)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test('then the error message is correct.', () {
+      expect(
+        errors.first.message,
+        'The "onDelete" property can only be set on the side holding the foreign key.',
+      );
+    }, skip: errors.isEmpty);
+
+    test('then the error location is on the onDelete key', () {
+      var error = collector.errors.first;
+      expect(error.span, isNotNull,
+          reason: 'Expected error to have a source span.');
+
+      var startSpan = error.span!.start;
+      expect(startSpan.line, 3);
+      expect(startSpan.column, 43);
+
+      var endSpan = error.span!.end;
+      expect(endSpan.line, 3);
+      expect(endSpan.column, 51);
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object relation on both sides with onUpdate defined on the side not holding the foreign key',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: User?, relation(name=user_address, onUpdate=SetNull)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test('then the error message is correct.', () {
+      expect(
+        errors.first.message,
+        'The "onUpdate" property can only be set on the side holding the foreign key.',
+      );
+    }, skip: errors.isEmpty);
+
+    test('then the error location is on the onDelete key', () {
+      var error = collector.errors.first;
+      expect(error.span, isNotNull,
+          reason: 'Expected error to have a source span.');
+
+      var startSpan = error.span!.start;
+      expect(startSpan.line, 3);
+      expect(startSpan.column, 43);
+
+      var endSpan = error.span!.end;
+      expect(endSpan.line, 3);
+      expect(endSpan.column, 51);
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object - list relation with onDelete defined on the side not holding the foreign key',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: List<User>?, relation(name=user_address, onDelete=SetNull)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test('then the error message is correct.', () {
+      expect(
+        errors.first.message,
+        'The "onDelete" property can only be set on the side holding the foreign key.',
+      );
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object - list relation with onUpdate defined on the side not holding the foreign key',
+      () {
+    var collector = CodeGenerationCollector();
+
+    var protocol1 = ProtocolSource(
+      '''
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
+''',
+      Uri(path: 'lib/src/protocol/user.yaml'),
+      [],
+    );
+
+    var protocol2 = ProtocolSource(
+      '''
+class: Address
+table: address
+fields:
+  user: List<User>?, relation(name=user_address, onUpdate=SetNull)
+''',
+      Uri(path: 'lib/src/protocol/address.yaml'),
+      [],
+    );
+
+    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol1,
+    );
+
+    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
+      protocol2,
+    );
+
+    var entities = [definition1!, definition2!];
+
+    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
+
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol1.yaml,
+      protocol1.yamlSourceUri.path,
+      collector,
+      definition1,
+      entities,
+    );
+    SerializableEntityAnalyzer.validateYamlDefinition(
+      protocol2.yaml,
+      protocol2.yamlSourceUri.path,
+      collector,
+      definition2,
+      entities,
+    );
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test('then the error message is correct.', () {
+      expect(
+        errors.first.message,
+        'The "onUpdate" property can only be set on the side holding the foreign key.',
+      );
+    }, skip: errors.isEmpty);
+  });
 }

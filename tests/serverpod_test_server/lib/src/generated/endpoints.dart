@@ -50,12 +50,16 @@ import 'package:serverpod_test_server/src/generated/entities_with_relations/comp
     as _i38;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/town.dart'
     as _i39;
-import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
     as _i40;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i41;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i42;
-import 'package:serverpod_test_module_server/module.dart' as _i43;
-import 'package:serverpod_auth_server/module.dart' as _i44;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
+    as _i41;
+import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
+    as _i42;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i43;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i44;
+import 'package:serverpod_test_module_server/module.dart' as _i45;
+import 'package:serverpod_auth_server/module.dart' as _i46;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -1843,6 +1847,26 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['relation'] as _i10.RelationEndpoint)
                   .citizenFindAllWithDeepIncludes(session),
         ),
+        'citizenFindAllWithNamedRelationNoneOriginSide': _i1.MethodConnector(
+          name: 'citizenFindAllWithNamedRelationNoneOriginSide',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .citizenFindAllWithNamedRelationNoneOriginSide(session),
+        ),
+        'addressFindAll': _i1.MethodConnector(
+          name: 'addressFindAll',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .addressFindAll(session),
+        ),
         'citizenFindAllWithShallowIncludes': _i1.MethodConnector(
           name: 'citizenFindAllWithShallowIncludes',
           params: {},
@@ -1871,6 +1895,16 @@ class Endpoints extends _i1.EndpointDispatch {
             session,
             params['id'],
           ),
+        ),
+        'findAllPostsIncludingNextAndPrevious': _i1.MethodConnector(
+          name: 'findAllPostsIncludingNextAndPrevious',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint)
+                  .findAllPostsIncludingNextAndPrevious(session),
         ),
         'citizenInsert': _i1.MethodConnector(
           name: 'citizenInsert',
@@ -1924,6 +1958,42 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['relation'] as _i10.RelationEndpoint).townInsert(
             session,
             params['town'],
+          ),
+        ),
+        'addressInsert': _i1.MethodConnector(
+          name: 'addressInsert',
+          params: {
+            'address': _i1.ParameterDescription(
+              name: 'address',
+              type: _i1.getType<_i40.Address>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint).addressInsert(
+            session,
+            params['address'],
+          ),
+        ),
+        'postInsert': _i1.MethodConnector(
+          name: 'postInsert',
+          params: {
+            'post': _i1.ParameterDescription(
+              name: 'post',
+              type: _i1.getType<_i41.Post>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i10.RelationEndpoint).postInsert(
+            session,
+            params['post'],
           ),
         ),
         'deleteAll': _i1.MethodConnector(
@@ -2039,7 +2109,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i40.ObjectFieldScopes>(),
+              type: _i1.getType<_i42.ObjectFieldScopes>(),
               nullable: false,
             )
           },
@@ -2074,7 +2144,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i41.SimpleData?>(),
+              type: _i1.getType<_i43.SimpleData?>(),
               nullable: true,
             )
           },
@@ -2422,7 +2492,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i41.SimpleData>>(),
+              type: _i1.getType<List<_i43.SimpleData>>(),
               nullable: false,
             )
           },
@@ -2441,7 +2511,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i41.SimpleData?>>(),
+              type: _i1.getType<List<_i43.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -2460,7 +2530,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i41.SimpleData>?>(),
+              type: _i1.getType<List<_i43.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -2479,7 +2549,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i41.SimpleData?>?>(),
+              type: _i1.getType<List<_i43.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -2746,7 +2816,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i42.TestEnum, int>>(),
+              type: _i1.getType<Map<_i44.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -2765,7 +2835,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i42.TestEnum>>(),
+              type: _i1.getType<Map<String, _i44.TestEnum>>(),
               nullable: false,
             )
           },
@@ -2974,7 +3044,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i41.SimpleData>>(),
+              type: _i1.getType<Map<String, _i43.SimpleData>>(),
               nullable: false,
             )
           },
@@ -2993,7 +3063,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i41.SimpleData?>>(),
+              type: _i1.getType<Map<String, _i43.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -3012,7 +3082,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i41.SimpleData>?>(),
+              type: _i1.getType<Map<String, _i43.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -3031,7 +3101,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i41.SimpleData?>?>(),
+              type: _i1.getType<Map<String, _i43.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -3105,7 +3175,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i43.ModuleClass>(),
+              type: _i1.getType<_i45.ModuleClass>(),
               nullable: false,
             )
           },
@@ -3241,7 +3311,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i41.SimpleData>(),
+              type: _i1.getType<_i43.SimpleData>(),
               nullable: false,
             ),
           },
@@ -3265,7 +3335,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i41.SimpleData>(),
+              type: _i1.getType<_i43.SimpleData>(),
               nullable: false,
             ),
           },
@@ -3354,7 +3424,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i41.SimpleData>(),
+              type: _i1.getType<_i43.SimpleData>(),
               nullable: false,
             ),
           },
@@ -3488,8 +3558,8 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
-    modules['serverpod_test_module'] = _i43.Endpoints()
+    modules['serverpod_test_module'] = _i45.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i44.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i46.Endpoints()..initializeEndpoints(server);
   }
 }

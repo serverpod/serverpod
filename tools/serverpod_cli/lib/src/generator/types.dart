@@ -41,7 +41,9 @@ class TypeDefinition {
     this.isEnum = false,
   });
 
-  bool get isList => className == 'List';
+  bool get isListType => className == 'List';
+
+  bool get isIdType => className == 'int';
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
