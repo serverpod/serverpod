@@ -205,7 +205,7 @@ class EntityRelations {
   }
 
   String extractReferenceClassName(SerializableEntityFieldDefinition field) {
-    if (field.type.isList) {
+    if (field.type.isListType) {
       return field.type.generics.first.className;
     }
 

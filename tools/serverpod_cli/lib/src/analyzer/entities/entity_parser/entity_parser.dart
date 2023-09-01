@@ -211,9 +211,9 @@ class EntityParser {
 
     var optionalRelation = _isOptionalRelation(node);
 
-    if (typeResult.type.isList) {
+    if (typeResult.type.isListType) {
       return UnresolvedListRelationDefinition(name: relationName);
-    } else if (typeResult.type.isId && parentTable != null) {
+    } else if (typeResult.type.isIdType && parentTable != null) {
       return ForeignRelationDefinition(
         name: relationName,
         parentTable: parentTable,
@@ -221,7 +221,7 @@ class EntityParser {
         onUpdate: onUpdate,
         onDelete: onDelete,
       );
-    } else if (!typeResult.type.isId) {
+    } else if (!typeResult.type.isIdType) {
       return UnresolvedObjectRelationDefinition(
         name: relationName,
         fieldName: relationFieldName,

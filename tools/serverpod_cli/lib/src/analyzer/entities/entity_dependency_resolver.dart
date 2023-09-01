@@ -90,7 +90,7 @@ class EntityDependencyResolver {
         relationFieldName,
       );
     } else if (relation.name == null ||
-        (foreignField != null && foreignField.type.isList)) {
+        (foreignField != null && foreignField.type.isListType)) {
       _resolveImplicitDefinedRelation(
         classDefinition,
         fieldDefinition,

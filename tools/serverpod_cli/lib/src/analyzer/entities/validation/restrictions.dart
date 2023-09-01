@@ -122,7 +122,7 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     if (field == null) return errors;
 
-    if (!field.type.isId) {
+    if (!field.type.isIdType) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
@@ -167,7 +167,7 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     if (field == null) return errors;
 
-    if (field.type.isId) {
+    if (field.type.isIdType) {
       errors.add(SourceSpanSeverityException(
         'The "optional" property should be omitted on id fields.',
         span,
@@ -258,7 +258,7 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    if (field.type.isList) {
+    if (field.type.isListType) {
       return [
         SourceSpanSeverityException(
           'The "field" property can only be used on an object relation.',
@@ -267,7 +267,7 @@ class Restrictions {
       ];
     }
 
-    if (field.type.isId) {
+    if (field.type.isIdType) {
       return [
         SourceSpanSeverityException(
           'The "field" property can only be used on an object relation.',
