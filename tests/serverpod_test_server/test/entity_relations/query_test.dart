@@ -401,7 +401,7 @@ void main() async {
   });
 
   group(
-      'Given entities with a named relation when fetching form the foreign key origin side',
+      'Given entities with a named relation when fetching from the foreign key origin side',
       () {
     late List<Address> addresses;
     setUpAll(() async {
