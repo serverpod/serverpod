@@ -439,7 +439,7 @@ void main() async {
 
     test('then the first post has a reference to the next post', () {
       var firstPost = posts[2];
-      expect(firstPost.next, posts[1]);
+      expect(firstPost.next?.content, posts[1].content);
     });
 
     test('then the first post has a null reference to the previous post', () {
@@ -449,22 +449,22 @@ void main() async {
 
     test('then the second post has a reference to the next post', () {
       var secondPost = posts[1];
-      expect(secondPost.next, posts[0]);
+      expect(secondPost.next?.content, posts[0].content);
     });
 
     test('then the second post has a reference to the previous post', () {
       var secondPost = posts[1];
-      expect(secondPost.previous, posts[2]);
+      expect(secondPost.previous?.content, posts[2].content);
     });
 
     test('then the third post has a null reference to the next post', () {
-      var secondPost = posts[2];
-      expect(secondPost.next, isNull);
+      var thirdPost = posts[0];
+      expect(thirdPost.next, isNull);
     });
 
-    test('then the second post has a reference to the previous post', () {
-      var secondPost = posts[2];
-      expect(secondPost.previous, posts[1]);
+    test('then the third post has a reference to the previous post', () {
+      var thirdPost = posts[0];
+      expect(thirdPost.previous?.content, posts[1].content);
     });
   });
 }

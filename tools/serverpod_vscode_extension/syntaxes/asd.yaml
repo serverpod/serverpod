@@ -1,0 +1,7 @@
+class: User
+table: user
+fields:
+  name: String
+  childId: int, unique
+  child: User? relation(name=parent_child)
+  parent: User? relation(name=parent_child)
