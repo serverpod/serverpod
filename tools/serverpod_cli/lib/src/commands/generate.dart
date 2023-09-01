@@ -56,9 +56,12 @@ class GenerateCommand extends ServerpodCommand {
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-    bool success = await performGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
+    bool success = await log.progress(
+      'Generating project',
+      () => performGenerate(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+      ),
     );
     if (watch) {
       log.info('Initial code generation complete. Listening for changes.');

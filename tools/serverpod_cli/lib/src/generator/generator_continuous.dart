@@ -24,11 +24,13 @@ Future<bool> performGenerateContinuously({
       'File changed: $event',
       newParagraph: true,
     );
-    success = await performGenerate(
-      changedFile: event.path,
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-    );
+    success = await log.progress(
+        'Generating project',
+        () => performGenerate(
+              changedFile: event.path,
+              config: config,
+              endpointsAnalyzer: endpointsAnalyzer,
+            ));
     log.info('Incremental code generation complete.');
   }
 
