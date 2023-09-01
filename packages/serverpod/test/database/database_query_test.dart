@@ -55,8 +55,9 @@ void main() {
         () {
       var table = 'citizen';
       Order order = Order(
-          column: ColumnString('id', queryPrefix: table),
-          orderDescending: false);
+        column: ColumnString('id', queryPrefix: table),
+        orderDescending: false,
+      );
 
       var query = SelectQueryBuilder(table: table).withOrderBy([order]).build();
 

@@ -390,7 +390,7 @@ void _validateTableReferences(
 extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
-    // Regex matches '<tableName>_' and '<tableName>.'
+    // Regex matches 'tableName_' and 'tableName.'
     return toString().startsWith(RegExp(table + r'[_\.]'));
   }
 }
