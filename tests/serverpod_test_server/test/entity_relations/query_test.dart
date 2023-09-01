@@ -377,7 +377,7 @@ void main() async {
     late List<Citizen> citizenWithAddress;
     setUpAll(() async {
       await _createTestDatabase(client);
-      citizenWithAddress =
+      citizensIncludingAdress =
           await client.relation.citizenFindAllWithNamedRelationNoneOriginSide();
     });
 
