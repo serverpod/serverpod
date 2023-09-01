@@ -76,9 +76,6 @@ fields:
     test('then the reference field is set on the list relation.', () {
       var relation = classDefinition.findField('employees')?.relation;
 
-      classDefinition;
-      definition1;
-
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
         (relation as ListRelationDefinition).foreignFieldName,
