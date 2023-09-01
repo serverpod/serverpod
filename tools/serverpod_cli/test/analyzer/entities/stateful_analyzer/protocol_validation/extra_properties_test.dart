@@ -76,7 +76,7 @@ void main() {
         ).build()
       ];
 
-      CodeGenerationCollector collector = CodeGenerationCollector();
+      var collector = CodeGenerationCollector();
       StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
       expect(
@@ -103,7 +103,7 @@ void main() {
         ).build()
       ];
 
-      CodeGenerationCollector collector = CodeGenerationCollector();
+      var collector = CodeGenerationCollector();
       StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
       expect(
@@ -132,7 +132,7 @@ void main() {
         ).build()
       ];
 
-      CodeGenerationCollector collector = CodeGenerationCollector();
+      var collector = CodeGenerationCollector();
       var entities = StatefulAnalyzer(protocols, onErrorsCollector(collector))
           .validateAll();
 
@@ -154,7 +154,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -186,7 +186,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -217,7 +217,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -256,7 +256,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -289,7 +289,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -323,7 +323,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
@@ -355,7 +355,7 @@ void main() {
           ).build()
         ];
 
-        CodeGenerationCollector collector = CodeGenerationCollector();
+        var collector = CodeGenerationCollector();
         StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(

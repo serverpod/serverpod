@@ -24,7 +24,7 @@ void main() {
       ).build()
     ];
 
-    CodeGenerationCollector collector = CodeGenerationCollector();
+    var collector = CodeGenerationCollector();
     StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
     expect(
@@ -53,7 +53,7 @@ void main() {
       ).build()
     ];
 
-    CodeGenerationCollector collector = CodeGenerationCollector();
+    var collector = CodeGenerationCollector();
     StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
     expect(
