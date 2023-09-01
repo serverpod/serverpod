@@ -372,7 +372,7 @@ void main() async {
   });
 
   group(
-      'Given entities with a named relation when fetching form the none origin side',
+      'Given entities with a named relation when fetching from the none origin side',
       () {
     late List<Citizen> citizenWithAddress;
     setUpAll(() async {
