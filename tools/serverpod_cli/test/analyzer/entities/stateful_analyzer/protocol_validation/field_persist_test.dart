@@ -221,8 +221,10 @@ void main() {
 
       var error = collector.errors.first as SourceSpanSeverityException;
 
-      expect(error.message,
-          'Fields are persisted by default, the property can be removed.');
+      expect(
+        error.message,
+        'Fields are persisted by default, the property can be removed.',
+      );
       expect(error.severity, SourceSpanSeverity.hint);
       expect(error.tags?.first, SourceSpanTag.unnecessary);
     },

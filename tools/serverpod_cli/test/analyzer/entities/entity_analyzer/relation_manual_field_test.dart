@@ -1,64 +1,41 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   group(
       'Given a class with a relation with a defined field name that holds the relation',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          myParentId: int
+          parent: ExampleParent?, relation(field=myParentId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+        '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+        ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  myParentId: int
-  parent: ExampleParent?, relation(field=myParentId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: ExampleParent
-table: example_parent
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
-    var exampleClass = definition1 as ClassDefinition;
+    var exampleClass = definitions.first as ClassDefinition;
 
     test('then no errors were collected', () {
-      expect(
-        collector.errors,
-        isEmpty,
-      );
+      expect(collector.errors, isEmpty);
     });
 
     test('then the implicit parentId field is NOT created', () {
@@ -83,33 +60,21 @@ fields:
 
   group('Given a class with a relation pointing to a field that does not exist',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          parent: Example?, relation(field=myParentId)
+        ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  parent: Example?, relation(field=myParentId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
@@ -137,50 +102,31 @@ fields:
   });
 
   group('Given a class with a List relation with a field pointer defined', () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          myChildId: int
+          child: List<ExampleChild>?, relation(field=myChildId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_child').withYaml(
+        '''
+        class: ExampleChild
+        table: example_child
+        fields:
+          name: String
+          exampleId: int, relation(parent=example)
+        ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  myChildId: int
-  child: List<ExampleChild>?, relation(field=myChildId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: ExampleChild
-table: example_child
-fields:
-  name: String
-  exampleId: int, relation(parent=example)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
@@ -210,50 +156,28 @@ fields:
   });
 
   group('Given a class with an id relation with a field pointer defined', () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+          class: Example
+          table: example
+          fields:
+            otherId: int
+            exampleChildId: int, relation(parent=example_child, field=otherId)
+          ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_child').withYaml(
+        '''
+          class: ExampleChild
+          table: example_child
+          fields:
+            name: String
+          ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  otherId: int
-  exampleChildId: int, relation(parent=example_child, field=otherId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: ExampleChild
-table: example_child
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
+    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -263,7 +187,7 @@ fields:
     test(
         'then the error message reports that the field keyword cannot be used on an id relation.',
         () {
-      var error = collector.errors.first;
+      var error = errors.first;
       expect(
         error.message,
         'The "field" property can only be used on an object relation.',
@@ -271,11 +195,9 @@ fields:
     }, skip: errors.isEmpty);
 
     test('then the error is reported at the field key location.', () {
-      var span = collector.errors.first.span;
-
+      var span = errors.first.span;
       expect(span?.start.line, 4);
       expect(span?.start.column, 54);
-
       expect(span?.end.line, 4);
       expect(span?.end.column, 54 + 'field'.length);
     }, skip: errors.isEmpty);
@@ -284,35 +206,20 @@ fields:
   group(
       'Given a class with a relation pointing to a field with a mismatching type to the reference',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+          class: Example
+          table: example
+          fields:
+            myParentId: String
+            parent: Example?, relation(field=myParentId)
+          ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  myParentId: String
-  parent: Example?, relation(field=myParentId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
+    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -322,7 +229,7 @@ fields:
     test(
         'then the error message reports that the field has a mismatching type to the reference.',
         () {
-      var error = collector.errors.first;
+      var error = errors.first;
       expect(
         error.message,
         'The field "myParentId" is of type "String" but reference field "id" is of type "int".',
@@ -330,11 +237,9 @@ fields:
     }, skip: errors.isEmpty);
 
     test('then the error is reported at the field key location.', () {
-      var span = collector.errors.first.span;
-
+      var span = errors.first.span;
       expect(span?.start.line, 4);
       expect(span?.start.column, 35);
-
       expect(span?.end.line, 4);
       expect(span?.end.column, 35 + 'myParentId'.length);
     }, skip: errors.isEmpty);
@@ -343,35 +248,20 @@ fields:
   group(
       'Given a class with a relation pointing to a field that is set to not persist',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+          class: Example
+          table: example
+          fields:
+            myParentId: int, !persist
+            parent: Example?, relation(field=myParentId)
+          ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Example
-table: example
-fields:
-  myParentId: int, !persist
-  parent: Example?, relation(field=myParentId)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
+    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -379,9 +269,9 @@ fields:
     });
 
     test(
-        'then the error message reports that the field has a mismatching type to the reference.',
+        'then the error message reports that the field is not persisted and cannot be used in a relation.',
         () {
-      var error = collector.errors.first;
+      var error = errors.first;
       expect(
         error.message,
         'The field "myParentId" is not persisted and cannot be used in a relation.',
@@ -389,11 +279,9 @@ fields:
     }, skip: errors.isEmpty);
 
     test('then the error is reported at the field key location.', () {
-      var span = collector.errors.first.span;
-
+      var span = errors.first.span;
       expect(span?.start.line, 4);
       expect(span?.start.column, 35);
-
       expect(span?.end.line, 4);
       expect(span?.end.column, 35 + 'myParentId'.length);
     }, skip: errors.isEmpty);
