@@ -390,7 +390,7 @@ fields:
   });
 
   group(
-      'Given a class with a one to many relation where the relationship where is named with a none string value',
+      'Given a class with a one to many relation where the relationship is named with a none string value',
       () {
     var collector = CodeGenerationCollector();
 
