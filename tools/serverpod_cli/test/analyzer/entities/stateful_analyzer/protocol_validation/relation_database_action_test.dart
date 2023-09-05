@@ -212,8 +212,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
 
     analyzer.validateAll();
     var errors = collector.errors;
@@ -272,10 +271,7 @@ void main() {
       ).build(),
     ];
 
-    StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
-      onErrorsCollector(collector),
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -331,8 +327,7 @@ void main() {
       ).build(),
     ];
 
-    StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -374,8 +369,7 @@ void main() {
       ).build(),
     ];
 
-    StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
