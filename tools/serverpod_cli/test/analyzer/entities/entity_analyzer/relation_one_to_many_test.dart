@@ -1,63 +1,39 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Given a class with a one to many relation', () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation(name=company_employees)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation(name=company_employees)
+        ''',
+      ).build()
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: Company?, relation(name=company_employees)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
     );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: List<Employee>?, relation(name=company_employees)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
-    var classDefinition = definition2 as ClassDefinition;
+    var definitions = analyzer.validateAll();
+    var classDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Company');
 
     var errors = collector.errors;
 
@@ -88,63 +64,37 @@ fields:
   group(
       'Given two classes with one to many relations defined without specifying a name',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: Company?, relation
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
+    var employeeDefinition = definitions.first as ClassDefinition;
+    var companyDefinition = definitions.last as ClassDefinition;
 
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: List<Employee>?, relation
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
-    var employeeDefinition = definition1 as ClassDefinition;
-    var companyDefinition = definition2 as ClassDefinition;
+    var errors = collector.errors;
 
     group('then two independent relations are created', () {
       test('with no errors during validation.', () {
-        expect(collector.errors, isEmpty);
+        expect(errors, isEmpty);
       });
 
       test('with no id field was created for the many side.', () {
@@ -199,61 +149,33 @@ fields:
   test(
       'Given a class with a one to many relation where the relation ship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation(name=company_employees)
+          myCompany: Company?, relation(name=company_employees)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation(name=company_employees)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: Company?, relation(name=company_employees)
-  myCompany: Company?, relation(name=company_employees)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: List<Employee>?, relation(name=company_employees)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     expect(
-      collector.errors.length,
-      greaterThan(0),
+      collector.errors,
+      isNotEmpty,
       reason: 'Expected an error but none was found.',
     );
 
@@ -268,58 +190,31 @@ fields:
   group(
       'Given a class with a one to many relation where the relationship is only named on one side',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          company: Company?, relation
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation(name=company_employees)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: Company?, relation
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: List<Employee>?, relation(name=company_employees)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
+
     test('then an error is collected', () {
       expect(errors, isNotEmpty);
     });
@@ -337,42 +232,29 @@ fields:
   group(
       'Given a class with a one to many relation where the named relationship has a mismatch table reference',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          parentId: int, relation(name=company_employees, parent=employee)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  parentId: int, relation(name=company_employees, parent=employee)
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
+
     test('then an error is collected', () {
       expect(errors, isNotEmpty);
     });
 
     test(
-        'then the error messages says that there is no matching relation because of invalid table reference.',
+        'then the error messages say that there is no matching relation because of invalid table reference.',
         () {
       expect(
         errors.first.message,
@@ -389,64 +271,37 @@ fields:
   group(
       'Given a class with a one to many relation where the relationship is named with a none string value',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          company: 
+            type: Company?
+            relation:
+              name: 1
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: 
+            type: List<Employee>?
+            relation:
+              name: 1
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  company: 
-    type: Company?
-    relation:
-      name: 1
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: 
-    type: List<Employee>?
-    relation:
-      name: 1
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
+
     test('then an error is collected', () {
       expect(errors, isNotEmpty);
     });
@@ -460,59 +315,31 @@ fields:
   });
 
   group('Given an implicit one to many relation', () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          name: String
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: Employee
-table: employee
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  employees: List<Employee>?, relation
-''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
-    var employeeDefinition = definition1 as ClassDefinition;
-    var companyDefinition = definition2 as ClassDefinition;
+    var employeeDefinition = definitions.first as ClassDefinition;
+    var companyDefinition = definitions.last as ClassDefinition;
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
