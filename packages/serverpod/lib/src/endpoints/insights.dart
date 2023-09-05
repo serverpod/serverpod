@@ -236,7 +236,7 @@ class InsightsEndpoint extends Endpoint {
 
     for (var module in modules) {
       var version =
-          Serverpod.instance!.migrationManager.getLatestVersion(module);
+          Serverpod.instance.migrationManager.getLatestVersion(module);
       latestAvailableMigrations.add(
         DatabaseMigrationVersion(
           module: module,

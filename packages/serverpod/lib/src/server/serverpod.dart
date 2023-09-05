@@ -42,7 +42,13 @@ class Serverpod {
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
-  static Serverpod? get instance => _instance;
+  static Serverpod get instance {
+    if (_instance == null) {
+      throw Exception('Serverpod has not been initialized. You need to create '
+          'the Serverpod object before calling this method.');
+    }
+    return _instance!;
+  }
 
   late String _runMode;
 

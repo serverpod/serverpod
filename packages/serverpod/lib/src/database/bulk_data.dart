@@ -148,7 +148,7 @@ class DatabaseBulkData {
     String table,
   ) async {
     var databaseDefinition =
-        Serverpod.instance!.serializationManager.getTargetDatabaseDefinition();
+        Serverpod.instance.serializationManager.getTargetDatabaseDefinition();
 
     var tableDefinition =
         databaseDefinition.tables.firstWhereOrNull((e) => e.name == table);
