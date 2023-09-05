@@ -1,8 +1,8 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -10,31 +10,26 @@ void main() {
     test(
       'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
       () {
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, database, database
+            ''',
+          ).build(),
+        ];
+
         var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, database, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
         );
-
-        expect(collector.errors.length, greaterThan(0));
 
         var error = collector.errors.first;
-
         expect(error.message,
             'The field option "database" is defined more than once.');
       },
@@ -43,31 +38,26 @@ void main() {
     test(
       'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
       () {
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, api, api
+            ''',
+          ).build(),
+        ];
+
         var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, api, api
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
+        expect(
+          collector.errors,
+          isNotEmpty,
+          reason: 'Expected an error but none was generated.',
         );
-
-        expect(collector.errors.length, greaterThan(0));
 
         var error = collector.errors.first;
-
         expect(
             error.message, 'The field option "api" is defined more than once.');
       },
@@ -76,27 +66,19 @@ void main() {
     test(
       'Given a class with a field with a negated api keyword, then the generated entity should be persisted.',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, !api
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, !api
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-                as ClassDefinition;
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition],
-        );
+        StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+        var definitions = analyzer.validateAll();
+        var definition = definitions.first as ClassDefinition;
 
         expect(
           definition.fields.last.shouldPersist,
@@ -108,27 +90,19 @@ void main() {
     test(
       'Given a class with a field with a negated database keyword, then the generated entity has the scope all.',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, !database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, !database
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-                as ClassDefinition;
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition],
-        );
+        StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+        var definitions = analyzer.validateAll();
+        var definition = definitions.first as ClassDefinition;
 
         expect(
           definition.fields.last.scope,
@@ -140,33 +114,28 @@ void main() {
     test(
       'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
       () {
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, api, database
+            ''',
+          ).build(),
+        ];
+
         var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, api, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+
+        expect(
+          collector.errors,
+          hasLength(greaterThan(1)),
         );
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
-
-        expect(collector.errors.length, greaterThan(1));
-
-        var message1 = 'The "api" property is mutually exclusive with the '
-            '"database" property.';
-        var message2 = 'The "database" property is mutually exclusive with the '
-            '"api" property.';
+        var message1 =
+            'The "api" property is mutually exclusive with the "database" property.';
+        var message2 =
+            'The "database" property is mutually exclusive with the "api" property.';
 
         var hasDatabaseError = collector.errors.any(
           (error) => error.message == message1,
@@ -176,44 +145,32 @@ void main() {
           (error) => error.message == message2,
         );
 
-        expect(
-          hasDatabaseError,
-          isTrue,
-          reason: 'Expected error message: $message1',
-        );
-        expect(
-          hasApiError,
-          isTrue,
-          reason: 'Expected error message: $message2',
-        );
+        expect(hasDatabaseError, isTrue);
+        expect(hasApiError, isTrue);
       },
     );
 
     group(
       'Given a class with a field with the scope set to database',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        table: example
-        fields:
-          name: String, database
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              name: String, database
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-                as ClassDefinition;
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition],
+        var collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          protocols,
+          onErrorsCollector(collector),
         );
+        var definitions = analyzer.validateAll();
+        var definition = definitions.first as ClassDefinition;
 
         test('then an error is reported', () {
           expect(collector.errors, isNotEmpty);
@@ -241,28 +198,22 @@ void main() {
     group(
       'Given a class with a field with the scope set to api',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-      class: Example
-      table: example
-      fields:
-        name: String, api
-      ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              name: String, api
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-                as ClassDefinition;
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition],
-        );
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer analyzer =
+            StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        var definitions = analyzer.validateAll();
+        var definition = definitions.first as ClassDefinition;
 
         test('then an error is reported', () {
           expect(collector.errors, isNotEmpty);
@@ -290,26 +241,18 @@ void main() {
     test(
       'Given a class with a field with database set to an invalid value, then collect an error that the value must be a bool.',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, database=INVALID
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, database=INVALID
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(collector.errors.length, greaterThan(0));
 
@@ -322,26 +265,18 @@ void main() {
     test(
       'Given a class with a field with api set to an invalid value, then collect an error that the value must be a bool.',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-        class: Example
-        fields:
-          name: String, api=INVALID
-        ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            fields:
+              name: String, api=INVALID
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+        var collector = CodeGenerationCollector();
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(collector.errors.length, greaterThan(0));
 
@@ -354,31 +289,24 @@ void main() {
     test(
       'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
       () {
-        var collector = CodeGenerationCollector();
-        var protocol = ProtocolSource(
-          '''
-      class: Example
-      table: example
-      fields:
-        nextId: int, parent=example, api
-      ''',
-          Uri(path: 'lib/src/protocol/example.yaml'),
-          [],
-        );
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+            class: Example
+            table: example
+            fields:
+              nextId: int, parent=example, api
+            ''',
+          ).build(),
+        ];
 
-        var definition =
-            SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-        SerializableEntityAnalyzer.validateYamlDefinition(
-          protocol.yaml,
-          protocol.yamlSourceUri.path,
-          collector,
-          definition,
-          [definition!],
-        );
+        var collector = CodeGenerationCollector();
+
+        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
 
         expect(
-          collector.errors.length,
-          greaterThan(0),
+          collector.errors,
+          isNotEmpty,
           reason: 'Expected an error, none was found.',
         );
 
@@ -397,115 +325,93 @@ void main() {
   test(
     'Given a class with a field with no scope set, then the generated entity has the all scope.',
     () {
-      var collector = CodeGenerationCollector();
-      var protocol = ProtocolSource(
-        '''
-        class: Example
-        table: example
-        fields:
-          name: String
-        ''',
-        Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
-      );
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+          ''',
+        ).build(),
+      ];
 
-      var definition = SerializableEntityAnalyzer.extractEntityDefinition(
-        protocol,
-      ) as ClassDefinition;
-      SerializableEntityAnalyzer.resolveEntityDependencies([definition]);
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        [definition],
-      );
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer =
+          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ClassDefinition;
 
       expect(definition.fields.last.scope, EntityFieldScopeDefinition.all);
     },
   );
 
-  group('Given a class with a field with the scope set', () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      fields:
-        name: String, scope=serverOnly
-        example: String, scope=all
-        town: String, scope=none
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
+  group(
+    'Given a class with a field with the scope set',
+    () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, scope=serverOnly
+            example: String, scope=all
+            town: String, scope=none
+          ''',
+        ).build(),
+      ];
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([definition]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      [definition],
-    );
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer =
+          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ClassDefinition;
 
-    test('then no errors are collected.', () {
-      expect(collector.errors, isEmpty);
-    });
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-    test('then the generated entity has the scope.', () {
-      expect(
-        definition.fields[0].scope,
-        EntityFieldScopeDefinition.serverOnly,
-      );
-    });
+      test('then the generated entity has the scope.', () {
+        expect(
+          definition.fields[0].scope,
+          EntityFieldScopeDefinition.serverOnly,
+        );
+      });
 
-    test('then the generated entity has the scope.', () {
-      expect(
-        definition.fields[1].scope,
-        EntityFieldScopeDefinition.all,
-      );
-    });
+      test('then the generated entity has the scope.', () {
+        expect(
+          definition.fields[1].scope,
+          EntityFieldScopeDefinition.all,
+        );
+      });
 
-    test('then the generated entity has the scope.', () {
-      expect(
-        definition.fields[2].scope,
-        EntityFieldScopeDefinition.none,
-      );
-    });
-  });
+      test('then the generated entity has the scope.', () {
+        expect(definition.fields[2].scope, EntityFieldScopeDefinition.none);
+      });
+    },
+  );
 
   test(
       'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
       () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      fields:
-        name: String, scope=
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          name: String, scope=
+        ''',
+      ).build(),
+    ];
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([definition]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      [definition],
-    );
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     expect(
-      collector.errors.length,
-      greaterThan(0),
+      collector.errors,
+      isNotEmpty,
       reason: 'Expected an error for invalid scope name, none was found.',
     );
 
@@ -516,112 +422,103 @@ void main() {
   });
 
   test(
-      'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      fields:
-        name: String, scope=InvalidScope
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      [],
-    );
+    'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
+    () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+        class: Example
+        fields:
+          name: String, scope=InvalidScope
+        ''',
+        ).build(),
+      ];
 
-    var definition = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([definition]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      definition,
-      [definition],
-    );
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer =
+          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      analyzer.validateAll();
 
-    expect(
-      collector.errors.length,
-      greaterThan(0),
-      reason: 'Expected an error for invalid scope name, none was found.',
-    );
+      expect(
+        collector.errors.length,
+        greaterThan(0),
+        reason: 'Expected an error for invalid scope name, none was found.',
+      );
 
-    expect(
-      collector.errors.first.message,
-      '"InvalidScope" is not a valid property. Valid properties are (all, serverOnly, none).',
-    );
-  });
+      expect(
+        collector.errors.first.message,
+        '"InvalidScope" is not a valid property. Valid properties are (all, serverOnly, none).',
+      );
+    },
+  );
 
   test(
     'Given a class with a field with both the scope and database keywords, then collect an error that only one of them is allowed.',
     () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, scope=serverOnly, database
+          ''',
+        ).build(),
+      ];
+
       var collector = CodeGenerationCollector();
-      var protocol = ProtocolSource(
-        '''
-        class: Example
-        fields:
-          name: String, scope=serverOnly, database
-        ''',
-        Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
-      );
+      StatefulAnalyzer analyzer =
+          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      analyzer.validateAll();
 
-      var definition =
-          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        [definition!],
-      );
-
-      expect(collector.errors.length, greaterThan(1));
+      expect(collector.errors, hasLength(greaterThan(1)));
 
       var error1 = collector.errors[0];
       var error2 = collector.errors[1];
 
-      expect(error1.message,
-          'The "scope" property is mutually exclusive with the "database" property.');
-      expect(error2.message,
-          'The "database" property is mutually exclusive with the "scope" property.');
+      expect(
+        error1.message,
+        'The "scope" property is mutually exclusive with the "database" property.',
+      );
+      expect(
+        error2.message,
+        'The "database" property is mutually exclusive with the "scope" property.',
+      );
     },
   );
 
   test(
     'Given a class with a field with both the scope and api keywords, then collect an error that only one of them is allowed.',
     () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, scope=serverOnly, api
+          ''',
+        ).build(),
+      ];
+
       var collector = CodeGenerationCollector();
-      var protocol = ProtocolSource(
-        '''
-        class: Example
-        fields:
-          name: String, scope=serverOnly, api
-        ''',
-        Uri(path: 'lib/src/protocol/example.yaml'),
-        [],
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        protocols,
+        onErrorsCollector(collector),
       );
+      analyzer.validateAll();
 
-      var definition =
-          SerializableEntityAnalyzer.extractEntityDefinition(protocol);
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        protocol.yaml,
-        protocol.yamlSourceUri.path,
-        collector,
-        definition,
-        [definition!],
-      );
-
-      expect(collector.errors.length, greaterThan(1));
+      expect(collector.errors, hasLength(greaterThan(1)));
 
       var error1 = collector.errors[0];
       var error2 = collector.errors[1];
 
-      expect(error1.message,
-          'The "scope" property is mutually exclusive with the "api" property.');
-      expect(error2.message,
-          'The "api" property is mutually exclusive with the "scope" property.');
+      expect(
+        error1.message,
+        'The "scope" property is mutually exclusive with the "api" property.',
+      );
+      expect(
+        error2.message,
+        'The "api" property is mutually exclusive with the "scope" property.',
+      );
     },
   );
 }
