@@ -25,7 +25,7 @@ Future<bool> performGenerateContinuously({
       newParagraph: true,
     );
     success = await log.progress(
-        'Generating project',
+        'Generating code',
         () => performGenerate(
               changedFile: event.path,
               config: config,
