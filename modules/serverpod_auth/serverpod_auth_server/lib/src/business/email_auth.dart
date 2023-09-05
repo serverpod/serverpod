@@ -13,7 +13,7 @@ class Emails {
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static String generatePasswordHash(String password, String email) {
-    var salt = Serverpod.instance!.getPassword('email_password_salt') ??
+    var salt = Serverpod.instance.getPassword('email_password_salt') ??
         'serverpod password salt';
     if (AuthConfig.current.extraSaltyHash) {
       salt += ':$email';

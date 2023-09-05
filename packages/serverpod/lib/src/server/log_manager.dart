@@ -491,7 +491,7 @@ class LogManager {
       sessionLog.add(
         SessionLogInfo(
           sessionLogEntry: SessionLogEntry(
-            serverId: Serverpod.instance!.serverId,
+            serverId: Serverpod.instance.serverId,
             time: entry.session.startTime,
             touched: DateTime.now(),
             endpoint: _endpointForSession(entry.session),
