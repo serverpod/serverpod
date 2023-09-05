@@ -1,46 +1,32 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('post').withYaml(
+        '''
+        class: Post
+        table: post
+        fields:
+          content: String
+          previous: Post?, relation(name=next_previous_post)
+          nextId: int?
+          next: Post?, relation(name=next_previous_post, field=nextId)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-      class: Post
-      table: post
-      fields:
-        content: String
-        previous: Post?, relation(name=next_previous_post)
-        nextId: int?
-        next: Post?, relation(name=next_previous_post, field=nextId)
-      ''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
-    var userDefinition = definition1 as ClassDefinition;
+    var postDefinition = definitions.first as ClassDefinition;
 
     var errors = collector.errors;
 
@@ -49,7 +35,7 @@ void main() {
     });
 
     group('then the successor field relation', () {
-      var field = userDefinition.findField('next');
+      var field = postDefinition.findField('next');
       var relation = field?.relation;
 
       test('name is null.', () {
@@ -86,7 +72,7 @@ void main() {
     });
 
     group('then the predecessor field relation', () {
-      var field = userDefinition.findField('previous');
+      var field = postDefinition.findField('previous');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -123,7 +109,7 @@ void main() {
     });
 
     group('then the successorId field relation', () {
-      var field = userDefinition.findField('nextId');
+      var field = postDefinition.findField('nextId');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -155,39 +141,25 @@ void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          successorId: int?
+          successor: User?, relation(name=user_predecessor, field=successorId)
+          predecessor: User?, relation(name=user_predecessor)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-      class: User
-      table: user
-      fields:
-        name: String
-        successorId: int?
-        successor: User?, relation(name=user_predecessor, field=successorId)
-        predecessor: User?, relation(name=user_predecessor)
-      ''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
-    var userDefinition = definition1 as ClassDefinition;
+    var userDefinition = definitions.first as ClassDefinition;
 
     var errors = collector.errors;
 
@@ -302,38 +274,24 @@ void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          parent: User?, relation(name=parent_child, optional)
+          children: List<User>?, relation(name=parent_child)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-      class: User
-      table: user
-      fields:
-        name: String
-        parent: User?, relation(name=parent_child, optional)
-        children: List<User>?, relation(name=parent_child)
-      ''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var entities = [definition1!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-
-    var userDefinition = definition1 as ClassDefinition;
+    var userDefinition = definitions.first as ClassDefinition;
 
     var errors = collector.errors;
 
