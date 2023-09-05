@@ -1,35 +1,111 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a class with no database action explicitly set', () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
+  var databaseActions = [
+    'Cascade',
+    'NoAction',
+    'Restrict',
+    'SetNull',
+    'SetDefault',
+  ];
 
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
+  for (var action in databaseActions) {
+    group(
+        'Given a class with onUpdate database action explicitly set to $action',
+        () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+        class: Example
+        table: example
+        fields:
+          example: Example?, relation(onUpdate=$action)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      var entity = definitions.first as ClassDefinition;
+
+      test('then no errors are detected.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      var field = entity.findField('exampleId');
+
+      var noneFieldRelation =
+          field == null || field.relation is! ForeignRelationDefinition;
+      test('then onUpdate is set to $action.', () {
+        var relation = field?.relation as ForeignRelationDefinition;
+
+        expect(
+          relation.onUpdate.name.toString().toLowerCase(),
+          action.toLowerCase(),
+        );
+      }, skip: noneFieldRelation);
+    });
+  }
+
+  for (var action in databaseActions) {
+    group(
+        'Given a class with onDelete database action explicitly set to $action',
+        () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+        class: Example
+        table: example
+        fields:
+          example: Example?, relation(onDelete=$action)
+        ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var definitions = analyzer.validateAll();
+      var entity = definitions.first as ClassDefinition;
+
+      test('then no errors are detected.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      var field = entity.findField('exampleId');
+
+      var noneFieldRelation =
+          field == null || field.relation is! ForeignRelationDefinition;
+      test('then onDelete is set to $action.', () {
+        var relation = field?.relation as ForeignRelationDefinition;
+        expect(
+          relation.onDelete.name.toString().toLowerCase(),
+          action.toLowerCase(),
+        );
+      }, skip: noneFieldRelation);
+    });
+  }
+
+  group('Given a class with no database action explicitly set', () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          example: Example?, relation
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+    var entity = definitions.first as ClassDefinition;
 
     test('then no errors are detected.', () {
       expect(collector.errors, isEmpty);
@@ -50,476 +126,62 @@ void main() {
     }, skip: noneFieldRelation);
   });
 
-  group('Given a class with onUpdate database action explicitly set to Cascade',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=Cascade)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to cascade.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, ForeignKeyAction.cascade);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onUpdate database action explicitly set to NoAction',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=NoAction)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to no action.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-
-      expect(relation.onUpdate, ForeignKeyAction.noAction);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onUpdate database action explicitly set to Restrict',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=Restrict)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to restrict.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, ForeignKeyAction.restrict);
-    }, skip: noneFieldRelation);
-  });
-
-  group('Given a class with onUpdate database action explicitly set to SetNull',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=SetNull)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to set null.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, ForeignKeyAction.setNull);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onUpdate database action explicitly set to SetDefault',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=SetDefault)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onUpdate is set to set default.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, ForeignKeyAction.setDefault);
-    }, skip: noneFieldRelation);
-  });
-
   test(
       'Given a class with onUpdate database action set to an invalid value, then collect an error.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          example: Example?, relation(onUpdate=Invalid)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-      class: Example
-      table: example
-      fields:
-        example: Example?, relation(onUpdate=Invalid)
-      ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol,
-    ) as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
     );
-
-    expect(collector.errors, isNotEmpty);
 
     var error = collector.errors.first;
-
     expect(
       error.message,
       '"Invalid" is not a valid property. Valid properties are (setNull, setDefault, restrict, noAction, cascade).',
     );
   });
 
-  group('Given a class with onDelete database action explicitly set to Cascade',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=Cascade)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set to cascade.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, ForeignKeyAction.cascade);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onDelete database action explicitly set to NoAction',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=NoAction)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set to no action.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-
-      expect(relation.onDelete, ForeignKeyAction.noAction);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onDelete database action explicitly set to Restrict',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=Restrict)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set to restrict.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, ForeignKeyAction.restrict);
-    }, skip: noneFieldRelation);
-  });
-
-  group('Given a class with onDelete database action explicitly set to SetNull',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=SetNull)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set to set null.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, ForeignKeyAction.setNull);
-    }, skip: noneFieldRelation);
-  });
-
-  group(
-      'Given a class with onDelete database action explicitly set to SetDefault',
-      () {
-    var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=SetDefault)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
-
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
-    );
-
-    test('then no errors are detected.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    var field = entity.findField('exampleId');
-
-    var noneFieldRelation =
-        field == null || field.relation is! ForeignRelationDefinition;
-    test('then onDelete is set to set default.', () {
-      var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, ForeignKeyAction.setDefault);
-    }, skip: noneFieldRelation);
-  });
-
   test(
       'Given a class with onDelete database action set to an invalid value, then collect an error.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          example: Example?, relation(onDelete=Invalid)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-    var protocol = ProtocolSource(
-      '''
-    class: Example
-    table: example
-    fields:
-      example: Example?, relation(onDelete=Invalid)
-    ''',
-      Uri(path: 'lib/src/protocol/example.yaml'),
-      ['lib', 'src', 'protocol'],
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
-    var entity = SerializableEntityAnalyzer.extractEntityDefinition(protocol)
-        as ClassDefinition;
-    SerializableEntityAnalyzer.resolveEntityDependencies([entity]);
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol.yaml,
-      protocol.yamlSourceUri.path,
-      collector,
-      entity,
-      [entity],
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
     );
-
-    expect(collector.errors, isNotEmpty);
 
     var error = collector.errors.first;
-
     expect(
       error.message,
       '"Invalid" is not a valid property. Valid properties are (setNull, setDefault, restrict, noAction, cascade).',
@@ -529,58 +191,31 @@ void main() {
   group(
       'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address, onDelete=SetNull)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
 
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  addressId: int
-  address: Address?, relation(name=user_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: User?, relation(name=user_address, onDelete=SetNull)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
+    analyzer.validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -596,8 +231,11 @@ fields:
 
     test('then the error location is on the onDelete key', () {
       var error = collector.errors.first;
-      expect(error.span, isNotNull,
-          reason: 'Expected error to have a source span.');
+      expect(
+        error.span,
+        isNotNull,
+        reason: 'Expected error to have a source span.',
+      );
 
       var startSpan = error.span!.start;
       expect(startSpan.line, 3);
@@ -614,55 +252,31 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  addressId: int
-  address: Address?, relation(name=user_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address, onUpdate=SetNull)
+        ''',
+      ).build(),
+    ];
 
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: User?, relation(name=user_address, onUpdate=SetNull)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
     );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
@@ -697,55 +311,29 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  addressId: int
-  address: Address?, relation(name=user_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: List<User>?, relation(name=user_address, onDelete=SetNull)
+        ''',
+      ).build(),
+    ];
 
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: List<User>?, relation(name=user_address, onDelete=SetNull)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
@@ -766,55 +354,29 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  addressId: int
-  address: Address?, relation(name=user_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: List<User>?, relation(name=user_address, onUpdate=SetNull)
+        ''',
+      ).build(),
+    ];
 
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: List<User>?, relation(name=user_address, onUpdate=SetNull)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    StatefulAnalyzer analyzer =
+        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
