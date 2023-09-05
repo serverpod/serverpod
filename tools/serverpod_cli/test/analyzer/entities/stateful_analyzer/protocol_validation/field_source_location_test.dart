@@ -10,9 +10,9 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          fields:
-            nameId: int, invalid
+class: Example
+fields:
+  nameId: int, invalid
           ''',
         ).build()
       ];
@@ -41,10 +41,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: int, parent=
+class: Example
+table: example
+fields:
+  nameId: int, parent=
           ''',
         ).build()
       ];
@@ -73,10 +73,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: int, parent=InvalidName_
+class: Example
+table: example
+fields:
+  nameId: int, parent=InvalidName_
           ''',
         ).build()
       ];
@@ -105,10 +105,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: int, database, api
+class: Example
+table: example
+fields:
+  nameId: int, database, api
           ''',
         ).build()
       ];
@@ -137,10 +137,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: int, !persist,
+class: Example
+table: example
+fields:
+  nameId: int, !persist,
           ''',
         ).build()
       ];
@@ -169,10 +169,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: int, database, database, parent=example
+class: Example
+table: example
+fields:
+  nameId: int, database, database, parent=example
           ''',
         ).build()
       ];
@@ -201,10 +201,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-          class: Example
-          table: example
-          fields:
-            nameId: Invalid-Type, !persist
+class: Example
+table: example
+fields:
+  nameId: Invalid-Type, !persist
           ''',
         ).build()
       ];

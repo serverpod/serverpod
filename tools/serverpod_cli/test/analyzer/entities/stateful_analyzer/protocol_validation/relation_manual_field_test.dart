@@ -63,10 +63,10 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-        class: Example
-        table: example
-        fields:
-          parent: Example?, relation(field=myParentId)
+class: Example
+table: example
+fields:
+  parent: Example?, relation(field=myParentId)
         ''',
       ).build()
     ];
@@ -105,20 +105,20 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-        class: Example
-        table: example
-        fields:
-          myChildId: int
-          child: List<ExampleChild>?, relation(field=myChildId)
+class: Example
+table: example
+fields:
+  myChildId: int
+  child: List<ExampleChild>?, relation(field=myChildId)
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('example_child').withYaml(
         '''
-        class: ExampleChild
-        table: example_child
-        fields:
-          name: String
-          exampleId: int, relation(parent=example)
+class: ExampleChild
+table: example_child
+fields:
+  name: String
+  exampleId: int, relation(parent=example)
         ''',
       ).build()
     ];
@@ -159,19 +159,19 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-          class: Example
-          table: example
-          fields:
-            otherId: int
-            exampleChildId: int, relation(parent=example_child, field=otherId)
+class: Example
+table: example
+fields:
+  otherId: int
+  exampleChildId: int, relation(parent=example_child, field=otherId)
           ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('example_child').withYaml(
         '''
-          class: ExampleChild
-          table: example_child
-          fields:
-            name: String
+class: ExampleChild
+table: example_child
+fields:
+  name: String
           ''',
       ).build()
     ];
@@ -209,11 +209,11 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-          class: Example
-          table: example
-          fields:
-            myParentId: String
-            parent: Example?, relation(field=myParentId)
+class: Example
+table: example
+fields:
+  myParentId: String
+  parent: Example?, relation(field=myParentId)
           ''',
       ).build()
     ];
@@ -251,11 +251,11 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-          class: Example
-          table: example
-          fields:
-            myParentId: int, !persist
-            parent: Example?, relation(field=myParentId)
+class: Example
+table: example
+fields:
+  myParentId: int, !persist
+  parent: Example?, relation(field=myParentId)
           ''',
       ).build()
     ];

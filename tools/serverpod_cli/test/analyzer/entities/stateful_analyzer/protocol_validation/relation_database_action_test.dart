@@ -194,19 +194,19 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withFileName('user').withYaml(
         '''
-        class: User
-        table: user
-        fields:
-          addressId: int
-          address: Address?, relation(name=user_address, field=addressId)
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
         '''
-        class: Address
-        table: address
-        fields:
-          user: User?, relation(name=user_address, onDelete=SetNull)
+class: Address
+table: address
+fields:
+  user: User?, relation(name=user_address, onDelete=SetNull)
         ''',
       ).build(),
     ];
@@ -254,19 +254,19 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withFileName('user').withYaml(
         '''
-        class: User
-        table: user
-        fields:
-          addressId: int
-          address: Address?, relation(name=user_address, field=addressId)
+class: User
+table: user
+fields:
+  addressId: int
+  address: Address?, relation(name=user_address, field=addressId)
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
         '''
-        class: Address
-        table: address
-        fields:
-          user: User?, relation(name=user_address, onUpdate=SetNull)
+class: Address
+table: address
+fields:
+  user: User?, relation(name=user_address, onUpdate=SetNull)
         ''',
       ).build(),
     ];

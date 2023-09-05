@@ -316,11 +316,11 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-        class: Example
-        exception: ExampleException
-        fields:
-          name: String
-        ''',
+class: Example
+exception: ExampleException
+fields:
+  name: String
+''',
       ).build()
     ];
     var collector = CodeGenerationCollector();
@@ -394,12 +394,12 @@ void main() {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
-        class: Example
-        exception: ExampleException
-        enum: ExampleType
-        fields:
-          name: String
-        ''',
+class: Example
+exception: ExampleException
+enum: ExampleType
+fields:
+  name: String
+''',
       ).build()
     ];
     var collector = CodeGenerationCollector();

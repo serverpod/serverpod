@@ -359,10 +359,10 @@ void main() {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
           '''
-        class: Example
-        table: example
-        fields:
-          parentId: int, relation(parent=example, parent=example)
+class: Example
+table: example
+fields:
+  parentId: int, relation(parent=example, parent=example)
         ''',
         ).build()
       ];

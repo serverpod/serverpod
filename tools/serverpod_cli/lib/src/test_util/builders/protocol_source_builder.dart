@@ -21,10 +21,7 @@ class ProtocolSourceBuilder {
   }
 
   ProtocolSourceBuilder withYaml(String yaml) {
-    var paddingSize = _countPadding(yaml);
-    var paddingToRemove = _createPadding(paddingSize);
-
-    this.yaml = yaml.replaceAll(paddingToRemove, '');
+    this.yaml = yaml;
     return this;
   }
 
@@ -42,23 +39,4 @@ class ProtocolSourceBuilder {
   ProtocolSource build() {
     return ProtocolSource(yaml, yamlSourceUri, protocolRootPathParts);
   }
-}
-
-int _countPadding(String yaml) {
-  var contentStartIndex = 0;
-  for (int i = 0; i < yaml.length; i++) {
-    if (yaml[i] != ' ') {
-      contentStartIndex = i;
-      break;
-    }
-  }
-  return contentStartIndex;
-}
-
-String _createPadding(int count) {
-  var padding = '';
-  for (int i = 0; i < count; i++) {
-    padding += ' ';
-  }
-  return padding;
 }
