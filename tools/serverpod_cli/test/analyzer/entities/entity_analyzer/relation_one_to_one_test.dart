@@ -1,67 +1,39 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   group(
       'Given a class with a named object relation on both sides with a field references',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
 
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  addressId: int
-  address: Address?, relation(name=user_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: User?, relation(name=user_address)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
-
-    var userDefinition = definition1 as ClassDefinition;
-    var addressDefinition = definition2 as ClassDefinition;
+    var userDefinition = definitions.first as ClassDefinition;
+    var addressDefinition = definitions.last as ClassDefinition;
 
     var errors = collector.errors;
 
@@ -178,56 +150,28 @@ fields:
   group(
       'Given a class with a named object relation on both sides without a field references',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  address: Address?, relation(name=user_address)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: User?, relation(name=user_address)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
 
@@ -253,59 +197,31 @@ fields:
   test(
       'Given a class with a one to one relation where the relationship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          addressId: int
+          address: Address?, relation(name=company_address, field=addressId)
+          oldAddressId: int
+          oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          company: Company?, relation(name=company_address)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  addressId: int
-  address: Address?, relation(name=company_address, field=addressId)
-  oldAddressId: int
-  oldAddress: Address?, relation(name=company_address, field=oldAddressId)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  company: Company?, relation(name=company_address)
-''',
-      Uri(path: 'lib/src/protocol/company.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     expect(
       collector.errors,
@@ -324,59 +240,31 @@ fields:
   test(
       'Given a class with a one to one relation where the relationship is ambiguous where the field names are the same in both models then an error is collected that the reference cannot be resolved.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          addressCompany: int
+          address: Address?, relation(name=company_address, field=addressCompany)
+          oldAddressId: int
+          oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          addressCompany: Company?, relation(name=company_address)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  addressCompany: int
-  address: Address?, relation(name=company_address, field=addressCompany)
-  oldAddressId: int
-  oldAddress: Address?, relation(name=company_address, field=oldAddressId)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  addressCompany: Company?, relation(name=company_address)
-''',
-      Uri(path: 'lib/src/protocol/company.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     expect(
       collector.errors,
@@ -395,62 +283,34 @@ fields:
   test(
       'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          addressId: int
+          address: Address?, relation(name=company_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          addressCompanyId: int
+          addressCompany: Company?, relation(name=company_address, field=addressCompanyId)
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: Company
-table: company
-fields:
-  addressId: int
-  address: Address?, relation(name=company_address, field=addressId)
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  addressCompanyId: int
-  addressCompany: Company?, relation(name=company_address, field=addressCompanyId)
-''',
-      Uri(path: 'lib/src/protocol/company.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     expect(
-      collector.errors.length,
-      greaterThan(1),
+      collector.errors,
+      hasLength(greaterThan(1)),
       reason: 'Expected an error but none was found.',
     );
 
@@ -468,56 +328,28 @@ fields:
   group(
       'Given a class with a one to one relation where the relationship is only named on one side',
       () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation
+        ''',
+      ).build(),
+    ];
+
     var collector = CodeGenerationCollector();
-
-    var protocol1 = ProtocolSource(
-      '''
-class: User
-table: user
-fields:
-  address: Address?, relation(name=user_address)
-''',
-      Uri(path: 'lib/src/protocol/user.yaml'),
-      [],
-    );
-
-    var protocol2 = ProtocolSource(
-      '''
-class: Address
-table: address
-fields:
-  user: User?, relation
-''',
-      Uri(path: 'lib/src/protocol/address.yaml'),
-      [],
-    );
-
-    var definition1 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol1,
-    );
-
-    var definition2 = SerializableEntityAnalyzer.extractEntityDefinition(
-      protocol2,
-    );
-
-    var entities = [definition1!, definition2!];
-
-    SerializableEntityAnalyzer.resolveEntityDependencies(entities);
-
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol1.yaml,
-      protocol1.yamlSourceUri.path,
-      collector,
-      definition1,
-      entities,
-    );
-    SerializableEntityAnalyzer.validateYamlDefinition(
-      protocol2.yaml,
-      protocol2.yamlSourceUri.path,
-      collector,
-      definition2,
-      entities,
-    );
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
 
     var errors = collector.errors;
     test('then an error is collected', () {
