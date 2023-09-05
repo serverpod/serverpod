@@ -19,7 +19,6 @@ void main() {
       'List<String?>?',
       'List<List<Map<String,int>>>',
       'Map<String,String>',
-      'module:auth:UserInfo',
     ];
 
     for (var datatype in datatypes) {
@@ -54,6 +53,37 @@ void main() {
       });
     }
 
+    group('Given a class with a field with a module type', () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: module:auth:UserInfo
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        protocols,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ClassDefinition;
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test(
+          'then a class with that field type set to module:auth:UserInfo is generated.',
+          () {
+        expect(definition.fields.first.type.toString(), 'module:auth:UserInfo');
+      });
+    });
+
     group('Given a class with a field with the type ByteData', () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -81,8 +111,10 @@ void main() {
       test(
           'then a class with that field type set to dart:typed_data:ByteData is generated.',
           () {
-        expect(definition.fields.first.type.toString(),
-            'dart:typed_data:ByteData');
+        expect(
+          definition.fields.first.type.toString(),
+          'dart:typed_data:ByteData',
+        );
       });
     });
 
