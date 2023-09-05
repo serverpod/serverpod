@@ -376,22 +376,26 @@ CitizenTable tCitizen = CitizenTable();
 
 class CitizenInclude extends _i1.Include {
   CitizenInclude._({
-    this.address,
-    this.company,
-    this.oldCompany,
-  });
+    _i2.AddressInclude? address,
+    _i2.CompanyInclude? company,
+    _i2.CompanyInclude? oldCompany,
+  }) {
+    _address = address;
+    _company = company;
+    _oldCompany = oldCompany;
+  }
 
-  _i2.AddressInclude? address;
+  _i2.AddressInclude? _address;
 
-  _i2.CompanyInclude? company;
+  _i2.CompanyInclude? _company;
 
-  _i2.CompanyInclude? oldCompany;
+  _i2.CompanyInclude? _oldCompany;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'address': address,
-        'company': company,
-        'oldCompany': oldCompany,
+        'address': _address,
+        'company': _company,
+        'oldCompany': _oldCompany,
       };
   @override
   _i1.Table get table => Citizen.t;

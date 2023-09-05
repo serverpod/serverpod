@@ -1089,11 +1089,15 @@ class SerializableEntityLibraryGenerator {
       var objectRelationFields =
           fields.where((f) => f.relation is ObjectRelationDefinition).toList();
 
-      c.constructors
-          .add(_buildEntityIncludeClassConstructor(objectRelationFields));
+      c.constructors.add(_buildEntityIncludeClassConstructor(
+        objectRelationFields,
+        classDefinition,
+      ));
 
       c.fields.addAll(_buildEntityIncludeClassFields(
-          objectRelationFields, classDefinition));
+        objectRelationFields,
+        classDefinition,
+      ));
 
       c.methods.addAll([
         _buildEntityIncludeClassIncludesGetter(objectRelationFields),
@@ -1132,7 +1136,7 @@ class SerializableEntityLibraryGenerator {
         ..type = MethodType.getter
         ..body = literalMap({
           for (var field in objectRelationFields)
-            literalString(field.name): refer(field.name)
+            literalString(field.name): refer('_${field.name}')
         }).code,
     );
   }
@@ -1143,7 +1147,7 @@ class SerializableEntityLibraryGenerator {
     List<Field> entityIncludeClassFields = [];
     for (var field in objectRelationFields) {
       entityIncludeClassFields.add(Field((f) => f
-        ..name = field.name
+        ..name = '_${field.name}'
         ..type = field.type.reference(
           serverCode,
           subDirParts: classDefinition.subDirParts,
@@ -1155,17 +1159,33 @@ class SerializableEntityLibraryGenerator {
   }
 
   Constructor _buildEntityIncludeClassConstructor(
-      List<SerializableEntityFieldDefinition> objectRelationFields) {
+    List<SerializableEntityFieldDefinition> objectRelationFields,
+    ClassDefinition classDefinition,
+  ) {
     return Constructor((constructor) {
       constructor.name = '_';
+      if (objectRelationFields.isEmpty) {
+        return;
+      }
+
       for (var field in objectRelationFields) {
         constructor.optionalParameters.add(Parameter(
           (p) => p
             ..name = field.name
-            ..named = true
-            ..toThis = true,
+            ..type = field.type.reference(
+              serverCode,
+              subDirParts: classDefinition.subDirParts,
+              config: config,
+              typeSuffix: 'Include',
+            )
+            ..named = true,
         ));
       }
+
+      constructor.body = Block.of([
+        for (var field in objectRelationFields)
+          refer('_${field.name}').assign(refer(field.name)).statement,
+      ]);
     });
   }
 

@@ -278,12 +278,14 @@ class CompanyTable extends _i1.Table {
 CompanyTable tCompany = CompanyTable();
 
 class CompanyInclude extends _i1.Include {
-  CompanyInclude._({this.town});
+  CompanyInclude._({_i2.TownInclude? town}) {
+    _town = town;
+  }
 
-  _i2.TownInclude? town;
+  _i2.TownInclude? _town;
 
   @override
-  Map<String, _i1.Include?> get includes => {'town': town};
+  Map<String, _i1.Include?> get includes => {'town': _town};
   @override
   _i1.Table get table => Company.t;
 }
