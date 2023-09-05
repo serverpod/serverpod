@@ -107,6 +107,7 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     required int priority,
+    bool write = true,
   }) async {
     var versionName = createVersionName(tag);
 
@@ -149,7 +150,9 @@ class MigrationGenerator {
       databaseDefinition: dstDatabase,
     );
 
-    await migrationVersion.write(module: projectName);
+    if (write) {
+      await migrationVersion.write(module: projectName);
+    }
 
     return migrationVersion;
   }

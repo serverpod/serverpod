@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
 
@@ -156,6 +158,31 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
         );
       })),
     );
+  }
+
+  /// Retrieves a list of installed database migrations.
+  static Future<List<DatabaseMigrationVersion>> getInstalledMigrationVersions(
+      Database database) async {
+    var migrations = <DatabaseMigrationVersion>[];
+
+    try {
+      var rows = await database.query('SELECT * FROM serverpod_migrations');
+      for (var row in rows) {
+        migrations.add(
+          DatabaseMigrationVersion(
+            module: row[0],
+            version: row[1],
+            priority: row[2],
+            timestamp: row[3],
+          ),
+        );
+      }
+    } catch (e) {
+      // Ignore if the table does not exist.
+      stderr.writeln('Failed to get installed migrations: $e');
+    }
+
+    return migrations;
   }
 }
 
