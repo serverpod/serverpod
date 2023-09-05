@@ -94,17 +94,25 @@ class MigrateCommand extends ServerpodCommand {
     );
 
     if (repair) {
-      await generator.repairMigration(
-        tag: tag,
-        force: force,
-        runMode: mode,
-      );
+      await log.progress('Creating repair migration', () async {
+        var migration = await generator.repairMigration(
+          tag: tag,
+          force: force,
+          runMode: mode,
+        );
+
+        return migration != null;
+      });
     } else {
-      await generator.createMigration(
-        tag: tag,
-        force: force,
-        priority: priority,
-      );
+      await log.progress('Creating migration', () async {
+        var migration = await generator.createMigration(
+          tag: tag,
+          force: force,
+          priority: priority,
+        );
+
+        return migration != null;
+      });
       log.info(
         'Done.',
         type: TextLogType.success,

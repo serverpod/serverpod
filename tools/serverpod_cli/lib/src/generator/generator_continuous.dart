@@ -17,20 +17,22 @@ Future<bool> performGenerateContinuously({
       DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
   var watcherEndpoints =
       DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
-  var hasErrors = false;
+  var success = true;
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
     log.info(
       'File changed: $event',
       newParagraph: true,
     );
-    hasErrors = await performGenerate(
-      changedFile: event.path,
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
-    );
+    success = await log.progress(
+        'Generating code',
+        () => performGenerate(
+              changedFile: event.path,
+              config: config,
+              endpointsAnalyzer: endpointsAnalyzer,
+            ));
     log.info('Incremental code generation complete.');
   }
 
-  return hasErrors;
+  return success;
 }

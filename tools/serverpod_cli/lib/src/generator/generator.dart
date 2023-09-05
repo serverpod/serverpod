@@ -13,7 +13,7 @@ Future<bool> performGenerate({
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
   var collector = CodeGenerationCollector();
-  bool hasErrors = false;
+  bool success = true;
 
   log.debug('Analyzing serializable entities in the protocol directory.');
   var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
@@ -22,7 +22,7 @@ Future<bool> performGenerate({
     collector.printErrors();
 
     if (collector.hasSeverErrors) {
-      hasErrors = true;
+      success = false;
     }
   });
 
@@ -39,7 +39,7 @@ Future<bool> performGenerate({
   );
 
   if (collector.hasSeverErrors) {
-    hasErrors = true;
+    success = false;
   }
   collector.printErrors();
   collector.clearErrors();
@@ -52,7 +52,7 @@ Future<bool> performGenerate({
   );
 
   if (collector.hasSeverErrors) {
-    hasErrors = true;
+    success = false;
   }
   collector.printErrors();
   collector.clearErrors();
@@ -72,7 +72,7 @@ Future<bool> performGenerate({
   );
 
   if (collector.hasSeverErrors) {
-    hasErrors = true;
+    success = false;
   }
   collector.printErrors();
   collector.clearErrors();
@@ -88,5 +88,5 @@ Future<bool> performGenerate({
     config: config,
   );
 
-  return hasErrors;
+  return success;
 }
