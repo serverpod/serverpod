@@ -12,23 +12,24 @@ class CreateCommand extends ServerpodCommand {
 
   @override
   final description =
-      'Creates a new Serverpod project, specify project name (must be lowercase with no special characters).';
+      'Creates a new Serverpod project, specify project name (must be '
+      'lowercase with no special characters).';
 
   CreateCommand() {
     argParser.addFlag(
       'force',
       abbr: 'f',
       negatable: false,
-      help:
-          'Create the project even if there are issues that prevents if from running out of the box.',
+      help: 'Create the project even if there are issues that prevents if from '
+          'running out of the box.',
     );
     argParser.addOption(
       'template',
       abbr: 't',
       defaultsTo: ServerpodTemplateType.server.name,
       allowed: templateTypes,
-      help:
-          'Template to use when creating a new project, valid options are "server" or "module".',
+      help: 'Template to use when creating a new project, valid options are '
+          '"server" or "module".',
     );
   }
 
