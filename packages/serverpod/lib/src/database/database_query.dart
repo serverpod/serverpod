@@ -361,11 +361,12 @@ void _validateTableReferences(
   List<Order>? orderBy,
   Expression? where,
 }) {
-  List<String> exceptions = [];
+  List<String> exceptionMessages = [];
   if (orderBy != null) {
     for (var column in orderBy.map((e) => e.column)) {
       if (!column.hasBaseTable(tableName)) {
-        exceptions.add('"orderBy" expression referencing column $column.');
+        exceptionMessages
+            .add('"orderBy" expression referencing column $column.');
       }
     }
   }
@@ -374,15 +375,16 @@ void _validateTableReferences(
     var columns = where.nodes.whereType<Column>();
     for (var column in columns) {
       if (!column.hasBaseTable(tableName)) {
-        exceptions.add('"where" expression referencing column $column.');
+        exceptionMessages.add('"where" expression referencing column $column.');
       }
     }
   }
 
-  if (exceptions.isNotEmpty) {
+  if (exceptionMessages.isNotEmpty) {
     var errorMessage =
-        'Column references starting from other tables than "$tableName" are not supported. The following expressions need to be removed or modified:'
-        '\n${exceptions.join('\n')}';
+        'Column references starting from other tables than "$tableName" are '
+        'not supported. The following expressions need to be removed or '
+        'modified:\n${exceptionMessages.join('\n')}';
     throw FormatException(errorMessage);
   }
 }
