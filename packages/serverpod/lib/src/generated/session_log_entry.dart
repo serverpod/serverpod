@@ -328,61 +328,129 @@ class SessionLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static SessionLogEntryInclude include() {
+    return SessionLogEntryInclude._();
+  }
 }
 
 typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
     SessionLogEntryTable);
 
 class SessionLogEntryTable extends _i1.Table {
-  SessionLogEntryTable() : super(tableName: 'serverpod_session_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  SessionLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_session_log') {
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    module = _i1.ColumnString(
+      'module',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    endpoint = _i1.ColumnString(
+      'endpoint',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    method = _i1.ColumnString(
+      'method',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    duration = _i1.ColumnDouble(
+      'duration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    numQueries = _i1.ColumnInt(
+      'numQueries',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    slow = _i1.ColumnBool(
+      'slow',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    error = _i1.ColumnString(
+      'error',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    authenticatedUserId = _i1.ColumnInt(
+      'authenticatedUserId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    isOpen = _i1.ColumnBool(
+      'isOpen',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    touched = _i1.ColumnDateTime(
+      'touched',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the server that handled this session.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// The starting time of this session.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The module this session is associated with, if any.
-  final module = _i1.ColumnString('module');
+  late final _i1.ColumnString module;
 
   /// The endpoint this session is associated with, if any.
-  final endpoint = _i1.ColumnString('endpoint');
+  late final _i1.ColumnString endpoint;
 
   /// The method this session is associated with, if any.
-  final method = _i1.ColumnString('method');
+  late final _i1.ColumnString method;
 
   /// The running time of this session. May be null if the session is still
   /// active.
-  final duration = _i1.ColumnDouble('duration');
+  late final _i1.ColumnDouble duration;
 
   /// The number of queries performed during this session.
-  final numQueries = _i1.ColumnInt('numQueries');
+  late final _i1.ColumnInt numQueries;
 
   /// True if this session was slow to complete.
-  final slow = _i1.ColumnBool('slow');
+  late final _i1.ColumnBool slow;
 
   /// If the session ends with an exception, the error field will be set.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// If the session ends with an exception, a stack trace will be set.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  final authenticatedUserId = _i1.ColumnInt('authenticatedUserId');
+  late final _i1.ColumnInt authenticatedUserId;
 
   /// True if the session is still open.
-  final isOpen = _i1.ColumnBool('isOpen');
+  late final _i1.ColumnBool isOpen;
 
   /// Timestamp of the last time this record was modified.
-  final touched = _i1.ColumnDateTime('touched');
+  late final _i1.ColumnDateTime touched;
 
   @override
   List<_i1.Column> get columns => [
@@ -405,3 +473,12 @@ class SessionLogEntryTable extends _i1.Table {
 
 @Deprecated('Use SessionLogEntryTable.t instead.')
 SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
+
+class SessionLogEntryInclude extends _i1.Include {
+  SessionLogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => SessionLogEntry.t;
+}

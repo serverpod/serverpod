@@ -237,31 +237,63 @@ class ObjectWithObject extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithObjectInclude include() {
+    return ObjectWithObjectInclude._();
+  }
 }
 
 typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
     ObjectWithObjectTable);
 
 class ObjectWithObjectTable extends _i1.Table {
-  ObjectWithObjectTable() : super(tableName: 'object_with_object');
+  ObjectWithObjectTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_object') {
+    data = _i1.ColumnSerializable(
+      'data',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableData = _i1.ColumnSerializable(
+      'nullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    dataList = _i1.ColumnSerializable(
+      'dataList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableDataList = _i1.ColumnSerializable(
+      'nullableDataList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    listWithNullableData = _i1.ColumnSerializable(
+      'listWithNullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableListWithNullableData = _i1.ColumnSerializable(
+      'nullableListWithNullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnSerializable data;
 
-  final data = _i1.ColumnSerializable('data');
+  late final _i1.ColumnSerializable nullableData;
 
-  final nullableData = _i1.ColumnSerializable('nullableData');
+  late final _i1.ColumnSerializable dataList;
 
-  final dataList = _i1.ColumnSerializable('dataList');
+  late final _i1.ColumnSerializable nullableDataList;
 
-  final nullableDataList = _i1.ColumnSerializable('nullableDataList');
+  late final _i1.ColumnSerializable listWithNullableData;
 
-  final listWithNullableData = _i1.ColumnSerializable('listWithNullableData');
-
-  final nullableListWithNullableData =
-      _i1.ColumnSerializable('nullableListWithNullableData');
+  late final _i1.ColumnSerializable nullableListWithNullableData;
 
   @override
   List<_i1.Column> get columns => [
@@ -277,3 +309,12 @@ class ObjectWithObjectTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithObjectTable.t instead.')
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();
+
+class ObjectWithObjectInclude extends _i1.Include {
+  ObjectWithObjectInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithObject.t;
+}

@@ -289,50 +289,103 @@ class QueryLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static QueryLogEntryInclude include() {
+    return QueryLogEntryInclude._();
+  }
 }
 
 typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
     QueryLogEntryTable);
 
 class QueryLogEntryTable extends _i1.Table {
-  QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  QueryLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_query_log') {
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    query = _i1.ColumnString(
+      'query',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    duration = _i1.ColumnDouble(
+      'duration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    numRows = _i1.ColumnInt(
+      'numRows',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    error = _i1.ColumnString(
+      'error',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    slow = _i1.ColumnBool(
+      'slow',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the server that handled the query.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// Id of the session this entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
   /// The id of the message this entry is associated with, if the query was
   /// executed in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// The query that was executed.
-  final query = _i1.ColumnString('query');
+  late final _i1.ColumnString query;
 
   /// The time it took to execute the query, in seconds.
-  final duration = _i1.ColumnDouble('duration');
+  late final _i1.ColumnDouble duration;
 
   /// Number of rows returned by this query. This can be null if the number is
   /// not relevant.
-  final numRows = _i1.ColumnInt('numRows');
+  late final _i1.ColumnInt numRows;
 
   /// Set if an exception was thrown during the execution of this query.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// The stack trace of this query.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// True if the execution of this query was considered slow.
-  final slow = _i1.ColumnBool('slow');
+  late final _i1.ColumnBool slow;
 
   /// used for sorting the query log.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [
@@ -352,3 +405,12 @@ class QueryLogEntryTable extends _i1.Table {
 
 @Deprecated('Use QueryLogEntryTable.t instead.')
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();
+
+class QueryLogEntryInclude extends _i1.Include {
+  QueryLogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => QueryLogEntry.t;
+}

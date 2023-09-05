@@ -267,36 +267,69 @@ class ChatMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChatMessageInclude include() {
+    return ChatMessageInclude._();
+  }
 }
 
 typedef ChatMessageExpressionBuilder = _i1.Expression Function(
     ChatMessageTable);
 
 class ChatMessageTable extends _i1.Table {
-  ChatMessageTable() : super(tableName: 'serverpod_chat_message');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChatMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_chat_message') {
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    message = _i1.ColumnString(
+      'message',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    sender = _i1.ColumnInt(
+      'sender',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    removed = _i1.ColumnBool(
+      'removed',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    attachments = _i1.ColumnSerializable(
+      'attachments',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The channel this message was posted to.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   /// The body of the message.
-  final message = _i1.ColumnString('message');
+  late final _i1.ColumnString message;
 
   /// The time when this message was posted.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The user id of the sender.
-  final sender = _i1.ColumnInt('sender');
+  late final _i1.ColumnInt sender;
 
   /// True, if this message has been removed.
-  final removed = _i1.ColumnBool('removed');
+  late final _i1.ColumnBool removed;
 
   /// List of attachments associated with this message.
-  final attachments = _i1.ColumnSerializable('attachments');
+  late final _i1.ColumnSerializable attachments;
 
   @override
   List<_i1.Column> get columns => [
@@ -312,3 +345,12 @@ class ChatMessageTable extends _i1.Table {
 
 @Deprecated('Use ChatMessageTable.t instead.')
 ChatMessageTable tChatMessage = ChatMessageTable();
+
+class ChatMessageInclude extends _i1.Include {
+  ChatMessageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ChatMessage.t;
+}

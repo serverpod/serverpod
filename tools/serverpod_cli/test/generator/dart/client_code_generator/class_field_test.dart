@@ -172,6 +172,14 @@ void main() {
         skip: maybeClassNamedExample == null
             ? 'Could not run test because $testClassName class was not found.'
             : false);
+
+    test('then a class named ${testClassName}Include does NOT exist.', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
+              name: '${testClassName}Include'),
+          isFalse,
+          reason: 'Class ${testClassName}Include should not be generated.');
+    });
   });
 
   group('Given a class with a none nullable field when generating code', () {

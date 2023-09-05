@@ -315,6 +315,17 @@ void main() {
             isTrue,
             reason: 'Missing declaration for static count method.');
       });
+
+      test('has a static include method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'include',
+              isStatic: true,
+            ),
+            isTrue,
+            reason: 'Missing declaration for static include method.');
+      });
     }, skip: maybeClassNamedExample == null);
 
     var maybeClassNamedExampleTable =
@@ -341,12 +352,14 @@ void main() {
             reason: 'Missing extends clause for Table.');
       });
 
-      test('has an empty constructor that passes table name to super.', () {
+      test(
+          'has constructor taking query prefix and table relations and passes table name to super.',
+          () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExampleTable!,
               name: null,
-              parameters: [],
+              parameters: ['super.queryPrefix', 'super.tableRelations'],
               superArguments: ['tableName: \'$tableName\''],
             ),
             isTrue,
@@ -362,6 +375,27 @@ void main() {
             ),
             isTrue,
             reason: 'Missing declaration for columns getter.');
+      });
+
+      test('does NOT have getRelationTable method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'getRelationTable',
+            ),
+            isFalse,
+            reason:
+                'Declaration for getRelationTable method should not be generated.');
+      });
+
+      test('does NOT have id field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'id',
+            ),
+            isFalse,
+            reason: 'Declaration for id field should not be generated.');
       });
     }, skip: maybeClassNamedExampleTable == null);
 
@@ -388,6 +422,16 @@ void main() {
           isTrue,
           reason:
               'Missing type alias for "${testClassName}ExpressionBuilder".');
+    });
+
+    test('then a class named ${testClassName}Include is generated.', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}Include',
+          ),
+          isTrue,
+          reason: 'Missing class named ${testClassName}Include.');
     });
   });
 
@@ -429,6 +473,7 @@ void main() {
               maybeClassNamedExampleTable!,
               name: 'title',
               isFinal: true,
+              isLate: true,
             ),
             isTrue,
             reason: 'Missing declaration for title field.');
@@ -506,6 +551,111 @@ void main() {
             isTrue,
             reason: 'Should not include field in columns.');
       });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleInclude =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Include',
+    );
+
+    group('then the class named ${testClassName}Include', () {
+      var exampleIncludeClass = maybeClassNamedExampleInclude!;
+      test('inherits from Include.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(
+              exampleIncludeClass,
+              name: 'Include',
+            ),
+            isTrue,
+            reason: 'Missing extends clause for Include.');
+      });
+      test('has named parameter for field in private constructor.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              exampleIncludeClass,
+              name: '_',
+              parameters: ['this.company'],
+            ),
+            isTrue,
+            reason:
+                'Missing constructor with named parameter for field in ${testClassName}Include.');
+      });
+
+      test('has field as nullable class variable.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              exampleIncludeClass,
+              name: 'company',
+              type: 'CompanyInclude?',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for company field in ${testClassName}Include.');
+      });
+      test('has an includes method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeClass,
+              name: 'includes',
+            ),
+            isTrue,
+            reason: 'Missing declaration for includes method.');
+      });
+
+      test('has a table method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeClass,
+              name: 'table',
+              functionExpression: 'Example.t',
+            ),
+            isTrue,
+            reason: 'Missing declaration for table method.');
+      });
+    },
+        skip: maybeClassNamedExampleInclude == null
+            ? 'Could not run test because ${testClassName}Include class was not found.'
+            : false);
+
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
+
+    test(
+        'then the class named ${testClassName}Table has a getRelationTable method.',
+        () {
+      expect(
+          CompilationUnitHelpers.hasMethodDeclaration(
+            maybeClassNamedExampleTable!,
+            name: 'getRelationTable',
+          ),
+          isTrue,
+          reason: 'Missing declaration for getRelationTable method.');
     },
         skip: maybeClassNamedExampleTable == null
             ? 'Could not run test because ${testClassName}Table class was not found.'
@@ -775,5 +925,52 @@ void main() {
           ? 'Could not run test because $testClassName class was not found.'
           : false,
     );
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    group('then the class named ${testClassName}Table', () {
+      test('has private field for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+                maybeClassNamedExampleTable!,
+                type: 'CompanyTable?',
+                name: '_company'),
+            isTrue,
+            reason: 'Missing private field declaration for relation table.');
+      });
+
+      test('has getter method for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+                maybeClassNamedExampleTable!,
+                name: 'company'),
+            isTrue,
+            reason: 'Missing declaration for relation table getter.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
   });
 }

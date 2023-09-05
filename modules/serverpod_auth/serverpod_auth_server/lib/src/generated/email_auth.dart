@@ -204,26 +204,44 @@ class EmailAuth extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailAuthInclude include() {
+    return EmailAuthInclude._();
+  }
 }
 
 typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 
 class EmailAuthTable extends _i1.Table {
-  EmailAuthTable() : super(tableName: 'serverpod_email_auth');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailAuthTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_auth') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    hash = _i1.ColumnString(
+      'hash',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user, corresponds to the id field in [UserInfo].
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The hashed password of the user.
-  final hash = _i1.ColumnString('hash');
+  late final _i1.ColumnString hash;
 
   @override
   List<_i1.Column> get columns => [
@@ -236,3 +254,12 @@ class EmailAuthTable extends _i1.Table {
 
 @Deprecated('Use EmailAuthTable.t instead.')
 EmailAuthTable tEmailAuth = EmailAuthTable();
+
+class EmailAuthInclude extends _i1.Include {
+  EmailAuthInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailAuth.t;
+}

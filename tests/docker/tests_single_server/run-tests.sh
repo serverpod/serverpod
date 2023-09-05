@@ -26,6 +26,9 @@ dart test test/websocket_test.dart
 dart test test/types_test.dart
 dart test test/migrations_test.dart
 dart test test/exception_test.dart
+dart test test/entity_relations/table_test.dart
+dart test test/entity_relations/query_test.dart
+dart test test/entity_relations/sql_query_test.dart
 
 #echo "### Running unit tests"
 #cd ../../packages/serverpod
