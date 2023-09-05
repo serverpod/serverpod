@@ -12,6 +12,12 @@ class _ProtocolState {
   });
 }
 
+var onErrorsCollector = (CodeGenerationCollector collector) {
+  return (Uri uri, CodeGenerationCollector collected) {
+    collector.addErrors(collected.errors);
+  };
+};
+
 class StatefulAnalyzer {
   final Map<String, _ProtocolState> _protocolStates = {};
   List<SerializableEntityDefinition> _entities = [];

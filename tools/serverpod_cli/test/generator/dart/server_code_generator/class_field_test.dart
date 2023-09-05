@@ -593,22 +593,25 @@ void main() {
             reason: 'Missing extends clause for Include.');
       });
       test('has named parameter for field in private constructor.', () {
+        print(CompilationUnitHelpers.tryFindConstructorDeclaration(
+            exampleIncludeClass,
+            name: '_'));
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               exampleIncludeClass,
               name: '_',
-              parameters: ['this.company'],
+              parameters: ['CompanyInclude? company'],
             ),
             isTrue,
             reason:
                 'Missing constructor with named parameter for field in ${testClassName}Include.');
       });
 
-      test('has field as nullable class variable.', () {
+      test('has private field as nullable class variable.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
               exampleIncludeClass,
-              name: 'company',
+              name: '_company',
               type: 'CompanyInclude?',
             ),
             isTrue,

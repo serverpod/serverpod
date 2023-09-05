@@ -278,12 +278,14 @@ class TownTable extends _i1.Table {
 TownTable tTown = TownTable();
 
 class TownInclude extends _i1.Include {
-  TownInclude._({this.mayor});
+  TownInclude._({_i2.CitizenInclude? mayor}) {
+    _mayor = mayor;
+  }
 
-  _i2.CitizenInclude? mayor;
+  _i2.CitizenInclude? _mayor;
 
   @override
-  Map<String, _i1.Include?> get includes => {'mayor': mayor};
+  Map<String, _i1.Include?> get includes => {'mayor': _mayor};
   @override
   _i1.Table get table => Town.t;
 }

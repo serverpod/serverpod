@@ -13,6 +13,7 @@ class Citizen extends _i1.TableRow {
   Citizen({
     int? id,
     required this.name,
+    this.address,
     required this.companyId,
     this.company,
     this.oldCompanyId,
@@ -26,6 +27,8 @@ class Citizen extends _i1.TableRow {
     return Citizen(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      address: serializationManager
+          .deserialize<_i2.Address?>(jsonSerialization['address']),
       companyId:
           serializationManager.deserialize<int>(jsonSerialization['companyId']),
       company: serializationManager
@@ -40,6 +43,8 @@ class Citizen extends _i1.TableRow {
   static final t = CitizenTable();
 
   String name;
+
+  _i2.Address? address;
 
   int companyId;
 
@@ -56,6 +61,7 @@ class Citizen extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
+      'address': address,
       'companyId': companyId,
       'company': company,
       'oldCompanyId': oldCompanyId,
@@ -78,6 +84,7 @@ class Citizen extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
+      'address': address,
       'companyId': companyId,
       'company': company,
       'oldCompanyId': oldCompanyId,
@@ -225,10 +232,12 @@ class Citizen extends _i1.TableRow {
   }
 
   static CitizenInclude include({
+    _i2.AddressInclude? address,
     _i2.CompanyInclude? company,
     _i2.CompanyInclude? oldCompany,
   }) {
     return CitizenInclude._(
+      address: address,
       company: company,
       oldCompany: oldCompany,
     );
@@ -261,6 +270,8 @@ class CitizenTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  _i2.AddressTable? _address;
+
   late final _i1.ColumnInt companyId;
 
   _i2.CompanyTable? _company;
@@ -268,6 +279,29 @@ class CitizenTable extends _i1.Table {
   late final _i1.ColumnInt oldCompanyId;
 
   _i2.CompanyTable? _oldCompany;
+
+  _i2.AddressTable get address {
+    if (_address != null) return _address!;
+    _address = _i1.createRelationTable(
+      queryPrefix: queryPrefix,
+      fieldName: 'address',
+      foreignTableName: _i2.Address.t.tableName,
+      column: id,
+      foreignColumnName: _i2.Address.t.inhabitantId.columnName,
+      createTable: (
+        relationQueryPrefix,
+        foreignTableRelation,
+      ) =>
+          _i2.AddressTable(
+        queryPrefix: relationQueryPrefix,
+        tableRelations: [
+          ...?tableRelations,
+          foreignTableRelation,
+        ],
+      ),
+    );
+    return _address!;
+  }
 
   _i2.CompanyTable get company {
     if (_company != null) return _company!;
@@ -324,6 +358,9 @@ class CitizenTable extends _i1.Table {
       ];
   @override
   _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'address') {
+      return address;
+    }
     if (relationField == 'company') {
       return company;
     }
@@ -339,18 +376,26 @@ CitizenTable tCitizen = CitizenTable();
 
 class CitizenInclude extends _i1.Include {
   CitizenInclude._({
-    this.company,
-    this.oldCompany,
-  });
+    _i2.AddressInclude? address,
+    _i2.CompanyInclude? company,
+    _i2.CompanyInclude? oldCompany,
+  }) {
+    _address = address;
+    _company = company;
+    _oldCompany = oldCompany;
+  }
 
-  _i2.CompanyInclude? company;
+  _i2.AddressInclude? _address;
 
-  _i2.CompanyInclude? oldCompany;
+  _i2.CompanyInclude? _company;
+
+  _i2.CompanyInclude? _oldCompany;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'company': company,
-        'oldCompany': oldCompany,
+        'address': _address,
+        'company': _company,
+        'oldCompany': _oldCompany,
       };
   @override
   _i1.Table get table => Citizen.t;

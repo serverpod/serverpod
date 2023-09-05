@@ -71,6 +71,10 @@ test -f $SERVERPOD_HOME/tests/serverpod_test_client/lib/src/protocol/serverOnly/
 test -f cli_test/cli_test_flutter/pubspec.yaml
 test -f cli_test/cli_test_flutter/lib/main.dart
 
+# Verify that the Dart analyzer doesn't fail
+echo "### Running dart analyze"
+dart analyze --fatal-infos cli_test/
+
 echo "### Removing generated files"
 rm -f cli_test/cli_test_server/lib/src/generated/*.dart
 rm -f cli_test/cli_test_client/lib/src/protocol/*.dart
@@ -84,6 +88,10 @@ echo "### Verifying that generated files exists"
 test -f cli_test/cli_test_client/lib/src/protocol/client.dart
 test -f cli_test/cli_test_server/lib/src/generated/endpoints.dart
 test -f cli_test/cli_test_server/lib/src/generated/example.dart
+
+# Verify that the Dart analyzer doesn't fail
+echo "### Running dart analyze"
+dart analyze --fatal-infos cli_test/
 
 echo "### Cleaning up"
 cd ..

@@ -56,21 +56,24 @@ class GenerateCommand extends ServerpodCommand {
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
 
-    bool hasErrors = await performGenerate(
-      config: config,
-      endpointsAnalyzer: endpointsAnalyzer,
+    bool success = await log.progress(
+      'Generating code',
+      () => performGenerate(
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+      ),
     );
     if (watch) {
       log.info('Initial code generation complete. Listening for changes.');
-      hasErrors = await performGenerateContinuously(
+      success = await performGenerateContinuously(
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
       );
-    } else if (!hasErrors) {
+    } else if (success) {
       log.info('Done.', type: TextLogType.success);
     }
 
-    if (hasErrors) {
+    if (!success) {
       throw ExitException();
     }
   }

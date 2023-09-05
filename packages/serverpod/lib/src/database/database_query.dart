@@ -24,6 +24,8 @@ class SelectQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
+    _validateTableReferences(_table, orderBy: _orderBy, where: _where);
+
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
 
@@ -132,6 +134,8 @@ class CountQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
+    _validateTableReferences(_table, where: _where);
+
     var join = _buildJoinQuery(where: _where);
 
     var query = 'SELECT COUNT($_field)';
@@ -179,6 +183,8 @@ class DeleteQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
+    _validateTableReferences(_table, where: _where);
+
     var using = _buildUsingQuery(where: _where);
 
     var query = 'DELETE FROM "$_table"';
@@ -348,4 +354,45 @@ _UsingQuery _usingQueryFromTableRelations(
     using: usingStatements.join(', '),
     where: whereStatements.join(' AND '),
   );
+}
+
+void _validateTableReferences(
+  String tableName, {
+  List<Order>? orderBy,
+  Expression? where,
+}) {
+  List<String> exceptionMessages = [];
+  if (orderBy != null) {
+    for (var column in orderBy.map((e) => e.column)) {
+      if (!column.hasBaseTable(tableName)) {
+        exceptionMessages
+            .add('"orderBy" expression referencing column $column.');
+      }
+    }
+  }
+
+  if (where != null) {
+    var columns = where.nodes.whereType<Column>();
+    for (var column in columns) {
+      if (!column.hasBaseTable(tableName)) {
+        exceptionMessages.add('"where" expression referencing column $column.');
+      }
+    }
+  }
+
+  if (exceptionMessages.isNotEmpty) {
+    var errorMessage =
+        'Column references starting from other tables than "$tableName" are '
+        'not supported. The following expressions need to be removed or '
+        'modified:\n${exceptionMessages.join('\n')}';
+    throw FormatException(errorMessage);
+  }
+}
+
+extension _ColumnHelpers on Column {
+  /// Returns true if the column has the specified table as base table.
+  bool hasBaseTable(String table) {
+    // Regex matches 'tableName_' and 'tableName.'
+    return toString().startsWith(RegExp(table + r'[_\.]'));
+  }
 }

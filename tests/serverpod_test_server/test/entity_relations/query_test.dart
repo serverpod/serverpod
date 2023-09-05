@@ -32,6 +32,20 @@ Future<void> _createTestDatabase(Client client) async {
   joanna.id = await client.relation.citizenInsert(joanna);
   theo.id = await client.relation.citizenInsert(theo);
   haris.id = await client.relation.citizenInsert(haris);
+
+  // Addresses
+  var alexAddress = Address(street: 'Götgatan 3', inhabitantId: alex.id!);
+  var isakAddress = Address(street: 'Kungsgatan 4', inhabitantId: isak.id!);
+
+  await client.relation.addressInsert(alexAddress);
+  await client.relation.addressInsert(isakAddress);
+
+  var post3 = Post(content: 'third post');
+  var post3Id = await client.relation.postInsert(post3);
+  var post2 = Post(content: 'second post', nextId: post3Id);
+  var post2Id = await client.relation.postInsert(post2);
+  var post1 = Post(content: 'first post', nextId: post2Id);
+  await client.relation.postInsert(post1);
 }
 
 void main() async {
@@ -354,6 +368,103 @@ void main() async {
       expect(citizenById!.id, secondCitizen.id);
       expect(citizenById.name, secondCitizen.name);
       expect(citizenById.companyId, secondCitizen.companyId);
+    });
+  });
+
+  group(
+      'Given entities with a named relation when fetching from the none origin side',
+      () {
+    late List<Citizen> citizensIncludingAddress;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      citizensIncludingAddress =
+          await client.relation.citizenFindAllWithNamedRelationNoneOriginSide();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+
+    test('then the citizenWithAddress is not empty', () {
+      expect(citizensIncludingAddress, isNotEmpty);
+    });
+
+    test('then alex citizen has an address object returned', () async {
+      expect(citizensIncludingAddress.first.address, isNotNull);
+    });
+
+    test('then isak citizen has an address object returned', () async {
+      expect(citizensIncludingAddress[1].address, isNotNull);
+    });
+
+    test('then lina citizen has no address object returned', () async {
+      expect(citizensIncludingAddress[2].address, isNull);
+    });
+  });
+
+  group(
+      'Given entities with a named relation when fetching from the foreign key origin side',
+      () {
+    late List<Address> addresses;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      addresses = await client.relation.addressFindAll();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+
+    test('then the addresses is not empty', () {
+      expect(addresses, isNotEmpty);
+    });
+
+    test('then the first address is linked with alex', () async {
+      expect(addresses.first.inhabitant?.name, 'Alex');
+    });
+
+    test('then the second address is linked with isak', () async {
+      expect(addresses[1].inhabitant?.name, 'Isak');
+    });
+  });
+
+  group('Given entities with a named self relation', () {
+    late List<Post> posts;
+    setUpAll(() async {
+      await _createTestDatabase(client);
+      posts = await client.relation.findAllPostsIncludingNextAndPrevious();
+    });
+
+    tearDownAll(() async => await client.relation.deleteAll());
+
+    test('then the posts is not empty', () {
+      expect(posts, isNotEmpty);
+    });
+
+    test('then the first post has a reference to the next post', () {
+      var firstPost = posts[2];
+      expect(firstPost.next?.content, posts[1].content);
+    });
+
+    test('then the first post has a null reference to the previous post', () {
+      var firstPost = posts[2];
+      expect(firstPost.previous, isNull);
+    });
+
+    test('then the second post has a reference to the next post', () {
+      var secondPost = posts[1];
+      expect(secondPost.next?.content, posts[0].content);
+    });
+
+    test('then the second post has a reference to the previous post', () {
+      var secondPost = posts[1];
+      expect(secondPost.previous?.content, posts[2].content);
+    });
+
+    test('then the third post has a null reference to the next post', () {
+      var thirdPost = posts[0];
+      expect(thirdPost.next, isNull);
+    });
+
+    test('then the third post has a reference to the previous post', () {
+      var thirdPost = posts[0];
+      expect(thirdPost.previous?.content, posts[1].content);
     });
   });
 }

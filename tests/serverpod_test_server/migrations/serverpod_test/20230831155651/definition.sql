@@ -1,6 +1,15 @@
 BEGIN;
 
 --
+-- Class Address as table address
+--
+CREATE TABLE "address" (
+    "id" serial PRIMARY KEY,
+    "street" text NOT NULL,
+    "inhabitantId" integer NOT NULL
+);
+
+--
 -- Class Citizen as table citizen
 --
 CREATE TABLE "citizen" (
@@ -107,6 +116,15 @@ CREATE TABLE "object_with_uuid" (
 );
 
 --
+-- Class Post as table post
+--
+CREATE TABLE "post" (
+    "id" serial PRIMARY KEY,
+    "content" text NOT NULL,
+    "nextId" integer
+);
+
+--
 -- Class SimpleData as table simple_data
 --
 CREATE TABLE "simple_data" (
@@ -145,6 +163,16 @@ CREATE TABLE "types" (
     "aDuration" bigint,
     "aUuid" uuid
 );
+
+--
+-- Foreign relations for "address" table
+--
+ALTER TABLE ONLY "address"
+    ADD CONSTRAINT "address_fk_0"
+    FOREIGN KEY("inhabitantId")
+    REFERENCES "citizen"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
 
 --
 -- Foreign relations for "citizen" table
@@ -193,6 +221,16 @@ ALTER TABLE ONLY "object_with_self_parent"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "post" table
+--
+ALTER TABLE ONLY "post"
+    ADD CONSTRAINT "post_fk_0"
+    FOREIGN KEY("nextId")
+    REFERENCES "post"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "town" table
 --
 ALTER TABLE ONLY "town"
@@ -206,9 +244,9 @@ ALTER TABLE ONLY "town"
 -- MIGRATION VERSION
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20230823073808', 2, now())
+    VALUES ('serverpod_test', '20230831155651', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20230823073808', "priority" = 2;
+    DO UPDATE SET "version" = '20230831155651', "priority" = 2;
 
 
 COMMIT;
