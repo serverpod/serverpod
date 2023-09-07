@@ -506,3 +506,7 @@ class MessageLogEntryInclude extends _i1.Include {
 class MessageLogEntryRepository {
   MessageLogEntryRepository._();
 }
+
+class MessageLogEntryAddRepository {
+  MessageLogEntryAddRepository._();
+}

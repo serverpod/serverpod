@@ -396,3 +396,7 @@ class PostInclude extends _i1.Include {
 class PostRepository {
   PostRepository._();
 }
+
+class PostAddRepository {
+  PostAddRepository._();
+}

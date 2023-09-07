@@ -339,3 +339,7 @@ class CompanyInclude extends _i1.Include {
 class CompanyRepository {
   CompanyRepository._();
 }
+
+class CompanyAddRepository {
+  CompanyAddRepository._();
+}

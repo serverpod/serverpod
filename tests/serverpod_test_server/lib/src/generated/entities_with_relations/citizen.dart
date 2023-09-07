@@ -469,3 +469,7 @@ class CitizenInclude extends _i1.Include {
 class CitizenRepository {
   CitizenRepository._();
 }
+
+class CitizenAddRepository {
+  CitizenAddRepository._();
+}

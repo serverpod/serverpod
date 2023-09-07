@@ -506,3 +506,7 @@ class QueryLogEntryInclude extends _i1.Include {
 class QueryLogEntryRepository {
   QueryLogEntryRepository._();
 }
+
+class QueryLogEntryAddRepository {
+  QueryLogEntryAddRepository._();
+}

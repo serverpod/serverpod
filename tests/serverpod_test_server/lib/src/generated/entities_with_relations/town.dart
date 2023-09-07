@@ -339,3 +339,7 @@ class TownInclude extends _i1.Include {
 class TownRepository {
   TownRepository._();
 }
+
+class TownAddRepository {
+  TownAddRepository._();
+}

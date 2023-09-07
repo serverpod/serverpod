@@ -503,3 +503,7 @@ class LogEntryInclude extends _i1.Include {
 class LogEntryRepository {
   LogEntryRepository._();
 }
+
+class LogEntryAddRepository {
+  LogEntryAddRepository._();
+}

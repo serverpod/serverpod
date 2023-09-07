@@ -257,3 +257,7 @@ class ObjectWithSelfParentInclude extends _i1.Include {
 class ObjectWithSelfParentRepository {
   ObjectWithSelfParentRepository._();
 }
+
+class ObjectWithSelfParentAddRepository {
+  ObjectWithSelfParentAddRepository._();
+}

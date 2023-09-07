@@ -341,3 +341,7 @@ class AddressInclude extends _i1.Include {
 class AddressRepository {
   AddressRepository._();
 }
+
+class AddressAddRepository {
+  AddressAddRepository._();
+}
