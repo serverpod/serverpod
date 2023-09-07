@@ -78,7 +78,12 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
-          ]);
+            _buildEntityAddRepositoryClass(
+              className,
+              fields,
+              classDefinition,
+            ),
+          ].whereType<Spec>());
         }
       },
     );
@@ -351,7 +356,8 @@ class SerializableEntityLibraryGenerator {
       ..static = true
       ..modifier = FieldModifier.final$
       ..name = 'db'
-      ..assignment = refer('${className}Repository').call([]).code);
+      ..assignment =
+          refer('${className}Repository').property('_').call([]).code);
   }
 
   Method _buildEntityClassIncludeMethod(
@@ -1393,6 +1399,20 @@ class SerializableEntityLibraryGenerator {
   ) {
     return Class((c) {
       c.name = '${className}Repository';
+
+      c.constructors.add(Constructor((constructor) => constructor.name = '_'));
+    });
+  }
+
+  Class? _buildEntityAddRepositoryClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    if (!(fields.any((field) => field.relation != null))) return null;
+
+    return Class((c) {
+      c.name = '${className}AddRepository';
 
       c.constructors.add(Constructor((constructor) => constructor.name = '_'));
     });

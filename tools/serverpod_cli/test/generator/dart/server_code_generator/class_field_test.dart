@@ -194,13 +194,25 @@ void main() {
       });
 
       test('has a static db instance.', () {
+        var dbField = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExample!,
+          name: 'db',
+        );
+
+        expect(dbField, isNotNull);
+
+        expect(
+          dbField?.fields.toSource(),
+          'final db = ${testClassName}Repository._()',
+        );
+
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'db',
               isFinal: true,
               isStatic: true,
-              initializerMethod: '${testClassName}Repository',
+              initializerMethod: '_',
             ),
             isTrue,
             reason:
@@ -479,6 +491,19 @@ void main() {
             reason: 'Missing private constructor.');
       });
     }, skip: repositoryClass == null);
+
+    test('then a class named ${testClassName}AddRepository is NOT generated',
+        () {
+      expect(
+        CompilationUnitHelpers.hasClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}AddRepository',
+        ),
+        isFalse,
+        reason:
+            'The class ${testClassName}AddRepository was found but was expected to not exist.',
+      );
+    });
   });
 
   group(
@@ -1009,8 +1034,9 @@ void main() {
       test('has getter method for relation table.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-                maybeClassNamedExampleTable!,
-                name: 'company'),
+              maybeClassNamedExampleTable!,
+              name: 'company',
+            ),
             isTrue,
             reason: 'Missing declaration for relation table getter.');
       });
@@ -1018,5 +1044,62 @@ void main() {
         skip: maybeClassNamedExampleTable == null
             ? 'Could not run test because ${testClassName}Table class was not found.'
             : false);
+
+    test('then a class named ${testClassName}AddRepository is generated', () {
+      expect(
+        CompilationUnitHelpers.hasClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}AddRepository',
+        ),
+        isTrue,
+        reason:
+            'Expected the class ${testClassName}AddRepository to be generated.',
+      );
+    });
+
+    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}AddRepository',
+    );
+
+    group('then the ${testClassName}AddRepository', () {
+      test('has a private constructor', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              repositoryClass!,
+              name: '_',
+            ),
+            isTrue,
+            reason: 'Missing private constructor.');
+      });
+    }, skip: repositoryClass == null);
+
+    /*group('then the class named ${testClassName}Repository', () {
+    test('has a field.', () {
+      var dbField = CompilationUnitHelpers.tryFindFieldDeclaration(
+        maybeClassNamedExample!,
+        name: 'db',
+      );
+
+      expect(dbField, isNotNull);
+
+      expect(
+        dbField?.fields.toSource(),
+        'final db = ${testClassName}Repository._()',
+      );
+
+      expect(
+          CompilationUnitHelpers.hasFieldDeclaration(
+            maybeClassNamedExample,
+            name: 'db',
+            isFinal: true,
+            isStatic: true,
+            initializerMethod: '_',
+          ),
+          isTrue,
+          reason:
+              'Missing declaration for ${testClassName}Repository singleton.');
+    });
+  });*/
   });
 }
