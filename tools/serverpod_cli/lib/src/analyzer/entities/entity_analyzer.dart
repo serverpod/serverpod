@@ -21,16 +21,6 @@ String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
 }
 
-class _ProtocolClassDefinitionSource {
-  final ProtocolSource protocolSource;
-  final SerializableEntityDefinition entityDefinition;
-
-  _ProtocolClassDefinitionSource({
-    required this.protocolSource,
-    required this.entityDefinition,
-  });
-}
-
 /// Used to analyze a singe yaml protocol file.
 class SerializableEntityAnalyzer {
   static const Set<String> _protocolClassTypes = {
@@ -205,24 +195,5 @@ class SerializableEntityAnalyzer {
     }
 
     return null;
-  }
-
-  static List<_ProtocolClassDefinitionSource> _createEntityProtocolDefinitions(
-      List<ProtocolSource> protocols) {
-    return protocols
-        .map((protocol) {
-          var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-            protocol,
-          );
-
-          if (entity == null) return null;
-
-          return _ProtocolClassDefinitionSource(
-            protocolSource: protocol,
-            entityDefinition: entity,
-          );
-        })
-        .whereType<_ProtocolClassDefinitionSource>()
-        .toList();
   }
 }
