@@ -13,7 +13,6 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
@@ -39,37 +38,6 @@ class SerializableEntityAnalyzer {
     Keyword.exceptionType,
     Keyword.enumType,
   };
-
-  /// Analyze all yaml files in the protocol directory.
-  static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
-    required CodeAnalysisCollector collector,
-    required GeneratorConfig config,
-  }) async {
-    var protocols =
-        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
-
-    var entityProtocolDefinitions = _createEntityProtocolDefinitions(
-      protocols,
-    );
-
-    var entityDefinitions = entityProtocolDefinitions
-        .map((definition) => definition.entityDefinition)
-        .toList();
-
-    resolveEntityDependencies(entityDefinitions);
-
-    for (var definition in entityProtocolDefinitions) {
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        definition.protocolSource.yaml,
-        definition.entityDefinition.sourceFileName,
-        collector,
-        definition.entityDefinition,
-        entityDefinitions,
-      );
-    }
-
-    return entityDefinitions;
-  }
 
   /// Best effort attempt to extract an entity definition from a yaml file.
   static SerializableEntityDefinition? extractEntityDefinition(
