@@ -193,6 +193,20 @@ void main() {
             reason: 'Missing declaration for ${testClassName}Table singleton.');
       });
 
+      test('has a static db instance.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExample!,
+              name: 'db',
+              isFinal: true,
+              isStatic: true,
+              initializerMethod: '${testClassName}Repository',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for ${testClassName}Repository singleton.');
+      });
+
       test('has a tableName method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -438,6 +452,33 @@ void main() {
           isTrue,
           reason: 'Missing class named ${testClassName}Include.');
     });
+
+    test('then the class name ${testClassName}Repository is generated', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}Repository',
+          ),
+          isTrue,
+          reason: 'Missing class named ${testClassName}Repository.');
+    });
+
+    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Repository',
+    );
+
+    group('then the ${testClassName}Repository', () {
+      test('has a private constructor', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              repositoryClass!,
+              name: '_',
+            ),
+            isTrue,
+            reason: 'Missing private constructor.');
+      });
+    }, skip: repositoryClass == null);
   });
 
   group(

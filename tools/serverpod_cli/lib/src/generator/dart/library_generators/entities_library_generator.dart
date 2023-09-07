@@ -73,6 +73,11 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
+            _buildEntityRepositoryClass(
+              className,
+              fields,
+              classDefinition,
+            ),
           ]);
         }
       },
@@ -102,7 +107,10 @@ class SerializableEntityLibraryGenerator {
         classBuilder.extend =
             refer('TableRow', 'package:serverpod/serverpod.dart');
 
-        classBuilder.fields.add(_buildEntityClassTableField(className));
+        classBuilder.fields.addAll([
+          _buildEntityClassTableField(className),
+          _buildEntityClassDBField(className)
+        ]);
 
         // add tableName getter
         classBuilder.methods.add(_buildEntityClassTableNameGetter(tableName));
@@ -336,6 +344,14 @@ class SerializableEntityLibraryGenerator {
       ..modifier = FieldModifier.final$
       ..name = 't'
       ..assignment = refer('${className}Table').call([]).code);
+  }
+
+  Field _buildEntityClassDBField(String className) {
+    return Field((f) => f
+      ..static = true
+      ..modifier = FieldModifier.final$
+      ..name = 'db'
+      ..assignment = refer('${className}Repository').call([]).code);
   }
 
   Method _buildEntityClassIncludeMethod(
@@ -1343,9 +1359,10 @@ class SerializableEntityLibraryGenerator {
   }
 
   Class _buildEntityIncludeClass(
-      String className,
-      List<SerializableEntityFieldDefinition> fields,
-      ClassDefinition classDefinition) {
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
     return Class(((c) {
       c.extend = refer('Include', 'package:serverpod/serverpod.dart');
       c.name = '${className}Include';
@@ -1367,6 +1384,18 @@ class SerializableEntityLibraryGenerator {
         _buildEntityIncludeClassTableGetter(className),
       ]);
     }));
+  }
+
+  Class _buildEntityRepositoryClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    return Class((c) {
+      c.name = '${className}Repository';
+
+      c.constructors.add(Constructor((constructor) => constructor.name = '_'));
+    });
   }
 
   Method _buildEntityIncludeClassTableGetter(String className) {
