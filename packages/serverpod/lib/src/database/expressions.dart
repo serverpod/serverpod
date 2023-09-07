@@ -22,8 +22,8 @@ class Expression<T> {
     return '$_expression';
   }
 
-  /// Returns a list of all [Expression]s in the tree.
-  List<Expression> get nodes => [this];
+  /// Returns a list of all [Column]s in the expression.
+  List<Column> get columns => [];
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
@@ -98,7 +98,7 @@ abstract class _TwoPartExpression extends Expression {
   _TwoPartExpression(super.expression, this.other);
 
   @override
-  List<Expression> get nodes => [..._expression.nodes, ...other.nodes];
+  List<Column> get columns => [..._expression.columns, ...other.columns];
 }
 
 class _AndExpression extends _TwoPartExpression {
@@ -225,8 +225,8 @@ abstract class _MinMaxExpression extends Expression {
   _MinMaxExpression(super.expression, this.min, this.max);
 
   @override
-  List<Expression> get nodes =>
-      [..._expression.nodes, ...min.nodes, ...max.nodes];
+  List<Column> get columns =>
+      [..._expression.columns, ...min.columns, ...max.columns];
 }
 
 class _BetweenExpression extends _MinMaxExpression {
@@ -253,8 +253,8 @@ class _SetExpression extends Expression {
   _SetExpression(super.expression, this.values);
 
   @override
-  List<Expression> get nodes =>
-      [..._expression.nodes, ...values.expand((value) => value.nodes)];
+  List<Column> get columns =>
+      [..._expression.columns, ...values.expand((value) => value.columns)];
 
   String _expressionSetToQueryString() {
     var valueList = values.join(', ');
@@ -302,6 +302,9 @@ abstract class Column<T> extends Expression {
 
   /// Table relations for the [Column].
   final List<TableRelation>? tableRelations;
+
+  @override
+  List<Column> get columns => [this];
 
   /// Creates a new [Column], this is typically done in generated code only.
   Column(

@@ -3,126 +3,102 @@ import 'package:test/test.dart';
 
 void main() {
   group(
-      'Given two columns right combined using two part expressions when retrieving nodes',
+      'Given two columns right combined using two part expressions when retrieving columns',
       () {
     ColumnString firstColumn = ColumnString('test 1');
     ColumnString secondColumn = ColumnString('test 2');
     Expression expression = firstColumn & (secondColumn | firstColumn);
 
-    List<Expression> expressions = expression.nodes;
+    List<Column> columns = expression.columns;
 
-    test('then all expressions are represented.', () {
-      expect(expressions.length, 3);
+    test('then all columns are represented.', () {
+      expect(columns.length, 3);
     });
 
-    test('then first expression is leftmost expression.', () {
-      expect(expressions.first, firstColumn);
-    }, skip: expressions.length != 3);
+    test('then first columns is leftmost column.', () {
+      expect(columns.first, firstColumn);
+    }, skip: columns.length != 3);
 
-    test('then second expression is middle expression.', () {
-      expect(expressions[1], secondColumn);
-    }, skip: expressions.length != 3);
+    test('then second column is middle column.', () {
+      expect(columns[1], secondColumn);
+    }, skip: columns.length != 3);
 
-    test('then last expression is rightmost expression.', () {
-      expect(expressions.last, firstColumn);
-    }, skip: expressions.length != 3);
+    test('then last column is rightmost column.', () {
+      expect(columns.last, firstColumn);
+    }, skip: columns.length != 3);
   });
 
   group(
-      'Given two columns left combined using two part expressions when retrieving nodes',
+      'Given two columns left combined using two part expressions when retrieving columns',
       () {
     ColumnString firstColumn = ColumnString('test 1');
     ColumnString secondColumn = ColumnString('test 2');
     Expression expression = (secondColumn | firstColumn) & firstColumn;
 
-    List<Expression> expressions = expression.nodes;
+    List<Column> columns = expression.columns;
 
-    test('then all expressions are represented.', () {
-      expect(expressions.length, 3);
+    test('then all columns are represented.', () {
+      expect(columns.length, 3);
     });
 
-    test('then first expression is leftmost expression.', () {
-      expect(expressions.first, secondColumn);
-    }, skip: expressions.length != 3);
+    test('then first column is leftmost expression.', () {
+      expect(columns.first, secondColumn);
+    }, skip: columns.length != 3);
 
     test('then second expression is middle expression.', () {
-      expect(expressions[1], firstColumn);
-    }, skip: expressions.length != 3);
+      expect(columns[1], firstColumn);
+    }, skip: columns.length != 3);
 
     test('then last expression is rightmost expression.', () {
-      expect(expressions.last, firstColumn);
-    }, skip: expressions.length != 3);
+      expect(columns.last, firstColumn);
+    }, skip: columns.length != 3);
   });
 
-  group('Given column BETWEEN expression when retrieving nodes', () {
+  group('Given column BETWEEN expression when retrieving columns', () {
     ColumnInt column = ColumnInt('test 1');
     Expression expression = column.between(1, 2);
 
-    List<Expression> expressions = expression.nodes;
+    List<Column> columns = expression.columns;
 
-    test('then all expressions are represented.', () {
-      expect(expressions.length, 3);
+    test('then column is represented.', () {
+      expect(columns.length, 1);
     });
 
-    test('then first expression is column.', () {
-      expect(expressions.first, column);
-    }, skip: expressions.length != 3);
-
-    test('then second expression is min value.', () {
-      expect(expressions[1].toString(), '1');
-    }, skip: expressions.length != 3);
-    test('then third expression is max value.', () {
-      expect(expressions[2].toString(), '2');
-    }, skip: expressions.length != 3);
+    test('then first is column.', () {
+      expect(columns.first, column);
+    }, skip: columns.length != 1);
   });
 
-  group('Given column IN SET expression when retrieving nodes', () {
+  group('Given column IN SET expression when retrieving columns', () {
     ColumnInt column = ColumnInt('test 1');
     Expression expression = column.inSet(<int>{1, 2});
 
-    List<Expression> expressions = expression.nodes;
+    List<Column> columns = expression.columns;
 
-    test('then all expressions are represented.', () {
-      expect(expressions.length, 3);
+    test('then column is represented.', () {
+      expect(columns.length, 1);
     });
 
-    test('then first expression is column.', () {
-      expect(expressions.first, column);
-    }, skip: expressions.length != 3);
-
-    test('then second expression is first value of set.', () {
-      expect(expressions[1].toString(), '1');
-    }, skip: expressions.length != 3);
-    test('then third expression is second value of value.', () {
-      expect(expressions[2].toString(), '2');
-    }, skip: expressions.length != 3);
+    test('then first is column.', () {
+      expect(columns.first, column);
+    }, skip: columns.length != 1);
   });
 
-  group('Given column in BETWEEN and two part expression when retrieving nodes',
+  group(
+      'Given column in BETWEEN and two part expression when retrieving columns',
       () {
     ColumnInt column = ColumnInt('test 1');
     Expression constant = Constant(true);
     Expression expression = column.between(1, 2) & constant;
 
-    List<Expression> expressions = expression.nodes;
+    List<Column> columns = expression.columns;
 
-    test('then all expressions are represented.', () {
-      expect(expressions.length, 4);
+    test('then all columns are represented.', () {
+      expect(columns.length, 1);
     });
 
-    test('then first expression is column.', () {
-      expect(expressions.first, column);
-    }, skip: expressions.length != 4);
-
-    test('then second expression is min value.', () {
-      expect(expressions[1].toString(), '1');
-    }, skip: expressions.length != 4);
-    test('then third expression is max value.', () {
-      expect(expressions[2].toString(), '2');
-    }, skip: expressions.length != 4);
-
-    test('then forth expression is constant.', () {
-      expect(expressions[3], constant);
-    }, skip: expressions.length != 4);
+    test('then first is column.', () {
+      expect(columns.first, column);
+    }, skip: columns.length != 1);
   });
 }

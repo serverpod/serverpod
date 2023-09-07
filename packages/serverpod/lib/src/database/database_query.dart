@@ -292,9 +292,8 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
     Expression expression) {
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
-  var columnsWithTableRelations = expression.nodes
-      .whereType<Column>()
-      .where((column) => column.tableRelations != null);
+  var columnsWithTableRelations =
+      expression.columns.where((column) => column.tableRelations != null);
   for (var column in columnsWithTableRelations) {
     for (var tableRelation in column.tableRelations!) {
       joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
@@ -372,8 +371,7 @@ void _validateTableReferences(
   }
 
   if (where != null) {
-    var columns = where.nodes.whereType<Column>();
-    for (var column in columns) {
+    for (var column in where.columns) {
       if (!column.hasBaseTable(tableName)) {
         exceptionMessages.add('"where" expression referencing column $column.');
       }
