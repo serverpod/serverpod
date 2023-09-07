@@ -9,7 +9,7 @@ import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
 import 'entity_relations.dart';
 
-final _globallyRestrictedKeywords = [
+const _globallyRestrictedKeywords = [
   'toJson',
   'fromJson',
   'toString',
@@ -77,6 +77,22 @@ final _globallyRestrictedKeywords = [
   'dynamic',
   'implements',
   'static'
+];
+
+const _databaseEntityReservedFieldNames = [
+  'count',
+  'insert',
+  'update',
+  'deleteRow',
+  'delete',
+  'findById',
+  'findSingleRow',
+  'find',
+  'setColumn',
+  'allToJson',
+  'toJsonForDatabase',
+  'tableName',
+  'include',
 ];
 
 class Restrictions {
@@ -313,24 +329,9 @@ class Restrictions {
       ];
     }
 
-    var databaseEntityReservedFieldNames = [
-      'count',
-      'insert',
-      'update',
-      'deleteRow',
-      'delete',
-      'findById',
-      'findSingleRow',
-      'find',
-      'setColumn',
-      'allToJson',
-      'toJsonForDatabase',
-      'tableName',
-      'include',
-    ];
     if (def is ClassDefinition &&
         def.tableName != null &&
-        databaseEntityReservedFieldNames.contains(fieldName)) {
+        _databaseEntityReservedFieldNames.contains(fieldName)) {
       return [
         SourceSpanSeverityException(
           'The field name "$fieldName" is reserved and cannot be used.',
