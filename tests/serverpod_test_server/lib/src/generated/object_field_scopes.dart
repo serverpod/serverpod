@@ -39,6 +39,8 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
 
   static final t = ObjectFieldScopesTable();
 
+  static final db = ObjectFieldScopesRepository._();
+
   String normal;
 
   String? api;
@@ -287,4 +289,8 @@ class ObjectFieldScopesInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectFieldScopes.t;
+}
+
+class ObjectFieldScopesRepository {
+  ObjectFieldScopesRepository._();
 }

@@ -54,6 +54,8 @@ abstract class ServerHealthMetric extends _i1.TableRow {
 
   static final t = ServerHealthMetricTable();
 
+  static final db = ServerHealthMetricRepository._();
+
   /// The name of the metric.
   String name;
 
@@ -392,4 +394,8 @@ class ServerHealthMetricInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ServerHealthMetric.t;
+}
+
+class ServerHealthMetricRepository {
+  ServerHealthMetricRepository._();
 }

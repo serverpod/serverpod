@@ -41,6 +41,8 @@ abstract class Address extends _i1.TableRow {
 
   static final t = AddressTable();
 
+  static final db = AddressRepository._();
+
   String street;
 
   int inhabitantId;
@@ -334,4 +336,8 @@ class AddressInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
   @override
   _i1.Table get table => Address.t;
+}
+
+class AddressRepository {
+  AddressRepository._();
 }

@@ -44,6 +44,8 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
 
   static final t = CloudStorageDirectUploadEntryTable();
 
+  static final db = CloudStorageDirectUploadEntryRepository._();
+
   /// The storageId, typically `public` or `private`.
   String storageId;
 
@@ -335,4 +337,8 @@ class CloudStorageDirectUploadEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => CloudStorageDirectUploadEntry.t;
+}
+
+class CloudStorageDirectUploadEntryRepository {
+  CloudStorageDirectUploadEntryRepository._();
 }

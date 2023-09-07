@@ -37,6 +37,8 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
 
   static final t = GoogleRefreshTokenTable();
 
+  static final db = GoogleRefreshTokenRepository._();
+
   /// The user id associated with the token.
   int userId;
 
@@ -281,4 +283,8 @@ class GoogleRefreshTokenInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => GoogleRefreshToken.t;
+}
+
+class GoogleRefreshTokenRepository {
+  GoogleRefreshTokenRepository._();
 }

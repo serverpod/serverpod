@@ -52,6 +52,8 @@ abstract class Citizen extends _i1.TableRow {
 
   static final t = CitizenTable();
 
+  static final db = CitizenRepository._();
+
   String name;
 
   _i2.Address? address;
@@ -462,4 +464,8 @@ class CitizenInclude extends _i1.Include {
       };
   @override
   _i1.Table get table => Citizen.t;
+}
+
+class CitizenRepository {
+  CitizenRepository._();
 }

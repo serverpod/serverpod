@@ -55,6 +55,8 @@ abstract class ObjectWithObject extends _i1.TableRow {
 
   static final t = ObjectWithObjectTable();
 
+  static final db = ObjectWithObjectRepository._();
+
   _i2.SimpleData data;
 
   _i2.SimpleData? nullableData;
@@ -387,4 +389,8 @@ class ObjectWithObjectInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithObject.t;
+}
+
+class ObjectWithObjectRepository {
+  ObjectWithObjectRepository._();
 }

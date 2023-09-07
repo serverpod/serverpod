@@ -40,6 +40,8 @@ abstract class Town extends _i1.TableRow {
 
   static final t = TownTable();
 
+  static final db = TownRepository._();
+
   String name;
 
   int? mayorId;
@@ -332,4 +334,8 @@ class TownInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
   @override
   _i1.Table get table => Town.t;
+}
+
+class TownRepository {
+  TownRepository._();
 }

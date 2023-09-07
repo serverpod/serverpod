@@ -47,6 +47,8 @@ abstract class RuntimeSettings extends _i1.TableRow {
 
   static final t = RuntimeSettingsTable();
 
+  static final db = RuntimeSettingsRepository._();
+
   /// Log settings.
   _i2.LogSettings logSettings;
 
@@ -338,4 +340,8 @@ class RuntimeSettingsInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => RuntimeSettings.t;
+}
+
+class RuntimeSettingsRepository {
+  RuntimeSettingsRepository._();
 }

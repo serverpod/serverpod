@@ -33,6 +33,8 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static final t = ObjectWithByteDataTable();
 
+  static final db = ObjectWithByteDataRepository._();
+
   _i2.ByteData byteData;
 
   @override
@@ -252,4 +254,8 @@ class ObjectWithByteDataInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithByteData.t;
+}
+
+class ObjectWithByteDataRepository {
+  ObjectWithByteDataRepository._();
 }

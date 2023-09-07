@@ -47,6 +47,8 @@ abstract class AuthKey extends _i1.TableRow {
 
   static final t = AuthKeyTable();
 
+  static final db = AuthKeyRepository._();
+
   /// The id of the user to provide access to.
   int userId;
 
@@ -348,4 +350,8 @@ class AuthKeyInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => AuthKey.t;
+}
+
+class AuthKeyRepository {
+  AuthKeyRepository._();
 }

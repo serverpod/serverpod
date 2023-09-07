@@ -54,6 +54,8 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
 
   static final t = ServerHealthConnectionInfoTable();
 
+  static final db = ServerHealthConnectionInfoRepository._();
+
   /// The server associated with this connection info.
   String serverId;
 
@@ -393,4 +395,8 @@ class ServerHealthConnectionInfoInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ServerHealthConnectionInfo.t;
+}
+
+class ServerHealthConnectionInfoRepository {
+  ServerHealthConnectionInfoRepository._();
 }

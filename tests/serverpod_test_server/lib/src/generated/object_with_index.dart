@@ -36,6 +36,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static final t = ObjectWithIndexTable();
 
+  static final db = ObjectWithIndexRepository._();
+
   int indexed;
 
   int indexed2;
@@ -276,4 +278,8 @@ class ObjectWithIndexInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithIndex.t;
+}
+
+class ObjectWithIndexRepository {
+  ObjectWithIndexRepository._();
 }

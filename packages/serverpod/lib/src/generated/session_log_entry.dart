@@ -80,6 +80,8 @@ abstract class SessionLogEntry extends _i1.TableRow {
 
   static final t = SessionLogEntryTable();
 
+  static final db = SessionLogEntryRepository._();
+
   /// The id of the server that handled this session.
   String serverId;
 
@@ -587,4 +589,8 @@ class SessionLogEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SessionLogEntry.t;
+}
+
+class SessionLogEntryRepository {
+  SessionLogEntryRepository._();
 }

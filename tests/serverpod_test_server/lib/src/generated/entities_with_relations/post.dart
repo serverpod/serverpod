@@ -45,6 +45,8 @@ abstract class Post extends _i1.TableRow {
 
   static final t = PostTable();
 
+  static final db = PostRepository._();
+
   String content;
 
   _i2.Post? previous;
@@ -389,4 +391,8 @@ class PostInclude extends _i1.Include {
       };
   @override
   _i1.Table get table => Post.t;
+}
+
+class PostRepository {
+  PostRepository._();
 }

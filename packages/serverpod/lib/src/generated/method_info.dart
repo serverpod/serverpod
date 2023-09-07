@@ -37,6 +37,8 @@ abstract class MethodInfo extends _i1.TableRow {
 
   static final t = MethodInfoTable();
 
+  static final db = MethodInfoRepository._();
+
   /// The endpoint of this method.
   String endpoint;
 
@@ -280,4 +282,8 @@ class MethodInfoInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => MethodInfo.t;
+}
+
+class MethodInfoRepository {
+  MethodInfoRepository._();
 }

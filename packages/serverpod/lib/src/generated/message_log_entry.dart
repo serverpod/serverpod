@@ -67,6 +67,8 @@ abstract class MessageLogEntry extends _i1.TableRow {
 
   static final t = MessageLogEntryTable();
 
+  static final db = MessageLogEntryRepository._();
+
   /// Id of the session this entry is associated with.
   int sessionLogId;
 
@@ -499,4 +501,8 @@ class MessageLogEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => MessageLogEntry.t;
+}
+
+class MessageLogEntryRepository {
+  MessageLogEntryRepository._();
 }

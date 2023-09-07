@@ -53,6 +53,8 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   static final t = CloudStorageEntryTable();
 
+  static final db = CloudStorageEntryRepository._();
+
   /// The storageId, typically `public` or `private`.
   String storageId;
 
@@ -389,4 +391,8 @@ class CloudStorageEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => CloudStorageEntry.t;
+}
+
+class CloudStorageEntryRepository {
+  CloudStorageEntryRepository._();
 }

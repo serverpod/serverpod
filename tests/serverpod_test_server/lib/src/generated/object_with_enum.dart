@@ -49,6 +49,8 @@ abstract class ObjectWithEnum extends _i1.TableRow {
 
   static final t = ObjectWithEnumTable();
 
+  static final db = ObjectWithEnumRepository._();
+
   _i2.TestEnum testEnum;
 
   _i2.TestEnum? nullableEnum;
@@ -353,4 +355,8 @@ class ObjectWithEnumInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithEnum.t;
+}
+
+class ObjectWithEnumRepository {
+  ObjectWithEnumRepository._();
 }

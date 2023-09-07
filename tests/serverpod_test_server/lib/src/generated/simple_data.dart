@@ -32,6 +32,8 @@ abstract class SimpleData extends _i1.TableRow {
 
   static final t = SimpleDataTable();
 
+  static final db = SimpleDataRepository._();
+
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
@@ -256,4 +258,8 @@ class SimpleDataInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SimpleData.t;
+}
+
+class SimpleDataRepository {
+  SimpleDataRepository._();
 }

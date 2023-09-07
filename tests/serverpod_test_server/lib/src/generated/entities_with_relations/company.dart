@@ -40,6 +40,8 @@ abstract class Company extends _i1.TableRow {
 
   static final t = CompanyTable();
 
+  static final db = CompanyRepository._();
+
   String name;
 
   int townId;
@@ -332,4 +334,8 @@ class CompanyInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'town': _town};
   @override
   _i1.Table get table => Company.t;
+}
+
+class CompanyRepository {
+  CompanyRepository._();
 }
