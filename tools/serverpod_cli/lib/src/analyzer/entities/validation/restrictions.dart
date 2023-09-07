@@ -9,6 +9,92 @@ import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
 import 'entity_relations.dart';
 
+const _globallyRestrictedKeywords = [
+  'toJson',
+  'fromJson',
+  'toString',
+  'hashCode',
+  'runtimeType',
+  'noSuchMethod',
+  'abstract',
+  'else',
+  'import',
+  'super',
+  'as',
+  'enum',
+  'in',
+  'switch',
+  'assert',
+  'export',
+  'interface',
+  'sync',
+  'async',
+  'extend',
+  'is',
+  'this',
+  'await',
+  'extension',
+  'library',
+  'throw',
+  'break',
+  'external',
+  'mixin',
+  'true',
+  'case',
+  'factory',
+  'new',
+  'try',
+  'class',
+  'final',
+  'catch',
+  'false',
+  'null',
+  'typedef',
+  'on',
+  'var',
+  'const',
+  'finally',
+  'operator',
+  'void',
+  'continue',
+  'for',
+  'part',
+  'while',
+  'covariant',
+  'function',
+  'rethrow',
+  'with',
+  'default',
+  'get',
+  'return',
+  'yield',
+  'deferred',
+  'hide',
+  'set',
+  'do',
+  'if',
+  'show',
+  'dynamic',
+  'implements',
+  'static'
+];
+
+const _databaseEntityReservedFieldNames = [
+  'count',
+  'insert',
+  'update',
+  'deleteRow',
+  'delete',
+  'findById',
+  'findSingleRow',
+  'find',
+  'setColumn',
+  'allToJson',
+  'toJsonForDatabase',
+  'tableName',
+  'include',
+];
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
@@ -234,10 +320,30 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (fieldName == 'id' && def is ClassDefinition && def.tableName != null) {
+    if (def is ClassDefinition && def.tableName != null && fieldName == 'id') {
       return [
         SourceSpanSeverityException(
           'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
+          span,
+        )
+      ];
+    }
+
+    if (def is ClassDefinition &&
+        def.tableName != null &&
+        _databaseEntityReservedFieldNames.contains(fieldName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field name "$fieldName" is reserved and cannot be used.',
+          span,
+        )
+      ];
+    }
+
+    if (_globallyRestrictedKeywords.contains(fieldName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field name "$fieldName" is reserved and cannot be used.',
           span,
         )
       ];
@@ -732,6 +838,13 @@ class Restrictions {
       if (enumCount[enumValue] != 1) {
         return SourceSpanSeverityException(
           'Enum values must be unique.',
+          node.span,
+        );
+      }
+
+      if (_globallyRestrictedKeywords.contains(enumValue)) {
+        return SourceSpanSeverityException(
+          'The enum value "$enumValue" is reserved and cannot be used.',
           node.span,
         );
       }

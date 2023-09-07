@@ -593,9 +593,6 @@ void main() {
             reason: 'Missing extends clause for Include.');
       });
       test('has named parameter for field in private constructor.', () {
-        print(CompilationUnitHelpers.tryFindConstructorDeclaration(
-            exampleIncludeClass,
-            name: '_'));
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               exampleIncludeClass,
