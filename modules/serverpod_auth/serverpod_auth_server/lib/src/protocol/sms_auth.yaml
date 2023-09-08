@@ -1,0 +1,13 @@
+### Database bindings for SMSAuth
+class: SmsAuth
+table: serverpod_sms_auth
+fields:
+  ### The id of the user, corresponds to the id field in the [UserInfo].
+  userId: int
+
+  ### The phone number of the user.
+  phoneNumber: String
+indexes:
+  serverpod_sms_auth:
+    fields: phoneNumber
+    unique: true
