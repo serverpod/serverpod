@@ -19,6 +19,9 @@ fields:
   ### The email of the user.
   email: String?
 
+  ### The phone number of the user.
+  phoneNumber: String?
+
   ### The time when this user was created.
   created: DateTime
 
@@ -36,3 +39,5 @@ indexes:
     unique: true
   serverpod_user_info_email:
     fields: email
+  serverpod_user_info_phone_number:
+    fields: phoneNumber
