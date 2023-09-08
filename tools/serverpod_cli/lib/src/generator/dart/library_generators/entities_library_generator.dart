@@ -34,12 +34,24 @@ class SerializableEntityLibraryGenerator {
 
     return Library(
       (libraryBuilder) {
-        libraryBuilder.body.add(_buildEntityClass(
-          className,
-          classDefinition,
-          tableName,
-          fields,
-        ));
+        libraryBuilder.body.addAll([
+          _buildEntityClass(
+            className,
+            classDefinition,
+            tableName,
+            fields,
+          ),
+          // We need to generate the implementation class for the copyWith method
+          // to support differentiating between null and undefined values.
+          // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
+          _buildUndefinedClass(),
+          _buildEntityImplClass(
+            className,
+            classDefinition,
+            tableName,
+            fields,
+          ),
+        ]);
 
         if (serverCode && tableName != null) {
           libraryBuilder.body.addAll([
@@ -76,6 +88,7 @@ class SerializableEntityLibraryGenerator {
         fields.where((field) => field.relation is ObjectRelationDefinition);
     return Class((classBuilder) {
       classBuilder
+        ..abstract = true
         ..name = className
         ..docs.addAll(classDefinition.documentation ?? []);
 
@@ -104,9 +117,21 @@ class SerializableEntityLibraryGenerator {
       ));
 
       classBuilder.constructors.addAll([
-        _buildEntityClassConstructor(fields, tableName),
+        _buildEntityClassConstructor(classDefinition, fields, tableName),
+        _buildEntityClassFactoryConstructor(
+          className,
+          classDefinition,
+          fields,
+          tableName,
+        ),
         _buildEntityClassFromJsonConstructor(className, fields, classDefinition)
       ]);
+
+      classBuilder.methods.add(_buildAbstractCopyWithMethod(
+        className,
+        classDefinition,
+        fields,
+      ));
 
       // Serialization
       classBuilder.methods.add(_buildEntityClassToJsonMethod(fields));
@@ -125,7 +150,9 @@ class SerializableEntityLibraryGenerator {
             _buildEntityClassSetColumnMethod(fields),
             _buildEntityClassFindMethod(className, objectRelationFields),
             _buildEntityClassFindSingleRowMethod(
-                className, objectRelationFields),
+              className,
+              objectRelationFields,
+            ),
             _buildEntityClassFindByIdMethod(className, objectRelationFields),
             _buildEntityClassDeleteMethod(className),
             _buildEntityClassDeleteRowMethod(className),
@@ -141,6 +168,112 @@ class SerializableEntityLibraryGenerator {
         }
       }
     });
+  }
+
+  Class _buildUndefinedClass() {
+    return Class((classBuilder) => classBuilder.name = '_Undefined');
+  }
+
+  Class _buildEntityImplClass(
+    String className,
+    ClassDefinition classDefinition,
+    String? tableName,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '_${className}Impl'
+        ..extend = refer(className)
+        ..constructors.add(
+          _buildEntityImplClassConstructor(classDefinition, fields, tableName),
+        )
+        ..methods.add(_buildCopyWithMethod(classDefinition, fields));
+    });
+  }
+
+  Method _buildAbstractCopyWithMethod(
+    String className,
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'copyWith'
+        ..optionalParameters.addAll(
+          _buildAbstractCopyWithParameters(classDefinition, fields),
+        )
+        ..returns = refer(className);
+    });
+  }
+
+  Method _buildCopyWithMethod(
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    return Method(
+      (m) {
+        m
+          ..name = 'copyWith'
+          ..annotations.add(refer('override'))
+          ..optionalParameters.addAll(
+            fields.where((field) => field.shouldIncludeField(serverCode)).map(
+              (field) {
+                var fieldType = field.type.reference(
+                  serverCode,
+                  nullable: true,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                );
+
+                var type = field.type.nullable ? refer('Object?') : fieldType;
+                var defaultValue =
+                    field.type.nullable ? const Code('_Undefined') : null;
+
+                return Parameter((p) {
+                  p
+                    ..name = field.name
+                    ..named = true
+                    ..type = type
+                    ..defaultTo = defaultValue;
+                });
+              },
+            ),
+          )
+          ..returns = refer(classDefinition.className)
+          ..body = refer(classDefinition.className)
+              .call(
+                [],
+                fields
+                    .where((field) => field.shouldIncludeField(serverCode))
+                    .fold({}, (map, field) {
+                  var valueDefinition = refer(field.name)
+                      .isNotA(field.type.reference(
+                        serverCode,
+                        nullable: field.type.nullable,
+                        subDirParts: classDefinition.subDirParts,
+                        config: config,
+                      ))
+                      .conditional(
+                        refer('this.${field.name}'),
+                        refer(field.name),
+                      );
+
+                  if (!field.type.nullable) {
+                    valueDefinition = refer(field.name).ifNullThen(
+                      refer('this.${field.name}'),
+                    );
+                  }
+
+                  return {
+                    ...map,
+                    field.name: valueDefinition,
+                  };
+                }),
+              )
+              .returned
+              .statement;
+      },
+    );
   }
 
   Method _buildEntityClassTableNameGetter(String tableName) {
@@ -769,34 +902,122 @@ class SerializableEntityLibraryGenerator {
   }
 
   Constructor _buildEntityClassConstructor(
-      List<SerializableEntityFieldDefinition> fields, String? tableName) {
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+    String? tableName,
+  ) {
     return Constructor((c) {
-      for (var field in fields) {
-        if (field.shouldIncludeField(serverCode)) {
-          if (field.name == 'id' && serverCode && tableName != null) {
-            c.optionalParameters.add(Parameter((p) {
-              p.named = true;
-              p.name = 'id';
-              p.type = TypeReference(
-                (t) => t
-                  ..symbol = 'int'
-                  ..isNullable = true,
-              );
-            }));
-          } else {
-            c.optionalParameters.add(Parameter((p) {
-              p.named = true;
-              p.required = !field.type.nullable;
-              p.toThis = true;
-              p.name = field.name;
-            }));
-          }
-        }
-      }
+      c.name = '_';
+      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+        classDefinition,
+        fields,
+        tableName,
+        setAsToThis: true,
+      ));
+
       if (serverCode && tableName != null) {
         c.initializers.add(refer('super').call([refer('id')]).code);
       }
     });
+  }
+
+  Constructor _buildEntityClassFactoryConstructor(
+    String className,
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+    String? tableName,
+  ) {
+    return Constructor((c) {
+      c.factory = true;
+      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+        classDefinition,
+        fields,
+        tableName,
+        setAsToThis: false,
+      ));
+
+      c.redirect = refer('_${className}Impl');
+    });
+  }
+
+  Constructor _buildEntityImplClassConstructor(
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+    String? tableName,
+  ) {
+    return Constructor((c) {
+      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+        classDefinition,
+        fields,
+        tableName,
+        setAsToThis: false,
+      ));
+
+      Map<String, Expression> namedParams = fields
+          .where((field) => field.shouldIncludeField(serverCode))
+          .fold({}, (map, field) {
+        return {
+          ...map,
+          field.name: refer(field.name),
+        };
+      });
+
+      c.initializers.add(refer('super._').call([], namedParams).code);
+    });
+  }
+
+  List<Parameter> _buildEntityClassConstructorParameters(
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+    String? tableName, {
+    required bool setAsToThis,
+  }) {
+    return fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .map((field) {
+      bool hasPrimaryKey =
+          field.name == 'id' && tableName != null && serverCode;
+
+      bool shouldIncludeType = !setAsToThis || hasPrimaryKey;
+      var type = field.type.reference(
+        serverCode,
+        nullable: field.type.nullable,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
+      return Parameter(
+        (p) => p
+          ..named = true
+          ..required = !field.type.nullable
+          ..type = shouldIncludeType ? type : null
+          ..toThis = !shouldIncludeType
+          ..name = field.name,
+      );
+    }).toList();
+  }
+
+  List<Parameter> _buildAbstractCopyWithParameters(
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    return fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .map((field) {
+      var type = field.type.reference(
+        serverCode,
+        nullable: true,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
+      return Parameter(
+        (p) => p
+          ..named = true
+          ..type = type
+          ..name = field.name,
+      );
+    }).toList();
   }
 
   List<Field> _buildEntityClassFields(
