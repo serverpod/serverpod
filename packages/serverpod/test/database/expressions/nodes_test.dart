@@ -1,3 +1,4 @@
+import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/expressions.dart';
 import 'package:test/test.dart';
 
@@ -7,7 +8,8 @@ void main() {
       () {
     ColumnString firstColumn = ColumnString('test 1');
     ColumnString secondColumn = ColumnString('test 2');
-    Expression expression = firstColumn & (secondColumn | firstColumn);
+    Expression expression = firstColumn.equals('test 1') &
+        (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
     List<Column> columns = expression.columns;
 
@@ -33,7 +35,9 @@ void main() {
       () {
     ColumnString firstColumn = ColumnString('test 1');
     ColumnString secondColumn = ColumnString('test 2');
-    Expression expression = (secondColumn | firstColumn) & firstColumn;
+    Expression expression =
+        (secondColumn.like('test 2') | firstColumn.equals('test 1')) &
+            firstColumn.equals('test 1');
 
     List<Column> columns = expression.columns;
 
