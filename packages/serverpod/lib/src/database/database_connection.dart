@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
