@@ -2,81 +2,104 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnUuid expression', () {
+  group('Given a ColumnUuid', () {
     var columnName = 'id';
-    var expression = ColumnUuid(columnName);
+    var column = ColumnUuid(columnName);
 
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(expression.toString(), '"$columnName"');
+      expect(column.toString(), '"$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(expression.columnName, columnName);
+      expect(column.columnName, columnName);
     });
 
     test('when type is called then UuidValue is returned.', () {
-      expect(expression.type, UuidValue);
+      expect(column.type, UuidValue);
     });
 
-    test(
-        'when equals compared to NULL value then output is IS NULL expression.',
-        () {
-      var comparisonExpression = expression.equals(null);
+    group('with _ColumnDefaultOperations mixin', () {
+      test(
+          'when equals compared to NULL value then output is IS NULL expression.',
+          () {
+        var comparisonExpression = column.equals(null);
 
-      expect(comparisonExpression.toString(), '"$columnName" IS NULL');
-    });
-
-    test('when equals compared to uuid value then output is equals expression.',
-        () {
-      var comparisonExpression = expression.equals(
-          UuidValue('testUuid', false /* Disable validation for test */));
-
-      expect(comparisonExpression.toString(), '"$columnName" = \'testuuid\'');
-    });
-
-    test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
-        () {
-      var comparisonExpression = expression.notEquals(null);
-
-      expect(comparisonExpression.toString(), '"$columnName" IS NOT NULL');
-    });
-
-    test(
-        'when NOT equals compared to uuid value then output is NOT equals expression.',
-        () {
-      var comparisonExpression = expression.notEquals(
-          UuidValue('testUuid', false /* Disable validation for test */));
-
-      expect(comparisonExpression.toString(), '"$columnName" != \'testuuid\'');
-    });
-
-    test(
-        'when checking if expression is in value set then output is IN expression.',
-        () {
-      var comparisonExpression = expression.inSet(<UuidValue>{
-        UuidValue('testUuid1', false /* Disable validation for test */),
-        UuidValue('testUuid2', false /* Disable validation for test */),
-        UuidValue('testUuid3', false /* Disable validation for test */),
+        expect(comparisonExpression.toString(), '$column IS NULL');
       });
 
-      expect(comparisonExpression.toString(),
-          '"$columnName" IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
-    });
+      test(
+          'when equals compared to uuid value then output is equals expression.',
+          () {
+        var comparisonExpression = column.equals(
+            UuidValue('testUuid', false /* Disable validation for test */));
 
-    test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
-        () {
-      var comparisonExpression = expression.notInSet(<UuidValue>{
-        UuidValue('testUuid1', false /* Disable validation for test */),
-        UuidValue('testUuid2', false /* Disable validation for test */),
-        UuidValue('testUuid3', false /* Disable validation for test */),
+        expect(comparisonExpression.toString(), '$column = \'testuuid\'');
       });
 
-      expect(comparisonExpression.toString(),
-          '"$columnName" NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+      test(
+          'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+          () {
+        var comparisonExpression = column.notEquals(null);
+
+        expect(comparisonExpression.toString(), '$column IS NOT NULL');
+      });
+
+      test(
+          'when NOT equals compared to uuid value then output is NOT equals expression.',
+          () {
+        var comparisonExpression = column.notEquals(
+            UuidValue('testUuid', false /* Disable validation for test */));
+
+        expect(comparisonExpression.toString(), '$column != \'testuuid\'');
+      });
+
+      test(
+          'when checking if expression is in value set then output is IN expression.',
+          () {
+        var comparisonExpression = column.inSet(<UuidValue>{
+          UuidValue('testUuid1', false /* Disable validation for test */),
+          UuidValue('testUuid2', false /* Disable validation for test */),
+          UuidValue('testUuid3', false /* Disable validation for test */),
+        });
+
+        expect(comparisonExpression.toString(),
+            '$column IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+      });
+
+      test(
+          'when checking if expression is NOT in value set then output is NOT IN expression.',
+          () {
+        var comparisonExpression = column.notInSet(<UuidValue>{
+          UuidValue('testUuid1', false /* Disable validation for test */),
+          UuidValue('testUuid2', false /* Disable validation for test */),
+          UuidValue('testUuid3', false /* Disable validation for test */),
+        });
+
+        expect(comparisonExpression.toString(),
+            '$column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+      });
+
+      test(
+          'when is distinct from compared to uuid value then output is IS DISTINCT FROM expression.',
+          () {
+        var comparisonExpression = column.isDistinctFrom(
+            UuidValue('testUuid1', false /* Disable validation for test */));
+
+        expect(comparisonExpression.toString(),
+            '$column IS DISTINCT FROM \'testuuid1\'');
+      });
+
+      test(
+          'when is NOT distinct from compared to uuid value then output is IS NOT DISTINCT FROM expression.',
+          () {
+        var comparisonExpression = column.isNotDistinctFrom(
+            UuidValue('testUuid1', false /* Disable validation for test */));
+
+        expect(comparisonExpression.toString(),
+            '$column IS NOT DISTINCT FROM \'testuuid1\'');
+      });
     });
   });
 }

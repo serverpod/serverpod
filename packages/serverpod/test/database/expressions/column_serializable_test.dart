@@ -2,22 +2,22 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnSerializable expression', () {
+  group('Given a ColumnSerializable', () {
     var columnName = 'configuration';
-    var expression = ColumnSerializable(columnName);
+    var column = ColumnSerializable(columnName);
 
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(expression.toString(), '"$columnName"');
+      expect(column.toString(), '"$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(expression.columnName, columnName);
+      expect(column.columnName, columnName);
     });
 
     test('when type is called then String is returned.', () {
-      expect(expression.type, String);
+      expect(column.type, String);
     });
   });
 }

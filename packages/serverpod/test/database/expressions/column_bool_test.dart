@@ -2,79 +2,90 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnBool expression', () {
+  group('Given a ColumnBool', () {
     var columnName = 'production';
-    var expression = ColumnBool(columnName);
+    var column = ColumnBool(columnName);
 
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(expression.toString(), '"$columnName"');
+      expect(column.toString(), '"$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(expression.columnName, columnName);
+      expect(column.columnName, columnName);
     });
 
     test('when type is called then bool is returned.', () {
-      expect(expression.type, bool);
+      expect(column.type, bool);
     });
 
-    test(
-        'when equals compared to NULL value then output is IS NULL expression.',
-        () {
-      var comparisonExpression = expression.equals(null);
+    group('with _ColumnDefaultOperations mixin', () {
+      test(
+          'when equals compared to NULL value then output is IS NULL expression.',
+          () {
+        var comparisonExpression = column.equals(null);
 
-      expect(comparisonExpression.toString(), '"$columnName" IS NULL');
-    });
+        expect(comparisonExpression.toString(), '$column IS NULL');
+      });
 
-    test('when equals compared to bool value then output is equals expression.',
-        () {
-      var comparisonExpression = expression.equals(true);
+      test(
+          'when equals compared to bool value then output is equals expression.',
+          () {
+        var comparisonExpression = column.equals(true);
 
-      expect(comparisonExpression.toString(), '"$columnName" = true');
-    });
+        expect(comparisonExpression.toString(), '$column = true');
+      });
 
-    test(
-        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
-        () {
-      var comparisonExpression = expression.notEquals(null);
+      test(
+          'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+          () {
+        var comparisonExpression = column.notEquals(null);
 
-      expect(comparisonExpression.toString(), '"$columnName" IS NOT NULL');
-    });
+        expect(comparisonExpression.toString(), '$column IS NOT NULL');
+      });
 
-    test(
-        'when NOT equals compared to bool value then output is NOT equals expression.',
-        () {
-      var comparisonExpression = expression.notEquals(true);
+      test(
+          'when NOT equals compared to bool value then output is NOT equals expression.',
+          () {
+        var comparisonExpression = column.notEquals(true);
 
-      expect(comparisonExpression.toString(), '"$columnName" != true');
-    });
+        expect(comparisonExpression.toString(), '$column != true');
+      });
 
-    test(
-        'when is distinct from compared to bool value then output is IS DISTINCT FROM expression.',
-        () {
-      var comparisonExpression = expression.isDistinctFrom(true);
+      test(
+          'when is distinct from compared to bool value then output is IS DISTINCT FROM expression.',
+          () {
+        var comparisonExpression = column.isDistinctFrom(true);
 
-      expect(comparisonExpression.toString(),
-          '"$columnName" IS DISTINCT FROM true');
-    });
+        expect(
+            comparisonExpression.toString(), '$column IS DISTINCT FROM true');
+      });
 
-    test(
-        'when checking if expression is in value set then output is IN expression.',
-        () {
-      var comparisonExpression = expression.inSet(<bool>{true, false});
+      test(
+          'when is NOT distinct from compared to bool value then output is IS NOT DISTINCT FROM expression.',
+          () {
+        var comparisonExpression = column.isNotDistinctFrom(true);
 
-      expect(comparisonExpression.toString(), '"$columnName" IN (true, false)');
-    });
+        expect(comparisonExpression.toString(),
+            '$column IS NOT DISTINCT FROM true');
+      });
 
-    test(
-        'when checking if expression is NOT in value set then output is NOT IN expression.',
-        () {
-      var comparisonExpression = expression.notInSet(<bool>{true, false});
+      test(
+          'when checking if expression is in value set then output is IN expression.',
+          () {
+        var comparisonExpression = column.inSet(<bool>{true, false});
 
-      expect(comparisonExpression.toString(),
-          '"$columnName" NOT IN (true, false)');
+        expect(comparisonExpression.toString(), '$column IN (true, false)');
+      });
+
+      test(
+          'when checking if expression is NOT in value set then output is NOT IN expression.',
+          () {
+        var comparisonExpression = column.notInSet(<bool>{true, false});
+
+        expect(comparisonExpression.toString(), '$column NOT IN (true, false)');
+      });
     });
   });
 }

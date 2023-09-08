@@ -4,22 +4,22 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnByteData expression', () {
+  group('Given a ColumnByteData', () {
     var columnName = 'configuration';
-    var expression = ColumnByteData(columnName);
+    var column = ColumnByteData(columnName);
 
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(expression.toString(), '"$columnName"');
+      expect(column.toString(), '"$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(expression.columnName, columnName);
+      expect(column.columnName, columnName);
     });
 
     test('when type is called then ByteData is returned.', () {
-      expect(expression.type, ByteData);
+      expect(column.type, ByteData);
     });
   });
 }

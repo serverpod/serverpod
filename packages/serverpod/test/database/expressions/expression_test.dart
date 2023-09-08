@@ -8,69 +8,6 @@ void main() {
     test('when toString is called then expression is returned', () {
       expect(expression.toString(), expressionString);
     });
-
-    test(
-        'when greater than compared to int then output is operator expression.',
-        () {
-      var comparisonExpression = expression > 10;
-
-      expect(comparisonExpression.toString(), '($expressionString > 10)');
-    });
-
-    test(
-        'when greater than compared to string then output is operator expression.',
-        () {
-      var comparisonExpression = expression > '10';
-
-      expect(comparisonExpression.toString(), '($expressionString > \'10\')');
-    });
-
-    test(
-        'when greater or equal than compared to int then output is operator expression.',
-        () {
-      var comparisonExpression = expression >= 10;
-
-      expect(comparisonExpression.toString(), '($expressionString >= 10)');
-    });
-
-    test(
-        'when greater or equal than compared to string then output is operator expression.',
-        () {
-      var comparisonExpression = expression >= '10';
-
-      expect(comparisonExpression.toString(), '($expressionString >= \'10\')');
-    });
-
-    test('when less than compared to int then output is operator expression.',
-        () {
-      var comparisonExpression = expression < 10;
-
-      expect(comparisonExpression.toString(), '($expressionString < 10)');
-    });
-
-    test(
-        'when less than compared to string then output is operator expression.',
-        () {
-      var comparisonExpression = expression < '10';
-
-      expect(comparisonExpression.toString(), '($expressionString < \'10\')');
-    });
-
-    test(
-        'when less or equal than compared to int then output is operator expression.',
-        () {
-      var comparisonExpression = expression <= 10;
-
-      expect(comparisonExpression.toString(), '($expressionString <= 10)');
-    });
-
-    test(
-        'when less or equal than compared to string then output is operator expression.',
-        () {
-      var comparisonExpression = expression <= '10';
-
-      expect(comparisonExpression.toString(), '($expressionString <= \'10\')');
-    });
   });
 
   group('Given two expressions', () {
@@ -89,34 +26,35 @@ void main() {
 
       expect(combinedExpression.toString(), '($expression1 OR $expression2)');
     });
+  });
 
-    test('when greater than compared then values are NOT escaped in output.',
+  group('Given three expressions', () {
+    var expression1 = Expression('test expression 1');
+    var expression2 = Expression('test expression 2');
+    var expression3 = Expression('test expression 3');
+    test('when combined using the AND operator then output is AND expression.',
         () {
-      var comparisonExpression = expression1 > expression2;
+      var combinedExpression = expression1 & (expression2 & expression3);
 
-      expect(comparisonExpression.toString(), '($expression1 > $expression2)');
+      expect(combinedExpression.toString(),
+          '($expression1 AND ($expression2 AND $expression3))');
     });
 
-    test(
-        'when greater or equal than compared then values are NOT escaped in output.',
+    test('when combined using the AND operator then output is AND expression.',
         () {
-      var comparisonExpression = expression1 >= expression2;
+      var combinedExpression = expression1 | (expression2 | expression3);
 
-      expect(comparisonExpression.toString(), '($expression1 >= $expression2)');
+      expect(combinedExpression.toString(),
+          '($expression1 OR ($expression2 OR $expression3))');
     });
+  });
 
-    test('when less than compared then values are NOT escaped in output.', () {
-      var comparisonExpression = expression1 < expression2;
-
-      expect(comparisonExpression.toString(), '($expression1 < $expression2)');
-    });
-
-    test(
-        'when less or equal than compared then values are NOT escaped in output.',
-        () {
-      var comparisonExpression = expression1 <= expression2;
-
-      expect(comparisonExpression.toString(), '($expression1 <= $expression2)');
+  group('Given escaped expression containing symbols that should be escaped',
+      () {
+    var expressionToEscape = '; DROP TABLE users;';
+    var expression = EscapedExpression(expressionToEscape);
+    test('when toString is called then escaped expression is returned', () {
+      expect(expression.toString(), '\'; DROP TABLE users;\'');
     });
   });
 }
