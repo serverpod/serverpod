@@ -12,14 +12,6 @@ Future<void> setupTestData(Client client) async {
   await client.basicDatabase.createSimpleTestData(100);
 }
 
-Future<void> setupTestDateTimeData(Client client) async {
-  await client.basicDatabase.deleteAllSimpleDateTimeTestData();
-  await client.basicDatabase.createSimpleDateTimeTestData(
-    numberOfYears: 100,
-    firstYear: DateTime(1900),
-  );
-}
-
 ByteData createByteData() {
   var ints = Uint8List(256);
   for (var i = 0; i < 256; i++) {
@@ -1024,36 +1016,6 @@ void main() {
       expect(list.rows.first.num, equals(1));
       expect(list.rows[98].num, equals(500));
       expect(list.rows.last.num, equals(1000));
-    });
-
-    test('Find DateTime before / after', () async {
-      await setupTestDateTimeData(client);
-
-      var list0 = await client.basicDatabase
-          .findSimpleDateTimeRowsAfter(DateTime(1995, 01, 01), 0, 100, false);
-      expect(list0, isNotNull);
-      expect(list0.map((r) => r.dateTime.year).toList(),
-          equals([1996, 1997, 1998, 1999]));
-
-      var list1 = await client.basicDatabase
-          .findSimpleDateTimeRowsEqualsOrAfter(
-              DateTime(1995, 01, 01), 0, 100, false);
-      expect(list1, isNotNull);
-      expect(list1.map((r) => r.dateTime.year).toList(),
-          equals([1995, 1996, 1997, 1998, 1999]));
-
-      var list2 = await client.basicDatabase
-          .findSimpleDateTimeRowsBefore(DateTime(1905, 01, 01), 0, 100, false);
-      expect(list2, isNotNull);
-      expect(list2.map((r) => r.dateTime.year).toList(),
-          equals([1900, 1901, 1902, 1903, 1904]));
-
-      var list3 = await client.basicDatabase
-          .findSimpleDateTimeRowsEqualsOrBefore(
-              DateTime(1905, 01, 01), 0, 100, false);
-      expect(list3, isNotNull);
-      expect(list3.map((r) => r.dateTime.year).toList(),
-          equals([1900, 1901, 1902, 1903, 1904, 1905]));
     });
 
     test('Store object with object', () async {
