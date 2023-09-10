@@ -223,7 +223,8 @@ CREATE TABLE "types" (
   "aString" text,
   "aByteData" bytea,
   "aDuration" bigint,
-  "aUuid" uuid
+  "aUuid" uuid,
+  "anEnum" integer
 );
 
 ALTER TABLE ONLY "types"

@@ -976,6 +976,12 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'UuidValue?',
         ),
+        _i2.ColumnDefinition(
+          name: 'anEnum',
+          columnType: _i2.ColumnType.integer,
+          isNullable: true,
+          dartType: 'protocol:TestEnum?',
+        ),
       ],
       foreignKeys: [],
       indexes: [

@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'protocol.dart' as _i3;
 
 class Types extends _i1.SerializableEntity {
   Types({
@@ -20,6 +21,7 @@ class Types extends _i1.SerializableEntity {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.anEnum,
   });
 
   factory Types.fromJson(
@@ -43,6 +45,8 @@ class Types extends _i1.SerializableEntity {
           .deserialize<Duration?>(jsonSerialization['aDuration']),
       aUuid: serializationManager
           .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
+      anEnum: serializationManager
+          .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
     );
   }
 
@@ -67,6 +71,8 @@ class Types extends _i1.SerializableEntity {
 
   _i1.UuidValue? aUuid;
 
+  _i3.TestEnum? anEnum;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -79,6 +85,7 @@ class Types extends _i1.SerializableEntity {
       'aByteData': aByteData,
       'aDuration': aDuration,
       'aUuid': aUuid,
+      'anEnum': anEnum,
     };
   }
 }
