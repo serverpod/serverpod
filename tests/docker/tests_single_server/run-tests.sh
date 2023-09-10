@@ -26,9 +26,8 @@ dart test test/websocket_test.dart
 dart test test/types_test.dart
 dart test test/migrations_test.dart
 dart test test/exception_test.dart
-dart test test/entity_relations/table_test.dart
-dart test test/entity_relations/query_test.dart
-dart test test/entity_relations/sql_query_test.dart
+dart test test/entity_relations --concurrency=1 # Tests in folder can not be run in parallel
+dart test test/column_operations --concurrency=1 # Tests in folder can not be run in parallel
 
 #echo "### Running unit tests"
 #cd ../../packages/serverpod
