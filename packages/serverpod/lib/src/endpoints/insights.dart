@@ -212,11 +212,7 @@ class InsightsEndpoint extends Endpoint {
 
     // Create map of installed modules.
     var modules = session.serverpod.migrationManager.installedVersions;
-    var installedModules = <String, String>{};
-    for (var module in modules) {
-      installedModules[module.module] = module.version;
-    }
-    databaseDefinition.installedModules = installedModules;
+    databaseDefinition.installedModules = modules;
 
     return databaseDefinition;
   }

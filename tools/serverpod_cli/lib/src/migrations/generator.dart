@@ -138,7 +138,7 @@ class MigrationGenerator {
       return null;
     }
 
-    if (migration.isEmpty) {
+    if (migration.isEmpty && !force) {
       log.info('No changes detected.');
       return null;
     }
@@ -204,8 +204,8 @@ class MigrationGenerator {
     if (liveDatabase.installedModules == null) {
       versionsChanged = true;
     } else {
-      for (var module in liveDatabase.installedModules!.keys) {
-        if (versions[module] != liveDatabase.installedModules![module]) {
+      for (var module in liveDatabase.installedModules!) {
+        if (versions[module.module] != module.version) {
           versionsChanged = true;
         }
       }
