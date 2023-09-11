@@ -10,11 +10,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about health and connection metrics.
-class ServerHealthResult extends _i1.SerializableEntity {
-  ServerHealthResult({
+abstract class ServerHealthResult extends _i1.SerializableEntity {
+  ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
   });
+
+  factory ServerHealthResult({
+    required List<_i2.ServerHealthMetric> metrics,
+    required List<_i2.ServerHealthConnectionInfo> connectionInfos,
+  }) = _ServerHealthResultImpl;
 
   factory ServerHealthResult.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,6 +40,10 @@ class ServerHealthResult extends _i1.SerializableEntity {
   /// List of connection metrics.
   List<_i2.ServerHealthConnectionInfo> connectionInfos;
 
+  ServerHealthResult copyWith({
+    List<_i2.ServerHealthMetric>? metrics,
+    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -49,5 +58,28 @@ class ServerHealthResult extends _i1.SerializableEntity {
       'metrics': metrics,
       'connectionInfos': connectionInfos,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ServerHealthResultImpl extends ServerHealthResult {
+  _ServerHealthResultImpl({
+    required List<_i2.ServerHealthMetric> metrics,
+    required List<_i2.ServerHealthConnectionInfo> connectionInfos,
+  }) : super._(
+          metrics: metrics,
+          connectionInfos: connectionInfos,
+        );
+
+  @override
+  ServerHealthResult copyWith({
+    List<_i2.ServerHealthMetric>? metrics,
+    List<_i2.ServerHealthConnectionInfo>? connectionInfos,
+  }) {
+    return ServerHealthResult(
+      metrics: metrics ?? this.metrics,
+      connectionInfos: connectionInfos ?? this.connectionInfos,
+    );
   }
 }

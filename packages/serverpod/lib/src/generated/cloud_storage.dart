@@ -10,8 +10,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-class CloudStorageEntry extends _i1.TableRow {
-  CloudStorageEntry({
+abstract class CloudStorageEntry extends _i1.TableRow {
+  CloudStorageEntry._({
     int? id,
     required this.storageId,
     required this.path,
@@ -20,6 +20,16 @@ class CloudStorageEntry extends _i1.TableRow {
     required this.byteData,
     required this.verified,
   }) : super(id);
+
+  factory CloudStorageEntry({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) = _CloudStorageEntryImpl;
 
   factory CloudStorageEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -63,6 +73,15 @@ class CloudStorageEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_cloud_storage';
+  CloudStorageEntry copyWith({
+    int? id,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    DateTime? expiration,
+    _i2.ByteData? byteData,
+    bool? verified,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -244,6 +263,49 @@ class CloudStorageEntry extends _i1.TableRow {
 
   static CloudStorageEntryInclude include() {
     return CloudStorageEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _CloudStorageEntryImpl extends CloudStorageEntry {
+  _CloudStorageEntryImpl({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) : super._(
+          id: id,
+          storageId: storageId,
+          path: path,
+          addedTime: addedTime,
+          expiration: expiration,
+          byteData: byteData,
+          verified: verified,
+        );
+
+  @override
+  CloudStorageEntry copyWith({
+    Object? id = _Undefined,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    Object? expiration = _Undefined,
+    _i2.ByteData? byteData,
+    bool? verified,
+  }) {
+    return CloudStorageEntry(
+      id: id is! int? ? this.id : id,
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      addedTime: addedTime ?? this.addedTime,
+      expiration: expiration is! DateTime? ? this.expiration : expiration,
+      byteData: byteData ?? this.byteData,
+      verified: verified ?? this.verified,
+    );
   }
 }
 

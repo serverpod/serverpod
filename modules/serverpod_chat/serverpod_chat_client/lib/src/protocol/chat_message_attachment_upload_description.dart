@@ -9,11 +9,17 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A description for uploading an attachement.
-class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
-  ChatMessageAttachmentUploadDescription({
+abstract class ChatMessageAttachmentUploadDescription
+    extends _i1.SerializableEntity {
+  ChatMessageAttachmentUploadDescription._({
     required this.filePath,
     required this.uploadDescription,
   });
+
+  factory ChatMessageAttachmentUploadDescription({
+    required String filePath,
+    required String uploadDescription,
+  }) = _ChatMessageAttachmentUploadDescriptionImpl;
 
   factory ChatMessageAttachmentUploadDescription.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,11 +40,39 @@ class ChatMessageAttachmentUploadDescription extends _i1.SerializableEntity {
   /// the upload.
   String uploadDescription;
 
+  ChatMessageAttachmentUploadDescription copyWith({
+    String? filePath,
+    String? uploadDescription,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'filePath': filePath,
       'uploadDescription': uploadDescription,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ChatMessageAttachmentUploadDescriptionImpl
+    extends ChatMessageAttachmentUploadDescription {
+  _ChatMessageAttachmentUploadDescriptionImpl({
+    required String filePath,
+    required String uploadDescription,
+  }) : super._(
+          filePath: filePath,
+          uploadDescription: uploadDescription,
+        );
+
+  @override
+  ChatMessageAttachmentUploadDescription copyWith({
+    String? filePath,
+    String? uploadDescription,
+  }) {
+    return ChatMessageAttachmentUploadDescription(
+      filePath: filePath ?? this.filePath,
+      uploadDescription: uploadDescription ?? this.uploadDescription,
+    );
   }
 }

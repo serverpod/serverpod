@@ -9,11 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-class SimpleDateTime extends _i1.TableRow {
-  SimpleDateTime({
+abstract class SimpleDateTime extends _i1.TableRow {
+  SimpleDateTime._({
     int? id,
     required this.dateTime,
   }) : super(id);
+
+  factory SimpleDateTime({
+    int? id,
+    required DateTime dateTime,
+  }) = _SimpleDateTimeImpl;
 
   factory SimpleDateTime.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,6 +38,10 @@ class SimpleDateTime extends _i1.TableRow {
 
   @override
   String get tableName => 'simple_date_time';
+  SimpleDateTime copyWith({
+    int? id,
+    DateTime? dateTime,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -184,6 +193,29 @@ class SimpleDateTime extends _i1.TableRow {
 
   static SimpleDateTimeInclude include() {
     return SimpleDateTimeInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDateTimeImpl extends SimpleDateTime {
+  _SimpleDateTimeImpl({
+    int? id,
+    required DateTime dateTime,
+  }) : super._(
+          id: id,
+          dateTime: dateTime,
+        );
+
+  @override
+  SimpleDateTime copyWith({
+    Object? id = _Undefined,
+    DateTime? dateTime,
+  }) {
+    return SimpleDateTime(
+      id: id is! int? ? this.id : id,
+      dateTime: dateTime ?? this.dateTime,
+    );
   }
 }
 

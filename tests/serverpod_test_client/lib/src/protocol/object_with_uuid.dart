@@ -8,12 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ObjectWithUuid extends _i1.SerializableEntity {
-  ObjectWithUuid({
+abstract class ObjectWithUuid extends _i1.SerializableEntity {
+  ObjectWithUuid._({
     this.id,
     required this.uuid,
     this.uuidNullable,
   });
+
+  factory ObjectWithUuid({
+    int? id,
+    required _i1.UuidValue uuid,
+    _i1.UuidValue? uuidNullable,
+  }) = _ObjectWithUuidImpl;
 
   factory ObjectWithUuid.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,6 +43,11 @@ class ObjectWithUuid extends _i1.SerializableEntity {
 
   _i1.UuidValue? uuidNullable;
 
+  ObjectWithUuid copyWith({
+    int? id,
+    _i1.UuidValue? uuid,
+    _i1.UuidValue? uuidNullable,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -44,5 +55,33 @@ class ObjectWithUuid extends _i1.SerializableEntity {
       'uuid': uuid,
       'uuidNullable': uuidNullable,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithUuidImpl extends ObjectWithUuid {
+  _ObjectWithUuidImpl({
+    int? id,
+    required _i1.UuidValue uuid,
+    _i1.UuidValue? uuidNullable,
+  }) : super._(
+          id: id,
+          uuid: uuid,
+          uuidNullable: uuidNullable,
+        );
+
+  @override
+  ObjectWithUuid copyWith({
+    Object? id = _Undefined,
+    _i1.UuidValue? uuid,
+    Object? uuidNullable = _Undefined,
+  }) {
+    return ObjectWithUuid(
+      id: id is! int? ? this.id : id,
+      uuid: uuid ?? this.uuid,
+      uuidNullable:
+          uuidNullable is! _i1.UuidValue? ? this.uuidNullable : uuidNullable,
+    );
   }
 }

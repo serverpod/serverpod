@@ -10,14 +10,22 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Runtime settings of the server.
-class RuntimeSettings extends _i1.TableRow {
-  RuntimeSettings({
+abstract class RuntimeSettings extends _i1.TableRow {
+  RuntimeSettings._({
     int? id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
   }) : super(id);
+
+  factory RuntimeSettings({
+    int? id,
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) = _RuntimeSettingsImpl;
 
   factory RuntimeSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -53,6 +61,13 @@ class RuntimeSettings extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_runtime_settings';
+  RuntimeSettings copyWith({
+    int? id,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -222,6 +237,41 @@ class RuntimeSettings extends _i1.TableRow {
 
   static RuntimeSettingsInclude include() {
     return RuntimeSettingsInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _RuntimeSettingsImpl extends RuntimeSettings {
+  _RuntimeSettingsImpl({
+    int? id,
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) : super._(
+          id: id,
+          logSettings: logSettings,
+          logSettingsOverrides: logSettingsOverrides,
+          logServiceCalls: logServiceCalls,
+          logMalformedCalls: logMalformedCalls,
+        );
+
+  @override
+  RuntimeSettings copyWith({
+    Object? id = _Undefined,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  }) {
+    return RuntimeSettings(
+      id: id is! int? ? this.id : id,
+      logSettings: logSettings ?? this.logSettings,
+      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
+      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
+      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
+    );
   }
 }
 

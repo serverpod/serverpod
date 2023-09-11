@@ -9,8 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-class QueryLogEntry extends _i1.SerializableEntity {
-  QueryLogEntry({
+abstract class QueryLogEntry extends _i1.SerializableEntity {
+  QueryLogEntry._({
     this.id,
     required this.serverId,
     required this.sessionLogId,
@@ -23,6 +23,20 @@ class QueryLogEntry extends _i1.SerializableEntity {
     required this.slow,
     required this.order,
   });
+
+  factory QueryLogEntry({
+    int? id,
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _QueryLogEntryImpl;
 
   factory QueryLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -88,6 +102,19 @@ class QueryLogEntry extends _i1.SerializableEntity {
   /// used for sorting the query log.
   int order;
 
+  QueryLogEntry copyWith({
+    int? id,
+    String? serverId,
+    int? sessionLogId,
+    int? messageId,
+    String? query,
+    double? duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -103,5 +130,64 @@ class QueryLogEntry extends _i1.SerializableEntity {
       'slow': slow,
       'order': order,
     };
+  }
+}
+
+class _Undefined {}
+
+class _QueryLogEntryImpl extends QueryLogEntry {
+  _QueryLogEntryImpl({
+    int? id,
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          sessionLogId: sessionLogId,
+          messageId: messageId,
+          query: query,
+          duration: duration,
+          numRows: numRows,
+          error: error,
+          stackTrace: stackTrace,
+          slow: slow,
+          order: order,
+        );
+
+  @override
+  QueryLogEntry copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    String? query,
+    double? duration,
+    Object? numRows = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    bool? slow,
+    int? order,
+  }) {
+    return QueryLogEntry(
+      id: id is! int? ? this.id : id,
+      serverId: serverId ?? this.serverId,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId is! int? ? this.messageId : messageId,
+      query: query ?? this.query,
+      duration: duration ?? this.duration,
+      numRows: numRows is! int? ? this.numRows : numRows,
+      error: error is! String? ? this.error : error,
+      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
   }
 }

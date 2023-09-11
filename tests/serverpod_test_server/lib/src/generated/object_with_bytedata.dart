@@ -9,11 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class ObjectWithByteData extends _i1.TableRow {
-  ObjectWithByteData({
+abstract class ObjectWithByteData extends _i1.TableRow {
+  ObjectWithByteData._({
     int? id,
     required this.byteData,
   }) : super(id);
+
+  factory ObjectWithByteData({
+    int? id,
+    required _i2.ByteData byteData,
+  }) = _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -32,6 +37,10 @@ class ObjectWithByteData extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_bytedata';
+  ObjectWithByteData copyWith({
+    int? id,
+    _i2.ByteData? byteData,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -183,6 +192,29 @@ class ObjectWithByteData extends _i1.TableRow {
 
   static ObjectWithByteDataInclude include() {
     return ObjectWithByteDataInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithByteDataImpl extends ObjectWithByteData {
+  _ObjectWithByteDataImpl({
+    int? id,
+    required _i2.ByteData byteData,
+  }) : super._(
+          id: id,
+          byteData: byteData,
+        );
+
+  @override
+  ObjectWithByteData copyWith({
+    Object? id = _Undefined,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id is! int? ? this.id : id,
+      byteData: byteData ?? this.byteData,
+    );
   }
 }
 

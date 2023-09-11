@@ -9,11 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Message to request a new chunk of messages from the server.
-class ChatRequestMessageChunk extends _i1.SerializableEntity {
-  ChatRequestMessageChunk({
+abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
+  ChatRequestMessageChunk._({
     required this.channel,
     required this.lastMessageId,
   });
+
+  factory ChatRequestMessageChunk({
+    required String channel,
+    required int lastMessageId,
+  }) = _ChatRequestMessageChunkImpl;
 
   factory ChatRequestMessageChunk.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,11 +38,38 @@ class ChatRequestMessageChunk extends _i1.SerializableEntity {
   /// The id of the last read message.
   int lastMessageId;
 
+  ChatRequestMessageChunk copyWith({
+    String? channel,
+    int? lastMessageId,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,
       'lastMessageId': lastMessageId,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
+  _ChatRequestMessageChunkImpl({
+    required String channel,
+    required int lastMessageId,
+  }) : super._(
+          channel: channel,
+          lastMessageId: lastMessageId,
+        );
+
+  @override
+  ChatRequestMessageChunk copyWith({
+    String? channel,
+    int? lastMessageId,
+  }) {
+    return ChatRequestMessageChunk(
+      channel: channel ?? this.channel,
+      lastMessageId: lastMessageId ?? this.lastMessageId,
+    );
   }
 }

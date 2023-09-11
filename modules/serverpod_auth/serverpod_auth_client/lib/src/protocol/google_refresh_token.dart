@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-class GoogleRefreshToken extends _i1.SerializableEntity {
-  GoogleRefreshToken({
+abstract class GoogleRefreshToken extends _i1.SerializableEntity {
+  GoogleRefreshToken._({
     this.id,
     required this.userId,
     required this.refreshToken,
   });
+
+  factory GoogleRefreshToken({
+    int? id,
+    required int userId,
+    required String refreshToken,
+  }) = _GoogleRefreshTokenImpl;
 
   factory GoogleRefreshToken.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,6 +46,11 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
   /// The token iteself.
   String refreshToken;
 
+  GoogleRefreshToken copyWith({
+    int? id,
+    int? userId,
+    String? refreshToken,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -47,5 +58,32 @@ class GoogleRefreshToken extends _i1.SerializableEntity {
       'userId': userId,
       'refreshToken': refreshToken,
     };
+  }
+}
+
+class _Undefined {}
+
+class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
+  _GoogleRefreshTokenImpl({
+    int? id,
+    required int userId,
+    required String refreshToken,
+  }) : super._(
+          id: id,
+          userId: userId,
+          refreshToken: refreshToken,
+        );
+
+  @override
+  GoogleRefreshToken copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? refreshToken,
+  }) {
+    return GoogleRefreshToken(
+      id: id is! int? ? this.id : id,
+      userId: userId ?? this.userId,
+      refreshToken: refreshToken ?? this.refreshToken,
+    );
   }
 }

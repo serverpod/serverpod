@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for an email reset.
-class EmailReset extends _i1.TableRow {
-  EmailReset({
+abstract class EmailReset extends _i1.TableRow {
+  EmailReset._({
     int? id,
     required this.userId,
     required this.verificationCode,
     required this.expiration,
   }) : super(id);
+
+  factory EmailReset({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) = _EmailResetImpl;
 
   factory EmailReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -45,6 +52,12 @@ class EmailReset extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_email_reset';
+  EmailReset copyWith({
+    int? id,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -208,6 +221,37 @@ class EmailReset extends _i1.TableRow {
 
   static EmailResetInclude include() {
     return EmailResetInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailResetImpl extends EmailReset {
+  _EmailResetImpl({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) : super._(
+          id: id,
+          userId: userId,
+          verificationCode: verificationCode,
+          expiration: expiration,
+        );
+
+  @override
+  EmailReset copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  }) {
+    return EmailReset(
+      id: id is! int? ? this.id : id,
+      userId: userId ?? this.userId,
+      verificationCode: verificationCode ?? this.verificationCode,
+      expiration: expiration ?? this.expiration,
+    );
   }
 }
 

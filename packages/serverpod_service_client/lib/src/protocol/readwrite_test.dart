@@ -10,11 +10,16 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-class ReadWriteTestEntry extends _i1.SerializableEntity {
-  ReadWriteTestEntry({
+abstract class ReadWriteTestEntry extends _i1.SerializableEntity {
+  ReadWriteTestEntry._({
     this.id,
     required this.number,
   });
+
+  factory ReadWriteTestEntry({
+    int? id,
+    required int number,
+  }) = _ReadWriteTestEntryImpl;
 
   factory ReadWriteTestEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,11 +40,38 @@ class ReadWriteTestEntry extends _i1.SerializableEntity {
   /// A random number, to verify that the write/read was performed correctly.
   int number;
 
+  ReadWriteTestEntry copyWith({
+    int? id,
+    int? number,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'number': number,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
+  _ReadWriteTestEntryImpl({
+    int? id,
+    required int number,
+  }) : super._(
+          id: id,
+          number: number,
+        );
+
+  @override
+  ReadWriteTestEntry copyWith({
+    Object? id = _Undefined,
+    int? number,
+  }) {
+    return ReadWriteTestEntry(
+      id: id is! int? ? this.id : id,
+      number: number ?? this.number,
+    );
   }
 }

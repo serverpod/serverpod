@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a version of a database migration.
-class DatabaseMigrationVersion extends _i1.SerializableEntity {
-  DatabaseMigrationVersion({
+abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
+  DatabaseMigrationVersion._({
     required this.module,
     required this.version,
     this.priority,
     this.timestamp,
   });
+
+  factory DatabaseMigrationVersion({
+    required String module,
+    required String version,
+    int? priority,
+    DateTime? timestamp,
+  }) = _DatabaseMigrationVersionImpl;
 
   factory DatabaseMigrationVersion.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +53,12 @@ class DatabaseMigrationVersion extends _i1.SerializableEntity {
   /// The timestamp of the migration. Only set if the migration is applied.
   DateTime? timestamp;
 
+  DatabaseMigrationVersion copyWith({
+    String? module,
+    String? version,
+    int? priority,
+    DateTime? timestamp,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -64,5 +77,36 @@ class DatabaseMigrationVersion extends _i1.SerializableEntity {
       'priority': priority,
       'timestamp': timestamp,
     };
+  }
+}
+
+class _Undefined {}
+
+class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
+  _DatabaseMigrationVersionImpl({
+    required String module,
+    required String version,
+    int? priority,
+    DateTime? timestamp,
+  }) : super._(
+          module: module,
+          version: version,
+          priority: priority,
+          timestamp: timestamp,
+        );
+
+  @override
+  DatabaseMigrationVersion copyWith({
+    String? module,
+    String? version,
+    Object? priority = _Undefined,
+    Object? timestamp = _Undefined,
+  }) {
+    return DatabaseMigrationVersion(
+      module: module ?? this.module,
+      version: version ?? this.version,
+      priority: priority is! int? ? this.priority : priority,
+      timestamp: timestamp is! DateTime? ? this.timestamp : timestamp,
+    );
   }
 }

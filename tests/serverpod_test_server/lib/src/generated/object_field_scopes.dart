@@ -8,13 +8,20 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectFieldScopes extends _i1.TableRow {
-  ObjectFieldScopes({
+abstract class ObjectFieldScopes extends _i1.TableRow {
+  ObjectFieldScopes._({
     int? id,
     required this.normal,
     this.api,
     this.database,
   }) : super(id);
+
+  factory ObjectFieldScopes({
+    int? id,
+    required String normal,
+    String? api,
+    String? database,
+  }) = _ObjectFieldScopesImpl;
 
   factory ObjectFieldScopes.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,6 +47,12 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   @override
   String get tableName => 'object_field_scopes';
+  ObjectFieldScopes copyWith({
+    int? id,
+    String? normal,
+    String? api,
+    String? database,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -198,6 +211,37 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   static ObjectFieldScopesInclude include() {
     return ObjectFieldScopesInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectFieldScopesImpl extends ObjectFieldScopes {
+  _ObjectFieldScopesImpl({
+    int? id,
+    required String normal,
+    String? api,
+    String? database,
+  }) : super._(
+          id: id,
+          normal: normal,
+          api: api,
+          database: database,
+        );
+
+  @override
+  ObjectFieldScopes copyWith({
+    Object? id = _Undefined,
+    String? normal,
+    Object? api = _Undefined,
+    Object? database = _Undefined,
+  }) {
+    return ObjectFieldScopes(
+      id: id is! int? ? this.id : id,
+      normal: normal ?? this.normal,
+      api: api is! String? ? this.api : api,
+      database: database is! String? ? this.database : database,
+    );
   }
 }
 

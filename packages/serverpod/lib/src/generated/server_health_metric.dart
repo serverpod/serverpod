@@ -11,8 +11,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-class ServerHealthMetric extends _i1.TableRow {
-  ServerHealthMetric({
+abstract class ServerHealthMetric extends _i1.TableRow {
+  ServerHealthMetric._({
     int? id,
     required this.name,
     required this.serverId,
@@ -21,6 +21,16 @@ class ServerHealthMetric extends _i1.TableRow {
     required this.value,
     required this.granularity,
   }) : super(id);
+
+  factory ServerHealthMetric({
+    int? id,
+    required String name,
+    required String serverId,
+    required DateTime timestamp,
+    required bool isHealthy,
+    required double value,
+    required int granularity,
+  }) = _ServerHealthMetricImpl;
 
   factory ServerHealthMetric.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -65,6 +75,15 @@ class ServerHealthMetric extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_health_metric';
+  ServerHealthMetric copyWith({
+    int? id,
+    String? name,
+    String? serverId,
+    DateTime? timestamp,
+    bool? isHealthy,
+    double? value,
+    int? granularity,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -246,6 +265,49 @@ class ServerHealthMetric extends _i1.TableRow {
 
   static ServerHealthMetricInclude include() {
     return ServerHealthMetricInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ServerHealthMetricImpl extends ServerHealthMetric {
+  _ServerHealthMetricImpl({
+    int? id,
+    required String name,
+    required String serverId,
+    required DateTime timestamp,
+    required bool isHealthy,
+    required double value,
+    required int granularity,
+  }) : super._(
+          id: id,
+          name: name,
+          serverId: serverId,
+          timestamp: timestamp,
+          isHealthy: isHealthy,
+          value: value,
+          granularity: granularity,
+        );
+
+  @override
+  ServerHealthMetric copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? serverId,
+    DateTime? timestamp,
+    bool? isHealthy,
+    double? value,
+    int? granularity,
+  }) {
+    return ServerHealthMetric(
+      id: id is! int? ? this.id : id,
+      name: name ?? this.name,
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      isHealthy: isHealthy ?? this.isHealthy,
+      value: value ?? this.value,
+      granularity: granularity ?? this.granularity,
+    );
   }
 }
 

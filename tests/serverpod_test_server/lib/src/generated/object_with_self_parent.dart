@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithSelfParent extends _i1.TableRow {
-  ObjectWithSelfParent({
+abstract class ObjectWithSelfParent extends _i1.TableRow {
+  ObjectWithSelfParent._({
     int? id,
     this.other,
   }) : super(id);
+
+  factory ObjectWithSelfParent({
+    int? id,
+    int? other,
+  }) = _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,6 +35,10 @@ class ObjectWithSelfParent extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_self_parent';
+  ObjectWithSelfParent copyWith({
+    int? id,
+    int? other,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -181,6 +190,29 @@ class ObjectWithSelfParent extends _i1.TableRow {
 
   static ObjectWithSelfParentInclude include() {
     return ObjectWithSelfParentInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
+  _ObjectWithSelfParentImpl({
+    int? id,
+    int? other,
+  }) : super._(
+          id: id,
+          other: other,
+        );
+
+  @override
+  ObjectWithSelfParent copyWith({
+    Object? id = _Undefined,
+    Object? other = _Undefined,
+  }) {
+    return ObjectWithSelfParent(
+      id: id is! int? ? this.id : id,
+      other: other is! int? ? this.other : other,
+    );
   }
 }
 

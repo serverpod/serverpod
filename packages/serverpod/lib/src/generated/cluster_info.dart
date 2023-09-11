@@ -10,8 +10,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about a cluster of servers.
-class ClusterInfo extends _i1.SerializableEntity {
-  ClusterInfo({required this.servers});
+abstract class ClusterInfo extends _i1.SerializableEntity {
+  ClusterInfo._({required this.servers});
+
+  factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =
+      _ClusterInfoImpl;
 
   factory ClusterInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -25,6 +28,7 @@ class ClusterInfo extends _i1.SerializableEntity {
   /// List of servers in the cluster.
   List<_i2.ClusterServerInfo> servers;
 
+  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
     return {'servers': servers};
@@ -33,5 +37,17 @@ class ClusterInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {'servers': servers};
+  }
+}
+
+class _Undefined {}
+
+class _ClusterInfoImpl extends ClusterInfo {
+  _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
+      : super._(servers: servers);
+
+  @override
+  ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
+    return ClusterInfo(servers: servers ?? this.servers);
   }
 }

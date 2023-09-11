@@ -10,8 +10,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Represents a foreign key.
-class ForeignKeyDefinition extends _i1.SerializableEntity {
-  ForeignKeyDefinition({
+abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
+  ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,
     required this.referenceTable,
@@ -21,6 +21,17 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
     this.onDelete,
     this.matchType,
   });
+
+  factory ForeignKeyDefinition({
+    required String constraintName,
+    required List<String> columns,
+    required String referenceTable,
+    required String referenceTableSchema,
+    required List<String> referenceColumns,
+    _i2.ForeignKeyAction? onUpdate,
+    _i2.ForeignKeyAction? onDelete,
+    _i2.ForeignKeyMatchType? matchType,
+  }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -70,6 +81,16 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
   /// The match type of the foreign key
   _i2.ForeignKeyMatchType? matchType;
 
+  ForeignKeyDefinition copyWith({
+    String? constraintName,
+    List<String>? columns,
+    String? referenceTable,
+    String? referenceTableSchema,
+    List<String>? referenceColumns,
+    _i2.ForeignKeyAction? onUpdate,
+    _i2.ForeignKeyAction? onDelete,
+    _i2.ForeignKeyMatchType? matchType,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -82,5 +103,53 @@ class ForeignKeyDefinition extends _i1.SerializableEntity {
       'onDelete': onDelete,
       'matchType': matchType,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
+  _ForeignKeyDefinitionImpl({
+    required String constraintName,
+    required List<String> columns,
+    required String referenceTable,
+    required String referenceTableSchema,
+    required List<String> referenceColumns,
+    _i2.ForeignKeyAction? onUpdate,
+    _i2.ForeignKeyAction? onDelete,
+    _i2.ForeignKeyMatchType? matchType,
+  }) : super._(
+          constraintName: constraintName,
+          columns: columns,
+          referenceTable: referenceTable,
+          referenceTableSchema: referenceTableSchema,
+          referenceColumns: referenceColumns,
+          onUpdate: onUpdate,
+          onDelete: onDelete,
+          matchType: matchType,
+        );
+
+  @override
+  ForeignKeyDefinition copyWith({
+    String? constraintName,
+    List<String>? columns,
+    String? referenceTable,
+    String? referenceTableSchema,
+    List<String>? referenceColumns,
+    Object? onUpdate = _Undefined,
+    Object? onDelete = _Undefined,
+    Object? matchType = _Undefined,
+  }) {
+    return ForeignKeyDefinition(
+      constraintName: constraintName ?? this.constraintName,
+      columns: columns ?? this.columns,
+      referenceTable: referenceTable ?? this.referenceTable,
+      referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
+      referenceColumns: referenceColumns ?? this.referenceColumns,
+      onUpdate: onUpdate is! _i2.ForeignKeyAction? ? this.onUpdate : onUpdate,
+      onDelete: onDelete is! _i2.ForeignKeyAction? ? this.onDelete : onDelete,
+      matchType:
+          matchType is! _i2.ForeignKeyMatchType? ? this.matchType : matchType,
+    );
   }
 }

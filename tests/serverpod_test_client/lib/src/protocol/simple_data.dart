@@ -9,11 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-class SimpleData extends _i1.SerializableEntity {
-  SimpleData({
+abstract class SimpleData extends _i1.SerializableEntity {
+  SimpleData._({
     this.id,
     required this.num,
   });
+
+  factory SimpleData({
+    int? id,
+    required int num,
+  }) = _SimpleDataImpl;
 
   factory SimpleData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,11 +40,38 @@ class SimpleData extends _i1.SerializableEntity {
   /// Second Value Extra Text
   int num;
 
+  SimpleData copyWith({
+    int? id,
+    int? num,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'num': num,
     };
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDataImpl extends SimpleData {
+  _SimpleDataImpl({
+    int? id,
+    required int num,
+  }) : super._(
+          id: id,
+          num: num,
+        );
+
+  @override
+  SimpleData copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id is! int? ? this.id : id,
+      num: num ?? this.num,
+    );
   }
 }

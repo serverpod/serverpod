@@ -8,14 +8,21 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ExceptionWithData extends _i1.SerializableEntity
+abstract class ExceptionWithData extends _i1.SerializableEntity
     implements _i1.SerializableException {
-  ExceptionWithData({
+  ExceptionWithData._({
     required this.message,
     required this.creationDate,
     required this.errorFields,
     this.someNullableField,
   });
+
+  factory ExceptionWithData({
+    required String message,
+    required DateTime creationDate,
+    required List<String> errorFields,
+    int? someNullableField,
+  }) = _ExceptionWithDataImpl;
 
   factory ExceptionWithData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,6 +48,12 @@ class ExceptionWithData extends _i1.SerializableEntity
 
   int? someNullableField;
 
+  ExceptionWithData copyWith({
+    String? message,
+    DateTime? creationDate,
+    List<String>? errorFields,
+    int? someNullableField,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -59,5 +72,38 @@ class ExceptionWithData extends _i1.SerializableEntity
       'errorFields': errorFields,
       'someNullableField': someNullableField,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ExceptionWithDataImpl extends ExceptionWithData {
+  _ExceptionWithDataImpl({
+    required String message,
+    required DateTime creationDate,
+    required List<String> errorFields,
+    int? someNullableField,
+  }) : super._(
+          message: message,
+          creationDate: creationDate,
+          errorFields: errorFields,
+          someNullableField: someNullableField,
+        );
+
+  @override
+  ExceptionWithData copyWith({
+    String? message,
+    DateTime? creationDate,
+    List<String>? errorFields,
+    Object? someNullableField = _Undefined,
+  }) {
+    return ExceptionWithData(
+      message: message ?? this.message,
+      creationDate: creationDate ?? this.creationDate,
+      errorFields: errorFields ?? this.errorFields,
+      someNullableField: someNullableField is! int?
+          ? this.someNullableField
+          : someNullableField,
+    );
   }
 }

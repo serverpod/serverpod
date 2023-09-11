@@ -10,11 +10,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-class ReadWriteTestEntry extends _i1.TableRow {
-  ReadWriteTestEntry({
+abstract class ReadWriteTestEntry extends _i1.TableRow {
+  ReadWriteTestEntry._({
     int? id,
     required this.number,
   }) : super(id);
+
+  factory ReadWriteTestEntry({
+    int? id,
+    required int number,
+  }) = _ReadWriteTestEntryImpl;
 
   factory ReadWriteTestEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,6 +39,10 @@ class ReadWriteTestEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_readwrite_test';
+  ReadWriteTestEntry copyWith({
+    int? id,
+    int? number,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -185,6 +194,29 @@ class ReadWriteTestEntry extends _i1.TableRow {
 
   static ReadWriteTestEntryInclude include() {
     return ReadWriteTestEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
+  _ReadWriteTestEntryImpl({
+    int? id,
+    required int number,
+  }) : super._(
+          id: id,
+          number: number,
+        );
+
+  @override
+  ReadWriteTestEntry copyWith({
+    Object? id = _Undefined,
+    int? number,
+  }) {
+    return ReadWriteTestEntry(
+      id: id is! int? ? this.id : id,
+      number: number ?? this.number,
+    );
   }
 }
 

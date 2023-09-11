@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a server method.
-class MethodInfo extends _i1.SerializableEntity {
-  MethodInfo({
+abstract class MethodInfo extends _i1.SerializableEntity {
+  MethodInfo._({
     this.id,
     required this.endpoint,
     required this.method,
   });
+
+  factory MethodInfo({
+    int? id,
+    required String endpoint,
+    required String method,
+  }) = _MethodInfoImpl;
 
   factory MethodInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,6 +46,11 @@ class MethodInfo extends _i1.SerializableEntity {
   /// The name of this method.
   String method;
 
+  MethodInfo copyWith({
+    int? id,
+    String? endpoint,
+    String? method,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -47,5 +58,32 @@ class MethodInfo extends _i1.SerializableEntity {
       'endpoint': endpoint,
       'method': method,
     };
+  }
+}
+
+class _Undefined {}
+
+class _MethodInfoImpl extends MethodInfo {
+  _MethodInfoImpl({
+    int? id,
+    required String endpoint,
+    required String method,
+  }) : super._(
+          id: id,
+          endpoint: endpoint,
+          method: method,
+        );
+
+  @override
+  MethodInfo copyWith({
+    Object? id = _Undefined,
+    String? endpoint,
+    String? method,
+  }) {
+    return MethodInfo(
+      id: id is! int? ? this.id : id,
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+    );
   }
 }

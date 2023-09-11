@@ -9,8 +9,11 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class SimpleDataList extends _i1.SerializableEntity {
-  SimpleDataList({required this.rows});
+abstract class SimpleDataList extends _i1.SerializableEntity {
+  SimpleDataList._({required this.rows});
+
+  factory SimpleDataList({required List<_i2.SimpleData> rows}) =
+      _SimpleDataListImpl;
 
   factory SimpleDataList.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -23,6 +26,7 @@ class SimpleDataList extends _i1.SerializableEntity {
 
   List<_i2.SimpleData> rows;
 
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
     return {'rows': rows};
@@ -31,5 +35,17 @@ class SimpleDataList extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {'rows': rows};
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDataListImpl extends SimpleDataList {
+  _SimpleDataListImpl({required List<_i2.SimpleData> rows})
+      : super._(rows: rows);
+
+  @override
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
+    return SimpleDataList(rows: rows ?? this.rows);
   }
 }

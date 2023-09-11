@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class Citizen extends _i1.TableRow {
-  Citizen({
+abstract class Citizen extends _i1.TableRow {
+  Citizen._({
     int? id,
     required this.name,
     this.address,
@@ -19,6 +19,16 @@ class Citizen extends _i1.TableRow {
     this.oldCompanyId,
     this.oldCompany,
   }) : super(id);
+
+  factory Citizen({
+    int? id,
+    required String name,
+    _i2.Address? address,
+    required int companyId,
+    _i2.Company? company,
+    int? oldCompanyId,
+    _i2.Company? oldCompany,
+  }) = _CitizenImpl;
 
   factory Citizen.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -56,6 +66,15 @@ class Citizen extends _i1.TableRow {
 
   @override
   String get tableName => 'citizen';
+  Citizen copyWith({
+    int? id,
+    String? name,
+    _i2.Address? address,
+    int? companyId,
+    _i2.Company? company,
+    int? oldCompanyId,
+    _i2.Company? oldCompany,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -240,6 +259,49 @@ class Citizen extends _i1.TableRow {
       address: address,
       company: company,
       oldCompany: oldCompany,
+    );
+  }
+}
+
+class _Undefined {}
+
+class _CitizenImpl extends Citizen {
+  _CitizenImpl({
+    int? id,
+    required String name,
+    _i2.Address? address,
+    required int companyId,
+    _i2.Company? company,
+    int? oldCompanyId,
+    _i2.Company? oldCompany,
+  }) : super._(
+          id: id,
+          name: name,
+          address: address,
+          companyId: companyId,
+          company: company,
+          oldCompanyId: oldCompanyId,
+          oldCompany: oldCompany,
+        );
+
+  @override
+  Citizen copyWith({
+    Object? id = _Undefined,
+    String? name,
+    Object? address = _Undefined,
+    int? companyId,
+    Object? company = _Undefined,
+    Object? oldCompanyId = _Undefined,
+    Object? oldCompany = _Undefined,
+  }) {
+    return Citizen(
+      id: id is! int? ? this.id : id,
+      name: name ?? this.name,
+      address: address is! _i2.Address? ? this.address : address,
+      companyId: companyId ?? this.companyId,
+      company: company is! _i2.Company? ? this.company : company,
+      oldCompanyId: oldCompanyId is! int? ? this.oldCompanyId : oldCompanyId,
+      oldCompany: oldCompany is! _i2.Company? ? this.oldCompany : oldCompany,
     );
   }
 }

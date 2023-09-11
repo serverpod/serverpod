@@ -10,13 +10,20 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Defines the structure of the database used by Serverpod.
-class DatabaseDefinition extends _i1.SerializableEntity {
-  DatabaseDefinition({
+abstract class DatabaseDefinition extends _i1.SerializableEntity {
+  DatabaseDefinition._({
     this.name,
     required this.tables,
     this.priority,
     this.installedModules,
   });
+
+  factory DatabaseDefinition({
+    String? name,
+    required List<_i2.TableDefinition> tables,
+    int? priority,
+    Map<String, String>? installedModules,
+  }) = _DatabaseDefinitionImpl;
 
   factory DatabaseDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -51,6 +58,12 @@ class DatabaseDefinition extends _i1.SerializableEntity {
   /// set if known.
   List<_i2.DatabaseMigrationVersion>? installedModules;
 
+  DatabaseDefinition copyWith({
+    String? name,
+    List<_i2.TableDefinition>? tables,
+    int? priority,
+    Map<String, String>? installedModules,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -59,5 +72,38 @@ class DatabaseDefinition extends _i1.SerializableEntity {
       'priority': priority,
       'installedModules': installedModules,
     };
+  }
+}
+
+class _Undefined {}
+
+class _DatabaseDefinitionImpl extends DatabaseDefinition {
+  _DatabaseDefinitionImpl({
+    String? name,
+    required List<_i2.TableDefinition> tables,
+    int? priority,
+    Map<String, String>? installedModules,
+  }) : super._(
+          name: name,
+          tables: tables,
+          priority: priority,
+          installedModules: installedModules,
+        );
+
+  @override
+  DatabaseDefinition copyWith({
+    Object? name = _Undefined,
+    List<_i2.TableDefinition>? tables,
+    Object? priority = _Undefined,
+    Object? installedModules = _Undefined,
+  }) {
+    return DatabaseDefinition(
+      name: name is! String? ? this.name : name,
+      tables: tables ?? this.tables,
+      priority: priority is! int? ? this.priority : priority,
+      installedModules: installedModules is! Map<String, String>?
+          ? this.installedModules
+          : installedModules,
+    );
   }
 }

@@ -9,8 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-class AuthKey extends _i1.SerializableEntity {
-  AuthKey({
+abstract class AuthKey extends _i1.SerializableEntity {
+  AuthKey._({
     this.id,
     required this.userId,
     required this.hash,
@@ -18,6 +18,15 @@ class AuthKey extends _i1.SerializableEntity {
     required this.scopeNames,
     required this.method,
   });
+
+  factory AuthKey({
+    int? id,
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) = _AuthKeyImpl;
 
   factory AuthKey.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -57,6 +66,14 @@ class AuthKey extends _i1.SerializableEntity {
   /// or different social logins.
   String method;
 
+  AuthKey copyWith({
+    int? id,
+    int? userId,
+    String? hash,
+    String? key,
+    List<String>? scopeNames,
+    String? method,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -67,5 +84,44 @@ class AuthKey extends _i1.SerializableEntity {
       'scopeNames': scopeNames,
       'method': method,
     };
+  }
+}
+
+class _Undefined {}
+
+class _AuthKeyImpl extends AuthKey {
+  _AuthKeyImpl({
+    int? id,
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) : super._(
+          id: id,
+          userId: userId,
+          hash: hash,
+          key: key,
+          scopeNames: scopeNames,
+          method: method,
+        );
+
+  @override
+  AuthKey copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? hash,
+    Object? key = _Undefined,
+    List<String>? scopeNames,
+    String? method,
+  }) {
+    return AuthKey(
+      id: id is! int? ? this.id : id,
+      userId: userId ?? this.userId,
+      hash: hash ?? this.hash,
+      key: key is! String? ? this.key : key,
+      scopeNames: scopeNames ?? this.scopeNames,
+      method: method ?? this.method,
+    );
   }
 }

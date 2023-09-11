@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class Types extends _i1.TableRow {
-  Types({
+abstract class Types extends _i1.TableRow {
+  Types._({
     int? id,
     this.anInt,
     this.aBool,
@@ -21,6 +21,18 @@ class Types extends _i1.TableRow {
     this.aDuration,
     this.aUuid,
   }) : super(id);
+
+  factory Types({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) = _TypesImpl;
 
   factory Types.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -66,6 +78,17 @@ class Types extends _i1.TableRow {
 
   @override
   String get tableName => 'types';
+  Types copyWith({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -259,6 +282,57 @@ class Types extends _i1.TableRow {
 
   static TypesInclude include() {
     return TypesInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _TypesImpl extends Types {
+  _TypesImpl({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+  }) : super._(
+          id: id,
+          anInt: anInt,
+          aBool: aBool,
+          aDouble: aDouble,
+          aDateTime: aDateTime,
+          aString: aString,
+          aByteData: aByteData,
+          aDuration: aDuration,
+          aUuid: aUuid,
+        );
+
+  @override
+  Types copyWith({
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
+    Object? aDateTime = _Undefined,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
+    Object? aDuration = _Undefined,
+    Object? aUuid = _Undefined,
+  }) {
+    return Types(
+      id: id is! int? ? this.id : id,
+      anInt: anInt is! int? ? this.anInt : anInt,
+      aBool: aBool is! bool? ? this.aBool : aBool,
+      aDouble: aDouble is! double? ? this.aDouble : aDouble,
+      aDateTime: aDateTime is! DateTime? ? this.aDateTime : aDateTime,
+      aString: aString is! String? ? this.aString : aString,
+      aByteData: aByteData is! _i2.ByteData? ? this.aByteData : aByteData,
+      aDuration: aDuration is! Duration? ? this.aDuration : aDuration,
+      aUuid: aUuid is! _i1.UuidValue? ? this.aUuid : aUuid,
+    );
   }
 }
 

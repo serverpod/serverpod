@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Log entry for a session.
-class SessionLogEntry extends _i1.TableRow {
-  SessionLogEntry({
+abstract class SessionLogEntry extends _i1.TableRow {
+  SessionLogEntry._({
     int? id,
     required this.serverId,
     required this.time,
@@ -26,6 +26,23 @@ class SessionLogEntry extends _i1.TableRow {
     this.isOpen,
     required this.touched,
   }) : super(id);
+
+  factory SessionLogEntry({
+    int? id,
+    required String serverId,
+    required DateTime time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    required DateTime touched,
+  }) = _SessionLogEntryImpl;
 
   factory SessionLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -108,6 +125,22 @@ class SessionLogEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_session_log';
+  SessionLogEntry copyWith({
+    int? id,
+    String? serverId,
+    DateTime? time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    DateTime? touched,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -331,6 +364,79 @@ class SessionLogEntry extends _i1.TableRow {
 
   static SessionLogEntryInclude include() {
     return SessionLogEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SessionLogEntryImpl extends SessionLogEntry {
+  _SessionLogEntryImpl({
+    int? id,
+    required String serverId,
+    required DateTime time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    required DateTime touched,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          time: time,
+          module: module,
+          endpoint: endpoint,
+          method: method,
+          duration: duration,
+          numQueries: numQueries,
+          slow: slow,
+          error: error,
+          stackTrace: stackTrace,
+          authenticatedUserId: authenticatedUserId,
+          isOpen: isOpen,
+          touched: touched,
+        );
+
+  @override
+  SessionLogEntry copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? time,
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    Object? duration = _Undefined,
+    Object? numQueries = _Undefined,
+    Object? slow = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    Object? authenticatedUserId = _Undefined,
+    Object? isOpen = _Undefined,
+    DateTime? touched,
+  }) {
+    return SessionLogEntry(
+      id: id is! int? ? this.id : id,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      module: module is! String? ? this.module : module,
+      endpoint: endpoint is! String? ? this.endpoint : endpoint,
+      method: method is! String? ? this.method : method,
+      duration: duration is! double? ? this.duration : duration,
+      numQueries: numQueries is! int? ? this.numQueries : numQueries,
+      slow: slow is! bool? ? this.slow : slow,
+      error: error is! String? ? this.error : error,
+      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
+      authenticatedUserId: authenticatedUserId is! int?
+          ? this.authenticatedUserId
+          : authenticatedUserId,
+      isOpen: isOpen is! bool? ? this.isOpen : isOpen,
+      touched: touched ?? this.touched,
+    );
   }
 }
 

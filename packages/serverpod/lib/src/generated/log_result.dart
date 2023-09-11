@@ -10,8 +10,10 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// A list of log entries, used to return logging data.
-class LogResult extends _i1.SerializableEntity {
-  LogResult({required this.entries});
+abstract class LogResult extends _i1.SerializableEntity {
+  LogResult._({required this.entries});
+
+  factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;
 
   factory LogResult.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -25,6 +27,7 @@ class LogResult extends _i1.SerializableEntity {
   /// The log entries in this result.
   List<_i2.LogEntry> entries;
 
+  LogResult copyWith({List<_i2.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
     return {'entries': entries};
@@ -33,5 +36,17 @@ class LogResult extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {'entries': entries};
+  }
+}
+
+class _Undefined {}
+
+class _LogResultImpl extends LogResult {
+  _LogResultImpl({required List<_i2.LogEntry> entries})
+      : super._(entries: entries);
+
+  @override
+  LogResult copyWith({List<_i2.LogEntry>? entries}) {
+    return LogResult(entries: entries ?? this.entries);
   }
 }

@@ -9,14 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class DatabaseMigrationWarning extends _i1.SerializableEntity {
-  DatabaseMigrationWarning({
+abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
+  DatabaseMigrationWarning._({
     required this.type,
     required this.message,
     required this.table,
     required this.columns,
     required this.destrucive,
   });
+
+  factory DatabaseMigrationWarning({
+    required _i2.DatabaseMigrationWarningType type,
+    required String message,
+    required String table,
+    required List<String> columns,
+    required bool destrucive,
+  }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +54,13 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
 
   bool destrucive;
 
+  DatabaseMigrationWarning copyWith({
+    _i2.DatabaseMigrationWarningType? type,
+    String? message,
+    String? table,
+    List<String>? columns,
+    bool? destrucive,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -66,5 +81,40 @@ class DatabaseMigrationWarning extends _i1.SerializableEntity {
       'columns': columns,
       'destrucive': destrucive,
     };
+  }
+}
+
+class _Undefined {}
+
+class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
+  _DatabaseMigrationWarningImpl({
+    required _i2.DatabaseMigrationWarningType type,
+    required String message,
+    required String table,
+    required List<String> columns,
+    required bool destrucive,
+  }) : super._(
+          type: type,
+          message: message,
+          table: table,
+          columns: columns,
+          destrucive: destrucive,
+        );
+
+  @override
+  DatabaseMigrationWarning copyWith({
+    _i2.DatabaseMigrationWarningType? type,
+    String? message,
+    String? table,
+    List<String>? columns,
+    bool? destrucive,
+  }) {
+    return DatabaseMigrationWarning(
+      type: type ?? this.type,
+      message: message ?? this.message,
+      table: table ?? this.table,
+      columns: columns ?? this.columns,
+      destrucive: destrucive ?? this.destrucive,
+    );
   }
 }

@@ -9,14 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a user that can safely be publically accessible.
-class UserInfoPublic extends _i1.SerializableEntity {
-  UserInfoPublic({
+abstract class UserInfoPublic extends _i1.SerializableEntity {
+  UserInfoPublic._({
     this.id,
     required this.userName,
     this.fullName,
     required this.created,
     this.imageUrl,
   });
+
+  factory UserInfoPublic({
+    int? id,
+    required String userName,
+    String? fullName,
+    required DateTime created,
+    String? imageUrl,
+  }) = _UserInfoPublicImpl;
 
   factory UserInfoPublic.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -50,6 +58,13 @@ class UserInfoPublic extends _i1.SerializableEntity {
   /// URL to the user's avatar.
   String? imageUrl;
 
+  UserInfoPublic copyWith({
+    int? id,
+    String? userName,
+    String? fullName,
+    DateTime? created,
+    String? imageUrl,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -70,5 +85,40 @@ class UserInfoPublic extends _i1.SerializableEntity {
       'created': created,
       'imageUrl': imageUrl,
     };
+  }
+}
+
+class _Undefined {}
+
+class _UserInfoPublicImpl extends UserInfoPublic {
+  _UserInfoPublicImpl({
+    int? id,
+    required String userName,
+    String? fullName,
+    required DateTime created,
+    String? imageUrl,
+  }) : super._(
+          id: id,
+          userName: userName,
+          fullName: fullName,
+          created: created,
+          imageUrl: imageUrl,
+        );
+
+  @override
+  UserInfoPublic copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    Object? fullName = _Undefined,
+    DateTime? created,
+    Object? imageUrl = _Undefined,
+  }) {
+    return UserInfoPublic(
+      id: id is! int? ? this.id : id,
+      userName: userName ?? this.userName,
+      fullName: fullName is! String? ? this.fullName : fullName,
+      created: created ?? this.created,
+      imageUrl: imageUrl is! String? ? this.imageUrl : imageUrl,
+    );
   }
 }

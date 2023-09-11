@@ -9,14 +9,22 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class Post extends _i1.TableRow {
-  Post({
+abstract class Post extends _i1.TableRow {
+  Post._({
     int? id,
     required this.content,
     this.previous,
     this.nextId,
     this.next,
   }) : super(id);
+
+  factory Post({
+    int? id,
+    required String content,
+    _i2.Post? previous,
+    int? nextId,
+    _i2.Post? next,
+  }) = _PostImpl;
 
   factory Post.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -47,6 +55,13 @@ class Post extends _i1.TableRow {
 
   @override
   String get tableName => 'post';
+  Post copyWith({
+    int? id,
+    String? content,
+    _i2.Post? previous,
+    int? nextId,
+    _i2.Post? next,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -221,6 +236,41 @@ class Post extends _i1.TableRow {
     return PostInclude._(
       previous: previous,
       next: next,
+    );
+  }
+}
+
+class _Undefined {}
+
+class _PostImpl extends Post {
+  _PostImpl({
+    int? id,
+    required String content,
+    _i2.Post? previous,
+    int? nextId,
+    _i2.Post? next,
+  }) : super._(
+          id: id,
+          content: content,
+          previous: previous,
+          nextId: nextId,
+          next: next,
+        );
+
+  @override
+  Post copyWith({
+    Object? id = _Undefined,
+    String? content,
+    Object? previous = _Undefined,
+    Object? nextId = _Undefined,
+    Object? next = _Undefined,
+  }) {
+    return Post(
+      id: id is! int? ? this.id : id,
+      content: content ?? this.content,
+      previous: previous is! _i2.Post? ? this.previous : previous,
+      nextId: nextId is! int? ? this.nextId : nextId,
+      next: next is! _i2.Post? ? this.next : next,
     );
   }
 }

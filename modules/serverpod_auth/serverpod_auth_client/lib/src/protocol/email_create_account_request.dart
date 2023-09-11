@@ -10,14 +10,22 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-class EmailCreateAccountRequest extends _i1.SerializableEntity {
-  EmailCreateAccountRequest({
+abstract class EmailCreateAccountRequest extends _i1.SerializableEntity {
+  EmailCreateAccountRequest._({
     this.id,
     required this.userName,
     required this.email,
     required this.hash,
     required this.verificationCode,
   });
+
+  factory EmailCreateAccountRequest({
+    int? id,
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -52,6 +60,13 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
   /// The verification code sent to the user.
   String verificationCode;
 
+  EmailCreateAccountRequest copyWith({
+    int? id,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -61,5 +76,40 @@ class EmailCreateAccountRequest extends _i1.SerializableEntity {
       'hash': hash,
       'verificationCode': verificationCode,
     };
+  }
+}
+
+class _Undefined {}
+
+class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
+  _EmailCreateAccountRequestImpl({
+    int? id,
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) : super._(
+          id: id,
+          userName: userName,
+          email: email,
+          hash: hash,
+          verificationCode: verificationCode,
+        );
+
+  @override
+  EmailCreateAccountRequest copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  }) {
+    return EmailCreateAccountRequest(
+      id: id is! int? ? this.id : id,
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
   }
 }

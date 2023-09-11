@@ -8,12 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class BulkDataException extends _i1.SerializableEntity
+abstract class BulkDataException extends _i1.SerializableEntity
     implements _i1.SerializableException {
-  BulkDataException({
+  BulkDataException._({
     required this.message,
     this.query,
   });
+
+  factory BulkDataException({
+    required String message,
+    String? query,
+  }) = _BulkDataExceptionImpl;
 
   factory BulkDataException.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,6 +36,10 @@ class BulkDataException extends _i1.SerializableEntity
 
   String? query;
 
+  BulkDataException copyWith({
+    String? message,
+    String? query,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -45,5 +54,28 @@ class BulkDataException extends _i1.SerializableEntity
       'message': message,
       'query': query,
     };
+  }
+}
+
+class _Undefined {}
+
+class _BulkDataExceptionImpl extends BulkDataException {
+  _BulkDataExceptionImpl({
+    required String message,
+    String? query,
+  }) : super._(
+          message: message,
+          query: query,
+        );
+
+  @override
+  BulkDataException copyWith({
+    String? message,
+    Object? query = _Undefined,
+  }) {
+    return BulkDataException(
+      message: message ?? this.message,
+      query: query is! String? ? this.query : query,
+    );
   }
 }
