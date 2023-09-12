@@ -22,7 +22,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     String? name,
     required List<_i2.TableDefinition> tables,
     int? priority,
-    Map<String, String>? installedModules,
+    List<_i2.DatabaseMigrationVersion>? installedModules,
   }) = _DatabaseDefinitionImpl;
 
   factory DatabaseDefinition.fromJson(
@@ -62,7 +62,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     String? name,
     List<_i2.TableDefinition>? tables,
     int? priority,
-    Map<String, String>? installedModules,
+    List<_i2.DatabaseMigrationVersion>? installedModules,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -82,7 +82,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     String? name,
     required List<_i2.TableDefinition> tables,
     int? priority,
-    Map<String, String>? installedModules,
+    List<_i2.DatabaseMigrationVersion>? installedModules,
   }) : super._(
           name: name,
           tables: tables,
@@ -101,7 +101,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
       name: name is! String? ? this.name : name,
       tables: tables ?? this.tables.clone(),
       priority: priority is! int? ? this.priority : priority,
-      installedModules: installedModules is! Map<String, String>?
+      installedModules: installedModules is! List<_i2.DatabaseMigrationVersion>?
           ? this.installedModules?.clone()
           : installedModules,
     );
