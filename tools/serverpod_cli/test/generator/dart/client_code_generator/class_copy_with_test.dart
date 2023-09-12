@@ -2,6 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/compilation_unit_helpers.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
@@ -310,5 +311,152 @@ void main() {
         }, skip: copyWithMethod == null);
       });
     }, skip: copyWithClass == null);
+  });
+
+  group('Given a class named $testClassName with a list of strings', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withField(FieldDefinitionBuilder()
+              .withName('names')
+              .withType(TypeDefinitionBuilder().withListOf('String').build())
+              .build())
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '_${testClassName}Impl',
+    );
+
+    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+      copyWithClass!,
+      name: 'copyWith',
+    );
+
+    test('then the clone method is called on field when copying the object.',
+        () {
+      var sourceCode = copyWithMethod?.body.toSource();
+      expect(
+          sourceCode, '{return Example(names: names ?? this.names.clone());}');
+    }, skip: copyWithMethod == null);
+  });
+
+  group('Given a class named $testClassName with a map of strings', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withField(FieldDefinitionBuilder()
+              .withName('map')
+              .withType(
+                  TypeDefinitionBuilder().withMapOf('String', 'String').build())
+              .build())
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '_${testClassName}Impl',
+    );
+
+    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+      copyWithClass!,
+      name: 'copyWith',
+    );
+
+    test('then the clone method is called on field when copying the object.',
+        () {
+      var sourceCode = copyWithMethod?.body.toSource();
+      expect(sourceCode, '{return Example(map: map ?? this.map.clone());}');
+    }, skip: copyWithMethod == null);
+  });
+
+  group('Given a class named $testClassName with a ByteData field', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withField(FieldDefinitionBuilder()
+              .withName('data')
+              .withTypeDefinition('ByteData')
+              .build())
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '_${testClassName}Impl',
+    );
+
+    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+      copyWithClass!,
+      name: 'copyWith',
+    );
+
+    test('then the clone method is called on field when copying the object.',
+        () {
+      var sourceCode = copyWithMethod?.body.toSource();
+      expect(sourceCode, '{return Example(data: data ?? this.data.clone());}');
+    }, skip: copyWithMethod == null);
+  });
+
+  group('Given a class named $testClassName with a nested object', () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withField(FieldDefinitionBuilder()
+              .withName('nested')
+              .withTypeDefinition('Example2')
+              .build())
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var copyWithClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '_${testClassName}Impl',
+    );
+
+    var copyWithMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+      copyWithClass!,
+      name: 'copyWith',
+    );
+
+    test('then the clone method is called on field when copying the object.',
+        () {
+      var sourceCode = copyWithMethod?.body.toSource();
+      expect(sourceCode,
+          '{return Example(nested: nested ?? this.nested.copyWith());}');
+    }, skip: copyWithMethod == null);
   });
 }

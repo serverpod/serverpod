@@ -2,6 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -250,37 +251,71 @@ class SerializableEntityLibraryGenerator {
           ..body = refer(classDefinition.className)
               .call(
                 [],
-                fields
-                    .where((field) => field.shouldIncludeField(serverCode))
-                    .fold({}, (map, field) {
-                  var valueDefinition = refer(field.name)
-                      .isNotA(field.type.reference(
-                        serverCode,
-                        nullable: field.type.nullable,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      ))
-                      .conditional(
-                        refer('this.${field.name}'),
-                        refer(field.name),
-                      );
-
-                  if (!field.type.nullable) {
-                    valueDefinition = refer(field.name).ifNullThen(
-                      refer('this.${field.name}'),
-                    );
-                  }
-
-                  return {
-                    ...map,
-                    field.name: valueDefinition,
-                  };
-                }),
+                _buildCopyWithAssignment(classDefinition, fields),
               )
               .returned
               .statement;
       },
     );
+  }
+
+  Map<String, Expression> _buildCopyWithAssignment(
+    ClassDefinition classDefinition,
+    List<SerializableEntityFieldDefinition> fields,
+  ) {
+    return fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .fold({}, (map, field) {
+      Expression assignment;
+
+      if ((field.type.isEnum ||
+          noneMutableTypeNames.contains(field.type.className))) {
+        assignment = refer('this').property(field.name);
+      } else if (clonableTypeNames.contains(field.type.className)) {
+        assignment = _buildMaybeNullMethodCall(field, 'clone');
+      } else {
+        assignment = _buildMaybeNullMethodCall(field, 'copyWith');
+      }
+
+      Expression valueDefinition;
+
+      if (field.type.nullable) {
+        valueDefinition = refer(field.name)
+            .isNotA(field.type.reference(
+              serverCode,
+              nullable: field.type.nullable,
+              subDirParts: classDefinition.subDirParts,
+              config: config,
+            ))
+            .conditional(
+              assignment,
+              refer(field.name),
+            );
+      } else {
+        valueDefinition = refer(field.name).ifNullThen(
+          assignment,
+        );
+      }
+
+      return {
+        ...map,
+        field.name: valueDefinition,
+      };
+    });
+  }
+
+  Expression _buildMaybeNullMethodCall(
+    SerializableEntityFieldDefinition field,
+    String methodName,
+  ) {
+    if (field.type.nullable) {
+      return refer('this')
+          .property(field.name)
+          .nullSafeProperty(methodName)
+          .call([]);
+    } else {
+      return refer('this').property(field.name).property(methodName).call([]);
+    }
   }
 
   Method _buildEntityClassTableNameGetter(String tableName) {

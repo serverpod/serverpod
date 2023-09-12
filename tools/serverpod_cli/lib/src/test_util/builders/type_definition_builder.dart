@@ -38,6 +38,17 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withMapOf(String keyClassName, String valueClassName,
+      [bool nullable = false]) {
+    _className = 'Map';
+    _generics.add(TypeDefinitionBuilder().withClassName(keyClassName).build());
+    _generics.add(TypeDefinitionBuilder()
+        .withClassName(valueClassName)
+        .withNullable(nullable)
+        .build());
+    return this;
+  }
+
   TypeDefinitionBuilder withNullable(bool nullable) {
     _nullable = nullable;
     return this;
