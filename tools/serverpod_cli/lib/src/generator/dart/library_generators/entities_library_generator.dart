@@ -44,7 +44,7 @@ class SerializableEntityLibraryGenerator {
           // We need to generate the implementation class for the copyWith method
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
-          _buildUndefinedClass(),
+          if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
           _buildEntityImplClass(
             className,
             classDefinition,
@@ -168,6 +168,13 @@ class SerializableEntityLibraryGenerator {
         }
       }
     });
+  }
+
+  bool _shouldCreateUndefinedClass(
+      List<SerializableEntityFieldDefinition> fields) {
+    return fields
+        .where((field) => field.shouldIncludeField(serverCode))
+        .any((field) => field.type.nullable);
   }
 
   Class _buildUndefinedClass() {

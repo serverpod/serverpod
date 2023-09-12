@@ -253,6 +253,17 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
+    test('then the _Undefined class is NOT generated.', () {
+      expect(
+        CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: '_Undefined',
+        ),
+        isNull,
+        reason: 'Expected no definition for class named _Undefined',
+      );
+    });
+
     group('then the $testClassName', () {
       var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
