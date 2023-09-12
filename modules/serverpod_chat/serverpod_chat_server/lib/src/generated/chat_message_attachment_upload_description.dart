@@ -61,8 +61,6 @@ abstract class ChatMessageAttachmentUploadDescription
   }
 }
 
-class _Undefined {}
-
 class _ChatMessageAttachmentUploadDescriptionImpl
     extends ChatMessageAttachmentUploadDescription {
   _ChatMessageAttachmentUploadDescriptionImpl({

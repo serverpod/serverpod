@@ -73,8 +73,6 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
   _DatabaseDefinitionsImpl({
     required _i2.DatabaseDefinition target,
@@ -96,11 +94,12 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
     List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
-      target: target ?? this.target,
-      live: live ?? this.live,
-      installedMigrations: installedMigrations ?? this.installedMigrations,
+      target: target ?? this.target.copyWith(),
+      live: live ?? this.live.copyWith(),
+      installedMigrations:
+          installedMigrations ?? this.installedMigrations.clone(),
       latestAvailableMigrations:
-          latestAvailableMigrations ?? this.latestAvailableMigrations,
+          latestAvailableMigrations ?? this.latestAvailableMigrations.clone(),
     );
   }
 }

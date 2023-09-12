@@ -344,14 +344,15 @@ class _ChatMessageImpl extends ChatMessage {
       message: message ?? this.message,
       time: time ?? this.time,
       sender: sender ?? this.sender,
-      senderInfo:
-          senderInfo is! _i2.UserInfoPublic? ? this.senderInfo : senderInfo,
+      senderInfo: senderInfo is! _i2.UserInfoPublic?
+          ? this.senderInfo?.copyWith()
+          : senderInfo,
       removed: removed ?? this.removed,
       clientMessageId:
           clientMessageId is! int? ? this.clientMessageId : clientMessageId,
       sent: sent is! bool? ? this.sent : sent,
       attachments: attachments is! List<_i3.ChatMessageAttachment>?
-          ? this.attachments
+          ? this.attachments?.clone()
           : attachments,
     );
   }

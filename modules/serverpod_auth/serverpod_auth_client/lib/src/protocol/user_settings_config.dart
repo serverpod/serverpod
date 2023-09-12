@@ -78,8 +78,6 @@ abstract class UserSettingsConfig extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _UserSettingsConfigImpl extends UserSettingsConfig {
   _UserSettingsConfigImpl({
     required bool canSeeUserName,

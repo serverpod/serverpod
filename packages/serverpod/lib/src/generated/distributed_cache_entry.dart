@@ -39,8 +39,6 @@ abstract class DistributedCacheEntry extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _DistributedCacheEntryImpl extends DistributedCacheEntry {
   _DistributedCacheEntryImpl({required String data}) : super._(data: data);
 

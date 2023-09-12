@@ -142,10 +142,10 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
   }) {
     return ForeignKeyDefinition(
       constraintName: constraintName ?? this.constraintName,
-      columns: columns ?? this.columns,
+      columns: columns ?? this.columns.clone(),
       referenceTable: referenceTable ?? this.referenceTable,
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
-      referenceColumns: referenceColumns ?? this.referenceColumns,
+      referenceColumns: referenceColumns ?? this.referenceColumns.clone(),
       onUpdate: onUpdate is! _i2.ForeignKeyAction? ? this.onUpdate : onUpdate,
       onDelete: onDelete is! _i2.ForeignKeyAction? ? this.onDelete : onDelete,
       matchType:

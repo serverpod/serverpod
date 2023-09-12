@@ -134,7 +134,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
       path: path ?? this.path,
       addedTime: addedTime ?? this.addedTime,
       expiration: expiration is! DateTime? ? this.expiration : expiration,
-      byteData: byteData ?? this.byteData,
+      byteData: byteData ?? this.byteData.clone(),
       verified: verified ?? this.verified,
     );
   }

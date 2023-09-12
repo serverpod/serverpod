@@ -125,8 +125,6 @@ abstract class LogSettings extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _LogSettingsImpl extends LogSettings {
   _LogSettingsImpl({
     required _i2.LogLevel logLevel,

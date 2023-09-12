@@ -61,8 +61,6 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ChatMessageChunkImpl extends ChatMessageChunk {
   _ChatMessageChunkImpl({
     required String channel,
@@ -82,7 +80,7 @@ class _ChatMessageChunkImpl extends ChatMessageChunk {
   }) {
     return ChatMessageChunk(
       channel: channel ?? this.channel,
-      messages: messages ?? this.messages,
+      messages: messages ?? this.messages.clone(),
       hasOlderMessages: hasOlderMessages ?? this.hasOlderMessages,
     );
   }

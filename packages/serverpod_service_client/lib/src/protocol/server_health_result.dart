@@ -53,8 +53,6 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ServerHealthResultImpl extends ServerHealthResult {
   _ServerHealthResultImpl({
     required List<_i2.ServerHealthMetric> metrics,
@@ -70,8 +68,8 @@ class _ServerHealthResultImpl extends ServerHealthResult {
     List<_i2.ServerHealthConnectionInfo>? connectionInfos,
   }) {
     return ServerHealthResult(
-      metrics: metrics ?? this.metrics,
-      connectionInfos: connectionInfos ?? this.connectionInfos,
+      metrics: metrics ?? this.metrics.clone(),
+      connectionInfos: connectionInfos ?? this.connectionInfos.clone(),
     );
   }
 }

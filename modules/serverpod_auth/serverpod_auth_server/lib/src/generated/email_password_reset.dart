@@ -59,8 +59,6 @@ abstract class EmailPasswordReset extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _EmailPasswordResetImpl extends EmailPasswordReset {
   _EmailPasswordResetImpl({
     required String userName,

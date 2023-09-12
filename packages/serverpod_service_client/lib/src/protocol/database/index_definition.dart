@@ -132,7 +132,7 @@ class _IndexDefinitionImpl extends IndexDefinition {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
       tableSpace: tableSpace is! String? ? this.tableSpace : tableSpace,
-      elements: elements ?? this.elements,
+      elements: elements ?? this.elements.clone(),
       type: type ?? this.type,
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,

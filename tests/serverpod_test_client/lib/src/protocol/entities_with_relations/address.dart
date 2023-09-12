@@ -93,7 +93,9 @@ class _AddressImpl extends Address {
       id: id is! int? ? this.id : id,
       street: street ?? this.street,
       inhabitantId: inhabitantId ?? this.inhabitantId,
-      inhabitant: inhabitant is! _i2.Citizen? ? this.inhabitant : inhabitant,
+      inhabitant: inhabitant is! _i2.Citizen?
+          ? this.inhabitant?.copyWith()
+          : inhabitant,
     );
   }
 }

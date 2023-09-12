@@ -65,8 +65,6 @@ abstract class Filter extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _FilterImpl extends Filter {
   _FilterImpl({
     required String name,
@@ -87,7 +85,7 @@ class _FilterImpl extends Filter {
     return Filter(
       name: name ?? this.name,
       table: table ?? this.table,
-      constraints: constraints ?? this.constraints,
+      constraints: constraints ?? this.constraints.clone(),
     );
   }
 }

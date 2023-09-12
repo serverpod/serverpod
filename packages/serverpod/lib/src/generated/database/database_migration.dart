@@ -68,8 +68,6 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _DatabaseMigrationImpl extends DatabaseMigration {
   _DatabaseMigrationImpl({
     required List<_i2.DatabaseMigrationAction> actions,
@@ -88,8 +86,8 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     int? priority,
   }) {
     return DatabaseMigration(
-      actions: actions ?? this.actions,
-      warnings: warnings ?? this.warnings,
+      actions: actions ?? this.actions.clone(),
+      warnings: warnings ?? this.warnings.clone(),
       priority: priority ?? this.priority,
     );
   }

@@ -70,8 +70,6 @@ abstract class CachesInfo extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _CachesInfoImpl extends CachesInfo {
   _CachesInfoImpl({
     required _i2.CacheInfo local,
@@ -90,9 +88,9 @@ class _CachesInfoImpl extends CachesInfo {
     _i2.CacheInfo? global,
   }) {
     return CachesInfo(
-      local: local ?? this.local,
-      localPrio: localPrio ?? this.localPrio,
-      global: global ?? this.global,
+      local: local ?? this.local.copyWith(),
+      localPrio: localPrio ?? this.localPrio.copyWith(),
+      global: global ?? this.global.copyWith(),
     );
   }
 }

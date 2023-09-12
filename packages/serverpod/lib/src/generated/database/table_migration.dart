@@ -200,14 +200,14 @@ class _TableMigrationImpl extends TableMigration {
       dartName: dartName is! String? ? this.dartName : dartName,
       module: module is! String? ? this.module : module,
       schema: schema ?? this.schema,
-      addColumns: addColumns ?? this.addColumns,
-      deleteColumns: deleteColumns ?? this.deleteColumns,
-      modifyColumns: modifyColumns ?? this.modifyColumns,
-      addIndexes: addIndexes ?? this.addIndexes,
-      deleteIndexes: deleteIndexes ?? this.deleteIndexes,
-      addForeignKeys: addForeignKeys ?? this.addForeignKeys,
-      deleteForeignKeys: deleteForeignKeys ?? this.deleteForeignKeys,
-      warnings: warnings ?? this.warnings,
+      addColumns: addColumns ?? this.addColumns.clone(),
+      deleteColumns: deleteColumns ?? this.deleteColumns.clone(),
+      modifyColumns: modifyColumns ?? this.modifyColumns.clone(),
+      addIndexes: addIndexes ?? this.addIndexes.clone(),
+      deleteIndexes: deleteIndexes ?? this.deleteIndexes.clone(),
+      addForeignKeys: addForeignKeys ?? this.addForeignKeys.clone(),
+      deleteForeignKeys: deleteForeignKeys ?? this.deleteForeignKeys.clone(),
+      warnings: warnings ?? this.warnings.clone(),
     );
   }
 }

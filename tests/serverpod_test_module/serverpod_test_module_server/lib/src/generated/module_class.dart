@@ -54,8 +54,6 @@ abstract class ModuleClass extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ModuleClassImpl extends ModuleClass {
   _ModuleClassImpl({
     required String name,

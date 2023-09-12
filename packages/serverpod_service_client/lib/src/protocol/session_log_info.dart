@@ -70,8 +70,6 @@ abstract class SessionLogInfo extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _SessionLogInfoImpl extends SessionLogInfo {
   _SessionLogInfoImpl({
     required _i2.SessionLogEntry sessionLogEntry,
@@ -93,10 +91,10 @@ class _SessionLogInfoImpl extends SessionLogInfo {
     List<_i2.MessageLogEntry>? messages,
   }) {
     return SessionLogInfo(
-      sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry,
-      queries: queries ?? this.queries,
-      logs: logs ?? this.logs,
-      messages: messages ?? this.messages,
+      sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),
+      queries: queries ?? this.queries.clone(),
+      logs: logs ?? this.logs.clone(),
+      messages: messages ?? this.messages.clone(),
     );
   }
 }

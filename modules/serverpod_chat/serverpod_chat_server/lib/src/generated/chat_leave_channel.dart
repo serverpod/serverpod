@@ -38,8 +38,6 @@ abstract class ChatLeaveChannel extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ChatLeaveChannelImpl extends ChatLeaveChannel {
   _ChatLeaveChannelImpl({required String channel}) : super._(channel: channel);
 

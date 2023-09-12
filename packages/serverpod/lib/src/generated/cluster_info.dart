@@ -40,14 +40,12 @@ abstract class ClusterInfo extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ClusterInfoImpl extends ClusterInfo {
   _ClusterInfoImpl({required List<_i2.ClusterServerInfo> servers})
       : super._(servers: servers);
 
   @override
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers}) {
-    return ClusterInfo(servers: servers ?? this.servers);
+    return ClusterInfo(servers: servers ?? this.servers.clone());
   }
 }

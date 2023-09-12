@@ -36,8 +36,6 @@ abstract class NotServerOnlyClass extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _NotServerOnlyClassImpl extends NotServerOnlyClass {
   _NotServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 

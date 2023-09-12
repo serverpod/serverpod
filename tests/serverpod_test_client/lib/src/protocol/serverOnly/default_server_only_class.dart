@@ -32,8 +32,6 @@ abstract class DefaultServerOnlyClass extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _DefaultServerOnlyClassImpl extends DefaultServerOnlyClass {
   _DefaultServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 

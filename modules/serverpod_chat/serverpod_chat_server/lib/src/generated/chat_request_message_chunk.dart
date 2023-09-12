@@ -59,8 +59,6 @@ abstract class ChatRequestMessageChunk extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ChatRequestMessageChunkImpl extends ChatRequestMessageChunk {
   _ChatRequestMessageChunkImpl({
     required String channel,

@@ -60,8 +60,6 @@ abstract class IndexElementDefinition extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _IndexElementDefinitionImpl extends IndexElementDefinition {
   _IndexElementDefinitionImpl({
     required _i2.IndexElementDefinitionType type,

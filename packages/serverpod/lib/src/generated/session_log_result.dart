@@ -40,14 +40,12 @@ abstract class SessionLogResult extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _SessionLogResultImpl extends SessionLogResult {
   _SessionLogResultImpl({required List<_i2.SessionLogInfo> sessionLog})
       : super._(sessionLog: sessionLog);
 
   @override
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
-    return SessionLogResult(sessionLog: sessionLog ?? this.sessionLog);
+    return SessionLogResult(sessionLog: sessionLog ?? this.sessionLog.clone());
   }
 }

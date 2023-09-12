@@ -39,14 +39,12 @@ abstract class LogResult extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _LogResultImpl extends LogResult {
   _LogResultImpl({required List<_i2.LogEntry> entries})
       : super._(entries: entries);
 
   @override
   LogResult copyWith({List<_i2.LogEntry>? entries}) {
-    return LogResult(entries: entries ?? this.entries);
+    return LogResult(entries: entries ?? this.entries.clone());
   }
 }

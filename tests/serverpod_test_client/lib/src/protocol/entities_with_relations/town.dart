@@ -92,7 +92,7 @@ class _TownImpl extends Town {
       id: id is! int? ? this.id : id,
       name: name ?? this.name,
       mayorId: mayorId is! int? ? this.mayorId : mayorId,
-      mayor: mayor is! _i2.Citizen? ? this.mayor : mayor,
+      mayor: mayor is! _i2.Citizen? ? this.mayor?.copyWith() : mayor,
     );
   }
 }

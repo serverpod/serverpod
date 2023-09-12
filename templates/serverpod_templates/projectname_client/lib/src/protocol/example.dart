@@ -46,8 +46,6 @@ abstract class Example extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ExampleImpl extends Example {
   _ExampleImpl({
     required String name,

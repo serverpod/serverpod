@@ -48,8 +48,6 @@ abstract class BulkData extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _BulkDataImpl extends BulkData {
   _BulkDataImpl({
     required _i2.TableDefinition tableDefinition,
@@ -65,7 +63,7 @@ class _BulkDataImpl extends BulkData {
     String? data,
   }) {
     return BulkData(
-      tableDefinition: tableDefinition ?? this.tableDefinition,
+      tableDefinition: tableDefinition ?? this.tableDefinition.copyWith(),
       data: data ?? this.data,
     );
   }

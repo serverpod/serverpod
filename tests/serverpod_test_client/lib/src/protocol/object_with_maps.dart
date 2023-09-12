@@ -159,8 +159,6 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ObjectWithMapsImpl extends ObjectWithMaps {
   _ObjectWithMapsImpl({
     required Map<String, _i2.SimpleData> dataMap,
@@ -215,21 +213,24 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
     Map<int, int>? intIntMap,
   }) {
     return ObjectWithMaps(
-      dataMap: dataMap ?? this.dataMap,
-      intMap: intMap ?? this.intMap,
-      stringMap: stringMap ?? this.stringMap,
-      dateTimeMap: dateTimeMap ?? this.dateTimeMap,
-      byteDataMap: byteDataMap ?? this.byteDataMap,
-      durationMap: durationMap ?? this.durationMap,
-      uuidMap: uuidMap ?? this.uuidMap,
-      nullableDataMap: nullableDataMap ?? this.nullableDataMap,
-      nullableIntMap: nullableIntMap ?? this.nullableIntMap,
-      nullableStringMap: nullableStringMap ?? this.nullableStringMap,
-      nullableDateTimeMap: nullableDateTimeMap ?? this.nullableDateTimeMap,
-      nullableByteDataMap: nullableByteDataMap ?? this.nullableByteDataMap,
-      nullableDurationMap: nullableDurationMap ?? this.nullableDurationMap,
-      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap,
-      intIntMap: intIntMap ?? this.intIntMap,
+      dataMap: dataMap ?? this.dataMap.clone(),
+      intMap: intMap ?? this.intMap.clone(),
+      stringMap: stringMap ?? this.stringMap.clone(),
+      dateTimeMap: dateTimeMap ?? this.dateTimeMap.clone(),
+      byteDataMap: byteDataMap ?? this.byteDataMap.clone(),
+      durationMap: durationMap ?? this.durationMap.clone(),
+      uuidMap: uuidMap ?? this.uuidMap.clone(),
+      nullableDataMap: nullableDataMap ?? this.nullableDataMap.clone(),
+      nullableIntMap: nullableIntMap ?? this.nullableIntMap.clone(),
+      nullableStringMap: nullableStringMap ?? this.nullableStringMap.clone(),
+      nullableDateTimeMap:
+          nullableDateTimeMap ?? this.nullableDateTimeMap.clone(),
+      nullableByteDataMap:
+          nullableByteDataMap ?? this.nullableByteDataMap.clone(),
+      nullableDurationMap:
+          nullableDurationMap ?? this.nullableDurationMap.clone(),
+      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap.clone(),
+      intIntMap: intIntMap ?? this.intIntMap.clone(),
     );
   }
 }

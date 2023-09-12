@@ -33,14 +33,12 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _SimpleDataListImpl extends SimpleDataList {
   _SimpleDataListImpl({required List<_i2.SimpleData> rows})
       : super._(rows: rows);
 
   @override
   SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
-    return SimpleDataList(rows: rows ?? this.rows);
+    return SimpleDataList(rows: rows ?? this.rows.clone());
   }
 }

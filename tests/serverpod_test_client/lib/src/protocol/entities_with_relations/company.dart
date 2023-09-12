@@ -92,7 +92,7 @@ class _CompanyImpl extends Company {
       id: id is! int? ? this.id : id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is! _i2.Town? ? this.town : town,
+      town: town is! _i2.Town? ? this.town?.copyWith() : town,
     );
   }
 }

@@ -84,8 +84,6 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
   _DatabaseMigrationWarningImpl({
     required _i2.DatabaseMigrationWarningType type,
@@ -113,7 +111,7 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
       type: type ?? this.type,
       message: message ?? this.message,
       table: table ?? this.table,
-      columns: columns ?? this.columns,
+      columns: columns ?? this.columns.clone(),
       destrucive: destrucive ?? this.destrucive,
     );
   }

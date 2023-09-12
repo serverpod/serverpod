@@ -36,8 +36,6 @@ abstract class ServerOnlyClass extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ServerOnlyClassImpl extends ServerOnlyClass {
   _ServerOnlyClassImpl({required String foo}) : super._(foo: foo);
 

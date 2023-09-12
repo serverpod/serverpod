@@ -109,7 +109,8 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
       success: success ?? this.success,
       key: key is! String? ? this.key : key,
       keyId: keyId is! int? ? this.keyId : keyId,
-      userInfo: userInfo is! _i2.UserInfo? ? this.userInfo : userInfo,
+      userInfo:
+          userInfo is! _i2.UserInfo? ? this.userInfo?.copyWith() : userInfo,
       failReason: failReason is! _i2.AuthenticationFailReason?
           ? this.failReason
           : failReason,

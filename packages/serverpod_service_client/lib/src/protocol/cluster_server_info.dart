@@ -34,8 +34,6 @@ abstract class ClusterServerInfo extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ClusterServerInfoImpl extends ClusterServerInfo {
   _ClusterServerInfoImpl({required String serverId})
       : super._(serverId: serverId);

@@ -74,8 +74,6 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _BulkQueryResultImpl extends BulkQueryResult {
   _BulkQueryResultImpl({
     required List<_i2.BulkQueryColumnDescription> headers,
@@ -97,7 +95,7 @@ class _BulkQueryResultImpl extends BulkQueryResult {
     Duration? duration,
   }) {
     return BulkQueryResult(
-      headers: headers ?? this.headers,
+      headers: headers ?? this.headers.clone(),
       data: data ?? this.data,
       numAffectedRows: numAffectedRows ?? this.numAffectedRows,
       duration: duration ?? this.duration,

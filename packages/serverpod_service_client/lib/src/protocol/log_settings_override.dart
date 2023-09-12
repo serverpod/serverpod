@@ -97,7 +97,7 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
       module: module is! String? ? this.module : module,
       endpoint: endpoint is! String? ? this.endpoint : endpoint,
       method: method is! String? ? this.method : method,
-      logSettings: logSettings ?? this.logSettings,
+      logSettings: logSettings ?? this.logSettings.copyWith(),
     );
   }
 }

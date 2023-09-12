@@ -268,9 +268,9 @@ class _PostImpl extends Post {
     return Post(
       id: id is! int? ? this.id : id,
       content: content ?? this.content,
-      previous: previous is! _i2.Post? ? this.previous : previous,
+      previous: previous is! _i2.Post? ? this.previous?.copyWith() : previous,
       nextId: nextId is! int? ? this.nextId : nextId,
-      next: next is! _i2.Post? ? this.next : next,
+      next: next is! _i2.Post? ? this.next?.copyWith() : next,
     );
   }
 }

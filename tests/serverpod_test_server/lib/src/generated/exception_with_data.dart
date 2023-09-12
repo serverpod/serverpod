@@ -100,7 +100,7 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
     return ExceptionWithData(
       message: message ?? this.message,
       creationDate: creationDate ?? this.creationDate,
-      errorFields: errorFields ?? this.errorFields,
+      errorFields: errorFields ?? this.errorFields.clone(),
       someNullableField: someNullableField is! int?
           ? this.someNullableField
           : someNullableField,

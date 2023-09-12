@@ -100,10 +100,12 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
     return DatabaseMigrationAction(
       type: type ?? this.type,
       deleteTable: deleteTable is! String? ? this.deleteTable : deleteTable,
-      alterTable:
-          alterTable is! _i2.TableMigration? ? this.alterTable : alterTable,
-      createTable:
-          createTable is! _i2.TableDefinition? ? this.createTable : createTable,
+      alterTable: alterTable is! _i2.TableMigration?
+          ? this.alterTable?.copyWith()
+          : alterTable,
+      createTable: createTable is! _i2.TableDefinition?
+          ? this.createTable?.copyWith()
+          : createTable,
     );
   }
 }

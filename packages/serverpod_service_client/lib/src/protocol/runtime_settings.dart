@@ -108,8 +108,9 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
   }) {
     return RuntimeSettings(
       id: id is! int? ? this.id : id,
-      logSettings: logSettings ?? this.logSettings,
-      logSettingsOverrides: logSettingsOverrides ?? this.logSettingsOverrides,
+      logSettings: logSettings ?? this.logSettings.copyWith(),
+      logSettingsOverrides:
+          logSettingsOverrides ?? this.logSettingsOverrides.clone(),
       logServiceCalls: logServiceCalls ?? this.logServiceCalls,
       logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
     );

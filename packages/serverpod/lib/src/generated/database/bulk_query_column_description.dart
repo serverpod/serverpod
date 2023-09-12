@@ -55,8 +55,6 @@ abstract class BulkQueryColumnDescription extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
   _BulkQueryColumnDescriptionImpl({
     required String name,

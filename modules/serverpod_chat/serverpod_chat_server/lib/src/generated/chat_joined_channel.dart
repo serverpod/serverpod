@@ -82,8 +82,6 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ChatJoinedChannelImpl extends ChatJoinedChannel {
   _ChatJoinedChannelImpl({
     required String channel,
@@ -106,9 +104,10 @@ class _ChatJoinedChannelImpl extends ChatJoinedChannel {
   }) {
     return ChatJoinedChannel(
       channel: channel ?? this.channel,
-      initialMessageChunk: initialMessageChunk ?? this.initialMessageChunk,
+      initialMessageChunk:
+          initialMessageChunk ?? this.initialMessageChunk.copyWith(),
       lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
-      userInfo: userInfo ?? this.userInfo,
+      userInfo: userInfo ?? this.userInfo.copyWith(),
     );
   }
 }

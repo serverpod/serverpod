@@ -150,7 +150,8 @@ class _TypesImpl extends Types {
       aDouble: aDouble is! double? ? this.aDouble : aDouble,
       aDateTime: aDateTime is! DateTime? ? this.aDateTime : aDateTime,
       aString: aString is! String? ? this.aString : aString,
-      aByteData: aByteData is! _i2.ByteData? ? this.aByteData : aByteData,
+      aByteData:
+          aByteData is! _i2.ByteData? ? this.aByteData?.clone() : aByteData,
       aDuration: aDuration is! Duration? ? this.aDuration : aDuration,
       aUuid: aUuid is! _i1.UuidValue? ? this.aUuid : aUuid,
     );

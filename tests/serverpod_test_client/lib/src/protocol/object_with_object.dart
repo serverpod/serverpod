@@ -126,17 +126,19 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
   }) {
     return ObjectWithObject(
       id: id is! int? ? this.id : id,
-      data: data ?? this.data,
-      nullableData:
-          nullableData is! _i2.SimpleData? ? this.nullableData : nullableData,
-      dataList: dataList ?? this.dataList,
+      data: data ?? this.data.copyWith(),
+      nullableData: nullableData is! _i2.SimpleData?
+          ? this.nullableData?.copyWith()
+          : nullableData,
+      dataList: dataList ?? this.dataList.clone(),
       nullableDataList: nullableDataList is! List<_i2.SimpleData>?
-          ? this.nullableDataList
+          ? this.nullableDataList?.clone()
           : nullableDataList,
-      listWithNullableData: listWithNullableData ?? this.listWithNullableData,
+      listWithNullableData:
+          listWithNullableData ?? this.listWithNullableData.clone(),
       nullableListWithNullableData:
           nullableListWithNullableData is! List<_i2.SimpleData?>?
-              ? this.nullableListWithNullableData
+              ? this.nullableListWithNullableData?.clone()
               : nullableListWithNullableData,
     );
   }

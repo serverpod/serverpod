@@ -99,10 +99,10 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
   }) {
     return DatabaseDefinition(
       name: name is! String? ? this.name : name,
-      tables: tables ?? this.tables,
+      tables: tables ?? this.tables.clone(),
       priority: priority is! int? ? this.priority : priority,
       installedModules: installedModules is! Map<String, String>?
-          ? this.installedModules
+          ? this.installedModules?.clone()
           : installedModules,
     );
   }

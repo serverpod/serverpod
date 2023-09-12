@@ -120,7 +120,7 @@ class _AuthKeyImpl extends AuthKey {
       userId: userId ?? this.userId,
       hash: hash ?? this.hash,
       key: key is! String? ? this.key : key,
-      scopeNames: scopeNames ?? this.scopeNames,
+      scopeNames: scopeNames ?? this.scopeNames.clone(),
       method: method ?? this.method,
     );
   }

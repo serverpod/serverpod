@@ -56,8 +56,6 @@ abstract class ServerpodSqlException extends _i1.SerializableEntity
   }
 }
 
-class _Undefined {}
-
 class _ServerpodSqlExceptionImpl extends ServerpodSqlException {
   _ServerpodSqlExceptionImpl({
     required String message,

@@ -51,8 +51,6 @@ abstract class ChatJoinChannelFailed extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ChatJoinChannelFailedImpl extends ChatJoinChannelFailed {
   _ChatJoinChannelFailedImpl({
     required String channel,

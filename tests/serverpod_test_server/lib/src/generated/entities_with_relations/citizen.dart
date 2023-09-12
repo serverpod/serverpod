@@ -297,11 +297,13 @@ class _CitizenImpl extends Citizen {
     return Citizen(
       id: id is! int? ? this.id : id,
       name: name ?? this.name,
-      address: address is! _i2.Address? ? this.address : address,
+      address: address is! _i2.Address? ? this.address?.copyWith() : address,
       companyId: companyId ?? this.companyId,
-      company: company is! _i2.Company? ? this.company : company,
+      company: company is! _i2.Company? ? this.company?.copyWith() : company,
       oldCompanyId: oldCompanyId is! int? ? this.oldCompanyId : oldCompanyId,
-      oldCompany: oldCompany is! _i2.Company? ? this.oldCompany : oldCompany,
+      oldCompany: oldCompany is! _i2.Company?
+          ? this.oldCompany?.copyWith()
+          : oldCompany,
     );
   }
 }

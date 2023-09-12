@@ -66,8 +66,6 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
   }
 }
 
-class _Undefined {}
-
 class _ModuleDatatypeImpl extends ModuleDatatype {
   _ModuleDatatypeImpl({
     required _i2.ModuleClass entity,
@@ -86,9 +84,9 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
     Map<String, _i2.ModuleClass>? map,
   }) {
     return ModuleDatatype(
-      entity: entity ?? this.entity,
-      list: list ?? this.list,
-      map: map ?? this.map,
+      entity: entity ?? this.entity.copyWith(),
+      list: list ?? this.list.clone(),
+      map: map ?? this.map.clone(),
     );
   }
 }

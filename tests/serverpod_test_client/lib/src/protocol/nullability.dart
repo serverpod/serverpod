@@ -581,9 +581,9 @@ class _NullabilityImpl extends Nullability {
       aNullableDateTime: aNullableDateTime is! DateTime?
           ? this.aNullableDateTime
           : aNullableDateTime,
-      aByteData: aByteData ?? this.aByteData,
+      aByteData: aByteData ?? this.aByteData.clone(),
       aNullableByteData: aNullableByteData is! _i2.ByteData?
-          ? this.aNullableByteData
+          ? this.aNullableByteData?.clone()
           : aNullableByteData,
       aDuration: aDuration ?? this.aDuration,
       aNullableDuration: aNullableDuration is! Duration?
@@ -592,78 +592,79 @@ class _NullabilityImpl extends Nullability {
       aUuid: aUuid ?? this.aUuid,
       aNullableUuid:
           aNullableUuid is! _i1.UuidValue? ? this.aNullableUuid : aNullableUuid,
-      anObject: anObject ?? this.anObject,
+      anObject: anObject ?? this.anObject.copyWith(),
       aNullableObject: aNullableObject is! _i3.SimpleData?
-          ? this.aNullableObject
+          ? this.aNullableObject?.copyWith()
           : aNullableObject,
-      anIntList: anIntList ?? this.anIntList,
+      anIntList: anIntList ?? this.anIntList.clone(),
       aNullableIntList: aNullableIntList is! List<int>?
-          ? this.aNullableIntList
+          ? this.aNullableIntList?.clone()
           : aNullableIntList,
       aListWithNullableInts:
-          aListWithNullableInts ?? this.aListWithNullableInts,
+          aListWithNullableInts ?? this.aListWithNullableInts.clone(),
       aNullableListWithNullableInts:
           aNullableListWithNullableInts is! List<int?>?
-              ? this.aNullableListWithNullableInts
+              ? this.aNullableListWithNullableInts?.clone()
               : aNullableListWithNullableInts,
-      anObjectList: anObjectList ?? this.anObjectList,
+      anObjectList: anObjectList ?? this.anObjectList.clone(),
       aNullableObjectList: aNullableObjectList is! List<_i3.SimpleData>?
-          ? this.aNullableObjectList
+          ? this.aNullableObjectList?.clone()
           : aNullableObjectList,
       aListWithNullableObjects:
-          aListWithNullableObjects ?? this.aListWithNullableObjects,
+          aListWithNullableObjects ?? this.aListWithNullableObjects.clone(),
       aNullableListWithNullableObjects:
           aNullableListWithNullableObjects is! List<_i3.SimpleData?>?
-              ? this.aNullableListWithNullableObjects
+              ? this.aNullableListWithNullableObjects?.clone()
               : aNullableListWithNullableObjects,
-      aDateTimeList: aDateTimeList ?? this.aDateTimeList,
+      aDateTimeList: aDateTimeList ?? this.aDateTimeList.clone(),
       aNullableDateTimeList: aNullableDateTimeList is! List<DateTime>?
-          ? this.aNullableDateTimeList
+          ? this.aNullableDateTimeList?.clone()
           : aNullableDateTimeList,
       aListWithNullableDateTimes:
-          aListWithNullableDateTimes ?? this.aListWithNullableDateTimes,
+          aListWithNullableDateTimes ?? this.aListWithNullableDateTimes.clone(),
       aNullableListWithNullableDateTimes:
           aNullableListWithNullableDateTimes is! List<DateTime?>?
-              ? this.aNullableListWithNullableDateTimes
+              ? this.aNullableListWithNullableDateTimes?.clone()
               : aNullableListWithNullableDateTimes,
-      aByteDataList: aByteDataList ?? this.aByteDataList,
+      aByteDataList: aByteDataList ?? this.aByteDataList.clone(),
       aNullableByteDataList: aNullableByteDataList is! List<_i2.ByteData>?
-          ? this.aNullableByteDataList
+          ? this.aNullableByteDataList?.clone()
           : aNullableByteDataList,
       aListWithNullableByteDatas:
-          aListWithNullableByteDatas ?? this.aListWithNullableByteDatas,
+          aListWithNullableByteDatas ?? this.aListWithNullableByteDatas.clone(),
       aNullableListWithNullableByteDatas:
           aNullableListWithNullableByteDatas is! List<_i2.ByteData?>?
-              ? this.aNullableListWithNullableByteDatas
+              ? this.aNullableListWithNullableByteDatas?.clone()
               : aNullableListWithNullableByteDatas,
-      aDurationList: aDurationList ?? this.aDurationList,
+      aDurationList: aDurationList ?? this.aDurationList.clone(),
       aNullableDurationList: aNullableDurationList is! List<Duration>?
-          ? this.aNullableDurationList
+          ? this.aNullableDurationList?.clone()
           : aNullableDurationList,
       aListWithNullableDurations:
-          aListWithNullableDurations ?? this.aListWithNullableDurations,
+          aListWithNullableDurations ?? this.aListWithNullableDurations.clone(),
       aNullableListWithNullableDurations:
           aNullableListWithNullableDurations is! List<Duration?>?
-              ? this.aNullableListWithNullableDurations
+              ? this.aNullableListWithNullableDurations?.clone()
               : aNullableListWithNullableDurations,
-      aUuidList: aUuidList ?? this.aUuidList,
+      aUuidList: aUuidList ?? this.aUuidList.clone(),
       aNullableUuidList: aNullableUuidList is! List<_i1.UuidValue>?
-          ? this.aNullableUuidList
+          ? this.aNullableUuidList?.clone()
           : aNullableUuidList,
       aListWithNullableUuids:
-          aListWithNullableUuids ?? this.aListWithNullableUuids,
+          aListWithNullableUuids ?? this.aListWithNullableUuids.clone(),
       aNullableListWithNullableUuids:
           aNullableListWithNullableUuids is! List<_i1.UuidValue?>?
-              ? this.aNullableListWithNullableUuids
+              ? this.aNullableListWithNullableUuids?.clone()
               : aNullableListWithNullableUuids,
-      anIntMap: anIntMap ?? this.anIntMap,
+      anIntMap: anIntMap ?? this.anIntMap.clone(),
       aNullableIntMap: aNullableIntMap is! Map<String, int>?
-          ? this.aNullableIntMap
+          ? this.aNullableIntMap?.clone()
           : aNullableIntMap,
-      aMapWithNullableInts: aMapWithNullableInts ?? this.aMapWithNullableInts,
+      aMapWithNullableInts:
+          aMapWithNullableInts ?? this.aMapWithNullableInts.clone(),
       aNullableMapWithNullableInts:
           aNullableMapWithNullableInts is! Map<String, int?>?
-              ? this.aNullableMapWithNullableInts
+              ? this.aNullableMapWithNullableInts?.clone()
               : aNullableMapWithNullableInts,
     );
   }
