@@ -201,10 +201,11 @@ class MigrationGenerator {
 
     // Check if there are any changes.
     var versionsChanged = false;
-    if (liveDatabase.installedModules == null) {
+    var installedModules = liveDatabase.installedModules;
+    if (installedModules == null) {
       versionsChanged = true;
     } else {
-      for (var module in liveDatabase.installedModules!) {
+      for (var module in installedModules) {
         if (versions[module.module] != module.version) {
           versionsChanged = true;
         }
