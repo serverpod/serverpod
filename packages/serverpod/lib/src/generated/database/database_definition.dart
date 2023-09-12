@@ -29,8 +29,9 @@ class DatabaseDefinition extends _i1.SerializableEntity {
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
       priority:
           serializationManager.deserialize<int?>(jsonSerialization['priority']),
-      installedModules: serializationManager.deserialize<Map<String, String>?>(
-          jsonSerialization['installedModules']),
+      installedModules:
+          serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>?>(
+              jsonSerialization['installedModules']),
     );
   }
 
@@ -48,7 +49,7 @@ class DatabaseDefinition extends _i1.SerializableEntity {
 
   /// Modules installed in the database, together with their version. Only
   /// set if known.
-  Map<String, String>? installedModules;
+  List<_i2.DatabaseMigrationVersion>? installedModules;
 
   @override
   Map<String, dynamic> toJson() {
