@@ -1285,8 +1285,8 @@ class SerializableEntityLibraryGenerator {
       String tableName,
       List<SerializableEntityFieldDefinition> fields,
       ClassDefinition classDefinition) {
-    return Constructor((constructor) {
-      constructor.optionalParameters.add(
+    return Constructor((constructorBuilder) {
+      constructorBuilder.optionalParameters.add(
         Parameter(
           (p) => p
             ..name = 'queryPrefix'
@@ -1294,7 +1294,7 @@ class SerializableEntityLibraryGenerator {
             ..named = true,
         ),
       );
-      constructor.optionalParameters.add(
+      constructorBuilder.optionalParameters.add(
         Parameter(
           (p) => p
             ..name = 'tableRelations'
@@ -1302,10 +1302,10 @@ class SerializableEntityLibraryGenerator {
             ..named = true,
         ),
       );
-      constructor.initializers.add(refer('super')
+      constructorBuilder.initializers.add(refer('super')
           .call([], {'tableName': literalString(tableName)}).code);
 
-      constructor.body = Block.of([
+      constructorBuilder.body = Block.of([
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
@@ -1425,14 +1425,14 @@ class SerializableEntityLibraryGenerator {
     List<SerializableEntityFieldDefinition> objectRelationFields,
     ClassDefinition classDefinition,
   ) {
-    return Constructor((constructor) {
-      constructor.name = '_';
+    return Constructor((constructorBuilder) {
+      constructorBuilder.name = '_';
       if (objectRelationFields.isEmpty) {
         return;
       }
 
       for (var field in objectRelationFields) {
-        constructor.optionalParameters.add(Parameter(
+        constructorBuilder.optionalParameters.add(Parameter(
           (p) => p
             ..name = field.name
             ..type = field.type.reference(
@@ -1445,7 +1445,7 @@ class SerializableEntityLibraryGenerator {
         ));
       }
 
-      constructor.body = Block.of([
+      constructorBuilder.body = Block.of([
         for (var field in objectRelationFields)
           refer('_${field.name}').assign(refer(field.name)).statement,
       ]);

@@ -355,7 +355,7 @@ void main() {
     test(
         'Given a map of Uuid when modifying the original after creating a copy then the copy is left unmodified',
         () {
-      var uuid = Uuid();
+      var uuid = const Uuid();
       var map = {
         'a': UuidValue(Uuid.NAMESPACE_NIL),
         'b': UuidValue(Uuid.NAMESPACE_NIL),
