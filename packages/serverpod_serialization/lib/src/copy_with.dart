@@ -31,7 +31,20 @@ extension CloneMap on Map {
   }
 }
 
-var _types = [
+/// List of types that are not mutable and therefore do not need to be
+/// copied or handled in a copyWith method.
+final noneMutableTypeNames =
+    _noneMutableTypes.map((t) => t.toString()).toList();
+
+/// List of types that has a clone method extension and therefore can be
+/// copied by calling clone().
+const clonableTypeNames = [
+  'ByteData',
+  'List',
+  'Map',
+];
+
+const _noneMutableTypes = [
   Null,
   String,
   int,
@@ -43,7 +56,7 @@ var _types = [
 ];
 
 dynamic _guardedCopyWith(dynamic element) {
-  if (_types.contains(element.runtimeType)) {
+  if (_noneMutableTypes.contains(element.runtimeType)) {
     return element;
   }
 
