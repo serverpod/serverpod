@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_sms_flutter/serverpod_auth_sms_flutter.dart';
-import 'package:serverpod_auth_sms_flutter/src/res/country_model.dart';
-import 'package:serverpod_auth_sms_flutter/src/widgets/otp_widget.dart';
-import 'package:serverpod_auth_sms_flutter/src/widgets/phone_number_widget.dart';
 
+import 'res/country_model.dart';
 import 'res/country_name.dart';
-import 'res/generated_code.dart';
+import 'res/get_country.dart';
+import 'widgets/otp_widget.dart';
+import 'widgets/phone_number_widget.dart';
 
 enum _Page {
   signIn,

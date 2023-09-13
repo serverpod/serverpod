@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_client/module.dart';
 
-import '../src/signin_dialog.dart';
 import 'res/country_name.dart';
+import 'signin_dialog.dart';
 
 class SignInWithSMSButton extends StatefulWidget {
   /// The Auth module's [Caller] instance.
