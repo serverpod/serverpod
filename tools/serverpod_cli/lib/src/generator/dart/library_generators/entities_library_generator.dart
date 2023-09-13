@@ -281,15 +281,15 @@ class SerializableEntityLibraryGenerator {
 
       if (field.type.nullable) {
         valueDefinition = refer(field.name)
-            .isNotA(field.type.reference(
+            .isA(field.type.reference(
               serverCode,
               nullable: field.type.nullable,
               subDirParts: classDefinition.subDirParts,
               config: config,
             ))
             .conditional(
-              assignment,
               refer(field.name),
+              assignment,
             );
       } else {
         valueDefinition = refer(field.name).ifNullThen(

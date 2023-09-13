@@ -156,7 +156,7 @@ void main() {
             () {
           var sourceCode = copyWithMethod?.body.toSource();
           expect(sourceCode,
-              '{return $testClassName(name: name ?? this.name, age: age is! int? ? this.age : age);}');
+              '{return $testClassName(name: name ?? this.name, age: age is int? ? age : this.age);}');
         }, skip: copyWithMethod == null);
       });
     }, skip: copyWithClass == null);
