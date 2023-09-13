@@ -1,3 +1,6 @@
+/// Use capital letters for the country names, because it is easier to
+/// read and it is the convention in the ISO 3166-1 standard.
+// ignore_for_file: constant_identifier_names
 enum CountryName {
   Afghanistan,
   Aland_Islands,
