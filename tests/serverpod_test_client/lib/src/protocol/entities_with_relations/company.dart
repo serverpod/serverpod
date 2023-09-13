@@ -89,10 +89,10 @@ class _CompanyImpl extends Company {
     Object? town = _Undefined,
   }) {
     return Company(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is! _i2.Town? ? this.town?.copyWith() : town,
+      town: town is _i2.Town? ? town : this.town?.copyWith(),
     );
   }
 }

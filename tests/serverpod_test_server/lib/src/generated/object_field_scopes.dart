@@ -237,10 +237,10 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
     Object? database = _Undefined,
   }) {
     return ObjectFieldScopes(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
-      api: api is! String? ? this.api : api,
-      database: database is! String? ? this.database : database,
+      api: api is String? ? api : this.api,
+      database: database is String? ? database : this.database,
     );
   }
 }

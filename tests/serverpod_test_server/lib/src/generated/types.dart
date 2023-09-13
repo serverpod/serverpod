@@ -323,16 +323,16 @@ class _TypesImpl extends Types {
     Object? aUuid = _Undefined,
   }) {
     return Types(
-      id: id is! int? ? this.id : id,
-      anInt: anInt is! int? ? this.anInt : anInt,
-      aBool: aBool is! bool? ? this.aBool : aBool,
-      aDouble: aDouble is! double? ? this.aDouble : aDouble,
-      aDateTime: aDateTime is! DateTime? ? this.aDateTime : aDateTime,
-      aString: aString is! String? ? this.aString : aString,
+      id: id is int? ? id : this.id,
+      anInt: anInt is int? ? anInt : this.anInt,
+      aBool: aBool is bool? ? aBool : this.aBool,
+      aDouble: aDouble is double? ? aDouble : this.aDouble,
+      aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
+      aString: aString is String? ? aString : this.aString,
       aByteData:
-          aByteData is! _i2.ByteData? ? this.aByteData?.clone() : aByteData,
-      aDuration: aDuration is! Duration? ? this.aDuration : aDuration,
-      aUuid: aUuid is! _i1.UuidValue? ? this.aUuid : aUuid,
+          aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
+      aDuration: aDuration is Duration? ? aDuration : this.aDuration,
+      aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
     );
   }
 }

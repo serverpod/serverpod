@@ -91,9 +91,9 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
       message: message ?? this.message,
       creationDate: creationDate ?? this.creationDate,
       errorFields: errorFields ?? this.errorFields.clone(),
-      someNullableField: someNullableField is! int?
-          ? this.someNullableField
-          : someNullableField,
+      someNullableField: someNullableField is int?
+          ? someNullableField
+          : this.someNullableField,
     );
   }
 }

@@ -129,11 +129,11 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     bool? verified,
   }) {
     return CloudStorageEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       addedTime: addedTime ?? this.addedTime,
-      expiration: expiration is! DateTime? ? this.expiration : expiration,
+      expiration: expiration is DateTime? ? expiration : this.expiration,
       byteData: byteData ?? this.byteData.clone(),
       verified: verified ?? this.verified,
     );

@@ -94,9 +94,9 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
     _i2.LogSettings? logSettings,
   }) {
     return LogSettingsOverride(
-      module: module is! String? ? this.module : module,
-      endpoint: endpoint is! String? ? this.endpoint : endpoint,
-      method: method is! String? ? this.method : method,
+      module: module is String? ? module : this.module,
+      endpoint: endpoint is String? ? endpoint : this.endpoint,
+      method: method is String? ? method : this.method,
       logSettings: logSettings ?? this.logSettings.copyWith(),
     );
   }

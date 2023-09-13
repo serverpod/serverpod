@@ -280,14 +280,14 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     Object? identifier = _Undefined,
   }) {
     return FutureCallEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
       time: time ?? this.time,
-      serializedObject: serializedObject is! String?
-          ? this.serializedObject
-          : serializedObject,
+      serializedObject: serializedObject is String?
+          ? serializedObject
+          : this.serializedObject,
       serverId: serverId ?? this.serverId,
-      identifier: identifier is! String? ? this.identifier : identifier,
+      identifier: identifier is String? ? identifier : this.identifier,
     );
   }
 }

@@ -81,7 +81,7 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
     String? refreshToken,
   }) {
     return GoogleRefreshToken(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       refreshToken: refreshToken ?? this.refreshToken,
     );

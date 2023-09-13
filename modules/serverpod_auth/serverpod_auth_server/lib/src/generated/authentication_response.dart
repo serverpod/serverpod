@@ -118,13 +118,13 @@ class _AuthenticationResponseImpl extends AuthenticationResponse {
   }) {
     return AuthenticationResponse(
       success: success ?? this.success,
-      key: key is! String? ? this.key : key,
-      keyId: keyId is! int? ? this.keyId : keyId,
+      key: key is String? ? key : this.key,
+      keyId: keyId is int? ? keyId : this.keyId,
       userInfo:
-          userInfo is! _i2.UserInfo? ? this.userInfo?.copyWith() : userInfo,
-      failReason: failReason is! _i2.AuthenticationFailReason?
-          ? this.failReason
-          : failReason,
+          userInfo is _i2.UserInfo? ? userInfo : this.userInfo?.copyWith(),
+      failReason: failReason is _i2.AuthenticationFailReason?
+          ? failReason
+          : this.failReason,
     );
   }
 }

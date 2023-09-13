@@ -77,7 +77,7 @@ class _ChatJoinChannelImpl extends ChatJoinChannel {
   }) {
     return ChatJoinChannel(
       channel: channel ?? this.channel,
-      userName: userName is! String? ? this.userName : userName,
+      userName: userName is String? ? userName : this.userName,
     );
   }
 }

@@ -107,7 +107,7 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     bool? logMalformedCalls,
   }) {
     return RuntimeSettings(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       logSettings: logSettings ?? this.logSettings.copyWith(),
       logSettingsOverrides:
           logSettingsOverrides ?? this.logSettingsOverrides.clone(),

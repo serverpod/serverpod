@@ -213,7 +213,7 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
     DateTime? dateTime,
   }) {
     return SimpleDateTime(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       dateTime: dateTime ?? this.dateTime,
     );
   }

@@ -179,8 +179,8 @@ class _TableMigrationImpl extends TableMigration {
   }) {
     return TableMigration(
       name: name ?? this.name,
-      dartName: dartName is! String? ? this.dartName : dartName,
-      module: module is! String? ? this.module : module,
+      dartName: dartName is String? ? dartName : this.dartName,
+      module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
       addColumns: addColumns ?? this.addColumns.clone(),
       deleteColumns: deleteColumns ?? this.deleteColumns.clone(),

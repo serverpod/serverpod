@@ -105,7 +105,7 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
     String? verificationCode,
   }) {
     return EmailCreateAccountRequest(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userName: userName ?? this.userName,
       email: email ?? this.email,
       hash: hash ?? this.hash,

@@ -248,12 +248,11 @@ class _AddressImpl extends Address {
     Object? inhabitant = _Undefined,
   }) {
     return Address(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       street: street ?? this.street,
       inhabitantId: inhabitantId ?? this.inhabitantId,
-      inhabitant: inhabitant is! _i2.Citizen?
-          ? this.inhabitant?.copyWith()
-          : inhabitant,
+      inhabitant:
+          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
     );
   }
 }

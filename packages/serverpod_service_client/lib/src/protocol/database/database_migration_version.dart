@@ -95,8 +95,8 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
     return DatabaseMigrationVersion(
       module: module ?? this.module,
       version: version ?? this.version,
-      priority: priority is! int? ? this.priority : priority,
-      timestamp: timestamp is! DateTime? ? this.timestamp : timestamp,
+      priority: priority is int? ? priority : this.priority,
+      timestamp: timestamp is DateTime? ? timestamp : this.timestamp,
     );
   }
 }

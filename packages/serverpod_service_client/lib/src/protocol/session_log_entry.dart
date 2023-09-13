@@ -216,21 +216,21 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     DateTime? touched,
   }) {
     return SessionLogEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       serverId: serverId ?? this.serverId,
       time: time ?? this.time,
-      module: module is! String? ? this.module : module,
-      endpoint: endpoint is! String? ? this.endpoint : endpoint,
-      method: method is! String? ? this.method : method,
-      duration: duration is! double? ? this.duration : duration,
-      numQueries: numQueries is! int? ? this.numQueries : numQueries,
-      slow: slow is! bool? ? this.slow : slow,
-      error: error is! String? ? this.error : error,
-      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
-      authenticatedUserId: authenticatedUserId is! int?
-          ? this.authenticatedUserId
-          : authenticatedUserId,
-      isOpen: isOpen is! bool? ? this.isOpen : isOpen,
+      module: module is String? ? module : this.module,
+      endpoint: endpoint is String? ? endpoint : this.endpoint,
+      method: method is String? ? method : this.method,
+      duration: duration is double? ? duration : this.duration,
+      numQueries: numQueries is int? ? numQueries : this.numQueries,
+      slow: slow is bool? ? slow : this.slow,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      authenticatedUserId: authenticatedUserId is int?
+          ? authenticatedUserId
+          : this.authenticatedUserId,
+      isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
     );
   }

@@ -131,7 +131,7 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
     int? granularity,
   }) {
     return ServerHealthConnectionInfo(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       serverId: serverId ?? this.serverId,
       timestamp: timestamp ?? this.timestamp,
       active: active ?? this.active,

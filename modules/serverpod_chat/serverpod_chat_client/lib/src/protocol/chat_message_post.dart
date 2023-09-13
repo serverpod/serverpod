@@ -97,9 +97,9 @@ class _ChatMessagePostImpl extends ChatMessagePost {
       channel: channel ?? this.channel,
       message: message ?? this.message,
       clientMessageId: clientMessageId ?? this.clientMessageId,
-      attachments: attachments is! List<_i2.ChatMessageAttachment>?
-          ? this.attachments?.clone()
-          : attachments,
+      attachments: attachments is List<_i2.ChatMessageAttachment>?
+          ? attachments
+          : this.attachments?.clone(),
     );
   }
 }

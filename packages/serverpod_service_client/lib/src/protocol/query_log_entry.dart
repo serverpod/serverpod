@@ -177,15 +177,15 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     int? order,
   }) {
     return QueryLogEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       serverId: serverId ?? this.serverId,
       sessionLogId: sessionLogId ?? this.sessionLogId,
-      messageId: messageId is! int? ? this.messageId : messageId,
+      messageId: messageId is int? ? messageId : this.messageId,
       query: query ?? this.query,
       duration: duration ?? this.duration,
-      numRows: numRows is! int? ? this.numRows : numRows,
-      error: error is! String? ? this.error : error,
-      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
+      numRows: numRows is int? ? numRows : this.numRows,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
       slow: slow ?? this.slow,
       order: order ?? this.order,
     );

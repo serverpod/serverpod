@@ -276,10 +276,10 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
     List<List<_i2.TestEnum>>? enumListList,
   }) {
     return ObjectWithEnum(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       testEnum: testEnum ?? this.testEnum,
       nullableEnum:
-          nullableEnum is! _i2.TestEnum? ? this.nullableEnum : nullableEnum,
+          nullableEnum is _i2.TestEnum? ? nullableEnum : this.nullableEnum,
       enumList: enumList ?? this.enumList.clone(),
       nullableEnumList: nullableEnumList ?? this.nullableEnumList.clone(),
       enumListList: enumListList ?? this.enumListList.clone(),

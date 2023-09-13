@@ -138,14 +138,14 @@ class _SessionLogFilterImpl extends SessionLogFilter {
     Object? lastSessionLogId = _Undefined,
   }) {
     return SessionLogFilter(
-      endpoint: endpoint is! String? ? this.endpoint : endpoint,
-      method: method is! String? ? this.method : method,
-      futureCall: futureCall is! String? ? this.futureCall : futureCall,
+      endpoint: endpoint is String? ? endpoint : this.endpoint,
+      method: method is String? ? method : this.method,
+      futureCall: futureCall is String? ? futureCall : this.futureCall,
       slow: slow ?? this.slow,
       error: error ?? this.error,
       open: open ?? this.open,
       lastSessionLogId:
-          lastSessionLogId is! int? ? this.lastSessionLogId : lastSessionLogId,
+          lastSessionLogId is int? ? lastSessionLogId : this.lastSessionLogId,
     );
   }
 }

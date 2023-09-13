@@ -101,7 +101,7 @@ class _FilterConstraintImpl extends FilterConstraint {
       type: type ?? this.type,
       column: column ?? this.column,
       value: value ?? this.value,
-      value2: value2 is! String? ? this.value2 : value2,
+      value2: value2 is String? ? value2 : this.value2,
     );
   }
 }

@@ -300,7 +300,7 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
     int? granularity,
   }) {
     return ServerHealthMetric(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
       serverId: serverId ?? this.serverId,
       timestamp: timestamp ?? this.timestamp,

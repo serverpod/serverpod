@@ -158,13 +158,13 @@ class _UserInfoImpl extends UserInfo {
     bool? blocked,
   }) {
     return UserInfo(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userIdentifier: userIdentifier ?? this.userIdentifier,
       userName: userName ?? this.userName,
-      fullName: fullName is! String? ? this.fullName : fullName,
-      email: email is! String? ? this.email : email,
+      fullName: fullName is String? ? fullName : this.fullName,
+      email: email is String? ? email : this.email,
       created: created ?? this.created,
-      imageUrl: imageUrl is! String? ? this.imageUrl : imageUrl,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
       scopeNames: scopeNames ?? this.scopeNames.clone(),
       blocked: blocked ?? this.blocked,
     );

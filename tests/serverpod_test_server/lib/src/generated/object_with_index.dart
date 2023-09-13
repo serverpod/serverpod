@@ -227,7 +227,7 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
     int? indexed2,
   }) {
     return ObjectWithIndex(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       indexed: indexed ?? this.indexed,
       indexed2: indexed2 ?? this.indexed2,
     );

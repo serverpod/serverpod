@@ -93,7 +93,7 @@ class _EmailResetImpl extends EmailReset {
     DateTime? expiration,
   }) {
     return EmailReset(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       verificationCode: verificationCode ?? this.verificationCode,
       expiration: expiration ?? this.expiration,

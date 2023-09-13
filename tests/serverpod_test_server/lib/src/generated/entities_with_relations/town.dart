@@ -247,10 +247,10 @@ class _TownImpl extends Town {
     Object? mayor = _Undefined,
   }) {
     return Town(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
-      mayorId: mayorId is! int? ? this.mayorId : mayorId,
-      mayor: mayor is! _i2.Citizen? ? this.mayor?.copyWith() : mayor,
+      mayorId: mayorId is int? ? mayorId : this.mayorId,
+      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
     );
   }
 }

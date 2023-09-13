@@ -366,15 +366,15 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     int? order,
   }) {
     return MessageLogEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       sessionLogId: sessionLogId ?? this.sessionLogId,
       serverId: serverId ?? this.serverId,
       messageId: messageId ?? this.messageId,
       endpoint: endpoint ?? this.endpoint,
       messageName: messageName ?? this.messageName,
       duration: duration ?? this.duration,
-      error: error is! String? ? this.error : error,
-      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
       slow: slow ?? this.slow,
       order: order ?? this.order,
     );

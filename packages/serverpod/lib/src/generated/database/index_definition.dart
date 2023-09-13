@@ -144,12 +144,12 @@ class _IndexDefinitionImpl extends IndexDefinition {
   }) {
     return IndexDefinition(
       indexName: indexName ?? this.indexName,
-      tableSpace: tableSpace is! String? ? this.tableSpace : tableSpace,
+      tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
       elements: elements ?? this.elements.clone(),
       type: type ?? this.type,
       isUnique: isUnique ?? this.isUnique,
       isPrimary: isPrimary ?? this.isPrimary,
-      predicate: predicate is! String? ? this.predicate : predicate,
+      predicate: predicate is String? ? predicate : this.predicate,
     );
   }
 }

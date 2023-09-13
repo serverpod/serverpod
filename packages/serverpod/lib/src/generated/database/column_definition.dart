@@ -121,8 +121,8 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
       columnType: columnType ?? this.columnType,
       isNullable: isNullable ?? this.isNullable,
       columnDefault:
-          columnDefault is! String? ? this.columnDefault : columnDefault,
-      dartType: dartType is! String? ? this.dartType : dartType,
+          columnDefault is String? ? columnDefault : this.columnDefault,
+      dartType: dartType is String? ? dartType : this.dartType,
     );
   }
 }

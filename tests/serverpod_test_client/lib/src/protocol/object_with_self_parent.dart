@@ -66,8 +66,8 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
     Object? other = _Undefined,
   }) {
     return ObjectWithSelfParent(
-      id: id is! int? ? this.id : id,
-      other: other is! int? ? this.other : other,
+      id: id is int? ? id : this.id,
+      other: other is int? ? other : this.other,
     );
   }
 }

@@ -229,7 +229,7 @@ class _ChannelImpl extends Channel {
     String? channel,
   }) {
     return Channel(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       name: name ?? this.name,
       channel: channel ?? this.channel,
     );

@@ -103,11 +103,11 @@ class _UserInfoPublicImpl extends UserInfoPublic {
     Object? imageUrl = _Undefined,
   }) {
     return UserInfoPublic(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userName: userName ?? this.userName,
-      fullName: fullName is! String? ? this.fullName : fullName,
+      fullName: fullName is String? ? fullName : this.fullName,
       created: created ?? this.created,
-      imageUrl: imageUrl is! String? ? this.imageUrl : imageUrl,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
     );
   }
 }

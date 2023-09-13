@@ -108,12 +108,12 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     Object? installedModules = _Undefined,
   }) {
     return DatabaseDefinition(
-      name: name is! String? ? this.name : name,
+      name: name is String? ? name : this.name,
       tables: tables ?? this.tables.clone(),
-      priority: priority is! int? ? this.priority : priority,
-      installedModules: installedModules is! List<_i2.DatabaseMigrationVersion>?
-          ? this.installedModules?.clone()
-          : installedModules,
+      priority: priority is int? ? priority : this.priority,
+      installedModules: installedModules is List<_i2.DatabaseMigrationVersion>?
+          ? installedModules
+          : this.installedModules?.clone(),
     );
   }
 }

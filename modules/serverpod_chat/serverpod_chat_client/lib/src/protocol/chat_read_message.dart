@@ -93,7 +93,7 @@ class _ChatReadMessageImpl extends ChatReadMessage {
     int? lastReadMessageId,
   }) {
     return ChatReadMessage(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       channel: channel ?? this.channel,
       userId: userId ?? this.userId,
       lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,

@@ -276,10 +276,10 @@ class _AuthKeyImpl extends AuthKey {
     String? method,
   }) {
     return AuthKey(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       hash: hash ?? this.hash,
-      key: key is! String? ? this.key : key,
+      key: key is String? ? key : this.key,
       scopeNames: scopeNames ?? this.scopeNames.clone(),
       method: method ?? this.method,
     );

@@ -92,7 +92,7 @@ class _UserImageImpl extends UserImage {
     String? url,
   }) {
     return UserImage(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       version: version ?? this.version,
       url: url ?? this.url,

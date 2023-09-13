@@ -167,21 +167,21 @@ class _ChatMessageImpl extends ChatMessage {
     Object? attachments = _Undefined,
   }) {
     return ChatMessage(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       channel: channel ?? this.channel,
       message: message ?? this.message,
       time: time ?? this.time,
       sender: sender ?? this.sender,
-      senderInfo: senderInfo is! _i2.UserInfoPublic?
-          ? this.senderInfo?.copyWith()
-          : senderInfo,
+      senderInfo: senderInfo is _i2.UserInfoPublic?
+          ? senderInfo
+          : this.senderInfo?.copyWith(),
       removed: removed ?? this.removed,
       clientMessageId:
-          clientMessageId is! int? ? this.clientMessageId : clientMessageId,
-      sent: sent is! bool? ? this.sent : sent,
-      attachments: attachments is! List<_i3.ChatMessageAttachment>?
-          ? this.attachments?.clone()
-          : attachments,
+          clientMessageId is int? ? clientMessageId : this.clientMessageId,
+      sent: sent is bool? ? sent : this.sent,
+      attachments: attachments is List<_i3.ChatMessageAttachment>?
+          ? attachments
+          : this.attachments?.clone(),
     );
   }
 }

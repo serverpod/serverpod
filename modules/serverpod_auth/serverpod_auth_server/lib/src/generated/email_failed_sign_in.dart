@@ -248,7 +248,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
     String? ipAddress,
   }) {
     return EmailFailedSignIn(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       email: email ?? this.email,
       time: time ?? this.time,
       ipAddress: ipAddress ?? this.ipAddress,

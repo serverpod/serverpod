@@ -81,7 +81,7 @@ class _MethodInfoImpl extends MethodInfo {
     String? method,
   }) {
     return MethodInfo(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       endpoint: endpoint ?? this.endpoint,
       method: method ?? this.method,
     );

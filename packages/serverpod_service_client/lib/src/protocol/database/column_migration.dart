@@ -102,7 +102,7 @@ class _ColumnMigrationImpl extends ColumnMigration {
       addNullable: addNullable ?? this.addNullable,
       removeNullable: removeNullable ?? this.removeNullable,
       changeDefault: changeDefault ?? this.changeDefault,
-      newDefault: newDefault is! String? ? this.newDefault : newDefault,
+      newDefault: newDefault is String? ? newDefault : this.newDefault,
     );
   }
 }

@@ -210,7 +210,7 @@ class _ObjectWithParentImpl extends ObjectWithParent {
     int? other,
   }) {
     return ObjectWithParent(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       other: other ?? this.other,
     );
   }

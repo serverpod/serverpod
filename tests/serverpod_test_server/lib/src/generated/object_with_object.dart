@@ -294,21 +294,21 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
     Object? nullableListWithNullableData = _Undefined,
   }) {
     return ObjectWithObject(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       data: data ?? this.data.copyWith(),
-      nullableData: nullableData is! _i2.SimpleData?
-          ? this.nullableData?.copyWith()
-          : nullableData,
+      nullableData: nullableData is _i2.SimpleData?
+          ? nullableData
+          : this.nullableData?.copyWith(),
       dataList: dataList ?? this.dataList.clone(),
-      nullableDataList: nullableDataList is! List<_i2.SimpleData>?
-          ? this.nullableDataList?.clone()
-          : nullableDataList,
+      nullableDataList: nullableDataList is List<_i2.SimpleData>?
+          ? nullableDataList
+          : this.nullableDataList?.clone(),
       listWithNullableData:
           listWithNullableData ?? this.listWithNullableData.clone(),
       nullableListWithNullableData:
-          nullableListWithNullableData is! List<_i2.SimpleData?>?
-              ? this.nullableListWithNullableData?.clone()
-              : nullableListWithNullableData,
+          nullableListWithNullableData is List<_i2.SimpleData?>?
+              ? nullableListWithNullableData
+              : this.nullableListWithNullableData?.clone(),
     );
   }
 }

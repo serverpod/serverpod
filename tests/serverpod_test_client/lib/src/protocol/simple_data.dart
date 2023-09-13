@@ -70,7 +70,7 @@ class _SimpleDataImpl extends SimpleData {
     int? num,
   }) {
     return SimpleData(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       num: num ?? this.num,
     );
   }

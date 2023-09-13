@@ -92,7 +92,7 @@ class _EmailAuthImpl extends EmailAuth {
     String? hash,
   }) {
     return EmailAuth(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       userId: userId ?? this.userId,
       email: email ?? this.email,
       hash: hash ?? this.hash,

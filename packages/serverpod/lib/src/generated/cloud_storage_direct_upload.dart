@@ -263,7 +263,7 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     String? authKey,
   }) {
     return CloudStorageDirectUploadEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       storageId: storageId ?? this.storageId,
       path: path ?? this.path,
       expiration: expiration ?? this.expiration,

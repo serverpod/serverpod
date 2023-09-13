@@ -211,7 +211,7 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
     Duration? duration,
   }) {
     return ObjectWithDuration(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       duration: duration ?? this.duration,
     );
   }

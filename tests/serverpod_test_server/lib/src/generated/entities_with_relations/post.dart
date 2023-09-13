@@ -266,11 +266,11 @@ class _PostImpl extends Post {
     Object? next = _Undefined,
   }) {
     return Post(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is! _i2.Post? ? this.previous?.copyWith() : previous,
-      nextId: nextId is! int? ? this.nextId : nextId,
-      next: next is! _i2.Post? ? this.next?.copyWith() : next,
+      previous: previous is _i2.Post? ? previous : this.previous?.copyWith(),
+      nextId: nextId is int? ? nextId : this.nextId,
+      next: next is _i2.Post? ? next : this.next?.copyWith(),
     );
   }
 }

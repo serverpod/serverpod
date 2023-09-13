@@ -78,10 +78,10 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     Object? uuidNullable = _Undefined,
   }) {
     return ObjectWithUuid(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
       uuidNullable:
-          uuidNullable is! _i1.UuidValue? ? this.uuidNullable : uuidNullable,
+          uuidNullable is _i1.UuidValue? ? uuidNullable : this.uuidNullable,
     );
   }
 }

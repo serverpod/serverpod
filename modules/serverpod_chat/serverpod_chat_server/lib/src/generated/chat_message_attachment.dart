@@ -130,10 +130,9 @@ class _ChatMessageAttachmentImpl extends ChatMessageAttachment {
       fileName: fileName ?? this.fileName,
       url: url ?? this.url,
       contentType: contentType ?? this.contentType,
-      previewImage: previewImage is! String? ? this.previewImage : previewImage,
-      previewWidth: previewWidth is! int? ? this.previewWidth : previewWidth,
-      previewHeight:
-          previewHeight is! int? ? this.previewHeight : previewHeight,
+      previewImage: previewImage is String? ? previewImage : this.previewImage,
+      previewWidth: previewWidth is int? ? previewWidth : this.previewWidth,
+      previewHeight: previewHeight is int? ? previewHeight : this.previewHeight,
     );
   }
 }

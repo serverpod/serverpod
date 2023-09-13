@@ -117,7 +117,7 @@ class _AppleAuthInfoImpl extends AppleAuthInfo {
   }) {
     return AppleAuthInfo(
       userIdentifier: userIdentifier ?? this.userIdentifier,
-      email: email is! String? ? this.email : email,
+      email: email is String? ? email : this.email,
       fullName: fullName ?? this.fullName,
       nickname: nickname ?? this.nickname,
       identityToken: identityToken ?? this.identityToken,

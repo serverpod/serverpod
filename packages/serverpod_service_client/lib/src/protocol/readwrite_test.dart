@@ -70,7 +70,7 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
     int? number,
   }) {
     return ReadWriteTestEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       number: number ?? this.number,
     );
   }

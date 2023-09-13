@@ -160,10 +160,10 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
       referenceTable: referenceTable ?? this.referenceTable,
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
       referenceColumns: referenceColumns ?? this.referenceColumns.clone(),
-      onUpdate: onUpdate is! _i2.ForeignKeyAction? ? this.onUpdate : onUpdate,
-      onDelete: onDelete is! _i2.ForeignKeyAction? ? this.onDelete : onDelete,
+      onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
+      onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
       matchType:
-          matchType is! _i2.ForeignKeyMatchType? ? this.matchType : matchType,
+          matchType is _i2.ForeignKeyMatchType? ? matchType : this.matchType,
     );
   }
 }

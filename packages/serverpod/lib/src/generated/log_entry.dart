@@ -366,16 +366,16 @@ class _LogEntryImpl extends LogEntry {
     int? order,
   }) {
     return LogEntry(
-      id: id is! int? ? this.id : id,
+      id: id is int? ? id : this.id,
       sessionLogId: sessionLogId ?? this.sessionLogId,
-      messageId: messageId is! int? ? this.messageId : messageId,
-      reference: reference is! String? ? this.reference : reference,
+      messageId: messageId is int? ? messageId : this.messageId,
+      reference: reference is String? ? reference : this.reference,
       serverId: serverId ?? this.serverId,
       time: time ?? this.time,
       logLevel: logLevel ?? this.logLevel,
       message: message ?? this.message,
-      error: error is! String? ? this.error : error,
-      stackTrace: stackTrace is! String? ? this.stackTrace : stackTrace,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
       order: order ?? this.order,
     );
   }

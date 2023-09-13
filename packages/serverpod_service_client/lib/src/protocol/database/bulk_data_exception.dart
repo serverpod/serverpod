@@ -67,7 +67,7 @@ class _BulkDataExceptionImpl extends BulkDataException {
   }) {
     return BulkDataException(
       message: message ?? this.message,
-      query: query is! String? ? this.query : query,
+      query: query is String? ? query : this.query,
     );
   }
 }

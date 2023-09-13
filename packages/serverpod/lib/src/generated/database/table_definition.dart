@@ -171,14 +171,14 @@ class _TableDefinitionImpl extends TableDefinition {
   }) {
     return TableDefinition(
       name: name ?? this.name,
-      dartName: dartName is! String? ? this.dartName : dartName,
-      module: module is! String? ? this.module : module,
+      dartName: dartName is String? ? dartName : this.dartName,
+      module: module is String? ? module : this.module,
       schema: schema ?? this.schema,
-      tableSpace: tableSpace is! String? ? this.tableSpace : tableSpace,
+      tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
       columns: columns ?? this.columns.clone(),
       foreignKeys: foreignKeys ?? this.foreignKeys.clone(),
       indexes: indexes ?? this.indexes.clone(),
-      managed: managed is! bool? ? this.managed : managed,
+      managed: managed is bool? ? managed : this.managed,
     );
   }
 }
