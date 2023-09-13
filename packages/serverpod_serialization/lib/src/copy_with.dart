@@ -29,8 +29,9 @@ extension CloneMap on Map {
   /// Creates a deep copy of the Map, mutations to the original will
   /// not affect the copy.
   Map<K, V> clone<K, V>() {
-    return map((key, value) => MapEntry(key, _guardedCopyWith(value)))
-        .cast<K, V>();
+    return map(
+      (key, value) => MapEntry(_guardedCopyWith(key), _guardedCopyWith(value)),
+    ).cast<K, V>();
   }
 }
 
