@@ -33,6 +33,10 @@ typedef SendPasswordResetEmailCallback = Future<bool> Function(
 typedef SendValidationEmailCallback = Future<bool> Function(
     Session session, String email, String validationCode);
 
+/// Callback for SMS authentication.
+typedef SendSMSAuthCallback = Future<bool> Function(
+    String phoneNumber, String otp);
+
 /// Configuration options for the Auth module.
 class AuthConfig {
   static AuthConfig _config = AuthConfig();
@@ -52,6 +56,20 @@ class AuthConfig {
 
   /// The reset period for email sign in attempts. Defaults to 5 minutes.
   final Duration emailSignInFailureResetTime;
+
+  ///Max allowed failed SMS sign in attempts within the reset period.
+  /// Defaults to 5. (By default, a user can make 5 sign in attempts within a
+  /// 5 minute window.)
+  final int maxAllowedSmsSignInAttempts;
+
+  /// the reset period for SMS authentication attempts. Defaults to 5 minutes.
+  final Duration smsSignInFailureResetTime;
+
+  /// SMS auth expiration time. Defaults to 5 minutes.
+  final Duration smsExpirationTime;
+
+  /// Called when a user should be sent a OTP by SMS.
+  final SendSMSAuthCallback? sendSMSAuth;
 
   /// True if users can update their profile images.
   final bool userCanEditUserImage;
@@ -133,6 +151,10 @@ class AuthConfig {
   AuthConfig({
     this.maxAllowedEmailSignInAttempts = 5,
     this.emailSignInFailureResetTime = const Duration(minutes: 5),
+    this.maxAllowedSmsSignInAttempts = 5,
+    this.smsSignInFailureResetTime = const Duration(minutes: 5),
+    this.smsExpirationTime = const Duration(minutes: 5),
+    this.sendSMSAuth,
     this.enableUserImages = true,
     this.importUserImagesFromGoogleSignIn = true,
     this.userImageSize = 256,
