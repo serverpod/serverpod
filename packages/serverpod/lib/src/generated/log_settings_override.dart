@@ -11,13 +11,20 @@ import 'protocol.dart' as _i2;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
-class LogSettingsOverride extends _i1.SerializableEntity {
-  LogSettingsOverride({
+abstract class LogSettingsOverride extends _i1.SerializableEntity {
+  LogSettingsOverride._({
     this.module,
     this.endpoint,
     this.method,
     required this.logSettings,
   });
+
+  factory LogSettingsOverride({
+    String? module,
+    String? endpoint,
+    String? method,
+    required _i2.LogSettings logSettings,
+  }) = _LogSettingsOverrideImpl;
 
   factory LogSettingsOverride.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -47,6 +54,12 @@ class LogSettingsOverride extends _i1.SerializableEntity {
   /// Log settings override.
   _i2.LogSettings logSettings;
 
+  LogSettingsOverride copyWith({
+    String? module,
+    String? endpoint,
+    String? method,
+    _i2.LogSettings? logSettings,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -65,5 +78,36 @@ class LogSettingsOverride extends _i1.SerializableEntity {
       'method': method,
       'logSettings': logSettings,
     };
+  }
+}
+
+class _Undefined {}
+
+class _LogSettingsOverrideImpl extends LogSettingsOverride {
+  _LogSettingsOverrideImpl({
+    String? module,
+    String? endpoint,
+    String? method,
+    required _i2.LogSettings logSettings,
+  }) : super._(
+          module: module,
+          endpoint: endpoint,
+          method: method,
+          logSettings: logSettings,
+        );
+
+  @override
+  LogSettingsOverride copyWith({
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    _i2.LogSettings? logSettings,
+  }) {
+    return LogSettingsOverride(
+      module: module is String? ? module : this.module,
+      endpoint: endpoint is String? ? endpoint : this.endpoint,
+      method: method is String? ? method : this.method,
+      logSettings: logSettings ?? this.logSettings.copyWith(),
+    );
   }
 }

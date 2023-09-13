@@ -24,7 +24,7 @@ void main() {
         exception = e;
       }
 
-      expect(exception.runtimeType, test_client.ExceptionWithData);
+      expect(exception.runtimeType.toString(), '_ExceptionWithDataImpl');
     });
 
     test('Serialize and deserialize custom server exception with data',

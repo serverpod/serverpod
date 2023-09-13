@@ -8,12 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithIndex extends _i1.TableRow {
-  ObjectWithIndex({
+abstract class ObjectWithIndex extends _i1.TableRow {
+  ObjectWithIndex._({
     int? id,
     required this.indexed,
     required this.indexed2,
   }) : super(id);
+
+  factory ObjectWithIndex({
+    int? id,
+    required int indexed,
+    required int indexed2,
+  }) = _ObjectWithIndexImpl;
 
   factory ObjectWithIndex.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -36,6 +42,11 @@ class ObjectWithIndex extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_index';
+  ObjectWithIndex copyWith({
+    int? id,
+    int? indexed,
+    int? indexed2,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -193,6 +204,33 @@ class ObjectWithIndex extends _i1.TableRow {
 
   static ObjectWithIndexInclude include() {
     return ObjectWithIndexInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithIndexImpl extends ObjectWithIndex {
+  _ObjectWithIndexImpl({
+    int? id,
+    required int indexed,
+    required int indexed2,
+  }) : super._(
+          id: id,
+          indexed: indexed,
+          indexed2: indexed2,
+        );
+
+  @override
+  ObjectWithIndex copyWith({
+    Object? id = _Undefined,
+    int? indexed,
+    int? indexed2,
+  }) {
+    return ObjectWithIndex(
+      id: id is int? ? id : this.id,
+      indexed: indexed ?? this.indexed,
+      indexed2: indexed2 ?? this.indexed2,
+    );
   }
 }
 

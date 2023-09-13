@@ -9,8 +9,11 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// An entry in the distributed cache.
-class DistributedCacheEntry extends _i1.SerializableEntity {
-  DistributedCacheEntry({required this.data});
+abstract class DistributedCacheEntry extends _i1.SerializableEntity {
+  DistributedCacheEntry._({required this.data});
+
+  factory DistributedCacheEntry({required String data}) =
+      _DistributedCacheEntryImpl;
 
   factory DistributedCacheEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -24,6 +27,7 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   /// The cached data.
   String data;
 
+  DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
     return {'data': data};
@@ -32,5 +36,14 @@ class DistributedCacheEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {'data': data};
+  }
+}
+
+class _DistributedCacheEntryImpl extends DistributedCacheEntry {
+  _DistributedCacheEntryImpl({required String data}) : super._(data: data);
+
+  @override
+  DistributedCacheEntry copyWith({String? data}) {
+    return DistributedCacheEntry(data: data ?? this.data);
   }
 }

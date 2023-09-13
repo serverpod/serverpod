@@ -11,13 +11,20 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_auth_server/module.dart' as _i3;
 
 /// A message passed to a user when it joins a channel.
-class ChatJoinedChannel extends _i1.SerializableEntity {
-  ChatJoinedChannel({
+abstract class ChatJoinedChannel extends _i1.SerializableEntity {
+  ChatJoinedChannel._({
     required this.channel,
     required this.initialMessageChunk,
     required this.lastReadMessageId,
     required this.userInfo,
   });
+
+  factory ChatJoinedChannel({
+    required String channel,
+    required _i2.ChatMessageChunk initialMessageChunk,
+    required int lastReadMessageId,
+    required _i3.UserInfo userInfo,
+  }) = _ChatJoinedChannelImpl;
 
   factory ChatJoinedChannel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -48,6 +55,12 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
   /// The user info of the user who joined the channel.
   _i3.UserInfo userInfo;
 
+  ChatJoinedChannel copyWith({
+    String? channel,
+    _i2.ChatMessageChunk? initialMessageChunk,
+    int? lastReadMessageId,
+    _i3.UserInfo? userInfo,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -66,5 +79,35 @@ class ChatJoinedChannel extends _i1.SerializableEntity {
       'lastReadMessageId': lastReadMessageId,
       'userInfo': userInfo,
     };
+  }
+}
+
+class _ChatJoinedChannelImpl extends ChatJoinedChannel {
+  _ChatJoinedChannelImpl({
+    required String channel,
+    required _i2.ChatMessageChunk initialMessageChunk,
+    required int lastReadMessageId,
+    required _i3.UserInfo userInfo,
+  }) : super._(
+          channel: channel,
+          initialMessageChunk: initialMessageChunk,
+          lastReadMessageId: lastReadMessageId,
+          userInfo: userInfo,
+        );
+
+  @override
+  ChatJoinedChannel copyWith({
+    String? channel,
+    _i2.ChatMessageChunk? initialMessageChunk,
+    int? lastReadMessageId,
+    _i3.UserInfo? userInfo,
+  }) {
+    return ChatJoinedChannel(
+      channel: channel ?? this.channel,
+      initialMessageChunk:
+          initialMessageChunk ?? this.initialMessageChunk.copyWith(),
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+      userInfo: userInfo ?? this.userInfo.copyWith(),
+    );
   }
 }

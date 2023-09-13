@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class BulkQueryColumnDescription extends _i1.SerializableEntity {
-  BulkQueryColumnDescription({
+abstract class BulkQueryColumnDescription extends _i1.SerializableEntity {
+  BulkQueryColumnDescription._({
     required this.name,
     required this.table,
   });
+
+  factory BulkQueryColumnDescription({
+    required String name,
+    required String table,
+  }) = _BulkQueryColumnDescriptionImpl;
 
   factory BulkQueryColumnDescription.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,11 +34,36 @@ class BulkQueryColumnDescription extends _i1.SerializableEntity {
 
   String table;
 
+  BulkQueryColumnDescription copyWith({
+    String? name,
+    String? table,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'table': table,
     };
+  }
+}
+
+class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
+  _BulkQueryColumnDescriptionImpl({
+    required String name,
+    required String table,
+  }) : super._(
+          name: name,
+          table: table,
+        );
+
+  @override
+  BulkQueryColumnDescription copyWith({
+    String? name,
+    String? table,
+  }) {
+    return BulkQueryColumnDescription(
+      name: name ?? this.name,
+      table: table ?? this.table,
+    );
   }
 }

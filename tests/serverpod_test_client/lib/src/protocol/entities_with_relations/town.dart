@@ -9,13 +9,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class Town extends _i1.SerializableEntity {
-  Town({
+abstract class Town extends _i1.SerializableEntity {
+  Town._({
     this.id,
     required this.name,
     this.mayorId,
     this.mayor,
   });
+
+  factory Town({
+    int? id,
+    required String name,
+    int? mayorId,
+    _i2.Citizen? mayor,
+  }) = _TownImpl;
 
   factory Town.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -42,6 +49,12 @@ class Town extends _i1.SerializableEntity {
 
   _i2.Citizen? mayor;
 
+  Town copyWith({
+    int? id,
+    String? name,
+    int? mayorId,
+    _i2.Citizen? mayor,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -50,5 +63,36 @@ class Town extends _i1.SerializableEntity {
       'mayorId': mayorId,
       'mayor': mayor,
     };
+  }
+}
+
+class _Undefined {}
+
+class _TownImpl extends Town {
+  _TownImpl({
+    int? id,
+    required String name,
+    int? mayorId,
+    _i2.Citizen? mayor,
+  }) : super._(
+          id: id,
+          name: name,
+          mayorId: mayorId,
+          mayor: mayor,
+        );
+
+  @override
+  Town copyWith({
+    Object? id = _Undefined,
+    String? name,
+    Object? mayorId = _Undefined,
+    Object? mayor = _Undefined,
+  }) {
+    return Town(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      mayorId: mayorId is int? ? mayorId : this.mayorId,
+      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
+    );
   }
 }

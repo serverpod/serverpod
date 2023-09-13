@@ -6,7 +6,7 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
   serverpod_client:
@@ -17,3 +17,6 @@ dependencies:
     path: ../serverpod_test_shared
   serverpod_auth_client:
     path: ../../modules/serverpod_auth/serverpod_auth_client
+
+dev_dependencies:
+  test: ^1.24.2

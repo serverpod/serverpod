@@ -10,8 +10,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-class LogEntry extends _i1.TableRow {
-  LogEntry({
+abstract class LogEntry extends _i1.TableRow {
+  LogEntry._({
     int? id,
     required this.sessionLogId,
     this.messageId,
@@ -24,6 +24,20 @@ class LogEntry extends _i1.TableRow {
     this.stackTrace,
     required this.order,
   }) : super(id);
+
+  factory LogEntry({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) = _LogEntryImpl;
 
   factory LogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -87,6 +101,19 @@ class LogEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_log';
+  LogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    int? messageId,
+    String? reference,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    String? error,
+    String? stackTrace,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -292,6 +319,65 @@ class LogEntry extends _i1.TableRow {
 
   static LogEntryInclude include() {
     return LogEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _LogEntryImpl extends LogEntry {
+  _LogEntryImpl({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) : super._(
+          id: id,
+          sessionLogId: sessionLogId,
+          messageId: messageId,
+          reference: reference,
+          serverId: serverId,
+          time: time,
+          logLevel: logLevel,
+          message: message,
+          error: error,
+          stackTrace: stackTrace,
+          order: order,
+        );
+
+  @override
+  LogEntry copyWith({
+    Object? id = _Undefined,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    Object? reference = _Undefined,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    int? order,
+  }) {
+    return LogEntry(
+      id: id is int? ? id : this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId is int? ? messageId : this.messageId,
+      reference: reference is String? ? reference : this.reference,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      logLevel: logLevel ?? this.logLevel,
+      message: message ?? this.message,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      order: order ?? this.order,
+    );
   }
 }
 

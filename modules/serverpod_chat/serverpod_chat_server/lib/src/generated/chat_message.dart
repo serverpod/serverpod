@@ -11,8 +11,8 @@ import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 
 /// A chat message.
-class ChatMessage extends _i1.TableRow {
-  ChatMessage({
+abstract class ChatMessage extends _i1.TableRow {
+  ChatMessage._({
     int? id,
     required this.channel,
     required this.message,
@@ -24,6 +24,19 @@ class ChatMessage extends _i1.TableRow {
     this.sent,
     this.attachments,
   }) : super(id);
+
+  factory ChatMessage({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) = _ChatMessageImpl;
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -83,6 +96,18 @@ class ChatMessage extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_chat_message';
+  ChatMessage copyWith({
+    int? id,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    _i2.UserInfoPublic? senderInfo,
+    bool? removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -270,6 +295,66 @@ class ChatMessage extends _i1.TableRow {
 
   static ChatMessageInclude include() {
     return ChatMessageInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ChatMessageImpl extends ChatMessage {
+  _ChatMessageImpl({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) : super._(
+          id: id,
+          channel: channel,
+          message: message,
+          time: time,
+          sender: sender,
+          senderInfo: senderInfo,
+          removed: removed,
+          clientMessageId: clientMessageId,
+          sent: sent,
+          attachments: attachments,
+        );
+
+  @override
+  ChatMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    Object? senderInfo = _Undefined,
+    bool? removed,
+    Object? clientMessageId = _Undefined,
+    Object? sent = _Undefined,
+    Object? attachments = _Undefined,
+  }) {
+    return ChatMessage(
+      id: id is int? ? id : this.id,
+      channel: channel ?? this.channel,
+      message: message ?? this.message,
+      time: time ?? this.time,
+      sender: sender ?? this.sender,
+      senderInfo: senderInfo is _i2.UserInfoPublic?
+          ? senderInfo
+          : this.senderInfo?.copyWith(),
+      removed: removed ?? this.removed,
+      clientMessageId:
+          clientMessageId is int? ? clientMessageId : this.clientMessageId,
+      sent: sent is bool? ? sent : this.sent,
+      attachments: attachments is List<_i3.ChatMessageAttachment>?
+          ? attachments
+          : this.attachments?.clone(),
+    );
   }
 }
 

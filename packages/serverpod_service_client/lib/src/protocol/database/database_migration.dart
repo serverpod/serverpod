@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class DatabaseMigration extends _i1.SerializableEntity {
-  DatabaseMigration({
+abstract class DatabaseMigration extends _i1.SerializableEntity {
+  DatabaseMigration._({
     required this.actions,
     required this.warnings,
     required this.priority,
   });
+
+  factory DatabaseMigration({
+    required List<_i2.DatabaseMigrationAction> actions,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+    required int priority,
+  }) = _DatabaseMigrationImpl;
 
   factory DatabaseMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,6 +44,11 @@ class DatabaseMigration extends _i1.SerializableEntity {
 
   int priority;
 
+  DatabaseMigration copyWith({
+    List<_i2.DatabaseMigrationAction>? actions,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+    int? priority,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -45,5 +56,30 @@ class DatabaseMigration extends _i1.SerializableEntity {
       'warnings': warnings,
       'priority': priority,
     };
+  }
+}
+
+class _DatabaseMigrationImpl extends DatabaseMigration {
+  _DatabaseMigrationImpl({
+    required List<_i2.DatabaseMigrationAction> actions,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+    required int priority,
+  }) : super._(
+          actions: actions,
+          warnings: warnings,
+          priority: priority,
+        );
+
+  @override
+  DatabaseMigration copyWith({
+    List<_i2.DatabaseMigrationAction>? actions,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+    int? priority,
+  }) {
+    return DatabaseMigration(
+      actions: actions ?? this.actions.clone(),
+      warnings: warnings ?? this.warnings.clone(),
+      priority: priority ?? this.priority,
+    );
   }
 }

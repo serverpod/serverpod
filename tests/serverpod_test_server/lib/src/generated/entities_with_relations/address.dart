@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class Address extends _i1.TableRow {
-  Address({
+abstract class Address extends _i1.TableRow {
+  Address._({
     int? id,
     required this.street,
     required this.inhabitantId,
     this.inhabitant,
   }) : super(id);
+
+  factory Address({
+    int? id,
+    required String street,
+    required int inhabitantId,
+    _i2.Citizen? inhabitant,
+  }) = _AddressImpl;
 
   factory Address.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -42,6 +49,12 @@ class Address extends _i1.TableRow {
 
   @override
   String get tableName => 'address';
+  Address copyWith({
+    int? id,
+    String? street,
+    int? inhabitantId,
+    _i2.Citizen? inhabitant,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -209,6 +222,38 @@ class Address extends _i1.TableRow {
 
   static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
     return AddressInclude._(inhabitant: inhabitant);
+  }
+}
+
+class _Undefined {}
+
+class _AddressImpl extends Address {
+  _AddressImpl({
+    int? id,
+    required String street,
+    required int inhabitantId,
+    _i2.Citizen? inhabitant,
+  }) : super._(
+          id: id,
+          street: street,
+          inhabitantId: inhabitantId,
+          inhabitant: inhabitant,
+        );
+
+  @override
+  Address copyWith({
+    Object? id = _Undefined,
+    String? street,
+    int? inhabitantId,
+    Object? inhabitant = _Undefined,
+  }) {
+    return Address(
+      id: id is int? ? id : this.id,
+      street: street ?? this.street,
+      inhabitantId: inhabitantId ?? this.inhabitantId,
+      inhabitant:
+          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
+    );
   }
 }
 

@@ -19,3 +19,4 @@ dependencies:
 dev_dependencies:
   serverpod_lints: #1.1.0
     path: ../serverpod_lints
+  test: ^1.24.2

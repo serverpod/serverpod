@@ -9,11 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-class SimpleDateTime extends _i1.SerializableEntity {
-  SimpleDateTime({
+abstract class SimpleDateTime extends _i1.SerializableEntity {
+  SimpleDateTime._({
     this.id,
     required this.dateTime,
   });
+
+  factory SimpleDateTime({
+    int? id,
+    required DateTime dateTime,
+  }) = _SimpleDateTimeImpl;
 
   factory SimpleDateTime.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,11 +39,38 @@ class SimpleDateTime extends _i1.SerializableEntity {
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
 
+  SimpleDateTime copyWith({
+    int? id,
+    DateTime? dateTime,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'dateTime': dateTime,
     };
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDateTimeImpl extends SimpleDateTime {
+  _SimpleDateTimeImpl({
+    int? id,
+    required DateTime dateTime,
+  }) : super._(
+          id: id,
+          dateTime: dateTime,
+        );
+
+  @override
+  SimpleDateTime copyWith({
+    Object? id = _Undefined,
+    DateTime? dateTime,
+  }) {
+    return SimpleDateTime(
+      id: id is int? ? id : this.id,
+      dateTime: dateTime ?? this.dateTime,
+    );
   }
 }

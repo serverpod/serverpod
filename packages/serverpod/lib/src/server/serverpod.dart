@@ -411,9 +411,11 @@ class Serverpod {
       }
 
       // Start maintenance tasks. If we are running in maintenance mode, we
-      // will only run the maintenance tasks once.
+      // will only run the maintenance tasks once. If we are applying migrations
+      // no other maintenance tasks will be run.
       if (commandLineArgs.role == ServerpodRole.monolith ||
-          commandLineArgs.role == ServerpodRole.maintenance) {
+          (commandLineArgs.role == ServerpodRole.maintenance &&
+              !commandLineArgs.applyMigrations)) {
         logVerbose('Starting maintenance tasks.');
 
         // Start future calls
@@ -425,7 +427,11 @@ class Serverpod {
 
       logVerbose('Serverpod start complete.');
 
-      // TODO: Run maintenance tasks once if in maintenance role.
+      if (commandLineArgs.role == ServerpodRole.maintenance &&
+          commandLineArgs.applyMigrations) {
+        logVerbose('Finished applying database migrations.');
+        exit(0);
+      }
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?

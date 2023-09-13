@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
-class UserImage extends _i1.TableRow {
-  UserImage({
+abstract class UserImage extends _i1.TableRow {
+  UserImage._({
     int? id,
     required this.userId,
     required this.version,
     required this.url,
   }) : super(id);
+
+  factory UserImage({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) = _UserImageImpl;
 
   factory UserImage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,6 +51,12 @@ class UserImage extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_user_image';
+  UserImage copyWith({
+    int? id,
+    int? userId,
+    int? version,
+    String? url,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -207,6 +220,37 @@ class UserImage extends _i1.TableRow {
 
   static UserImageInclude include() {
     return UserImageInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _UserImageImpl extends UserImage {
+  _UserImageImpl({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) : super._(
+          id: id,
+          userId: userId,
+          version: version,
+          url: url,
+        );
+
+  @override
+  UserImage copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
   }
 }
 

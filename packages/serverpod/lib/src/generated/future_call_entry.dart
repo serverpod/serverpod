@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-class FutureCallEntry extends _i1.TableRow {
-  FutureCallEntry({
+abstract class FutureCallEntry extends _i1.TableRow {
+  FutureCallEntry._({
     int? id,
     required this.name,
     required this.time,
@@ -18,6 +18,15 @@ class FutureCallEntry extends _i1.TableRow {
     required this.serverId,
     this.identifier,
   }) : super(id);
+
+  factory FutureCallEntry({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -56,6 +65,14 @@ class FutureCallEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_future_call';
+  FutureCallEntry copyWith({
+    int? id,
+    String? name,
+    DateTime? time,
+    String? serializedObject,
+    String? serverId,
+    String? identifier,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -231,6 +248,47 @@ class FutureCallEntry extends _i1.TableRow {
 
   static FutureCallEntryInclude include() {
     return FutureCallEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _FutureCallEntryImpl extends FutureCallEntry {
+  _FutureCallEntryImpl({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) : super._(
+          id: id,
+          name: name,
+          time: time,
+          serializedObject: serializedObject,
+          serverId: serverId,
+          identifier: identifier,
+        );
+
+  @override
+  FutureCallEntry copyWith({
+    Object? id = _Undefined,
+    String? name,
+    DateTime? time,
+    Object? serializedObject = _Undefined,
+    String? serverId,
+    Object? identifier = _Undefined,
+  }) {
+    return FutureCallEntry(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      time: time ?? this.time,
+      serializedObject: serializedObject is String?
+          ? serializedObject
+          : this.serializedObject,
+      serverId: serverId ?? this.serverId,
+      identifier: identifier is String? ? identifier : this.identifier,
+    );
   }
 }
 

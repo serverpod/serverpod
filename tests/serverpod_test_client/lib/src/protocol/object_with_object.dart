@@ -9,8 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class ObjectWithObject extends _i1.SerializableEntity {
-  ObjectWithObject({
+abstract class ObjectWithObject extends _i1.SerializableEntity {
+  ObjectWithObject._({
     this.id,
     required this.data,
     this.nullableData,
@@ -19,6 +19,16 @@ class ObjectWithObject extends _i1.SerializableEntity {
     required this.listWithNullableData,
     this.nullableListWithNullableData,
   });
+
+  factory ObjectWithObject({
+    int? id,
+    required _i2.SimpleData data,
+    _i2.SimpleData? nullableData,
+    required List<_i2.SimpleData> dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    required List<_i2.SimpleData?> listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) = _ObjectWithObjectImpl;
 
   factory ObjectWithObject.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -60,6 +70,15 @@ class ObjectWithObject extends _i1.SerializableEntity {
 
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
+  ObjectWithObject copyWith({
+    int? id,
+    _i2.SimpleData? data,
+    _i2.SimpleData? nullableData,
+    List<_i2.SimpleData>? dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    List<_i2.SimpleData?>? listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -71,5 +90,56 @@ class ObjectWithObject extends _i1.SerializableEntity {
       'listWithNullableData': listWithNullableData,
       'nullableListWithNullableData': nullableListWithNullableData,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithObjectImpl extends ObjectWithObject {
+  _ObjectWithObjectImpl({
+    int? id,
+    required _i2.SimpleData data,
+    _i2.SimpleData? nullableData,
+    required List<_i2.SimpleData> dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    required List<_i2.SimpleData?> listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) : super._(
+          id: id,
+          data: data,
+          nullableData: nullableData,
+          dataList: dataList,
+          nullableDataList: nullableDataList,
+          listWithNullableData: listWithNullableData,
+          nullableListWithNullableData: nullableListWithNullableData,
+        );
+
+  @override
+  ObjectWithObject copyWith({
+    Object? id = _Undefined,
+    _i2.SimpleData? data,
+    Object? nullableData = _Undefined,
+    List<_i2.SimpleData>? dataList,
+    Object? nullableDataList = _Undefined,
+    List<_i2.SimpleData?>? listWithNullableData,
+    Object? nullableListWithNullableData = _Undefined,
+  }) {
+    return ObjectWithObject(
+      id: id is int? ? id : this.id,
+      data: data ?? this.data.copyWith(),
+      nullableData: nullableData is _i2.SimpleData?
+          ? nullableData
+          : this.nullableData?.copyWith(),
+      dataList: dataList ?? this.dataList.clone(),
+      nullableDataList: nullableDataList is List<_i2.SimpleData>?
+          ? nullableDataList
+          : this.nullableDataList?.clone(),
+      listWithNullableData:
+          listWithNullableData ?? this.listWithNullableData.clone(),
+      nullableListWithNullableData:
+          nullableListWithNullableData is List<_i2.SimpleData?>?
+              ? nullableListWithNullableData
+              : this.nullableListWithNullableData?.clone(),
+    );
   }
 }

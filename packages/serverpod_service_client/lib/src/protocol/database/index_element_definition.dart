@@ -10,11 +10,16 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// Defines an element of an index.
-class IndexElementDefinition extends _i1.SerializableEntity {
-  IndexElementDefinition({
+abstract class IndexElementDefinition extends _i1.SerializableEntity {
+  IndexElementDefinition._({
     required this.type,
     required this.definition,
   });
+
+  factory IndexElementDefinition({
+    required _i2.IndexElementDefinitionType type,
+    required String definition,
+  }) = _IndexElementDefinitionImpl;
 
   factory IndexElementDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,11 +39,36 @@ class IndexElementDefinition extends _i1.SerializableEntity {
   /// Depending on the [type], this is either a column name or an expression.
   String definition;
 
+  IndexElementDefinition copyWith({
+    _i2.IndexElementDefinitionType? type,
+    String? definition,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'type': type,
       'definition': definition,
     };
+  }
+}
+
+class _IndexElementDefinitionImpl extends IndexElementDefinition {
+  _IndexElementDefinitionImpl({
+    required _i2.IndexElementDefinitionType type,
+    required String definition,
+  }) : super._(
+          type: type,
+          definition: definition,
+        );
+
+  @override
+  IndexElementDefinition copyWith({
+    _i2.IndexElementDefinitionType? type,
+    String? definition,
+  }) {
+    return IndexElementDefinition(
+      type: type ?? this.type,
+      definition: definition ?? this.definition,
+    );
   }
 }

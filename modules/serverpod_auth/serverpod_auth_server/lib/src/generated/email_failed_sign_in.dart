@@ -10,13 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-class EmailFailedSignIn extends _i1.TableRow {
-  EmailFailedSignIn({
+abstract class EmailFailedSignIn extends _i1.TableRow {
+  EmailFailedSignIn._({
     int? id,
     required this.email,
     required this.time,
     required this.ipAddress,
   }) : super(id);
+
+  factory EmailFailedSignIn({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) = _EmailFailedSignInImpl;
 
   factory EmailFailedSignIn.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +53,12 @@ class EmailFailedSignIn extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_email_failed_sign_in';
+  EmailFailedSignIn copyWith({
+    int? id,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -209,6 +222,37 @@ class EmailFailedSignIn extends _i1.TableRow {
 
   static EmailFailedSignInInclude include() {
     return EmailFailedSignInInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailFailedSignInImpl extends EmailFailedSignIn {
+  _EmailFailedSignInImpl({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) : super._(
+          id: id,
+          email: email,
+          time: time,
+          ipAddress: ipAddress,
+        );
+
+  @override
+  EmailFailedSignIn copyWith({
+    Object? id = _Undefined,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  }) {
+    return EmailFailedSignIn(
+      id: id is int? ? id : this.id,
+      email: email ?? this.email,
+      time: time ?? this.time,
+      ipAddress: ipAddress ?? this.ipAddress,
+    );
   }
 }
 

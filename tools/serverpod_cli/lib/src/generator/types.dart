@@ -43,6 +43,8 @@ class TypeDefinition {
 
   bool get isListType => className == 'List';
 
+  bool get isMapType => className == 'Map';
+
   bool get isIdType => className == 'int';
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
