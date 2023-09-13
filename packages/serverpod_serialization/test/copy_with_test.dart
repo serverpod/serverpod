@@ -35,6 +35,41 @@ void main() {
         Uint8List.fromList([0, 1, 2, 3, 4]),
       );
     });
+
+    group(
+        'Given a ByteData when specifying a slice of the buffer and modifying the original after creating a copy',
+        () {
+      ByteBuffer buffer = Uint8List.fromList([0, 1, 2, 3, 4]).buffer;
+
+      var offsetInBytes = 2;
+      var lengthInBytes = 1;
+
+      ByteData byteDataView = ByteData.view(
+        buffer,
+        offsetInBytes,
+        lengthInBytes,
+      );
+
+      var clone = byteDataView.clone();
+
+      buffer.asByteData().setUint8(0, 9);
+
+      test('then the copy buffer has the full original data.', () {
+        expect(clone.buffer.asUint8List(), Uint8List.fromList([0, 1, 2, 3, 4]));
+      });
+
+      test('then the view is preserved.', () {
+        expect(clone.getInt8(0), byteDataView.getInt8(0));
+      });
+
+      test('then the offsetInBytes is preserved.', () {
+        expect(clone.offsetInBytes, offsetInBytes);
+      });
+
+      test('then the lengthInBytes is preserved', () {
+        expect(clone.lengthInBytes, lengthInBytes);
+      });
+    });
   });
 
   group('on List', () {
