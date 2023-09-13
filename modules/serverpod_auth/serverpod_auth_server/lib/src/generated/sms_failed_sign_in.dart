@@ -10,13 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database Table for Tracking failed SMS sign in attempts. Saves IP address, phone number
 /// and time to prevent brute force attacks.
-class SmsFailedSignIn extends _i1.TableRow {
-  SmsFailedSignIn({
+abstract class SmsFailedSignIn extends _i1.TableRow {
+  SmsFailedSignIn._({
     int? id,
     required this.phoneNumber,
     required this.time,
     required this.ipAddress,
   }) : super(id);
+
+  factory SmsFailedSignIn({
+    int? id,
+    required String phoneNumber,
+    required DateTime time,
+    required String ipAddress,
+  }) = _SmsFailedSignInImpl;
 
   factory SmsFailedSignIn.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +53,12 @@ class SmsFailedSignIn extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_sms_failed_sign_in';
+  SmsFailedSignIn copyWith({
+    int? id,
+    String? phoneNumber,
+    DateTime? time,
+    String? ipAddress,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -209,6 +222,37 @@ class SmsFailedSignIn extends _i1.TableRow {
 
   static SmsFailedSignInInclude include() {
     return SmsFailedSignInInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SmsFailedSignInImpl extends SmsFailedSignIn {
+  _SmsFailedSignInImpl({
+    int? id,
+    required String phoneNumber,
+    required DateTime time,
+    required String ipAddress,
+  }) : super._(
+          id: id,
+          phoneNumber: phoneNumber,
+          time: time,
+          ipAddress: ipAddress,
+        );
+
+  @override
+  SmsFailedSignIn copyWith({
+    Object? id = _Undefined,
+    String? phoneNumber,
+    DateTime? time,
+    String? ipAddress,
+  }) {
+    return SmsFailedSignIn(
+      id: id is int? ? id : this.id,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      time: time ?? this.time,
+      ipAddress: ipAddress ?? this.ipAddress,
+    );
   }
 }
 

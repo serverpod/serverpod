@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for SMSAuth
-class SmsAuth extends _i1.SerializableEntity {
-  SmsAuth({
+abstract class SmsAuth extends _i1.SerializableEntity {
+  SmsAuth._({
     this.id,
     required this.userId,
     required this.phoneNumber,
   });
+
+  factory SmsAuth({
+    int? id,
+    required int userId,
+    required String phoneNumber,
+  }) = _SmsAuthImpl;
 
   factory SmsAuth.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,6 +46,11 @@ class SmsAuth extends _i1.SerializableEntity {
   /// The phone number of the user.
   String phoneNumber;
 
+  SmsAuth copyWith({
+    int? id,
+    int? userId,
+    String? phoneNumber,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -47,5 +58,32 @@ class SmsAuth extends _i1.SerializableEntity {
       'userId': userId,
       'phoneNumber': phoneNumber,
     };
+  }
+}
+
+class _Undefined {}
+
+class _SmsAuthImpl extends SmsAuth {
+  _SmsAuthImpl({
+    int? id,
+    required int userId,
+    required String phoneNumber,
+  }) : super._(
+          id: id,
+          userId: userId,
+          phoneNumber: phoneNumber,
+        );
+
+  @override
+  SmsAuth copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? phoneNumber,
+  }) {
+    return SmsAuth(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+    );
   }
 }

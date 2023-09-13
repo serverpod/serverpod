@@ -10,12 +10,18 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about SMS OTP response.
-class SmsOtpResponse extends _i1.SerializableEntity {
-  SmsOtpResponse({
+abstract class SmsOtpResponse extends _i1.SerializableEntity {
+  SmsOtpResponse._({
     required this.success,
     this.hash,
     this.failReason,
   });
+
+  factory SmsOtpResponse({
+    required bool success,
+    String? hash,
+    _i2.AuthenticationFailReason? failReason,
+  }) = _SmsOtpResponseImpl;
 
   factory SmsOtpResponse.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,6 +47,11 @@ class SmsOtpResponse extends _i1.SerializableEntity {
   /// failed.
   _i2.AuthenticationFailReason? failReason;
 
+  SmsOtpResponse copyWith({
+    bool? success,
+    String? hash,
+    _i2.AuthenticationFailReason? failReason,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -57,5 +68,34 @@ class SmsOtpResponse extends _i1.SerializableEntity {
       'hash': hash,
       'failReason': failReason,
     };
+  }
+}
+
+class _Undefined {}
+
+class _SmsOtpResponseImpl extends SmsOtpResponse {
+  _SmsOtpResponseImpl({
+    required bool success,
+    String? hash,
+    _i2.AuthenticationFailReason? failReason,
+  }) : super._(
+          success: success,
+          hash: hash,
+          failReason: failReason,
+        );
+
+  @override
+  SmsOtpResponse copyWith({
+    bool? success,
+    Object? hash = _Undefined,
+    Object? failReason = _Undefined,
+  }) {
+    return SmsOtpResponse(
+      success: success ?? this.success,
+      hash: hash is String? ? hash : this.hash,
+      failReason: failReason is _i2.AuthenticationFailReason?
+          ? failReason
+          : this.failReason,
+    );
   }
 }

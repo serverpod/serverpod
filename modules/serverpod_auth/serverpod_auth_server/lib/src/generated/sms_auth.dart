@@ -9,12 +9,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for SMSAuth
-class SmsAuth extends _i1.TableRow {
-  SmsAuth({
+abstract class SmsAuth extends _i1.TableRow {
+  SmsAuth._({
     int? id,
     required this.userId,
     required this.phoneNumber,
   }) : super(id);
+
+  factory SmsAuth({
+    int? id,
+    required int userId,
+    required String phoneNumber,
+  }) = _SmsAuthImpl;
 
   factory SmsAuth.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,6 +45,11 @@ class SmsAuth extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_sms_auth';
+  SmsAuth copyWith({
+    int? id,
+    int? userId,
+    String? phoneNumber,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -196,6 +207,33 @@ class SmsAuth extends _i1.TableRow {
 
   static SmsAuthInclude include() {
     return SmsAuthInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SmsAuthImpl extends SmsAuth {
+  _SmsAuthImpl({
+    int? id,
+    required int userId,
+    required String phoneNumber,
+  }) : super._(
+          id: id,
+          userId: userId,
+          phoneNumber: phoneNumber,
+        );
+
+  @override
+  SmsAuth copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? phoneNumber,
+  }) {
+    return SmsAuth(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+    );
   }
 }
 
