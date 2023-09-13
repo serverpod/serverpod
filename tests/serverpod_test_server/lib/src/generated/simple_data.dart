@@ -9,11 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-class SimpleData extends _i1.TableRow {
-  SimpleData({
+abstract class SimpleData extends _i1.TableRow {
+  SimpleData._({
     int? id,
     required this.num,
   }) : super(id);
+
+  factory SimpleData({
+    int? id,
+    required int num,
+  }) = _SimpleDataImpl;
 
   factory SimpleData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,6 +39,10 @@ class SimpleData extends _i1.TableRow {
 
   @override
   String get tableName => 'simple_data';
+  SimpleData copyWith({
+    int? id,
+    int? num,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -185,6 +194,29 @@ class SimpleData extends _i1.TableRow {
 
   static SimpleDataInclude include() {
     return SimpleDataInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDataImpl extends SimpleData {
+  _SimpleDataImpl({
+    int? id,
+    required int num,
+  }) : super._(
+          id: id,
+          num: num,
+        );
+
+  @override
+  SimpleData copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id is int? ? id : this.id,
+      num: num ?? this.num,
+    );
   }
 }
 

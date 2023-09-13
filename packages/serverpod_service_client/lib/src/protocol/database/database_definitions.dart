@@ -11,13 +11,20 @@ import '../protocol.dart' as _i2;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
-class DatabaseDefinitions extends _i1.SerializableEntity {
-  DatabaseDefinitions({
+abstract class DatabaseDefinitions extends _i1.SerializableEntity {
+  DatabaseDefinitions._({
     required this.target,
     required this.live,
     required this.installedMigrations,
     required this.latestAvailableMigrations,
   });
+
+  factory DatabaseDefinitions({
+    required _i2.DatabaseDefinition target,
+    required _i2.DatabaseDefinition live,
+    required List<_i2.DatabaseMigrationVersion> installedMigrations,
+    required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
+  }) = _DatabaseDefinitionsImpl;
 
   factory DatabaseDefinitions.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -49,6 +56,12 @@ class DatabaseDefinitions extends _i1.SerializableEntity {
   /// The latest available migrations that can be applied.
   List<_i2.DatabaseMigrationVersion> latestAvailableMigrations;
 
+  DatabaseDefinitions copyWith({
+    _i2.DatabaseDefinition? target,
+    _i2.DatabaseDefinition? live,
+    List<_i2.DatabaseMigrationVersion>? installedMigrations,
+    List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -57,5 +70,36 @@ class DatabaseDefinitions extends _i1.SerializableEntity {
       'installedMigrations': installedMigrations,
       'latestAvailableMigrations': latestAvailableMigrations,
     };
+  }
+}
+
+class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
+  _DatabaseDefinitionsImpl({
+    required _i2.DatabaseDefinition target,
+    required _i2.DatabaseDefinition live,
+    required List<_i2.DatabaseMigrationVersion> installedMigrations,
+    required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
+  }) : super._(
+          target: target,
+          live: live,
+          installedMigrations: installedMigrations,
+          latestAvailableMigrations: latestAvailableMigrations,
+        );
+
+  @override
+  DatabaseDefinitions copyWith({
+    _i2.DatabaseDefinition? target,
+    _i2.DatabaseDefinition? live,
+    List<_i2.DatabaseMigrationVersion>? installedMigrations,
+    List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
+  }) {
+    return DatabaseDefinitions(
+      target: target ?? this.target.copyWith(),
+      live: live ?? this.live.copyWith(),
+      installedMigrations:
+          installedMigrations ?? this.installedMigrations.clone(),
+      latestAvailableMigrations:
+          latestAvailableMigrations ?? this.latestAvailableMigrations.clone(),
+    );
   }
 }

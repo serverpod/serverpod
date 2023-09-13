@@ -8,12 +8,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ServerpodSqlException extends _i1.SerializableEntity
+abstract class ServerpodSqlException extends _i1.SerializableEntity
     implements _i1.SerializableException {
-  ServerpodSqlException({
+  ServerpodSqlException._({
     required this.message,
     required this.sql,
   });
+
+  factory ServerpodSqlException({
+    required String message,
+    required String sql,
+  }) = _ServerpodSqlExceptionImpl;
 
   factory ServerpodSqlException.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,6 +35,10 @@ class ServerpodSqlException extends _i1.SerializableEntity
 
   String sql;
 
+  ServerpodSqlException copyWith({
+    String? message,
+    String? sql,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -44,5 +53,26 @@ class ServerpodSqlException extends _i1.SerializableEntity
       'message': message,
       'sql': sql,
     };
+  }
+}
+
+class _ServerpodSqlExceptionImpl extends ServerpodSqlException {
+  _ServerpodSqlExceptionImpl({
+    required String message,
+    required String sql,
+  }) : super._(
+          message: message,
+          sql: sql,
+        );
+
+  @override
+  ServerpodSqlException copyWith({
+    String? message,
+    String? sql,
+  }) {
+    return ServerpodSqlException(
+      message: message ?? this.message,
+      sql: sql ?? this.sql,
+    );
   }
 }

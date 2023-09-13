@@ -21,3 +21,4 @@ dependencies:
 dev_dependencies:
   serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
     path: ../serverpod_lints
+  test: ^1.24.2

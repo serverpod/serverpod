@@ -10,13 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Compounded information about a session log.
-class SessionLogInfo extends _i1.SerializableEntity {
-  SessionLogInfo({
+abstract class SessionLogInfo extends _i1.SerializableEntity {
+  SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
     required this.logs,
     required this.messages,
   });
+
+  factory SessionLogInfo({
+    required _i2.SessionLogEntry sessionLogEntry,
+    required List<_i2.QueryLogEntry> queries,
+    required List<_i2.LogEntry> logs,
+    required List<_i2.MessageLogEntry> messages,
+  }) = _SessionLogInfoImpl;
 
   factory SessionLogInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +53,12 @@ class SessionLogInfo extends _i1.SerializableEntity {
   /// List of messages sent during the session.
   List<_i2.MessageLogEntry> messages;
 
+  SessionLogInfo copyWith({
+    _i2.SessionLogEntry? sessionLogEntry,
+    List<_i2.QueryLogEntry>? queries,
+    List<_i2.LogEntry>? logs,
+    List<_i2.MessageLogEntry>? messages,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -64,5 +77,34 @@ class SessionLogInfo extends _i1.SerializableEntity {
       'logs': logs,
       'messages': messages,
     };
+  }
+}
+
+class _SessionLogInfoImpl extends SessionLogInfo {
+  _SessionLogInfoImpl({
+    required _i2.SessionLogEntry sessionLogEntry,
+    required List<_i2.QueryLogEntry> queries,
+    required List<_i2.LogEntry> logs,
+    required List<_i2.MessageLogEntry> messages,
+  }) : super._(
+          sessionLogEntry: sessionLogEntry,
+          queries: queries,
+          logs: logs,
+          messages: messages,
+        );
+
+  @override
+  SessionLogInfo copyWith({
+    _i2.SessionLogEntry? sessionLogEntry,
+    List<_i2.QueryLogEntry>? queries,
+    List<_i2.LogEntry>? logs,
+    List<_i2.MessageLogEntry>? messages,
+  }) {
+    return SessionLogInfo(
+      sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),
+      queries: queries ?? this.queries.clone(),
+      logs: logs ?? this.logs.clone(),
+      messages: messages ?? this.messages.clone(),
+    );
   }
 }

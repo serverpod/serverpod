@@ -9,13 +9,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Message to notifiy the server that messages have been read.
-class ChatReadMessage extends _i1.SerializableEntity {
-  ChatReadMessage({
+abstract class ChatReadMessage extends _i1.SerializableEntity {
+  ChatReadMessage._({
     this.id,
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
   });
+
+  factory ChatReadMessage({
+    int? id,
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) = _ChatReadMessageImpl;
 
   factory ChatReadMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,6 +53,12 @@ class ChatReadMessage extends _i1.SerializableEntity {
   /// The id of the last read message.
   int lastReadMessageId;
 
+  ChatReadMessage copyWith({
+    int? id,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -54,5 +67,36 @@ class ChatReadMessage extends _i1.SerializableEntity {
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ChatReadMessageImpl extends ChatReadMessage {
+  _ChatReadMessageImpl({
+    int? id,
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) : super._(
+          id: id,
+          channel: channel,
+          userId: userId,
+          lastReadMessageId: lastReadMessageId,
+        );
+
+  @override
+  ChatReadMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  }) {
+    return ChatReadMessage(
+      id: id is int? ? id : this.id,
+      channel: channel ?? this.channel,
+      userId: userId ?? this.userId,
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+    );
   }
 }

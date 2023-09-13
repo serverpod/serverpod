@@ -9,12 +9,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_module_server/module.dart' as _i2;
 
-class ModuleDatatype extends _i1.SerializableEntity {
-  ModuleDatatype({
+abstract class ModuleDatatype extends _i1.SerializableEntity {
+  ModuleDatatype._({
     required this.entity,
     required this.list,
     required this.map,
   });
+
+  factory ModuleDatatype({
+    required _i2.ModuleClass entity,
+    required List<_i2.ModuleClass> list,
+    required Map<String, _i2.ModuleClass> map,
+  }) = _ModuleDatatypeImpl;
 
   factory ModuleDatatype.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -36,6 +42,11 @@ class ModuleDatatype extends _i1.SerializableEntity {
 
   Map<String, _i2.ModuleClass> map;
 
+  ModuleDatatype copyWith({
+    _i2.ModuleClass? entity,
+    List<_i2.ModuleClass>? list,
+    Map<String, _i2.ModuleClass>? map,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -52,5 +63,30 @@ class ModuleDatatype extends _i1.SerializableEntity {
       'list': list,
       'map': map,
     };
+  }
+}
+
+class _ModuleDatatypeImpl extends ModuleDatatype {
+  _ModuleDatatypeImpl({
+    required _i2.ModuleClass entity,
+    required List<_i2.ModuleClass> list,
+    required Map<String, _i2.ModuleClass> map,
+  }) : super._(
+          entity: entity,
+          list: list,
+          map: map,
+        );
+
+  @override
+  ModuleDatatype copyWith({
+    _i2.ModuleClass? entity,
+    List<_i2.ModuleClass>? list,
+    Map<String, _i2.ModuleClass>? map,
+  }) {
+    return ModuleDatatype(
+      entity: entity ?? this.entity.copyWith(),
+      list: list ?? this.list.clone(),
+      map: map ?? this.map.clone(),
+    );
   }
 }

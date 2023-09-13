@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithDuration extends _i1.TableRow {
-  ObjectWithDuration({
+abstract class ObjectWithDuration extends _i1.TableRow {
+  ObjectWithDuration._({
     int? id,
     required this.duration,
   }) : super(id);
+
+  factory ObjectWithDuration({
+    int? id,
+    required Duration duration,
+  }) = _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,6 +36,10 @@ class ObjectWithDuration extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_duration';
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -182,6 +191,29 @@ class ObjectWithDuration extends _i1.TableRow {
 
   static ObjectWithDurationInclude include() {
     return ObjectWithDurationInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithDurationImpl extends ObjectWithDuration {
+  _ObjectWithDurationImpl({
+    int? id,
+    required Duration duration,
+  }) : super._(
+          id: id,
+          duration: duration,
+        );
+
+  @override
+  ObjectWithDuration copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id is int? ? id : this.id,
+      duration: duration ?? this.duration,
+    );
   }
 }
 

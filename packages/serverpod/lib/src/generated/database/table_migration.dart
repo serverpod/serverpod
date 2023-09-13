@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class TableMigration extends _i1.SerializableEntity {
-  TableMigration({
+abstract class TableMigration extends _i1.SerializableEntity {
+  TableMigration._({
     required this.name,
     this.dartName,
     this.module,
@@ -24,6 +24,21 @@ class TableMigration extends _i1.SerializableEntity {
     required this.deleteForeignKeys,
     required this.warnings,
   });
+
+  factory TableMigration({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    required List<_i2.ColumnDefinition> addColumns,
+    required List<String> deleteColumns,
+    required List<_i2.ColumnMigration> modifyColumns,
+    required List<_i2.IndexDefinition> addIndexes,
+    required List<String> deleteIndexes,
+    required List<_i2.ForeignKeyDefinition> addForeignKeys,
+    required List<String> deleteForeignKeys,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+  }) = _TableMigrationImpl;
 
   factory TableMigration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -83,6 +98,20 @@ class TableMigration extends _i1.SerializableEntity {
 
   List<_i2.DatabaseMigrationWarning> warnings;
 
+  TableMigration copyWith({
+    String? name,
+    String? dartName,
+    String? module,
+    String? schema,
+    List<_i2.ColumnDefinition>? addColumns,
+    List<String>? deleteColumns,
+    List<_i2.ColumnMigration>? modifyColumns,
+    List<_i2.IndexDefinition>? addIndexes,
+    List<String>? deleteIndexes,
+    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<String>? deleteForeignKeys,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -117,5 +146,68 @@ class TableMigration extends _i1.SerializableEntity {
       'deleteForeignKeys': deleteForeignKeys,
       'warnings': warnings,
     };
+  }
+}
+
+class _Undefined {}
+
+class _TableMigrationImpl extends TableMigration {
+  _TableMigrationImpl({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    required List<_i2.ColumnDefinition> addColumns,
+    required List<String> deleteColumns,
+    required List<_i2.ColumnMigration> modifyColumns,
+    required List<_i2.IndexDefinition> addIndexes,
+    required List<String> deleteIndexes,
+    required List<_i2.ForeignKeyDefinition> addForeignKeys,
+    required List<String> deleteForeignKeys,
+    required List<_i2.DatabaseMigrationWarning> warnings,
+  }) : super._(
+          name: name,
+          dartName: dartName,
+          module: module,
+          schema: schema,
+          addColumns: addColumns,
+          deleteColumns: deleteColumns,
+          modifyColumns: modifyColumns,
+          addIndexes: addIndexes,
+          deleteIndexes: deleteIndexes,
+          addForeignKeys: addForeignKeys,
+          deleteForeignKeys: deleteForeignKeys,
+          warnings: warnings,
+        );
+
+  @override
+  TableMigration copyWith({
+    String? name,
+    Object? dartName = _Undefined,
+    Object? module = _Undefined,
+    String? schema,
+    List<_i2.ColumnDefinition>? addColumns,
+    List<String>? deleteColumns,
+    List<_i2.ColumnMigration>? modifyColumns,
+    List<_i2.IndexDefinition>? addIndexes,
+    List<String>? deleteIndexes,
+    List<_i2.ForeignKeyDefinition>? addForeignKeys,
+    List<String>? deleteForeignKeys,
+    List<_i2.DatabaseMigrationWarning>? warnings,
+  }) {
+    return TableMigration(
+      name: name ?? this.name,
+      dartName: dartName is String? ? dartName : this.dartName,
+      module: module is String? ? module : this.module,
+      schema: schema ?? this.schema,
+      addColumns: addColumns ?? this.addColumns.clone(),
+      deleteColumns: deleteColumns ?? this.deleteColumns.clone(),
+      modifyColumns: modifyColumns ?? this.modifyColumns.clone(),
+      addIndexes: addIndexes ?? this.addIndexes.clone(),
+      deleteIndexes: deleteIndexes ?? this.deleteIndexes.clone(),
+      addForeignKeys: addForeignKeys ?? this.addForeignKeys.clone(),
+      deleteForeignKeys: deleteForeignKeys ?? this.deleteForeignKeys.clone(),
+      warnings: warnings ?? this.warnings.clone(),
+    );
   }
 }

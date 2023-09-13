@@ -10,12 +10,18 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
-class CachesInfo extends _i1.SerializableEntity {
-  CachesInfo({
+abstract class CachesInfo extends _i1.SerializableEntity {
+  CachesInfo._({
     required this.local,
     required this.localPrio,
     required this.global,
   });
+
+  factory CachesInfo({
+    required _i2.CacheInfo local,
+    required _i2.CacheInfo localPrio,
+    required _i2.CacheInfo global,
+  }) = _CachesInfoImpl;
 
   factory CachesInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -40,6 +46,11 @@ class CachesInfo extends _i1.SerializableEntity {
   /// Information about the global cache.
   _i2.CacheInfo global;
 
+  CachesInfo copyWith({
+    _i2.CacheInfo? local,
+    _i2.CacheInfo? localPrio,
+    _i2.CacheInfo? global,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -56,5 +67,30 @@ class CachesInfo extends _i1.SerializableEntity {
       'localPrio': localPrio,
       'global': global,
     };
+  }
+}
+
+class _CachesInfoImpl extends CachesInfo {
+  _CachesInfoImpl({
+    required _i2.CacheInfo local,
+    required _i2.CacheInfo localPrio,
+    required _i2.CacheInfo global,
+  }) : super._(
+          local: local,
+          localPrio: localPrio,
+          global: global,
+        );
+
+  @override
+  CachesInfo copyWith({
+    _i2.CacheInfo? local,
+    _i2.CacheInfo? localPrio,
+    _i2.CacheInfo? global,
+  }) {
+    return CachesInfo(
+      local: local ?? this.local.copyWith(),
+      localPrio: localPrio ?? this.localPrio.copyWith(),
+      global: global ?? this.global.copyWith(),
+    );
   }
 }

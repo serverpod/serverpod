@@ -10,8 +10,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
 
-class ObjectWithMaps extends _i1.SerializableEntity {
-  ObjectWithMaps({
+abstract class ObjectWithMaps extends _i1.SerializableEntity {
+  ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,
     required this.stringMap,
@@ -28,6 +28,24 @@ class ObjectWithMaps extends _i1.SerializableEntity {
     required this.nullableUuidMap,
     required this.intIntMap,
   });
+
+  factory ObjectWithMaps({
+    required Map<String, _i2.SimpleData> dataMap,
+    required Map<String, int> intMap,
+    required Map<String, String> stringMap,
+    required Map<String, DateTime> dateTimeMap,
+    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, Duration> durationMap,
+    required Map<String, _i1.UuidValue> uuidMap,
+    required Map<String, _i2.SimpleData?> nullableDataMap,
+    required Map<String, int?> nullableIntMap,
+    required Map<String, String?> nullableStringMap,
+    required Map<String, DateTime?> nullableDateTimeMap,
+    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, Duration?> nullableDurationMap,
+    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<int, int> intIntMap,
+  }) = _ObjectWithMapsImpl;
 
   factory ObjectWithMaps.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -102,6 +120,23 @@ class ObjectWithMaps extends _i1.SerializableEntity {
 
   Map<int, int> intIntMap;
 
+  ObjectWithMaps copyWith({
+    Map<String, _i2.SimpleData>? dataMap,
+    Map<String, int>? intMap,
+    Map<String, String>? stringMap,
+    Map<String, DateTime>? dateTimeMap,
+    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, Duration>? durationMap,
+    Map<String, _i1.UuidValue>? uuidMap,
+    Map<String, _i2.SimpleData?>? nullableDataMap,
+    Map<String, int?>? nullableIntMap,
+    Map<String, String?>? nullableStringMap,
+    Map<String, DateTime?>? nullableDateTimeMap,
+    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, Duration?>? nullableDurationMap,
+    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<int, int>? intIntMap,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -142,5 +177,81 @@ class ObjectWithMaps extends _i1.SerializableEntity {
       'nullableUuidMap': nullableUuidMap,
       'intIntMap': intIntMap,
     };
+  }
+}
+
+class _ObjectWithMapsImpl extends ObjectWithMaps {
+  _ObjectWithMapsImpl({
+    required Map<String, _i2.SimpleData> dataMap,
+    required Map<String, int> intMap,
+    required Map<String, String> stringMap,
+    required Map<String, DateTime> dateTimeMap,
+    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, Duration> durationMap,
+    required Map<String, _i1.UuidValue> uuidMap,
+    required Map<String, _i2.SimpleData?> nullableDataMap,
+    required Map<String, int?> nullableIntMap,
+    required Map<String, String?> nullableStringMap,
+    required Map<String, DateTime?> nullableDateTimeMap,
+    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, Duration?> nullableDurationMap,
+    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<int, int> intIntMap,
+  }) : super._(
+          dataMap: dataMap,
+          intMap: intMap,
+          stringMap: stringMap,
+          dateTimeMap: dateTimeMap,
+          byteDataMap: byteDataMap,
+          durationMap: durationMap,
+          uuidMap: uuidMap,
+          nullableDataMap: nullableDataMap,
+          nullableIntMap: nullableIntMap,
+          nullableStringMap: nullableStringMap,
+          nullableDateTimeMap: nullableDateTimeMap,
+          nullableByteDataMap: nullableByteDataMap,
+          nullableDurationMap: nullableDurationMap,
+          nullableUuidMap: nullableUuidMap,
+          intIntMap: intIntMap,
+        );
+
+  @override
+  ObjectWithMaps copyWith({
+    Map<String, _i2.SimpleData>? dataMap,
+    Map<String, int>? intMap,
+    Map<String, String>? stringMap,
+    Map<String, DateTime>? dateTimeMap,
+    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, Duration>? durationMap,
+    Map<String, _i1.UuidValue>? uuidMap,
+    Map<String, _i2.SimpleData?>? nullableDataMap,
+    Map<String, int?>? nullableIntMap,
+    Map<String, String?>? nullableStringMap,
+    Map<String, DateTime?>? nullableDateTimeMap,
+    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, Duration?>? nullableDurationMap,
+    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<int, int>? intIntMap,
+  }) {
+    return ObjectWithMaps(
+      dataMap: dataMap ?? this.dataMap.clone(),
+      intMap: intMap ?? this.intMap.clone(),
+      stringMap: stringMap ?? this.stringMap.clone(),
+      dateTimeMap: dateTimeMap ?? this.dateTimeMap.clone(),
+      byteDataMap: byteDataMap ?? this.byteDataMap.clone(),
+      durationMap: durationMap ?? this.durationMap.clone(),
+      uuidMap: uuidMap ?? this.uuidMap.clone(),
+      nullableDataMap: nullableDataMap ?? this.nullableDataMap.clone(),
+      nullableIntMap: nullableIntMap ?? this.nullableIntMap.clone(),
+      nullableStringMap: nullableStringMap ?? this.nullableStringMap.clone(),
+      nullableDateTimeMap:
+          nullableDateTimeMap ?? this.nullableDateTimeMap.clone(),
+      nullableByteDataMap:
+          nullableByteDataMap ?? this.nullableByteDataMap.clone(),
+      nullableDurationMap:
+          nullableDurationMap ?? this.nullableDurationMap.clone(),
+      nullableUuidMap: nullableUuidMap ?? this.nullableUuidMap.clone(),
+      intIntMap: intIntMap ?? this.intIntMap.clone(),
+    );
   }
 }

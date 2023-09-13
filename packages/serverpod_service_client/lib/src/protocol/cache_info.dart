@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Provides high level information about a cache.
-class CacheInfo extends _i1.SerializableEntity {
-  CacheInfo({
+abstract class CacheInfo extends _i1.SerializableEntity {
+  CacheInfo._({
     required this.numEntries,
     required this.maxEntries,
     this.keys,
   });
+
+  factory CacheInfo({
+    required int numEntries,
+    required int maxEntries,
+    List<String>? keys,
+  }) = _CacheInfoImpl;
 
   factory CacheInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,6 +45,11 @@ class CacheInfo extends _i1.SerializableEntity {
   /// Optional list of keys used by the cache.
   List<String>? keys;
 
+  CacheInfo copyWith({
+    int? numEntries,
+    int? maxEntries,
+    List<String>? keys,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -46,5 +57,32 @@ class CacheInfo extends _i1.SerializableEntity {
       'maxEntries': maxEntries,
       'keys': keys,
     };
+  }
+}
+
+class _Undefined {}
+
+class _CacheInfoImpl extends CacheInfo {
+  _CacheInfoImpl({
+    required int numEntries,
+    required int maxEntries,
+    List<String>? keys,
+  }) : super._(
+          numEntries: numEntries,
+          maxEntries: maxEntries,
+          keys: keys,
+        );
+
+  @override
+  CacheInfo copyWith({
+    int? numEntries,
+    int? maxEntries,
+    Object? keys = _Undefined,
+  }) {
+    return CacheInfo(
+      numEntries: numEntries ?? this.numEntries,
+      maxEntries: maxEntries ?? this.maxEntries,
+      keys: keys is List<String>? ? keys : this.keys?.clone(),
+    );
   }
 }
