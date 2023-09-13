@@ -18,10 +18,13 @@ import 'email_failed_sign_in.dart' as _i8;
 import 'email_password_reset.dart' as _i9;
 import 'email_reset.dart' as _i10;
 import 'google_refresh_token.dart' as _i11;
-import 'user_image.dart' as _i12;
-import 'user_info.dart' as _i13;
-import 'user_info_public.dart' as _i14;
-import 'user_settings_config.dart' as _i15;
+import 'sms_auth.dart' as _i12;
+import 'sms_failed_sign_in.dart' as _i13;
+import 'sms_otp_response.dart' as _i14;
+import 'user_image.dart' as _i15;
+import 'user_info.dart' as _i16;
+import 'user_info_public.dart' as _i17;
+import 'user_settings_config.dart' as _i18;
 export 'apple_auth_info.dart';
 export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
@@ -31,6 +34,9 @@ export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
 export 'google_refresh_token.dart';
+export 'sms_auth.dart';
+export 'sms_failed_sign_in.dart';
+export 'sms_otp_response.dart';
 export 'user_image.dart';
 export 'user_info.dart';
 export 'user_info_public.dart';
@@ -378,6 +384,140 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'serverpod_sms_auth',
+      dartName: 'SmsAuth',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_sms_auth_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_sms_auth_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_sms_auth_sms',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_sms_failed_sign_in',
+      dartName: 'SmsFailedSignIn',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_sms_failed_sign_in_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_sms_failed_sign_in_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_sms_failed_sign_in_sms_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_sms_failed_sign_in_sms_time_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'time',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'serverpod_user_image',
       dartName: 'UserImage',
       schema: 'public',
@@ -482,6 +622,12 @@ class Protocol extends _i1.SerializationManagerServer {
           dartType: 'String?',
         ),
         _i2.ColumnDefinition(
+          name: 'phoneNumber',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
           name: 'created',
           columnType: _i2.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
@@ -547,6 +693,19 @@ class Protocol extends _i1.SerializationManagerServer {
           isUnique: false,
           isPrimary: false,
         ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_phone_number',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'phoneNumber',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
       ],
       managed: true,
     ),
@@ -588,17 +747,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i11.GoogleRefreshToken) {
       return _i11.GoogleRefreshToken.fromJson(data, this) as T;
     }
-    if (t == _i12.UserImage) {
-      return _i12.UserImage.fromJson(data, this) as T;
+    if (t == _i12.SmsAuth) {
+      return _i12.SmsAuth.fromJson(data, this) as T;
     }
-    if (t == _i13.UserInfo) {
-      return _i13.UserInfo.fromJson(data, this) as T;
+    if (t == _i13.SmsFailedSignIn) {
+      return _i13.SmsFailedSignIn.fromJson(data, this) as T;
     }
-    if (t == _i14.UserInfoPublic) {
-      return _i14.UserInfoPublic.fromJson(data, this) as T;
+    if (t == _i14.SmsOtpResponse) {
+      return _i14.SmsOtpResponse.fromJson(data, this) as T;
     }
-    if (t == _i15.UserSettingsConfig) {
-      return _i15.UserSettingsConfig.fromJson(data, this) as T;
+    if (t == _i15.UserImage) {
+      return _i15.UserImage.fromJson(data, this) as T;
+    }
+    if (t == _i16.UserInfo) {
+      return _i16.UserInfo.fromJson(data, this) as T;
+    }
+    if (t == _i17.UserInfoPublic) {
+      return _i17.UserInfoPublic.fromJson(data, this) as T;
+    }
+    if (t == _i18.UserSettingsConfig) {
+      return _i18.UserSettingsConfig.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i3.AppleAuthInfo?>()) {
       return (data != null ? _i3.AppleAuthInfo.fromJson(data, this) : null)
@@ -637,19 +805,30 @@ class Protocol extends _i1.SerializationManagerServer {
           ? _i11.GoogleRefreshToken.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i12.UserImage?>()) {
-      return (data != null ? _i12.UserImage.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i12.SmsAuth?>()) {
+      return (data != null ? _i12.SmsAuth.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i13.UserInfo?>()) {
-      return (data != null ? _i13.UserInfo.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i14.UserInfoPublic?>()) {
-      return (data != null ? _i14.UserInfoPublic.fromJson(data, this) : null)
+    if (t == _i1.getType<_i13.SmsFailedSignIn?>()) {
+      return (data != null ? _i13.SmsFailedSignIn.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i15.UserSettingsConfig?>()) {
+    if (t == _i1.getType<_i14.SmsOtpResponse?>()) {
+      return (data != null ? _i14.SmsOtpResponse.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i15.UserImage?>()) {
+      return (data != null ? _i15.UserImage.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i16.UserInfo?>()) {
+      return (data != null ? _i16.UserInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i17.UserInfoPublic?>()) {
+      return (data != null ? _i17.UserInfoPublic.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i18.UserSettingsConfig?>()) {
       return (data != null
-          ? _i15.UserSettingsConfig.fromJson(data, this)
+          ? _i18.UserSettingsConfig.fromJson(data, this)
           : null) as T;
     }
     if (t == List<String>) {
@@ -691,16 +870,25 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i11.GoogleRefreshToken) {
       return 'GoogleRefreshToken';
     }
-    if (data is _i12.UserImage) {
+    if (data is _i12.SmsAuth) {
+      return 'SmsAuth';
+    }
+    if (data is _i13.SmsFailedSignIn) {
+      return 'SmsFailedSignIn';
+    }
+    if (data is _i14.SmsOtpResponse) {
+      return 'SmsOtpResponse';
+    }
+    if (data is _i15.UserImage) {
       return 'UserImage';
     }
-    if (data is _i13.UserInfo) {
+    if (data is _i16.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i14.UserInfoPublic) {
+    if (data is _i17.UserInfoPublic) {
       return 'UserInfoPublic';
     }
-    if (data is _i15.UserSettingsConfig) {
+    if (data is _i18.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     return super.getClassNameForObject(data);
@@ -735,17 +923,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'GoogleRefreshToken') {
       return deserialize<_i11.GoogleRefreshToken>(data['data']);
     }
+    if (data['className'] == 'SmsAuth') {
+      return deserialize<_i12.SmsAuth>(data['data']);
+    }
+    if (data['className'] == 'SmsFailedSignIn') {
+      return deserialize<_i13.SmsFailedSignIn>(data['data']);
+    }
+    if (data['className'] == 'SmsOtpResponse') {
+      return deserialize<_i14.SmsOtpResponse>(data['data']);
+    }
     if (data['className'] == 'UserImage') {
-      return deserialize<_i12.UserImage>(data['data']);
+      return deserialize<_i15.UserImage>(data['data']);
     }
     if (data['className'] == 'UserInfo') {
-      return deserialize<_i13.UserInfo>(data['data']);
+      return deserialize<_i16.UserInfo>(data['data']);
     }
     if (data['className'] == 'UserInfoPublic') {
-      return deserialize<_i14.UserInfoPublic>(data['data']);
+      return deserialize<_i17.UserInfoPublic>(data['data']);
     }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserialize<_i15.UserSettingsConfig>(data['data']);
+      return deserialize<_i18.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -769,10 +966,14 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i10.EmailReset.t;
       case _i11.GoogleRefreshToken:
         return _i11.GoogleRefreshToken.t;
-      case _i12.UserImage:
-        return _i12.UserImage.t;
-      case _i13.UserInfo:
-        return _i13.UserInfo.t;
+      case _i12.SmsAuth:
+        return _i12.SmsAuth.t;
+      case _i13.SmsFailedSignIn:
+        return _i13.SmsFailedSignIn.t;
+      case _i15.UserImage:
+        return _i15.UserImage.t;
+      case _i16.UserInfo:
+        return _i16.UserInfo.t;
     }
     return null;
   }

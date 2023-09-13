@@ -20,6 +20,7 @@ class UserInfo extends _i1.SerializableEntity {
     required this.userName,
     this.fullName,
     this.email,
+    this.phoneNumber,
     required this.created,
     this.imageUrl,
     required this.scopeNames,
@@ -40,6 +41,8 @@ class UserInfo extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['fullName']),
       email:
           serializationManager.deserialize<String?>(jsonSerialization['email']),
+      phoneNumber: serializationManager
+          .deserialize<String?>(jsonSerialization['phoneNumber']),
       created: serializationManager
           .deserialize<DateTime>(jsonSerialization['created']),
       imageUrl: serializationManager
@@ -69,6 +72,9 @@ class UserInfo extends _i1.SerializableEntity {
   /// The email of the user.
   String? email;
 
+  /// The phone number of the user.
+  String? phoneNumber;
+
   /// The time when this user was created.
   DateTime created;
 
@@ -89,6 +95,7 @@ class UserInfo extends _i1.SerializableEntity {
       'userName': userName,
       'fullName': fullName,
       'email': email,
+      'phoneNumber': phoneNumber,
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,

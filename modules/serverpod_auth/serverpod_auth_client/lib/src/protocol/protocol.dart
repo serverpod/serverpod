@@ -17,10 +17,13 @@ import 'email_failed_sign_in.dart' as _i7;
 import 'email_password_reset.dart' as _i8;
 import 'email_reset.dart' as _i9;
 import 'google_refresh_token.dart' as _i10;
-import 'user_image.dart' as _i11;
-import 'user_info.dart' as _i12;
-import 'user_info_public.dart' as _i13;
-import 'user_settings_config.dart' as _i14;
+import 'sms_auth.dart' as _i11;
+import 'sms_failed_sign_in.dart' as _i12;
+import 'sms_otp_response.dart' as _i13;
+import 'user_image.dart' as _i14;
+import 'user_info.dart' as _i15;
+import 'user_info_public.dart' as _i16;
+import 'user_settings_config.dart' as _i17;
 export 'apple_auth_info.dart';
 export 'authentication_fail_reason.dart';
 export 'authentication_response.dart';
@@ -30,6 +33,9 @@ export 'email_failed_sign_in.dart';
 export 'email_password_reset.dart';
 export 'email_reset.dart';
 export 'google_refresh_token.dart';
+export 'sms_auth.dart';
+export 'sms_failed_sign_in.dart';
+export 'sms_otp_response.dart';
 export 'user_image.dart';
 export 'user_info.dart';
 export 'user_info_public.dart';
@@ -81,17 +87,26 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i10.GoogleRefreshToken) {
       return _i10.GoogleRefreshToken.fromJson(data, this) as T;
     }
-    if (t == _i11.UserImage) {
-      return _i11.UserImage.fromJson(data, this) as T;
+    if (t == _i11.SmsAuth) {
+      return _i11.SmsAuth.fromJson(data, this) as T;
     }
-    if (t == _i12.UserInfo) {
-      return _i12.UserInfo.fromJson(data, this) as T;
+    if (t == _i12.SmsFailedSignIn) {
+      return _i12.SmsFailedSignIn.fromJson(data, this) as T;
     }
-    if (t == _i13.UserInfoPublic) {
-      return _i13.UserInfoPublic.fromJson(data, this) as T;
+    if (t == _i13.SmsOtpResponse) {
+      return _i13.SmsOtpResponse.fromJson(data, this) as T;
     }
-    if (t == _i14.UserSettingsConfig) {
-      return _i14.UserSettingsConfig.fromJson(data, this) as T;
+    if (t == _i14.UserImage) {
+      return _i14.UserImage.fromJson(data, this) as T;
+    }
+    if (t == _i15.UserInfo) {
+      return _i15.UserInfo.fromJson(data, this) as T;
+    }
+    if (t == _i16.UserInfoPublic) {
+      return _i16.UserInfoPublic.fromJson(data, this) as T;
+    }
+    if (t == _i17.UserSettingsConfig) {
+      return _i17.UserSettingsConfig.fromJson(data, this) as T;
     }
     if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
       return (data != null ? _i2.AppleAuthInfo.fromJson(data, this) : null)
@@ -130,19 +145,30 @@ class Protocol extends _i1.SerializationManager {
           ? _i10.GoogleRefreshToken.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i11.UserImage?>()) {
-      return (data != null ? _i11.UserImage.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i11.SmsAuth?>()) {
+      return (data != null ? _i11.SmsAuth.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i12.UserInfo?>()) {
-      return (data != null ? _i12.UserInfo.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i13.UserInfoPublic?>()) {
-      return (data != null ? _i13.UserInfoPublic.fromJson(data, this) : null)
+    if (t == _i1.getType<_i12.SmsFailedSignIn?>()) {
+      return (data != null ? _i12.SmsFailedSignIn.fromJson(data, this) : null)
           as T;
     }
-    if (t == _i1.getType<_i14.UserSettingsConfig?>()) {
+    if (t == _i1.getType<_i13.SmsOtpResponse?>()) {
+      return (data != null ? _i13.SmsOtpResponse.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i14.UserImage?>()) {
+      return (data != null ? _i14.UserImage.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i15.UserInfo?>()) {
+      return (data != null ? _i15.UserInfo.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i16.UserInfoPublic?>()) {
+      return (data != null ? _i16.UserInfoPublic.fromJson(data, this) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i17.UserSettingsConfig?>()) {
       return (data != null
-          ? _i14.UserSettingsConfig.fromJson(data, this)
+          ? _i17.UserSettingsConfig.fromJson(data, this)
           : null) as T;
     }
     if (t == List<String>) {
@@ -181,16 +207,25 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i10.GoogleRefreshToken) {
       return 'GoogleRefreshToken';
     }
-    if (data is _i11.UserImage) {
+    if (data is _i11.SmsAuth) {
+      return 'SmsAuth';
+    }
+    if (data is _i12.SmsFailedSignIn) {
+      return 'SmsFailedSignIn';
+    }
+    if (data is _i13.SmsOtpResponse) {
+      return 'SmsOtpResponse';
+    }
+    if (data is _i14.UserImage) {
       return 'UserImage';
     }
-    if (data is _i12.UserInfo) {
+    if (data is _i15.UserInfo) {
       return 'UserInfo';
     }
-    if (data is _i13.UserInfoPublic) {
+    if (data is _i16.UserInfoPublic) {
       return 'UserInfoPublic';
     }
-    if (data is _i14.UserSettingsConfig) {
+    if (data is _i17.UserSettingsConfig) {
       return 'UserSettingsConfig';
     }
     return super.getClassNameForObject(data);
@@ -225,17 +260,26 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'GoogleRefreshToken') {
       return deserialize<_i10.GoogleRefreshToken>(data['data']);
     }
+    if (data['className'] == 'SmsAuth') {
+      return deserialize<_i11.SmsAuth>(data['data']);
+    }
+    if (data['className'] == 'SmsFailedSignIn') {
+      return deserialize<_i12.SmsFailedSignIn>(data['data']);
+    }
+    if (data['className'] == 'SmsOtpResponse') {
+      return deserialize<_i13.SmsOtpResponse>(data['data']);
+    }
     if (data['className'] == 'UserImage') {
-      return deserialize<_i11.UserImage>(data['data']);
+      return deserialize<_i14.UserImage>(data['data']);
     }
     if (data['className'] == 'UserInfo') {
-      return deserialize<_i12.UserInfo>(data['data']);
+      return deserialize<_i15.UserInfo>(data['data']);
     }
     if (data['className'] == 'UserInfoPublic') {
-      return deserialize<_i13.UserInfoPublic>(data['data']);
+      return deserialize<_i16.UserInfoPublic>(data['data']);
     }
     if (data['className'] == 'UserSettingsConfig') {
-      return deserialize<_i14.UserSettingsConfig>(data['data']);
+      return deserialize<_i17.UserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

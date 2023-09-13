@@ -14,9 +14,11 @@ import 'package:serverpod_auth_client/src/protocol/authentication_response.dart'
 import 'package:serverpod_auth_client/src/protocol/apple_auth_info.dart' as _i5;
 import 'package:serverpod_auth_client/src/protocol/email_password_reset.dart'
     as _i6;
-import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
+import 'package:serverpod_auth_client/src/protocol/sms_otp_response.dart'
     as _i7;
-import 'dart:typed_data' as _i8;
+import 'package:serverpod_auth_client/src/protocol/user_settings_config.dart'
+    as _i8;
+import 'dart:typed_data' as _i9;
 
 /// Endpoint for handling admin functions.
 /// {@category Endpoint}
@@ -204,6 +206,42 @@ class EndpointGoogle extends _i1.EndpointRef {
       );
 }
 
+/// Endpoint for handling Sign in with SMS.
+/// {@category Endpoint}
+class EndpointSms extends _i1.EndpointRef {
+  EndpointSms(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'serverpod_auth.sms';
+
+  /// Start a Authentication with SMS. Returns a String containing a hash that
+  /// should be sent back to the server with the OTP. To verify.
+  _i2.Future<_i7.SmsOtpResponse> startAuthentication(String phoneNumber) =>
+      caller.callServerEndpoint<_i7.SmsOtpResponse>(
+        'serverpod_auth.sms',
+        'startAuthentication',
+        {'phoneNumber': phoneNumber},
+      );
+
+  /// Verifies that the OTP is correct and that the hash hasn't been tampered
+  /// with. If the OTP is correct, the user is logged in and a session is
+  /// returned.
+  _i2.Future<_i4.AuthenticationResponse> verifyAuthentication(
+    String phoneNumber,
+    String otp,
+    String storedHash,
+  ) =>
+      caller.callServerEndpoint<_i4.AuthenticationResponse>(
+        'serverpod_auth.sms',
+        'verifyAuthentication',
+        {
+          'phoneNumber': phoneNumber,
+          'otp': otp,
+          'storedHash': storedHash,
+        },
+      );
+}
+
 /// Endpoint for getting status for a signed in user and module configuration.
 /// {@category Endpoint}
 class EndpointStatus extends _i1.EndpointRef {
@@ -236,8 +274,8 @@ class EndpointStatus extends _i1.EndpointRef {
       );
 
   /// Gets the server configuration.
-  _i2.Future<_i7.UserSettingsConfig> getUserSettingsConfig() =>
-      caller.callServerEndpoint<_i7.UserSettingsConfig>(
+  _i2.Future<_i8.UserSettingsConfig> getUserSettingsConfig() =>
+      caller.callServerEndpoint<_i8.UserSettingsConfig>(
         'serverpod_auth.status',
         'getUserSettingsConfig',
         {},
@@ -261,7 +299,7 @@ class EndpointUser extends _i1.EndpointRef {
       );
 
   /// Sets a new user image for the signed in user.
-  _i2.Future<bool> setUserImage(_i8.ByteData image) =>
+  _i2.Future<bool> setUserImage(_i9.ByteData image) =>
       caller.callServerEndpoint<bool>(
         'serverpod_auth.user',
         'setUserImage',
@@ -284,6 +322,7 @@ class Caller extends _i1.ModuleEndpointCaller {
     email = EndpointEmail(this);
     firebase = EndpointFirebase(this);
     google = EndpointGoogle(this);
+    sms = EndpointSms(this);
     status = EndpointStatus(this);
     user = EndpointUser(this);
   }
@@ -298,6 +337,8 @@ class Caller extends _i1.ModuleEndpointCaller {
 
   late final EndpointGoogle google;
 
+  late final EndpointSms sms;
+
   late final EndpointStatus status;
 
   late final EndpointUser user;
@@ -309,6 +350,7 @@ class Caller extends _i1.ModuleEndpointCaller {
         'serverpod_auth.email': email,
         'serverpod_auth.firebase': firebase,
         'serverpod_auth.google': google,
+        'serverpod_auth.sms': sms,
         'serverpod_auth.status': status,
         'serverpod_auth.user': user,
       };

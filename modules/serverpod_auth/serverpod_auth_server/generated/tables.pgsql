@@ -80,6 +80,38 @@ ALTER TABLE ONLY "serverpod_google_refresh_token"
 CREATE UNIQUE INDEX serverpod_google_refresh_token_userId_idx ON "serverpod_google_refresh_token" USING btree ("userId");
 
 --
+-- Class SmsAuth as table serverpod_sms_auth
+--
+
+CREATE TABLE "serverpod_sms_auth" (
+  "id" serial,
+  "userId" integer NOT NULL,
+  "phoneNumber" text NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_sms_auth"
+  ADD CONSTRAINT serverpod_sms_auth_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_sms_auth_sms ON "serverpod_sms_auth" USING btree ("phoneNumber");
+
+--
+-- Class SmsFailedSignIn as table serverpod_sms_failed_sign_in
+--
+
+CREATE TABLE "serverpod_sms_failed_sign_in" (
+  "id" serial,
+  "phoneNumber" text NOT NULL,
+  "time" timestamp without time zone NOT NULL,
+  "ipAddress" text NOT NULL
+);
+
+ALTER TABLE ONLY "serverpod_sms_failed_sign_in"
+  ADD CONSTRAINT serverpod_sms_failed_sign_in_pkey PRIMARY KEY (id);
+
+CREATE INDEX serverpod_sms_failed_sign_in_sms_idx ON "serverpod_sms_failed_sign_in" USING btree ("phoneNumber");
+CREATE INDEX serverpod_sms_failed_sign_in_sms_time_idx ON "serverpod_sms_failed_sign_in" USING btree ("time");
+
+--
 -- Class UserImage as table serverpod_user_image
 --
 
@@ -105,6 +137,7 @@ CREATE TABLE "serverpod_user_info" (
   "userName" text NOT NULL,
   "fullName" text,
   "email" text,
+  "phoneNumber" text,
   "created" timestamp without time zone NOT NULL,
   "imageUrl" text,
   "scopeNames" json NOT NULL,
@@ -116,4 +149,5 @@ ALTER TABLE ONLY "serverpod_user_info"
 
 CREATE UNIQUE INDEX serverpod_user_info_user_identifier ON "serverpod_user_info" USING btree ("userIdentifier");
 CREATE INDEX serverpod_user_info_email ON "serverpod_user_info" USING btree ("email");
+CREATE INDEX serverpod_user_info_phone_number ON "serverpod_user_info" USING btree ("phoneNumber");
 

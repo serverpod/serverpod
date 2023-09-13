@@ -20,6 +20,7 @@ class UserInfo extends _i1.TableRow {
     required this.userName,
     this.fullName,
     this.email,
+    this.phoneNumber,
     required this.created,
     this.imageUrl,
     required this.scopeNames,
@@ -40,6 +41,8 @@ class UserInfo extends _i1.TableRow {
           .deserialize<String?>(jsonSerialization['fullName']),
       email:
           serializationManager.deserialize<String?>(jsonSerialization['email']),
+      phoneNumber: serializationManager
+          .deserialize<String?>(jsonSerialization['phoneNumber']),
       created: serializationManager
           .deserialize<DateTime>(jsonSerialization['created']),
       imageUrl: serializationManager
@@ -66,6 +69,9 @@ class UserInfo extends _i1.TableRow {
   /// The email of the user.
   String? email;
 
+  /// The phone number of the user.
+  String? phoneNumber;
+
   /// The time when this user was created.
   DateTime created;
 
@@ -88,6 +94,7 @@ class UserInfo extends _i1.TableRow {
       'userName': userName,
       'fullName': fullName,
       'email': email,
+      'phoneNumber': phoneNumber,
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
@@ -103,6 +110,7 @@ class UserInfo extends _i1.TableRow {
       'userName': userName,
       'fullName': fullName,
       'email': email,
+      'phoneNumber': phoneNumber,
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
@@ -118,6 +126,7 @@ class UserInfo extends _i1.TableRow {
       'userName': userName,
       'fullName': fullName,
       'email': email,
+      'phoneNumber': phoneNumber,
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
@@ -145,6 +154,9 @@ class UserInfo extends _i1.TableRow {
         return;
       case 'email':
         email = value;
+        return;
+      case 'phoneNumber':
+        phoneNumber = value;
         return;
       case 'created':
         created = value;
@@ -303,6 +315,11 @@ class UserInfoTable extends _i1.Table {
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
+    phoneNumber = _i1.ColumnString(
+      'phoneNumber',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
     created = _i1.ColumnDateTime(
       'created',
       queryPrefix: super.queryPrefix,
@@ -338,6 +355,9 @@ class UserInfoTable extends _i1.Table {
   /// The email of the user.
   late final _i1.ColumnString email;
 
+  /// The phone number of the user.
+  late final _i1.ColumnString phoneNumber;
+
   /// The time when this user was created.
   late final _i1.ColumnDateTime created;
 
@@ -357,6 +377,7 @@ class UserInfoTable extends _i1.Table {
         userName,
         fullName,
         email,
+        phoneNumber,
         created,
         imageUrl,
         scopeNames,
