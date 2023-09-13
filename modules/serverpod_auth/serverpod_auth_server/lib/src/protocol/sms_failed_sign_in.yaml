@@ -12,8 +12,8 @@ fields:
   ### The IP address of the sign in attempt.
   ipAddress: String
 indexes:
-  serverpod_sms_failed_sign_in_idx:
+  serverpod_sms_failed_sign_in_sms_idx:
     fields: phoneNumber
-  serverpod_sms_failed_sign_in_time_idx:
+  serverpod_sms_failed_sign_in_sms_time_idx:
     fields: time
   

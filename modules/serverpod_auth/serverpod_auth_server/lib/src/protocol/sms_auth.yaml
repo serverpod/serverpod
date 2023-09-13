@@ -8,6 +8,6 @@ fields:
   ### The phone number of the user.
   phoneNumber: String
 indexes:
-  serverpod_sms_auth:
+  serverpod_sms_auth_sms:
     fields: phoneNumber
     unique: true
