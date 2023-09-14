@@ -6,9 +6,9 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
   switch (enumValue) {
     case CountryName.afghanistan:
       return countryData.firstWhere((element) => element.name == "Afghanistan");
-    case CountryName.aLandIslands:
+    case CountryName.alandIslands:
       return countryData
-          .firstWhere((element) => element.name == "Aland Islands");
+          .firstWhere((element) => element.name == "Åland Islands");
     case CountryName.albania:
       return countryData.firstWhere((element) => element.name == "Albania");
     case CountryName.algeria:
@@ -112,7 +112,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
           .firstWhere((element) => element.name == "Christmas Island");
     case CountryName.cocosKeelingIslands:
       return countryData
-          .firstWhere((element) => element.name == "Cocos  Keeling  Islands");
+          .firstWhere((element) => element.name == "Cocos [Keeling] Islands");
     case CountryName.colombia:
       return countryData.firstWhere((element) => element.name == "Colombia");
     case CountryName.comoros:
@@ -128,15 +128,15 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
           .firstWhere((element) => element.name == "Cook Islands");
     case CountryName.costaRica:
       return countryData.firstWhere((element) => element.name == "Costa Rica");
-    case CountryName.cTeDIvoire:
+    case CountryName.coteDIvoire:
       return countryData
-          .firstWhere((element) => element.name == "C te d Ivoire");
+          .firstWhere((element) => element.name == "Côte d'Ivoire");
     case CountryName.croatia:
       return countryData.firstWhere((element) => element.name == "Croatia");
     case CountryName.cuba:
       return countryData.firstWhere((element) => element.name == "Cuba");
-    case CountryName.curaAo:
-      return countryData.firstWhere((element) => element.name == "Cura ao");
+    case CountryName.Curacao:
+      return countryData.firstWhere((element) => element.name == "Curaçao");
     case CountryName.cyprus:
       return countryData.firstWhere((element) => element.name == "Cyprus");
     case CountryName.czechRepublic:
@@ -172,7 +172,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Ethiopia");
     case CountryName.falklandIslandsIslasMalvinas:
       return countryData.firstWhere(
-          (element) => element.name == "Falkland Islands  Islas Malvinas ");
+          (element) => element.name == "Falkland Islands [Islas Malvinas]");
     case CountryName.faroeIslands:
       return countryData
           .firstWhere((element) => element.name == "Faroe Islands");
@@ -219,7 +219,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
           .firstWhere((element) => element.name == "Guinea Conakry");
     case CountryName.guineaBissau:
       return countryData
-          .firstWhere((element) => element.name == "Guinea Bissau");
+          .firstWhere((element) => element.name == "Guinea-Bissau");
     case CountryName.guyana:
       return countryData.firstWhere((element) => element.name == "Guyana");
     case CountryName.haiti:
@@ -337,7 +337,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Mozambique");
     case CountryName.myanmarBurma:
       return countryData
-          .firstWhere((element) => element.name == "Myanmar  Burma ");
+          .firstWhere((element) => element.name == "Myanmar [Burma]");
     case CountryName.namibia:
       return countryData.firstWhere((element) => element.name == "Namibia");
     case CountryName.nauru:
@@ -397,24 +397,24 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Puerto Rico");
     case CountryName.qatar:
       return countryData.firstWhere((element) => element.name == "Qatar");
-    case CountryName.rUnion:
-      return countryData.firstWhere((element) => element.name == "R union");
+    case CountryName.Reunion:
+      return countryData.firstWhere((element) => element.name == "Réunion");
     case CountryName.romania:
       return countryData.firstWhere((element) => element.name == "Romania");
     case CountryName.russia:
       return countryData.firstWhere((element) => element.name == "Russia");
     case CountryName.rwanda:
       return countryData.firstWhere((element) => element.name == "Rwanda");
-    case CountryName.saintBarthLemy:
+    case CountryName.saintBarthelemy:
       return countryData
-          .firstWhere((element) => element.name == "Saint Barth lemy");
+          .firstWhere((element) => element.name == "Saint Barthélemy");
     case CountryName.saintHelena:
       return countryData
           .firstWhere((element) => element.name == "Saint Helena");
     case CountryName.stKitts:
-      return countryData.firstWhere((element) => element.name == "St  Kitts");
+      return countryData.firstWhere((element) => element.name == "St. Kitts");
     case CountryName.stLucia:
-      return countryData.firstWhere((element) => element.name == "St  Lucia");
+      return countryData.firstWhere((element) => element.name == "St. Lucia");
     case CountryName.saintMartin:
       return countryData
           .firstWhere((element) => element.name == "Saint Martin");
@@ -422,14 +422,14 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData
           .firstWhere((element) => element.name == "Saint Pierre and Miquelon");
     case CountryName.stVincent:
-      return countryData.firstWhere((element) => element.name == "St  Vincent");
+      return countryData.firstWhere((element) => element.name == "St. Vincent");
     case CountryName.samoa:
       return countryData.firstWhere((element) => element.name == "Samoa");
     case CountryName.sanMarino:
       return countryData.firstWhere((element) => element.name == "San Marino");
-    case CountryName.sOTomAndPrNcipe:
+    case CountryName.saoTomeAndPrincipe:
       return countryData
-          .firstWhere((element) => element.name == "S o Tom  and Pr ncipe");
+          .firstWhere((element) => element.name == "São Tomé and Príncipe");
     case CountryName.saudiArabia:
       return countryData
           .firstWhere((element) => element.name == "Saudi Arabia");
@@ -499,7 +499,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Tonga");
     case CountryName.trinidadTobago:
       return countryData
-          .firstWhere((element) => element.name == "Trinidad Tobago");
+          .firstWhere((element) => element.name == "Trinidad/Tobago");
     case CountryName.tunisia:
       return countryData.firstWhere((element) => element.name == "Tunisia");
     case CountryName.turkey:
@@ -514,7 +514,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Tuvalu");
     case CountryName.usVirginIslands:
       return countryData
-          .firstWhere((element) => element.name == "U S  Virgin Islands");
+          .firstWhere((element) => element.name == "U.S. Virgin Islands");
     case CountryName.uganda:
       return countryData.firstWhere((element) => element.name == "Uganda");
     case CountryName.ukraine:
