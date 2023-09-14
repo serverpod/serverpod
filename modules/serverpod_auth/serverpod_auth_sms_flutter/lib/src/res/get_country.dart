@@ -135,7 +135,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Croatia");
     case CountryName.cuba:
       return countryData.firstWhere((element) => element.name == "Cuba");
-    case CountryName.Curacao:
+    case CountryName.curacao:
       return countryData.firstWhere((element) => element.name == "Curaçao");
     case CountryName.cyprus:
       return countryData.firstWhere((element) => element.name == "Cyprus");
@@ -397,7 +397,7 @@ CountryModel getCountryDisplayName(CountryName enumValue) {
       return countryData.firstWhere((element) => element.name == "Puerto Rico");
     case CountryName.qatar:
       return countryData.firstWhere((element) => element.name == "Qatar");
-    case CountryName.Reunion:
+    case CountryName.reunion:
       return countryData.firstWhere((element) => element.name == "Réunion");
     case CountryName.romania:
       return countryData.firstWhere((element) => element.name == "Romania");

@@ -3,7 +3,6 @@ import 'package:serverpod_auth_client/module.dart';
 import 'package:serverpod_auth_sms_flutter/serverpod_auth_sms_flutter.dart';
 
 import 'res/country_model.dart';
-import 'res/country_name.dart';
 import 'res/get_country.dart';
 import 'widgets/otp_widget.dart';
 import 'widgets/phone_number_widget.dart';
