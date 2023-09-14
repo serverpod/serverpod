@@ -21,7 +21,7 @@ class SignInWithSMSButton extends StatefulWidget {
   final Icon? icon;
 
   /// Default country code. Defaults to India.
-  final CountryName defaultCountry;
+  final CountryName? defaultCountry;
 
   const SignInWithSMSButton({
     required this.caller,
@@ -29,7 +29,7 @@ class SignInWithSMSButton extends StatefulWidget {
     this.style,
     this.label,
     this.icon,
-    this.defaultCountry = CountryName.India,
+    this.defaultCountry,
     Key? key,
   }) : super(key: key);
 
@@ -53,7 +53,7 @@ class _SignInWithSMSButtonState extends State<SignInWithSMSButton> {
         showSignInWithSMSDialog(
           context: context,
           caller: widget.caller,
-          defaultCountry: widget.defaultCountry,
+          defaultCountry: widget.defaultCountry ?? CountryName.india,
           onSignedIn: () {
             if (widget.onSignedIn != null) {
               widget.onSignedIn!();

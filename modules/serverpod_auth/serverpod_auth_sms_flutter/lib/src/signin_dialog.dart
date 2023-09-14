@@ -79,7 +79,7 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
             });
             return;
           },
-          defaultCountry: CountryName.india,
+          defaultCountry: widget.defaultCountry,
           onCountryChanged: (country) {
             setState(() {
               _selectedCountry = country;
