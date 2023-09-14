@@ -4,554 +4,554 @@ import 'country_name.dart';
 
 CountryModel getCountryDisplayName(CountryName enumValue) {
   switch (enumValue) {
-    case CountryName.Afghanistan:
+    case CountryName.afghanistan:
       return countryData.firstWhere((element) => element.name == "Afghanistan");
-    case CountryName.Aland_Islands:
+    case CountryName.aLandIslands:
       return countryData
           .firstWhere((element) => element.name == "Aland Islands");
-    case CountryName.Albania:
+    case CountryName.albania:
       return countryData.firstWhere((element) => element.name == "Albania");
-    case CountryName.Algeria:
+    case CountryName.algeria:
       return countryData.firstWhere((element) => element.name == "Algeria");
-    case CountryName.American_Samoa:
+    case CountryName.americanSamoa:
       return countryData
           .firstWhere((element) => element.name == "American Samoa");
-    case CountryName.Andorra:
+    case CountryName.andorra:
       return countryData.firstWhere((element) => element.name == "Andorra");
-    case CountryName.Angola:
+    case CountryName.angola:
       return countryData.firstWhere((element) => element.name == "Angola");
-    case CountryName.Anguilla:
+    case CountryName.anguilla:
       return countryData.firstWhere((element) => element.name == "Anguilla");
-    case CountryName.Antigua_and_Barbuda:
+    case CountryName.antiguaAndBarbuda:
       return countryData
           .firstWhere((element) => element.name == "Antigua and Barbuda");
-    case CountryName.Argentina:
+    case CountryName.argentina:
       return countryData.firstWhere((element) => element.name == "Argentina");
-    case CountryName.Armenia:
+    case CountryName.armenia:
       return countryData.firstWhere((element) => element.name == "Armenia");
-    case CountryName.Aruba:
+    case CountryName.aruba:
       return countryData.firstWhere((element) => element.name == "Aruba");
-    case CountryName.Ascension_Island:
+    case CountryName.ascensionIsland:
       return countryData
           .firstWhere((element) => element.name == "Ascension Island");
-    case CountryName.Australia:
+    case CountryName.australia:
       return countryData.firstWhere((element) => element.name == "Australia");
-    case CountryName.Austria:
+    case CountryName.austria:
       return countryData.firstWhere((element) => element.name == "Austria");
-    case CountryName.Azerbaijan:
+    case CountryName.azerbaijan:
       return countryData.firstWhere((element) => element.name == "Azerbaijan");
-    case CountryName.Bahamas:
+    case CountryName.bahamas:
       return countryData.firstWhere((element) => element.name == "Bahamas");
-    case CountryName.Bahrain:
+    case CountryName.bahrain:
       return countryData.firstWhere((element) => element.name == "Bahrain");
-    case CountryName.Bangladesh:
+    case CountryName.bangladesh:
       return countryData.firstWhere((element) => element.name == "Bangladesh");
-    case CountryName.Barbados:
+    case CountryName.barbados:
       return countryData.firstWhere((element) => element.name == "Barbados");
-    case CountryName.Belarus:
+    case CountryName.belarus:
       return countryData.firstWhere((element) => element.name == "Belarus");
-    case CountryName.Belgium:
+    case CountryName.belgium:
       return countryData.firstWhere((element) => element.name == "Belgium");
-    case CountryName.Belize:
+    case CountryName.belize:
       return countryData.firstWhere((element) => element.name == "Belize");
-    case CountryName.Benin:
+    case CountryName.benin:
       return countryData.firstWhere((element) => element.name == "Benin");
-    case CountryName.Bermuda:
+    case CountryName.bermuda:
       return countryData.firstWhere((element) => element.name == "Bermuda");
-    case CountryName.Bhutan:
+    case CountryName.bhutan:
       return countryData.firstWhere((element) => element.name == "Bhutan");
-    case CountryName.Bolivia:
+    case CountryName.bolivia:
       return countryData.firstWhere((element) => element.name == "Bolivia");
-    case CountryName.Bosnia_and_Herzegovina:
+    case CountryName.bosniaAndHerzegovina:
       return countryData
           .firstWhere((element) => element.name == "Bosnia and Herzegovina");
-    case CountryName.Botswana:
+    case CountryName.botswana:
       return countryData.firstWhere((element) => element.name == "Botswana");
-    case CountryName.Brazil:
+    case CountryName.brazil:
       return countryData.firstWhere((element) => element.name == "Brazil");
-    case CountryName.British_Indian_Ocean_Territory:
+    case CountryName.britishIndianOceanTerritory:
       return countryData.firstWhere(
           (element) => element.name == "British Indian Ocean Territory");
-    case CountryName.British_Virgin_Islands:
+    case CountryName.britishVirginIslands:
       return countryData
           .firstWhere((element) => element.name == "British Virgin Islands");
-    case CountryName.Brunei:
+    case CountryName.brunei:
       return countryData.firstWhere((element) => element.name == "Brunei");
-    case CountryName.Bulgaria:
+    case CountryName.bulgaria:
       return countryData.firstWhere((element) => element.name == "Bulgaria");
-    case CountryName.Burkina_Faso:
+    case CountryName.burkinaFaso:
       return countryData
           .firstWhere((element) => element.name == "Burkina Faso");
-    case CountryName.Burundi:
+    case CountryName.burundi:
       return countryData.firstWhere((element) => element.name == "Burundi");
-    case CountryName.Cambodia:
+    case CountryName.cambodia:
       return countryData.firstWhere((element) => element.name == "Cambodia");
-    case CountryName.Cameroon:
+    case CountryName.cameroon:
       return countryData.firstWhere((element) => element.name == "Cameroon");
-    case CountryName.Canada:
+    case CountryName.canada:
       return countryData.firstWhere((element) => element.name == "Canada");
-    case CountryName.Cape_Verde:
+    case CountryName.capeVerde:
       return countryData.firstWhere((element) => element.name == "Cape Verde");
-    case CountryName.Caribbean_Netherlands:
+    case CountryName.caribbeanNetherlands:
       return countryData
           .firstWhere((element) => element.name == "Caribbean Netherlands");
-    case CountryName.Cayman_Islands:
+    case CountryName.caymanIslands:
       return countryData
           .firstWhere((element) => element.name == "Cayman Islands");
-    case CountryName.Central_African_Republic:
+    case CountryName.centralAfricanRepublic:
       return countryData
           .firstWhere((element) => element.name == "Central African Republic");
-    case CountryName.Chad:
+    case CountryName.chad:
       return countryData.firstWhere((element) => element.name == "Chad");
-    case CountryName.Chile:
+    case CountryName.chile:
       return countryData.firstWhere((element) => element.name == "Chile");
-    case CountryName.China:
+    case CountryName.china:
       return countryData.firstWhere((element) => element.name == "China");
-    case CountryName.Christmas_Island:
+    case CountryName.christmasIsland:
       return countryData
           .firstWhere((element) => element.name == "Christmas Island");
-    case CountryName.Cocos__Keeling__Islands:
+    case CountryName.cocosKeelingIslands:
       return countryData
           .firstWhere((element) => element.name == "Cocos  Keeling  Islands");
-    case CountryName.Colombia:
+    case CountryName.colombia:
       return countryData.firstWhere((element) => element.name == "Colombia");
-    case CountryName.Comoros:
+    case CountryName.comoros:
       return countryData.firstWhere((element) => element.name == "Comoros");
-    case CountryName.Democratic_Republic_Congo:
+    case CountryName.democraticRepublicCongo:
       return countryData
           .firstWhere((element) => element.name == "Democratic Republic Congo");
-    case CountryName.Republic_of_Congo:
+    case CountryName.republicOfCongo:
       return countryData
           .firstWhere((element) => element.name == "Republic of Congo");
-    case CountryName.Cook_Islands:
+    case CountryName.cookIslands:
       return countryData
           .firstWhere((element) => element.name == "Cook Islands");
-    case CountryName.Costa_Rica:
+    case CountryName.costaRica:
       return countryData.firstWhere((element) => element.name == "Costa Rica");
-    case CountryName.C_te_d_Ivoire:
+    case CountryName.cTeDIvoire:
       return countryData
           .firstWhere((element) => element.name == "C te d Ivoire");
-    case CountryName.Croatia:
+    case CountryName.croatia:
       return countryData.firstWhere((element) => element.name == "Croatia");
-    case CountryName.Cuba:
+    case CountryName.cuba:
       return countryData.firstWhere((element) => element.name == "Cuba");
-    case CountryName.Cura_ao:
+    case CountryName.curaAo:
       return countryData.firstWhere((element) => element.name == "Cura ao");
-    case CountryName.Cyprus:
+    case CountryName.cyprus:
       return countryData.firstWhere((element) => element.name == "Cyprus");
-    case CountryName.Czech_Republic:
+    case CountryName.czechRepublic:
       return countryData
           .firstWhere((element) => element.name == "Czech Republic");
-    case CountryName.Denmark:
+    case CountryName.denmark:
       return countryData.firstWhere((element) => element.name == "Denmark");
-    case CountryName.Djibouti:
+    case CountryName.djibouti:
       return countryData.firstWhere((element) => element.name == "Djibouti");
-    case CountryName.Dominica:
+    case CountryName.dominica:
       return countryData.firstWhere((element) => element.name == "Dominica");
-    case CountryName.Dominican_Republic:
+    case CountryName.dominicanRepublic:
       return countryData
           .firstWhere((element) => element.name == "Dominican Republic");
-    case CountryName.East_Timor:
+    case CountryName.eastTimor:
       return countryData.firstWhere((element) => element.name == "East Timor");
-    case CountryName.Ecuador:
+    case CountryName.ecuador:
       return countryData.firstWhere((element) => element.name == "Ecuador");
-    case CountryName.Egypt:
+    case CountryName.egypt:
       return countryData.firstWhere((element) => element.name == "Egypt");
-    case CountryName.El_Salvador:
+    case CountryName.elSalvador:
       return countryData.firstWhere((element) => element.name == "El Salvador");
-    case CountryName.Equatorial_Guinea:
+    case CountryName.equatorialGuinea:
       return countryData
           .firstWhere((element) => element.name == "Equatorial Guinea");
-    case CountryName.Eritrea:
+    case CountryName.eritrea:
       return countryData.firstWhere((element) => element.name == "Eritrea");
-    case CountryName.Estonia:
+    case CountryName.estonia:
       return countryData.firstWhere((element) => element.name == "Estonia");
-    case CountryName.Eswatini:
+    case CountryName.eswatini:
       return countryData.firstWhere((element) => element.name == "Eswatini");
-    case CountryName.Ethiopia:
+    case CountryName.ethiopia:
       return countryData.firstWhere((element) => element.name == "Ethiopia");
-    case CountryName.Falkland_Islands__Islas_Malvinas_:
+    case CountryName.falklandIslandsIslasMalvinas:
       return countryData.firstWhere(
           (element) => element.name == "Falkland Islands  Islas Malvinas ");
-    case CountryName.Faroe_Islands:
+    case CountryName.faroeIslands:
       return countryData
           .firstWhere((element) => element.name == "Faroe Islands");
-    case CountryName.Fiji:
+    case CountryName.fiji:
       return countryData.firstWhere((element) => element.name == "Fiji");
-    case CountryName.Finland:
+    case CountryName.finland:
       return countryData.firstWhere((element) => element.name == "Finland");
-    case CountryName.France:
+    case CountryName.france:
       return countryData.firstWhere((element) => element.name == "France");
-    case CountryName.French_Guiana:
+    case CountryName.frenchGuiana:
       return countryData
           .firstWhere((element) => element.name == "French Guiana");
-    case CountryName.French_Polynesia:
+    case CountryName.frenchPolynesia:
       return countryData
           .firstWhere((element) => element.name == "French Polynesia");
-    case CountryName.Gabon:
+    case CountryName.gabon:
       return countryData.firstWhere((element) => element.name == "Gabon");
-    case CountryName.Gambia:
+    case CountryName.gambia:
       return countryData.firstWhere((element) => element.name == "Gambia");
-    case CountryName.Georgia:
+    case CountryName.georgia:
       return countryData.firstWhere((element) => element.name == "Georgia");
-    case CountryName.Germany:
+    case CountryName.germany:
       return countryData.firstWhere((element) => element.name == "Germany");
-    case CountryName.Ghana:
+    case CountryName.ghana:
       return countryData.firstWhere((element) => element.name == "Ghana");
-    case CountryName.Gibraltar:
+    case CountryName.gibraltar:
       return countryData.firstWhere((element) => element.name == "Gibraltar");
-    case CountryName.Greece:
+    case CountryName.greece:
       return countryData.firstWhere((element) => element.name == "Greece");
-    case CountryName.Greenland:
+    case CountryName.greenland:
       return countryData.firstWhere((element) => element.name == "Greenland");
-    case CountryName.Grenada:
+    case CountryName.grenada:
       return countryData.firstWhere((element) => element.name == "Grenada");
-    case CountryName.Guadeloupe:
+    case CountryName.guadeloupe:
       return countryData.firstWhere((element) => element.name == "Guadeloupe");
-    case CountryName.Guam:
+    case CountryName.guam:
       return countryData.firstWhere((element) => element.name == "Guam");
-    case CountryName.Guatemala:
+    case CountryName.guatemala:
       return countryData.firstWhere((element) => element.name == "Guatemala");
-    case CountryName.Guernsey:
+    case CountryName.guernsey:
       return countryData.firstWhere((element) => element.name == "Guernsey");
-    case CountryName.Guinea_Conakry:
+    case CountryName.guineaConakry:
       return countryData
           .firstWhere((element) => element.name == "Guinea Conakry");
-    case CountryName.Guinea_Bissau:
+    case CountryName.guineaBissau:
       return countryData
           .firstWhere((element) => element.name == "Guinea Bissau");
-    case CountryName.Guyana:
+    case CountryName.guyana:
       return countryData.firstWhere((element) => element.name == "Guyana");
-    case CountryName.Haiti:
+    case CountryName.haiti:
       return countryData.firstWhere((element) => element.name == "Haiti");
-    case CountryName.Heard_Island_and_McDonald_Islands:
+    case CountryName.heardIslandAndMcDonaldIslands:
       return countryData.firstWhere(
           (element) => element.name == "Heard Island and McDonald Islands");
-    case CountryName.Honduras:
+    case CountryName.honduras:
       return countryData.firstWhere((element) => element.name == "Honduras");
-    case CountryName.Hong_Kong:
+    case CountryName.hongKong:
       return countryData.firstWhere((element) => element.name == "Hong Kong");
-    case CountryName.Hungary:
+    case CountryName.hungary:
       return countryData.firstWhere((element) => element.name == "Hungary");
-    case CountryName.Iceland:
+    case CountryName.iceland:
       return countryData.firstWhere((element) => element.name == "Iceland");
-    case CountryName.India:
+    case CountryName.india:
       return countryData.firstWhere((element) => element.name == "India");
-    case CountryName.Indonesia:
+    case CountryName.indonesia:
       return countryData.firstWhere((element) => element.name == "Indonesia");
-    case CountryName.Iran:
+    case CountryName.iran:
       return countryData.firstWhere((element) => element.name == "Iran");
-    case CountryName.Iraq:
+    case CountryName.iraq:
       return countryData.firstWhere((element) => element.name == "Iraq");
-    case CountryName.Ireland:
+    case CountryName.ireland:
       return countryData.firstWhere((element) => element.name == "Ireland");
-    case CountryName.Isle_of_Man:
+    case CountryName.isleOfMan:
       return countryData.firstWhere((element) => element.name == "Isle of Man");
-    case CountryName.Israel:
+    case CountryName.israel:
       return countryData.firstWhere((element) => element.name == "Israel");
-    case CountryName.Italy:
+    case CountryName.italy:
       return countryData.firstWhere((element) => element.name == "Italy");
-    case CountryName.Jamaica:
+    case CountryName.jamaica:
       return countryData.firstWhere((element) => element.name == "Jamaica");
-    case CountryName.Japan:
+    case CountryName.japan:
       return countryData.firstWhere((element) => element.name == "Japan");
-    case CountryName.Jersey:
+    case CountryName.jersey:
       return countryData.firstWhere((element) => element.name == "Jersey");
-    case CountryName.Jordan:
+    case CountryName.jordan:
       return countryData.firstWhere((element) => element.name == "Jordan");
-    case CountryName.Kazakhstan:
+    case CountryName.kazakhstan:
       return countryData.firstWhere((element) => element.name == "Kazakhstan");
-    case CountryName.Kenya:
+    case CountryName.kenya:
       return countryData.firstWhere((element) => element.name == "Kenya");
-    case CountryName.Kiribati:
+    case CountryName.kiribati:
       return countryData.firstWhere((element) => element.name == "Kiribati");
-    case CountryName.Kosovo:
+    case CountryName.kosovo:
       return countryData.firstWhere((element) => element.name == "Kosovo");
-    case CountryName.Kuwait:
+    case CountryName.kuwait:
       return countryData.firstWhere((element) => element.name == "Kuwait");
-    case CountryName.Kyrgyzstan:
+    case CountryName.kyrgyzstan:
       return countryData.firstWhere((element) => element.name == "Kyrgyzstan");
-    case CountryName.Laos:
+    case CountryName.laos:
       return countryData.firstWhere((element) => element.name == "Laos");
-    case CountryName.Latvia:
+    case CountryName.latvia:
       return countryData.firstWhere((element) => element.name == "Latvia");
-    case CountryName.Lebanon:
+    case CountryName.lebanon:
       return countryData.firstWhere((element) => element.name == "Lebanon");
-    case CountryName.Lesotho:
+    case CountryName.lesotho:
       return countryData.firstWhere((element) => element.name == "Lesotho");
-    case CountryName.Liberia:
+    case CountryName.liberia:
       return countryData.firstWhere((element) => element.name == "Liberia");
-    case CountryName.Libya:
+    case CountryName.libya:
       return countryData.firstWhere((element) => element.name == "Libya");
-    case CountryName.Liechtenstein:
+    case CountryName.liechtenstein:
       return countryData
           .firstWhere((element) => element.name == "Liechtenstein");
-    case CountryName.Lithuania:
+    case CountryName.lithuania:
       return countryData.firstWhere((element) => element.name == "Lithuania");
-    case CountryName.Luxembourg:
+    case CountryName.luxembourg:
       return countryData.firstWhere((element) => element.name == "Luxembourg");
-    case CountryName.Macau:
+    case CountryName.macau:
       return countryData.firstWhere((element) => element.name == "Macau");
-    case CountryName.Macedonia:
+    case CountryName.macedonia:
       return countryData.firstWhere((element) => element.name == "Macedonia");
-    case CountryName.Madagascar:
+    case CountryName.madagascar:
       return countryData.firstWhere((element) => element.name == "Madagascar");
-    case CountryName.Malawi:
+    case CountryName.malawi:
       return countryData.firstWhere((element) => element.name == "Malawi");
-    case CountryName.Malaysia:
+    case CountryName.malaysia:
       return countryData.firstWhere((element) => element.name == "Malaysia");
-    case CountryName.Maldives:
+    case CountryName.maldives:
       return countryData.firstWhere((element) => element.name == "Maldives");
-    case CountryName.Mali:
+    case CountryName.mali:
       return countryData.firstWhere((element) => element.name == "Mali");
-    case CountryName.Malta:
+    case CountryName.malta:
       return countryData.firstWhere((element) => element.name == "Malta");
-    case CountryName.Marshall_Islands:
+    case CountryName.marshallIslands:
       return countryData
           .firstWhere((element) => element.name == "Marshall Islands");
-    case CountryName.Martinique:
+    case CountryName.martinique:
       return countryData.firstWhere((element) => element.name == "Martinique");
-    case CountryName.Mauritania:
+    case CountryName.mauritania:
       return countryData.firstWhere((element) => element.name == "Mauritania");
-    case CountryName.Mauritius:
+    case CountryName.mauritius:
       return countryData.firstWhere((element) => element.name == "Mauritius");
-    case CountryName.Mayotte:
+    case CountryName.mayotte:
       return countryData.firstWhere((element) => element.name == "Mayotte");
-    case CountryName.Mexico:
+    case CountryName.mexico:
       return countryData.firstWhere((element) => element.name == "Mexico");
-    case CountryName.Micronesia:
+    case CountryName.micronesia:
       return countryData.firstWhere((element) => element.name == "Micronesia");
-    case CountryName.Moldova:
+    case CountryName.moldova:
       return countryData.firstWhere((element) => element.name == "Moldova");
-    case CountryName.Monaco:
+    case CountryName.monaco:
       return countryData.firstWhere((element) => element.name == "Monaco");
-    case CountryName.Mongolia:
+    case CountryName.mongolia:
       return countryData.firstWhere((element) => element.name == "Mongolia");
-    case CountryName.Montenegro:
+    case CountryName.montenegro:
       return countryData.firstWhere((element) => element.name == "Montenegro");
-    case CountryName.Montserrat:
+    case CountryName.montserrat:
       return countryData.firstWhere((element) => element.name == "Montserrat");
-    case CountryName.Morocco:
+    case CountryName.morocco:
       return countryData.firstWhere((element) => element.name == "Morocco");
-    case CountryName.Mozambique:
+    case CountryName.mozambique:
       return countryData.firstWhere((element) => element.name == "Mozambique");
-    case CountryName.Myanmar__Burma_:
+    case CountryName.myanmarBurma:
       return countryData
           .firstWhere((element) => element.name == "Myanmar  Burma ");
-    case CountryName.Namibia:
+    case CountryName.namibia:
       return countryData.firstWhere((element) => element.name == "Namibia");
-    case CountryName.Nauru:
+    case CountryName.nauru:
       return countryData.firstWhere((element) => element.name == "Nauru");
-    case CountryName.Nepal:
+    case CountryName.nepal:
       return countryData.firstWhere((element) => element.name == "Nepal");
-    case CountryName.Netherlands:
+    case CountryName.netherlands:
       return countryData.firstWhere((element) => element.name == "Netherlands");
-    case CountryName.New_Caledonia:
+    case CountryName.newCaledonia:
       return countryData
           .firstWhere((element) => element.name == "New Caledonia");
-    case CountryName.New_Zealand:
+    case CountryName.newZealand:
       return countryData.firstWhere((element) => element.name == "New Zealand");
-    case CountryName.Nicaragua:
+    case CountryName.nicaragua:
       return countryData.firstWhere((element) => element.name == "Nicaragua");
-    case CountryName.Niger:
+    case CountryName.niger:
       return countryData.firstWhere((element) => element.name == "Niger");
-    case CountryName.Nigeria:
+    case CountryName.nigeria:
       return countryData.firstWhere((element) => element.name == "Nigeria");
-    case CountryName.Niue:
+    case CountryName.niue:
       return countryData.firstWhere((element) => element.name == "Niue");
-    case CountryName.Norfolk_Island:
+    case CountryName.norfolkIsland:
       return countryData
           .firstWhere((element) => element.name == "Norfolk Island");
-    case CountryName.North_Korea:
+    case CountryName.northKorea:
       return countryData.firstWhere((element) => element.name == "North Korea");
-    case CountryName.Northern_Mariana_Islands:
+    case CountryName.northernMarianaIslands:
       return countryData
           .firstWhere((element) => element.name == "Northern Mariana Islands");
-    case CountryName.Norway:
+    case CountryName.norway:
       return countryData.firstWhere((element) => element.name == "Norway");
-    case CountryName.Oman:
+    case CountryName.oman:
       return countryData.firstWhere((element) => element.name == "Oman");
-    case CountryName.Pakistan:
+    case CountryName.pakistan:
       return countryData.firstWhere((element) => element.name == "Pakistan");
-    case CountryName.Palau:
+    case CountryName.palau:
       return countryData.firstWhere((element) => element.name == "Palau");
-    case CountryName.Palestinian_Territories:
+    case CountryName.palestinianTerritories:
       return countryData
           .firstWhere((element) => element.name == "Palestinian Territories");
-    case CountryName.Panama:
+    case CountryName.panama:
       return countryData.firstWhere((element) => element.name == "Panama");
-    case CountryName.Papua_New_Guinea:
+    case CountryName.papuaNewGuinea:
       return countryData
           .firstWhere((element) => element.name == "Papua New Guinea");
-    case CountryName.Paraguay:
+    case CountryName.paraguay:
       return countryData.firstWhere((element) => element.name == "Paraguay");
-    case CountryName.Peru:
+    case CountryName.peru:
       return countryData.firstWhere((element) => element.name == "Peru");
-    case CountryName.Philippines:
+    case CountryName.philippines:
       return countryData.firstWhere((element) => element.name == "Philippines");
-    case CountryName.Poland:
+    case CountryName.poland:
       return countryData.firstWhere((element) => element.name == "Poland");
-    case CountryName.Portugal:
+    case CountryName.portugal:
       return countryData.firstWhere((element) => element.name == "Portugal");
-    case CountryName.Puerto_Rico:
+    case CountryName.puertoRico:
       return countryData.firstWhere((element) => element.name == "Puerto Rico");
-    case CountryName.Qatar:
+    case CountryName.qatar:
       return countryData.firstWhere((element) => element.name == "Qatar");
-    case CountryName.R_union:
+    case CountryName.rUnion:
       return countryData.firstWhere((element) => element.name == "R union");
-    case CountryName.Romania:
+    case CountryName.romania:
       return countryData.firstWhere((element) => element.name == "Romania");
-    case CountryName.Russia:
+    case CountryName.russia:
       return countryData.firstWhere((element) => element.name == "Russia");
-    case CountryName.Rwanda:
+    case CountryName.rwanda:
       return countryData.firstWhere((element) => element.name == "Rwanda");
-    case CountryName.Saint_Barth_lemy:
+    case CountryName.saintBarthLemy:
       return countryData
           .firstWhere((element) => element.name == "Saint Barth lemy");
-    case CountryName.Saint_Helena:
+    case CountryName.saintHelena:
       return countryData
           .firstWhere((element) => element.name == "Saint Helena");
-    case CountryName.St__Kitts:
+    case CountryName.stKitts:
       return countryData.firstWhere((element) => element.name == "St  Kitts");
-    case CountryName.St__Lucia:
+    case CountryName.stLucia:
       return countryData.firstWhere((element) => element.name == "St  Lucia");
-    case CountryName.Saint_Martin:
+    case CountryName.saintMartin:
       return countryData
           .firstWhere((element) => element.name == "Saint Martin");
-    case CountryName.Saint_Pierre_and_Miquelon:
+    case CountryName.saintPierreAndMiquelon:
       return countryData
           .firstWhere((element) => element.name == "Saint Pierre and Miquelon");
-    case CountryName.St__Vincent:
+    case CountryName.stVincent:
       return countryData.firstWhere((element) => element.name == "St  Vincent");
-    case CountryName.Samoa:
+    case CountryName.samoa:
       return countryData.firstWhere((element) => element.name == "Samoa");
-    case CountryName.San_Marino:
+    case CountryName.sanMarino:
       return countryData.firstWhere((element) => element.name == "San Marino");
-    case CountryName.S_o_Tom__and_Pr_ncipe:
+    case CountryName.sOTomAndPrNcipe:
       return countryData
           .firstWhere((element) => element.name == "S o Tom  and Pr ncipe");
-    case CountryName.Saudi_Arabia:
+    case CountryName.saudiArabia:
       return countryData
           .firstWhere((element) => element.name == "Saudi Arabia");
-    case CountryName.Senegal:
+    case CountryName.senegal:
       return countryData.firstWhere((element) => element.name == "Senegal");
-    case CountryName.Serbia:
+    case CountryName.serbia:
       return countryData.firstWhere((element) => element.name == "Serbia");
-    case CountryName.Seychelles:
+    case CountryName.seychelles:
       return countryData.firstWhere((element) => element.name == "Seychelles");
-    case CountryName.Sierra_Leone:
+    case CountryName.sierraLeone:
       return countryData
           .firstWhere((element) => element.name == "Sierra Leone");
-    case CountryName.Singapore:
+    case CountryName.singapore:
       return countryData.firstWhere((element) => element.name == "Singapore");
-    case CountryName.Sint_Maarten:
+    case CountryName.sintMaarten:
       return countryData
           .firstWhere((element) => element.name == "Sint Maarten");
-    case CountryName.Slovakia:
+    case CountryName.slovakia:
       return countryData.firstWhere((element) => element.name == "Slovakia");
-    case CountryName.Slovenia:
+    case CountryName.slovenia:
       return countryData.firstWhere((element) => element.name == "Slovenia");
-    case CountryName.Solomon_Islands:
+    case CountryName.solomonIslands:
       return countryData
           .firstWhere((element) => element.name == "Solomon Islands");
-    case CountryName.Somalia:
+    case CountryName.somalia:
       return countryData.firstWhere((element) => element.name == "Somalia");
-    case CountryName.South_Africa:
+    case CountryName.southAfrica:
       return countryData
           .firstWhere((element) => element.name == "South Africa");
-    case CountryName.South_Georgia_and_the_South_Sandwich_Islands:
+    case CountryName.southGeorgiaAndTheSouthSandwichIslands:
       return countryData.firstWhere((element) =>
           element.name == "South Georgia and the South Sandwich Islands");
-    case CountryName.South_Korea:
+    case CountryName.southKorea:
       return countryData.firstWhere((element) => element.name == "South Korea");
-    case CountryName.South_Sudan:
+    case CountryName.southSudan:
       return countryData.firstWhere((element) => element.name == "South Sudan");
-    case CountryName.Spain:
+    case CountryName.spain:
       return countryData.firstWhere((element) => element.name == "Spain");
-    case CountryName.Sri_Lanka:
+    case CountryName.sriLanka:
       return countryData.firstWhere((element) => element.name == "Sri Lanka");
-    case CountryName.Sudan:
+    case CountryName.sudan:
       return countryData.firstWhere((element) => element.name == "Sudan");
-    case CountryName.Suriname:
+    case CountryName.suriname:
       return countryData.firstWhere((element) => element.name == "Suriname");
-    case CountryName.Svalbard_and_Jan_Mayen:
+    case CountryName.svalbardAndJanMayen:
       return countryData
           .firstWhere((element) => element.name == "Svalbard and Jan Mayen");
-    case CountryName.Sweden:
+    case CountryName.sweden:
       return countryData.firstWhere((element) => element.name == "Sweden");
-    case CountryName.Switzerland:
+    case CountryName.switzerland:
       return countryData.firstWhere((element) => element.name == "Switzerland");
-    case CountryName.Syria:
+    case CountryName.syria:
       return countryData.firstWhere((element) => element.name == "Syria");
-    case CountryName.Taiwan:
+    case CountryName.taiwan:
       return countryData.firstWhere((element) => element.name == "Taiwan");
-    case CountryName.Tajikistan:
+    case CountryName.tajikistan:
       return countryData.firstWhere((element) => element.name == "Tajikistan");
-    case CountryName.Tanzania:
+    case CountryName.tanzania:
       return countryData.firstWhere((element) => element.name == "Tanzania");
-    case CountryName.Thailand:
+    case CountryName.thailand:
       return countryData.firstWhere((element) => element.name == "Thailand");
-    case CountryName.Togo:
+    case CountryName.togo:
       return countryData.firstWhere((element) => element.name == "Togo");
-    case CountryName.Tokelau:
+    case CountryName.tokelau:
       return countryData.firstWhere((element) => element.name == "Tokelau");
-    case CountryName.Tonga:
+    case CountryName.tonga:
       return countryData.firstWhere((element) => element.name == "Tonga");
-    case CountryName.Trinidad_Tobago:
+    case CountryName.trinidadTobago:
       return countryData
           .firstWhere((element) => element.name == "Trinidad Tobago");
-    case CountryName.Tunisia:
+    case CountryName.tunisia:
       return countryData.firstWhere((element) => element.name == "Tunisia");
-    case CountryName.Turkey:
+    case CountryName.turkey:
       return countryData.firstWhere((element) => element.name == "Turkey");
-    case CountryName.Turkmenistan:
+    case CountryName.turkmenistan:
       return countryData
           .firstWhere((element) => element.name == "Turkmenistan");
-    case CountryName.Turks_and_Caicos_Islands:
+    case CountryName.turksAndCaicosIslands:
       return countryData
           .firstWhere((element) => element.name == "Turks and Caicos Islands");
-    case CountryName.Tuvalu:
+    case CountryName.tuvalu:
       return countryData.firstWhere((element) => element.name == "Tuvalu");
-    case CountryName.U_S__Virgin_Islands:
+    case CountryName.usVirginIslands:
       return countryData
           .firstWhere((element) => element.name == "U S  Virgin Islands");
-    case CountryName.Uganda:
+    case CountryName.uganda:
       return countryData.firstWhere((element) => element.name == "Uganda");
-    case CountryName.Ukraine:
+    case CountryName.ukraine:
       return countryData.firstWhere((element) => element.name == "Ukraine");
-    case CountryName.United_Arab_Emirates:
+    case CountryName.unitedArabEmirates:
       return countryData
           .firstWhere((element) => element.name == "United Arab Emirates");
-    case CountryName.United_Kingdom:
+    case CountryName.unitedKingdom:
       return countryData
           .firstWhere((element) => element.name == "United Kingdom");
-    case CountryName.United_States:
+    case CountryName.unitedStates:
       return countryData
           .firstWhere((element) => element.name == "United States");
-    case CountryName.Uruguay:
+    case CountryName.uruguay:
       return countryData.firstWhere((element) => element.name == "Uruguay");
-    case CountryName.Uzbekistan:
+    case CountryName.uzbekistan:
       return countryData.firstWhere((element) => element.name == "Uzbekistan");
-    case CountryName.Vanuatu:
+    case CountryName.vanuatu:
       return countryData.firstWhere((element) => element.name == "Vanuatu");
-    case CountryName.Vatican_City:
+    case CountryName.vaticanCity:
       return countryData
           .firstWhere((element) => element.name == "Vatican City");
-    case CountryName.Venezuela:
+    case CountryName.venezuela:
       return countryData.firstWhere((element) => element.name == "Venezuela");
-    case CountryName.Vietnam:
+    case CountryName.vietnam:
       return countryData.firstWhere((element) => element.name == "Vietnam");
-    case CountryName.Wallis_and_Futuna:
+    case CountryName.wallisAndFutuna:
       return countryData
           .firstWhere((element) => element.name == "Wallis and Futuna");
-    case CountryName.Western_Sahara:
+    case CountryName.westernSahara:
       return countryData
           .firstWhere((element) => element.name == "Western Sahara");
-    case CountryName.Yemen:
+    case CountryName.yemen:
       return countryData.firstWhere((element) => element.name == "Yemen");
-    case CountryName.Zambia:
+    case CountryName.zambia:
       return countryData.firstWhere((element) => element.name == "Zambia");
-    case CountryName.Zimbabwe:
+    case CountryName.zimbabwe:
       return countryData.firstWhere((element) => element.name == "Zimbabwe");
   }
 }
