@@ -14,7 +14,6 @@ enum _Page {
 }
 
 /// A dialog that allows the user to sign in with SMS.
-// ignore: must_be_immutable
 class SignInWithSMSDialog extends StatefulWidget {
   /// A reference to the auth module as retrieved from the client object.
   final Caller caller;
@@ -23,9 +22,9 @@ class SignInWithSMSDialog extends StatefulWidget {
   final VoidCallback onSignedIn;
 
   /// Country code. Defaults to India.
-  CountryName defaultCountry;
+  final CountryName defaultCountry;
 
-  SignInWithSMSDialog({
+  const SignInWithSMSDialog({
     Key? key,
     required this.caller,
     required this.onSignedIn,
@@ -74,7 +73,13 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
     if (_page == _Page.signIn) {
       widgets = [
         PhoneNumberWidget(
-          defaultCountry: CountryName.India,
+          updateIssue: (issue) {
+            setState(() {
+              _phoneNumberIssue = issue;
+            });
+            return;
+          },
+          defaultCountry: CountryName.india,
           onCountryChanged: (country) {
             setState(() {
               _selectedCountry = country;
@@ -90,7 +95,15 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
       ];
     } else if (_page == _Page.verify) {
       widgets = [
-        OTPWidget(otpController: _otpController, otpIssue: _otpIssue),
+        OTPWidget(
+            updateIssue: (issue) {
+              setState(() {
+                _otpIssue = issue;
+              });
+              return;
+            },
+            otpController: _otpController,
+            otpIssue: _otpIssue),
         ElevatedButton(
           onPressed: _enabled ? _verifyAuthentication : null,
           child: const Text('Verify'),

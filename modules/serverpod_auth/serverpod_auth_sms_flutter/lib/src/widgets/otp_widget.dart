@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-//ignore: must_be_immutable
 class OTPWidget extends StatefulWidget {
   final TextEditingController otpController;
-  String? otpIssue;
-  OTPWidget({
+  final String? otpIssue;
+  final void Function(String?)? updateIssue;
+  const OTPWidget({
     required this.otpController,
-    this.otpIssue,
+    required this.otpIssue,
+    required this.updateIssue,
     Key? key,
   }) : super(key: key);
 
   @override
-  _OTPWidgetState createState() => _OTPWidgetState();
+  OTPWidgetState createState() => OTPWidgetState();
 }
 
-class _OTPWidgetState extends State<OTPWidget> {
+class OTPWidgetState extends State<OTPWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,9 +32,7 @@ class _OTPWidgetState extends State<OTPWidget> {
           errorText: widget.otpIssue,
         ),
         onChanged: (_) {
-          setState(() {
-            widget.otpIssue = null;
-          });
+          widget.updateIssue?.call(null);
         },
       ),
     );

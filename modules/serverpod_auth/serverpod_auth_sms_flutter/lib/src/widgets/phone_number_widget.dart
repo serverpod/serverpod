@@ -5,26 +5,27 @@ import 'country_widget.dart';
 import '../res/country_model.dart';
 import '../res/country_name.dart';
 
-//ignore: must_be_immutable
 class PhoneNumberWidget extends StatefulWidget {
   final void Function(CountryModel country)? onCountryChanged;
-  CountryName defaultCountry;
+  final CountryName defaultCountry;
 
-  TextEditingController phoneNumberController;
-  String? phoneNumberIssue;
-  PhoneNumberWidget({
+  final TextEditingController phoneNumberController;
+  final String? phoneNumberIssue;
+  final void Function(String?)? updateIssue;
+  const PhoneNumberWidget({
     required this.onCountryChanged,
     required this.defaultCountry,
     required this.phoneNumberController,
-    this.phoneNumberIssue,
+    required this.phoneNumberIssue,
+    required this.updateIssue,
     Key? key,
   }) : super(key: key);
 
   @override
-  _PhoneNumberWidgetState createState() => _PhoneNumberWidgetState();
+  PhoneNumberWidgetState createState() => PhoneNumberWidgetState();
 }
 
-class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
+class PhoneNumberWidgetState extends State<PhoneNumberWidget> {
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -49,9 +50,7 @@ class _PhoneNumberWidgetState extends State<PhoneNumberWidget> {
         errorText: widget.phoneNumberIssue,
       ),
       onChanged: (_) {
-        setState(() {
-          widget.phoneNumberIssue = null;
-        });
+        widget.updateIssue?.call(null);
       },
     );
   }

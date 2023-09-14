@@ -4,12 +4,12 @@ import '../res/country_model.dart';
 import '../res/country_name.dart';
 import '../res/get_country.dart';
 
-//ignore: must_be_immutable
 class CountryWidget extends StatefulWidget {
-  CountryName defaultCountry;
+  final CountryName defaultCountry;
   final void Function(CountryModel country)? onCountryChanged;
 
-  CountryWidget({Key? key, required this.defaultCountry, this.onCountryChanged})
+  const CountryWidget(
+      {Key? key, required this.defaultCountry, this.onCountryChanged})
       : super(key: key);
 
   @override
