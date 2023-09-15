@@ -774,7 +774,9 @@ fields:
     var collector = CodeGenerationCollector();
     StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
     expect(collector.errors, isNotEmpty, reason: 'Expected an error');
-    expect(collector.errors.first.message,
-        'The class "ExampleParent" must have a "table" property defined to be used in a relation.');
+    expect(
+      collector.errors.first.message,
+      'The class "ExampleParent" must have a "table" property defined to be used in a relation.',
+    );
   });
 }
