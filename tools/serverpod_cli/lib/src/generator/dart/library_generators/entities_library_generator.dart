@@ -1568,9 +1568,7 @@ class SerializableEntityLibraryGenerator {
     return fields.where((field) {
       var relation = field.relation;
       if (relation is! ObjectRelationDefinition) return false;
-      if (relation.isForeignKeyOrigin &&
-          classDefinition.findField(relation.fieldName)?.type.nullable ==
-              false) {
+      if (!relation.nullableRelation) {
         return false;
       }
       return true;

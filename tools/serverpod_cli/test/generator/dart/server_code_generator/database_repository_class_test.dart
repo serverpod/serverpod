@@ -323,16 +323,9 @@ void main() {
         name: 'company',
       );
 
-      test('has a company method defined.', () {
-        expect(companyMethod, isNotNull, reason: 'Missing company method.');
+      test('has no a company method defined for none nullable relation.', () {
+        expect(companyMethod, isNull, reason: 'Company method was found.');
       });
-
-      test('company method has the input params of session, example', () {
-        expect(
-          companyMethod?.parameters?.toSource(),
-          '(_i1.Session session, Example example)',
-        );
-      }, skip: companyMethod == null);
 
       var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
         repositoryDetachClass,
