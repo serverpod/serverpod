@@ -9,9 +9,6 @@ export 'package:serverpod/relic.dart';
 // Database
 export 'package:serverpod/database.dart';
 
-// Errors
-export 'package:serverpod/errors.dart';
-
 // Serialization and logging
 export 'package:serverpod_serialization/serverpod_serialization.dart';
 export 'package:serverpod/src/util/http_request_extension.dart';
