@@ -3,6 +3,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:super_string/super_string.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -78,7 +79,12 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
-            _buildEntityAddRepositoryClass(
+            _buildEntityAttachRepositoryClass(
+              className,
+              fields,
+              classDefinition,
+            ),
+            _buildEntityDetachRepositoryClass(
               className,
               fields,
               classDefinition,
@@ -1397,25 +1403,326 @@ class SerializableEntityLibraryGenerator {
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    return Class((c) {
-      c.name = '${className}Repository';
-
-      c.constructors.add(Constructor((constructor) => constructor.name = '_'));
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}Repository'
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..name = '_'
+            ..constant = true;
+        }))
+        ..fields.addAll([
+          if (_hasAttachOperations(fields))
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = 'attach'
+                ..modifier = FieldModifier.final$
+                ..assignment = Code('const ${className}AttachRepository._()');
+            }),
+          if (_hasDetachOperations(fields))
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = 'detach'
+                ..modifier = FieldModifier.final$
+                ..assignment = Code('const ${className}DetachRepository._()');
+            }),
+        ]);
     });
   }
 
-  Class? _buildEntityAddRepositoryClass(
+  Class? _buildEntityAttachRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     if (!(fields.any((field) => field.relation != null))) return null;
 
-    return Class((c) {
-      c.name = '${className}AddRepository';
-
-      c.constructors.add(Constructor((constructor) => constructor.name = '_'));
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}AttachRepository'
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..name = '_'
+            ..constant = true;
+        }))
+        ..methods.addAll(_buildAttachMethods(
+          fields,
+          className,
+          classDefinition,
+        ));
     });
+  }
+
+  Class? _buildEntityDetachRepositoryClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    if (!(fields.any((field) => field.relation != null))) return null;
+
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}DetachRepository'
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..name = '_'
+            ..constant = true;
+        }))
+        ..methods.addAll(_buildDetachMethods(
+          fields,
+          className,
+          classDefinition,
+        ));
+    });
+  }
+
+  Iterable<Method> _buildAttachMethods(
+      List<SerializableEntityFieldDefinition> fields,
+      String className,
+      ClassDefinition classDefinition) {
+    return fields
+        .where((method) => method.relation is ObjectRelationDefinition)
+        .map(
+          (field) => Method((methodBuilder) {
+            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
+            var otherClassFieldName = field.name;
+
+            var relation = field.relation;
+            (relation as ObjectRelationDefinition);
+
+            methodBuilder
+              ..returns = refer('Future<void>')
+              ..name = field.name
+              ..requiredParameters.addAll([
+                Parameter((parameterBuilder) {
+                  parameterBuilder
+                    ..name = 'session'
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart');
+                }),
+                Parameter((parameterBuilder) {
+                  parameterBuilder
+                    ..name = classFieldName
+                    ..type = refer(className);
+                }),
+                Parameter((parameterBuilder) {
+                  parameterBuilder
+                    ..name = otherClassFieldName
+                    ..type = field.type.reference(
+                      serverCode,
+                      nullable: false,
+                      subDirParts: classDefinition.subDirParts,
+                      config: config,
+                    );
+                })
+              ])
+              ..modifier = MethodModifier.async
+              ..body = relation.isForeignKeyOrigin
+                  ? _buildAttachImplementationBlock(
+                      classFieldName,
+                      otherClassFieldName,
+                      relation.fieldName,
+                      refer(className),
+                    )
+                  : _buildAttachImplementationBlock(
+                      otherClassFieldName,
+                      classFieldName,
+                      relation.foreignFieldName,
+                      field.type.reference(
+                        serverCode,
+                        nullable: false,
+                        subDirParts: classDefinition.subDirParts,
+                        config: config,
+                      ));
+            const Code('');
+          }),
+        );
+  }
+
+  Block _buildAttachImplementationBlock(
+    String classFieldName,
+    String otherClassFieldName,
+    String foreignKeyField,
+    Reference classReference,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
+            const Code(''),
+            _buildUpdateSingleField(
+              classFieldName,
+              foreignKeyField,
+              classReference,
+              refer(otherClassFieldName).property('id'),
+            ),
+          ]))
+        .build();
+  }
+
+  Iterable<Method> _buildDetachMethods(
+      List<SerializableEntityFieldDefinition> fields,
+      String className,
+      ClassDefinition classDefinition) {
+    return fields.where((field) {
+      var relation = field.relation;
+      if (relation is! ObjectRelationDefinition) return false;
+      if (relation.isForeignKeyOrigin &&
+          classDefinition.findField(relation.fieldName)?.type.nullable ==
+              false) {
+        return false;
+      }
+      return true;
+    }).map(
+      (field) => Method((methodBuilder) {
+        var classFieldName = className.toCamelCase(isLowerCamelCase: true);
+        var fieldName = field.name;
+
+        var relation = field.relation;
+        (relation as ObjectRelationDefinition);
+
+        methodBuilder
+          ..name = field.name
+          ..requiredParameters.addAll([
+            Parameter((parameterBuilder) {
+              parameterBuilder
+                ..name = 'session'
+                ..type = refer('Session', 'package:serverpod/serverpod.dart');
+            }),
+            Parameter((parameterBuilder) {
+              parameterBuilder
+                ..name = classFieldName
+                ..type = refer(className);
+            })
+          ])
+          ..returns = refer('Future<void>')
+          ..modifier = MethodModifier.async
+          ..body = relation.isForeignKeyOrigin
+              ? _buildDetachImplementationBlockOriginSide(
+                  fieldName,
+                  classFieldName,
+                  relation.fieldName,
+                  className,
+                )
+              : _buildDetachImplementationBlockForeignSide(
+                  fieldName,
+                  classFieldName,
+                  relation.foreignFieldName,
+                  field.type.reference(
+                    serverCode,
+                    nullable: false,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  ));
+        const Code('');
+      }),
+    );
+  }
+
+  Block _buildDetachImplementationBlockOriginSide(
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    String className,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              _buildCodeBlockThrowIfIdIsNull(classFieldName),
+              const Code(''),
+              _buildUpdateSingleField(
+                classFieldName,
+                foreignKeyField,
+                refer(className),
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
+  }
+
+  Block _buildDetachImplementationBlockForeignSide(
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    Reference foreignClass,
+  ) {
+    var localCopyVariable = '\$$fieldName';
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              declareVar(localCopyVariable)
+                  .assign(refer(classFieldName).property(fieldName))
+                  .statement,
+              const Code(''),
+              _buildCodeBlockThrowIfFieldIsNull(
+                localCopyVariable,
+                classFieldName,
+              ),
+              _buildCodeBlockThrowIfIdIsNull(localCopyVariable),
+              _buildCodeBlockThrowIfIdIsNull(classFieldName),
+              const Code(''),
+              _buildUpdateSingleField(
+                localCopyVariable,
+                foreignKeyField,
+                foreignClass,
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
+  }
+
+  Block _buildCodeBlockThrowIfIdIsNull(String className) {
+    return Block.of([
+      Code('if ($className.id == null) {'),
+      refer('MissingIdError', 'package:serverpod/serverpod.dart')
+          .call([refer("'$className'")])
+          .thrown
+          .statement,
+      const Code('}'),
+    ]);
+  }
+
+  Block _buildCodeBlockThrowIfFieldIsNull(String fieldName, String className) {
+    return Block.of([
+      Code('if ($fieldName == null) {'),
+      refer('MissingFieldError', 'package:serverpod/serverpod.dart')
+          .call([refer("'$className'"), refer("'$fieldName'")])
+          .thrown
+          .statement,
+      const Code('}'),
+    ]);
+  }
+
+  Code _buildUpdateSingleField(
+    String rowName,
+    String fieldName,
+    Reference classReference,
+    Expression assignment,
+  ) {
+    var localCopyVariable = '\$$rowName';
+    return (BlockBuilder()
+          ..statements.addAll([
+            declareVar(localCopyVariable)
+                .assign(refer(rowName).property('copyWith').call([], {
+                  fieldName: assignment,
+                }))
+                .statement,
+            refer('session')
+                .property('db')
+                .property('update')
+                .call([
+                  refer(localCopyVariable)
+                ], {
+                  'columns': literalList(
+                    [classReference.property('t').property(fieldName)],
+                  )
+                })
+                .awaited
+                .statement,
+          ]))
+        .build();
   }
 
   Method _buildEntityIncludeClassTableGetter(String className) {
@@ -1568,5 +1875,13 @@ class SerializableEntityLibraryGenerator {
     ]);
 
     return library.build();
+  }
+
+  bool _hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
+    return fields.any((field) => field.relation is ObjectRelationDefinition);
+  }
+
+  bool _hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
+    return fields.any((field) => field.relation is ObjectRelationDefinition);
   }
 }

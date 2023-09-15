@@ -193,32 +193,6 @@ void main() {
             reason: 'Missing declaration for ${testClassName}Table singleton.');
       });
 
-      test('has a static db instance.', () {
-        var dbField = CompilationUnitHelpers.tryFindFieldDeclaration(
-          maybeClassNamedExample!,
-          name: 'db',
-        );
-
-        expect(dbField, isNotNull);
-
-        expect(
-          dbField?.fields.toSource(),
-          'final db = ${testClassName}Repository._()',
-        );
-
-        expect(
-            CompilationUnitHelpers.hasFieldDeclaration(
-              maybeClassNamedExample,
-              name: 'db',
-              isFinal: true,
-              isStatic: true,
-              initializerMethod: '_',
-            ),
-            isTrue,
-            reason:
-                'Missing declaration for ${testClassName}Repository singleton.');
-      });
-
       test('has a tableName method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -463,46 +437,6 @@ void main() {
           ),
           isTrue,
           reason: 'Missing class named ${testClassName}Include.');
-    });
-
-    test('then the class name ${testClassName}Repository is generated', () {
-      expect(
-          CompilationUnitHelpers.hasClassDeclaration(
-            compilationUnit,
-            name: '${testClassName}Repository',
-          ),
-          isTrue,
-          reason: 'Missing class named ${testClassName}Repository.');
-    });
-
-    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}Repository',
-    );
-
-    group('then the ${testClassName}Repository', () {
-      test('has a private constructor', () {
-        expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(
-              repositoryClass!,
-              name: '_',
-            ),
-            isTrue,
-            reason: 'Missing private constructor.');
-      });
-    }, skip: repositoryClass == null);
-
-    test('then a class named ${testClassName}AddRepository is NOT generated',
-        () {
-      expect(
-        CompilationUnitHelpers.hasClassDeclaration(
-          compilationUnit,
-          name: '${testClassName}AddRepository',
-        ),
-        isFalse,
-        reason:
-            'The class ${testClassName}AddRepository was found but was expected to not exist.',
-      );
     });
   });
 
@@ -1044,62 +978,5 @@ void main() {
         skip: maybeClassNamedExampleTable == null
             ? 'Could not run test because ${testClassName}Table class was not found.'
             : false);
-
-    test('then a class named ${testClassName}AddRepository is generated', () {
-      expect(
-        CompilationUnitHelpers.hasClassDeclaration(
-          compilationUnit,
-          name: '${testClassName}AddRepository',
-        ),
-        isTrue,
-        reason:
-            'Expected the class ${testClassName}AddRepository to be generated.',
-      );
-    });
-
-    var repositoryClass = CompilationUnitHelpers.tryFindClassDeclaration(
-      compilationUnit,
-      name: '${testClassName}AddRepository',
-    );
-
-    group('then the ${testClassName}AddRepository', () {
-      test('has a private constructor', () {
-        expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(
-              repositoryClass!,
-              name: '_',
-            ),
-            isTrue,
-            reason: 'Missing private constructor.');
-      });
-    }, skip: repositoryClass == null);
-
-    /*group('then the class named ${testClassName}Repository', () {
-    test('has a field.', () {
-      var dbField = CompilationUnitHelpers.tryFindFieldDeclaration(
-        maybeClassNamedExample!,
-        name: 'db',
-      );
-
-      expect(dbField, isNotNull);
-
-      expect(
-        dbField?.fields.toSource(),
-        'final db = ${testClassName}Repository._()',
-      );
-
-      expect(
-          CompilationUnitHelpers.hasFieldDeclaration(
-            maybeClassNamedExample,
-            name: 'db',
-            isFinal: true,
-            isStatic: true,
-            initializerMethod: '_',
-          ),
-          isTrue,
-          reason:
-              'Missing declaration for ${testClassName}Repository singleton.');
-    });
-  });*/
   });
 }

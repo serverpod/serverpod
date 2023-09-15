@@ -104,8 +104,11 @@ class ClassDefinitionBuilder {
   ClassDefinitionBuilder withObjectRelationField(
     String fieldName,
     String className,
-    String parentTable,
-  ) {
+    String parentTable, {
+    String? foreignFieldName,
+    bool nullableRelation = false,
+  }) {
+    var foreignKeyFieldName = foreignFieldName ?? '${fieldName}Id';
     _fields.addAll([
       FieldDefinitionBuilder()
           .withName(fieldName)
@@ -120,8 +123,8 @@ class ClassDefinitionBuilder {
           ))
           .build(),
       FieldDefinitionBuilder()
-          .withName('${fieldName}Id')
-          .withIdType()
+          .withName(foreignKeyFieldName)
+          .withIdType(nullableRelation)
           .withShouldPersist(true)
           .withRelation(ForeignRelationDefinitionBuilder()
               .withParentTable(parentTable)
