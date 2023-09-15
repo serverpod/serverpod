@@ -196,7 +196,7 @@ class EntityDependencyResolver {
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       isForeignKeyOrigin: true,
-      nullableRelation: relation.nullableRelation,
+      nullableRelation: field.type.nullable,
     );
   }
 

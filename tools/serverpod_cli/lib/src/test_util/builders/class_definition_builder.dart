@@ -152,7 +152,7 @@ class ClassDefinitionBuilder {
             parentTable: parentTable,
             fieldName: foreignFieldName,
             foreignFieldName: 'id',
-            nullableRelation: false,
+            nullableRelation: nullableRelation,
             isForeignKeyOrigin: true,
           ))
           .build(),
