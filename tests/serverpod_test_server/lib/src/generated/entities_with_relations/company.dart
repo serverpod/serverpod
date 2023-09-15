@@ -351,10 +351,10 @@ class CompanyAttachRepository {
     _i2.Town town,
   ) async {
     if (company.id == null) {
-      throw _i1.MissingIdError('company');
+      throw ArgumentError.notNull('company.id');
     }
     if (town.id == null) {
-      throw _i1.MissingIdError('town');
+      throw ArgumentError.notNull('town.id');
     }
 
     var $company = company.copyWith(townId: town.id);

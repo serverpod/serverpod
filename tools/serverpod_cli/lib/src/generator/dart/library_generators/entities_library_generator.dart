@@ -1657,9 +1657,12 @@ class SerializableEntityLibraryGenerator {
               const Code(''),
               _buildCodeBlockThrowIfFieldIsNull(
                 localCopyVariable,
-                classFieldName,
+                '$classFieldName.$fieldName',
               ),
-              _buildCodeBlockThrowIfIdIsNull(localCopyVariable),
+              _buildCodeBlockThrowIfIdIsNull(
+                localCopyVariable,
+                '$classFieldName.$fieldName.id',
+              ),
               _buildCodeBlockThrowIfIdIsNull(classFieldName),
               const Code(''),
               _buildUpdateSingleField(
@@ -1673,22 +1676,20 @@ class SerializableEntityLibraryGenerator {
         .build();
   }
 
-  Block _buildCodeBlockThrowIfIdIsNull(String className) {
-    return Block.of([
-      Code('if ($className.id == null) {'),
-      refer('MissingIdError', 'package:serverpod/serverpod.dart')
-          .call([refer("'$className'")])
-          .thrown
-          .statement,
-      const Code('}'),
-    ]);
+  Block _buildCodeBlockThrowIfIdIsNull(String className, [String? errorRef]) {
+    return _buildCodeBlockThrowIfFieldIsNull('$className.id', errorRef);
   }
 
-  Block _buildCodeBlockThrowIfFieldIsNull(String fieldName, String className) {
+  Block _buildCodeBlockThrowIfFieldIsNull(
+    String nullCheckRef, [
+    String? errorRef,
+  ]) {
+    var error = errorRef ?? nullCheckRef;
     return Block.of([
-      Code('if ($fieldName == null) {'),
-      refer('MissingFieldError', 'package:serverpod/serverpod.dart')
-          .call([refer("'$className'"), refer("'$fieldName'")])
+      Code('if ($nullCheckRef == null) {'),
+      refer('ArgumentError', 'dart:core')
+          .property('notNull')
+          .call([refer('\'$error\'')])
           .thrown
           .statement,
       const Code('}'),

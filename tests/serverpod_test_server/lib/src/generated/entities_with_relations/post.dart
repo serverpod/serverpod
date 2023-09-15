@@ -410,10 +410,10 @@ class PostAttachRepository {
     _i2.Post previous,
   ) async {
     if (previous.id == null) {
-      throw _i1.MissingIdError('previous');
+      throw ArgumentError.notNull('previous.id');
     }
     if (post.id == null) {
-      throw _i1.MissingIdError('post');
+      throw ArgumentError.notNull('post.id');
     }
 
     var $previous = previous.copyWith(nextId: post.id);
@@ -429,10 +429,10 @@ class PostAttachRepository {
     _i2.Post next,
   ) async {
     if (post.id == null) {
-      throw _i1.MissingIdError('post');
+      throw ArgumentError.notNull('post.id');
     }
     if (next.id == null) {
-      throw _i1.MissingIdError('next');
+      throw ArgumentError.notNull('next.id');
     }
 
     var $post = post.copyWith(nextId: next.id);
@@ -453,16 +453,13 @@ class PostDetachRepository {
     var $previous = post.previous;
 
     if ($previous == null) {
-      throw _i1.MissingFieldError(
-        'post',
-        '$previous',
-      );
+      throw ArgumentError.notNull('post.previous');
     }
     if ($previous.id == null) {
-      throw _i1.MissingIdError('$previous');
+      throw ArgumentError.notNull('post.previous.id');
     }
     if (post.id == null) {
-      throw _i1.MissingIdError('post');
+      throw ArgumentError.notNull('post.id');
     }
 
     var $$previous = $previous.copyWith(nextId: null);
@@ -477,7 +474,7 @@ class PostDetachRepository {
     Post post,
   ) async {
     if (post.id == null) {
-      throw _i1.MissingIdError('post');
+      throw ArgumentError.notNull('post.id');
     }
 
     var $post = post.copyWith(nextId: null);

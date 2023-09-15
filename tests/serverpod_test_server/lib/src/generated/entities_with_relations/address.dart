@@ -355,10 +355,10 @@ class AddressAttachRepository {
     _i2.Citizen inhabitant,
   ) async {
     if (address.id == null) {
-      throw _i1.MissingIdError('address');
+      throw ArgumentError.notNull('address.id');
     }
     if (inhabitant.id == null) {
-      throw _i1.MissingIdError('inhabitant');
+      throw ArgumentError.notNull('inhabitant.id');
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
@@ -377,7 +377,7 @@ class AddressDetachRepository {
     Address address,
   ) async {
     if (address.id == null) {
-      throw _i1.MissingIdError('address');
+      throw ArgumentError.notNull('address.id');
     }
 
     var $address = address.copyWith(inhabitantId: null);

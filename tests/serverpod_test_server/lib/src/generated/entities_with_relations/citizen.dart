@@ -483,10 +483,10 @@ class CitizenAttachRepository {
     _i2.Address address,
   ) async {
     if (address.id == null) {
-      throw _i1.MissingIdError('address');
+      throw ArgumentError.notNull('address.id');
     }
     if (citizen.id == null) {
-      throw _i1.MissingIdError('citizen');
+      throw ArgumentError.notNull('citizen.id');
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
@@ -502,10 +502,10 @@ class CitizenAttachRepository {
     _i2.Company company,
   ) async {
     if (citizen.id == null) {
-      throw _i1.MissingIdError('citizen');
+      throw ArgumentError.notNull('citizen.id');
     }
     if (company.id == null) {
-      throw _i1.MissingIdError('company');
+      throw ArgumentError.notNull('company.id');
     }
 
     var $citizen = citizen.copyWith(companyId: company.id);
@@ -521,10 +521,10 @@ class CitizenAttachRepository {
     _i2.Company oldCompany,
   ) async {
     if (citizen.id == null) {
-      throw _i1.MissingIdError('citizen');
+      throw ArgumentError.notNull('citizen.id');
     }
     if (oldCompany.id == null) {
-      throw _i1.MissingIdError('oldCompany');
+      throw ArgumentError.notNull('oldCompany.id');
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: oldCompany.id);
@@ -545,16 +545,13 @@ class CitizenDetachRepository {
     var $address = citizen.address;
 
     if ($address == null) {
-      throw _i1.MissingFieldError(
-        'citizen',
-        '$address',
-      );
+      throw ArgumentError.notNull('citizen.address');
     }
     if ($address.id == null) {
-      throw _i1.MissingIdError('$address');
+      throw ArgumentError.notNull('citizen.address.id');
     }
     if (citizen.id == null) {
-      throw _i1.MissingIdError('citizen');
+      throw ArgumentError.notNull('citizen.id');
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
@@ -569,7 +566,7 @@ class CitizenDetachRepository {
     Citizen citizen,
   ) async {
     if (citizen.id == null) {
-      throw _i1.MissingIdError('citizen');
+      throw ArgumentError.notNull('citizen.id');
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: null);

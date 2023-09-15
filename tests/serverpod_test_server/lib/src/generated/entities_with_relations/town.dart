@@ -353,10 +353,10 @@ class TownAttachRepository {
     _i2.Citizen mayor,
   ) async {
     if (town.id == null) {
-      throw _i1.MissingIdError('town');
+      throw ArgumentError.notNull('town.id');
     }
     if (mayor.id == null) {
-      throw _i1.MissingIdError('mayor');
+      throw ArgumentError.notNull('mayor.id');
     }
 
     var $town = town.copyWith(mayorId: mayor.id);
@@ -375,7 +375,7 @@ class TownDetachRepository {
     Town town,
   ) async {
     if (town.id == null) {
-      throw _i1.MissingIdError('town');
+      throw ArgumentError.notNull('town.id');
     }
 
     var $town = town.copyWith(mayorId: null);
