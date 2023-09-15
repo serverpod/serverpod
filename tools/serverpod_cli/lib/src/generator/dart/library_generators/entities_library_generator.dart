@@ -1435,7 +1435,7 @@ class SerializableEntityLibraryGenerator {
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    if (!(fields.any((field) => field.relation != null))) return null;
+    if (!_hasAttachOperations(fields)) return null;
 
     return Class((classBuilder) {
       classBuilder
@@ -1458,7 +1458,7 @@ class SerializableEntityLibraryGenerator {
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    if (!(fields.any((field) => field.relation != null))) return null;
+    if (!_hasDetachOperations(fields)) return null;
 
     return Class((classBuilder) {
       classBuilder
@@ -1480,9 +1480,7 @@ class SerializableEntityLibraryGenerator {
       List<SerializableEntityFieldDefinition> fields,
       String className,
       ClassDefinition classDefinition) {
-    return fields
-        .where((method) => method.relation is ObjectRelationDefinition)
-        .map(
+    return fields.where(_shouldCreateAttachMethodFromField).map(
           (field) => Method((methodBuilder) {
             var classFieldName = className.toCamelCase(isLowerCamelCase: true);
             var otherClassFieldName =
@@ -1565,57 +1563,51 @@ class SerializableEntityLibraryGenerator {
       List<SerializableEntityFieldDefinition> fields,
       String className,
       ClassDefinition classDefinition) {
-    return fields.where((field) {
-      var relation = field.relation;
-      if (relation is! ObjectRelationDefinition) return false;
-      if (!relation.nullableRelation) {
-        return false;
-      }
-      return true;
-    }).map(
-      (field) => Method((methodBuilder) {
-        var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-        var fieldName = field.name;
+    return fields.where(_shouldCreateDetachMethodFromField).map(
+          (field) => Method((methodBuilder) {
+            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
+            var fieldName = field.name;
 
-        var relation = field.relation;
-        (relation as ObjectRelationDefinition);
+            var relation = field.relation;
+            (relation as ObjectRelationDefinition);
 
-        methodBuilder
-          ..name = field.name
-          ..requiredParameters.addAll([
-            Parameter((parameterBuilder) {
-              parameterBuilder
-                ..name = 'session'
-                ..type = refer('Session', 'package:serverpod/serverpod.dart');
-            }),
-            Parameter((parameterBuilder) {
-              parameterBuilder
-                ..name = classFieldName
-                ..type = refer(className);
-            })
-          ])
-          ..returns = refer('Future<void>')
-          ..modifier = MethodModifier.async
-          ..body = relation.isForeignKeyOrigin
-              ? _buildDetachImplementationBlockOriginSide(
-                  fieldName,
-                  classFieldName,
-                  relation.fieldName,
-                  className,
-                )
-              : _buildDetachImplementationBlockForeignSide(
-                  fieldName,
-                  classFieldName,
-                  relation.foreignFieldName,
-                  field.type.reference(
-                    serverCode,
-                    nullable: false,
-                    subDirParts: classDefinition.subDirParts,
-                    config: config,
-                  ));
-        const Code('');
-      }),
-    );
+            methodBuilder
+              ..name = field.name
+              ..requiredParameters.addAll([
+                Parameter((parameterBuilder) {
+                  parameterBuilder
+                    ..name = 'session'
+                    ..type =
+                        refer('Session', 'package:serverpod/serverpod.dart');
+                }),
+                Parameter((parameterBuilder) {
+                  parameterBuilder
+                    ..name = classFieldName
+                    ..type = refer(className);
+                })
+              ])
+              ..returns = refer('Future<void>')
+              ..modifier = MethodModifier.async
+              ..body = relation.isForeignKeyOrigin
+                  ? _buildDetachImplementationBlockOriginSide(
+                      fieldName,
+                      classFieldName,
+                      relation.fieldName,
+                      className,
+                    )
+                  : _buildDetachImplementationBlockForeignSide(
+                      fieldName,
+                      classFieldName,
+                      relation.foreignFieldName,
+                      field.type.reference(
+                        serverCode,
+                        nullable: false,
+                        subDirParts: classDefinition.subDirParts,
+                        config: config,
+                      ));
+            const Code('');
+          }),
+        );
   }
 
   Block _buildDetachImplementationBlockOriginSide(
@@ -1877,10 +1869,23 @@ class SerializableEntityLibraryGenerator {
   }
 
   bool _hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any((field) => field.relation is ObjectRelationDefinition);
+    return fields.any(_shouldCreateAttachMethodFromField);
+  }
+
+  bool _shouldCreateAttachMethodFromField(
+    SerializableEntityFieldDefinition field,
+  ) {
+    return field.relation is ObjectRelationDefinition;
   }
 
   bool _hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any((field) => field.relation is ObjectRelationDefinition);
+    return fields.any(_shouldCreateDetachMethodFromField);
+  }
+
+  bool _shouldCreateDetachMethodFromField(
+    SerializableEntityFieldDefinition field,
+  ) {
+    var relation = field.relation;
+    return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 }

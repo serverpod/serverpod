@@ -383,6 +383,7 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example')
+          .withObjectRelationField('company', 'Company', 'company')
           .withObjectRelationFieldNoForeignKey(
             'address',
             'Address',
@@ -403,13 +404,59 @@ void main() {
       name: '${testClassName}DetachRepository',
     );
 
-    group('then', () {
+    test('then no detach repository is generated', () {
+      expect(
+        repositoryDetachClass,
+        isNull,
+        reason:
+            'The class ${testClassName}DetachRepository was found but was expected to not exist.',
+      );
+    });
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example')
+          .withObjectRelationField(
+            'company',
+            'Company',
+            'company',
+            nullableRelation: true,
+          )
+          .withObjectRelationFieldNoForeignKey(
+            'address',
+            'Address',
+            'address',
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}DetachRepository',
+    );
+
+    group(
+        'then the address method is not generated for none nullable relation.',
+        () {
       var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
         repositoryDetachClass!,
         name: 'address',
       );
 
-      test('has NOT an address method defined for none nullable relation.', () {
+      test('', () {
         expect(addressMethod, isNull, reason: 'Missing address method.');
       });
     });
