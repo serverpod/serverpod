@@ -288,7 +288,7 @@ fields:
   });
 
   group(
-      'Given a class with a relation with a defined field name that holds the relation',
+      'Given two classes with a named relation with a defined field name that holds the relation',
       () {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
@@ -297,7 +297,7 @@ fields:
         table: example
         fields:
           parentId: int?
-          parent: ExampleParent?, relation(field=parentId)
+          parent: ExampleParent?, relation(name=example_parent, field=parentId)
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('example_parent').withYaml(
@@ -306,6 +306,7 @@ fields:
         table: example_parent
         fields:
           name: String
+          example: Example?, relation(name=example_parent)
         ''',
       ).build()
     ];
@@ -315,6 +316,7 @@ fields:
     var definitions = analyzer.validateAll();
 
     var exampleClass = definitions.first as ClassDefinition;
+    var exampleParentClass = definitions.last as ClassDefinition;
 
     test('then no errors were collected', () {
       expect(collector.errors, isEmpty);
@@ -329,6 +331,19 @@ fields:
       var field = exampleClass.findField('parent');
       var relation = field!.relation as ObjectRelationDefinition;
       expect(relation.nullableRelation, isTrue);
+    });
+
+    group('then the foreign side', () {
+      var field = exampleParentClass.findField('example');
+      var relation = field!.relation;
+
+      test('has an object relation', () {
+        expect(relation.runtimeType, ObjectRelationDefinition);
+      });
+
+      test('has a nullable relation', () {
+        expect((relation as ObjectRelationDefinition).nullableRelation, isTrue);
+      }, skip: relation is! ObjectRelationDefinition);
     });
   });
 }

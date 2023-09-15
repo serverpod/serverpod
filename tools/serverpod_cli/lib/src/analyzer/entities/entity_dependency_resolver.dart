@@ -62,6 +62,7 @@ class EntityDependencyResolver {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
+    // TODO: o(n^2)
     var referenceClass = entityDefinitions
         .cast<SerializableEntityDefinition?>()
         .firstWhere(
@@ -115,6 +116,9 @@ class EntityDependencyResolver {
   ) {
     String? foreignFieldName;
 
+    // No need to check ObjectRelationDefinition as it will never be named on
+    // the relational origin side. This case is covered by
+    // checking the ForeignRelationDefinition.
     var foreignRelation = foreignField.relation;
     if (foreignRelation is UnresolvedObjectRelationDefinition) {
       foreignFieldName = foreignRelation.fieldName;
@@ -130,7 +134,7 @@ class EntityDependencyResolver {
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
       isForeignKeyOrigin: relation.isForeignKeyOrigin,
-      nullableRelation: relation.nullableRelation,
+      nullableRelation: foreignField.type.nullable,
     );
   }
 
@@ -246,6 +250,7 @@ class EntityDependencyResolver {
     var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
+    // TODO: O(n^2)
     var referenceClass =
         entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
               (entity) => entity?.className == referenceClassName,
@@ -290,7 +295,6 @@ class EntityDependencyResolver {
       });
 
       if (foreignFields.isNotEmpty) {
-        // TODO: Handle multiple references.
         fieldDefinition.relation = ListRelationDefinition(
           name: relation.name,
           foreignFieldName: foreignFields.first.name,
