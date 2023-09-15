@@ -57,12 +57,17 @@ void main() {
       test('has the relation name set', () {
         expect(relation?.name, 'user_address');
       });
+
       test('is an ObjectRelationDefinition', () {
         expect(
           relation.runtimeType,
           ObjectRelationDefinition,
           reason: 'Expected the relation to be an ObjectRelationDefinition.',
         );
+      });
+
+      test('has the nullableRelation set to false', () {
+        expect((relation as ObjectRelationDefinition).nullableRelation, false);
       });
 
       test('has the parent table is set', () {
@@ -140,6 +145,10 @@ void main() {
           ObjectRelationDefinition,
         );
       });
+
+      test('has the nullableRelation set to false', () {
+        expect((relation as ObjectRelationDefinition).nullableRelation, false);
+      }, skip: relation is! ObjectRelationDefinition);
 
       test('without a name for the relation', () {
         expect(relation?.name, isNull);
