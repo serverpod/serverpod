@@ -141,7 +141,7 @@ void main() {
             'address',
             'Address',
             'address',
-            foreignFieldName: 'companyAddressId',
+            foreignKeyFieldName: 'companyAddressId',
           )
           .build()
     ];
@@ -373,6 +373,46 @@ void main() {
         );
       });
     }, skip: repositoryClass == null);
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example')
+          .withObjectRelationFieldNoForeignKey(
+            'address',
+            'Address',
+            'address',
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}DetachRepository',
+    );
+
+    group('then', () {
+      var addressMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryDetachClass!,
+        name: 'address',
+      );
+
+      test('has NOT an address method defined for none nullable relation.', () {
+        expect(addressMethod, isNull, reason: 'Missing address method.');
+      });
+    });
   });
 
   group(
