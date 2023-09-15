@@ -374,4 +374,58 @@ void main() {
       });
     }, skip: repositoryClass == null);
   });
+
+  group(
+      'Given a class with a self relation where the field has the same name as the class',
+      () {
+    var tableName = 'example_table';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withObjectRelationField(
+            'example',
+            testClassName,
+            tableName,
+            nullableRelation: true,
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var attachRepository = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}AttachRepository',
+    );
+
+    group('then the attach method for example', () {
+      var method = CompilationUnitHelpers.tryFindMethodDeclaration(
+        attachRepository!,
+        name: 'example',
+      );
+
+      test('has the secondary input param named "nestedExample" ', () {
+        expect(
+          method?.parameters?.toSource(),
+          matches(
+            r'(_i\d.Session session, Example example, Example nestedExample)',
+          ),
+        );
+      });
+    });
+
+    test('then the class name ${testClassName}Repository is generated', () {
+      expect(
+        attachRepository,
+        isNotNull,
+        reason: 'Missing class named ${testClassName}Repository.',
+      );
+    });
+  });
 }

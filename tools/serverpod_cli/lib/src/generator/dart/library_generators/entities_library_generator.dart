@@ -1485,7 +1485,8 @@ class SerializableEntityLibraryGenerator {
         .map(
           (field) => Method((methodBuilder) {
             var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-            var otherClassFieldName = field.name;
+            var otherClassFieldName =
+                field.name == classFieldName ? 'nested$className' : field.name;
 
             var relation = field.relation;
             (relation as ObjectRelationDefinition);
