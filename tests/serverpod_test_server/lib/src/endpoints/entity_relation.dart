@@ -159,15 +159,15 @@ class RelationEndpoint extends Endpoint {
 
   Future<int> deleteAll(Session session) async {
     var townDeletions =
-        await Town.delete(session, where: (_) => Constant(true));
+        await Town.delete(session, where: (_) => Constant.bool(true));
     var companyDeletions =
-        await Company.delete(session, where: (_) => Constant(true));
+        await Company.delete(session, where: (_) => Constant.bool(true));
     var citizenDeletions =
-        await Citizen.delete(session, where: (_) => Constant(true));
+        await Citizen.delete(session, where: (_) => Constant.bool(true));
     var addressDeletions =
-        await Address.delete(session, where: (_) => Constant(true));
+        await Address.delete(session, where: (_) => Constant.bool(true));
     var postDeletions =
-        await Post.delete(session, where: (_) => Constant(true));
+        await Post.delete(session, where: (_) => Constant.bool(true));
 
     return townDeletions +
         companyDeletions +

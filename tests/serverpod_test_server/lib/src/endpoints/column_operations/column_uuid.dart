@@ -9,13 +9,13 @@ class ColumnUuidEndpoint extends Endpoint {
   }
 
   Future<int> deleteAll(Session session) async {
-    return await Types.delete(session, where: (_) => Constant(true));
+    return await Types.delete(session, where: (_) => Constant.bool(true));
   }
 
   Future<List<Types>> findAll(Session session) async {
     return await Types.find(
       session,
-      where: (_) => Constant(true),
+      where: (_) => Constant.bool(true),
     );
   }
 

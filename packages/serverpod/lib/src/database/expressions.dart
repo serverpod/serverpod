@@ -13,7 +13,7 @@ class Expression<T> {
   /// Note that the precedence of operators may not be what you think, so
   /// always use parentheses to make sure that that expressions are executed
   /// in the correct order.
-  Expression(this._expression);
+  const Expression(this._expression);
 
   @override
   String toString() {
@@ -59,7 +59,19 @@ class Constant extends Expression {
   // TODO: Handle more types
 
   /// Creates a constant [Expression]. Currently supports [bool] and [String].
+  @Deprecated('Use Constant.bool or Constant.string instead.')
   Constant(dynamic value) : super(_formatValue(value));
+
+  const Constant._(dynamic value) : super(value);
+
+  /// Creates a constant [String] expression.
+  factory Constant.string(String value) => Constant._(EscapedExpression(value));
+
+  /// Creates a constant [bool] expression.
+  factory Constant.bool(bool value) => Constant._('$value'.toUpperCase());
+
+  /// Creates a constant [null] expression.
+  static Constant nullValue = const Constant._('NULL');
 
   static String _formatValue(dynamic value) {
     if (value == null) return 'NULL';

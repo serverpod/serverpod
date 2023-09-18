@@ -148,7 +148,7 @@ void main() {
       'Given column in BETWEEN and two part expression when retrieving columns',
       () {
     ColumnInt column = ColumnInt('test 1');
-    Expression constant = Constant(true);
+    Expression constant = Constant.bool(true);
     Expression expression = column.between(1, 2) & constant;
 
     List<Column> columns = expression.columns;
