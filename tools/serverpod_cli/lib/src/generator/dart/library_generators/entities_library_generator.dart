@@ -74,22 +74,26 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
-            _buildEntityRepositoryClass(
-              className,
-              fields,
-              classDefinition,
-            ),
-            _buildEntityAttachRepositoryClass(
-              className,
-              fields,
-              classDefinition,
-            ),
-            _buildEntityDetachRepositoryClass(
-              className,
-              fields,
-              classDefinition,
-            ),
-          ].whereType<Spec>());
+            // TODO: remove when this class supports db operations
+            if (_hasAttachOperations(fields) || _hasDetachOperations(fields))
+              _buildEntityRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
+            if (_hasAttachOperations(fields))
+              _buildEntityAttachRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
+            if (_hasDetachOperations(fields))
+              _buildEntityDetachRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
+          ]);
         }
       },
     );
@@ -1402,16 +1406,11 @@ class SerializableEntityLibraryGenerator {
     }));
   }
 
-  Class? _buildEntityRepositoryClass(
+  Class _buildEntityRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    // TODO: remove when this class supports db operations
-    if (!(_hasAttachOperations(fields) || _hasDetachOperations(fields))) {
-      return null;
-    }
-
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Repository'
@@ -1439,13 +1438,11 @@ class SerializableEntityLibraryGenerator {
     });
   }
 
-  Class? _buildEntityAttachRepositoryClass(
+  Class _buildEntityAttachRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    if (!_hasAttachOperations(fields)) return null;
-
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}AttachRepository'
@@ -1462,13 +1459,11 @@ class SerializableEntityLibraryGenerator {
     });
   }
 
-  Class? _buildEntityDetachRepositoryClass(
+  Class _buildEntityDetachRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    if (!_hasDetachOperations(fields)) return null;
-
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}DetachRepository'
