@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given one expression', () {
-    var expressionString = 'test expression';
+    var expressionString = 'true = true';
     var expression = Expression(expressionString);
     test('when toString is called then expression is returned', () {
       expect(expression.toString(), expressionString);
@@ -12,8 +12,8 @@ void main() {
   });
 
   group('Given two expressions', () {
-    var expression1 = Expression('test expression 1');
-    var expression2 = Expression('test expression 2');
+    var expression1 = Expression('true = true');
+    var expression2 = Expression('"A" = "A"');
     test('when combined using the AND operator then output is AND expression.',
         () {
       var combinedExpression = expression1 & expression2;
@@ -30,9 +30,9 @@ void main() {
   });
 
   group('Given three expressions', () {
-    var expression1 = Expression('test expression 1');
-    var expression2 = Expression('test expression 2');
-    var expression3 = Expression('test expression 3');
+    var expression1 = Expression('true = true');
+    var expression2 = Expression('"A" = "A"');
+    var expression3 = Expression('"B" = "B"');
     test('when combined using the AND operator then output is AND expression.',
         () {
       var combinedExpression = expression1 & (expression2 & expression3);
