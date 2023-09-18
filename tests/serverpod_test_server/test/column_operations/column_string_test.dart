@@ -64,10 +64,7 @@ void main() async {
         () async {
       var result = await client.columnString.notInSet(['one']);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not 'one'
-      expect(result.length, 1);
-      expect(result.first.aString, 'two');
+      expect(result.length, 2);
     });
 
     test('when filtering using isDistinctFrom then matching rows are returned.',

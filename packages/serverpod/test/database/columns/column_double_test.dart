@@ -87,7 +87,7 @@ void main() {
         var comparisonExpression = column.notInSet(<double>{10.0, 11.0, 12.0});
 
         expect(comparisonExpression.toString(),
-            '$column NOT IN (10.0, 11.0, 12.0)');
+            '($column NOT IN (10.0, 11.0, 12.0) OR $column IS NULL)');
       });
 
       test(

@@ -81,7 +81,8 @@ void main() {
           TestEnum.green,
         });
 
-        expect(comparisonExpression.toString(), '$column NOT IN (0, 1, 2)');
+        expect(comparisonExpression.toString(),
+            '($column NOT IN (0, 1, 2) OR $column IS NULL)');
       });
 
       test(

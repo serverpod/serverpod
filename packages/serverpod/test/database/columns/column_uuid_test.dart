@@ -79,7 +79,7 @@ void main() {
         });
 
         expect(comparisonExpression.toString(),
-            '$column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\')');
+            '($column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\') OR $column IS NULL)');
       });
 
       test(

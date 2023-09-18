@@ -77,7 +77,7 @@ void main() {
         });
 
         expect(comparisonExpression.toString(),
-            '$column NOT IN (\'36000000\', \'39600000\', \'43200000\')');
+            '($column NOT IN (\'36000000\', \'39600000\', \'43200000\') OR $column IS NULL)');
       });
       test(
           'when is distinct from compared to duration value then output is IS DISTINCT FROM expression.',

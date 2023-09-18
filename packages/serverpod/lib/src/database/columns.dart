@@ -491,6 +491,6 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String toString() {
-    return '$_column NOT IN ${_expressionSetToQueryString()}';
+    return '($_column NOT IN ${_expressionSetToQueryString()} OR $_column IS NULL)';
   }
 }

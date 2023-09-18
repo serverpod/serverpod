@@ -85,7 +85,8 @@ void main() {
           () {
         var comparisonExpression = column.notInSet(<bool>{true, false});
 
-        expect(comparisonExpression.toString(), '$column NOT IN (true, false)');
+        expect(comparisonExpression.toString(),
+            '($column NOT IN (true, false) OR $column IS NULL)');
       });
     });
   });
