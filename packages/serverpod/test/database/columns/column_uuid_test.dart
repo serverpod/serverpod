@@ -32,10 +32,10 @@ void main() {
       test(
           'when equals compared to uuid value then output is equals expression.',
           () {
-        var comparisonExpression = column.equals(
-            UuidValue('testUuid', false /* Disable validation for test */));
+        var comparisonExpression = column.equals(UuidValue(Uuid.NAMESPACE_NIL));
 
-        expect(comparisonExpression.toString(), '$column = \'testuuid\'');
+        expect(comparisonExpression.toString(),
+            '$column = \'00000000-0000-0000-0000-000000000000\'');
       });
 
       test(
@@ -49,10 +49,11 @@ void main() {
       test(
           'when NOT equals compared to uuid value then output is NOT equals expression.',
           () {
-        var comparisonExpression = column.notEquals(
-            UuidValue('testUuid', false /* Disable validation for test */));
+        var comparisonExpression =
+            column.notEquals(UuidValue(Uuid.NAMESPACE_NIL));
 
-        expect(comparisonExpression.toString(), '$column != \'testuuid\'');
+        expect(comparisonExpression.toString(),
+            '$column != \'00000000-0000-0000-0000-000000000000\'');
       });
 
       test(
@@ -84,21 +85,21 @@ void main() {
       test(
           'when is distinct from compared to uuid value then output is IS DISTINCT FROM expression.',
           () {
-        var comparisonExpression = column.isDistinctFrom(
-            UuidValue('testUuid1', false /* Disable validation for test */));
+        var comparisonExpression =
+            column.isDistinctFrom(UuidValue(Uuid.NAMESPACE_NIL));
 
         expect(comparisonExpression.toString(),
-            '$column IS DISTINCT FROM \'testuuid1\'');
+            '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
       });
 
       test(
           'when is NOT distinct from compared to uuid value then output is IS NOT DISTINCT FROM expression.',
           () {
-        var comparisonExpression = column.isNotDistinctFrom(
-            UuidValue('testUuid1', false /* Disable validation for test */));
+        var comparisonExpression =
+            column.isNotDistinctFrom(UuidValue(Uuid.NAMESPACE_NIL));
 
         expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM \'testuuid1\'');
+            '$column IS NOT DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
       });
     });
   });
