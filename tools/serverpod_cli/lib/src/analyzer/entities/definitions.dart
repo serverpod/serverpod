@@ -226,7 +226,12 @@ abstract class RelationDefinition {
 
 /// Internal representation of an unresolved [ListRelationDefinition].
 class UnresolvedListRelationDefinition extends RelationDefinition {
-  UnresolvedListRelationDefinition({String? name}) : super(name, false);
+  final bool nullableRelation;
+
+  UnresolvedListRelationDefinition({
+    String? name,
+    required this.nullableRelation,
+  }) : super(name, false);
 }
 
 /// Used for relations for fields of type [List] that has a reference pointer
@@ -235,9 +240,12 @@ class ListRelationDefinition extends RelationDefinition {
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
 
+  final bool nullableRelation;
+
   ListRelationDefinition({
     String? name,
     required this.foreignFieldName,
+    required this.nullableRelation,
   }) : super(name, false);
 }
 
@@ -256,12 +264,15 @@ class ObjectRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String foreignFieldName;
 
+  final bool nullableRelation;
+
   ObjectRelationDefinition({
     String? name,
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
     required bool isForeignKeyOrigin,
+    required this.nullableRelation,
   }) : super(name, isForeignKeyOrigin);
 }
 
@@ -276,7 +287,7 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   final ForeignKeyAction onUpdate;
 
   /// Only used for implicit relations, toggles if the relation id is nullable.
-  bool optionalRelation;
+  final bool nullableRelation;
 
   UnresolvedObjectRelationDefinition({
     String? name,
@@ -284,7 +295,7 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
     required this.onDelete,
     required this.onUpdate,
     required bool isForeignKeyOrigin,
-    this.optionalRelation = false,
+    this.nullableRelation = false,
   }) : super(name, isForeignKeyOrigin);
 }
 

@@ -32,6 +32,8 @@ dependencies:
   yaml: ^3.1.1
   serverpod_shared: #1.1.0
     path: ../../packages/serverpod_shared
+  serverpod_serialization: #1.1.0
+    path: ../../packages/serverpod_serialization
   serverpod_service_client: #1.1.0
     path: ../../packages/serverpod_service_client
   async: ^2.11.0

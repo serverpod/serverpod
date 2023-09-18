@@ -128,6 +128,7 @@ class CommandLineArgs {
       serverId = 'default';
       loggingMode = ServerpodLoggingMode.normal;
       role = ServerpodRole.monolith;
+      applyMigrations = false;
     }
   }
 

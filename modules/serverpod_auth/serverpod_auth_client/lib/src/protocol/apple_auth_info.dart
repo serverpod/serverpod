@@ -9,8 +9,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Authentication info for Sign in with Apple.
-class AppleAuthInfo extends _i1.SerializableEntity {
-  AppleAuthInfo({
+abstract class AppleAuthInfo extends _i1.SerializableEntity {
+  AppleAuthInfo._({
     required this.userIdentifier,
     this.email,
     required this.fullName,
@@ -18,6 +18,15 @@ class AppleAuthInfo extends _i1.SerializableEntity {
     required this.identityToken,
     required this.authorizationCode,
   });
+
+  factory AppleAuthInfo({
+    required String userIdentifier,
+    String? email,
+    required String fullName,
+    required String nickname,
+    required String identityToken,
+    required String authorizationCode,
+  }) = _AppleAuthInfoImpl;
 
   factory AppleAuthInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -57,6 +66,14 @@ class AppleAuthInfo extends _i1.SerializableEntity {
   /// Authorization code associated with the sign in.
   String authorizationCode;
 
+  AppleAuthInfo copyWith({
+    String? userIdentifier,
+    String? email,
+    String? fullName,
+    String? nickname,
+    String? identityToken,
+    String? authorizationCode,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -67,5 +84,44 @@ class AppleAuthInfo extends _i1.SerializableEntity {
       'identityToken': identityToken,
       'authorizationCode': authorizationCode,
     };
+  }
+}
+
+class _Undefined {}
+
+class _AppleAuthInfoImpl extends AppleAuthInfo {
+  _AppleAuthInfoImpl({
+    required String userIdentifier,
+    String? email,
+    required String fullName,
+    required String nickname,
+    required String identityToken,
+    required String authorizationCode,
+  }) : super._(
+          userIdentifier: userIdentifier,
+          email: email,
+          fullName: fullName,
+          nickname: nickname,
+          identityToken: identityToken,
+          authorizationCode: authorizationCode,
+        );
+
+  @override
+  AppleAuthInfo copyWith({
+    String? userIdentifier,
+    Object? email = _Undefined,
+    String? fullName,
+    String? nickname,
+    String? identityToken,
+    String? authorizationCode,
+  }) {
+    return AppleAuthInfo(
+      userIdentifier: userIdentifier ?? this.userIdentifier,
+      email: email is String? ? email : this.email,
+      fullName: fullName ?? this.fullName,
+      nickname: nickname ?? this.nickname,
+      identityToken: identityToken ?? this.identityToken,
+      authorizationCode: authorizationCode ?? this.authorizationCode,
+    );
   }
 }

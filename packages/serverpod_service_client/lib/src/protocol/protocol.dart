@@ -536,10 +536,11 @@ class Protocol extends _i1.SerializationManager {
           .map((e) => deserialize<_i55.TableDefinition>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<Map<String, String>?>()) {
+    if (t == _i1.getType<List<_i55.DatabaseMigrationVersion>?>()) {
       return (data != null
-          ? (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<String>(v)))
+          ? (data as List)
+              .map((e) => deserialize<_i55.DatabaseMigrationVersion>(e))
+              .toList()
           : null) as dynamic;
     }
     if (t == List<_i55.DatabaseMigrationVersion>) {

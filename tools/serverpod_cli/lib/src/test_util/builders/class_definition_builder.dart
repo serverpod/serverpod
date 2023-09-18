@@ -112,10 +112,12 @@ class ClassDefinitionBuilder {
           .withTypeDefinition(className, true)
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
-              parentTable: parentTable,
-              fieldName: '${fieldName}Id',
-              foreignFieldName: 'id',
-              isForeignKeyOrigin: true))
+            parentTable: parentTable,
+            fieldName: '${fieldName}Id',
+            foreignFieldName: 'id',
+            isForeignKeyOrigin: true,
+            nullableRelation: false,
+          ))
           .build(),
       FieldDefinitionBuilder()
           .withName('${fieldName}Id')

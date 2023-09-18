@@ -10,8 +10,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) table in the database.
-class TableDefinition extends _i1.SerializableEntity {
-  TableDefinition({
+abstract class TableDefinition extends _i1.SerializableEntity {
+  TableDefinition._({
     required this.name,
     this.dartName,
     this.module,
@@ -22,6 +22,18 @@ class TableDefinition extends _i1.SerializableEntity {
     required this.indexes,
     this.managed,
   });
+
+  factory TableDefinition({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    String? tableSpace,
+    required List<_i2.ColumnDefinition> columns,
+    required List<_i2.ForeignKeyDefinition> foreignKeys,
+    required List<_i2.IndexDefinition> indexes,
+    bool? managed,
+  }) = _TableDefinitionImpl;
 
   factory TableDefinition.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -78,6 +90,17 @@ class TableDefinition extends _i1.SerializableEntity {
   /// Null, if this is unknown.
   bool? managed;
 
+  TableDefinition copyWith({
+    String? name,
+    String? dartName,
+    String? module,
+    String? schema,
+    String? tableSpace,
+    List<_i2.ColumnDefinition>? columns,
+    List<_i2.ForeignKeyDefinition>? foreignKeys,
+    List<_i2.IndexDefinition>? indexes,
+    bool? managed,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -91,5 +114,56 @@ class TableDefinition extends _i1.SerializableEntity {
       'indexes': indexes,
       'managed': managed,
     };
+  }
+}
+
+class _Undefined {}
+
+class _TableDefinitionImpl extends TableDefinition {
+  _TableDefinitionImpl({
+    required String name,
+    String? dartName,
+    String? module,
+    required String schema,
+    String? tableSpace,
+    required List<_i2.ColumnDefinition> columns,
+    required List<_i2.ForeignKeyDefinition> foreignKeys,
+    required List<_i2.IndexDefinition> indexes,
+    bool? managed,
+  }) : super._(
+          name: name,
+          dartName: dartName,
+          module: module,
+          schema: schema,
+          tableSpace: tableSpace,
+          columns: columns,
+          foreignKeys: foreignKeys,
+          indexes: indexes,
+          managed: managed,
+        );
+
+  @override
+  TableDefinition copyWith({
+    String? name,
+    Object? dartName = _Undefined,
+    Object? module = _Undefined,
+    String? schema,
+    Object? tableSpace = _Undefined,
+    List<_i2.ColumnDefinition>? columns,
+    List<_i2.ForeignKeyDefinition>? foreignKeys,
+    List<_i2.IndexDefinition>? indexes,
+    Object? managed = _Undefined,
+  }) {
+    return TableDefinition(
+      name: name ?? this.name,
+      dartName: dartName is String? ? dartName : this.dartName,
+      module: module is String? ? module : this.module,
+      schema: schema ?? this.schema,
+      tableSpace: tableSpace is String? ? tableSpace : this.tableSpace,
+      columns: columns ?? this.columns.clone(),
+      foreignKeys: foreignKeys ?? this.foreignKeys.clone(),
+      indexes: indexes ?? this.indexes.clone(),
+      managed: managed is bool? ? managed : this.managed,
+    );
   }
 }

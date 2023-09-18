@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -181,17 +182,18 @@ Future<bool> performCreate(
     });
 
     if (dockerConfigured) {
-      if (Platform.isWindows) {
-        success &= await CommandLineTools.cleanupForWindows(
-          serverpodDirs.projectDir,
+      await log.progress('Creating default database migration.', () {
+        return DatabaseSetup.createDefaultMigration(
+          serverpodDirs.serverDir,
           name,
         );
-      } else {
-        success &= await log.progress(
-            'Downloading and configuring Docker image.',
-            () =>
-                CommandLineTools.createTables(serverpodDirs.projectDir, name));
-      }
+      });
+
+      await log.progress('Downloading and configuring Docker image.', () {
+        return DatabaseSetup.applyDefaultMigration(
+          serverpodDirs.serverDir,
+        );
+      });
     }
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(

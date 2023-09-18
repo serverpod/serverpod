@@ -162,17 +162,22 @@ void main() {
             reason: 'Missing extends clause for TableRow.');
       });
 
-      test('has id in constructor passed to super.', () {
-        expect(
-            CompilationUnitHelpers.hasConstructorDeclaration(
-              maybeClassNamedExample!,
-              name: null,
-              parameters: ['int? id'],
-              superArguments: ['id'],
-            ),
-            isTrue,
-            reason:
-                'Missing declaration for $testClassName constructor with nullable id field passed to super.');
+      group('has a constructor', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+            maybeClassNamedExample!,
+            name: '_');
+
+        test('defined', () {
+          expect(constructor, isNotNull, reason: 'No private constructor');
+        });
+
+        test('with id param', () {
+          expect(constructor?.parameters.toSource(), '({int? id})');
+        });
+
+        test('passing id to super', () {
+          expect(constructor?.initializers.first.toSource(), 'super(id)');
+        });
       });
 
       test('has a static Singleton instance.', () {
@@ -687,7 +692,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['required this.title'],
+              parameters: ['required String title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -735,7 +740,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.title'],
+              parameters: ['String? title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');

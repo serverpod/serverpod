@@ -9,11 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class ObjectWithByteData extends _i1.SerializableEntity {
-  ObjectWithByteData({
+abstract class ObjectWithByteData extends _i1.SerializableEntity {
+  ObjectWithByteData._({
     this.id,
     required this.byteData,
   });
+
+  factory ObjectWithByteData({
+    int? id,
+    required _i2.ByteData byteData,
+  }) = _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,11 +38,38 @@ class ObjectWithByteData extends _i1.SerializableEntity {
 
   _i2.ByteData byteData;
 
+  ObjectWithByteData copyWith({
+    int? id,
+    _i2.ByteData? byteData,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'byteData': byteData,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithByteDataImpl extends ObjectWithByteData {
+  _ObjectWithByteDataImpl({
+    int? id,
+    required _i2.ByteData byteData,
+  }) : super._(
+          id: id,
+          byteData: byteData,
+        );
+
+  @override
+  ObjectWithByteData copyWith({
+    Object? id = _Undefined,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id is int? ? id : this.id,
+      byteData: byteData ?? this.byteData.clone(),
+    );
   }
 }

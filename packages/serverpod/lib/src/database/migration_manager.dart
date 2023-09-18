@@ -28,7 +28,7 @@ const _queryGetMigrations =
 class MigrationManager {
   /// List of installed migration versions. Available after [initialize] has
   /// been called.
-  final List<MigrationVersion> installedVersions = [];
+  final List<DatabaseMigrationVersion> installedVersions = [];
 
   /// List of available migration versions as loaded from the migrations
   /// directory. Available after [initialize] has been called.
@@ -40,7 +40,7 @@ class MigrationManager {
     await session.db.query(_queryCreateMigrations);
 
     // Get installed versions
-    var versions = <MigrationVersion>[];
+    var versions = <DatabaseMigrationVersion>[];
     var result = await session.db.query(_queryGetMigrations);
     for (var row in result) {
       assert(row.length == 4);
@@ -50,7 +50,7 @@ class MigrationManager {
       DateTime timestamp = row[3];
 
       versions.add(
-        MigrationVersion(
+        DatabaseMigrationVersion(
           module: module,
           version: version,
           priority: priority,
@@ -206,35 +206,6 @@ class MigrationManager {
         stderr.writeln('$e');
       }
     }
-  }
-}
-
-/// A migration to a version of the database that has been applied.
-class MigrationVersion {
-  /// Creates a new version.
-  MigrationVersion(
-      {required this.module,
-      required this.version,
-      required this.priority,
-      required this.timestamp});
-
-  /// The name of the module associated with the migration.
-  final String module;
-
-  /// The name of the version. Should correspond to the name of the
-  /// migration directory.
-  final String version;
-
-  /// The priority of the migration. Migrations with lower priority will be
-  /// applied first.
-  final int priority;
-
-  /// The timestamp of when the migration was applied.
-  final DateTime timestamp;
-
-  @override
-  String toString() {
-    return '$module:$version';
   }
 }
 

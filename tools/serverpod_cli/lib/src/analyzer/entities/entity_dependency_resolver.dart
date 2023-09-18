@@ -125,11 +125,13 @@ class EntityDependencyResolver {
     if (foreignFieldName == null) return;
 
     fieldDefinition.relation = ObjectRelationDefinition(
-        name: relation.name,
-        parentTable: tableName,
-        fieldName: defaultPrimaryKeyName,
-        foreignFieldName: foreignFieldName,
-        isForeignKeyOrigin: relation.isForeignKeyOrigin);
+      name: relation.name,
+      parentTable: tableName,
+      fieldName: defaultPrimaryKeyName,
+      foreignFieldName: foreignFieldName,
+      isForeignKeyOrigin: relation.isForeignKeyOrigin,
+      nullableRelation: relation.nullableRelation,
+    );
   }
 
   static void _resolveImplicitDefinedRelation(
@@ -138,7 +140,7 @@ class EntityDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
-    var relationFieldType = relation.optionalRelation
+    var relationFieldType = relation.nullableRelation
         ? TypeDefinition.int.asNullable
         : TypeDefinition.int;
 
@@ -163,10 +165,12 @@ class EntityDependencyResolver {
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
-        parentTable: tableName,
-        fieldName: '${fieldDefinition.name}Id',
-        foreignFieldName: defaultPrimaryKeyName,
-        isForeignKeyOrigin: true);
+      parentTable: tableName,
+      fieldName: '${fieldDefinition.name}Id',
+      foreignFieldName: defaultPrimaryKeyName,
+      isForeignKeyOrigin: true,
+      nullableRelation: relation.nullableRelation,
+    );
   }
 
   static void _resolveManualDefinedRelation(
@@ -188,10 +192,12 @@ class EntityDependencyResolver {
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
-        parentTable: tableName,
-        fieldName: relationFieldName,
-        foreignFieldName: defaultPrimaryKeyName,
-        isForeignKeyOrigin: true);
+      parentTable: tableName,
+      fieldName: relationFieldName,
+      foreignFieldName: defaultPrimaryKeyName,
+      isForeignKeyOrigin: true,
+      nullableRelation: relation.nullableRelation,
+    );
   }
 
   static SerializableEntityFieldDefinition? _findForeignFieldByRelationName(
@@ -272,9 +278,9 @@ class EntityDependencyResolver {
       );
 
       fieldDefinition.relation = ListRelationDefinition(
-        name: autoRelationName,
-        foreignFieldName: foreignFieldName,
-      );
+          name: autoRelationName,
+          foreignFieldName: foreignFieldName,
+          nullableRelation: true);
     } else {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
@@ -288,6 +294,7 @@ class EntityDependencyResolver {
         fieldDefinition.relation = ListRelationDefinition(
           name: relation.name,
           foreignFieldName: foreignFields.first.name,
+          nullableRelation: foreignFields.first.type.nullable,
         );
       }
     }

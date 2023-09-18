@@ -152,7 +152,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.id'],
+              parameters: ['int? id'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -208,7 +208,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['required this.title'],
+              parameters: ['required String title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -257,7 +257,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.title'],
+              parameters: ['String? title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');

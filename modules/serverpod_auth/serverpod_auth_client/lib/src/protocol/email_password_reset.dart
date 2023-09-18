@@ -9,11 +9,16 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about an email password reset.
-class EmailPasswordReset extends _i1.SerializableEntity {
-  EmailPasswordReset({
+abstract class EmailPasswordReset extends _i1.SerializableEntity {
+  EmailPasswordReset._({
     required this.userName,
     required this.email,
   });
+
+  factory EmailPasswordReset({
+    required String userName,
+    required String email,
+  }) = _EmailPasswordResetImpl;
 
   factory EmailPasswordReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,11 +38,36 @@ class EmailPasswordReset extends _i1.SerializableEntity {
   /// The email of the user.
   String email;
 
+  EmailPasswordReset copyWith({
+    String? userName,
+    String? email,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'userName': userName,
       'email': email,
     };
+  }
+}
+
+class _EmailPasswordResetImpl extends EmailPasswordReset {
+  _EmailPasswordResetImpl({
+    required String userName,
+    required String email,
+  }) : super._(
+          userName: userName,
+          email: email,
+        );
+
+  @override
+  EmailPasswordReset copyWith({
+    String? userName,
+    String? email,
+  }) {
+    return EmailPasswordReset(
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+    );
   }
 }

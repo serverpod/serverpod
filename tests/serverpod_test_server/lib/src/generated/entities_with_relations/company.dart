@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-class Company extends _i1.TableRow {
-  Company({
+abstract class Company extends _i1.TableRow {
+  Company._({
     int? id,
     required this.name,
     required this.townId,
     this.town,
   }) : super(id);
+
+  factory Company({
+    int? id,
+    required String name,
+    required int townId,
+    _i2.Town? town,
+  }) = _CompanyImpl;
 
   factory Company.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,6 +48,12 @@ class Company extends _i1.TableRow {
 
   @override
   String get tableName => 'company';
+  Company copyWith({
+    int? id,
+    String? name,
+    int? townId,
+    _i2.Town? town,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -208,6 +221,37 @@ class Company extends _i1.TableRow {
 
   static CompanyInclude include({_i2.TownInclude? town}) {
     return CompanyInclude._(town: town);
+  }
+}
+
+class _Undefined {}
+
+class _CompanyImpl extends Company {
+  _CompanyImpl({
+    int? id,
+    required String name,
+    required int townId,
+    _i2.Town? town,
+  }) : super._(
+          id: id,
+          name: name,
+          townId: townId,
+          town: town,
+        );
+
+  @override
+  Company copyWith({
+    Object? id = _Undefined,
+    String? name,
+    int? townId,
+    Object? town = _Undefined,
+  }) {
+    return Company(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      townId: townId ?? this.townId,
+      town: town is _i2.Town? ? town : this.town?.copyWith(),
+    );
   }
 }
 

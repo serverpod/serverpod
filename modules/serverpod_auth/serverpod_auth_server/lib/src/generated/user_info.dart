@@ -13,8 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-class UserInfo extends _i1.TableRow {
-  UserInfo({
+abstract class UserInfo extends _i1.TableRow {
+  UserInfo._({
     int? id,
     required this.userIdentifier,
     required this.userName,
@@ -25,6 +25,18 @@ class UserInfo extends _i1.TableRow {
     required this.scopeNames,
     required this.blocked,
   }) : super(id);
+
+  factory UserInfo({
+    int? id,
+    required String userIdentifier,
+    required String userName,
+    String? fullName,
+    String? email,
+    required DateTime created,
+    String? imageUrl,
+    required List<String> scopeNames,
+    required bool blocked,
+  }) = _UserInfoImpl;
 
   factory UserInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -80,6 +92,17 @@ class UserInfo extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_user_info';
+  UserInfo copyWith({
+    int? id,
+    String? userIdentifier,
+    String? userName,
+    String? fullName,
+    String? email,
+    DateTime? created,
+    String? imageUrl,
+    List<String>? scopeNames,
+    bool? blocked,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -273,6 +296,57 @@ class UserInfo extends _i1.TableRow {
 
   static UserInfoInclude include() {
     return UserInfoInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _UserInfoImpl extends UserInfo {
+  _UserInfoImpl({
+    int? id,
+    required String userIdentifier,
+    required String userName,
+    String? fullName,
+    String? email,
+    required DateTime created,
+    String? imageUrl,
+    required List<String> scopeNames,
+    required bool blocked,
+  }) : super._(
+          id: id,
+          userIdentifier: userIdentifier,
+          userName: userName,
+          fullName: fullName,
+          email: email,
+          created: created,
+          imageUrl: imageUrl,
+          scopeNames: scopeNames,
+          blocked: blocked,
+        );
+
+  @override
+  UserInfo copyWith({
+    Object? id = _Undefined,
+    String? userIdentifier,
+    String? userName,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
+    DateTime? created,
+    Object? imageUrl = _Undefined,
+    List<String>? scopeNames,
+    bool? blocked,
+  }) {
+    return UserInfo(
+      id: id is int? ? id : this.id,
+      userIdentifier: userIdentifier ?? this.userIdentifier,
+      userName: userName ?? this.userName,
+      fullName: fullName is String? ? fullName : this.fullName,
+      email: email is String? ? email : this.email,
+      created: created ?? this.created,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
+      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      blocked: blocked ?? this.blocked,
+    );
   }
 }
 

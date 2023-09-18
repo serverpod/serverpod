@@ -49,9 +49,8 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
+    var relation = classDefinition.findField('employees')?.relation;
     test('then the reference field is set on the list relation.', () {
-      var relation = classDefinition.findField('employees')?.relation;
-
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
         (relation as ListRelationDefinition).foreignFieldName,
@@ -59,6 +58,10 @@ void main() {
         reason: 'Expected the reference field to be set to "companyId".',
       );
     }, skip: errors.isNotEmpty);
+
+    test('has the nullableRelation set to false', () {
+      expect((relation as ListRelationDefinition).nullableRelation, false);
+    }, skip: relation is! ListRelationDefinition);
   });
 
   group(
@@ -345,9 +348,8 @@ void main() {
       expect(collector.errors, isEmpty);
     });
 
+    var relation = companyDefinition.findField('employees')?.relation;
     test('then the reference field is set on the list relation.', () {
-      var relation = companyDefinition.findField('employees')?.relation;
-
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
         (relation as ListRelationDefinition).foreignFieldName,
@@ -355,6 +357,10 @@ void main() {
         reason: 'Expected the reference field to be set.',
       );
     });
+
+    test('has the nullableRelation set to true', () {
+      expect((relation as ListRelationDefinition).nullableRelation, true);
+    }, skip: relation is! ListRelationDefinition);
 
     test('then the relation field is created on the employee side.', () {
       var field = employeeDefinition.findField('_company_employees_companyId');
