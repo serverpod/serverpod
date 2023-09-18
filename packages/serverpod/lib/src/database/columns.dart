@@ -9,9 +9,6 @@ abstract class Column<T> {
   /// Corresponding dart [Type].
   final Type type;
 
-  /// Maximum length for a varchar
-  final int? varcharLength;
-
   final String _columnName;
 
   /// Name of the [Column].
@@ -29,7 +26,6 @@ abstract class Column<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
     this._columnName, {
-    this.varcharLength,
     this.queryPrefix = '',
     this.tableRelations,
   }) : type = T;
@@ -70,7 +66,6 @@ class ColumnSerializable extends Column<String> {
 abstract class _ValueOperatorColumn<T> extends Column<T> {
   _ValueOperatorColumn(
     super.columnName, {
-    super.varcharLength,
     super.queryPrefix,
     super.tableRelations,
   });
@@ -96,10 +91,13 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
 /// A [Column] holding an [String].
 class ColumnString extends _ValueOperatorColumn<String>
     with _ColumnDefaultOperations<String> {
+  /// Maximum length for a varchar
+  final int? varcharLength;
+
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnString(
     super.columnName, {
-    super.varcharLength,
+    this.varcharLength,
     super.queryPrefix,
     super.tableRelations,
   });
