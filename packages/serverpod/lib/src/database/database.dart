@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
+import 'package:serverpod/src/database/columns.dart';
 
 import '../server/session.dart';
 import 'database_connection.dart';

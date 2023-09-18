@@ -8,6 +8,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'protocol.dart' as _i3;
 
 abstract class Types extends _i1.SerializableEntity {
   Types._({
@@ -20,6 +21,7 @@ abstract class Types extends _i1.SerializableEntity {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.anEnum,
   });
 
   factory Types({
@@ -32,6 +34,7 @@ abstract class Types extends _i1.SerializableEntity {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
   }) = _TypesImpl;
 
   factory Types.fromJson(
@@ -55,6 +58,8 @@ abstract class Types extends _i1.SerializableEntity {
           .deserialize<Duration?>(jsonSerialization['aDuration']),
       aUuid: serializationManager
           .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
+      anEnum: serializationManager
+          .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
     );
   }
 
@@ -79,6 +84,8 @@ abstract class Types extends _i1.SerializableEntity {
 
   _i1.UuidValue? aUuid;
 
+  _i3.TestEnum? anEnum;
+
   Types copyWith({
     int? id,
     int? anInt,
@@ -89,6 +96,7 @@ abstract class Types extends _i1.SerializableEntity {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -102,6 +110,7 @@ abstract class Types extends _i1.SerializableEntity {
       'aByteData': aByteData,
       'aDuration': aDuration,
       'aUuid': aUuid,
+      'anEnum': anEnum,
     };
   }
 }
@@ -119,6 +128,7 @@ class _TypesImpl extends Types {
     _i2.ByteData? aByteData,
     Duration? aDuration,
     _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -129,6 +139,7 @@ class _TypesImpl extends Types {
           aByteData: aByteData,
           aDuration: aDuration,
           aUuid: aUuid,
+          anEnum: anEnum,
         );
 
   @override
@@ -142,6 +153,7 @@ class _TypesImpl extends Types {
     Object? aByteData = _Undefined,
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
+    Object? anEnum = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -154,6 +166,7 @@ class _TypesImpl extends Types {
           aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
+      anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
     );
   }
 }

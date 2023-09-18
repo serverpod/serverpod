@@ -48,90 +48,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<int?> deleteAllInTypes(Session session) async {
-    return await Types.delete(session, where: (t) => Constant(true));
-  }
-
-  Future<void> createSimpleDateTimeTestData(
-    Session session, {
-    required int numberOfYears,
-    required DateTime firstYear,
-  }) async {
-    for (var i = 0; i < numberOfYears; i++) {
-      var data = SimpleDateTime(dateTime: DateTime(firstYear.year + i));
-      await SimpleDateTime.insert(session, data);
-    }
-  }
-
-  Future<List<SimpleDateTime>> findSimpleDateTimeRowsBefore(
-    Session session,
-    DateTime dateTime,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    return await SimpleDateTime.find(
-      session,
-      where: (t) => t.dateTime < dateTime,
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleDateTime.t.dateTime,
-      orderDescending: descending,
-    );
-  }
-
-  Future<List<SimpleDateTime>> findSimpleDateTimeRowsAfter(
-    Session session,
-    DateTime dateTime,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    return await SimpleDateTime.find(
-      session,
-      where: (t) => t.dateTime > dateTime,
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleDateTime.t.dateTime,
-      orderDescending: descending,
-    );
-  }
-
-  Future<List<SimpleDateTime>> findSimpleDateTimeRowsEqualsOrBefore(
-    Session session,
-    DateTime dateTime,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    return await SimpleDateTime.find(
-      session,
-      where: (t) => t.dateTime <= dateTime,
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleDateTime.t.dateTime,
-      orderDescending: descending,
-    );
-  }
-
-  Future<List<SimpleDateTime>> findSimpleDateTimeRowsEqualsOrAfter(
-    Session session,
-    DateTime dateTime,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    return await SimpleDateTime.find(
-      session,
-      where: (t) => t.dateTime >= (dateTime),
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleDateTime.t.dateTime,
-      orderDescending: descending,
-    );
-  }
-
-  Future<void> deleteAllSimpleDateTimeTestData(Session session) async {
-    await SimpleDateTime.delete(session, where: (t) => Constant(true));
+    return await Types.delete(session, where: (t) => Constant.bool(true));
   }
 
   Future<void> createSimpleTestData(Session session, int numRows) async {
@@ -148,7 +65,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<void> deleteAllSimpleTestData(Session session) async {
-    await SimpleData.delete(session, where: (t) => Constant(true));
+    await SimpleData.delete(session, where: (t) => Constant.bool(true));
   }
 
   Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {
@@ -175,92 +92,6 @@ class BasicDatabase extends Endpoint {
     var rows = await SimpleData.find(
       session,
       where: (t) => t.num < num,
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleData.t.num,
-      orderDescending: descending,
-    );
-
-    return SimpleDataList(
-      rows: rows,
-    );
-  }
-
-  Future<SimpleDataList?> findSimpleDataRowsInSet(
-    Session session,
-    List<int> setList,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    var rows = await SimpleData.find(
-      session,
-      where: (t) => t.num.inSet(setList.toSet()),
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleData.t.num,
-      orderDescending: descending,
-    );
-
-    return SimpleDataList(
-      rows: rows,
-    );
-  }
-
-  Future<SimpleDataList?> findSimpleDataRowsNotInSet(
-    Session session,
-    List<int> setList,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    var rows = await SimpleData.find(
-      session,
-      where: (t) => t.num.notInSet(setList.toSet()),
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleData.t.num,
-      orderDescending: descending,
-    );
-
-    return SimpleDataList(
-      rows: rows,
-    );
-  }
-
-  Future<SimpleDataList?> findSimpleDataRowsBetween(
-    Session session,
-    int min,
-    int max,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    var rows = await SimpleData.find(
-      session,
-      where: (t) => t.num.between(min, max),
-      offset: offset,
-      limit: limit,
-      orderBy: SimpleData.t.num,
-      orderDescending: descending,
-    );
-
-    return SimpleDataList(
-      rows: rows,
-    );
-  }
-
-  Future<SimpleDataList?> findSimpleDataRowsNotBetween(
-    Session session,
-    int min,
-    int max,
-    int offset,
-    int limit,
-    bool descending,
-  ) async {
-    var rows = await SimpleData.find(
-      session,
-      where: (t) => t.num.notBetween(min, max),
       offset: offset,
       limit: limit,
       orderBy: SimpleData.t.num,
@@ -304,7 +135,7 @@ class BasicDatabase extends Endpoint {
     // Clear database.
     await ObjectWithByteData.delete(
       session,
-      where: (t) => Constant(true),
+      where: (t) => Constant.bool(true),
     );
 
     // Create byte data.
@@ -336,7 +167,7 @@ class BasicDatabase extends Endpoint {
     // Clear database.
     await ObjectWithDuration.delete(
       session,
-      where: (t) => Constant(true),
+      where: (t) => Constant.bool(true),
     );
 
     // Create byte data.

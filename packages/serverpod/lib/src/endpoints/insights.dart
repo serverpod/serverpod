@@ -37,7 +37,7 @@ class InsightsEndpoint extends Endpoint {
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
     await session.db.delete<SessionLogEntry>(
-      where: Constant(true),
+      where: Constant.bool(true),
     );
   }
 
@@ -47,7 +47,7 @@ class InsightsEndpoint extends Endpoint {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
-      where = Constant(true);
+      where = Constant.bool(true);
     } else if (filter.open) {
       where = SessionLogEntry.t.isOpen.equals(true);
     } else {

@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:serverpod/src/database/expressions.dart';
+import 'package:serverpod/src/database/columns.dart';
 
 /// Records the relation between two tables.
 /// This is typically only used internally by the serverpod framework.
