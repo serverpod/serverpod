@@ -62,7 +62,6 @@ class EntityDependencyResolver {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
-    // TODO: o(n^2)
     var referenceClass = entityDefinitions
         .cast<SerializableEntityDefinition?>()
         .firstWhere(
@@ -250,7 +249,6 @@ class EntityDependencyResolver {
     var type = fieldDefinition.type;
     var referenceClassName = type.generics.first.className;
 
-    // TODO: O(n^2)
     var referenceClass =
         entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
               (entity) => entity?.className == referenceClassName,
