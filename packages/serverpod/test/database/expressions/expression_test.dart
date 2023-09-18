@@ -12,8 +12,8 @@ void main() {
   });
 
   group('Given two expressions', () {
-    var expression1 = Expression('true = true');
-    var expression2 = Expression('"A" = "A"');
+    var expression1 = const Expression('true = true');
+    var expression2 = const Expression('"A" = "A"');
     test('when combined using the AND operator then output is AND expression.',
         () {
       var combinedExpression = expression1 & expression2;
@@ -30,9 +30,9 @@ void main() {
   });
 
   group('Given three expressions', () {
-    var expression1 = Expression('true = true');
-    var expression2 = Expression('"A" = "A"');
-    var expression3 = Expression('"B" = "B"');
+    var expression1 = const Expression('true = true');
+    var expression2 = const Expression('"A" = "A"');
+    var expression3 = const Expression('"B" = "B"');
     test('when combined using the AND operator then output is AND expression.',
         () {
       var combinedExpression = expression1 & (expression2 & expression3);

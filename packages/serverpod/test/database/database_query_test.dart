@@ -29,7 +29,7 @@ void main() {
         'when query with simple where expression is built then output is a WHERE query.',
         () {
       var query = SelectQueryBuilder(table: 'citizen')
-          .withWhere(Expression('"test"=@test'))
+          .withWhere(const Expression('"test"=@test'))
           .build();
 
       expect(query, 'SELECT * FROM "citizen" WHERE "test"=@test');
@@ -38,8 +38,8 @@ void main() {
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var expression1 = Expression('TRUE = TRUE');
-      var expression2 = Expression('FALSE = FALSE');
+      var expression1 = const Expression('TRUE = TRUE');
+      var expression2 = const Expression('FALSE = FALSE');
       var combinedExpression = expression1 & expression2;
 
       var query = SelectQueryBuilder(table: 'citizen')
@@ -253,7 +253,7 @@ void main() {
         'when query with where expression is built then output is a WHERE query.',
         () {
       var query = CountQueryBuilder(table: 'citizen')
-          .withWhere(Expression('"test"=@test'))
+          .withWhere(const Expression('"test"=@test'))
           .build();
 
       expect(query, 'SELECT COUNT(*) FROM "citizen" WHERE "test"=@test');
@@ -377,7 +377,7 @@ void main() {
         'when query with where expression is built then output is a WHERE query.',
         () {
       var query = DeleteQueryBuilder(table: 'citizen')
-          .withWhere(Expression('"test"=@test'))
+          .withWhere(const Expression('"test"=@test'))
           .build();
 
       expect(query, 'DELETE FROM "citizen" WHERE "test"=@test');

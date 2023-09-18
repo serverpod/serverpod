@@ -130,7 +130,7 @@ void main() {
       test(
           'when greater than compared to expression then output is operator expression.',
           () {
-        var comparisonExpression = column > Expression('10');
+        var comparisonExpression = column > const Expression('10');
 
         expect(comparisonExpression.toString(), '($column > 10)');
       });
@@ -163,7 +163,7 @@ void main() {
       test(
           'when greater or equal than compared to expression then output is operator expression.',
           () {
-        var comparisonExpression = column >= Expression('10');
+        var comparisonExpression = column >= const Expression('10');
 
         expect(comparisonExpression.toString(), '($column >= 10)');
       });
@@ -196,7 +196,7 @@ void main() {
       test(
           'when less than compared to expression then output is operator expression.',
           () {
-        var comparisonExpression = column < Expression('10');
+        var comparisonExpression = column < const Expression('10');
 
         expect(comparisonExpression.toString(), '($column < 10)');
       });
@@ -229,7 +229,7 @@ void main() {
       test(
           'when less or equal than compared to expression then output is operator expression.',
           () {
-        var comparisonExpression = column <= Expression('10');
+        var comparisonExpression = column <= const Expression('10');
 
         expect(comparisonExpression.toString(), '($column <= 10)');
       });
