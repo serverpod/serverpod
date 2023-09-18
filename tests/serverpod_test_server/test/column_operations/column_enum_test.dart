@@ -42,9 +42,7 @@ void main() async {
         () async {
       var result = await client.columnEnum.notEquals(TestEnum.one);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not TestEnum.one
-      expect(result.length, 1);
+      expect(result.length, 2);
     });
 
     test(

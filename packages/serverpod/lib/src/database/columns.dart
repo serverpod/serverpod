@@ -357,7 +357,7 @@ class _NotEqualsExpression<T> extends _TwoPartColumnExpression<T> {
 
   @override
   String toString() {
-    return '$_column != $other';
+    return '($_column != $other OR $_column IS NULL)';
   }
 }
 

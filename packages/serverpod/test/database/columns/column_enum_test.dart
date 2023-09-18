@@ -56,7 +56,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(TestEnum.blue);
 
-        expect(comparisonExpression.toString(), '$column != 1');
+        expect(comparisonExpression.toString(),
+            '($column != 1 OR $column IS NULL)');
       });
 
       test(

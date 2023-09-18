@@ -47,9 +47,7 @@ void main() async {
         () async {
       var result = await client.columnDateTime.notEquals(firstDate);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not "firstDate"
-      expect(result.length, 2);
+      expect(result.length, 3);
     });
 
     test(

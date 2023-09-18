@@ -53,7 +53,7 @@ void main() {
             column.notEquals(UuidValue(Uuid.NAMESPACE_NIL));
 
         expect(comparisonExpression.toString(),
-            '$column != \'00000000-0000-0000-0000-000000000000\'');
+            '($column != \'00000000-0000-0000-0000-000000000000\' OR $column IS NULL)');
       });
 
       test(

@@ -43,9 +43,7 @@ void main() async {
         () async {
       var result = await client.columnInt.notEquals(1);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not 1
-      expect(result.length, 2);
+      expect(result.length, 3);
     });
 
     test(

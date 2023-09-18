@@ -52,7 +52,7 @@ void main() {
         var comparisonExpression = column.notEquals(DateTime.utc(1991, 5, 28));
 
         expect(comparisonExpression.toString(),
-            '$column != \'"1991-05-28T00:00:00.000Z"\'');
+            '($column != \'"1991-05-28T00:00:00.000Z"\' OR $column IS NULL)');
       });
 
       test(

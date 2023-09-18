@@ -50,7 +50,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(const Duration(hours: 10));
 
-        expect(comparisonExpression.toString(), '$column != \'36000000\'');
+        expect(comparisonExpression.toString(),
+            '($column != \'36000000\' OR $column IS NULL)');
       });
 
       test(

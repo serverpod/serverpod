@@ -47,9 +47,7 @@ void main() async {
         () async {
       var result = await client.columnDuration.notEquals(firstDuration);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not "firstDuration"
-      expect(result.length, 2);
+      expect(result.length, 3);
     });
 
     test(

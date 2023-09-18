@@ -49,9 +49,7 @@ void main() async {
         () async {
       var result = await client.columnUuid.notEquals(firstUuid);
 
-      // NULL is considered an "unknown" value in Postgres and therefore
-      // is not not firstUuid
-      expect(result.length, 1);
+      expect(result.length, 2);
     });
 
     test(
