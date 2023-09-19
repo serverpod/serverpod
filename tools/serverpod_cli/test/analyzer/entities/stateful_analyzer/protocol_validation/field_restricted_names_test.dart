@@ -97,6 +97,7 @@ void main() {
     'tableName',
     'include',
     'db',
+    'table',
   ];
 
   group('Classes with table', () {
