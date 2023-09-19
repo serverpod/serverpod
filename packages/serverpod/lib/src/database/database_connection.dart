@@ -464,7 +464,7 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    var query = DeleteQueryBuilder(table: row.tableName)
+    var query = DeleteQueryBuilder(table: row.table.tableName)
         .withWhere(Expression('id = ${row.id}'))
         .build();
 
