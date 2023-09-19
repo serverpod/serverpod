@@ -39,12 +39,10 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
-
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
   });
-
   @override
   Map<String, dynamic> toJson() {
     return {
