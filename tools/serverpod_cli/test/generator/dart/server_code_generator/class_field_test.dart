@@ -968,8 +968,9 @@ void main() {
       test('has getter method for relation table.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-                maybeClassNamedExampleTable!,
-                name: 'company'),
+              maybeClassNamedExampleTable!,
+              name: 'company',
+            ),
             isTrue,
             reason: 'Missing declaration for relation table getter.');
       });

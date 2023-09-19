@@ -290,26 +290,31 @@ class DatabaseConnection {
   Future<bool> update(
     TableRow row, {
     required Session session,
+    List<Column>? columns,
     Transaction? transaction,
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    var data = row.toJsonForDatabase();
+
+    columns?.forEach((column) {
+      if (!data.containsKey(column.columnName)) {
+        throw Exception(
+          'Column ${column.columnName} does not exist in table row provided.',
+        );
+      }
+    });
 
     int? id = data['id'];
 
-    var updatesList = <String>[];
+    Iterable<String> cols = columns?.map((c) => c.columnName) ?? data.keys;
 
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
+    String updates = cols.where((column) => column != 'id').map((column) {
       var value = DatabasePoolManager.encoder.convert(data[column]);
+      return '"$column" = $value';
+    }).join(', ');
 
-      updatesList.add('"$column" = $value');
-    }
-    var updates = updatesList.join(', ');
-
-    var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+    var query = 'UPDATE "${row.tableName}" SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
@@ -352,7 +357,7 @@ class DatabaseConnection {
     var values = valueList.join(', ');
 
     var query =
-        'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+        'INSERT INTO "${row.tableName}" ($columns) VALUES ($values) RETURNING id';
 
     int insertedId;
     try {

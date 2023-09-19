@@ -4,6 +4,8 @@ import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition
 
 import 'serializable_entity_field_definition_builder.dart';
 
+typedef _FieldBuilder = SerializableEntityFieldDefinition Function();
+
 class ClassDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
@@ -12,7 +14,7 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
-  List<SerializableEntityFieldDefinition> _fields;
+  List<_FieldBuilder> _fields;
   List<SerializableEntityIndexDefinition>? _indexes;
   List<String>? _documentation;
 
@@ -29,7 +31,7 @@ class ClassDefinitionBuilder {
     if (_tableName != null) {
       _fields.insert(
         0,
-        FieldDefinitionBuilder()
+        () => FieldDefinitionBuilder()
             .withName('id')
             .withType(TypeDefinition.int.asNullable)
             .withScope(EntityFieldScopeDefinition.all)
@@ -42,7 +44,7 @@ class ClassDefinitionBuilder {
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
-      fields: _fields,
+      fields: _fields.map((f) => f()).toList(),
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
       isException: _isException,
@@ -88,7 +90,7 @@ class ClassDefinitionBuilder {
     bool nullable = false,
   }) {
     _fields.add(
-      FieldDefinitionBuilder()
+      () => FieldDefinitionBuilder()
           .withName(fieldName)
           .withTypeDefinition(type, nullable)
           .build(),
@@ -97,31 +99,66 @@ class ClassDefinitionBuilder {
   }
 
   ClassDefinitionBuilder withField(SerializableEntityFieldDefinition field) {
-    _fields.add(field);
+    _fields.add(() => field);
+    return this;
+  }
+
+  ClassDefinitionBuilder withObjectRelationFieldNoForeignKey(
+    String fieldName,
+    String className,
+    String parentTable, {
+    String? foreignKeyFieldName,
+    bool nullableRelation = false,
+  }) {
+    _fields.addAll([
+      () {
+        if (_tableName == null) {
+          throw Exception(
+            'Cannot create object relation field without table name',
+          );
+        }
+        var foreignFieldName = foreignKeyFieldName ?? '${_tableName}Id';
+        return FieldDefinitionBuilder()
+            .withName(fieldName)
+            .withTypeDefinition(className, true)
+            .withShouldPersist(false)
+            .withRelation(ObjectRelationDefinition(
+              parentTable: parentTable,
+              fieldName: foreignFieldName,
+              foreignFieldName: 'id',
+              isForeignKeyOrigin: false,
+              nullableRelation: nullableRelation,
+            ))
+            .build();
+      }
+    ]);
     return this;
   }
 
   ClassDefinitionBuilder withObjectRelationField(
     String fieldName,
     String className,
-    String parentTable,
-  ) {
+    String parentTable, {
+    String? foreignKeyFieldName,
+    bool nullableRelation = false,
+  }) {
+    var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
     _fields.addAll([
-      FieldDefinitionBuilder()
+      () => FieldDefinitionBuilder()
           .withName(fieldName)
           .withTypeDefinition(className, true)
           .withShouldPersist(false)
           .withRelation(ObjectRelationDefinition(
             parentTable: parentTable,
-            fieldName: '${fieldName}Id',
+            fieldName: foreignFieldName,
             foreignFieldName: 'id',
+            nullableRelation: nullableRelation,
             isForeignKeyOrigin: true,
-            nullableRelation: false,
           ))
           .build(),
-      FieldDefinitionBuilder()
-          .withName('${fieldName}Id')
-          .withIdType()
+      () => FieldDefinitionBuilder()
+          .withName(foreignFieldName)
+          .withIdType(nullableRelation)
           .withShouldPersist(true)
           .withRelation(ForeignRelationDefinitionBuilder()
               .withParentTable(parentTable)
@@ -135,7 +172,7 @@ class ClassDefinitionBuilder {
   ClassDefinitionBuilder withFields(
     List<SerializableEntityFieldDefinition> fields,
   ) {
-    _fields = fields;
+    _fields = fields.map((f) => () => f).toList();
     return this;
   }
 

@@ -122,8 +122,11 @@ class Database {
   }
 
   /// Updates a single [TableRow]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
   Future<bool> update(
     TableRow row, {
+    List<Column>? columns,
     Transaction? transaction,
   }) async {
     var conn = await databaseConnection;
@@ -131,6 +134,7 @@ class Database {
     return await conn.update(
       row,
       session: session,
+      columns: columns,
       transaction: transaction,
     );
   }

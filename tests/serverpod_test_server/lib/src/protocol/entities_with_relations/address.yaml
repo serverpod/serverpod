@@ -2,5 +2,5 @@ class: Address
 table: address
 fields:
   street: String
-  inhabitantId: int
+  inhabitantId: int?
   inhabitant: Citizen?, relation(name=citizen_address, field=inhabitantId)

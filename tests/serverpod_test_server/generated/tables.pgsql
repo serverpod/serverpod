@@ -5,7 +5,7 @@
 CREATE TABLE "address" (
   "id" serial,
   "street" text NOT NULL,
-  "inhabitantId" integer NOT NULL
+  "inhabitantId" integer
 );
 
 ALTER TABLE ONLY "address"

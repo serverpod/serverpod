@@ -40,6 +40,8 @@ abstract class Company extends _i1.TableRow {
 
   static final t = CompanyTable();
 
+  static final db = CompanyRepository._();
+
   String name;
 
   int townId;
@@ -332,4 +334,33 @@ class CompanyInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'town': _town};
   @override
   _i1.Table get table => Company.t;
+}
+
+class CompanyRepository {
+  const CompanyRepository._();
+
+  final attach = const CompanyAttachRepository._();
+}
+
+class CompanyAttachRepository {
+  const CompanyAttachRepository._();
+
+  Future<void> town(
+    _i1.Session session,
+    Company company,
+    _i2.Town town,
+  ) async {
+    if (company.id == null) {
+      throw ArgumentError.notNull('company.id');
+    }
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
+    }
+
+    var $company = company.copyWith(townId: town.id);
+    await session.db.update(
+      $company,
+      columns: [Company.t.townId],
+    );
+  }
 }

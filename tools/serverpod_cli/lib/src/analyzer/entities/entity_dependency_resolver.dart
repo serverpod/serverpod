@@ -115,6 +115,9 @@ class EntityDependencyResolver {
   ) {
     String? foreignFieldName;
 
+    // No need to check ObjectRelationDefinition as it will never be named on
+    // the relational origin side. This case is covered by
+    // checking the ForeignRelationDefinition.
     var foreignRelation = foreignField.relation;
     if (foreignRelation is UnresolvedObjectRelationDefinition) {
       foreignFieldName = foreignRelation.fieldName;
@@ -130,7 +133,7 @@ class EntityDependencyResolver {
       fieldName: defaultPrimaryKeyName,
       foreignFieldName: foreignFieldName,
       isForeignKeyOrigin: relation.isForeignKeyOrigin,
-      nullableRelation: relation.nullableRelation,
+      nullableRelation: foreignField.type.nullable,
     );
   }
 
@@ -196,7 +199,7 @@ class EntityDependencyResolver {
       fieldName: relationFieldName,
       foreignFieldName: defaultPrimaryKeyName,
       isForeignKeyOrigin: true,
-      nullableRelation: relation.nullableRelation,
+      nullableRelation: field.type.nullable,
     );
   }
 
@@ -290,7 +293,6 @@ class EntityDependencyResolver {
       });
 
       if (foreignFields.isNotEmpty) {
-        // TODO: Handle multiple references.
         fieldDefinition.relation = ListRelationDefinition(
           name: relation.name,
           foreignFieldName: foreignFields.first.name,

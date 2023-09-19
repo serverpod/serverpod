@@ -286,4 +286,64 @@ fields:
       expect(span?.end.column, 35 + 'myParentId'.length);
     }, skip: errors.isEmpty);
   });
+
+  group(
+      'Given two classes with a named relation with a defined field name that holds the relation',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          parentId: int?
+          parent: ExampleParent?, relation(name=example_parent, field=parentId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+        '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+          example: Example?, relation(name=example_parent)
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var exampleClass = definitions.first as ClassDefinition;
+    var exampleParentClass = definitions.last as ClassDefinition;
+
+    test('then no errors were collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then parentId is nullable', () {
+      var field = exampleClass.findField('parentId');
+      expect(field?.type.nullable, isTrue);
+    });
+
+    test('then parent field has a nullable relation.', () {
+      var field = exampleClass.findField('parent');
+      var relation = field!.relation as ObjectRelationDefinition;
+      expect(relation.nullableRelation, isTrue);
+    });
+
+    group('then the foreign side', () {
+      var field = exampleParentClass.findField('example');
+      var relation = field!.relation;
+
+      test('has an object relation', () {
+        expect(relation.runtimeType, ObjectRelationDefinition);
+      });
+
+      test('has a nullable relation', () {
+        expect((relation as ObjectRelationDefinition).nullableRelation, isTrue);
+      }, skip: relation is! ObjectRelationDefinition);
+    });
+  });
 }

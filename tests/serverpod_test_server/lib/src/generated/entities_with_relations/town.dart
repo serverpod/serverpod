@@ -40,6 +40,8 @@ abstract class Town extends _i1.TableRow {
 
   static final t = TownTable();
 
+  static final db = TownRepository._();
+
   String name;
 
   int? mayorId;
@@ -332,4 +334,54 @@ class TownInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
   @override
   _i1.Table get table => Town.t;
+}
+
+class TownRepository {
+  const TownRepository._();
+
+  final attach = const TownAttachRepository._();
+
+  final detach = const TownDetachRepository._();
+}
+
+class TownAttachRepository {
+  const TownAttachRepository._();
+
+  Future<void> mayor(
+    _i1.Session session,
+    Town town,
+    _i2.Citizen mayor,
+  ) async {
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
+    }
+    if (mayor.id == null) {
+      throw ArgumentError.notNull('mayor.id');
+    }
+
+    var $town = town.copyWith(mayorId: mayor.id);
+    await session.db.update(
+      $town,
+      columns: [Town.t.mayorId],
+    );
+  }
+}
+
+class TownDetachRepository {
+  const TownDetachRepository._();
+
+  Future<void> mayor(
+    _i1.Session session,
+    Town town,
+  ) async {
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
+    }
+
+    var $town = town.copyWith(mayorId: null);
+    await session.db.update(
+      $town,
+      columns: [Town.t.mayorId],
+    );
+  }
 }
