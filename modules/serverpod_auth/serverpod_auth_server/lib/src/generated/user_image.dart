@@ -50,7 +50,7 @@ abstract class UserImage extends _i1.TableRow {
   String url;
 
   @override
-  String get tableName => 'serverpod_user_image';
+  _i1.Table get table => t;
   UserImage copyWith({
     int? id,
     int? userId,
@@ -68,6 +68,7 @@ abstract class UserImage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

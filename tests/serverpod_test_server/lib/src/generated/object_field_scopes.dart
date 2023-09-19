@@ -46,7 +46,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   String? database;
 
   @override
-  String get tableName => 'object_field_scopes';
+  _i1.Table get table => t;
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
@@ -63,6 +63,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

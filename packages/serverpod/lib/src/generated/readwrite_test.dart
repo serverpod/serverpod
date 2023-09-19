@@ -38,11 +38,13 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   int number;
 
   @override
-  String get tableName => 'serverpod_readwrite_test';
+  _i1.Table get table => t;
+
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
   });
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -52,6 +54,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

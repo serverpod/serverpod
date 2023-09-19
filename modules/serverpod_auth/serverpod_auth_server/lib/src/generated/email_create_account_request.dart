@@ -58,7 +58,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   String verificationCode;
 
   @override
-  String get tableName => 'serverpod_email_create_request';
+  _i1.Table get table => t;
   EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
@@ -78,6 +78,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

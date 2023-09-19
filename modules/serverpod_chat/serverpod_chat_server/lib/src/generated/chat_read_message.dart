@@ -51,7 +51,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   int lastReadMessageId;
 
   @override
-  String get tableName => 'serverpod_chat_read_message';
+  _i1.Table get table => t;
   ChatReadMessage copyWith({
     int? id,
     String? channel,
@@ -69,6 +69,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

@@ -64,7 +64,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   String? identifier;
 
   @override
-  String get tableName => 'serverpod_future_call';
+  _i1.Table get table => t;
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -86,6 +86,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

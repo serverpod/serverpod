@@ -37,7 +37,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   DateTime dateTime;
 
   @override
-  String get tableName => 'simple_date_time';
+  _i1.Table get table => t;
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -51,6 +51,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

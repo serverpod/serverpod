@@ -60,7 +60,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   List<List<_i2.TestEnum>> enumListList;
 
   @override
-  String get tableName => 'object_with_enum';
+  _i1.Table get table => t;
   ObjectWithEnum copyWith({
     int? id,
     _i2.TestEnum? testEnum,
@@ -82,6 +82,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

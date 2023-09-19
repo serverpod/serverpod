@@ -49,7 +49,7 @@ abstract class Town extends _i1.TableRow {
   _i2.Citizen? mayor;
 
   @override
-  String get tableName => 'town';
+  _i1.Table get table => t;
   Town copyWith({
     int? id,
     String? name,
@@ -67,6 +67,7 @@ abstract class Town extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

@@ -50,7 +50,7 @@ abstract class EmailAuth extends _i1.TableRow {
   String hash;
 
   @override
-  String get tableName => 'serverpod_email_auth';
+  _i1.Table get table => t;
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -68,6 +68,7 @@ abstract class EmailAuth extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

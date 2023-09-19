@@ -44,7 +44,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
   String refreshToken;
 
   @override
-  String get tableName => 'serverpod_google_refresh_token';
+  _i1.Table get table => t;
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -60,6 +60,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

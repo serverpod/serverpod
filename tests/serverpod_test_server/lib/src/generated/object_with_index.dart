@@ -41,7 +41,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   int indexed2;
 
   @override
-  String get tableName => 'object_with_index';
+  _i1.Table get table => t;
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -57,6 +57,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
