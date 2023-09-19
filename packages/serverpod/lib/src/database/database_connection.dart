@@ -307,7 +307,7 @@ class DatabaseConnection {
 
     int? id = data['id'];
 
-    Iterable<String> cols = columns?.map((c) => c.toString()) ?? data.keys;
+    Iterable<String> cols = columns?.map((c) => c.columnName) ?? data.keys;
 
     String updates = cols.where((column) => column != 'id').map((column) {
       var value = DatabasePoolManager.encoder.convert(data[column]);
