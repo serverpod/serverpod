@@ -144,14 +144,6 @@ class RelationEndpoint extends Endpoint {
     await Citizen.db.attach.company(session, citizen, company);
   }
 
-  Future<void> citizenDetachCompany(
-    Session session,
-    Citizen citizen,
-    Company company,
-  ) async {
-    await Citizen.db.detach.company(session, citizen);
-  }
-
   Future<void> citizenAttachAddress(
     Session session,
     Citizen citizen,

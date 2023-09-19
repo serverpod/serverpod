@@ -467,9 +467,115 @@ class CitizenInclude extends _i1.Include {
 }
 
 class CitizenRepository {
-  CitizenRepository._();
+  const CitizenRepository._();
+
+  final attach = const CitizenAttachRepository._();
+
+  final detach = const CitizenDetachRepository._();
 }
 
-class CitizenAddRepository {
-  CitizenAddRepository._();
+class CitizenAttachRepository {
+  const CitizenAttachRepository._();
+
+  Future<void> address(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Address address,
+  ) async {
+    if (address.id == null) {
+      throw _i1.MissingIdError('address');
+    }
+    if (citizen.id == null) {
+      throw _i1.MissingIdError('citizen');
+    }
+
+    var $address = address.copyWith(inhabitantId: citizen.id);
+    await session.db.update(
+      $address,
+      columns: [_i2.Address.t.inhabitantId],
+    );
+  }
+
+  Future<void> company(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Company company,
+  ) async {
+    if (citizen.id == null) {
+      throw _i1.MissingIdError('citizen');
+    }
+    if (company.id == null) {
+      throw _i1.MissingIdError('company');
+    }
+
+    var $citizen = citizen.copyWith(companyId: company.id);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.companyId],
+    );
+  }
+
+  Future<void> oldCompany(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Company oldCompany,
+  ) async {
+    if (citizen.id == null) {
+      throw _i1.MissingIdError('citizen');
+    }
+    if (oldCompany.id == null) {
+      throw _i1.MissingIdError('oldCompany');
+    }
+
+    var $citizen = citizen.copyWith(oldCompanyId: oldCompany.id);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.oldCompanyId],
+    );
+  }
+}
+
+class CitizenDetachRepository {
+  const CitizenDetachRepository._();
+
+  Future<void> address(
+    _i1.Session session,
+    Citizen citizen,
+  ) async {
+    var $address = citizen.address;
+
+    if ($address == null) {
+      throw _i1.MissingFieldError(
+        'citizen',
+        '$address',
+      );
+    }
+    if ($address.id == null) {
+      throw _i1.MissingIdError('$address');
+    }
+    if (citizen.id == null) {
+      throw _i1.MissingIdError('citizen');
+    }
+
+    var $$address = $address.copyWith(inhabitantId: null);
+    await session.db.update(
+      $$address,
+      columns: [_i2.Address.t.inhabitantId],
+    );
+  }
+
+  Future<void> oldCompany(
+    _i1.Session session,
+    Citizen citizen,
+  ) async {
+    if (citizen.id == null) {
+      throw _i1.MissingIdError('citizen');
+    }
+
+    var $citizen = citizen.copyWith(oldCompanyId: null);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.oldCompanyId],
+    );
+  }
 }

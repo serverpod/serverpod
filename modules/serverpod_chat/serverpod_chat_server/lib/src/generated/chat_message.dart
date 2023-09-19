@@ -67,8 +67,6 @@ abstract class ChatMessage extends _i1.TableRow {
 
   static final t = ChatMessageTable();
 
-  static final db = ChatMessageRepository._();
-
   /// The channel this message was posted to.
   String channel;
 
@@ -440,8 +438,4 @@ class ChatMessageInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ChatMessage.t;
-}
-
-class ChatMessageRepository {
-  ChatMessageRepository._();
 }

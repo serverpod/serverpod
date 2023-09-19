@@ -36,8 +36,6 @@ abstract class Channel extends _i1.TableRow {
 
   static final t = ChannelTable();
 
-  static final db = ChannelRepository._();
-
   /// The name of the channel.
   String name;
 
@@ -281,8 +279,4 @@ class ChannelInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => Channel.t;
-}
-
-class ChannelRepository {
-  ChannelRepository._();
 }

@@ -67,8 +67,6 @@ abstract class QueryLogEntry extends _i1.TableRow {
 
   static final t = QueryLogEntryTable();
 
-  static final db = QueryLogEntryRepository._();
-
   /// The id of the server that handled the query.
   String serverId;
 
@@ -501,12 +499,4 @@ class QueryLogEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => QueryLogEntry.t;
-}
-
-class QueryLogEntryRepository {
-  QueryLogEntryRepository._();
-}
-
-class QueryLogEntryAddRepository {
-  QueryLogEntryAddRepository._();
 }

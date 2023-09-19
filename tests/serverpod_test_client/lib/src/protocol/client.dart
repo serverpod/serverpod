@@ -1440,13 +1440,6 @@ class EndpointRelation extends _i1.EndpointRef {
             {},
           );
 
-  _i2.Future<List<_i15.Address>> addressFindAll() =>
-      caller.callServerEndpoint<List<_i15.Address>>(
-        'relation',
-        'addressFindAll',
-        {},
-      );
-
   /// Includes company and oldCompany
   _i2.Future<List<_i14.Citizen>> citizenFindAllWithShallowIncludes() =>
       caller.callServerEndpoint<List<_i14.Citizen>>(
@@ -1462,10 +1455,84 @@ class EndpointRelation extends _i1.EndpointRef {
         {'id': id},
       );
 
+  _i2.Future<List<_i15.Address>> addressFindAll() =>
+      caller.callServerEndpoint<List<_i15.Address>>(
+        'relation',
+        'addressFindAll',
+        {},
+      );
+
+  _i2.Future<_i15.Address?> addressFindById(int id) =>
+      caller.callServerEndpoint<_i15.Address?>(
+        'relation',
+        'addressFindById',
+        {'id': id},
+      );
+
   _i2.Future<List<_i16.Post>> findAllPostsIncludingNextAndPrevious() =>
       caller.callServerEndpoint<List<_i16.Post>>(
         'relation',
         'findAllPostsIncludingNextAndPrevious',
+        {},
+      );
+
+  _i2.Future<void> citizenAttachCompany(
+    _i14.Citizen citizen,
+    _i17.Company company,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'relation',
+        'citizenAttachCompany',
+        {
+          'citizen': citizen,
+          'company': company,
+        },
+      );
+
+  _i2.Future<void> citizenAttachAddress(
+    _i14.Citizen citizen,
+    _i15.Address address,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'relation',
+        'citizenAttachAddress',
+        {
+          'citizen': citizen,
+          'address': address,
+        },
+      );
+
+  _i2.Future<void> citizenDetachAddress(_i14.Citizen citizen) =>
+      caller.callServerEndpoint<void>(
+        'relation',
+        'citizenDetachAddress',
+        {'citizen': citizen},
+      );
+
+  _i2.Future<void> addressAttachCitizen(
+    _i15.Address address,
+    _i14.Citizen citizen,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'relation',
+        'addressAttachCitizen',
+        {
+          'address': address,
+          'citizen': citizen,
+        },
+      );
+
+  _i2.Future<void> addressDetachCitizen(_i15.Address address) =>
+      caller.callServerEndpoint<void>(
+        'relation',
+        'addressDetachCitizen',
+        {'address': address},
+      );
+
+  _i2.Future<List<_i17.Company>> companyFindAll() =>
+      caller.callServerEndpoint<List<_i17.Company>>(
+        'relation',
+        'companyFindAll',
         {},
       );
 

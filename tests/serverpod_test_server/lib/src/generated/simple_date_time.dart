@@ -33,8 +33,6 @@ abstract class SimpleDateTime extends _i1.TableRow {
 
   static final t = SimpleDateTimeTable();
 
-  static final db = SimpleDateTimeRepository._();
-
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
 
@@ -256,8 +254,4 @@ class SimpleDateTimeInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SimpleDateTime.t;
-}
-
-class SimpleDateTimeRepository {
-  SimpleDateTimeRepository._();
 }

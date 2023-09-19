@@ -65,8 +65,6 @@ abstract class UserInfo extends _i1.TableRow {
 
   static final t = UserInfoTable();
 
-  static final db = UserInfoRepository._();
-
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
   String userIdentifier;
@@ -450,8 +448,4 @@ class UserInfoInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => UserInfo.t;
-}
-
-class UserInfoRepository {
-  UserInfoRepository._();
 }

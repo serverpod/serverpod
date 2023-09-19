@@ -41,8 +41,6 @@ abstract class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
-  static final db = EmailResetRepository._();
-
   /// The id of the user that is resetting his/her password.
   int userId;
 
@@ -309,8 +307,4 @@ class EmailResetInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailReset.t;
-}
-
-class EmailResetRepository {
-  EmailResetRepository._();
 }

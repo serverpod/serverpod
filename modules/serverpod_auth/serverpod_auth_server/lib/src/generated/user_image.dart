@@ -40,8 +40,6 @@ abstract class UserImage extends _i1.TableRow {
 
   static final t = UserImageTable();
 
-  static final db = UserImageRepository._();
-
   /// The id of the user.
   int userId;
 
@@ -308,8 +306,4 @@ class UserImageInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => UserImage.t;
-}
-
-class UserImageRepository {
-  UserImageRepository._();
 }

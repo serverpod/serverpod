@@ -41,8 +41,6 @@ abstract class ChatReadMessage extends _i1.TableRow {
 
   static final t = ChatReadMessageTable();
 
-  static final db = ChatReadMessageRepository._();
-
   /// The channel this that has been read.
   String channel;
 
@@ -310,8 +308,4 @@ class ChatReadMessageInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ChatReadMessage.t;
-}
-
-class ChatReadMessageRepository {
-  ChatReadMessageRepository._();
 }

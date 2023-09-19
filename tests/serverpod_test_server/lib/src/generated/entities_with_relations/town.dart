@@ -337,9 +337,51 @@ class TownInclude extends _i1.Include {
 }
 
 class TownRepository {
-  TownRepository._();
+  const TownRepository._();
+
+  final attach = const TownAttachRepository._();
+
+  final detach = const TownDetachRepository._();
 }
 
-class TownAddRepository {
-  TownAddRepository._();
+class TownAttachRepository {
+  const TownAttachRepository._();
+
+  Future<void> mayor(
+    _i1.Session session,
+    Town town,
+    _i2.Citizen mayor,
+  ) async {
+    if (town.id == null) {
+      throw _i1.MissingIdError('town');
+    }
+    if (mayor.id == null) {
+      throw _i1.MissingIdError('mayor');
+    }
+
+    var $town = town.copyWith(mayorId: mayor.id);
+    await session.db.update(
+      $town,
+      columns: [Town.t.mayorId],
+    );
+  }
+}
+
+class TownDetachRepository {
+  const TownDetachRepository._();
+
+  Future<void> mayor(
+    _i1.Session session,
+    Town town,
+  ) async {
+    if (town.id == null) {
+      throw _i1.MissingIdError('town');
+    }
+
+    var $town = town.copyWith(mayorId: null);
+    await session.db.update(
+      $town,
+      columns: [Town.t.mayorId],
+    );
+  }
 }

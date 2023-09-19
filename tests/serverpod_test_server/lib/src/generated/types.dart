@@ -65,8 +65,6 @@ abstract class Types extends _i1.TableRow {
 
   static final t = TypesTable();
 
-  static final db = TypesRepository._();
-
   int? anInt;
 
   bool? aBool;
@@ -454,8 +452,4 @@ class TypesInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => Types.t;
-}
-
-class TypesRepository {
-  TypesRepository._();
 }

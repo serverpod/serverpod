@@ -57,9 +57,9 @@ import 'package:serverpod_test_server/src/generated/entities_with_relations/citi
     as _i46;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/company.dart'
     as _i47;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/town.dart'
-    as _i48;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
+    as _i48;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/town.dart'
     as _i49;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
     as _i50;
@@ -3345,16 +3345,6 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['relation'] as _i18.RelationEndpoint)
                   .citizenFindAllWithNamedRelationNoneOriginSide(session),
         ),
-        'addressFindAll': _i1.MethodConnector(
-          name: 'addressFindAll',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['relation'] as _i18.RelationEndpoint)
-                  .addressFindAll(session),
-        ),
         'citizenFindAllWithShallowIncludes': _i1.MethodConnector(
           name: 'citizenFindAllWithShallowIncludes',
           params: {},
@@ -3384,6 +3374,34 @@ class Endpoints extends _i1.EndpointDispatch {
             params['id'],
           ),
         ),
+        'addressFindAll': _i1.MethodConnector(
+          name: 'addressFindAll',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .addressFindAll(session),
+        ),
+        'addressFindById': _i1.MethodConnector(
+          name: 'addressFindById',
+          params: {
+            'id': _i1.ParameterDescription(
+              name: 'id',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint).addressFindById(
+            session,
+            params['id'],
+          ),
+        ),
         'findAllPostsIncludingNextAndPrevious': _i1.MethodConnector(
           name: 'findAllPostsIncludingNextAndPrevious',
           params: {},
@@ -3393,6 +3411,129 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['relation'] as _i18.RelationEndpoint)
                   .findAllPostsIncludingNextAndPrevious(session),
+        ),
+        'citizenAttachCompany': _i1.MethodConnector(
+          name: 'citizenAttachCompany',
+          params: {
+            'citizen': _i1.ParameterDescription(
+              name: 'citizen',
+              type: _i1.getType<_i46.Citizen>(),
+              nullable: false,
+            ),
+            'company': _i1.ParameterDescription(
+              name: 'company',
+              type: _i1.getType<_i47.Company>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .citizenAttachCompany(
+            session,
+            params['citizen'],
+            params['company'],
+          ),
+        ),
+        'citizenAttachAddress': _i1.MethodConnector(
+          name: 'citizenAttachAddress',
+          params: {
+            'citizen': _i1.ParameterDescription(
+              name: 'citizen',
+              type: _i1.getType<_i46.Citizen>(),
+              nullable: false,
+            ),
+            'address': _i1.ParameterDescription(
+              name: 'address',
+              type: _i1.getType<_i48.Address>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .citizenAttachAddress(
+            session,
+            params['citizen'],
+            params['address'],
+          ),
+        ),
+        'citizenDetachAddress': _i1.MethodConnector(
+          name: 'citizenDetachAddress',
+          params: {
+            'citizen': _i1.ParameterDescription(
+              name: 'citizen',
+              type: _i1.getType<_i46.Citizen>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .citizenDetachAddress(
+            session,
+            params['citizen'],
+          ),
+        ),
+        'addressAttachCitizen': _i1.MethodConnector(
+          name: 'addressAttachCitizen',
+          params: {
+            'address': _i1.ParameterDescription(
+              name: 'address',
+              type: _i1.getType<_i48.Address>(),
+              nullable: false,
+            ),
+            'citizen': _i1.ParameterDescription(
+              name: 'citizen',
+              type: _i1.getType<_i46.Citizen>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .addressAttachCitizen(
+            session,
+            params['address'],
+            params['citizen'],
+          ),
+        ),
+        'addressDetachCitizen': _i1.MethodConnector(
+          name: 'addressDetachCitizen',
+          params: {
+            'address': _i1.ParameterDescription(
+              name: 'address',
+              type: _i1.getType<_i48.Address>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .addressDetachCitizen(
+            session,
+            params['address'],
+          ),
+        ),
+        'companyFindAll': _i1.MethodConnector(
+          name: 'companyFindAll',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['relation'] as _i18.RelationEndpoint)
+                  .companyFindAll(session),
         ),
         'citizenInsert': _i1.MethodConnector(
           name: 'citizenInsert',
@@ -3435,7 +3576,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'town': _i1.ParameterDescription(
               name: 'town',
-              type: _i1.getType<_i48.Town>(),
+              type: _i1.getType<_i49.Town>(),
               nullable: false,
             )
           },
@@ -3453,7 +3594,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'address': _i1.ParameterDescription(
               name: 'address',
-              type: _i1.getType<_i49.Address>(),
+              type: _i1.getType<_i48.Address>(),
               nullable: false,
             )
           },

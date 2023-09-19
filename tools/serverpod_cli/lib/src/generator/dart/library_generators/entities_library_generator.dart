@@ -120,8 +120,12 @@ class SerializableEntityLibraryGenerator {
 
         classBuilder.fields.addAll([
           _buildEntityClassTableField(className),
-          _buildEntityClassDBField(className)
         ]);
+
+        // TODO: remove when we support db operations on this class.
+        if (_hasAttachOperations(fields) || _hasDetachOperations(fields)) {
+          classBuilder.fields.add(_buildEntityClassDBField(className));
+        }
 
         // add tableName getter
         classBuilder.methods.add(_buildEntityClassTableNameGetter(tableName));
@@ -1398,11 +1402,16 @@ class SerializableEntityLibraryGenerator {
     }));
   }
 
-  Class _buildEntityRepositoryClass(
+  Class? _buildEntityRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
+    // TODO: remove when this class supports db operations
+    if (!(_hasAttachOperations(fields) || _hasDetachOperations(fields))) {
+      return null;
+    }
+
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Repository'

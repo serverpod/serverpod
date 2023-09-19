@@ -394,9 +394,96 @@ class PostInclude extends _i1.Include {
 }
 
 class PostRepository {
-  PostRepository._();
+  const PostRepository._();
+
+  final attach = const PostAttachRepository._();
+
+  final detach = const PostDetachRepository._();
 }
 
-class PostAddRepository {
-  PostAddRepository._();
+class PostAttachRepository {
+  const PostAttachRepository._();
+
+  Future<void> previous(
+    _i1.Session session,
+    Post post,
+    _i2.Post previous,
+  ) async {
+    if (previous.id == null) {
+      throw _i1.MissingIdError('previous');
+    }
+    if (post.id == null) {
+      throw _i1.MissingIdError('post');
+    }
+
+    var $previous = previous.copyWith(nextId: post.id);
+    await session.db.update(
+      $previous,
+      columns: [_i2.Post.t.nextId],
+    );
+  }
+
+  Future<void> next(
+    _i1.Session session,
+    Post post,
+    _i2.Post next,
+  ) async {
+    if (post.id == null) {
+      throw _i1.MissingIdError('post');
+    }
+    if (next.id == null) {
+      throw _i1.MissingIdError('next');
+    }
+
+    var $post = post.copyWith(nextId: next.id);
+    await session.db.update(
+      $post,
+      columns: [Post.t.nextId],
+    );
+  }
+}
+
+class PostDetachRepository {
+  const PostDetachRepository._();
+
+  Future<void> previous(
+    _i1.Session session,
+    Post post,
+  ) async {
+    var $previous = post.previous;
+
+    if ($previous == null) {
+      throw _i1.MissingFieldError(
+        'post',
+        '$previous',
+      );
+    }
+    if ($previous.id == null) {
+      throw _i1.MissingIdError('$previous');
+    }
+    if (post.id == null) {
+      throw _i1.MissingIdError('post');
+    }
+
+    var $$previous = $previous.copyWith(nextId: null);
+    await session.db.update(
+      $$previous,
+      columns: [_i2.Post.t.nextId],
+    );
+  }
+
+  Future<void> next(
+    _i1.Session session,
+    Post post,
+  ) async {
+    if (post.id == null) {
+      throw _i1.MissingIdError('post');
+    }
+
+    var $post = post.copyWith(nextId: null);
+    await session.db.update(
+      $post,
+      columns: [Post.t.nextId],
+    );
+  }
 }

@@ -69,8 +69,6 @@ abstract class LogEntry extends _i1.TableRow {
 
   static final t = LogEntryTable();
 
-  static final db = LogEntryRepository._();
-
   /// The id of the session this log entry is associated with.
   int sessionLogId;
 
@@ -498,12 +496,4 @@ class LogEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => LogEntry.t;
-}
-
-class LogEntryRepository {
-  LogEntryRepository._();
-}
-
-class LogEntryAddRepository {
-  LogEntryAddRepository._();
 }

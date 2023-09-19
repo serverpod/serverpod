@@ -42,8 +42,6 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
 
   static final t = EmailFailedSignInTable();
 
-  static final db = EmailFailedSignInRepository._();
-
   /// Email attempting to sign in with.
   String email;
 
@@ -311,8 +309,4 @@ class EmailFailedSignInInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailFailedSignIn.t;
-}
-
-class EmailFailedSignInRepository {
-  EmailFailedSignInRepository._();
 }

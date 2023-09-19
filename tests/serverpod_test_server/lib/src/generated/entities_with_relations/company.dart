@@ -337,9 +337,30 @@ class CompanyInclude extends _i1.Include {
 }
 
 class CompanyRepository {
-  CompanyRepository._();
+  const CompanyRepository._();
+
+  final attach = const CompanyAttachRepository._();
 }
 
-class CompanyAddRepository {
-  CompanyAddRepository._();
+class CompanyAttachRepository {
+  const CompanyAttachRepository._();
+
+  Future<void> town(
+    _i1.Session session,
+    Company company,
+    _i2.Town town,
+  ) async {
+    if (company.id == null) {
+      throw _i1.MissingIdError('company');
+    }
+    if (town.id == null) {
+      throw _i1.MissingIdError('town');
+    }
+
+    var $company = company.copyWith(townId: town.id);
+    await session.db.update(
+      $company,
+      columns: [Company.t.townId],
+    );
+  }
 }
