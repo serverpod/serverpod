@@ -255,12 +255,12 @@ String? _buildJoinQuery({
 }) {
   LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where));
+    tableRelations.addAll(_gatherTableRelations(where.columns));
   }
 
   if (orderBy != null) {
     for (var order in orderBy) {
-      tableRelations.addAll(_gatherTableRelations(order.column));
+      tableRelations.addAll(_gatherTableRelations([order.column]));
     }
   }
 
@@ -278,7 +278,7 @@ String? _buildJoinQuery({
 _UsingQuery? _buildUsingQuery({Expression? where}) {
   LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where));
+    tableRelations.addAll(_gatherTableRelations(where.columns));
   }
 
   if (tableRelations.isEmpty) {
@@ -289,12 +289,11 @@ _UsingQuery? _buildUsingQuery({Expression? where}) {
 }
 
 LinkedHashMap<String, TableRelation> _gatherTableRelations(
-    Expression expression) {
+    List<Column> columns) {
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
-  var columnsWithTableRelations = expression.nodes
-      .whereType<Column>()
-      .where((column) => column.tableRelations != null);
+  var columnsWithTableRelations =
+      columns.where((column) => column.tableRelations != null);
   for (var column in columnsWithTableRelations) {
     for (var tableRelation in column.tableRelations!) {
       joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
@@ -372,8 +371,7 @@ void _validateTableReferences(
   }
 
   if (where != null) {
-    var columns = where.nodes.whereType<Column>();
-    for (var column in columns) {
+    for (var column in where.columns) {
       if (!column.hasBaseTable(tableName)) {
         exceptionMessages.add('"where" expression referencing column $column.');
       }

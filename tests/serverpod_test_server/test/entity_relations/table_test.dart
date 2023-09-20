@@ -14,18 +14,18 @@ void main() {
             '(citizen_oldCompany_company_town_town_mayor_citizen."name" = \'Alex\' AND citizen_company_company."name" = \'Serverpod\')');
       });
 
-      test('then node exists for each sub expression.', () {
-        expect(expression.nodes.length, 4);
+      test('then each in expression column is retrievable.', () {
+        expect(expression.columns.length, 2);
       });
 
       test('then each column expression has table relation.', () {
-        var columnExpressions = expression.nodes.whereType<Column>();
-        var columnExpressionsWithTableRelations = columnExpressions
-            .where((element) => element.tableRelations != null);
+        var columns = expression.columns;
+        var columnWithTableRelations =
+            columns.where((element) => element.tableRelations != null);
 
-        expect(columnExpressionsWithTableRelations.length, 2,
+        expect(columnWithTableRelations.length, 2,
             reason:
-                'Table relation should exists for each column expression since we traverse a relation field.');
+                'Table relation should exists for each column in expression since we traverse a relation field.');
       });
     });
 

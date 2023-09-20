@@ -34,7 +34,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
   int? other;
 
   @override
-  String get tableName => 'object_with_self_parent';
+  _i1.Table get table => t;
   ObjectWithSelfParent copyWith({
     int? id,
     int? other,
@@ -48,6 +48,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

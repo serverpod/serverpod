@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -289,26 +290,37 @@ class DatabaseConnection {
   Future<bool> update(
     TableRow row, {
     required Session session,
+    List<Column>? columns,
     Transaction? transaction,
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    var selectedColumns = columns ?? row.table.columns;
+    Map data = row.allToJson();
 
     int? id = data['id'];
-
-    var updatesList = <String>[];
-
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
-      var value = DatabasePoolManager.encoder.convert(data[column]);
-
-      updatesList.add('"$column" = $value');
+    if (id == null) {
+      throw ArgumentError.notNull('row.id');
     }
-    var updates = updatesList.join(', ');
 
-    var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+    for (var column in selectedColumns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
+    }
+
+    var updates = selectedColumns
+        .where((column) => column.columnName != 'id')
+        .map((column) {
+      var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
+      return '"${column.columnName}" = $value';
+    }).join(', ');
+
+    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
@@ -332,26 +344,32 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    Map data = row.allToJson();
 
-    var columnsList = <String>[];
-    var valueList = <String>[];
-
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
-      dynamic unformattedValue = data[column];
-
-      String value = DatabasePoolManager.encoder.convert(unformattedValue);
-
-      columnsList.add('"$column"');
-      valueList.add(value);
+    for (var column in row.table.columns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
     }
-    var columns = columnsList.join(', ');
-    var values = valueList.join(', ');
+
+    var selectedColumns = row.table.columns.where((column) {
+      return column.columnName != 'id';
+    });
+
+    var columns =
+        selectedColumns.map((column) => '"${column.columnName}"').join(', ');
+
+    var values = selectedColumns.map((column) {
+      var unformattedValue = data[column.columnName];
+      return DatabasePoolManager.encoder.convert(unformattedValue);
+    }).join(', ');
 
     var query =
-        'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+        'INSERT INTO "${row.table.tableName}" ($columns) VALUES ($values) RETURNING id';
 
     int insertedId;
     try {
@@ -461,7 +479,7 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    var query = DeleteQueryBuilder(table: row.tableName)
+    var query = DeleteQueryBuilder(table: row.table.tableName)
         .withWhere(Expression('id = ${row.id}'))
         .build();
 

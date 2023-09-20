@@ -91,16 +91,6 @@ class RelationEndpoint extends Endpoint {
     );
   }
 
-  Future<List<Address>> addressFindAll(Session session) async {
-    return await Address.find(
-      session,
-      orderBy: Address.t.id,
-      include: Address.include(
-        inhabitant: Citizen.include(),
-      ),
-    );
-  }
-
   /// Includes company and oldCompany
   Future<List<Citizen>> citizenFindAllWithShallowIncludes(
     Session session,
@@ -120,6 +110,20 @@ class RelationEndpoint extends Endpoint {
         include: Citizen.include(company: Company.include()));
   }
 
+  Future<List<Address>> addressFindAll(Session session) async {
+    return await Address.find(
+      session,
+      orderBy: Address.t.id,
+      include: Address.include(
+        inhabitant: Citizen.include(),
+      ),
+    );
+  }
+
+  Future<Address?> addressFindById(Session session, int id) async {
+    return await Address.findById(session, id);
+  }
+
   Future<List<Post>> findAllPostsIncludingNextAndPrevious(
     Session session,
   ) async {
@@ -130,6 +134,48 @@ class RelationEndpoint extends Endpoint {
         next: Post.include(),
       ),
     );
+  }
+
+  Future<void> citizenAttachCompany(
+    Session session,
+    Citizen citizen,
+    Company company,
+  ) async {
+    await Citizen.db.attach.company(session, citizen, company);
+  }
+
+  Future<void> citizenAttachAddress(
+    Session session,
+    Citizen citizen,
+    Address address,
+  ) async {
+    await Citizen.db.attach.address(session, citizen, address);
+  }
+
+  Future<void> citizenDetachAddress(
+    Session session,
+    Citizen citizen,
+  ) async {
+    await Citizen.db.detach.address(session, citizen);
+  }
+
+  Future<void> addressAttachCitizen(
+    Session session,
+    Address address,
+    Citizen citizen,
+  ) async {
+    await Address.db.attach.inhabitant(session, address, citizen);
+  }
+
+  Future<void> addressDetachCitizen(
+    Session session,
+    Address address,
+  ) async {
+    await Address.db.detach.inhabitant(session, address);
+  }
+
+  Future<List<Company>> companyFindAll(Session session) async {
+    return await Company.find(session, orderBy: Company.t.id);
   }
 
   Future<int?> citizenInsert(Session session, Citizen citizen) async {
@@ -159,15 +205,15 @@ class RelationEndpoint extends Endpoint {
 
   Future<int> deleteAll(Session session) async {
     var townDeletions =
-        await Town.delete(session, where: (_) => Constant(true));
+        await Town.delete(session, where: (_) => Constant.bool(true));
     var companyDeletions =
-        await Company.delete(session, where: (_) => Constant(true));
+        await Company.delete(session, where: (_) => Constant.bool(true));
     var citizenDeletions =
-        await Citizen.delete(session, where: (_) => Constant(true));
+        await Citizen.delete(session, where: (_) => Constant.bool(true));
     var addressDeletions =
-        await Address.delete(session, where: (_) => Constant(true));
+        await Address.delete(session, where: (_) => Constant.bool(true));
     var postDeletions =
-        await Post.delete(session, where: (_) => Constant(true));
+        await Post.delete(session, where: (_) => Constant.bool(true));
 
     return townDeletions +
         companyDeletions +

@@ -60,7 +60,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   bool logMalformedCalls;
 
   @override
-  String get tableName => 'serverpod_runtime_settings';
+  _i1.Table get table => t;
   RuntimeSettings copyWith({
     int? id,
     _i2.LogSettings? logSettings,
@@ -80,6 +80,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

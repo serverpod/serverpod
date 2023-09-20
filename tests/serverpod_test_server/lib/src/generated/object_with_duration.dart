@@ -35,7 +35,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   Duration duration;
 
   @override
-  String get tableName => 'object_with_duration';
+  _i1.Table get table => t;
   ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
@@ -49,6 +49,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

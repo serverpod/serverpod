@@ -13,14 +13,14 @@ abstract class Address extends _i1.TableRow {
   Address._({
     int? id,
     required this.street,
-    required this.inhabitantId,
+    this.inhabitantId,
     this.inhabitant,
   }) : super(id);
 
   factory Address({
     int? id,
     required String street,
-    required int inhabitantId,
+    int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) = _AddressImpl;
 
@@ -33,7 +33,7 @@ abstract class Address extends _i1.TableRow {
       street:
           serializationManager.deserialize<String>(jsonSerialization['street']),
       inhabitantId: serializationManager
-          .deserialize<int>(jsonSerialization['inhabitantId']),
+          .deserialize<int?>(jsonSerialization['inhabitantId']),
       inhabitant: serializationManager
           .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
     );
@@ -41,14 +41,16 @@ abstract class Address extends _i1.TableRow {
 
   static final t = AddressTable();
 
+  static final db = AddressRepository._();
+
   String street;
 
-  int inhabitantId;
+  int? inhabitantId;
 
   _i2.Citizen? inhabitant;
 
   @override
-  String get tableName => 'address';
+  _i1.Table get table => t;
   Address copyWith({
     int? id,
     String? street,
@@ -66,6 +68,7 @@ abstract class Address extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -231,7 +234,7 @@ class _AddressImpl extends Address {
   _AddressImpl({
     int? id,
     required String street,
-    required int inhabitantId,
+    int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
           id: id,
@@ -244,13 +247,13 @@ class _AddressImpl extends Address {
   Address copyWith({
     Object? id = _Undefined,
     String? street,
-    int? inhabitantId,
+    Object? inhabitantId = _Undefined,
     Object? inhabitant = _Undefined,
   }) {
     return Address(
       id: id is int? ? id : this.id,
       street: street ?? this.street,
-      inhabitantId: inhabitantId ?? this.inhabitantId,
+      inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
       inhabitant:
           inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
     );
@@ -334,4 +337,54 @@ class AddressInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
   @override
   _i1.Table get table => Address.t;
+}
+
+class AddressRepository {
+  const AddressRepository._();
+
+  final attach = const AddressAttachRepository._();
+
+  final detach = const AddressDetachRepository._();
+}
+
+class AddressAttachRepository {
+  const AddressAttachRepository._();
+
+  Future<void> inhabitant(
+    _i1.Session session,
+    Address address,
+    _i2.Citizen inhabitant,
+  ) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+    if (inhabitant.id == null) {
+      throw ArgumentError.notNull('inhabitant.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: inhabitant.id);
+    await session.db.update(
+      $address,
+      columns: [Address.t.inhabitantId],
+    );
+  }
+}
+
+class AddressDetachRepository {
+  const AddressDetachRepository._();
+
+  Future<void> inhabitant(
+    _i1.Session session,
+    Address address,
+  ) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: null);
+    await session.db.update(
+      $address,
+      columns: [Address.t.inhabitantId],
+    );
+  }
 }

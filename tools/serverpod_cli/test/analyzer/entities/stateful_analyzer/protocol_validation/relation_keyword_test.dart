@@ -47,6 +47,13 @@ void main() {
       );
     });
 
+    test('has the nullableRelation set to false', () {
+      var parent = classDefinition.findField('parent');
+      var relation = parent?.relation;
+
+      expect((relation as ObjectRelationDefinition).nullableRelation, false);
+    });
+
     var parentId = classDefinition.findField('parentId');
 
     test('then the class has a relation field for the id.', () {
@@ -137,6 +144,13 @@ void main() {
         reason: 'Expected to be nullable.',
       );
     });
+
+    test('has the nullableRelation set to true', () {
+      var parent = classDefinition.findField('parent');
+      var relation = parent?.relation;
+
+      expect((relation as ObjectRelationDefinition).nullableRelation, true);
+    });
   });
 
   group(
@@ -170,6 +184,13 @@ void main() {
         isFalse,
         reason: 'Expected to not be nullable.',
       );
+    });
+
+    test('has the nullableRelation set to false', () {
+      var parent = classDefinition.findField('parent');
+      var relation = parent?.relation;
+
+      expect((relation as ObjectRelationDefinition).nullableRelation, false);
     });
   });
 
@@ -753,7 +774,9 @@ fields:
     var collector = CodeGenerationCollector();
     StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
     expect(collector.errors, isNotEmpty, reason: 'Expected an error');
-    expect(collector.errors.first.message,
-        'The class "ExampleParent" must have a "table" property defined to be used in a relation.');
+    expect(
+      collector.errors.first.message,
+      'The class "ExampleParent" must have a "table" property defined to be used in a relation.',
+    );
   });
 }

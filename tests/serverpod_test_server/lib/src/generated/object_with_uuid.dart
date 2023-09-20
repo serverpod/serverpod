@@ -41,7 +41,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   _i1.UuidValue? uuidNullable;
 
   @override
-  String get tableName => 'object_with_uuid';
+  _i1.Table get table => t;
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -57,6 +57,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

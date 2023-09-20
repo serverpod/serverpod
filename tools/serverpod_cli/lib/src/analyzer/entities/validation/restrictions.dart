@@ -93,6 +93,8 @@ const _databaseEntityReservedFieldNames = [
   'toJsonForDatabase',
   'tableName',
   'include',
+  'db',
+  'table',
 ];
 
 class Restrictions {

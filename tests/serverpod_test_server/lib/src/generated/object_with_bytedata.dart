@@ -36,7 +36,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   _i2.ByteData byteData;
 
   @override
-  String get tableName => 'object_with_bytedata';
+  _i1.Table get table => t;
   ObjectWithByteData copyWith({
     int? id,
     _i2.ByteData? byteData,
@@ -50,6 +50,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

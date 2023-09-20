@@ -13,14 +13,14 @@ abstract class Address extends _i1.SerializableEntity {
   Address._({
     this.id,
     required this.street,
-    required this.inhabitantId,
+    this.inhabitantId,
     this.inhabitant,
   });
 
   factory Address({
     int? id,
     required String street,
-    required int inhabitantId,
+    int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) = _AddressImpl;
 
@@ -33,7 +33,7 @@ abstract class Address extends _i1.SerializableEntity {
       street:
           serializationManager.deserialize<String>(jsonSerialization['street']),
       inhabitantId: serializationManager
-          .deserialize<int>(jsonSerialization['inhabitantId']),
+          .deserialize<int?>(jsonSerialization['inhabitantId']),
       inhabitant: serializationManager
           .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
     );
@@ -46,7 +46,7 @@ abstract class Address extends _i1.SerializableEntity {
 
   String street;
 
-  int inhabitantId;
+  int? inhabitantId;
 
   _i2.Citizen? inhabitant;
 
@@ -73,7 +73,7 @@ class _AddressImpl extends Address {
   _AddressImpl({
     int? id,
     required String street,
-    required int inhabitantId,
+    int? inhabitantId,
     _i2.Citizen? inhabitant,
   }) : super._(
           id: id,
@@ -86,13 +86,13 @@ class _AddressImpl extends Address {
   Address copyWith({
     Object? id = _Undefined,
     String? street,
-    int? inhabitantId,
+    Object? inhabitantId = _Undefined,
     Object? inhabitant = _Undefined,
   }) {
     return Address(
       id: id is int? ? id : this.id,
       street: street ?? this.street,
-      inhabitantId: inhabitantId ?? this.inhabitantId,
+      inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
       inhabitant:
           inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
     );

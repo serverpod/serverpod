@@ -5,7 +5,7 @@
 CREATE TABLE "address" (
   "id" serial,
   "street" text NOT NULL,
-  "inhabitantId" integer NOT NULL
+  "inhabitantId" integer
 );
 
 ALTER TABLE ONLY "address"
@@ -223,7 +223,8 @@ CREATE TABLE "types" (
   "aString" text,
   "aByteData" bytea,
   "aDuration" bigint,
-  "aUuid" uuid
+  "aUuid" uuid,
+  "anEnum" integer
 );
 
 ALTER TABLE ONLY "types"

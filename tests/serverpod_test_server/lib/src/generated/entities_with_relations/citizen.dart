@@ -52,6 +52,8 @@ abstract class Citizen extends _i1.TableRow {
 
   static final t = CitizenTable();
 
+  static final db = CitizenRepository._();
+
   String name;
 
   _i2.Address? address;
@@ -65,7 +67,7 @@ abstract class Citizen extends _i1.TableRow {
   _i2.Company? oldCompany;
 
   @override
-  String get tableName => 'citizen';
+  _i1.Table get table => t;
   Citizen copyWith({
     int? id,
     String? name,
@@ -89,6 +91,7 @@ abstract class Citizen extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -462,4 +465,115 @@ class CitizenInclude extends _i1.Include {
       };
   @override
   _i1.Table get table => Citizen.t;
+}
+
+class CitizenRepository {
+  const CitizenRepository._();
+
+  final attach = const CitizenAttachRepository._();
+
+  final detach = const CitizenDetachRepository._();
+}
+
+class CitizenAttachRepository {
+  const CitizenAttachRepository._();
+
+  Future<void> address(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Address address,
+  ) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: citizen.id);
+    await session.db.update(
+      $address,
+      columns: [_i2.Address.t.inhabitantId],
+    );
+  }
+
+  Future<void> company(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Company company,
+  ) async {
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+    if (company.id == null) {
+      throw ArgumentError.notNull('company.id');
+    }
+
+    var $citizen = citizen.copyWith(companyId: company.id);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.companyId],
+    );
+  }
+
+  Future<void> oldCompany(
+    _i1.Session session,
+    Citizen citizen,
+    _i2.Company oldCompany,
+  ) async {
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+    if (oldCompany.id == null) {
+      throw ArgumentError.notNull('oldCompany.id');
+    }
+
+    var $citizen = citizen.copyWith(oldCompanyId: oldCompany.id);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.oldCompanyId],
+    );
+  }
+}
+
+class CitizenDetachRepository {
+  const CitizenDetachRepository._();
+
+  Future<void> address(
+    _i1.Session session,
+    Citizen citizen,
+  ) async {
+    var $address = citizen.address;
+
+    if ($address == null) {
+      throw ArgumentError.notNull('citizen.address');
+    }
+    if ($address.id == null) {
+      throw ArgumentError.notNull('citizen.address.id');
+    }
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+
+    var $$address = $address.copyWith(inhabitantId: null);
+    await session.db.update(
+      $$address,
+      columns: [_i2.Address.t.inhabitantId],
+    );
+  }
+
+  Future<void> oldCompany(
+    _i1.Session session,
+    Citizen citizen,
+  ) async {
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+
+    var $citizen = citizen.copyWith(oldCompanyId: null);
+    await session.db.update(
+      $citizen,
+      columns: [Citizen.t.oldCompanyId],
+    );
+  }
 }

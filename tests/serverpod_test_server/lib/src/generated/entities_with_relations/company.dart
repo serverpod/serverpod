@@ -40,6 +40,8 @@ abstract class Company extends _i1.TableRow {
 
   static final t = CompanyTable();
 
+  static final db = CompanyRepository._();
+
   String name;
 
   int townId;
@@ -47,7 +49,7 @@ abstract class Company extends _i1.TableRow {
   _i2.Town? town;
 
   @override
-  String get tableName => 'company';
+  _i1.Table get table => t;
   Company copyWith({
     int? id,
     String? name,
@@ -65,6 +67,7 @@ abstract class Company extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -332,4 +335,33 @@ class CompanyInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {'town': _town};
   @override
   _i1.Table get table => Company.t;
+}
+
+class CompanyRepository {
+  const CompanyRepository._();
+
+  final attach = const CompanyAttachRepository._();
+}
+
+class CompanyAttachRepository {
+  const CompanyAttachRepository._();
+
+  Future<void> town(
+    _i1.Session session,
+    Company company,
+    _i2.Town town,
+  ) async {
+    if (company.id == null) {
+      throw ArgumentError.notNull('company.id');
+    }
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
+    }
+
+    var $company = company.copyWith(townId: town.id);
+    await session.db.update(
+      $company,
+      columns: [Company.t.townId],
+    );
+  }
 }

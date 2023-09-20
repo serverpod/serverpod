@@ -68,7 +68,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
-  String get tableName => 'object_with_object';
+  _i1.Table get table => t;
   ObjectWithObject copyWith({
     int? id,
     _i2.SimpleData? data,
@@ -92,6 +92,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

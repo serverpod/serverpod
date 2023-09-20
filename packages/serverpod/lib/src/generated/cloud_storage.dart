@@ -72,7 +72,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   bool verified;
 
   @override
-  String get tableName => 'serverpod_cloud_storage';
+  _i1.Table get table => t;
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -96,6 +96,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

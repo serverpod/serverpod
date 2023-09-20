@@ -96,6 +96,8 @@ void main() {
     'toJsonForDatabase',
     'tableName',
     'include',
+    'db',
+    'table',
   ];
 
   group('Classes with table', () {

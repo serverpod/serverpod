@@ -100,7 +100,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get tableName => 'serverpod_query_log';
+  _i1.Table get table => t;
   QueryLogEntry copyWith({
     int? id,
     String? serverId,
@@ -132,6 +132,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
