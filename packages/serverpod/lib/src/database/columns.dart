@@ -232,20 +232,34 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// specified value.
   Expression equals(T? value) {
     if (value == null) {
-      return _IsNullExpression(this);
+      return _ColumnExpression.create(
+        column: this,
+        constructor: _IsNullExpression._,
+      );
     }
 
-    return _EqualsExpression(this, _encodeValueForQuery(value));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _encodeValueForQuery(value),
+      constructor: _EqualsExpression._,
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
   Expression notEquals(T? value) {
     if (value == null) {
-      return _IsNotNullExpression(this);
+      return _ColumnExpression.create(
+        column: this,
+        constructor: _IsNotNullExpression._,
+      );
     }
 
-    return _NotEqualsExpression(this, _encodeValueForQuery(value));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _encodeValueForQuery(value),
+      constructor: _NotEqualsExpression._,
+    );
   }
 
   /// Creates and [Expression] checking if the value in the column is included
@@ -254,7 +268,11 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
-    return _InSetExpression(this, valuesAsExpressions);
+    return _SetColumnExpression.create(
+      column: this,
+      values: valuesAsExpressions,
+      constructor: _InSetExpression._,
+    );
   }
 
   /// Creates and [Expression] checking if the value in the column is NOT
@@ -263,19 +281,31 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
-    return _NotInSetExpression(this, valuesAsExpressions);
+    return _SetColumnExpression.create(
+      column: this,
+      values: valuesAsExpressions,
+      constructor: _NotInSetExpression._,
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column is distinct
   /// from the specified value.
   Expression isDistinctFrom(T value) {
-    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _encodeValueForQuery(value),
+      constructor: _IsDistinctFromExpression._,
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column is distinct
   /// from the specified value.
   Expression isNotDistinctFrom(T value) {
-    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _encodeValueForQuery(value),
+      constructor: _IsNotDistinctFromExpression._,
+    );
   }
 }
 
@@ -283,35 +313,59 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column is between
   /// the [min], [max] values.
   Expression between(T min, T max) {
-    return _BetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+    return _MinMaxColumnExpression.create(
+      column: this,
+      min: _encodeValueForQuery(min),
+      max: _encodeValueForQuery(max),
+      constructor: _BetweenExpression._,
+    );
   }
 
   /// Creates an [Expression] checking if the value in the column is NOT between
   /// the [min], [max] values.
   Expression notBetween(T min, T max) {
-    return _NotBetweenExpression(
-        this, _encodeValueForQuery(min), _encodeValueForQuery(max));
+    return _MinMaxColumnExpression.create(
+      column: this,
+      min: _encodeValueForQuery(min),
+      max: _encodeValueForQuery(max),
+      constructor: _NotBetweenExpression._,
+    );
   }
 
   /// Database greater than operator.
   Expression operator >(dynamic other) {
-    return _GreaterThanExpression(this, _createValueExpression(other));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _createValueExpression(other),
+      constructor: _GreaterThanExpression._,
+    );
   }
 
   /// Database greater or equal than operator.
   Expression operator >=(dynamic other) {
-    return _GreaterOrEqualExpression(this, _createValueExpression(other));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _createValueExpression(other),
+      constructor: _GreaterOrEqualExpression._,
+    );
   }
 
   /// Database less than operator.
   Expression operator <(dynamic other) {
-    return _LessThanExpression(this, _createValueExpression(other));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _createValueExpression(other),
+      constructor: _LessThanExpression._,
+    );
   }
 
   /// Database less or equal than operator.
   Expression operator <=(dynamic other) {
-    return _LessThanOrEqualExpression(this, _createValueExpression(other));
+    return _TwoPartColumnExpression.create(
+      column: this,
+      other: _createValueExpression(other),
+      constructor: _LessThanOrEqualExpression._,
+    );
   }
 
   Expression _createValueExpression(dynamic other) {
@@ -331,16 +385,29 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
   }
 }
 
+typedef _ColumnExpressionConstructor = _ColumnExpression Function(
+    Column column);
+
 abstract class _ColumnExpression<T> extends Expression {
   final Column<T> _column;
   _ColumnExpression(this._column) : super(_column);
+
+  static Expression create(
+      {required Column column,
+      required _ColumnExpressionConstructor constructor}) {
+    if (column is ColumnCountAggregate) {
+      return _AggregateColumnExpression(column, constructor(column));
+    }
+
+    return constructor(column);
+  }
 
   @override
   List<Column> get columns => [_column];
 }
 
 class _IsNullExpression<T> extends _ColumnExpression<T> {
-  _IsNullExpression(super.column);
+  _IsNullExpression._(super.column);
 
   @override
   String toString() {
@@ -349,7 +416,7 @@ class _IsNullExpression<T> extends _ColumnExpression<T> {
 }
 
 class _IsNotNullExpression<T> extends _ColumnExpression<T> {
-  _IsNotNullExpression(super.column);
+  _IsNotNullExpression._(super.column);
 
   @override
   String toString() {
@@ -375,17 +442,31 @@ class _AggregateColumnExpression<T> extends AggregateExpression {
       ];
 }
 
+typedef _TwoPartColumnExpressionConstructor = _TwoPartColumnExpression Function(
+    Column column, Expression other);
+
 abstract class _TwoPartColumnExpression<T> extends _ColumnExpression<T> {
   Expression other;
 
   _TwoPartColumnExpression(super.column, this.other);
+
+  static Expression create(
+      {required Column column,
+      required Expression other,
+      required _TwoPartColumnExpressionConstructor constructor}) {
+    if (column is ColumnCountAggregate) {
+      return _AggregateColumnExpression(column, constructor(column, other));
+    }
+
+    return constructor(column, other);
+  }
 
   @override
   List<Column> get columns => [...super.columns, ...other.columns];
 }
 
 class _EqualsExpression<T> extends _TwoPartColumnExpression<T> {
-  _EqualsExpression(super.value, super.other);
+  _EqualsExpression._(super.value, super.other);
 
   @override
   String toString() {
@@ -394,7 +475,7 @@ class _EqualsExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _NotEqualsExpression<T> extends _TwoPartColumnExpression<T> {
-  _NotEqualsExpression(super.column, super.other);
+  _NotEqualsExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -403,7 +484,7 @@ class _NotEqualsExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _GreaterThanExpression<T> extends _TwoPartColumnExpression<T> {
-  _GreaterThanExpression(super.column, super.other);
+  _GreaterThanExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -412,7 +493,7 @@ class _GreaterThanExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _GreaterOrEqualExpression<T> extends _TwoPartColumnExpression<T> {
-  _GreaterOrEqualExpression(super.column, super.other);
+  _GreaterOrEqualExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -421,7 +502,7 @@ class _GreaterOrEqualExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _LessThanExpression<T> extends _TwoPartColumnExpression<T> {
-  _LessThanExpression(super.column, super.other);
+  _LessThanExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -430,7 +511,7 @@ class _LessThanExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _LessThanOrEqualExpression<T> extends _TwoPartColumnExpression<T> {
-  _LessThanOrEqualExpression(super.column, super.other);
+  _LessThanOrEqualExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -457,7 +538,7 @@ class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
-  _IsDistinctFromExpression(super.column, super.other);
+  _IsDistinctFromExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -466,7 +547,7 @@ class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
 }
 
 class _IsNotDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
-  _IsNotDistinctFromExpression(super.column, super.other);
+  _IsNotDistinctFromExpression._(super.column, super.other);
 
   @override
   String toString() {
@@ -474,11 +555,26 @@ class _IsNotDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
   }
 }
 
+typedef _MinMaxColumnExpressionConstructor = _MinMaxColumnExpression Function(
+    Column column, Expression min, Expression max);
+
 abstract class _MinMaxColumnExpression<T> extends _ColumnExpression<T> {
   Expression min;
   Expression max;
 
   _MinMaxColumnExpression(super.column, this.min, this.max);
+
+  static Expression create(
+      {required Column column,
+      required Expression min,
+      required Expression max,
+      required _MinMaxColumnExpressionConstructor constructor}) {
+    if (column is ColumnCountAggregate) {
+      return _AggregateColumnExpression(column, constructor(column, min, max));
+    }
+
+    return constructor(column, min, max);
+  }
 
   @override
   List<Column> get columns =>
@@ -486,7 +582,7 @@ abstract class _MinMaxColumnExpression<T> extends _ColumnExpression<T> {
 }
 
 class _BetweenExpression<T> extends _MinMaxColumnExpression<T> {
-  _BetweenExpression(super.column, super.min, super.max);
+  _BetweenExpression._(super.column, super.min, super.max);
 
   @override
   String toString() {
@@ -495,7 +591,7 @@ class _BetweenExpression<T> extends _MinMaxColumnExpression<T> {
 }
 
 class _NotBetweenExpression<T> extends _MinMaxColumnExpression<T> {
-  _NotBetweenExpression(super.column, super.min, super.max);
+  _NotBetweenExpression._(super.column, super.min, super.max);
 
   @override
   String toString() {
@@ -503,10 +599,24 @@ class _NotBetweenExpression<T> extends _MinMaxColumnExpression<T> {
   }
 }
 
+typedef _SetColumnExpressionConstructor = _SetColumnExpression Function(
+    Column column, List<Expression> values);
+
 abstract class _SetColumnExpression<T> extends _ColumnExpression<T> {
   List<Expression> values;
 
   _SetColumnExpression(super.column, this.values);
+
+  static Expression create(
+      {required Column column,
+      required List<Expression> values,
+      required _SetColumnExpressionConstructor constructor}) {
+    if (column is ColumnCountAggregate) {
+      return _AggregateColumnExpression(column, constructor(column, values));
+    }
+
+    return constructor(column, values);
+  }
 
   @override
   List<Column> get columns =>
@@ -519,7 +629,7 @@ abstract class _SetColumnExpression<T> extends _ColumnExpression<T> {
 }
 
 class _InSetExpression<T> extends _SetColumnExpression<T> {
-  _InSetExpression(super.column, super.values);
+  _InSetExpression._(super.column, super.values);
 
   @override
   String toString() {
@@ -528,7 +638,7 @@ class _InSetExpression<T> extends _SetColumnExpression<T> {
 }
 
 class _NotInSetExpression extends _SetColumnExpression {
-  _NotInSetExpression(super.column, super.values);
+  _NotInSetExpression._(super.column, super.values);
 
   @override
   String toString() {
