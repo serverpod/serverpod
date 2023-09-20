@@ -298,6 +298,11 @@ class DatabaseConnection {
     var selectedColumns = columns ?? row.table.columns;
     Map data = row.allToJson();
 
+    int? id = data['id'];
+    if (id == null) {
+      throw ArgumentError.notNull('row.id');
+    }
+
     for (var column in selectedColumns) {
       if (!data.containsKey(column.columnName)) {
         throw ArgumentError.value(
@@ -314,8 +319,6 @@ class DatabaseConnection {
       var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
       return '"${column.columnName}" = $value';
     }).join(', ');
-
-    int? id = data['id'];
 
     var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
 
