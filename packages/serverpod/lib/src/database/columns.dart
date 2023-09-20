@@ -204,6 +204,29 @@ class ColumnDouble extends _ValueOperatorColumn<double>
   Expression _encodeValueForQuery(double value) => Expression(value);
 }
 
+/// An aggregate [Column] holding count of rows.
+class ColumnCountAggregate extends _ValueOperatorColumn<int>
+    with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+  /// Where expression used to filter the aggregated table.
+  final Expression innerWhere;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnCountAggregate(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+    required this.innerWhere,
+  });
+
+  @override
+  String toString() {
+    return 'COUNT(${super.toString()})';
+  }
+
+  @override
+  Expression _encodeValueForQuery(int value) => Expression(value);
+}
+
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -332,6 +355,24 @@ class _IsNotNullExpression<T> extends _ColumnExpression<T> {
   String toString() {
     return '$_column IS NOT NULL';
   }
+}
+
+class _AggregateColumnExpression<T> extends AggregateExpression {
+  final ColumnCountAggregate _aggregateColumn;
+
+  _AggregateColumnExpression(
+    this._aggregateColumn,
+    aggregateExpression,
+  ) : super(
+          aggregateExpression,
+          _aggregateColumn.innerWhere,
+        );
+
+  @override
+  List<Column> get columns => [
+        _aggregateColumn,
+        ..._aggregateColumn.innerWhere.columns,
+      ];
 }
 
 abstract class _TwoPartColumnExpression<T> extends _ColumnExpression<T> {

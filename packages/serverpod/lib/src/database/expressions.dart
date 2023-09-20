@@ -23,6 +23,9 @@ class Expression<T> {
   /// Returns a list of all [Column]s in the expression.
   List<Column> get columns => [];
 
+  /// Returns a list of all [AggregateExpression]s in the expression.
+  List<AggregateExpression> get aggregateExpressions => [];
+
   /// Database AND operator.
   Expression operator &(dynamic other) {
     if (other is Expression) {
@@ -83,6 +86,21 @@ class Constant extends Expression {
       throw const FormatException();
     }
   }
+}
+
+/// A database expressions for an aggregate Column.
+class AggregateExpression extends Expression {
+  /// Expression for the aggregate.
+  final Expression aggregateExpression;
+
+  /// Creates a new [AggregateExpression].
+  AggregateExpression(
+    this.aggregateExpression,
+    innerWhere,
+  ) : super(innerWhere);
+
+  @override
+  List<AggregateExpression> get aggregateExpressions => [this];
 }
 
 abstract class _TwoPartExpression extends Expression {
