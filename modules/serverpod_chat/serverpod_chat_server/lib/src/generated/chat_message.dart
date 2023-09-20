@@ -95,7 +95,7 @@ abstract class ChatMessage extends _i1.TableRow {
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
-  String get tableName => 'serverpod_chat_message';
+  _i1.Table get table => t;
   ChatMessage copyWith({
     int? id,
     String? channel,
@@ -125,6 +125,7 @@ abstract class ChatMessage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

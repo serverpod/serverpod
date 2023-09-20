@@ -94,6 +94,7 @@ const _databaseEntityReservedFieldNames = [
   'tableName',
   'include',
   'db',
+  'table',
 ];
 
 class Restrictions {

@@ -193,14 +193,14 @@ void main() {
             reason: 'Missing declaration for ${testClassName}Table singleton.');
       });
 
-      test('has a tableName method.', () {
+      test('has a table getter.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               maybeClassNamedExample!,
-              name: 'tableName',
+              name: 'table',
             ),
             isTrue,
-            reason: 'Missing declaration for tableName method.');
+            reason: 'Missing declaration for table method.');
       });
 
       test('is NOT generated with id field.', () {

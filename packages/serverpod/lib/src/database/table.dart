@@ -1,3 +1,4 @@
+import 'package:serverpod/database.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Holds data corresponding to a row in the database. Concrete classes are
@@ -11,12 +12,16 @@ abstract class TableRow extends SerializableEntity {
   /// the database.
   int? id;
 
+  /// The table that this row belongs to.
+  Table get table;
+
   /// The name of the table that contains this row.
-  String get tableName;
+  @Deprecated('Use: table.tableName instead, will be removed in 2.0.0.')
+  String get tableName => table.tableName;
 
   /// Will create a serialization of with the fields that are stored in the
   /// database only.
-  //TODO: better name
+  @Deprecated('Will be removed in 2.0.0.')
   Map<String, dynamic> toJsonForDatabase();
 
   /// Sets the value of a column by its name. Used in communication with the

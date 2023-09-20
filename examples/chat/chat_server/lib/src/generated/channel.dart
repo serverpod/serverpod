@@ -43,7 +43,7 @@ abstract class Channel extends _i1.TableRow {
   String channel;
 
   @override
-  String get tableName => 'channel';
+  _i1.Table get table => t;
   Channel copyWith({
     int? id,
     String? name,
@@ -59,6 +59,7 @@ abstract class Channel extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,

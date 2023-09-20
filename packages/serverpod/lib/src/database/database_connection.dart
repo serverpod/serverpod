@@ -295,26 +295,32 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    var data = row.toJsonForDatabase();
-
-    columns?.forEach((column) {
-      if (!data.containsKey(column.columnName)) {
-        throw Exception(
-          'Column ${column.columnName} does not exist in table row provided.',
-        );
-      }
-    });
+    var selectedColumns = columns ?? row.table.columns;
+    Map data = row.allToJson();
 
     int? id = data['id'];
+    if (id == null) {
+      throw ArgumentError.notNull('row.id');
+    }
 
-    Iterable<String> cols = columns?.map((c) => c.columnName) ?? data.keys;
+    for (var column in selectedColumns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
+    }
 
-    String updates = cols.where((column) => column != 'id').map((column) {
-      var value = DatabasePoolManager.encoder.convert(data[column]);
-      return '"$column" = $value';
+    var updates = selectedColumns
+        .where((column) => column.columnName != 'id')
+        .map((column) {
+      var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
+      return '"${column.columnName}" = $value';
     }).join(', ');
 
-    var query = 'UPDATE "${row.tableName}" SET $updates WHERE id = $id';
+    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
@@ -338,26 +344,32 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    Map data = row.allToJson();
 
-    var columnsList = <String>[];
-    var valueList = <String>[];
-
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
-      dynamic unformattedValue = data[column];
-
-      String value = DatabasePoolManager.encoder.convert(unformattedValue);
-
-      columnsList.add('"$column"');
-      valueList.add(value);
+    for (var column in row.table.columns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
     }
-    var columns = columnsList.join(', ');
-    var values = valueList.join(', ');
+
+    var selectedColumns = row.table.columns.where((column) {
+      return column.columnName != 'id';
+    });
+
+    var columns =
+        selectedColumns.map((column) => '"${column.columnName}"').join(', ');
+
+    var values = selectedColumns.map((column) {
+      var unformattedValue = data[column.columnName];
+      return DatabasePoolManager.encoder.convert(unformattedValue);
+    }).join(', ');
 
     var query =
-        'INSERT INTO "${row.tableName}" ($columns) VALUES ($values) RETURNING id';
+        'INSERT INTO "${row.table.tableName}" ($columns) VALUES ($values) RETURNING id';
 
     int insertedId;
     try {
@@ -467,7 +479,7 @@ class DatabaseConnection {
   }) async {
     var startTime = DateTime.now();
 
-    var query = DeleteQueryBuilder(table: row.tableName)
+    var query = DeleteQueryBuilder(table: row.table.tableName)
         .withWhere(Expression('id = ${row.id}'))
         .build();
 

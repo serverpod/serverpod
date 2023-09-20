@@ -131,8 +131,7 @@ class SerializableEntityLibraryGenerator {
           classBuilder.fields.add(_buildEntityClassDBField(className));
         }
 
-        // add tableName getter
-        classBuilder.methods.add(_buildEntityClassTableNameGetter(tableName));
+        classBuilder.methods.add(_buildEntityClassTableGetter());
       } else {
         classBuilder.extend =
             refer('SerializableEntity', serverpodUrl(serverCode));
@@ -345,15 +344,15 @@ class SerializableEntityLibraryGenerator {
     }
   }
 
-  Method _buildEntityClassTableNameGetter(String tableName) {
+  Method _buildEntityClassTableGetter() {
     return Method(
       (m) => m
-        ..name = 'tableName'
+        ..name = 'table'
         ..annotations.add(refer('override'))
         ..type = MethodType.getter
-        ..returns = refer('String')
+        ..returns = refer('Table', serverpodUrl(serverCode))
         ..lambda = true
-        ..body = Code('\'$tableName\''),
+        ..body = const Code('t'),
     );
   }
 
@@ -911,9 +910,11 @@ class SerializableEntityLibraryGenerator {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
-        // TODO: better name
         m.name = 'toJsonForDatabase';
-        m.annotations.add(refer('override'));
+        m.annotations.addAll([
+          refer('override'),
+          refer("Deprecated('Will be removed in 2.0.0')")
+        ]);
 
         m.body = literalMap(
           {

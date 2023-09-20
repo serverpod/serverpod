@@ -91,7 +91,7 @@ abstract class UserInfo extends _i1.TableRow {
   bool blocked;
 
   @override
-  String get tableName => 'serverpod_user_info';
+  _i1.Table get table => t;
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -119,6 +119,7 @@ abstract class UserInfo extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
