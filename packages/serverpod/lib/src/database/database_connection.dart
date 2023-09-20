@@ -299,7 +299,13 @@ class DatabaseConnection {
     Map data = row.allToJson();
 
     for (var column in selectedColumns) {
-      assert(data.containsKey(column.columnName));
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
     }
 
     var updates = selectedColumns
@@ -338,7 +344,13 @@ class DatabaseConnection {
     Map data = row.allToJson();
 
     for (var column in row.table.columns) {
-      assert(data.containsKey(column.columnName));
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
     }
 
     var selectedColumns = row.table.columns.where((column) {
