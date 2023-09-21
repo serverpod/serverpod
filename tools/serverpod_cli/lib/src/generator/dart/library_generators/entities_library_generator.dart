@@ -57,9 +57,8 @@ class SerializableEntityLibraryGenerator {
 
         if (serverCode && tableName != null) {
           libraryBuilder.body.addAll([
-            _buildExpressionBuilderTypeDef(
-              className,
-            ),
+            _buildExpressionBuilderTypeDef(className),
+            _buildExpressionBuilderWithoutManyRelationsTypeDef(className),
             _buildEntityTableClass(
               className,
               tableName,
@@ -1138,6 +1137,16 @@ class SerializableEntityLibraryGenerator {
         f.requiredParameters.add(refer('${className}Table'));
       },
     ).toTypeDef('${className}ExpressionBuilder');
+  }
+
+  Code _buildExpressionBuilderWithoutManyRelationsTypeDef(String className) {
+    return FunctionType(
+      (f) {
+        f.returnType = refer('Expression', serverpodUrl(serverCode));
+        f.requiredParameters
+            .add(refer('${className}WithoutManyRelationsTable'));
+      },
+    ).toTypeDef('${className}WithoutManyRelationsExpressionBuilder');
   }
 
   Class _buildEntityTableClass(

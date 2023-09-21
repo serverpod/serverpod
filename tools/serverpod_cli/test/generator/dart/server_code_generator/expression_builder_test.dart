@@ -42,5 +42,16 @@ void main() {
           reason:
               'Missing type alias for "${testClassName}ExpressionBuilder".');
     });
+
+    test('then type alias ${testClassName}ExpressionBuilder is generated.', () {
+      expect(
+          CompilationUnitHelpers.hasTypeAliasDeclaration(
+            compilationUnit,
+            name: '${testClassName}ExpressionBuilder',
+          ),
+          isTrue,
+          reason:
+              'Missing type alias for "${testClassName}ExpressionBuilder".');
+    });
   });
 }
