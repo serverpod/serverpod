@@ -46,34 +46,38 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
+  bool _isType<T1, T2>(Type t) => t == T1 || t == T2;
+
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
-    if (t == int || t == getType<int?>()) {
+    if (_isType<int, int?>(t)) {
       return data;
-    } else if (t == double || t == getType<double?>()) {
+    } else if (_isType<double, double?>(t)) {
       return (data as num?)?.toDouble() as T;
-    } else if (t == String || t == getType<String?>()) {
+    } else if (_isType<String, String?>(t)) {
       return data;
-    } else if (t == bool || t == getType<bool?>()) {
+    } else if (_isType<bool, bool?>(t)) {
       return data;
-    } else if (t == DateTime) {
-      return DateTime.parse(data).toUtc() as T;
-    } else if (t == getType<DateTime?>()) {
+    } else if (_isType<DateTime, DateTime?>(t)) {
+      if (data is DateTime) return data as T;
       return DateTime.tryParse(data ?? '')?.toUtc() as T;
-    } else if (t == ByteData) {
-      return (data as String).base64DecodedByteData()! as T;
-    } else if (t == getType<ByteData?>()) {
-      return (data as String?)?.base64DecodedByteData() as T;
-    } else if (t == Duration) {
-      return Duration(milliseconds: (data as int)) as T;
-    } else if (t == getType<Duration?>()) {
+    } else if (_isType<ByteData, ByteData?>(t)) {
+      if (data is Uint8List) {
+        var byteData = ByteData.view(
+          data.buffer,
+          data.offsetInBytes,
+          data.lengthInBytes,
+        );
+        return byteData as T;
+      } else {
+        return (data as String?)?.base64DecodedByteData() as T;
+      }
+    } else if (_isType<Duration, Duration?>(t)) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
-    } else if (t == UuidValue) {
-      return UuidValue(data as String) as T;
-    } else if (t == getType<UuidValue?>()) {
+    } else if (_isType<UuidValue, UuidValue?>(t)) {
       return (data == null ? null : UuidValue(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');

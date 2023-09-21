@@ -180,7 +180,7 @@ class DatabaseConnection {
           include: include,
         );
 
-        list.add(_formatTableRow<T>(tableName, rawTableRow));
+        list.add(poolManager.serializationManager.deserialize<T>(rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -219,31 +219,6 @@ class DatabaseConnection {
     } else {
       return result[0];
     }
-  }
-
-  //TODO: is this still needed?
-  T? _formatTableRow<T extends TableRow>(
-      String tableName, Map<String, dynamic>? rawRow) {
-    var data = <String, dynamic>{};
-
-    for (var columnName in rawRow!.keys) {
-      var value = rawRow[columnName];
-
-      if (value is DateTime) {
-        data[columnName] = value.toIso8601String();
-      } else if (value is Uint8List) {
-        var byteData = ByteData.view(
-          value.buffer,
-          value.offsetInBytes,
-          value.length,
-        );
-        data[columnName] = byteData.base64encodedString();
-      } else {
-        data[columnName] = value;
-      }
-    }
-
-    return poolManager.serializationManager.deserialize<T>(data);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -460,7 +435,8 @@ class DatabaseConnection {
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        list.add(
+            poolManager.serializationManager.deserialize<T>(rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
