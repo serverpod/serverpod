@@ -44,7 +44,7 @@ abstract class SmsAuth extends _i1.TableRow {
   String phoneNumber;
 
   @override
-  String get tableName => 'serverpod_sms_auth';
+  _i1.Table get table => t;
   SmsAuth copyWith({
     int? id,
     int? userId,
@@ -60,6 +60,7 @@ abstract class SmsAuth extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
