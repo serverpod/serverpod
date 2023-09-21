@@ -18,6 +18,7 @@ void main() {
   var testClassFileName = 'example';
   var expectedFilePath =
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
+  var tableName = 'example_table';
 
   group('Given empty class named $testClassName when generating code', () {
     var entities = [
@@ -124,7 +125,6 @@ void main() {
   });
 
   group('Given a class with table name when generating code', () {
-    var tableName = 'example_table';
     var entities = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
@@ -447,7 +447,7 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .withTableName('example_table')
+          .withTableName(tableName)
           .withField(
             FieldDefinitionBuilder()
                 .withName('title')
@@ -507,7 +507,7 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .withTableName('example_table')
+          .withTableName(tableName)
           .withField(
             FieldDefinitionBuilder()
                 .withName('title')
@@ -569,7 +569,7 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .withTableName('example_table')
+          .withTableName(tableName)
           .withObjectRelationField('company', 'Company', 'company')
           .build()
     ];
@@ -939,7 +939,7 @@ void main() {
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
-          .withTableName('example_table')
+          .withTableName(tableName)
           .withObjectRelationField('company', 'Company', 'company')
           .build()
     ];
