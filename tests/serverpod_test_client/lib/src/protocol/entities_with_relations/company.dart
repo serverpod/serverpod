@@ -15,6 +15,7 @@ abstract class Company extends _i1.SerializableEntity {
     required this.name,
     required this.townId,
     this.town,
+    this.employees,
   });
 
   factory Company({
@@ -22,6 +23,7 @@ abstract class Company extends _i1.SerializableEntity {
     required String name,
     required int townId,
     _i2.Town? town,
+    List<_i2.Citizen>? employees,
   }) = _CompanyImpl;
 
   factory Company.fromJson(
@@ -35,6 +37,8 @@ abstract class Company extends _i1.SerializableEntity {
           serializationManager.deserialize<int>(jsonSerialization['townId']),
       town: serializationManager
           .deserialize<_i2.Town?>(jsonSerialization['town']),
+      employees: serializationManager
+          .deserialize<List<_i2.Citizen>?>(jsonSerialization['employees']),
     );
   }
 
@@ -49,11 +53,14 @@ abstract class Company extends _i1.SerializableEntity {
 
   _i2.Town? town;
 
+  List<_i2.Citizen>? employees;
+
   Company copyWith({
     int? id,
     String? name,
     int? townId,
     _i2.Town? town,
+    List<_i2.Citizen>? employees,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -62,6 +69,7 @@ abstract class Company extends _i1.SerializableEntity {
       'name': name,
       'townId': townId,
       'town': town,
+      'employees': employees,
     };
   }
 }
@@ -74,11 +82,13 @@ class _CompanyImpl extends Company {
     required String name,
     required int townId,
     _i2.Town? town,
+    List<_i2.Citizen>? employees,
   }) : super._(
           id: id,
           name: name,
           townId: townId,
           town: town,
+          employees: employees,
         );
 
   @override
@@ -87,12 +97,15 @@ class _CompanyImpl extends Company {
     String? name,
     int? townId,
     Object? town = _Undefined,
+    Object? employees = _Undefined,
   }) {
     return Company(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
       town: town is _i2.Town? ? town : this.town?.copyWith(),
+      employees:
+          employees is List<_i2.Citizen>? ? employees : this.employees?.clone(),
     );
   }
 }

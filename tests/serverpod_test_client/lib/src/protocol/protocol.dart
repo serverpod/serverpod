@@ -36,8 +36,8 @@ import 'simple_data_map.dart' as _i26;
 import 'simple_date_time.dart' as _i27;
 import 'test_enum.dart' as _i28;
 import 'types.dart' as _i29;
-import 'package:serverpod_test_module_client/module.dart' as _i30;
-import 'protocol.dart' as _i31;
+import 'protocol.dart' as _i30;
+import 'package:serverpod_test_module_client/module.dart' as _i31;
 import 'dart:typed_data' as _i32;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i33;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i34;
@@ -293,18 +293,23 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i29.Types?>()) {
       return (data != null ? _i29.Types.fromJson(data, this) : null) as T;
     }
+    if (t == _i1.getType<List<_i30.Citizen>?>()) {
+      return (data != null
+          ? (data as List).map((e) => deserialize<_i30.Citizen>(e)).toList()
+          : null) as dynamic;
+    }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i30.ModuleClass>) {
+    if (t == List<_i31.ModuleClass>) {
       return (data as List)
-          .map((e) => deserialize<_i30.ModuleClass>(e))
+          .map((e) => deserialize<_i31.ModuleClass>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i30.ModuleClass>) {
+    if (t == Map<String, _i31.ModuleClass>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i30.ModuleClass>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i31.ModuleClass>(v))) as dynamic;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
@@ -323,23 +328,23 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i31.SimpleData>) {
-      return (data as List).map((e) => deserialize<_i31.SimpleData>(e)).toList()
+    if (t == List<_i30.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i30.SimpleData>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i31.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i30.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i31.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i30.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i31.SimpleData?>) {
+    if (t == List<_i30.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i31.SimpleData?>(e))
+          .map((e) => deserialize<_i30.SimpleData?>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<_i31.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i30.SimpleData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i31.SimpleData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i30.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<DateTime>) {
@@ -436,22 +441,22 @@ class Protocol extends _i1.SerializationManager {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as dynamic;
     }
-    if (t == List<_i31.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i31.TestEnum>(e)).toList()
+    if (t == List<_i30.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i30.TestEnum>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i31.TestEnum?>) {
-      return (data as List).map((e) => deserialize<_i31.TestEnum?>(e)).toList()
+    if (t == List<_i30.TestEnum?>) {
+      return (data as List).map((e) => deserialize<_i30.TestEnum?>(e)).toList()
           as dynamic;
     }
-    if (t == List<List<_i31.TestEnum>>) {
+    if (t == List<List<_i30.TestEnum>>) {
       return (data as List)
-          .map((e) => deserialize<List<_i31.TestEnum>>(e))
+          .map((e) => deserialize<List<_i30.TestEnum>>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i31.SimpleData>) {
+    if (t == Map<String, _i30.SimpleData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i31.SimpleData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i30.SimpleData>(v)))
           as dynamic;
     }
     if (t == Map<String, String>) {
@@ -478,9 +483,9 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i31.SimpleData?>) {
+    if (t == Map<String, _i30.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i31.SimpleData?>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i30.SimpleData?>(v))) as dynamic;
     }
     if (t == Map<String, String?>) {
       return (data as Map).map((k, v) =>
@@ -511,14 +516,14 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == _i1.getType<List<_i31.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i30.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i31.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i30.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i31.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i30.SimpleData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i31.SimpleData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i30.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<_i33.Types>) {
@@ -846,7 +851,7 @@ class Protocol extends _i1.SerializationManager {
           : null) as T;
     }
     try {
-      return _i30.Protocol().deserialize<T>(data, t);
+      return _i31.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
       return _i43.Protocol().deserialize<T>(data, t);
@@ -857,7 +862,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i30.Protocol().getClassNameForObject(data);
+    className = _i31.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
@@ -965,7 +970,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
-      return _i30.Protocol().deserializeByClassName(data);
+      return _i31.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
