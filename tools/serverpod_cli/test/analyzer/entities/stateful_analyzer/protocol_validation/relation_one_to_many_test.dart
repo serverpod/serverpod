@@ -129,6 +129,15 @@ void main() {
         expect(field, isNotNull);
       });
 
+      test('with the relation field created with scope none on employee side.',
+          () {
+        var field = employeeDefinition.findField(
+          '_company_employees_companyId',
+        );
+
+        expect(field?.scope, EntityFieldScopeDefinition.none);
+      });
+
       test(
           'with the reference field is set on the object relation to an implicit relation field.',
           () {
