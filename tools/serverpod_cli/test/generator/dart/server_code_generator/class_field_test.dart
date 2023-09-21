@@ -979,4 +979,149 @@ void main() {
             ? 'Could not run test because ${testClassName}Table class was not found.'
             : false);
   });
+
+  group(
+      'Given a class with a persistent field with scope none when generating code',
+      () {
+    var fieldName = 'implicit_field';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            SerializableEntityFieldDefinition(
+              name: fieldName,
+              type: TypeDefinition(className: 'String', nullable: true),
+              scope: EntityFieldScopeDefinition.none,
+              shouldPersist: true,
+            ),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var maybeClassNamedExample = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: testClassName,
+    );
+
+    group(
+      'then class',
+      () {
+        test('is generated with field as hidden class variable.', () {
+          expect(
+              CompilationUnitHelpers.hasFieldDeclaration(
+                  maybeClassNamedExample!,
+                  name: '_$fieldName',
+                  type: 'String?'),
+              isTrue,
+              reason: 'Field declaration missing for $fieldName.');
+        });
+
+        test('has a toJsonForDatabase that uses hidden class variable.', () {
+          var maybeToJsonForDatabase =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'toJsonForDatabase',
+          );
+
+          expect(maybeToJsonForDatabase, isNotNull,
+              reason: 'Missing declaration for toJsonForDatabase method.');
+          expect(maybeToJsonForDatabase!.toSource(),
+              contains('\'$fieldName\' : _$fieldName'),
+              reason:
+                  'Missing use of hidden class variable in toJsonForDatabase method.');
+        });
+
+        test('has a allToJson that uses hidden class variable.', () {
+          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'allToJson',
+          );
+
+          expect(maybeAllToJson, isNotNull,
+              reason: 'Missing declaration for allToJson method.');
+          expect(maybeAllToJson!.toSource(),
+              contains('\'$fieldName\' : _$fieldName'),
+              reason:
+                  'Missing use of hidden class variable in setColumn method.');
+        });
+
+        test('has a setColumn that uses hidden class variable.', () {
+          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
+            maybeClassNamedExample!,
+            name: 'setColumn',
+          );
+
+          expect(maybeAllToJson, isNotNull,
+              reason: 'Missing declaration for setColumn method.');
+          expect(maybeAllToJson!.toSource(), contains('_$fieldName = value'),
+              reason:
+                  'Missing use of hidden class variable in setColumn method.');
+        });
+      },
+      skip: maybeClassNamedExample == null
+          ? 'Could not run test because $testClassName class was not found.'
+          : false,
+    );
+  });
+
+  group(
+    'Given a class with a persistent field with scope none starting with underscore when generating code',
+    () {
+      var fieldName = '_implicit_field';
+      var entities = [
+        ClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName(tableName)
+            .withField(
+              SerializableEntityFieldDefinition(
+                name: fieldName,
+                type: TypeDefinition(className: 'String', nullable: true),
+                scope: EntityFieldScopeDefinition.none,
+                shouldPersist: true,
+              ),
+            )
+            .build()
+      ];
+
+      var codeMap = generator.generateSerializableEntitiesCode(
+        entities: entities,
+        config: config,
+      );
+
+      var compilationUnit =
+          parseString(content: codeMap[expectedFilePath]!).unit;
+
+      var maybeClassNamedExample =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: testClassName,
+      );
+
+      test(
+        'then class is generated with field as hidden class variable with no extra underscore appended.',
+        () {
+          expect(
+              CompilationUnitHelpers.hasFieldDeclaration(
+                  maybeClassNamedExample!,
+                  name: fieldName,
+                  type: 'String?'),
+              isTrue,
+              reason: 'Field declaration missing for $fieldName.');
+        },
+        skip: maybeClassNamedExample == null
+            ? 'Could not run test because $testClassName class was not found.'
+            : false,
+      );
+    },
+  );
 }

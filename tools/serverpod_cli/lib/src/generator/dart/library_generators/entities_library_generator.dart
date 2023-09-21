@@ -861,6 +861,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassSetColumnMethod(
       List<SerializableEntityFieldDefinition> fields) {
+    var serializableFields =
+        fields.where((f) => f.shouldSerializeFieldForDatabase(serverCode));
+
     return Method((m) => m
       ..annotations.add(refer('override'))
       ..name = 'setColumn'
@@ -873,13 +876,14 @@ class SerializableEntityLibraryGenerator {
       ])
       ..body = Block.of([
         const Code('switch(columnName){'),
-        for (var field in fields)
-          if (field.shouldSerializeFieldForDatabase(serverCode))
-            Block.of([
-              Code('case \'${field.name}\':'),
-              refer(field.name).assign(refer('value')).statement,
-              refer('').returned.statement,
-            ]),
+        for (var field in serializableFields)
+          Block.of([
+            Code('case \'${field.name}\':'),
+            _createSerializableFieldNameReference(serverCode, field)
+                .assign(refer('value'))
+                .statement,
+            refer('').returned.statement,
+          ]),
         const Code('default:'),
         refer('UnimplementedError').call([]).thrown.statement,
         const Code('}'),
@@ -897,9 +901,9 @@ class SerializableEntityLibraryGenerator {
         m.body = literalMap(
           {
             for (var field in fields)
-              literalString(field.name): refer(field.name)
+              literalString(field.name):
+                  _createSerializableFieldNameReference(serverCode, field)
           },
-          //  refer('String'), refer('dynamic')
         ).returned.statement;
       },
     );
@@ -907,6 +911,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassToJsonForDatabaseMethod(
       List<SerializableEntityFieldDefinition> fields) {
+    var serializableFields =
+        fields.where((f) => f.shouldSerializeFieldForDatabase(serverCode));
+
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
@@ -918,9 +925,9 @@ class SerializableEntityLibraryGenerator {
 
         m.body = literalMap(
           {
-            for (var field in fields)
-              if (field.shouldSerializeFieldForDatabase(serverCode))
-                literalString(field.name): refer(field.name)
+            for (var field in serializableFields)
+              literalString(field.name):
+                  _createSerializableFieldNameReference(serverCode, field)
           },
         ).returned.statement;
       },
@@ -1104,17 +1111,21 @@ class SerializableEntityLibraryGenerator {
       String? tableName,
       List<String> subDirParts) {
     List<Field> entityClassFields = [];
-    for (var field in fields) {
-      if (field.shouldIncludeField(serverCode) &&
-          !(field.name == 'id' && serverCode && tableName != null)) {
-        entityClassFields.add(Field((f) {
-          f.type = field.type
-              .reference(serverCode, subDirParts: subDirParts, config: config);
-          f
-            ..name = field.name
-            ..docs.addAll(field.documentation ?? []);
-        }));
-      }
+    var classFields = fields
+        .where((f) =>
+            f.shouldIncludeField(serverCode) ||
+            (tableName != null && f.hiddenSerializableField(serverCode)))
+        .where((f) => !(f.name == 'id' && serverCode && tableName != null));
+
+    for (var field in classFields) {
+      entityClassFields.add(Field((f) {
+        f.type = field.type
+            .reference(serverCode, subDirParts: subDirParts, config: config);
+        f
+          ..name =
+              _createSerializableFieldNameReference(serverCode, field).symbol
+          ..docs.addAll(field.documentation ?? []);
+      }));
     }
 
     return entityClassFields;
@@ -1893,5 +1904,17 @@ class SerializableEntityLibraryGenerator {
   ) {
     var relation = field.relation;
     return relation is ObjectRelationDefinition && relation.nullableRelation;
+  }
+
+  Reference _createSerializableFieldNameReference(
+    bool serverCode,
+    SerializableEntityFieldDefinition field,
+  ) {
+    if (field.hiddenSerializableField(serverCode) &&
+        !field.name.startsWith('_')) {
+      return refer('_${field.name}');
+    }
+
+    return refer(field.name);
   }
 }

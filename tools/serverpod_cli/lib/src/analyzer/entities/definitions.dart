@@ -149,6 +149,14 @@ class SerializableEntityFieldDefinition {
   bool shouldSerializeFieldForDatabase(bool serverCode) {
     return shouldPersist;
   }
+
+  /// Returns true, if this is serialized field that should be hidden.
+  /// [serverCode] specifies if it's code on the server or client side.
+  bool hiddenSerializableField(bool serverCode) {
+    return serverCode &&
+        shouldPersist &&
+        scope == EntityFieldScopeDefinition.none;
+  }
 }
 
 /// The scope of a field.
