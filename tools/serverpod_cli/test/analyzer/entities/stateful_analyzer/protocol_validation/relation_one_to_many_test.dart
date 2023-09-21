@@ -116,14 +116,14 @@ void main() {
         expect(relation.runtimeType, ListRelationDefinition);
         expect(
           (relation as ListRelationDefinition).foreignFieldName,
-          '_company_employees_companyId',
+          '_companyEmployeesCompanyId',
           reason: 'Expected the reference field to be set.',
         );
       });
 
       test('with the relation field created on the employee side.', () {
         var field = employeeDefinition.findField(
-          '_company_employees_companyId',
+          '_companyEmployeesCompanyId',
         );
 
         expect(field, isNotNull);
@@ -132,7 +132,7 @@ void main() {
       test('with the relation field created with scope none on employee side.',
           () {
         var field = employeeDefinition.findField(
-          '_company_employees_companyId',
+          '_companyEmployeesCompanyId',
         );
 
         expect(field?.scope, EntityFieldScopeDefinition.none);
@@ -362,7 +362,7 @@ void main() {
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
         (relation as ListRelationDefinition).foreignFieldName,
-        '_company_employees_companyId',
+        '_companyEmployeesCompanyId',
         reason: 'Expected the reference field to be set.',
       );
     });
@@ -372,7 +372,7 @@ void main() {
     }, skip: relation is! ListRelationDefinition);
 
     test('then the relation field is created on the employee side.', () {
-      var field = employeeDefinition.findField('_company_employees_companyId');
+      var field = employeeDefinition.findField('_companyEmployeesCompanyId');
 
       expect(field, isNotNull);
     });
