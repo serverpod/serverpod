@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:super_string/super_string.dart';
 
 class EntityDependencyResolver {
   /// Resolves dependencies between entities, this method mutates the input.
@@ -262,7 +263,7 @@ class EntityDependencyResolver {
 
     if (relation.name == null) {
       var foreignFieldName =
-          '_${classDefinition.tableName}_${fieldDefinition.name}_${classDefinition.tableName}Id';
+          '_${classDefinition.tableName?.toCamelCase(isLowerCamelCase: true)}${fieldDefinition.name.toCamelCase()}${classDefinition.tableName?.toCamelCase()}Id';
 
       var autoRelationName = '#_relation_$foreignFieldName';
 
