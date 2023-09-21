@@ -263,7 +263,7 @@ class EntityDependencyResolver {
 
     if (relation.name == null) {
       var foreignFieldName =
-          '_${classDefinition.tableName}${fieldDefinition.name.toCamelCase()}${classDefinition.tableName?.toCamelCase()}Id';
+          '_${classDefinition.tableName?.toCamelCase(isLowerCamelCase: true)}${fieldDefinition.name.toCamelCase()}${classDefinition.tableName?.toCamelCase()}Id';
 
       var autoRelationName = '#_relation_$foreignFieldName';
 

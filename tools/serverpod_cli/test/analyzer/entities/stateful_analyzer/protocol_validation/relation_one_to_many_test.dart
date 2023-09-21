@@ -377,4 +377,59 @@ void main() {
       expect(field, isNotNull);
     });
   });
+
+  group(
+      'Given an implicit one to many relation with many table including underscores',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          name: String
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company_table
+        fields:
+          employees: List<Employee>?, relation
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var employeeDefinition = definitions.first as ClassDefinition;
+    var companyDefinition = definitions.last as ClassDefinition;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    var relation = companyDefinition.findField('employees')?.relation;
+    test(
+        'then the table name in the reference field on the list relation is converted to camel case.',
+        () {
+      expect(relation.runtimeType, ListRelationDefinition);
+      expect(
+        (relation as ListRelationDefinition).foreignFieldName,
+        '_companyTableEmployeesCompanyTableId',
+        reason: 'Expected the reference field to be set.',
+      );
+    });
+
+    test(
+        'then the table name in the relation field on the employee side is converted to camel case.',
+        () {
+      var field =
+          employeeDefinition.findField('_companyTableEmployeesCompanyTableId');
+
+      expect(field, isNotNull);
+    });
+  });
 }
