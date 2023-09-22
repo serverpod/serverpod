@@ -190,13 +190,17 @@ abstract class CompilationUnitHelpers {
     required String name,
     bool? isStatic,
     String? functionExpression,
+    List<String>? parameters,
+    String? returnTypeContains,
   }) {
     var member = classDeclaration.members
         .whereType<MethodDeclaration>()
         .where((member) => member.name.toString() == name)
         .where((member) => member._hasMatchingStatic(isStatic))
         .where((member) =>
-            member._hasMatchingFunctionExpression(functionExpression));
+            member._hasMatchingFunctionExpression(functionExpression))
+        .where((member) => member._hasMatchingParameters(parameters))
+        .where((member) => member._returnTypeContains(returnTypeContains));
 
     return member.isNotEmpty ? member.first : null;
   }
@@ -211,12 +215,16 @@ abstract class CompilationUnitHelpers {
     required String name,
     bool? isStatic,
     String? functionExpression,
+    List<String>? parameters,
+    String? returnTypeContains,
   }) {
     var maybeDeclaration = tryFindMethodDeclaration(
       classDeclaration,
       name: name,
       isStatic: isStatic,
       functionExpression: functionExpression,
+      parameters: parameters,
+      returnTypeContains: returnTypeContains,
     );
 
     return maybeDeclaration != null;
@@ -348,6 +356,30 @@ extension _MethodDeclarationExtensions on MethodDeclaration {
     return body is ExpressionFunctionBody &&
         (body as ExpressionFunctionBody).expression.toString() ==
             functionExpression;
+  }
+
+  bool _hasMatchingParameters(List<String>? parameters) {
+    if (parameters == null) {
+      return true;
+    }
+
+    var memberParameters = this.parameters?.parameters ?? [];
+    var matchingParameters =
+        memberParameters.where((p) => parameters.contains(p.toString()));
+
+    return matchingParameters.length == parameters.length;
+  }
+
+  bool _returnTypeContains(String? returnType) {
+    if (returnType == null) {
+      return true;
+    }
+
+    if (this.returnType == null) {
+      false;
+    }
+
+    return this.returnType.toString().contains(returnType);
   }
 }
 

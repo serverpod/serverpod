@@ -169,6 +169,32 @@ class ClassDefinitionBuilder {
     return this;
   }
 
+  ClassDefinitionBuilder withListObjectRelationField(
+    String fieldName,
+    String objectRelationType, {
+    bool nullableRelation = false,
+  }) {
+    _fields.addAll([
+      () => FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withTypeDefinition('List', true, [
+            TypeDefinition(
+              className: objectRelationType,
+              nullable: false,
+            )
+          ])
+          .withShouldPersist(false)
+          .withRelation(ListRelationDefinition(
+            fieldName: '${fieldName}Id',
+            foreignFieldName: 'id',
+            nullableRelation: nullableRelation,
+          ))
+          .build()
+    ]);
+
+    return this;
+  }
+
   ClassDefinitionBuilder withFields(
     List<SerializableEntityFieldDefinition> fields,
   ) {

@@ -47,11 +47,54 @@ void main() {
         reason: 'Missing definition for class named ${testClassName}Table',
       );
     });
-    group('then the class named ${testClassName}Table', () {
-      test('inherits from Table.', () {
+
+    group('then class named ${testClassName}Table', () {
+      test('inherits from ${testClassName}WithoutManyRelationsTable.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExampleTable!,
+              name: '${testClassName}WithoutManyRelationsTable',
+            ),
+            isTrue,
+            reason:
+                'Missing extends clause for ${testClassName}WithoutManyRelationsTable.');
+      });
+
+      test('has constructor taking query prefix and table relations as super.',
+          () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              maybeClassNamedExampleTable!,
+              name: null,
+              parameters: ['super.queryPrefix', 'super.tableRelations'],
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for ${testClassName}Table constructor.');
+      });
+    }, skip: maybeClassNamedExampleTable == null);
+
+    var maybeClassNamedExampleWithoutManyRelationsTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}WithoutManyRelationsTable',
+    );
+
+    test(
+        'then a class named ${testClassName}WithoutManyRelationsTable is generated.',
+        () {
+      expect(
+        maybeClassNamedExampleWithoutManyRelationsTable,
+        isNotNull,
+        reason:
+            'Missing definition for class named ${testClassName}WithoutManyRelationsTable',
+      );
+    });
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
+      test('inherits from Table.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'Table',
             ),
             isTrue,
@@ -63,20 +106,20 @@ void main() {
           () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: null,
               parameters: ['super.queryPrefix', 'super.tableRelations'],
               superArguments: ['tableName: \'$tableName\''],
             ),
             isTrue,
             reason:
-                'Missing declaration for $testClassName constructor with nullable id field passed to super.');
+                'Missing declaration for ${testClassName}WithoutManyRelationsTable constructor.');
       });
 
       test('has a columns method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'columns',
             ),
             isTrue,
@@ -86,7 +129,7 @@ void main() {
       test('does NOT have getRelationTable method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'getRelationTable',
             ),
             isFalse,
@@ -97,13 +140,13 @@ void main() {
       test('does NOT have id field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'id',
             ),
             isFalse,
             reason: 'Declaration for id field should not be generated.');
       });
-    }, skip: maybeClassNamedExampleTable == null);
+    }, skip: maybeClassNamedExampleWithoutManyRelationsTable == null);
   });
 
   group(
@@ -131,17 +174,17 @@ void main() {
     );
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    var maybeClassNamedExampleWithoutManyRelationsTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}Table',
+      name: '${testClassName}WithoutManyRelationsTable',
     );
 
-    group('then the class named ${testClassName}Table', () {
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
       test('has class variable for field.', () {
         expect(
             CompilationUnitHelpers.hasFieldDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'title',
               isFinal: true,
               isLate: true,
@@ -153,7 +196,7 @@ void main() {
       test('has field included in columns.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'columns',
               functionExpression: '[id, title]',
             ),
@@ -161,8 +204,8 @@ void main() {
             reason: 'Missing title field in columns.');
       });
     },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found'
+        skip: maybeClassNamedExampleWithoutManyRelationsTable == null
+            ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found'
             : false);
   });
 
@@ -191,19 +234,19 @@ void main() {
     );
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
-    var maybeClassNamedExampleTable =
+    var maybeClassNamedExampleWithoutManyRelationsTable =
         CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}Table',
+      name: '${testClassName}WithoutManyRelationsTable',
     );
 
-    group('then the class named ${testClassName}Table', () {
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
       test(
         'does NOT have class variable for field.',
         () {
           expect(
               CompilationUnitHelpers.hasFieldDeclaration(
-                maybeClassNamedExampleTable!,
+                maybeClassNamedExampleWithoutManyRelationsTable!,
                 name: 'title',
                 isFinal: true,
               ),
@@ -215,7 +258,7 @@ void main() {
       test('does NOT have field included in columns.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExampleTable!,
+              maybeClassNamedExampleWithoutManyRelationsTable!,
               name: 'columns',
               functionExpression: '[id]',
             ),
@@ -223,20 +266,109 @@ void main() {
             reason: 'Should not include field in columns.');
       });
     },
-        skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
+        skip: maybeClassNamedExampleWithoutManyRelationsTable == null
+            ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found.'
             : false);
   });
 
   group(
       'Given a class with table name and object relation field when generating code',
       () {
+    var objectRelationType = 'Company';
     var entities = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
-          .withObjectRelationField('company', 'Company', 'company')
+          .withObjectRelationField('company', objectRelationType, 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleWithoutManyRelationsTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}WithoutManyRelationsTable',
+    );
+
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
+      test('has a getRelationTable method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
+              name: 'getRelationTable',
+            ),
+            isTrue,
+            reason: 'Missing declaration for getRelationTable method.');
+      });
+
+      test('has private field for relation.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
+              name: '_company',
+            ),
+            isTrue,
+            reason: 'Missing declaration for _company field.');
+      });
+
+      test(
+          'has private field for relation with return type ${objectRelationType}Table.',
+          () {
+        var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExampleWithoutManyRelationsTable!,
+          name: '_company',
+        );
+
+        expect(field?.toSource(), contains('${objectRelationType}Table?'),
+            reason:
+                'Wrong return type for field declaration for _company field.');
+      });
+
+      test('has getter for relation field.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
+              name: 'company',
+            ),
+            isTrue,
+            reason: 'Missing declaration for company getter method.');
+      });
+
+      test(
+          'has getter for relation with return type ${objectRelationType}Table.',
+          () {
+        var getter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleWithoutManyRelationsTable!,
+          name: 'company',
+        );
+
+        expect(getter?.toSource(), contains('${objectRelationType}Table get'),
+            reason:
+                'Wrong return type for field declaration for company getter method.');
+      });
+    },
+        skip: maybeClassNamedExampleWithoutManyRelationsTable == null
+            ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found.'
+            : false);
+  });
+
+  group(
+      'Given a class with many relation object relation field when generating code',
+      () {
+    var relationFieldName = 'employees';
+    var objectRelationType = 'Citizen';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withListObjectRelationField(relationFieldName, objectRelationType)
           .build()
     ];
 
@@ -252,19 +384,73 @@ void main() {
       name: '${testClassName}Table',
     );
 
-    test(
-        'then the class named ${testClassName}Table has a getRelationTable method.',
+    group(
+        'then the class named ${testClassName}Table has many relation private field.',
         () {
-      expect(
-          CompilationUnitHelpers.hasMethodDeclaration(
-            maybeClassNamedExampleTable!,
-            name: 'getRelationTable',
-          ),
-          isTrue,
-          reason: 'Missing declaration for getRelationTable method.');
+      test('has private field for relation.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: '_$relationFieldName',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for _$relationFieldName private field.');
+      });
+
+      test(
+          'has private field for relation with return type ${objectRelationType}WithoutManyRelationsTable.',
+          () {
+        var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExampleTable!,
+          name: '_$relationFieldName',
+        );
+
+        expect(field?.toSource(),
+            contains('${objectRelationType}WithoutManyRelationsTable?'),
+            reason: 'Wrong return type for _$relationFieldName field.');
+      });
+
+      test('has private getter for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: '_${relationFieldName}Table',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for _$relationFieldName private getter.');
+      });
+
+      test(
+          'has getter for relation table with return type ${objectRelationType}WithoutManyRelationsTable.',
+          () {
+        var getter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleTable!,
+          name: '_${relationFieldName}Table',
+        );
+
+        expect(getter?.toSource(),
+            contains('${objectRelationType}WithoutManyRelationsTable get'),
+            reason: 'Wrong return type for _$relationFieldName field.');
+      });
+
+      test('has method for many relation.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+                maybeClassNamedExampleTable!,
+                name: relationFieldName,
+                parameters: [
+                  '${objectRelationType}WithoutManyRelationsExpressionBuilder where'
+                ],
+                returnTypeContains: 'ManyRelation'),
+            isTrue,
+            reason:
+                'Missing method declaration for $relationFieldName many relation.');
+      });
     },
         skip: maybeClassNamedExampleTable == null
-            ? 'Could not run test because ${testClassName}Table class was not found.'
+            ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found.'
             : false);
   });
 }

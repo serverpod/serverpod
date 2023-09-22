@@ -221,3 +221,30 @@ T createRelationTable<T>({
     foreignTableRelation,
   );
 }
+
+/// Many relation field between two tables.
+class ManyRelation {
+  /// Where clause for the many side of the relation.
+  final Expression where;
+
+  /// The table on the many side of the relation.
+  final Table table;
+
+  /// Id column name for foreign table.
+  final String foreignIdColumnName;
+
+  /// Creates a new [ManyRelation].
+  ManyRelation({
+    required this.where,
+    required this.table,
+    required this.foreignIdColumnName,
+  });
+
+  /// Returns a [ColumnCountAggregate] for the number of rows in the relation.
+  ColumnCountAggregate get count => ColumnCountAggregate(
+        foreignIdColumnName,
+        queryPrefix: table.queryPrefix,
+        tableRelations: table.tableRelations,
+        innerWhere: where,
+      );
+}
