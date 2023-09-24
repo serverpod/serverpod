@@ -12,7 +12,7 @@ class SMSAuthController {
   /// Attempts to sign in a user with SMS authentication. If successful, a
   /// [UserInfo] is returned. If the user doesn't exist, a new user is created
   /// and returned. If the attempt fails, null is returned.
-  Future<SmsOtpResponse> signInWithSMS({
+  Future<SmsOtpResponse> sendSMS({
     required String phoneNumber,
   }) async {
     return await caller.sms.startAuthentication(phoneNumber);
@@ -21,7 +21,7 @@ class SMSAuthController {
   /// Attempts to sign in a user with SMS authentication. If successful, a
   /// [UserInfo] is returned. If the user doesn't exist, a new user is created
   /// and returned. If the attempt fails, null is returned.
-  Future<AuthenticationResponse> verifySMS({
+  Future<AuthenticationResponse> validateSMS({
     required String phoneNumber,
     required String otp,
     required String storedHash,

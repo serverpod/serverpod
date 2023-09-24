@@ -87,9 +87,10 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
           phoneNumberController: _phoneNumberController,
           phoneNumberIssue: _phoneNumberIssue,
         ),
+        const SizedBox(height: 8),
         ElevatedButton(
           onPressed: _enabled ? _startAuthentication : null,
-          child: const Text('Sign in'),
+          child: const Text('Get OTP'),
         )
       ];
     } else if (_page == _Page.verify) {
@@ -103,6 +104,7 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
             },
             otpController: _otpController,
             otpIssue: _otpIssue),
+        const SizedBox(height: 8),
         ElevatedButton(
           onPressed: _enabled ? _verifyAuthentication : null,
           child: const Text('Verify'),
@@ -148,7 +150,7 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
     });
 
     var result =
-        await _smsAuth.signInWithSMS(phoneNumber: _phoneNumberWithCountryCode);
+        await _smsAuth.sendSMS(phoneNumber: _phoneNumberWithCountryCode);
 
     if (result.success == false) {
       switch (result.failReason) {
@@ -199,7 +201,7 @@ class SignInWithSMSDialogState extends State<SignInWithSMSDialog> {
       _enabled = false;
     });
 
-    var result = await _smsAuth.verifySMS(
+    var result = await _smsAuth.validateSMS(
       phoneNumber: _phoneNumberWithCountryCode,
       otp: _otpController.text.trim(),
       storedHash: _storedHash,

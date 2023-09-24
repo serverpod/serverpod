@@ -69,7 +69,7 @@ class AuthConfig {
   final Duration smsExpirationTime;
 
   /// Called when a user should be sent a OTP by SMS.
-  final SendSMSAuthCallback? sendSMSAuth;
+  final SendSMSAuthCallback? sendValidationSMS;
 
   /// True if users can update their profile images.
   final bool userCanEditUserImage;
@@ -154,7 +154,6 @@ class AuthConfig {
     this.maxAllowedSmsSignInAttempts = 5,
     this.smsSignInFailureResetTime = const Duration(minutes: 5),
     this.smsExpirationTime = const Duration(minutes: 5),
-    this.sendSMSAuth,
     this.enableUserImages = true,
     this.importUserImagesFromGoogleSignIn = true,
     this.userImageSize = 256,
@@ -172,6 +171,7 @@ class AuthConfig {
     this.onUserUpdated,
     this.sendPasswordResetEmail,
     this.sendValidationEmail,
+    this.sendValidationSMS,
     this.passwordResetExpirationTime = const Duration(hours: 24),
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =

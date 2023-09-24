@@ -25,7 +25,7 @@ class SMSs {
       phoneNumber: phoneNumber,
       otp: otp,
     );
-    await AuthConfig.current.sendSMSAuth!(
+    await AuthConfig.current.sendValidationSMS!(
       phoneNumber,
       otp,
     );
