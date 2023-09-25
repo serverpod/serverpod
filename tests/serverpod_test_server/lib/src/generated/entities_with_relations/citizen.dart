@@ -493,9 +493,9 @@ class CitizenInclude extends _i1.Include {
 class CitizenRepository {
   const CitizenRepository._();
 
-  final attach = const CitizenAttachRepository._();
+  final attachRow = const CitizenAttachRowRepository._();
 
-  final detach = const CitizenDetachRepository._();
+  final detachRow = const CitizenDetachRowRepository._();
 
   Future<List<Citizen>> find(
     _i1.Session session, {
@@ -604,8 +604,8 @@ class CitizenRepository {
   }
 }
 
-class CitizenAttachRepository {
-  const CitizenAttachRepository._();
+class CitizenAttachRowRepository {
+  const CitizenAttachRowRepository._();
 
   Future<void> address(
     _i1.Session session,
@@ -665,8 +665,8 @@ class CitizenAttachRepository {
   }
 }
 
-class CitizenDetachRepository {
-  const CitizenDetachRepository._();
+class CitizenDetachRowRepository {
+  const CitizenDetachRowRepository._();
 
   Future<void> address(
     _i1.Session session,

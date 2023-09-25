@@ -362,7 +362,7 @@ class CompanyInclude extends _i1.Include {
 class CompanyRepository {
   const CompanyRepository._();
 
-  final attach = const CompanyAttachRepository._();
+  final attachRow = const CompanyAttachRowRepository._();
 
   Future<List<Company>> find(
     _i1.Session session, {
@@ -471,8 +471,8 @@ class CompanyRepository {
   }
 }
 
-class CompanyAttachRepository {
-  const CompanyAttachRepository._();
+class CompanyAttachRowRepository {
+  const CompanyAttachRowRepository._();
 
   Future<void> town(
     _i1.Session session,

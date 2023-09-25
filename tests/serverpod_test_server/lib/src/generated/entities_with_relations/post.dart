@@ -405,9 +405,9 @@ class PostInclude extends _i1.Include {
 class PostRepository {
   const PostRepository._();
 
-  final attach = const PostAttachRepository._();
+  final attachRow = const PostAttachRowRepository._();
 
-  final detach = const PostDetachRepository._();
+  final detachRow = const PostDetachRowRepository._();
 
   Future<List<Post>> find(
     _i1.Session session, {
@@ -516,8 +516,8 @@ class PostRepository {
   }
 }
 
-class PostAttachRepository {
-  const PostAttachRepository._();
+class PostAttachRowRepository {
+  const PostAttachRowRepository._();
 
   Future<void> previous(
     _i1.Session session,
@@ -558,8 +558,8 @@ class PostAttachRepository {
   }
 }
 
-class PostDetachRepository {
-  const PostDetachRepository._();
+class PostDetachRowRepository {
+  const PostDetachRowRepository._();
 
   Future<void> previous(
     _i1.Session session,

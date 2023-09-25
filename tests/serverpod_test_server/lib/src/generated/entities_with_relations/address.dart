@@ -350,9 +350,9 @@ class AddressInclude extends _i1.Include {
 class AddressRepository {
   const AddressRepository._();
 
-  final attach = const AddressAttachRepository._();
+  final attachRow = const AddressAttachRowRepository._();
 
-  final detach = const AddressDetachRepository._();
+  final detachRow = const AddressDetachRowRepository._();
 
   Future<List<Address>> find(
     _i1.Session session, {
@@ -461,8 +461,8 @@ class AddressRepository {
   }
 }
 
-class AddressAttachRepository {
-  const AddressAttachRepository._();
+class AddressAttachRowRepository {
+  const AddressAttachRowRepository._();
 
   Future<void> inhabitant(
     _i1.Session session,
@@ -484,8 +484,8 @@ class AddressAttachRepository {
   }
 }
 
-class AddressDetachRepository {
-  const AddressDetachRepository._();
+class AddressDetachRowRepository {
+  const AddressDetachRowRepository._();
 
   Future<void> inhabitant(
     _i1.Session session,

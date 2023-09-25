@@ -348,9 +348,9 @@ class TownInclude extends _i1.Include {
 class TownRepository {
   const TownRepository._();
 
-  final attach = const TownAttachRepository._();
+  final attachRow = const TownAttachRowRepository._();
 
-  final detach = const TownDetachRepository._();
+  final detachRow = const TownDetachRowRepository._();
 
   Future<List<Town>> find(
     _i1.Session session, {
@@ -459,8 +459,8 @@ class TownRepository {
   }
 }
 
-class TownAttachRepository {
-  const TownAttachRepository._();
+class TownAttachRowRepository {
+  const TownAttachRowRepository._();
 
   Future<void> mayor(
     _i1.Session session,
@@ -482,8 +482,8 @@ class TownAttachRepository {
   }
 }
 
-class TownDetachRepository {
-  const TownDetachRepository._();
+class TownDetachRowRepository {
+  const TownDetachRowRepository._();
 
   Future<void> mayor(
     _i1.Session session,

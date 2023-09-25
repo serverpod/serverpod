@@ -141,7 +141,7 @@ class RelationEndpoint extends Endpoint {
     Citizen citizen,
     Company company,
   ) async {
-    await Citizen.db.attach.company(session, citizen, company);
+    await Citizen.db.attachRow.company(session, citizen, company);
   }
 
   Future<void> citizenAttachAddress(
@@ -149,14 +149,14 @@ class RelationEndpoint extends Endpoint {
     Citizen citizen,
     Address address,
   ) async {
-    await Citizen.db.attach.address(session, citizen, address);
+    await Citizen.db.attachRow.address(session, citizen, address);
   }
 
   Future<void> citizenDetachAddress(
     Session session,
     Citizen citizen,
   ) async {
-    await Citizen.db.detach.address(session, citizen);
+    await Citizen.db.detachRow.address(session, citizen);
   }
 
   Future<void> addressAttachCitizen(
@@ -164,14 +164,14 @@ class RelationEndpoint extends Endpoint {
     Address address,
     Citizen citizen,
   ) async {
-    await Address.db.attach.inhabitant(session, address, citizen);
+    await Address.db.attachRow.inhabitant(session, address, citizen);
   }
 
   Future<void> addressDetachCitizen(
     Session session,
     Address address,
   ) async {
-    await Address.db.detach.inhabitant(session, address);
+    await Address.db.detachRow.inhabitant(session, address);
   }
 
   Future<List<Company>> companyFindAll(Session session) async {
