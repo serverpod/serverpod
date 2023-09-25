@@ -11,16 +11,34 @@ import 'expressions.dart';
 import 'table.dart';
 
 /// Provides easy access to the database in relation to the current [Session].
-class Database {
-  final Session _session;
+class DatabaseLegacy {
+  /// The [Session] the database is currently related to.
+  Session session;
 
-  final DatabaseConnection _databaseConnection;
+  /// The [DatabaseConnection] currently used to access the database.
+  DatabaseConnection databaseConnection;
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session})
-      : _session = session,
-        _databaseConnection = DatabaseConnection(session.server.databaseConfig);
+  DatabaseLegacy({required this.session})
+      : databaseConnection = DatabaseConnection(session.server.databaseConfig);
+
+  /// Find a single [TableRow] by its [id] or null if no such row exists. It's
+  /// often useful to cast the object returned.
+  ///
+  ///     var myRow = session.db.findById(tMyTable, myId) as MyTable;
+  Future<T?> findById<T extends TableRow>(
+    int id, {
+    Transaction? transaction,
+    Include? include,
+  }) async {
+    return databaseConnection.findById<T>(
+      session,
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
@@ -37,8 +55,8 @@ class Database {
     Transaction? transaction,
     Include? include,
   }) async {
-    return _databaseConnection.find<T>(
-      _session,
+    return databaseConnection.find<T>(
+      session,
       where: where,
       limit: limit,
       offset: offset,
@@ -51,86 +69,29 @@ class Database {
   }
 
   /// Find a single [TableRow] from a table, using the provided [where]
-  Future<T?> findRow<T extends TableRow>({
+  /// expression, optionally using [limit], [offset], and [orderBy]. To order by
+  /// multiple columns, user [orderByList].
+  Future<T?> findSingleRow<T extends TableRow>({
     Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    bool useCache = true,
     Transaction? transaction,
     Include? include,
   }) async {
-    return await _databaseConnection.findRow<T>(
-      _session,
+    var rows = await databaseConnection.find<T>(
+      session,
       where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
-  }
 
-  /// Find a single [TableRow] by its [id] or null if no such row exists. It's
-  /// often useful to cast the object returned.
-  ///
-  ///     var myRow = session.db.findById<MyClass>(myId);
-  Future<T?> findById<T extends TableRow>(
-    int id, {
-    Transaction? transaction,
-    Include? include,
-  }) async {
-    return _databaseConnection.findById<T>(
-      _session,
-      id,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  /// Updates a single [TableRow]. The row needs to have its id set.
-  /// Optionally, a list of [columns] can be provided to only update those
-  /// columns. Defaults to all columns.
-  Future<T> updateRow<T extends TableRow>(
-    TableRow row, {
-    List<Column>? columns,
-    Transaction? transaction,
-  }) async {
-    return _databaseConnection.updateRow<T>(
-      _session,
-      row,
-      columns: columns,
-      transaction: transaction,
-    );
-  }
-
-  /// Inserts a single [TableRow] and returns the inserted row.
-  Future<T> insertRow<T extends TableRow>(
-    TableRow row, {
-    Transaction? transaction,
-  }) async {
-    return _databaseConnection.insertRow<T>(
-      _session,
-      row,
-      transaction: transaction,
-    );
-  }
-
-  /// Deletes a single [TableRow].
-  Future<int> deleteRow(
-    TableRow row, {
-    Transaction? transaction,
-  }) async {
-    return await _databaseConnection.deleteRow(
-      _session,
-      row,
-      transaction: transaction,
-    );
-  }
-
-  /// Deletes all rows matching the [where] expression.
-  Future<List<int>> deleteWhere<T extends TableRow>({
-    required Expression where,
-    Transaction? transaction,
-  }) async {
-    return _databaseConnection.deleteWhere<T>(
-      _session,
-      where,
-      transaction: transaction,
-    );
+    if (rows.isEmpty) return null;
+    return rows.first;
   }
 
   /// Counts the number of rows matching the [where] expression. If omitted,
@@ -141,26 +102,89 @@ class Database {
     bool useCache = true,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.count<T>(
-      _session,
+    return databaseConnection.count<T>(
+      session,
       where: where,
       limit: limit,
       transaction: transaction,
     );
   }
 
+  /// Updates a single [TableRow]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  @Deprecated('Will be removed in 2.0.0. Use: updateRow instead')
+  Future<bool> update<T extends TableRow>(
+    TableRow row, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    return await databaseConnection.legacy.update(
+      row,
+      session: session,
+      columns: columns,
+      transaction: transaction,
+    );
+  }
+
+  /// Inserts a single [TableRow].
+  Future<void> insert(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
+    await databaseConnection.legacy.insert(
+      row,
+      session: session,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  Future<int> delete<T extends TableRow>({
+    required Expression where,
+    Transaction? transaction,
+  }) async {
+    var list = await databaseConnection.deleteWhere<T>(
+      session,
+      where,
+      transaction: transaction,
+    );
+    return list.length;
+  }
+
+  /// Deletes all rows matching the [where] expression, returns all deleted
+  /// rows.
+  Future<List<T>> deleteAndReturn<T extends TableRow>({
+    required Expression where,
+    Transaction? transaction,
+  }) async {
+    return await databaseConnection.legacy.deleteAndReturn<T>(
+      where: where,
+      session: session,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [TableRow].
+  Future<bool> deleteRow(
+    TableRow row, {
+    Transaction? transaction,
+  }) async {
+    await databaseConnection.deleteRow(
+      session,
+      row,
+      transaction: transaction,
+    );
+    return true;
+  }
+
   /// Stores a file in the database, specifically using the
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(
-    String storageId,
-    String path,
-    ByteData byteData,
-    DateTime? expiration,
-    bool verified,
-  ) async {
-    return await _databaseConnection.legacy.storeFile(
+  Future<void> storeFile(String storageId, String path, ByteData byteData,
+      DateTime? expiration, bool verified) async {
+    return await databaseConnection.legacy.storeFile(
         storageId, path, byteData, expiration, verified,
-        session: _session);
+        session: session);
   }
 
   /// Retrieves a file stored in the database or null if it doesn't exist,
@@ -170,8 +194,8 @@ class Database {
     String storageId,
     String path,
   ) async {
-    return await _databaseConnection.legacy
-        .retrieveFile(storageId, path, session: _session);
+    return await databaseConnection.legacy
+        .retrieveFile(storageId, path, session: session);
   }
 
   /// Verifies that a file has been successfully uploaded.
@@ -179,23 +203,22 @@ class Database {
     String storageId,
     String path,
   ) async {
-    return await _databaseConnection.legacy.verifyFile(
+    return await databaseConnection.legacy.verifyFile(
       storageId,
       path,
-      session: _session,
+      session: session,
     );
   }
 
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<PostgreSQLResult> queryDangerously(
+  Future<PostgreSQLResult> query(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.query(
-      _session,
+    return databaseConnection.query(
+      session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
@@ -204,14 +227,13 @@ class Database {
 
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<int> executeDangerously(
+  Future<int> execute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    return _databaseConnection.execute(
-      _session,
+    return databaseConnection.execute(
+      session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
@@ -225,7 +247,7 @@ class Database {
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) async {
-    return await _databaseConnection.transaction(
+    return await databaseConnection.transaction(
       transactionFunction,
       retryOptions: retryOptions,
       orElse: orElse,

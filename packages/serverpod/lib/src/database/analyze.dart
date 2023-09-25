@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
-import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_legacy.dart';
 
 import '../util/column_type_extension.dart';
 
 /// Analyzes the structure of [Database]s.
 class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
-  static Future<DatabaseDefinition> analyze(Database database) async {
+  static Future<DatabaseDefinition> analyze(DatabaseLegacy database) async {
     return DatabaseDefinition(
       name: (await database.query('SELECT current_database();')).first.first,
       tables: await Future.wait((await database.query(
@@ -162,7 +162,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
 
   /// Retrieves a list of installed database migrations.
   static Future<List<DatabaseMigrationVersion>> getInstalledMigrationVersions(
-      Database database) async {
+      DatabaseLegacy database) async {
     var migrations = <DatabaseMigrationVersion>[];
 
     try {

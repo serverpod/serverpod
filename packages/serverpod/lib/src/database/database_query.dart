@@ -156,19 +156,33 @@ class _UsingQuery {
   _UsingQuery({required this.using, required this.where});
 }
 
+enum _Returning {
+  all,
+  id,
+  none,
+}
+
 /// Builds a SQL query for a delete statement.
 @internal
 class DeleteQueryBuilder {
   final String _table;
-  bool? _returnAll;
+  _Returning _returning;
   Expression? _where;
 
   /// Creates a new [DeleteQueryBuilder].
-  DeleteQueryBuilder({required table}) : _table = table;
+  DeleteQueryBuilder({required table})
+      : _table = table,
+        _returning = _Returning.none;
 
   /// Determines if "RETURNING *" should be added to the query.
   DeleteQueryBuilder withReturnAll() {
-    _returnAll = true;
+    _returning = _Returning.all;
+    return this;
+  }
+
+  /// Determines if "RETURNING id" should be added to the query.
+  DeleteQueryBuilder withReturnId() {
+    _returning = _Returning.id;
     return this;
   }
 
@@ -191,7 +205,16 @@ class DeleteQueryBuilder {
     if (using != null) query += ' USING ${using.using}';
     if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
-    if (_returnAll != null) query += ' RETURNING *';
+    switch (_returning) {
+      case _Returning.all:
+        query += ' RETURNING *';
+        break;
+      case _Returning.id:
+        query += ' RETURNING "$_table".id';
+        break;
+      case _Returning.none:
+        break;
+    }
     return query;
   }
 }

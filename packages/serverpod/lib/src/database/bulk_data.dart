@@ -6,7 +6,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_legacy.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
@@ -14,7 +14,7 @@ import 'package:serverpod/src/database/extensions.dart';
 class DatabaseBulkData {
   /// Exports data from the provided [table].
   static Future<BulkData> exportTableData({
-    required Database database,
+    required DatabaseLegacy database,
     required String table,
     int lastId = 0,
     int limit = 100,
@@ -84,7 +84,7 @@ class DatabaseBulkData {
 
   /// Returns the approximate number of rows in the provided [table].
   static Future<int> approximateRowCount({
-    required Database database,
+    required DatabaseLegacy database,
     required String table,
   }) async {
     var tableDefinition = await _getLiveTableDefinition(database, table);
@@ -110,7 +110,7 @@ class DatabaseBulkData {
   /// Executes a series of queries and returns the last result as a
   /// [BulkQueryResult].
   static Future<BulkQueryResult> executeQueries({
-    required Database database,
+    required DatabaseLegacy database,
     required List<String> queries,
   }) async {
     var result =
@@ -144,7 +144,7 @@ class DatabaseBulkData {
   }
 
   static Future<TableDefinition?> _getTargetTableDefinition(
-    Database database,
+    DatabaseLegacy database,
     String table,
   ) async {
     var databaseDefinition =
@@ -157,7 +157,7 @@ class DatabaseBulkData {
   }
 
   static Future<TableDefinition?> _getLiveTableDefinition(
-    Database database,
+    DatabaseLegacy database,
     String table,
   ) async {
     var databaseDefinition = await _getLiveDatabaseDefinition(database);
@@ -171,7 +171,7 @@ class DatabaseBulkData {
   static DatabaseDefinition? _cachedDatabaseDefinition;
 
   static Future<DatabaseDefinition> _getLiveDatabaseDefinition(
-    Database database,
+    DatabaseLegacy database,
   ) async {
     if (_cachedDatabaseDefinition == null) {
       _cachedDatabaseDefinition = await DatabaseAnalyzer.analyze(database);
