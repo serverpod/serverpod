@@ -915,7 +915,8 @@ void main() {
         [TestEnum.two, TestEnum.one]
       ]);
 
-      var objectId = await client.basicDatabaseLegacy.storeObjectWithEnum(object);
+      var objectId =
+          await client.basicDatabaseLegacy.storeObjectWithEnum(object);
       expect(objectId, isNotNull);
 
       var returnedObject =
@@ -966,7 +967,8 @@ void main() {
       var count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, equals(100));
 
-      var success = await client.basicDatabaseLegacy.findAndDeleteSimpleTestData(50);
+      var success =
+          await client.basicDatabaseLegacy.findAndDeleteSimpleTestData(50);
       expect(success, equals(true));
 
       count = await client.basicDatabaseLegacy.countSimpleData();
@@ -976,7 +978,8 @@ void main() {
     test('Update row', () async {
       await setupTestData(client);
 
-      var result = await client.basicDatabaseLegacy.updateSimpleDataRow(0, 1000);
+      var result =
+          await client.basicDatabaseLegacy.updateSimpleDataRow(0, 1000);
       expect(result, isNotNull);
       expect(result, equals(true));
 
