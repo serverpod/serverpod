@@ -110,7 +110,7 @@ class Database {
   }
 
   /// Deletes a single [TableRow].
-  Future<int> deleteRow(
+  Future<int> deleteRow<T extends TableRow>(
     TableRow row, {
     Transaction? transaction,
   }) async {
