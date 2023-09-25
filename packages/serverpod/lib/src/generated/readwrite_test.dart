@@ -223,9 +223,19 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
 
 typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
     ReadWriteTestEntryTable);
+typedef ReadWriteTestEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ReadWriteTestEntryWithoutManyRelationsTable);
 
-class ReadWriteTestEntryTable extends _i1.Table {
+class ReadWriteTestEntryTable
+    extends ReadWriteTestEntryWithoutManyRelationsTable {
   ReadWriteTestEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ReadWriteTestEntryWithoutManyRelationsTable extends _i1.Table {
+  ReadWriteTestEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_readwrite_test') {

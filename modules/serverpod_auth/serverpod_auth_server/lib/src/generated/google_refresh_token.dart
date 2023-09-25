@@ -240,9 +240,19 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
 
 typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
     GoogleRefreshTokenTable);
+typedef GoogleRefreshTokenWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(GoogleRefreshTokenWithoutManyRelationsTable);
 
-class GoogleRefreshTokenTable extends _i1.Table {
+class GoogleRefreshTokenTable
+    extends GoogleRefreshTokenWithoutManyRelationsTable {
   GoogleRefreshTokenTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class GoogleRefreshTokenWithoutManyRelationsTable extends _i1.Table {
+  GoogleRefreshTokenWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_google_refresh_token') {

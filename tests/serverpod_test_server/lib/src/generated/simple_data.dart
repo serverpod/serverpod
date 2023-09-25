@@ -222,9 +222,18 @@ class _SimpleDataImpl extends SimpleData {
 }
 
 typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
+typedef SimpleDataWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(SimpleDataWithoutManyRelationsTable);
 
-class SimpleDataTable extends _i1.Table {
+class SimpleDataTable extends SimpleDataWithoutManyRelationsTable {
   SimpleDataTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class SimpleDataWithoutManyRelationsTable extends _i1.Table {
+  SimpleDataWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'simple_data') {

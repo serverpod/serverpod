@@ -352,9 +352,18 @@ class _UserInfoImpl extends UserInfo {
 }
 
 typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
+typedef UserInfoWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    UserInfoWithoutManyRelationsTable);
 
-class UserInfoTable extends _i1.Table {
+class UserInfoTable extends UserInfoWithoutManyRelationsTable {
   UserInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class UserInfoWithoutManyRelationsTable extends _i1.Table {
+  UserInfoWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_user_info') {

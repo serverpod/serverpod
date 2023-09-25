@@ -290,9 +290,18 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
 
 typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
     ObjectWithEnumTable);
+typedef ObjectWithEnumWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithEnumWithoutManyRelationsTable);
 
-class ObjectWithEnumTable extends _i1.Table {
+class ObjectWithEnumTable extends ObjectWithEnumWithoutManyRelationsTable {
   ObjectWithEnumTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithEnumWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithEnumWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_enum') {

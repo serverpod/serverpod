@@ -384,9 +384,18 @@ class _MessageLogEntryImpl extends MessageLogEntry {
 
 typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
     MessageLogEntryTable);
+typedef MessageLogEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(MessageLogEntryWithoutManyRelationsTable);
 
-class MessageLogEntryTable extends _i1.Table {
+class MessageLogEntryTable extends MessageLogEntryWithoutManyRelationsTable {
   MessageLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class MessageLogEntryWithoutManyRelationsTable extends _i1.Table {
+  MessageLogEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_message_log') {

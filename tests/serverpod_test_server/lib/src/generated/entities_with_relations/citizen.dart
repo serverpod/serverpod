@@ -318,9 +318,18 @@ class _CitizenImpl extends Citizen {
 }
 
 typedef CitizenExpressionBuilder = _i1.Expression Function(CitizenTable);
+typedef CitizenWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    CitizenWithoutManyRelationsTable);
 
-class CitizenTable extends _i1.Table {
+class CitizenTable extends CitizenWithoutManyRelationsTable {
   CitizenTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class CitizenWithoutManyRelationsTable extends _i1.Table {
+  CitizenWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'citizen') {

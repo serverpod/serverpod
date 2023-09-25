@@ -221,9 +221,19 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
 
 typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
     ObjectWithByteDataTable);
+typedef ObjectWithByteDataWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithByteDataWithoutManyRelationsTable);
 
-class ObjectWithByteDataTable extends _i1.Table {
+class ObjectWithByteDataTable
+    extends ObjectWithByteDataWithoutManyRelationsTable {
   ObjectWithByteDataTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithByteDataWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithByteDataWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_bytedata') {

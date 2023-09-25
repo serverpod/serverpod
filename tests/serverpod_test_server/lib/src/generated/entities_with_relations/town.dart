@@ -259,9 +259,18 @@ class _TownImpl extends Town {
 }
 
 typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
+typedef TownWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    TownWithoutManyRelationsTable);
 
-class TownTable extends _i1.Table {
+class TownTable extends TownWithoutManyRelationsTable {
   TownTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class TownWithoutManyRelationsTable extends _i1.Table {
+  TownWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'town') {

@@ -222,9 +222,18 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
 
 typedef SimpleDateTimeExpressionBuilder = _i1.Expression Function(
     SimpleDateTimeTable);
+typedef SimpleDateTimeWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(SimpleDateTimeWithoutManyRelationsTable);
 
-class SimpleDateTimeTable extends _i1.Table {
+class SimpleDateTimeTable extends SimpleDateTimeWithoutManyRelationsTable {
   SimpleDateTimeTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class SimpleDateTimeWithoutManyRelationsTable extends _i1.Table {
+  SimpleDateTimeWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'simple_date_time') {

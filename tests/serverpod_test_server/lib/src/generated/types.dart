@@ -357,9 +357,18 @@ class _TypesImpl extends Types {
 }
 
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
+typedef TypesWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    TypesWithoutManyRelationsTable);
 
-class TypesTable extends _i1.Table {
+class TypesTable extends TypesWithoutManyRelationsTable {
   TypesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class TypesWithoutManyRelationsTable extends _i1.Table {
+  TypesWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'types') {

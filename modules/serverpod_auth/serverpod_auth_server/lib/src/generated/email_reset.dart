@@ -257,9 +257,18 @@ class _EmailResetImpl extends EmailReset {
 }
 
 typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
+typedef EmailResetWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(EmailResetWithoutManyRelationsTable);
 
-class EmailResetTable extends _i1.Table {
+class EmailResetTable extends EmailResetWithoutManyRelationsTable {
   EmailResetTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class EmailResetWithoutManyRelationsTable extends _i1.Table {
+  EmailResetWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_email_reset') {

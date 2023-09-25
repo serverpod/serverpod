@@ -279,9 +279,18 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
 
 typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
     RuntimeSettingsTable);
+typedef RuntimeSettingsWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(RuntimeSettingsWithoutManyRelationsTable);
 
-class RuntimeSettingsTable extends _i1.Table {
+class RuntimeSettingsTable extends RuntimeSettingsWithoutManyRelationsTable {
   RuntimeSettingsTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class RuntimeSettingsWithoutManyRelationsTable extends _i1.Table {
+  RuntimeSettingsWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_runtime_settings') {

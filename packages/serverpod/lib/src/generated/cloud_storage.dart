@@ -312,9 +312,19 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
 
 typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
     CloudStorageEntryTable);
+typedef CloudStorageEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(CloudStorageEntryWithoutManyRelationsTable);
 
-class CloudStorageEntryTable extends _i1.Table {
+class CloudStorageEntryTable
+    extends CloudStorageEntryWithoutManyRelationsTable {
   CloudStorageEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class CloudStorageEntryWithoutManyRelationsTable extends _i1.Table {
+  CloudStorageEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_cloud_storage') {

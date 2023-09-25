@@ -288,9 +288,18 @@ class _AuthKeyImpl extends AuthKey {
 }
 
 typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
+typedef AuthKeyWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    AuthKeyWithoutManyRelationsTable);
 
-class AuthKeyTable extends _i1.Table {
+class AuthKeyTable extends AuthKeyWithoutManyRelationsTable {
   AuthKeyTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class AuthKeyWithoutManyRelationsTable extends _i1.Table {
+  AuthKeyWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_auth_key') {

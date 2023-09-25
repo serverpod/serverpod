@@ -275,9 +275,20 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
 
 typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
     Function(CloudStorageDirectUploadEntryTable);
+typedef CloudStorageDirectUploadEntryWithoutManyRelationsExpressionBuilder
+    = _i1.Expression Function(
+        CloudStorageDirectUploadEntryWithoutManyRelationsTable);
 
-class CloudStorageDirectUploadEntryTable extends _i1.Table {
+class CloudStorageDirectUploadEntryTable
+    extends CloudStorageDirectUploadEntryWithoutManyRelationsTable {
   CloudStorageDirectUploadEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class CloudStorageDirectUploadEntryWithoutManyRelationsTable extends _i1.Table {
+  CloudStorageDirectUploadEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_cloud_storage_direct_upload') {

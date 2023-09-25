@@ -383,9 +383,18 @@ class _LogEntryImpl extends LogEntry {
 }
 
 typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
+typedef LogEntryWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    LogEntryWithoutManyRelationsTable);
 
-class LogEntryTable extends _i1.Table {
+class LogEntryTable extends LogEntryWithoutManyRelationsTable {
   LogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class LogEntryWithoutManyRelationsTable extends _i1.Table {
+  LogEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_log') {

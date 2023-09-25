@@ -219,9 +219,19 @@ class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
 
 typedef ObjectWithSelfParentExpressionBuilder = _i1.Expression Function(
     ObjectWithSelfParentTable);
+typedef ObjectWithSelfParentWithoutManyRelationsExpressionBuilder
+    = _i1.Expression Function(ObjectWithSelfParentWithoutManyRelationsTable);
 
-class ObjectWithSelfParentTable extends _i1.Table {
+class ObjectWithSelfParentTable
+    extends ObjectWithSelfParentWithoutManyRelationsTable {
   ObjectWithSelfParentTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithSelfParentWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithSelfParentWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_self_parent') {

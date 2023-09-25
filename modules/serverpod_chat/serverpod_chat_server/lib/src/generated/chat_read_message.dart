@@ -258,9 +258,18 @@ class _ChatReadMessageImpl extends ChatReadMessage {
 
 typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
     ChatReadMessageTable);
+typedef ChatReadMessageWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ChatReadMessageWithoutManyRelationsTable);
 
-class ChatReadMessageTable extends _i1.Table {
+class ChatReadMessageTable extends ChatReadMessageWithoutManyRelationsTable {
   ChatReadMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ChatReadMessageWithoutManyRelationsTable extends _i1.Table {
+  ChatReadMessageWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_chat_read_message') {

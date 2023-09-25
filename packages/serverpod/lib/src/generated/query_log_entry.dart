@@ -384,9 +384,18 @@ class _QueryLogEntryImpl extends QueryLogEntry {
 
 typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
     QueryLogEntryTable);
+typedef QueryLogEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(QueryLogEntryWithoutManyRelationsTable);
 
-class QueryLogEntryTable extends _i1.Table {
+class QueryLogEntryTable extends QueryLogEntryWithoutManyRelationsTable {
   QueryLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class QueryLogEntryWithoutManyRelationsTable extends _i1.Table {
+  QueryLogEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_query_log') {

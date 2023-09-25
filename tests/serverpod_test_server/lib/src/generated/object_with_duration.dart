@@ -220,9 +220,19 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
 
 typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
     ObjectWithDurationTable);
+typedef ObjectWithDurationWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithDurationWithoutManyRelationsTable);
 
-class ObjectWithDurationTable extends _i1.Table {
+class ObjectWithDurationTable
+    extends ObjectWithDurationWithoutManyRelationsTable {
   ObjectWithDurationTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithDurationWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithDurationWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_duration') {

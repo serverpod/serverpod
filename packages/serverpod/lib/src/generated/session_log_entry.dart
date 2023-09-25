@@ -443,9 +443,18 @@ class _SessionLogEntryImpl extends SessionLogEntry {
 
 typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
     SessionLogEntryTable);
+typedef SessionLogEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(SessionLogEntryWithoutManyRelationsTable);
 
-class SessionLogEntryTable extends _i1.Table {
+class SessionLogEntryTable extends SessionLogEntryWithoutManyRelationsTable {
   SessionLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class SessionLogEntryWithoutManyRelationsTable extends _i1.Table {
+  SessionLogEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_session_log') {

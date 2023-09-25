@@ -259,9 +259,19 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
 
 typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
     EmailFailedSignInTable);
+typedef EmailFailedSignInWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(EmailFailedSignInWithoutManyRelationsTable);
 
-class EmailFailedSignInTable extends _i1.Table {
+class EmailFailedSignInTable
+    extends EmailFailedSignInWithoutManyRelationsTable {
   EmailFailedSignInTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class EmailFailedSignInWithoutManyRelationsTable extends _i1.Table {
+  EmailFailedSignInWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_email_failed_sign_in') {

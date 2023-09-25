@@ -256,9 +256,18 @@ class _EmailAuthImpl extends EmailAuth {
 }
 
 typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
+typedef EmailAuthWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(EmailAuthWithoutManyRelationsTable);
 
-class EmailAuthTable extends _i1.Table {
+class EmailAuthTable extends EmailAuthWithoutManyRelationsTable {
   EmailAuthTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class EmailAuthWithoutManyRelationsTable extends _i1.Table {
+  EmailAuthWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_email_auth') {

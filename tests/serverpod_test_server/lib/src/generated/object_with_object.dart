@@ -316,9 +316,18 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 
 typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
     ObjectWithObjectTable);
+typedef ObjectWithObjectWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithObjectWithoutManyRelationsTable);
 
-class ObjectWithObjectTable extends _i1.Table {
+class ObjectWithObjectTable extends ObjectWithObjectWithoutManyRelationsTable {
   ObjectWithObjectTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithObjectWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithObjectWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_object') {

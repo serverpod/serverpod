@@ -314,9 +314,20 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
 
 typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
     ServerHealthConnectionInfoTable);
+typedef ServerHealthConnectionInfoWithoutManyRelationsExpressionBuilder
+    = _i1.Expression Function(
+        ServerHealthConnectionInfoWithoutManyRelationsTable);
 
-class ServerHealthConnectionInfoTable extends _i1.Table {
+class ServerHealthConnectionInfoTable
+    extends ServerHealthConnectionInfoWithoutManyRelationsTable {
   ServerHealthConnectionInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ServerHealthConnectionInfoWithoutManyRelationsTable extends _i1.Table {
+  ServerHealthConnectionInfoWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_health_connection_info') {

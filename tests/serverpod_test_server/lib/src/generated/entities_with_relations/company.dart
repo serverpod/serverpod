@@ -273,9 +273,52 @@ class _CompanyImpl extends Company {
 }
 
 typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
+typedef CompanyWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    CompanyWithoutManyRelationsTable);
 
-class CompanyTable extends _i1.Table {
+class CompanyTable extends CompanyWithoutManyRelationsTable {
   CompanyTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+
+  _i2.CitizenWithoutManyRelationsTable? _employees;
+
+  _i2.CitizenWithoutManyRelationsTable get _employeesTable {
+    if (_employees != null) return _employees!;
+    _employees = _i1.createRelationTable(
+      queryPrefix: queryPrefix,
+      fieldName: 'employees',
+      foreignTableName: _i2.Citizen.t.tableName,
+      column: id,
+      foreignColumnName: _i2.Citizen.t._companyEmployeesCompanyId.columnName,
+      createTable: (
+        relationQueryPrefix,
+        foreignTableRelation,
+      ) =>
+          _i2.CitizenWithoutManyRelationsTable(
+        queryPrefix: relationQueryPrefix,
+        tableRelations: [
+          ...?tableRelations,
+          foreignTableRelation,
+        ],
+      ),
+    );
+    return _employees!;
+  }
+
+  _i1.ManyRelation employees(
+      _i2.CitizenWithoutManyRelationsExpressionBuilder where) {
+    return _i1.ManyRelation(
+      table: _employeesTable,
+      where: where(_employeesTable),
+      foreignIdColumnName: '_companyEmployeesCompanyId',
+    );
+  }
+}
+
+class CompanyWithoutManyRelationsTable extends _i1.Table {
+  CompanyWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'company') {

@@ -361,9 +361,18 @@ class _ChatMessageImpl extends ChatMessage {
 
 typedef ChatMessageExpressionBuilder = _i1.Expression Function(
     ChatMessageTable);
+typedef ChatMessageWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ChatMessageWithoutManyRelationsTable);
 
-class ChatMessageTable extends _i1.Table {
+class ChatMessageTable extends ChatMessageWithoutManyRelationsTable {
   ChatMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ChatMessageWithoutManyRelationsTable extends _i1.Table {
+  ChatMessageWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_chat_message') {

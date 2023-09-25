@@ -276,9 +276,20 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
 
 typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
     EmailCreateAccountRequestTable);
+typedef EmailCreateAccountRequestWithoutManyRelationsExpressionBuilder
+    = _i1.Expression Function(
+        EmailCreateAccountRequestWithoutManyRelationsTable);
 
-class EmailCreateAccountRequestTable extends _i1.Table {
+class EmailCreateAccountRequestTable
+    extends EmailCreateAccountRequestWithoutManyRelationsTable {
   EmailCreateAccountRequestTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class EmailCreateAccountRequestWithoutManyRelationsTable extends _i1.Table {
+  EmailCreateAccountRequestWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_email_create_request') {

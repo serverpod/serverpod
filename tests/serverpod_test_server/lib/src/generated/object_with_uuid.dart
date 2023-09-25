@@ -238,9 +238,18 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
 
 typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
     ObjectWithUuidTable);
+typedef ObjectWithUuidWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithUuidWithoutManyRelationsTable);
 
-class ObjectWithUuidTable extends _i1.Table {
+class ObjectWithUuidTable extends ObjectWithUuidWithoutManyRelationsTable {
   ObjectWithUuidTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithUuidWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithUuidWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_uuid') {

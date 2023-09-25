@@ -239,9 +239,18 @@ class _MethodInfoImpl extends MethodInfo {
 }
 
 typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
+typedef MethodInfoWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(MethodInfoWithoutManyRelationsTable);
 
-class MethodInfoTable extends _i1.Table {
+class MethodInfoTable extends MethodInfoWithoutManyRelationsTable {
   MethodInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class MethodInfoWithoutManyRelationsTable extends _i1.Table {
+  MethodInfoWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_method') {

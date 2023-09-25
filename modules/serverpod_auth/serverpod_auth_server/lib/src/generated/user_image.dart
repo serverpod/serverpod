@@ -256,9 +256,18 @@ class _UserImageImpl extends UserImage {
 }
 
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
+typedef UserImageWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(UserImageWithoutManyRelationsTable);
 
-class UserImageTable extends _i1.Table {
+class UserImageTable extends UserImageWithoutManyRelationsTable {
   UserImageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class UserImageWithoutManyRelationsTable extends _i1.Table {
+  UserImageWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_user_image') {

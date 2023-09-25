@@ -279,9 +279,18 @@ class _PostImpl extends Post {
 }
 
 typedef PostExpressionBuilder = _i1.Expression Function(PostTable);
+typedef PostWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    PostWithoutManyRelationsTable);
 
-class PostTable extends _i1.Table {
+class PostTable extends PostWithoutManyRelationsTable {
   PostTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class PostWithoutManyRelationsTable extends _i1.Table {
+  PostWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'post') {

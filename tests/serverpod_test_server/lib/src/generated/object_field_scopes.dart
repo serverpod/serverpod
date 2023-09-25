@@ -248,9 +248,19 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
 
 typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
     ObjectFieldScopesTable);
+typedef ObjectFieldScopesWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectFieldScopesWithoutManyRelationsTable);
 
-class ObjectFieldScopesTable extends _i1.Table {
+class ObjectFieldScopesTable
+    extends ObjectFieldScopesWithoutManyRelationsTable {
   ObjectFieldScopesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectFieldScopesWithoutManyRelationsTable extends _i1.Table {
+  ObjectFieldScopesWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_field_scopes') {

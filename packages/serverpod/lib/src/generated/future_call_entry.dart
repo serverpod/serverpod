@@ -295,9 +295,18 @@ class _FutureCallEntryImpl extends FutureCallEntry {
 
 typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
     FutureCallEntryTable);
+typedef FutureCallEntryWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(FutureCallEntryWithoutManyRelationsTable);
 
-class FutureCallEntryTable extends _i1.Table {
+class FutureCallEntryTable extends FutureCallEntryWithoutManyRelationsTable {
   FutureCallEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class FutureCallEntryWithoutManyRelationsTable extends _i1.Table {
+  FutureCallEntryWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_future_call') {

@@ -261,9 +261,18 @@ class _AddressImpl extends Address {
 }
 
 typedef AddressExpressionBuilder = _i1.Expression Function(AddressTable);
+typedef AddressWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    AddressWithoutManyRelationsTable);
 
-class AddressTable extends _i1.Table {
+class AddressTable extends AddressWithoutManyRelationsTable {
   AddressTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class AddressWithoutManyRelationsTable extends _i1.Table {
+  AddressWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'address') {

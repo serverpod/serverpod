@@ -237,9 +237,18 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
 
 typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
     ObjectWithIndexTable);
+typedef ObjectWithIndexWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ObjectWithIndexWithoutManyRelationsTable);
 
-class ObjectWithIndexTable extends _i1.Table {
+class ObjectWithIndexTable extends ObjectWithIndexWithoutManyRelationsTable {
   ObjectWithIndexTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ObjectWithIndexWithoutManyRelationsTable extends _i1.Table {
+  ObjectWithIndexWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'object_with_index') {

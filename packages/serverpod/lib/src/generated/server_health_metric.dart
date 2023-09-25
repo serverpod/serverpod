@@ -314,9 +314,19 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
 
 typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
     ServerHealthMetricTable);
+typedef ServerHealthMetricWithoutManyRelationsExpressionBuilder = _i1.Expression
+    Function(ServerHealthMetricWithoutManyRelationsTable);
 
-class ServerHealthMetricTable extends _i1.Table {
+class ServerHealthMetricTable
+    extends ServerHealthMetricWithoutManyRelationsTable {
   ServerHealthMetricTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ServerHealthMetricWithoutManyRelationsTable extends _i1.Table {
+  ServerHealthMetricWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'serverpod_health_metric') {

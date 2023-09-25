@@ -238,9 +238,18 @@ class _ChannelImpl extends Channel {
 }
 
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
+typedef ChannelWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    ChannelWithoutManyRelationsTable);
 
-class ChannelTable extends _i1.Table {
+class ChannelTable extends ChannelWithoutManyRelationsTable {
   ChannelTable({
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
+class ChannelWithoutManyRelationsTable extends _i1.Table {
+  ChannelWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
   }) : super(tableName: 'channel') {
