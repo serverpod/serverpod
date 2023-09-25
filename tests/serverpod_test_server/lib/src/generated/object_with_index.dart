@@ -97,6 +97,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithIndex>> find(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
@@ -120,6 +121,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithIndex?> findSingleRow(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
@@ -139,6 +141,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithIndex?> findById(
     _i1.Session session,
     int id,
@@ -146,6 +149,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     return session.db.findById<ObjectWithIndex>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithIndexExpressionBuilder where,
@@ -157,6 +161,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -168,6 +173,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -179,6 +185,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.insert instead.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -190,6 +197,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
