@@ -48,7 +48,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<int?> deleteAllInTypes(Session session) async {
-    return await Types.delete(session, where: (t) => Constant(true));
+    return await Types.delete(session, where: (t) => Constant.bool(true));
   }
 
   Future<void> createSimpleTestData(Session session, int numRows) async {
@@ -65,7 +65,7 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<void> deleteAllSimpleTestData(Session session) async {
-    await SimpleData.delete(session, where: (t) => Constant(true));
+    await SimpleData.delete(session, where: (t) => Constant.bool(true));
   }
 
   Future<void> deleteSimpleTestDataLessThan(Session session, int num) async {
@@ -135,7 +135,7 @@ class BasicDatabase extends Endpoint {
     // Clear database.
     await ObjectWithByteData.delete(
       session,
-      where: (t) => Constant(true),
+      where: (t) => Constant.bool(true),
     );
 
     // Create byte data.
@@ -167,7 +167,7 @@ class BasicDatabase extends Endpoint {
     // Clear database.
     await ObjectWithDuration.delete(
       session,
-      where: (t) => Constant(true),
+      where: (t) => Constant.bool(true),
     );
 
     // Create byte data.

@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class ObjectWithObject extends _i1.TableRow {
-  ObjectWithObject({
+abstract class ObjectWithObject extends _i1.TableRow {
+  ObjectWithObject._({
     int? id,
     required this.data,
     this.nullableData,
@@ -19,6 +19,16 @@ class ObjectWithObject extends _i1.TableRow {
     required this.listWithNullableData,
     this.nullableListWithNullableData,
   }) : super(id);
+
+  factory ObjectWithObject({
+    int? id,
+    required _i2.SimpleData data,
+    _i2.SimpleData? nullableData,
+    required List<_i2.SimpleData> dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    required List<_i2.SimpleData?> listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) = _ObjectWithObjectImpl;
 
   factory ObjectWithObject.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -58,7 +68,16 @@ class ObjectWithObject extends _i1.TableRow {
   List<_i2.SimpleData?>? nullableListWithNullableData;
 
   @override
-  String get tableName => 'object_with_object';
+  _i1.Table get table => t;
+  ObjectWithObject copyWith({
+    int? id,
+    _i2.SimpleData? data,
+    _i2.SimpleData? nullableData,
+    List<_i2.SimpleData>? dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    List<_i2.SimpleData?>? listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -73,6 +92,7 @@ class ObjectWithObject extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -237,31 +257,114 @@ class ObjectWithObject extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithObjectInclude include() {
+    return ObjectWithObjectInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithObjectImpl extends ObjectWithObject {
+  _ObjectWithObjectImpl({
+    int? id,
+    required _i2.SimpleData data,
+    _i2.SimpleData? nullableData,
+    required List<_i2.SimpleData> dataList,
+    List<_i2.SimpleData>? nullableDataList,
+    required List<_i2.SimpleData?> listWithNullableData,
+    List<_i2.SimpleData?>? nullableListWithNullableData,
+  }) : super._(
+          id: id,
+          data: data,
+          nullableData: nullableData,
+          dataList: dataList,
+          nullableDataList: nullableDataList,
+          listWithNullableData: listWithNullableData,
+          nullableListWithNullableData: nullableListWithNullableData,
+        );
+
+  @override
+  ObjectWithObject copyWith({
+    Object? id = _Undefined,
+    _i2.SimpleData? data,
+    Object? nullableData = _Undefined,
+    List<_i2.SimpleData>? dataList,
+    Object? nullableDataList = _Undefined,
+    List<_i2.SimpleData?>? listWithNullableData,
+    Object? nullableListWithNullableData = _Undefined,
+  }) {
+    return ObjectWithObject(
+      id: id is int? ? id : this.id,
+      data: data ?? this.data.copyWith(),
+      nullableData: nullableData is _i2.SimpleData?
+          ? nullableData
+          : this.nullableData?.copyWith(),
+      dataList: dataList ?? this.dataList.clone(),
+      nullableDataList: nullableDataList is List<_i2.SimpleData>?
+          ? nullableDataList
+          : this.nullableDataList?.clone(),
+      listWithNullableData:
+          listWithNullableData ?? this.listWithNullableData.clone(),
+      nullableListWithNullableData:
+          nullableListWithNullableData is List<_i2.SimpleData?>?
+              ? nullableListWithNullableData
+              : this.nullableListWithNullableData?.clone(),
+    );
+  }
 }
 
 typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
     ObjectWithObjectTable);
 
 class ObjectWithObjectTable extends _i1.Table {
-  ObjectWithObjectTable() : super(tableName: 'object_with_object');
+  ObjectWithObjectTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_object') {
+    data = _i1.ColumnSerializable(
+      'data',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableData = _i1.ColumnSerializable(
+      'nullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    dataList = _i1.ColumnSerializable(
+      'dataList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableDataList = _i1.ColumnSerializable(
+      'nullableDataList',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    listWithNullableData = _i1.ColumnSerializable(
+      'listWithNullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    nullableListWithNullableData = _i1.ColumnSerializable(
+      'nullableListWithNullableData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnSerializable data;
 
-  final data = _i1.ColumnSerializable('data');
+  late final _i1.ColumnSerializable nullableData;
 
-  final nullableData = _i1.ColumnSerializable('nullableData');
+  late final _i1.ColumnSerializable dataList;
 
-  final dataList = _i1.ColumnSerializable('dataList');
+  late final _i1.ColumnSerializable nullableDataList;
 
-  final nullableDataList = _i1.ColumnSerializable('nullableDataList');
+  late final _i1.ColumnSerializable listWithNullableData;
 
-  final listWithNullableData = _i1.ColumnSerializable('listWithNullableData');
-
-  final nullableListWithNullableData =
-      _i1.ColumnSerializable('nullableListWithNullableData');
+  late final _i1.ColumnSerializable nullableListWithNullableData;
 
   @override
   List<_i1.Column> get columns => [
@@ -277,3 +380,12 @@ class ObjectWithObjectTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithObjectTable.t instead.')
 ObjectWithObjectTable tObjectWithObject = ObjectWithObjectTable();
+
+class ObjectWithObjectInclude extends _i1.Include {
+  ObjectWithObjectInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithObject.t;
+}

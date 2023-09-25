@@ -9,6 +9,94 @@ import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
 import 'entity_relations.dart';
 
+const _globallyRestrictedKeywords = [
+  'toJson',
+  'fromJson',
+  'toString',
+  'hashCode',
+  'runtimeType',
+  'noSuchMethod',
+  'abstract',
+  'else',
+  'import',
+  'super',
+  'as',
+  'enum',
+  'in',
+  'switch',
+  'assert',
+  'export',
+  'interface',
+  'sync',
+  'async',
+  'extend',
+  'is',
+  'this',
+  'await',
+  'extension',
+  'library',
+  'throw',
+  'break',
+  'external',
+  'mixin',
+  'true',
+  'case',
+  'factory',
+  'new',
+  'try',
+  'class',
+  'final',
+  'catch',
+  'false',
+  'null',
+  'typedef',
+  'on',
+  'var',
+  'const',
+  'finally',
+  'operator',
+  'void',
+  'continue',
+  'for',
+  'part',
+  'while',
+  'covariant',
+  'function',
+  'rethrow',
+  'with',
+  'default',
+  'get',
+  'return',
+  'yield',
+  'deferred',
+  'hide',
+  'set',
+  'do',
+  'if',
+  'show',
+  'dynamic',
+  'implements',
+  'static'
+];
+
+const _databaseEntityReservedFieldNames = [
+  'count',
+  'insert',
+  'update',
+  'deleteRow',
+  'delete',
+  'findById',
+  'findSingleRow',
+  'find',
+  'setColumn',
+  'allToJson',
+  'toJsonForDatabase',
+  'tableName',
+  'include',
+  'db',
+  'table',
+];
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
@@ -89,11 +177,15 @@ class Restrictions {
       ];
     }
 
-    var relations = entityRelations;
-    if (relations != null &&
-        !_isKeyGloballyUnique(tableName, relations.tableNames)) {
-      var otherClass =
-          _findFirstClassOtherClass(tableName, relations.tableNames);
+    var relationships = entityRelations;
+    if (relationships == null) return [];
+
+    if (!relationships.isTableNameUnique(documentDefinition, tableName)) {
+      var otherClass = relationships.findByTableName(
+        tableName,
+        ignore: documentDefinition,
+      );
+
       return [
         SourceSpanSeverityException(
           'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
@@ -118,9 +210,7 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     if (field == null) return errors;
 
-    var type = field.type.className;
-
-    if (!AnalyzeChecker.isIdType(type)) {
+    if (!field.type.isIdType) {
       errors.add(SourceSpanSeverityException(
         'The "parent" property should be omitted on protocol relations.',
         span,
@@ -128,6 +218,28 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> validateDatabaseActionKey(
+    String parentNodeName,
+    String key,
+    SourceSpan? span,
+  ) {
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+
+    if (field?.relation?.isForeignKeyOrigin == false) {
+      return [
+        SourceSpanSeverityException(
+          'The "$key" property can only be set on the side holding the foreign key.',
+          span,
+        )
+      ];
+    }
+
+    return [];
   }
 
   List<SourceSpanSeverityException> validateOptionalKey(
@@ -143,9 +255,7 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     if (field == null) return errors;
 
-    var type = field.type.className;
-
-    if (AnalyzeChecker.isIdType(type)) {
+    if (field.type.isIdType) {
       errors.add(SourceSpanSeverityException(
         'The "optional" property should be omitted on id fields.',
         span,
@@ -168,9 +278,14 @@ class Restrictions {
         )
       ];
     }
-    var indexNames = entityRelations?.indexNames;
-    if (indexNames != null && !_isKeyGloballyUnique(indexName, indexNames)) {
-      var collision = _findFirstClassOtherClass(indexName, indexNames);
+    var relationships = entityRelations;
+    if (relationships == null) return [];
+    if (!relationships.isIndexNameUnique(documentDefinition, indexName)) {
+      var collision = relationships.findByIndexName(
+        indexName,
+        ignore: documentDefinition,
+      );
+
       return [
         SourceSpanSeverityException(
           'The index name "$indexName" is already used by the protocol class "${collision?.className}".',
@@ -207,10 +322,30 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (fieldName == 'id' && def is ClassDefinition && def.tableName != null) {
+    if (def is ClassDefinition && def.tableName != null && fieldName == 'id') {
       return [
         SourceSpanSeverityException(
           'The field name "id" is not allowed when a table is defined (the "id" field will be auto generated).',
+          span,
+        )
+      ];
+    }
+
+    if (def is ClassDefinition &&
+        def.tableName != null &&
+        _databaseEntityReservedFieldNames.contains(fieldName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field name "$fieldName" is reserved and cannot be used.',
+          span,
+        )
+      ];
+    }
+
+    if (_globallyRestrictedKeywords.contains(fieldName)) {
+      return [
+        SourceSpanSeverityException(
+          'The field name "$fieldName" is reserved and cannot be used.',
           span,
         )
       ];
@@ -221,7 +356,7 @@ class Restrictions {
 
   List<SourceSpanSeverityException> validateRelationFieldKey(
     String parentNodeName,
-    String fieldName,
+    String _,
     SourceSpan? span,
   ) {
     var classDefinition = documentDefinition;
@@ -231,7 +366,7 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    if (field.type.isList) {
+    if (field.type.isListType) {
       return [
         SourceSpanSeverityException(
           'The "field" property can only be used on an object relation.',
@@ -240,16 +375,68 @@ class Restrictions {
       ];
     }
 
-    if (AnalyzeChecker.isIdType(field.type.className)) {
+    if (field.type.isIdType) {
       return [
         SourceSpanSeverityException(
           'The "field" property can only be used on an object relation.',
+          span,
+        )
+      ];
+    }
+
+    var foreignFields = entityRelations?.findNamedForeignRelationFields(
+      classDefinition,
+      field,
+    );
+    if (foreignFields == null) return [];
+
+    if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
+      return [
+        SourceSpanSeverityException(
+          'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
           span,
         )
       ];
     }
 
     return [];
+  }
+
+  bool _isForeignKeyDefinedOnAnySide(
+    SerializableEntityFieldDefinition field,
+    List<SerializableEntityFieldDefinition> foreignFields,
+  ) {
+    bool isForeignFieldForeignKeyOrigin = _isForeignFieldForeignKeyOrigin(
+      foreignFields,
+    );
+
+    var isLocalFieldForeignKeyOrigin =
+        field.relation?.isForeignKeyOrigin == true;
+
+    return isLocalFieldForeignKeyOrigin || isForeignFieldForeignKeyOrigin;
+  }
+
+  bool _isForeignKeyDefinedOnBothSides(
+    SerializableEntityFieldDefinition field,
+    List<SerializableEntityFieldDefinition> foreignFields,
+  ) {
+    bool isForeignFieldForeignKeyOrigin = _isForeignFieldForeignKeyOrigin(
+      foreignFields,
+    );
+
+    var isLocalFieldForeignKeyOrigin =
+        field.relation?.isForeignKeyOrigin == true;
+
+    return isLocalFieldForeignKeyOrigin && isForeignFieldForeignKeyOrigin;
+  }
+
+  bool _isForeignFieldForeignKeyOrigin(
+    List<SerializableEntityFieldDefinition> foreignFields,
+  ) {
+    var isForeignFieldForeignKeyOrigin = foreignFields.any(
+      (element) => element.relation?.isForeignKeyOrigin == true,
+    );
+    return isForeignFieldForeignKeyOrigin;
   }
 
   List<SourceSpanSeverityException> validateRelationFieldName(
@@ -405,10 +592,10 @@ class Restrictions {
       ));
     }
 
-    String? parsedType = _extractReferenceClassName(field);
-
     var localEntityRelations = entityRelations;
     if (localEntityRelations == null) return errors;
+
+    String? parsedType = localEntityRelations.extractReferenceClassName(field);
 
     var referenceClassExists = localEntityRelations.classNameExists(parsedType);
     if (!referenceClassExists) {
@@ -419,8 +606,7 @@ class Restrictions {
       return errors;
     }
 
-    var referenceClasses = localEntityRelations.classNames[parsedType];
-    var referenceClass = referenceClasses?.first;
+    var referenceClass = localEntityRelations.findByClassName(parsedType);
 
     if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
@@ -430,31 +616,9 @@ class Restrictions {
       return errors;
     }
 
-    if (!_hasTableDefined(referenceClasses)) {
+    if (!_hasTableDefined(referenceClass)) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
-        span,
-      ));
-    }
-
-    if (!(field.type.isList)) return errors;
-
-    var referenceFields = referenceClass.fields.where((field) {
-      var relation = field.relation;
-      if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == classDefinition.tableName;
-    });
-
-    if (referenceFields.isEmpty) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" does not have a relation to this protocol.',
-        span,
-      ));
-    }
-
-    if (referenceFields.length > 1) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" has several reference fields, unable to resolve ambiguous relation.',
         span,
       ));
     }
@@ -572,6 +736,67 @@ class Restrictions {
     return errors;
   }
 
+  List<SourceSpanSeverityException> validateRelationName(
+    String parentNodeName,
+    dynamic name,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ClassDefinition) return [];
+
+    if (name is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The property must be a String.',
+          span,
+        )
+      ];
+    }
+
+    var localEntityRelations = entityRelations;
+    if (localEntityRelations == null) return [];
+
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null) return [];
+
+    var foreignFields = localEntityRelations.findNamedForeignRelationFields(
+      classDefinition,
+      field,
+    );
+
+    var foreignClassName = localEntityRelations.extractReferenceClassName(
+      field,
+    );
+    if (foreignFields.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'There is no named relation with name "$name" on the class "$foreignClassName".',
+          span,
+        )
+      ];
+    }
+
+    if (foreignFields.length > 1) {
+      return [
+        SourceSpanSeverityException(
+          'Unable to resolve ambiguous relation, there are several named relations with name "$name" on the class "$foreignClassName".',
+          span,
+        )
+      ];
+    }
+
+    if (!_isForeignKeyDefinedOnAnySide(field, foreignFields)) {
+      return [
+        SourceSpanSeverityException(
+          'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateEnumValues(
     String parentNodeName,
     dynamic content,
@@ -619,6 +844,13 @@ class Restrictions {
         );
       }
 
+      if (_globallyRestrictedKeywords.contains(enumValue)) {
+        return SourceSpanSeverityException(
+          'The enum value "$enumValue" is reserved and cannot be used.',
+          node.span,
+        );
+      }
+
       return null;
     });
 
@@ -653,45 +885,29 @@ class Restrictions {
     );
   }
 
-  bool _isKeyGloballyUnique(
-    String key,
-    Map<String, List<SerializableEntityDefinition>> map,
-  ) {
-    var classes = map[key];
+  bool _hasTableDefined(SerializableEntityDefinition classDefinition) {
+    if (classDefinition is! ClassDefinition) return false;
 
-    if (documentDefinition == null && classes != null && classes.isNotEmpty) {
-      return false;
+    return classDefinition.tableName != null;
+  }
+}
+
+class StringValueRestriction {
+  List<SourceSpanSeverityException> validate(
+    String parentNodeName,
+    dynamic value,
+    SourceSpan? span,
+  ) {
+    if (value is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The property must be a String.',
+          span,
+        )
+      ];
     }
 
-    return classes == null || classes.length == 1;
-  }
-
-  SerializableEntityDefinition? _findFirstClassOtherClass(
-    String key,
-    Map<String, List<SerializableEntityDefinition>> map,
-  ) {
-    var classes = map[key];
-    if (classes == null || classes.isEmpty) return null;
-
-    return classes.firstWhere((c) => c != documentDefinition);
-  }
-
-  String? _extractReferenceClassName(SerializableEntityFieldDefinition? field) {
-    if (field == null) return null;
-    if (field.type.isList) {
-      return field.type.generics.first.className;
-    }
-
-    return field.type.className;
-  }
-
-  bool _hasTableDefined(List<SerializableEntityDefinition>? classes) {
-    var hasTable = classes
-        ?.whereType<ClassDefinition>()
-        .any((definition) => definition.tableName != null);
-    if (hasTable == null) return false;
-
-    return hasTable;
+    return [];
   }
 }
 

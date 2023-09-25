@@ -9,13 +9,20 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-class FilterConstraint extends _i1.SerializableEntity {
-  FilterConstraint({
+abstract class FilterConstraint extends _i1.SerializableEntity {
+  FilterConstraint._({
     required this.type,
     required this.column,
     required this.value,
     this.value2,
   });
+
+  factory FilterConstraint({
+    required _i2.FilterConstraintType type,
+    required String column,
+    required String value,
+    String? value2,
+  }) = _FilterConstraintImpl;
 
   factory FilterConstraint.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -41,6 +48,12 @@ class FilterConstraint extends _i1.SerializableEntity {
 
   String? value2;
 
+  FilterConstraint copyWith({
+    _i2.FilterConstraintType? type,
+    String? column,
+    String? value,
+    String? value2,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -49,5 +62,36 @@ class FilterConstraint extends _i1.SerializableEntity {
       'value': value,
       'value2': value2,
     };
+  }
+}
+
+class _Undefined {}
+
+class _FilterConstraintImpl extends FilterConstraint {
+  _FilterConstraintImpl({
+    required _i2.FilterConstraintType type,
+    required String column,
+    required String value,
+    String? value2,
+  }) : super._(
+          type: type,
+          column: column,
+          value: value,
+          value2: value2,
+        );
+
+  @override
+  FilterConstraint copyWith({
+    _i2.FilterConstraintType? type,
+    String? column,
+    String? value,
+    Object? value2 = _Undefined,
+  }) {
+    return FilterConstraint(
+      type: type ?? this.type,
+      column: column ?? this.column,
+      value: value ?? this.value,
+      value2: value2 is String? ? value2 : this.value2,
+    );
   }
 }

@@ -13,8 +13,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-class UserInfo extends _i1.TableRow {
-  UserInfo({
+abstract class UserInfo extends _i1.TableRow {
+  UserInfo._({
     int? id,
     required this.userIdentifier,
     required this.userName,
@@ -25,6 +25,18 @@ class UserInfo extends _i1.TableRow {
     required this.scopeNames,
     required this.blocked,
   }) : super(id);
+
+  factory UserInfo({
+    int? id,
+    required String userIdentifier,
+    required String userName,
+    String? fullName,
+    String? email,
+    required DateTime created,
+    String? imageUrl,
+    required List<String> scopeNames,
+    required bool blocked,
+  }) = _UserInfoImpl;
 
   factory UserInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -79,7 +91,18 @@ class UserInfo extends _i1.TableRow {
   bool blocked;
 
   @override
-  String get tableName => 'serverpod_user_info';
+  _i1.Table get table => t;
+  UserInfo copyWith({
+    int? id,
+    String? userIdentifier,
+    String? userName,
+    String? fullName,
+    String? email,
+    DateTime? created,
+    String? imageUrl,
+    List<String>? scopeNames,
+    bool? blocked,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -96,6 +119,7 @@ class UserInfo extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -270,42 +294,136 @@ class UserInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static UserInfoInclude include() {
+    return UserInfoInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _UserInfoImpl extends UserInfo {
+  _UserInfoImpl({
+    int? id,
+    required String userIdentifier,
+    required String userName,
+    String? fullName,
+    String? email,
+    required DateTime created,
+    String? imageUrl,
+    required List<String> scopeNames,
+    required bool blocked,
+  }) : super._(
+          id: id,
+          userIdentifier: userIdentifier,
+          userName: userName,
+          fullName: fullName,
+          email: email,
+          created: created,
+          imageUrl: imageUrl,
+          scopeNames: scopeNames,
+          blocked: blocked,
+        );
+
+  @override
+  UserInfo copyWith({
+    Object? id = _Undefined,
+    String? userIdentifier,
+    String? userName,
+    Object? fullName = _Undefined,
+    Object? email = _Undefined,
+    DateTime? created,
+    Object? imageUrl = _Undefined,
+    List<String>? scopeNames,
+    bool? blocked,
+  }) {
+    return UserInfo(
+      id: id is int? ? id : this.id,
+      userIdentifier: userIdentifier ?? this.userIdentifier,
+      userName: userName ?? this.userName,
+      fullName: fullName is String? ? fullName : this.fullName,
+      email: email is String? ? email : this.email,
+      created: created ?? this.created,
+      imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
+      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      blocked: blocked ?? this.blocked,
+    );
+  }
 }
 
 typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
 
 class UserInfoTable extends _i1.Table {
-  UserInfoTable() : super(tableName: 'serverpod_user_info');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  UserInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_user_info') {
+    userIdentifier = _i1.ColumnString(
+      'userIdentifier',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userName = _i1.ColumnString(
+      'userName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    fullName = _i1.ColumnString(
+      'fullName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    created = _i1.ColumnDateTime(
+      'created',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    imageUrl = _i1.ColumnString(
+      'imageUrl',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    scopeNames = _i1.ColumnSerializable(
+      'scopeNames',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    blocked = _i1.ColumnBool(
+      'blocked',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
-  final userIdentifier = _i1.ColumnString('userIdentifier');
+  late final _i1.ColumnString userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  final userName = _i1.ColumnString('userName');
+  late final _i1.ColumnString userName;
 
   /// The full name of the user.
-  final fullName = _i1.ColumnString('fullName');
+  late final _i1.ColumnString fullName;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The time when this user was created.
-  final created = _i1.ColumnDateTime('created');
+  late final _i1.ColumnDateTime created;
 
   /// A URL to the user's avatar.
-  final imageUrl = _i1.ColumnString('imageUrl');
+  late final _i1.ColumnString imageUrl;
 
   /// List of scopes that this user can access.
-  final scopeNames = _i1.ColumnSerializable('scopeNames');
+  late final _i1.ColumnSerializable scopeNames;
 
   /// True if the user is blocked from signing in.
-  final blocked = _i1.ColumnBool('blocked');
+  late final _i1.ColumnBool blocked;
 
   @override
   List<_i1.Column> get columns => [
@@ -323,3 +441,12 @@ class UserInfoTable extends _i1.Table {
 
 @Deprecated('Use UserInfoTable.t instead.')
 UserInfoTable tUserInfo = UserInfoTable();
+
+class UserInfoInclude extends _i1.Include {
+  UserInfoInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => UserInfo.t;
+}

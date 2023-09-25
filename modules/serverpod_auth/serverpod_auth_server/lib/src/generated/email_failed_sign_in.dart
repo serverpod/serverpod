@@ -10,13 +10,20 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-class EmailFailedSignIn extends _i1.TableRow {
-  EmailFailedSignIn({
+abstract class EmailFailedSignIn extends _i1.TableRow {
+  EmailFailedSignIn._({
     int? id,
     required this.email,
     required this.time,
     required this.ipAddress,
   }) : super(id);
+
+  factory EmailFailedSignIn({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) = _EmailFailedSignInImpl;
 
   factory EmailFailedSignIn.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -45,7 +52,13 @@ class EmailFailedSignIn extends _i1.TableRow {
   String ipAddress;
 
   @override
-  String get tableName => 'serverpod_email_failed_sign_in';
+  _i1.Table get table => t;
+  EmailFailedSignIn copyWith({
+    int? id,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -57,6 +70,7 @@ class EmailFailedSignIn extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -206,27 +220,76 @@ class EmailFailedSignIn extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailFailedSignInInclude include() {
+    return EmailFailedSignInInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailFailedSignInImpl extends EmailFailedSignIn {
+  _EmailFailedSignInImpl({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) : super._(
+          id: id,
+          email: email,
+          time: time,
+          ipAddress: ipAddress,
+        );
+
+  @override
+  EmailFailedSignIn copyWith({
+    Object? id = _Undefined,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  }) {
+    return EmailFailedSignIn(
+      id: id is int? ? id : this.id,
+      email: email ?? this.email,
+      time: time ?? this.time,
+      ipAddress: ipAddress ?? this.ipAddress,
+    );
+  }
 }
 
 typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
     EmailFailedSignInTable);
 
 class EmailFailedSignInTable extends _i1.Table {
-  EmailFailedSignInTable() : super(tableName: 'serverpod_email_failed_sign_in');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailFailedSignInTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_failed_sign_in') {
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    ipAddress = _i1.ColumnString(
+      'ipAddress',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Email attempting to sign in with.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The time of the sign in attempt.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The IP address of the sign in attempt.
-  final ipAddress = _i1.ColumnString('ipAddress');
+  late final _i1.ColumnString ipAddress;
 
   @override
   List<_i1.Column> get columns => [
@@ -239,3 +302,12 @@ class EmailFailedSignInTable extends _i1.Table {
 
 @Deprecated('Use EmailFailedSignInTable.t instead.')
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
+
+class EmailFailedSignInInclude extends _i1.Include {
+  EmailFailedSignInInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailFailedSignIn.t;
+}

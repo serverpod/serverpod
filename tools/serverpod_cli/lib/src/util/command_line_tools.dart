@@ -130,6 +130,60 @@ class CommandLineTools {
 
     return true;
   }
+
+  static Future<bool> startDockerContainer(Directory dir) async {
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'docker',
+      arguments: ['compose', 'up', '--build', '--detach'],
+      workingDirectory: dir.path,
+    );
+
+    if (exitCode != 0) {
+      log.error('Failed to start Docker container.');
+      return false;
+    }
+
+    return true;
+  }
+
+  static Future<bool> stopDockerContainer(Directory dir) async {
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'docker',
+      arguments: ['compose', 'stop'],
+      workingDirectory: dir.path,
+    );
+
+    if (exitCode != 0) {
+      log.error('Failed to stop Docker container.');
+      return false;
+    }
+
+    return true;
+  }
+
+  static Future<bool> applyMigrations(Directory dir, LogLevel logLevel) async {
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'dart',
+      arguments: [
+        'bin/main.dart',
+        '--apply-migrations',
+        '--role',
+        'maintenance',
+        if (logLevel == LogLevel.debug) ...[
+          '--logging',
+          'verbose',
+        ],
+      ],
+      workingDirectory: dir.path,
+    );
+
+    if (exitCode != 0) {
+      log.error('Failed to apply default database migration.');
+      return false;
+    }
+
+    return true;
+  }
 }
 
 class _CommandFormatter {

@@ -973,34 +973,6 @@ void main() {
       expect(count, equals(99));
     });
 
-    test('Find with limit', () async {
-      await setupTestData(client);
-
-      var list = await client.basicDatabase
-          .findSimpleDataRowsLessThan(75, 25, 25, true);
-      expect(list, isNotNull);
-      expect(list!.rows, isNotNull);
-      expect(list.rows.length, equals(25));
-      expect(list.rows.first.num, equals(49));
-      expect(list.rows.last.num, equals(25));
-
-      list = await client.basicDatabase
-          .findSimpleDataRowsLessThan(75, 25, 25, false);
-      expect(list, isNotNull);
-      expect(list!.rows, isNotNull);
-      expect(list.rows.length, equals(25));
-      expect(list.rows.first.num, equals(25));
-      expect(list.rows.last.num, equals(49));
-
-      list = await client.basicDatabase
-          .findSimpleDataRowsLessThan(20, 0, 25, false);
-      expect(list, isNotNull);
-      expect(list!.rows, isNotNull);
-      expect(list.rows.length, equals(20));
-      expect(list.rows.first.num, equals(0));
-      expect(list.rows.last.num, equals(19));
-    });
-
     test('Update row', () async {
       await setupTestData(client);
 

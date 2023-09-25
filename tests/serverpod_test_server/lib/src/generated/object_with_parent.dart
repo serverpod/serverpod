@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithParent extends _i1.TableRow {
-  ObjectWithParent({
+abstract class ObjectWithParent extends _i1.TableRow {
+  ObjectWithParent._({
     int? id,
     required this.other,
   }) : super(id);
+
+  factory ObjectWithParent({
+    int? id,
+    required int other,
+  }) = _ObjectWithParentImpl;
 
   factory ObjectWithParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -29,7 +34,11 @@ class ObjectWithParent extends _i1.TableRow {
   int other;
 
   @override
-  String get tableName => 'object_with_parent';
+  _i1.Table get table => t;
+  ObjectWithParent copyWith({
+    int? id,
+    int? other,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -39,6 +48,7 @@ class ObjectWithParent extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -178,20 +188,51 @@ class ObjectWithParent extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithParentInclude include() {
+    return ObjectWithParentInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithParentImpl extends ObjectWithParent {
+  _ObjectWithParentImpl({
+    int? id,
+    required int other,
+  }) : super._(
+          id: id,
+          other: other,
+        );
+
+  @override
+  ObjectWithParent copyWith({
+    Object? id = _Undefined,
+    int? other,
+  }) {
+    return ObjectWithParent(
+      id: id is int? ? id : this.id,
+      other: other ?? this.other,
+    );
+  }
 }
 
 typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
     ObjectWithParentTable);
 
 class ObjectWithParentTable extends _i1.Table {
-  ObjectWithParentTable() : super(tableName: 'object_with_parent');
+  ObjectWithParentTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_parent') {
+    other = _i1.ColumnInt(
+      'other',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
-
-  final other = _i1.ColumnInt('other');
+  late final _i1.ColumnInt other;
 
   @override
   List<_i1.Column> get columns => [
@@ -202,3 +243,12 @@ class ObjectWithParentTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithParentTable.t instead.')
 ObjectWithParentTable tObjectWithParent = ObjectWithParentTable();
+
+class ObjectWithParentInclude extends _i1.Include {
+  ObjectWithParentInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithParent.t;
+}

@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ObjectWithDuration extends _i1.SerializableEntity {
-  ObjectWithDuration({
+abstract class ObjectWithDuration extends _i1.SerializableEntity {
+  ObjectWithDuration._({
     this.id,
     required this.duration,
   });
+
+  factory ObjectWithDuration({
+    int? id,
+    required Duration duration,
+  }) = _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -32,11 +37,38 @@ class ObjectWithDuration extends _i1.SerializableEntity {
 
   Duration duration;
 
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'duration': duration,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithDurationImpl extends ObjectWithDuration {
+  _ObjectWithDurationImpl({
+    int? id,
+    required Duration duration,
+  }) : super._(
+          id: id,
+          duration: duration,
+        );
+
+  @override
+  ObjectWithDuration copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id is int? ? id : this.id,
+      duration: duration ?? this.duration,
+    );
   }
 }

@@ -1,0 +1,3 @@
+class: SimpleDataMap
+fields:
+  data: Map<String, SimpleData>

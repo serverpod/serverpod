@@ -1,0 +1,15 @@
+### Represents a version of a database migration.
+class: DatabaseMigrationVersion
+fields:
+  ### The module the migration belongs to.
+  module: String
+
+  ### The version of the migration.
+  version: String
+
+  ### The priority of the migration. Determines the order in which the
+  ### migrations are applied.
+  priority: int?
+
+  ### The timestamp of the migration. Only set if the migration is applied.
+  timestamp: DateTime?

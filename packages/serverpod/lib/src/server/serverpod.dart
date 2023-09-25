@@ -42,7 +42,13 @@ class Serverpod {
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
   /// object, although it may be possible to run multiple instances in the same
   /// program it's not recommended.
-  static Serverpod? get instance => _instance;
+  static Serverpod get instance {
+    if (_instance == null) {
+      throw Exception('Serverpod has not been initialized. You need to create '
+          'the Serverpod object before calling this method.');
+    }
+    return _instance!;
+  }
 
   late String _runMode;
 
@@ -405,9 +411,11 @@ class Serverpod {
       }
 
       // Start maintenance tasks. If we are running in maintenance mode, we
-      // will only run the maintenance tasks once.
+      // will only run the maintenance tasks once. If we are applying migrations
+      // no other maintenance tasks will be run.
       if (commandLineArgs.role == ServerpodRole.monolith ||
-          commandLineArgs.role == ServerpodRole.maintenance) {
+          (commandLineArgs.role == ServerpodRole.maintenance &&
+              !commandLineArgs.applyMigrations)) {
         logVerbose('Starting maintenance tasks.');
 
         // Start future calls
@@ -419,7 +427,11 @@ class Serverpod {
 
       logVerbose('Serverpod start complete.');
 
-      // TODO: Run maintenance tasks once if in maintenance role.
+      if (commandLineArgs.role == ServerpodRole.maintenance &&
+          commandLineArgs.applyMigrations) {
+        logVerbose('Finished applying database migrations.');
+        exit(0);
+      }
     }, (e, stackTrace) {
       // Last resort error handling
       // TODO: Log to database?

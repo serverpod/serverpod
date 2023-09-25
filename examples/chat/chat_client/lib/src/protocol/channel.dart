@@ -9,12 +9,18 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Represents a chat channel.
-class Channel extends _i1.SerializableEntity {
-  Channel({
+abstract class Channel extends _i1.SerializableEntity {
+  Channel._({
     this.id,
     required this.name,
     required this.channel,
   });
+
+  factory Channel({
+    int? id,
+    required String name,
+    required String channel,
+  }) = _ChannelImpl;
 
   factory Channel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,6 +45,11 @@ class Channel extends _i1.SerializableEntity {
   /// The id of the channel.
   String channel;
 
+  Channel copyWith({
+    int? id,
+    String? name,
+    String? channel,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -46,5 +57,32 @@ class Channel extends _i1.SerializableEntity {
       'name': name,
       'channel': channel,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ChannelImpl extends Channel {
+  _ChannelImpl({
+    int? id,
+    required String name,
+    required String channel,
+  }) : super._(
+          id: id,
+          name: name,
+          channel: channel,
+        );
+
+  @override
+  Channel copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? channel,
+  }) {
+    return Channel(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      channel: channel ?? this.channel,
+    );
   }
 }

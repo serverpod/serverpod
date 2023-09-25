@@ -8,9 +8,10 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'protocol.dart' as _i3;
 
-class Types extends _i1.TableRow {
-  Types({
+abstract class Types extends _i1.TableRow {
+  Types._({
     int? id,
     this.anInt,
     this.aBool,
@@ -20,7 +21,21 @@ class Types extends _i1.TableRow {
     this.aByteData,
     this.aDuration,
     this.aUuid,
+    this.anEnum,
   }) : super(id);
+
+  factory Types({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
+  }) = _TypesImpl;
 
   factory Types.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -43,6 +58,8 @@ class Types extends _i1.TableRow {
           .deserialize<Duration?>(jsonSerialization['aDuration']),
       aUuid: serializationManager
           .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
+      anEnum: serializationManager
+          .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
     );
   }
 
@@ -64,8 +81,22 @@ class Types extends _i1.TableRow {
 
   _i1.UuidValue? aUuid;
 
+  _i3.TestEnum? anEnum;
+
   @override
-  String get tableName => 'types';
+  _i1.Table get table => t;
+  Types copyWith({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -78,10 +109,12 @@ class Types extends _i1.TableRow {
       'aByteData': aByteData,
       'aDuration': aDuration,
       'aUuid': aUuid,
+      'anEnum': anEnum,
     };
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -93,6 +126,7 @@ class Types extends _i1.TableRow {
       'aByteData': aByteData,
       'aDuration': aDuration,
       'aUuid': aUuid,
+      'anEnum': anEnum,
     };
   }
 
@@ -108,6 +142,7 @@ class Types extends _i1.TableRow {
       'aByteData': aByteData,
       'aDuration': aDuration,
       'aUuid': aUuid,
+      'anEnum': anEnum,
     };
   }
 
@@ -143,6 +178,9 @@ class Types extends _i1.TableRow {
         return;
       case 'aUuid':
         aUuid = value;
+        return;
+      case 'anEnum':
+        anEnum = value;
         return;
       default:
         throw UnimplementedError();
@@ -256,33 +294,139 @@ class Types extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static TypesInclude include() {
+    return TypesInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _TypesImpl extends Types {
+  _TypesImpl({
+    int? id,
+    int? anInt,
+    bool? aBool,
+    double? aDouble,
+    DateTime? aDateTime,
+    String? aString,
+    _i2.ByteData? aByteData,
+    Duration? aDuration,
+    _i1.UuidValue? aUuid,
+    _i3.TestEnum? anEnum,
+  }) : super._(
+          id: id,
+          anInt: anInt,
+          aBool: aBool,
+          aDouble: aDouble,
+          aDateTime: aDateTime,
+          aString: aString,
+          aByteData: aByteData,
+          aDuration: aDuration,
+          aUuid: aUuid,
+          anEnum: anEnum,
+        );
+
+  @override
+  Types copyWith({
+    Object? id = _Undefined,
+    Object? anInt = _Undefined,
+    Object? aBool = _Undefined,
+    Object? aDouble = _Undefined,
+    Object? aDateTime = _Undefined,
+    Object? aString = _Undefined,
+    Object? aByteData = _Undefined,
+    Object? aDuration = _Undefined,
+    Object? aUuid = _Undefined,
+    Object? anEnum = _Undefined,
+  }) {
+    return Types(
+      id: id is int? ? id : this.id,
+      anInt: anInt is int? ? anInt : this.anInt,
+      aBool: aBool is bool? ? aBool : this.aBool,
+      aDouble: aDouble is double? ? aDouble : this.aDouble,
+      aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
+      aString: aString is String? ? aString : this.aString,
+      aByteData:
+          aByteData is _i2.ByteData? ? aByteData : this.aByteData?.clone(),
+      aDuration: aDuration is Duration? ? aDuration : this.aDuration,
+      aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
+      anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
+    );
+  }
 }
 
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
-  TypesTable() : super(tableName: 'types');
+  TypesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'types') {
+    anInt = _i1.ColumnInt(
+      'anInt',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aBool = _i1.ColumnBool(
+      'aBool',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDouble = _i1.ColumnDouble(
+      'aDouble',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDateTime = _i1.ColumnDateTime(
+      'aDateTime',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aString = _i1.ColumnString(
+      'aString',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aByteData = _i1.ColumnByteData(
+      'aByteData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aDuration = _i1.ColumnDuration(
+      'aDuration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    aUuid = _i1.ColumnUuid(
+      'aUuid',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    anEnum = _i1.ColumnEnum<_i3.TestEnum>(
+      'anEnum',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt anInt;
 
-  final anInt = _i1.ColumnInt('anInt');
+  late final _i1.ColumnBool aBool;
 
-  final aBool = _i1.ColumnBool('aBool');
+  late final _i1.ColumnDouble aDouble;
 
-  final aDouble = _i1.ColumnDouble('aDouble');
+  late final _i1.ColumnDateTime aDateTime;
 
-  final aDateTime = _i1.ColumnDateTime('aDateTime');
+  late final _i1.ColumnString aString;
 
-  final aString = _i1.ColumnString('aString');
+  late final _i1.ColumnByteData aByteData;
 
-  final aByteData = _i1.ColumnByteData('aByteData');
+  late final _i1.ColumnDuration aDuration;
 
-  final aDuration = _i1.ColumnDuration('aDuration');
+  late final _i1.ColumnUuid aUuid;
 
-  final aUuid = _i1.ColumnUuid('aUuid');
+  late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
   @override
   List<_i1.Column> get columns => [
@@ -295,8 +439,18 @@ class TypesTable extends _i1.Table {
         aByteData,
         aDuration,
         aUuid,
+        anEnum,
       ];
 }
 
 @Deprecated('Use TypesTable.t instead.')
 TypesTable tTypes = TypesTable();
+
+class TypesInclude extends _i1.Include {
+  TypesInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => Types.t;
+}

@@ -9,11 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Just some simple data.
-class SimpleData extends _i1.TableRow {
-  SimpleData({
+abstract class SimpleData extends _i1.TableRow {
+  SimpleData._({
     int? id,
     required this.num,
   }) : super(id);
+
+  factory SimpleData({
+    int? id,
+    required int num,
+  }) = _SimpleDataImpl;
 
   factory SimpleData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,7 +38,11 @@ class SimpleData extends _i1.TableRow {
   int num;
 
   @override
-  String get tableName => 'simple_data';
+  _i1.Table get table => t;
+  SimpleData copyWith({
+    int? id,
+    int? num,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -43,6 +52,7 @@ class SimpleData extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -182,22 +192,53 @@ class SimpleData extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static SimpleDataInclude include() {
+    return SimpleDataInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _SimpleDataImpl extends SimpleData {
+  _SimpleDataImpl({
+    int? id,
+    required int num,
+  }) : super._(
+          id: id,
+          num: num,
+        );
+
+  @override
+  SimpleData copyWith({
+    Object? id = _Undefined,
+    int? num,
+  }) {
+    return SimpleData(
+      id: id is int? ? id : this.id,
+      num: num ?? this.num,
+    );
+  }
 }
 
 typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
 
 class SimpleDataTable extends _i1.Table {
-  SimpleDataTable() : super(tableName: 'simple_data');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  SimpleDataTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'simple_data') {
+    num = _i1.ColumnInt(
+      'num',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  final num = _i1.ColumnInt('num');
+  late final _i1.ColumnInt num;
 
   @override
   List<_i1.Column> get columns => [
@@ -208,3 +249,12 @@ class SimpleDataTable extends _i1.Table {
 
 @Deprecated('Use SimpleDataTable.t instead.')
 SimpleDataTable tSimpleData = SimpleDataTable();
+
+class SimpleDataInclude extends _i1.Include {
+  SimpleDataInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => SimpleData.t;
+}

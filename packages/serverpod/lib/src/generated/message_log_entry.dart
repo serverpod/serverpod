@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-class MessageLogEntry extends _i1.TableRow {
-  MessageLogEntry({
+abstract class MessageLogEntry extends _i1.TableRow {
+  MessageLogEntry._({
     int? id,
     required this.sessionLogId,
     required this.serverId,
@@ -23,6 +23,20 @@ class MessageLogEntry extends _i1.TableRow {
     required this.slow,
     required this.order,
   }) : super(id);
+
+  factory MessageLogEntry({
+    int? id,
+    required int sessionLogId,
+    required String serverId,
+    required int messageId,
+    required String endpoint,
+    required String messageName,
+    required double duration,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _MessageLogEntryImpl;
 
   factory MessageLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -86,7 +100,20 @@ class MessageLogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get tableName => 'serverpod_message_log';
+  _i1.Table get table => t;
+  MessageLogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    String? serverId,
+    int? messageId,
+    String? endpoint,
+    String? messageName,
+    double? duration,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -105,6 +132,7 @@ class MessageLogEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -289,50 +317,162 @@ class MessageLogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static MessageLogEntryInclude include() {
+    return MessageLogEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _MessageLogEntryImpl extends MessageLogEntry {
+  _MessageLogEntryImpl({
+    int? id,
+    required int sessionLogId,
+    required String serverId,
+    required int messageId,
+    required String endpoint,
+    required String messageName,
+    required double duration,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) : super._(
+          id: id,
+          sessionLogId: sessionLogId,
+          serverId: serverId,
+          messageId: messageId,
+          endpoint: endpoint,
+          messageName: messageName,
+          duration: duration,
+          error: error,
+          stackTrace: stackTrace,
+          slow: slow,
+          order: order,
+        );
+
+  @override
+  MessageLogEntry copyWith({
+    Object? id = _Undefined,
+    int? sessionLogId,
+    String? serverId,
+    int? messageId,
+    String? endpoint,
+    String? messageName,
+    double? duration,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    bool? slow,
+    int? order,
+  }) {
+    return MessageLogEntry(
+      id: id is int? ? id : this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      serverId: serverId ?? this.serverId,
+      messageId: messageId ?? this.messageId,
+      endpoint: endpoint ?? this.endpoint,
+      messageName: messageName ?? this.messageName,
+      duration: duration ?? this.duration,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
+  }
 }
 
 typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
     MessageLogEntryTable);
 
 class MessageLogEntryTable extends _i1.Table {
-  MessageLogEntryTable() : super(tableName: 'serverpod_message_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  MessageLogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_message_log') {
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    endpoint = _i1.ColumnString(
+      'endpoint',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    messageName = _i1.ColumnString(
+      'messageName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    duration = _i1.ColumnDouble(
+      'duration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    error = _i1.ColumnString(
+      'error',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    slow = _i1.ColumnBool(
+      'slow',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Id of the session this entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
   /// The id of the server that handled the message.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// The id of the message this entry is associated with.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// The entpoint this message is associated with.
-  final endpoint = _i1.ColumnString('endpoint');
+  late final _i1.ColumnString endpoint;
 
   /// The class name of the message this entry is associated with.
-  final messageName = _i1.ColumnString('messageName');
+  late final _i1.ColumnString messageName;
 
   /// The duration of handling of this message.
-  final duration = _i1.ColumnDouble('duration');
+  late final _i1.ColumnDouble duration;
 
   /// Error is set if an error or exception was thrown during the handling of
   /// this message.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// The stack trace of an error that was thrown during the handling of this
   /// message.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// The handling of this message was slow.
-  final slow = _i1.ColumnBool('slow');
+  late final _i1.ColumnBool slow;
 
   /// Used for sorting the message log.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [
@@ -352,3 +492,12 @@ class MessageLogEntryTable extends _i1.Table {
 
 @Deprecated('Use MessageLogEntryTable.t instead.')
 MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
+
+class MessageLogEntryInclude extends _i1.Include {
+  MessageLogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => MessageLogEntry.t;
+}

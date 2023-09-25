@@ -9,12 +9,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a server method.
-class MethodInfo extends _i1.TableRow {
-  MethodInfo({
+abstract class MethodInfo extends _i1.TableRow {
+  MethodInfo._({
     int? id,
     required this.endpoint,
     required this.method,
   }) : super(id);
+
+  factory MethodInfo({
+    int? id,
+    required String endpoint,
+    required String method,
+  }) = _MethodInfoImpl;
 
   factory MethodInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,7 +44,12 @@ class MethodInfo extends _i1.TableRow {
   String method;
 
   @override
-  String get tableName => 'serverpod_method';
+  _i1.Table get table => t;
+  MethodInfo copyWith({
+    int? id,
+    String? endpoint,
+    String? method,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -49,6 +60,7 @@ class MethodInfo extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -193,23 +205,63 @@ class MethodInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static MethodInfoInclude include() {
+    return MethodInfoInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _MethodInfoImpl extends MethodInfo {
+  _MethodInfoImpl({
+    int? id,
+    required String endpoint,
+    required String method,
+  }) : super._(
+          id: id,
+          endpoint: endpoint,
+          method: method,
+        );
+
+  @override
+  MethodInfo copyWith({
+    Object? id = _Undefined,
+    String? endpoint,
+    String? method,
+  }) {
+    return MethodInfo(
+      id: id is int? ? id : this.id,
+      endpoint: endpoint ?? this.endpoint,
+      method: method ?? this.method,
+    );
+  }
 }
 
 typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
 class MethodInfoTable extends _i1.Table {
-  MethodInfoTable() : super(tableName: 'serverpod_method');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  MethodInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_method') {
+    endpoint = _i1.ColumnString(
+      'endpoint',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    method = _i1.ColumnString(
+      'method',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The endpoint of this method.
-  final endpoint = _i1.ColumnString('endpoint');
+  late final _i1.ColumnString endpoint;
 
   /// The name of this method.
-  final method = _i1.ColumnString('method');
+  late final _i1.ColumnString method;
 
   @override
   List<_i1.Column> get columns => [
@@ -221,3 +273,12 @@ class MethodInfoTable extends _i1.Table {
 
 @Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();
+
+class MethodInfoInclude extends _i1.Include {
+  MethodInfoInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => MethodInfo.t;
+}

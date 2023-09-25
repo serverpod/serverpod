@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Message to notifiy the server that messages have been read.
-class ChatReadMessage extends _i1.TableRow {
-  ChatReadMessage({
+abstract class ChatReadMessage extends _i1.TableRow {
+  ChatReadMessage._({
     int? id,
     required this.channel,
     required this.userId,
     required this.lastReadMessageId,
   }) : super(id);
+
+  factory ChatReadMessage({
+    int? id,
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) = _ChatReadMessageImpl;
 
   factory ChatReadMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,7 +51,13 @@ class ChatReadMessage extends _i1.TableRow {
   int lastReadMessageId;
 
   @override
-  String get tableName => 'serverpod_chat_read_message';
+  _i1.Table get table => t;
+  ChatReadMessage copyWith({
+    int? id,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -56,6 +69,7 @@ class ChatReadMessage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -205,27 +219,76 @@ class ChatReadMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChatReadMessageInclude include() {
+    return ChatReadMessageInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ChatReadMessageImpl extends ChatReadMessage {
+  _ChatReadMessageImpl({
+    int? id,
+    required String channel,
+    required int userId,
+    required int lastReadMessageId,
+  }) : super._(
+          id: id,
+          channel: channel,
+          userId: userId,
+          lastReadMessageId: lastReadMessageId,
+        );
+
+  @override
+  ChatReadMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    int? userId,
+    int? lastReadMessageId,
+  }) {
+    return ChatReadMessage(
+      id: id is int? ? id : this.id,
+      channel: channel ?? this.channel,
+      userId: userId ?? this.userId,
+      lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+    );
+  }
 }
 
 typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
     ChatReadMessageTable);
 
 class ChatReadMessageTable extends _i1.Table {
-  ChatReadMessageTable() : super(tableName: 'serverpod_chat_read_message');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChatReadMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_chat_read_message') {
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    lastReadMessageId = _i1.ColumnInt(
+      'lastReadMessageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The channel this that has been read.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   /// The id of the user that read the messages.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The id of the last read message.
-  final lastReadMessageId = _i1.ColumnInt('lastReadMessageId');
+  late final _i1.ColumnInt lastReadMessageId;
 
   @override
   List<_i1.Column> get columns => [
@@ -238,3 +301,12 @@ class ChatReadMessageTable extends _i1.Table {
 
 @Deprecated('Use ChatReadMessageTable.t instead.')
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
+
+class ChatReadMessageInclude extends _i1.Include {
+  ChatReadMessageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ChatReadMessage.t;
+}

@@ -10,14 +10,22 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Runtime settings of the server.
-class RuntimeSettings extends _i1.TableRow {
-  RuntimeSettings({
+abstract class RuntimeSettings extends _i1.TableRow {
+  RuntimeSettings._({
     int? id,
     required this.logSettings,
     required this.logSettingsOverrides,
     required this.logServiceCalls,
     required this.logMalformedCalls,
   }) : super(id);
+
+  factory RuntimeSettings({
+    int? id,
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) = _RuntimeSettingsImpl;
 
   factory RuntimeSettings.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -52,7 +60,14 @@ class RuntimeSettings extends _i1.TableRow {
   bool logMalformedCalls;
 
   @override
-  String get tableName => 'serverpod_runtime_settings';
+  _i1.Table get table => t;
+  RuntimeSettings copyWith({
+    int? id,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -65,6 +80,7 @@ class RuntimeSettings extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -219,30 +235,89 @@ class RuntimeSettings extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static RuntimeSettingsInclude include() {
+    return RuntimeSettingsInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _RuntimeSettingsImpl extends RuntimeSettings {
+  _RuntimeSettingsImpl({
+    int? id,
+    required _i2.LogSettings logSettings,
+    required List<_i2.LogSettingsOverride> logSettingsOverrides,
+    required bool logServiceCalls,
+    required bool logMalformedCalls,
+  }) : super._(
+          id: id,
+          logSettings: logSettings,
+          logSettingsOverrides: logSettingsOverrides,
+          logServiceCalls: logServiceCalls,
+          logMalformedCalls: logMalformedCalls,
+        );
+
+  @override
+  RuntimeSettings copyWith({
+    Object? id = _Undefined,
+    _i2.LogSettings? logSettings,
+    List<_i2.LogSettingsOverride>? logSettingsOverrides,
+    bool? logServiceCalls,
+    bool? logMalformedCalls,
+  }) {
+    return RuntimeSettings(
+      id: id is int? ? id : this.id,
+      logSettings: logSettings ?? this.logSettings.copyWith(),
+      logSettingsOverrides:
+          logSettingsOverrides ?? this.logSettingsOverrides.clone(),
+      logServiceCalls: logServiceCalls ?? this.logServiceCalls,
+      logMalformedCalls: logMalformedCalls ?? this.logMalformedCalls,
+    );
+  }
 }
 
 typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
     RuntimeSettingsTable);
 
 class RuntimeSettingsTable extends _i1.Table {
-  RuntimeSettingsTable() : super(tableName: 'serverpod_runtime_settings');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  RuntimeSettingsTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_runtime_settings') {
+    logSettings = _i1.ColumnSerializable(
+      'logSettings',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logSettingsOverrides = _i1.ColumnSerializable(
+      'logSettingsOverrides',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logServiceCalls = _i1.ColumnBool(
+      'logServiceCalls',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logMalformedCalls = _i1.ColumnBool(
+      'logMalformedCalls',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Log settings.
-  final logSettings = _i1.ColumnSerializable('logSettings');
+  late final _i1.ColumnSerializable logSettings;
 
   /// List of log setting overrides.
-  final logSettingsOverrides = _i1.ColumnSerializable('logSettingsOverrides');
+  late final _i1.ColumnSerializable logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
-  final logServiceCalls = _i1.ColumnBool('logServiceCalls');
+  late final _i1.ColumnBool logServiceCalls;
 
   /// True if malformed calls should be logged.
-  final logMalformedCalls = _i1.ColumnBool('logMalformedCalls');
+  late final _i1.ColumnBool logMalformedCalls;
 
   @override
   List<_i1.Column> get columns => [
@@ -256,3 +331,12 @@ class RuntimeSettingsTable extends _i1.Table {
 
 @Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
+
+class RuntimeSettingsInclude extends _i1.Include {
+  RuntimeSettingsInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => RuntimeSettings.t;
+}

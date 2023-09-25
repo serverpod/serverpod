@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/entity_dependency_resolver.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/entity_relations.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
@@ -5,7 +6,6 @@ import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validato
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
@@ -13,23 +13,12 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
   return p.basenameWithoutExtension(path);
-}
-
-class _ProtocolClassDefinitionSource {
-  final ProtocolSource protocolSource;
-  final SerializableEntityDefinition entityDefinition;
-
-  _ProtocolClassDefinitionSource({
-    required this.protocolSource,
-    required this.entityDefinition,
-  });
 }
 
 /// Used to analyze a singe yaml protocol file.
@@ -39,37 +28,6 @@ class SerializableEntityAnalyzer {
     Keyword.exceptionType,
     Keyword.enumType,
   };
-
-  /// Analyze all yaml files in the protocol directory.
-  static Future<List<SerializableEntityDefinition>> analyzeAllFiles({
-    required CodeAnalysisCollector collector,
-    required GeneratorConfig config,
-  }) async {
-    var protocols =
-        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
-
-    var entityProtocolDefinitions = _createEntityProtocolDefinitions(
-      protocols,
-    );
-
-    var entityDefinitions = entityProtocolDefinitions
-        .map((definition) => definition.entityDefinition)
-        .toList();
-
-    resolveEntityDependencies(entityDefinitions);
-
-    for (var definition in entityProtocolDefinitions) {
-      SerializableEntityAnalyzer.validateYamlDefinition(
-        definition.protocolSource.yaml,
-        definition.entityDefinition.sourceFileName,
-        collector,
-        definition.entityDefinition,
-        entityDefinitions,
-      );
-    }
-
-    return entityDefinitions;
-  }
 
   /// Best effort attempt to extract an entity definition from a yaml file.
   static SerializableEntityDefinition? extractEntityDefinition(
@@ -126,22 +84,9 @@ class SerializableEntityAnalyzer {
   static void resolveEntityDependencies(
     List<SerializableEntityDefinition> entityDefinitions,
   ) {
-    entityDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      for (var fieldDefinition in classDefinition.fields) {
-        _resolveProtocolReference(fieldDefinition, entityDefinitions);
-        _resolveEnumType(fieldDefinition, entityDefinitions);
-        _resolveObjectAndIdRelations(
-          classDefinition,
-          fieldDefinition,
-          entityDefinitions,
-        );
-        _resolveListRelationReference(
-          classDefinition,
-          fieldDefinition,
-          entityDefinitions,
-        );
-      }
-    });
+    return EntityDependencyResolver.resolveEntityDependencies(
+      entityDefinitions,
+    );
   }
 
   /// Validates a yaml file against an expected syntax for protocol files.
@@ -250,154 +195,5 @@ class SerializableEntityAnalyzer {
     }
 
     return null;
-  }
-
-  static List<_ProtocolClassDefinitionSource> _createEntityProtocolDefinitions(
-      List<ProtocolSource> protocols) {
-    return protocols
-        .map((protocol) {
-          var entity = SerializableEntityAnalyzer.extractEntityDefinition(
-            protocol,
-          );
-
-          if (entity == null) return null;
-
-          return _ProtocolClassDefinitionSource(
-            protocolSource: protocol,
-            entityDefinition: entity,
-          );
-        })
-        .whereType<_ProtocolClassDefinitionSource>()
-        .toList();
-  }
-
-  static TypeDefinition _resolveProtocolReference(
-      SerializableEntityFieldDefinition fieldDefinition,
-      List<SerializableEntityDefinition> entityDefinitions) {
-    return fieldDefinition.type =
-        fieldDefinition.type.applyProtocolReferences(entityDefinitions);
-  }
-
-  static void _resolveEnumType(
-      SerializableEntityFieldDefinition fieldDefinition,
-      List<SerializableEntityDefinition> entityDefinitions) {
-    if (_isEnumField(fieldDefinition, entityDefinitions)) {
-      fieldDefinition.type.isEnum = true;
-    }
-  }
-
-  static bool _isEnumField(SerializableEntityFieldDefinition fieldDefinition,
-      List<SerializableEntityDefinition> entityDefinitions) {
-    return fieldDefinition.type.url == 'protocol' &&
-        entityDefinitions
-            .whereType<EnumDefinition>()
-            .any((e) => e.className == fieldDefinition.type.className);
-  }
-
-  static void _resolveObjectAndIdRelations(
-    ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
-  ) {
-    // order of execution matters here.
-    _resolveObjectRelationReference(
-      classDefinition,
-      fieldDefinition,
-      entityDefinitions,
-    );
-    _resolveForeignRelationDefinition(
-      classDefinition,
-      fieldDefinition,
-      entityDefinitions,
-    );
-  }
-
-  static void _resolveObjectRelationReference(
-    ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
-  ) {
-    var relation = fieldDefinition.relation;
-    if (relation is! UnresolvedObjectRelationDefinition) return;
-
-    fieldDefinition.relation = ObjectRelationDefinition(
-      fieldName: relation.fieldName,
-    );
-
-    var field = classDefinition.findField(relation.fieldName);
-    if (field == null) return;
-
-    field.relation = UnresolvedForeignRelationDefinition(
-      referenceFieldName: relation.foreignFieldName,
-      onUpdate: relation.onUpdate,
-      onDelete: relation.onDelete,
-    );
-  }
-
-  static void _resolveForeignRelationDefinition(
-    ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
-  ) {
-    var relation = fieldDefinition.relation;
-    if (relation is! ObjectRelationDefinition) return;
-
-    var referenceClass = entityDefinitions
-        .cast<SerializableEntityDefinition?>()
-        .firstWhere(
-            (entity) => entity?.className == fieldDefinition.type.className,
-            orElse: () => null);
-
-    if (referenceClass is! ClassDefinition) return;
-
-    var tableName = referenceClass.tableName;
-    if (tableName is! String) return;
-
-    var relationField = classDefinition.findField(
-      relation.fieldName,
-    );
-
-    var fieldRelation = relationField?.relation;
-    if (relationField == null) return;
-    if (fieldRelation is! UnresolvedForeignRelationDefinition) return;
-
-    relationField.relation = ForeignRelationDefinition(
-      parentTable: tableName,
-      foreignFieldName: fieldRelation.referenceFieldName,
-      onUpdate: fieldRelation.onUpdate,
-      onDelete: fieldRelation.onDelete,
-    );
-  }
-
-  static void _resolveListRelationReference(
-    ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
-  ) {
-    var type = fieldDefinition.type;
-    if (!type.isList || type.generics.isEmpty) return;
-
-    var referenceClassName = type.generics.first.className;
-
-    var referenceClass =
-        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
-              (entity) => entity?.className == referenceClassName,
-              orElse: () => null,
-            );
-
-    if (referenceClass is! ClassDefinition) return;
-
-    var foreignFields = referenceClass.fields.where((field) {
-      var relation = field.relation;
-      if (relation is! ForeignRelationDefinition) return false;
-      return relation.parentTable == classDefinition.tableName;
-    });
-
-    if (foreignFields.isEmpty) return;
-
-    // TODO: Handle multiple references.
-    fieldDefinition.relation = ListRelationDefinition(
-      foreignFieldName: foreignFields.first.name,
-    );
   }
 }

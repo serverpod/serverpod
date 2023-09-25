@@ -9,11 +9,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-class ObjectWithByteData extends _i1.TableRow {
-  ObjectWithByteData({
+abstract class ObjectWithByteData extends _i1.TableRow {
+  ObjectWithByteData._({
     int? id,
     required this.byteData,
   }) : super(id);
+
+  factory ObjectWithByteData({
+    int? id,
+    required _i2.ByteData byteData,
+  }) = _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,7 +36,11 @@ class ObjectWithByteData extends _i1.TableRow {
   _i2.ByteData byteData;
 
   @override
-  String get tableName => 'object_with_bytedata';
+  _i1.Table get table => t;
+  ObjectWithByteData copyWith({
+    int? id,
+    _i2.ByteData? byteData,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -41,6 +50,7 @@ class ObjectWithByteData extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -180,20 +190,51 @@ class ObjectWithByteData extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithByteDataInclude include() {
+    return ObjectWithByteDataInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithByteDataImpl extends ObjectWithByteData {
+  _ObjectWithByteDataImpl({
+    int? id,
+    required _i2.ByteData byteData,
+  }) : super._(
+          id: id,
+          byteData: byteData,
+        );
+
+  @override
+  ObjectWithByteData copyWith({
+    Object? id = _Undefined,
+    _i2.ByteData? byteData,
+  }) {
+    return ObjectWithByteData(
+      id: id is int? ? id : this.id,
+      byteData: byteData ?? this.byteData.clone(),
+    );
+  }
 }
 
 typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
     ObjectWithByteDataTable);
 
 class ObjectWithByteDataTable extends _i1.Table {
-  ObjectWithByteDataTable() : super(tableName: 'object_with_bytedata');
+  ObjectWithByteDataTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_bytedata') {
+    byteData = _i1.ColumnByteData(
+      'byteData',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
-
-  final byteData = _i1.ColumnByteData('byteData');
+  late final _i1.ColumnByteData byteData;
 
   @override
   List<_i1.Column> get columns => [
@@ -204,3 +245,12 @@ class ObjectWithByteDataTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithByteDataTable.t instead.')
 ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
+
+class ObjectWithByteDataInclude extends _i1.Include {
+  ObjectWithByteDataInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithByteData.t;
+}

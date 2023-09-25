@@ -8,12 +8,18 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithIndex extends _i1.TableRow {
-  ObjectWithIndex({
+abstract class ObjectWithIndex extends _i1.TableRow {
+  ObjectWithIndex._({
     int? id,
     required this.indexed,
     required this.indexed2,
   }) : super(id);
+
+  factory ObjectWithIndex({
+    int? id,
+    required int indexed,
+    required int indexed2,
+  }) = _ObjectWithIndexImpl;
 
   factory ObjectWithIndex.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -35,7 +41,12 @@ class ObjectWithIndex extends _i1.TableRow {
   int indexed2;
 
   @override
-  String get tableName => 'object_with_index';
+  _i1.Table get table => t;
+  ObjectWithIndex copyWith({
+    int? id,
+    int? indexed,
+    int? indexed2,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -46,6 +57,7 @@ class ObjectWithIndex extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -190,22 +202,62 @@ class ObjectWithIndex extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithIndexInclude include() {
+    return ObjectWithIndexInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithIndexImpl extends ObjectWithIndex {
+  _ObjectWithIndexImpl({
+    int? id,
+    required int indexed,
+    required int indexed2,
+  }) : super._(
+          id: id,
+          indexed: indexed,
+          indexed2: indexed2,
+        );
+
+  @override
+  ObjectWithIndex copyWith({
+    Object? id = _Undefined,
+    int? indexed,
+    int? indexed2,
+  }) {
+    return ObjectWithIndex(
+      id: id is int? ? id : this.id,
+      indexed: indexed ?? this.indexed,
+      indexed2: indexed2 ?? this.indexed2,
+    );
+  }
 }
 
 typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
     ObjectWithIndexTable);
 
 class ObjectWithIndexTable extends _i1.Table {
-  ObjectWithIndexTable() : super(tableName: 'object_with_index');
+  ObjectWithIndexTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_index') {
+    indexed = _i1.ColumnInt(
+      'indexed',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    indexed2 = _i1.ColumnInt(
+      'indexed2',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnInt indexed;
 
-  final indexed = _i1.ColumnInt('indexed');
-
-  final indexed2 = _i1.ColumnInt('indexed2');
+  late final _i1.ColumnInt indexed2;
 
   @override
   List<_i1.Column> get columns => [
@@ -217,3 +269,12 @@ class ObjectWithIndexTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithIndexTable.t instead.')
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
+
+class ObjectWithIndexInclude extends _i1.Include {
+  ObjectWithIndexInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithIndex.t;
+}

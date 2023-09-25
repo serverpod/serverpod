@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a sign in with email.
-class EmailAuth extends _i1.TableRow {
-  EmailAuth({
+abstract class EmailAuth extends _i1.TableRow {
+  EmailAuth._({
     int? id,
     required this.userId,
     required this.email,
     required this.hash,
   }) : super(id);
+
+  factory EmailAuth({
+    int? id,
+    required int userId,
+    required String email,
+    required String hash,
+  }) = _EmailAuthImpl;
 
   factory EmailAuth.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -43,7 +50,13 @@ class EmailAuth extends _i1.TableRow {
   String hash;
 
   @override
-  String get tableName => 'serverpod_email_auth';
+  _i1.Table get table => t;
+  EmailAuth copyWith({
+    int? id,
+    int? userId,
+    String? email,
+    String? hash,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -55,6 +68,7 @@ class EmailAuth extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -204,26 +218,75 @@ class EmailAuth extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailAuthInclude include() {
+    return EmailAuthInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailAuthImpl extends EmailAuth {
+  _EmailAuthImpl({
+    int? id,
+    required int userId,
+    required String email,
+    required String hash,
+  }) : super._(
+          id: id,
+          userId: userId,
+          email: email,
+          hash: hash,
+        );
+
+  @override
+  EmailAuth copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? email,
+    String? hash,
+  }) {
+    return EmailAuth(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+    );
+  }
 }
 
 typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 
 class EmailAuthTable extends _i1.Table {
-  EmailAuthTable() : super(tableName: 'serverpod_email_auth');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailAuthTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_auth') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    hash = _i1.ColumnString(
+      'hash',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user, corresponds to the id field in [UserInfo].
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// The hashed password of the user.
-  final hash = _i1.ColumnString('hash');
+  late final _i1.ColumnString hash;
 
   @override
   List<_i1.Column> get columns => [
@@ -236,3 +299,12 @@ class EmailAuthTable extends _i1.Table {
 
 @Deprecated('Use EmailAuthTable.t instead.')
 EmailAuthTable tEmailAuth = EmailAuthTable();
+
+class EmailAuthInclude extends _i1.Include {
+  EmailAuthInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailAuth.t;
+}

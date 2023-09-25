@@ -10,11 +10,16 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-class ReadWriteTestEntry extends _i1.TableRow {
-  ReadWriteTestEntry({
+abstract class ReadWriteTestEntry extends _i1.TableRow {
+  ReadWriteTestEntry._({
     int? id,
     required this.number,
   }) : super(id);
+
+  factory ReadWriteTestEntry({
+    int? id,
+    required int number,
+  }) = _ReadWriteTestEntryImpl;
 
   factory ReadWriteTestEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,7 +38,11 @@ class ReadWriteTestEntry extends _i1.TableRow {
   int number;
 
   @override
-  String get tableName => 'serverpod_readwrite_test';
+  _i1.Table get table => t;
+  ReadWriteTestEntry copyWith({
+    int? id,
+    int? number,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -43,6 +52,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -182,21 +192,52 @@ class ReadWriteTestEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ReadWriteTestEntryInclude include() {
+    return ReadWriteTestEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
+  _ReadWriteTestEntryImpl({
+    int? id,
+    required int number,
+  }) : super._(
+          id: id,
+          number: number,
+        );
+
+  @override
+  ReadWriteTestEntry copyWith({
+    Object? id = _Undefined,
+    int? number,
+  }) {
+    return ReadWriteTestEntry(
+      id: id is int? ? id : this.id,
+      number: number ?? this.number,
+    );
+  }
 }
 
 typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
     ReadWriteTestEntryTable);
 
 class ReadWriteTestEntryTable extends _i1.Table {
-  ReadWriteTestEntryTable() : super(tableName: 'serverpod_readwrite_test');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ReadWriteTestEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_readwrite_test') {
+    number = _i1.ColumnInt(
+      'number',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// A random number, to verify that the write/read was performed correctly.
-  final number = _i1.ColumnInt('number');
+  late final _i1.ColumnInt number;
 
   @override
   List<_i1.Column> get columns => [
@@ -207,3 +248,12 @@ class ReadWriteTestEntryTable extends _i1.Table {
 
 @Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
+
+class ReadWriteTestEntryInclude extends _i1.Include {
+  ReadWriteTestEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ReadWriteTestEntry.t;
+}

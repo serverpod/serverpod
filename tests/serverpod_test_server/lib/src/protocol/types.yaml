@@ -9,3 +9,4 @@ fields:
   aByteData: ByteData?
   aDuration: Duration?
   aUuid: UuidValue?
+  anEnum: TestEnum?

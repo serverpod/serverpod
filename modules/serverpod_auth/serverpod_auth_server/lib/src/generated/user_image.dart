@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
-class UserImage extends _i1.TableRow {
-  UserImage({
+abstract class UserImage extends _i1.TableRow {
+  UserImage._({
     int? id,
     required this.userId,
     required this.version,
     required this.url,
   }) : super(id);
+
+  factory UserImage({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) = _UserImageImpl;
 
   factory UserImage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -43,7 +50,13 @@ class UserImage extends _i1.TableRow {
   String url;
 
   @override
-  String get tableName => 'serverpod_user_image';
+  _i1.Table get table => t;
+  UserImage copyWith({
+    int? id,
+    int? userId,
+    int? version,
+    String? url,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -55,6 +68,7 @@ class UserImage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -204,26 +218,75 @@ class UserImage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static UserImageInclude include() {
+    return UserImageInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _UserImageImpl extends UserImage {
+  _UserImageImpl({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) : super._(
+          id: id,
+          userId: userId,
+          version: version,
+          url: url,
+        );
+
+  @override
+  UserImage copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
+  }
 }
 
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 class UserImageTable extends _i1.Table {
-  UserImageTable() : super(tableName: 'serverpod_user_image');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  UserImageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_user_image') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    version = _i1.ColumnInt(
+      'version',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    url = _i1.ColumnString(
+      'url',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  final version = _i1.ColumnInt('version');
+  late final _i1.ColumnInt version;
 
   /// The URL to the image.
-  final url = _i1.ColumnString('url');
+  late final _i1.ColumnString url;
 
   @override
   List<_i1.Column> get columns => [
@@ -236,3 +299,12 @@ class UserImageTable extends _i1.Table {
 
 @Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();
+
+class UserImageInclude extends _i1.Include {
+  UserImageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => UserImage.t;
+}

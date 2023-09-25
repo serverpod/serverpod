@@ -10,14 +10,22 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
-class EmailCreateAccountRequest extends _i1.TableRow {
-  EmailCreateAccountRequest({
+abstract class EmailCreateAccountRequest extends _i1.TableRow {
+  EmailCreateAccountRequest._({
     int? id,
     required this.userName,
     required this.email,
     required this.hash,
     required this.verificationCode,
   }) : super(id);
+
+  factory EmailCreateAccountRequest({
+    int? id,
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) = _EmailCreateAccountRequestImpl;
 
   factory EmailCreateAccountRequest.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -50,7 +58,14 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   String verificationCode;
 
   @override
-  String get tableName => 'serverpod_email_create_request';
+  _i1.Table get table => t;
+  EmailCreateAccountRequest copyWith({
+    int? id,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -63,6 +78,7 @@ class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -217,31 +233,88 @@ class EmailCreateAccountRequest extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailCreateAccountRequestInclude include() {
+    return EmailCreateAccountRequestInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
+  _EmailCreateAccountRequestImpl({
+    int? id,
+    required String userName,
+    required String email,
+    required String hash,
+    required String verificationCode,
+  }) : super._(
+          id: id,
+          userName: userName,
+          email: email,
+          hash: hash,
+          verificationCode: verificationCode,
+        );
+
+  @override
+  EmailCreateAccountRequest copyWith({
+    Object? id = _Undefined,
+    String? userName,
+    String? email,
+    String? hash,
+    String? verificationCode,
+  }) {
+    return EmailCreateAccountRequest(
+      id: id is int? ? id : this.id,
+      userName: userName ?? this.userName,
+      email: email ?? this.email,
+      hash: hash ?? this.hash,
+      verificationCode: verificationCode ?? this.verificationCode,
+    );
+  }
 }
 
 typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
     EmailCreateAccountRequestTable);
 
 class EmailCreateAccountRequestTable extends _i1.Table {
-  EmailCreateAccountRequestTable()
-      : super(tableName: 'serverpod_email_create_request');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailCreateAccountRequestTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_create_request') {
+    userName = _i1.ColumnString(
+      'userName',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    hash = _i1.ColumnString(
+      'hash',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    verificationCode = _i1.ColumnString(
+      'verificationCode',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The name of the user.
-  final userName = _i1.ColumnString('userName');
+  late final _i1.ColumnString userName;
 
   /// The email of the user.
-  final email = _i1.ColumnString('email');
+  late final _i1.ColumnString email;
 
   /// Hash of the user's requested password.
-  final hash = _i1.ColumnString('hash');
+  late final _i1.ColumnString hash;
 
   /// The verification code sent to the user.
-  final verificationCode = _i1.ColumnString('verificationCode');
+  late final _i1.ColumnString verificationCode;
 
   @override
   List<_i1.Column> get columns => [
@@ -256,3 +329,12 @@ class EmailCreateAccountRequestTable extends _i1.Table {
 @Deprecated('Use EmailCreateAccountRequestTable.t instead.')
 EmailCreateAccountRequestTable tEmailCreateAccountRequest =
     EmailCreateAccountRequestTable();
+
+class EmailCreateAccountRequestInclude extends _i1.Include {
+  EmailCreateAccountRequestInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailCreateAccountRequest.t;
+}

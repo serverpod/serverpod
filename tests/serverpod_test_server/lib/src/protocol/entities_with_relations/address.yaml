@@ -1,0 +1,6 @@
+class: Address
+table: address
+fields:
+  street: String
+  inhabitantId: int?
+  inhabitant: Citizen?, relation(name=citizen_address, field=inhabitantId)

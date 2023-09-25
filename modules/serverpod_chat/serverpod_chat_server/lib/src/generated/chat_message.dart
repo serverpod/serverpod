@@ -11,8 +11,8 @@ import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
 
 /// A chat message.
-class ChatMessage extends _i1.TableRow {
-  ChatMessage({
+abstract class ChatMessage extends _i1.TableRow {
+  ChatMessage._({
     int? id,
     required this.channel,
     required this.message,
@@ -24,6 +24,19 @@ class ChatMessage extends _i1.TableRow {
     this.sent,
     this.attachments,
   }) : super(id);
+
+  factory ChatMessage({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) = _ChatMessageImpl;
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -82,7 +95,19 @@ class ChatMessage extends _i1.TableRow {
   List<_i3.ChatMessageAttachment>? attachments;
 
   @override
-  String get tableName => 'serverpod_chat_message';
+  _i1.Table get table => t;
+  ChatMessage copyWith({
+    int? id,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    _i2.UserInfoPublic? senderInfo,
+    bool? removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -100,6 +125,7 @@ class ChatMessage extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -267,36 +293,129 @@ class ChatMessage extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChatMessageInclude include() {
+    return ChatMessageInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ChatMessageImpl extends ChatMessage {
+  _ChatMessageImpl({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) : super._(
+          id: id,
+          channel: channel,
+          message: message,
+          time: time,
+          sender: sender,
+          senderInfo: senderInfo,
+          removed: removed,
+          clientMessageId: clientMessageId,
+          sent: sent,
+          attachments: attachments,
+        );
+
+  @override
+  ChatMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    Object? senderInfo = _Undefined,
+    bool? removed,
+    Object? clientMessageId = _Undefined,
+    Object? sent = _Undefined,
+    Object? attachments = _Undefined,
+  }) {
+    return ChatMessage(
+      id: id is int? ? id : this.id,
+      channel: channel ?? this.channel,
+      message: message ?? this.message,
+      time: time ?? this.time,
+      sender: sender ?? this.sender,
+      senderInfo: senderInfo is _i2.UserInfoPublic?
+          ? senderInfo
+          : this.senderInfo?.copyWith(),
+      removed: removed ?? this.removed,
+      clientMessageId:
+          clientMessageId is int? ? clientMessageId : this.clientMessageId,
+      sent: sent is bool? ? sent : this.sent,
+      attachments: attachments is List<_i3.ChatMessageAttachment>?
+          ? attachments
+          : this.attachments?.clone(),
+    );
+  }
 }
 
 typedef ChatMessageExpressionBuilder = _i1.Expression Function(
     ChatMessageTable);
 
 class ChatMessageTable extends _i1.Table {
-  ChatMessageTable() : super(tableName: 'serverpod_chat_message');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChatMessageTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_chat_message') {
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    message = _i1.ColumnString(
+      'message',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    sender = _i1.ColumnInt(
+      'sender',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    removed = _i1.ColumnBool(
+      'removed',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    attachments = _i1.ColumnSerializable(
+      'attachments',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The channel this message was posted to.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   /// The body of the message.
-  final message = _i1.ColumnString('message');
+  late final _i1.ColumnString message;
 
   /// The time when this message was posted.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The user id of the sender.
-  final sender = _i1.ColumnInt('sender');
+  late final _i1.ColumnInt sender;
 
   /// True, if this message has been removed.
-  final removed = _i1.ColumnBool('removed');
+  late final _i1.ColumnBool removed;
 
   /// List of attachments associated with this message.
-  final attachments = _i1.ColumnSerializable('attachments');
+  late final _i1.ColumnSerializable attachments;
 
   @override
   List<_i1.Column> get columns => [
@@ -312,3 +431,12 @@ class ChatMessageTable extends _i1.Table {
 
 @Deprecated('Use ChatMessageTable.t instead.')
 ChatMessageTable tChatMessage = ChatMessageTable();
+
+class ChatMessageInclude extends _i1.Include {
+  ChatMessageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ChatMessage.t;
+}

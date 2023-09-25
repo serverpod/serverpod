@@ -9,12 +9,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-class GoogleRefreshToken extends _i1.TableRow {
-  GoogleRefreshToken({
+abstract class GoogleRefreshToken extends _i1.TableRow {
+  GoogleRefreshToken._({
     int? id,
     required this.userId,
     required this.refreshToken,
   }) : super(id);
+
+  factory GoogleRefreshToken({
+    int? id,
+    required int userId,
+    required String refreshToken,
+  }) = _GoogleRefreshTokenImpl;
 
   factory GoogleRefreshToken.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -38,7 +44,12 @@ class GoogleRefreshToken extends _i1.TableRow {
   String refreshToken;
 
   @override
-  String get tableName => 'serverpod_google_refresh_token';
+  _i1.Table get table => t;
+  GoogleRefreshToken copyWith({
+    int? id,
+    int? userId,
+    String? refreshToken,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -49,6 +60,7 @@ class GoogleRefreshToken extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -193,25 +205,64 @@ class GoogleRefreshToken extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static GoogleRefreshTokenInclude include() {
+    return GoogleRefreshTokenInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
+  _GoogleRefreshTokenImpl({
+    int? id,
+    required int userId,
+    required String refreshToken,
+  }) : super._(
+          id: id,
+          userId: userId,
+          refreshToken: refreshToken,
+        );
+
+  @override
+  GoogleRefreshToken copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? refreshToken,
+  }) {
+    return GoogleRefreshToken(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      refreshToken: refreshToken ?? this.refreshToken,
+    );
+  }
 }
 
 typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
     GoogleRefreshTokenTable);
 
 class GoogleRefreshTokenTable extends _i1.Table {
-  GoogleRefreshTokenTable()
-      : super(tableName: 'serverpod_google_refresh_token');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  GoogleRefreshTokenTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_google_refresh_token') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    refreshToken = _i1.ColumnString(
+      'refreshToken',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The user id associated with the token.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The token iteself.
-  final refreshToken = _i1.ColumnString('refreshToken');
+  late final _i1.ColumnString refreshToken;
 
   @override
   List<_i1.Column> get columns => [
@@ -223,3 +274,12 @@ class GoogleRefreshTokenTable extends _i1.Table {
 
 @Deprecated('Use GoogleRefreshTokenTable.t instead.')
 GoogleRefreshTokenTable tGoogleRefreshToken = GoogleRefreshTokenTable();
+
+class GoogleRefreshTokenInclude extends _i1.Include {
+  GoogleRefreshTokenInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => GoogleRefreshToken.t;
+}

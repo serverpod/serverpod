@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-class FutureCallEntry extends _i1.TableRow {
-  FutureCallEntry({
+abstract class FutureCallEntry extends _i1.TableRow {
+  FutureCallEntry._({
     int? id,
     required this.name,
     required this.time,
@@ -18,6 +18,15 @@ class FutureCallEntry extends _i1.TableRow {
     required this.serverId,
     this.identifier,
   }) : super(id);
+
+  factory FutureCallEntry({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -55,7 +64,15 @@ class FutureCallEntry extends _i1.TableRow {
   String? identifier;
 
   @override
-  String get tableName => 'serverpod_future_call';
+  _i1.Table get table => t;
+  FutureCallEntry copyWith({
+    int? id,
+    String? name,
+    DateTime? time,
+    String? serializedObject,
+    String? serverId,
+    String? identifier,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -69,6 +86,7 @@ class FutureCallEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -228,33 +246,102 @@ class FutureCallEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static FutureCallEntryInclude include() {
+    return FutureCallEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _FutureCallEntryImpl extends FutureCallEntry {
+  _FutureCallEntryImpl({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) : super._(
+          id: id,
+          name: name,
+          time: time,
+          serializedObject: serializedObject,
+          serverId: serverId,
+          identifier: identifier,
+        );
+
+  @override
+  FutureCallEntry copyWith({
+    Object? id = _Undefined,
+    String? name,
+    DateTime? time,
+    Object? serializedObject = _Undefined,
+    String? serverId,
+    Object? identifier = _Undefined,
+  }) {
+    return FutureCallEntry(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      time: time ?? this.time,
+      serializedObject: serializedObject is String?
+          ? serializedObject
+          : this.serializedObject,
+      serverId: serverId ?? this.serverId,
+      identifier: identifier is String? ? identifier : this.identifier,
+    );
+  }
 }
 
 typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
     FutureCallEntryTable);
 
 class FutureCallEntryTable extends _i1.Table {
-  FutureCallEntryTable() : super(tableName: 'serverpod_future_call');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  FutureCallEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_future_call') {
+    name = _i1.ColumnString(
+      'name',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serializedObject = _i1.ColumnString(
+      'serializedObject',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    identifier = _i1.ColumnString(
+      'identifier',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// Name of the future call. Used to find the correct method to call.
-  final name = _i1.ColumnString('name');
+  late final _i1.ColumnString name;
 
   /// Time to execute the call.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The serialized object, used as a parameter to the call.
-  final serializedObject = _i1.ColumnString('serializedObject');
+  late final _i1.ColumnString serializedObject;
 
   /// The id of the server where the call was created.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// An optional identifier which can be used to cancel the call.
-  final identifier = _i1.ColumnString('identifier');
+  late final _i1.ColumnString identifier;
 
   @override
   List<_i1.Column> get columns => [
@@ -269,3 +356,12 @@ class FutureCallEntryTable extends _i1.Table {
 
 @Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();
+
+class FutureCallEntryInclude extends _i1.Include {
+  FutureCallEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => FutureCallEntry.t;
+}

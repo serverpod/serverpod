@@ -1,0 +1,6 @@
+class: Company
+table: company
+fields:
+  name: String
+  town: Town?, relation
+  employees: List<Citizen>?, relation

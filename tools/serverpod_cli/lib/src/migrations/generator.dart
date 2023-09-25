@@ -107,6 +107,7 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     required int priority,
+    bool write = true,
   }) async {
     var versionName = createVersionName(tag);
 
@@ -137,7 +138,7 @@ class MigrationGenerator {
       return null;
     }
 
-    if (migration.isEmpty) {
+    if (migration.isEmpty && !force) {
       log.info('No changes detected.');
       return null;
     }
@@ -149,7 +150,9 @@ class MigrationGenerator {
       databaseDefinition: dstDatabase,
     );
 
-    await migrationVersion.write(module: projectName);
+    if (write) {
+      await migrationVersion.write(module: projectName);
+    }
 
     return migrationVersion;
   }
@@ -198,11 +201,12 @@ class MigrationGenerator {
 
     // Check if there are any changes.
     var versionsChanged = false;
-    if (liveDatabase.installedModules == null) {
+    var installedModules = liveDatabase.installedModules;
+    if (installedModules == null) {
       versionsChanged = true;
     } else {
-      for (var module in liveDatabase.installedModules!.keys) {
-        if (versions[module] != liveDatabase.installedModules![module]) {
+      for (var module in installedModules) {
+        if (versions[module.module] != module.version) {
           versionsChanged = true;
         }
       }

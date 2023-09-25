@@ -4,6 +4,9 @@ import 'dart:typed_data';
 
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/database_query.dart';
+import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
@@ -111,11 +114,14 @@ class DatabaseConnection {
     int id, {
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'findById');
     var result = await find<T>(
-      where: Expression('id = $id'),
+      where: table.id.equals(id),
       session: session,
       transaction: transaction,
+      include: include,
     );
     if (result.isEmpty) return null;
     return result[0];
@@ -132,35 +138,28 @@ class DatabaseConnection {
     bool useCache = true,
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
     assert(orderByList == null || orderBy == null);
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.find<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert<T>(session, operation: 'find');
 
     var startTime = DateTime.now();
-    where ??= Expression('TRUE');
+
+    if (orderBy != null) {
+      // If order by is set then order by list is overriden.
+      // TODO: Only expose order by list in interface.
+      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
+    }
 
     var tableName = table.tableName;
-    var query = 'SELECT * FROM $tableName WHERE $where';
-    if (orderBy != null) {
-      query += ' ORDER BY $orderBy';
-      if (orderDescending) query += ' DESC';
-    } else if (orderByList != null) {
-      assert(orderByList.isNotEmpty);
-
-      var strList = <String>[];
-      for (var order in orderByList) {
-        strList.add(order.toString());
-      }
-
-      query += ' ORDER BY ${strList.join(',')}';
-    }
-    if (limit != null) query += ' LIMIT $limit';
-    if (offset != null) query += ' OFFSET $offset';
+    var query = SelectQueryBuilder(table: tableName)
+        .withSelectFields(table.columns)
+        .withWhere(where)
+        .withOrderBy(orderByList)
+        .withLimit(limit)
+        .withOffset(offset)
+        .withInclude(include)
+        .build();
 
     List<TableRow?> list = <TableRow>[];
     try {
@@ -175,7 +174,13 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        var rawTableRow = resolvePrefixedQueryRow(
+          table,
+          rawRow,
+          include: include,
+        );
+
+        list.add(poolManager.serializationManager.deserialize<T>(rawTableRow));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -195,6 +200,7 @@ Current type was $T''');
     bool useCache = true,
     required Session session,
     Transaction? transaction,
+    Include? include,
   }) async {
     var result = await find<T>(
       where: where,
@@ -205,6 +211,7 @@ Current type was $T''');
       offset: offset,
       session: session,
       transaction: transaction,
+      include: include,
     );
 
     if (result.isEmpty) {
@@ -212,31 +219,6 @@ Current type was $T''');
     } else {
       return result[0];
     }
-  }
-
-  //TODO: is this still needed?
-  T? _formatTableRow<T extends TableRow>(
-      String tableName, Map<String, dynamic>? rawRow) {
-    var data = <String, dynamic>{};
-
-    for (var columnName in rawRow!.keys) {
-      var value = rawRow[columnName];
-
-      if (value is DateTime) {
-        data[columnName] = value.toIso8601String();
-      } else if (value is Uint8List) {
-        var byteData = ByteData.view(
-          value.buffer,
-          value.offsetInBytes,
-          value.length,
-        );
-        data[columnName] = byteData.base64encodedString();
-      } else {
-        data[columnName] = value;
-      }
-    }
-
-    return poolManager.serializationManager.deserialize<T>(data);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -247,20 +229,16 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. numRows = await session.db.count<MyTableClass>();
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert<T>(session, operation: 'count');
 
     var startTime = DateTime.now();
 
-    where ??= Expression('TRUE');
-
     var tableName = table.tableName;
-    var query = 'SELECT COUNT(*) as c FROM $tableName WHERE $where';
-    if (limit != null) query += ' LIMIT $limit';
+    var query = CountQueryBuilder(table: tableName)
+        .withCountAlias('c')
+        .withWhere(where)
+        .withLimit(limit)
+        .build();
 
     try {
       var context = transaction != null
@@ -287,26 +265,37 @@ Current type was $T''');
   Future<bool> update(
     TableRow row, {
     required Session session,
+    List<Column>? columns,
     Transaction? transaction,
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    var selectedColumns = columns ?? row.table.columns;
+    Map data = row.allToJson();
 
     int? id = data['id'];
-
-    var updatesList = <String>[];
-
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
-      var value = DatabasePoolManager.encoder.convert(data[column]);
-
-      updatesList.add('"$column" = $value');
+    if (id == null) {
+      throw ArgumentError.notNull('row.id');
     }
-    var updates = updatesList.join(', ');
 
-    var query = 'UPDATE ${row.tableName} SET $updates WHERE id = $id';
+    for (var column in selectedColumns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
+    }
+
+    var updates = selectedColumns
+        .where((column) => column.columnName != 'id')
+        .map((column) {
+      var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
+      return '"${column.columnName}" = $value';
+    }).join(', ');
+
+    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
@@ -330,26 +319,32 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    Map data = row.toJsonForDatabase();
+    Map data = row.allToJson();
 
-    var columnsList = <String>[];
-    var valueList = <String>[];
-
-    for (var column in data.keys as Iterable<String>) {
-      if (column == 'id') continue;
-
-      dynamic unformattedValue = data[column];
-
-      String value = DatabasePoolManager.encoder.convert(unformattedValue);
-
-      columnsList.add('"$column"');
-      valueList.add(value);
+    for (var column in row.table.columns) {
+      if (!data.containsKey(column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
     }
-    var columns = columnsList.join(', ');
-    var values = valueList.join(', ');
+
+    var selectedColumns = row.table.columns.where((column) {
+      return column.columnName != 'id';
+    });
+
+    var columns =
+        selectedColumns.map((column) => '"${column.columnName}"').join(', ');
+
+    var values = selectedColumns.map((column) {
+      var unformattedValue = data[column.columnName];
+      return DatabasePoolManager.encoder.convert(unformattedValue);
+    }).join(', ');
 
     var query =
-        'INSERT INTO ${row.tableName} ($columns) VALUES ($values) RETURNING id';
+        'INSERT INTO "${row.table.tableName}" ($columns) VALUES ($values) RETURNING id';
 
     int insertedId;
     try {
@@ -389,18 +384,13 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. numRows = await session.db.delete<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert<T>(session, operation: 'delete');
 
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
 
-    var query = 'DELETE FROM $tableName WHERE $where';
+    var query = DeleteQueryBuilder(table: tableName).withWhere(where).build();
 
     try {
       var context = transaction != null
@@ -422,17 +412,15 @@ Current type was $T''');
     required Session session,
     Transaction? transaction,
   }) async {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.deleteAndReturn<MyTableClass>(where: ...);
-Current type was $T''');
-    table = table!;
+    var table = _getTableOrAssert<T>(session, operation: 'deleteAndReturn');
 
     var startTime = DateTime.now();
 
     var tableName = table.tableName;
-    var query = 'DELETE FROM $tableName WHERE $where RETURNING *';
+    var query = DeleteQueryBuilder(table: tableName)
+        .withWhere(where)
+        .withReturnAll()
+        .build();
 
     List<TableRow?> list = <TableRow>[];
     try {
@@ -447,7 +435,8 @@ Current type was $T''');
         substitutionValues: {},
       );
       for (var rawRow in result) {
-        list.add(_formatTableRow<T>(tableName, rawRow[tableName]));
+        list.add(
+            poolManager.serializationManager.deserialize<T>(rawRow[tableName]));
       }
     } catch (e, trace) {
       _logQuery(session, query, startTime, exception: e, trace: trace);
@@ -466,7 +455,9 @@ Current type was $T''');
   }) async {
     var startTime = DateTime.now();
 
-    var query = 'DELETE FROM ${row.tableName} WHERE id = ${row.id}';
+    var query = DeleteQueryBuilder(table: row.table.tableName)
+        .withWhere(Expression('id = ${row.id}'))
+        .build();
 
     try {
       var context = transaction != null
@@ -480,6 +471,15 @@ Current type was $T''');
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
+  }
+
+  Table _getTableOrAssert<T>(Session session, {required String operation}) {
+    var table = session.serverpod.serializationManager.getTableForType(T);
+    assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
+Current type was $T''');
+    return table!;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -522,6 +522,7 @@ Current type was $T''');
       // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       query =
           'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
+
       var result = await postgresConnection.query(
         query,
         allowReuse: false,
@@ -738,4 +739,14 @@ class Transaction {
   /// The Postgresql execution context associated with a running transaction.
   final PostgreSQLExecutionContext postgresContext;
   Transaction._(this.postgresContext);
+}
+
+/// Defines what tables to join when querying a table.
+abstract class Include {
+  /// Map containing the relation field name as key and the [Include] object
+  /// for the foreign table as value.
+  Map<String, Include?> get includes;
+
+  /// Accessor for the [Table] this include is for.
+  Table get table;
 }

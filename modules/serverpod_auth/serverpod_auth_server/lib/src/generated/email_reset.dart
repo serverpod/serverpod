@@ -9,13 +9,20 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for an email reset.
-class EmailReset extends _i1.TableRow {
-  EmailReset({
+abstract class EmailReset extends _i1.TableRow {
+  EmailReset._({
     int? id,
     required this.userId,
     required this.verificationCode,
     required this.expiration,
   }) : super(id);
+
+  factory EmailReset({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) = _EmailResetImpl;
 
   factory EmailReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -44,7 +51,13 @@ class EmailReset extends _i1.TableRow {
   DateTime expiration;
 
   @override
-  String get tableName => 'serverpod_email_reset';
+  _i1.Table get table => t;
+  EmailReset copyWith({
+    int? id,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -56,6 +69,7 @@ class EmailReset extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -205,26 +219,75 @@ class EmailReset extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static EmailResetInclude include() {
+    return EmailResetInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _EmailResetImpl extends EmailReset {
+  _EmailResetImpl({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) : super._(
+          id: id,
+          userId: userId,
+          verificationCode: verificationCode,
+          expiration: expiration,
+        );
+
+  @override
+  EmailReset copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  }) {
+    return EmailReset(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      verificationCode: verificationCode ?? this.verificationCode,
+      expiration: expiration ?? this.expiration,
+    );
+  }
 }
 
 typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
 
 class EmailResetTable extends _i1.Table {
-  EmailResetTable() : super(tableName: 'serverpod_email_reset');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailResetTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_email_reset') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    verificationCode = _i1.ColumnString(
+      'verificationCode',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    expiration = _i1.ColumnDateTime(
+      'expiration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user that is resetting his/her password.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The verification code for the password reset.
-  final verificationCode = _i1.ColumnString('verificationCode');
+  late final _i1.ColumnString verificationCode;
 
   /// The expiration time for the password reset.
-  final expiration = _i1.ColumnDateTime('expiration');
+  late final _i1.ColumnDateTime expiration;
 
   @override
   List<_i1.Column> get columns => [
@@ -237,3 +300,12 @@ class EmailResetTable extends _i1.Table {
 
 @Deprecated('Use EmailResetTable.t instead.')
 EmailResetTable tEmailReset = EmailResetTable();
+
+class EmailResetInclude extends _i1.Include {
+  EmailResetInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => EmailReset.t;
+}

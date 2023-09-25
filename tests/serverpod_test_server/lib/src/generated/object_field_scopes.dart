@@ -8,13 +8,20 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectFieldScopes extends _i1.TableRow {
-  ObjectFieldScopes({
+abstract class ObjectFieldScopes extends _i1.TableRow {
+  ObjectFieldScopes._({
     int? id,
     required this.normal,
     this.api,
     this.database,
   }) : super(id);
+
+  factory ObjectFieldScopes({
+    int? id,
+    required String normal,
+    String? api,
+    String? database,
+  }) = _ObjectFieldScopesImpl;
 
   factory ObjectFieldScopes.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -39,7 +46,13 @@ class ObjectFieldScopes extends _i1.TableRow {
   String? database;
 
   @override
-  String get tableName => 'object_field_scopes';
+  _i1.Table get table => t;
+  ObjectFieldScopes copyWith({
+    int? id,
+    String? normal,
+    String? api,
+    String? database,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -50,6 +63,7 @@ class ObjectFieldScopes extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -195,22 +209,66 @@ class ObjectFieldScopes extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectFieldScopesInclude include() {
+    return ObjectFieldScopesInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectFieldScopesImpl extends ObjectFieldScopes {
+  _ObjectFieldScopesImpl({
+    int? id,
+    required String normal,
+    String? api,
+    String? database,
+  }) : super._(
+          id: id,
+          normal: normal,
+          api: api,
+          database: database,
+        );
+
+  @override
+  ObjectFieldScopes copyWith({
+    Object? id = _Undefined,
+    String? normal,
+    Object? api = _Undefined,
+    Object? database = _Undefined,
+  }) {
+    return ObjectFieldScopes(
+      id: id is int? ? id : this.id,
+      normal: normal ?? this.normal,
+      api: api is String? ? api : this.api,
+      database: database is String? ? database : this.database,
+    );
+  }
 }
 
 typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
     ObjectFieldScopesTable);
 
 class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable() : super(tableName: 'object_field_scopes');
+  ObjectFieldScopesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_field_scopes') {
+    normal = _i1.ColumnString(
+      'normal',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    database = _i1.ColumnString(
+      'database',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  late final _i1.ColumnString normal;
 
-  final normal = _i1.ColumnString('normal');
-
-  final database = _i1.ColumnString('database');
+  late final _i1.ColumnString database;
 
   @override
   List<_i1.Column> get columns => [
@@ -222,3 +280,12 @@ class ObjectFieldScopesTable extends _i1.Table {
 
 @Deprecated('Use ObjectFieldScopesTable.t instead.')
 ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
+
+class ObjectFieldScopesInclude extends _i1.Include {
+  ObjectFieldScopesInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectFieldScopes.t;
+}

@@ -11,8 +11,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-class ServerHealthConnectionInfo extends _i1.TableRow {
-  ServerHealthConnectionInfo({
+abstract class ServerHealthConnectionInfo extends _i1.TableRow {
+  ServerHealthConnectionInfo._({
     int? id,
     required this.serverId,
     required this.timestamp,
@@ -21,6 +21,16 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
     required this.idle,
     required this.granularity,
   }) : super(id);
+
+  factory ServerHealthConnectionInfo({
+    int? id,
+    required String serverId,
+    required DateTime timestamp,
+    required int active,
+    required int closing,
+    required int idle,
+    required int granularity,
+  }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -64,7 +74,16 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
   int granularity;
 
   @override
-  String get tableName => 'serverpod_health_connection_info';
+  _i1.Table get table => t;
+  ServerHealthConnectionInfo copyWith({
+    int? id,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -79,6 +98,7 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -243,38 +263,113 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ServerHealthConnectionInfoInclude include() {
+    return ServerHealthConnectionInfoInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
+  _ServerHealthConnectionInfoImpl({
+    int? id,
+    required String serverId,
+    required DateTime timestamp,
+    required int active,
+    required int closing,
+    required int idle,
+    required int granularity,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          timestamp: timestamp,
+          active: active,
+          closing: closing,
+          idle: idle,
+          granularity: granularity,
+        );
+
+  @override
+  ServerHealthConnectionInfo copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  }) {
+    return ServerHealthConnectionInfo(
+      id: id is int? ? id : this.id,
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      active: active ?? this.active,
+      closing: closing ?? this.closing,
+      idle: idle ?? this.idle,
+      granularity: granularity ?? this.granularity,
+    );
+  }
 }
 
 typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
     ServerHealthConnectionInfoTable);
 
 class ServerHealthConnectionInfoTable extends _i1.Table {
-  ServerHealthConnectionInfoTable()
-      : super(tableName: 'serverpod_health_connection_info');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ServerHealthConnectionInfoTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_health_connection_info') {
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    timestamp = _i1.ColumnDateTime(
+      'timestamp',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    active = _i1.ColumnInt(
+      'active',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    closing = _i1.ColumnInt(
+      'closing',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    idle = _i1.ColumnInt(
+      'idle',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    granularity = _i1.ColumnInt(
+      'granularity',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The server associated with this connection info.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// The time when the connections was checked, granularity is one minute.
-  final timestamp = _i1.ColumnDateTime('timestamp');
+  late final _i1.ColumnDateTime timestamp;
 
   /// Number of active connections currently open.
-  final active = _i1.ColumnInt('active');
+  late final _i1.ColumnInt active;
 
   /// Number of connections currently closing.
-  final closing = _i1.ColumnInt('closing');
+  late final _i1.ColumnInt closing;
 
   /// Number of connections currently idle.
-  final idle = _i1.ColumnInt('idle');
+  late final _i1.ColumnInt idle;
 
   /// The granularity of this timestamp, null represents 1 minute, other valid
   /// values are 60 minutes and 1440 minutes (one day).
-  final granularity = _i1.ColumnInt('granularity');
+  late final _i1.ColumnInt granularity;
 
   @override
   List<_i1.Column> get columns => [
@@ -291,3 +386,12 @@ class ServerHealthConnectionInfoTable extends _i1.Table {
 @Deprecated('Use ServerHealthConnectionInfoTable.t instead.')
 ServerHealthConnectionInfoTable tServerHealthConnectionInfo =
     ServerHealthConnectionInfoTable();
+
+class ServerHealthConnectionInfoInclude extends _i1.Include {
+  ServerHealthConnectionInfoInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ServerHealthConnectionInfo.t;
+}

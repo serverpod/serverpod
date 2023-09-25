@@ -8,11 +8,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-class ObjectWithDuration extends _i1.TableRow {
-  ObjectWithDuration({
+abstract class ObjectWithDuration extends _i1.TableRow {
+  ObjectWithDuration._({
     int? id,
     required this.duration,
   }) : super(id);
+
+  factory ObjectWithDuration({
+    int? id,
+    required Duration duration,
+  }) = _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -30,7 +35,11 @@ class ObjectWithDuration extends _i1.TableRow {
   Duration duration;
 
   @override
-  String get tableName => 'object_with_duration';
+  _i1.Table get table => t;
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -40,6 +49,7 @@ class ObjectWithDuration extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -179,20 +189,51 @@ class ObjectWithDuration extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ObjectWithDurationInclude include() {
+    return ObjectWithDurationInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithDurationImpl extends ObjectWithDuration {
+  _ObjectWithDurationImpl({
+    int? id,
+    required Duration duration,
+  }) : super._(
+          id: id,
+          duration: duration,
+        );
+
+  @override
+  ObjectWithDuration copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id is int? ? id : this.id,
+      duration: duration ?? this.duration,
+    );
+  }
 }
 
 typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
     ObjectWithDurationTable);
 
 class ObjectWithDurationTable extends _i1.Table {
-  ObjectWithDurationTable() : super(tableName: 'object_with_duration');
+  ObjectWithDurationTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_duration') {
+    duration = _i1.ColumnDuration(
+      'duration',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
-
-  final duration = _i1.ColumnDuration('duration');
+  late final _i1.ColumnDuration duration;
 
   @override
   List<_i1.Column> get columns => [
@@ -203,3 +244,12 @@ class ObjectWithDurationTable extends _i1.Table {
 
 @Deprecated('Use ObjectWithDurationTable.t instead.')
 ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
+
+class ObjectWithDurationInclude extends _i1.Include {
+  ObjectWithDurationInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => ObjectWithDuration.t;
+}

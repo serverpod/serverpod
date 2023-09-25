@@ -10,8 +10,8 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Bindings to a log entry in the database.
-class LogEntry extends _i1.TableRow {
-  LogEntry({
+abstract class LogEntry extends _i1.TableRow {
+  LogEntry._({
     int? id,
     required this.sessionLogId,
     this.messageId,
@@ -24,6 +24,20 @@ class LogEntry extends _i1.TableRow {
     this.stackTrace,
     required this.order,
   }) : super(id);
+
+  factory LogEntry({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) = _LogEntryImpl;
 
   factory LogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -86,7 +100,20 @@ class LogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get tableName => 'serverpod_log';
+  _i1.Table get table => t;
+  LogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    int? messageId,
+    String? reference,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    String? error,
+    String? stackTrace,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -105,6 +132,7 @@ class LogEntry extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -289,47 +317,159 @@ class LogEntry extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static LogEntryInclude include() {
+    return LogEntryInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _LogEntryImpl extends LogEntry {
+  _LogEntryImpl({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) : super._(
+          id: id,
+          sessionLogId: sessionLogId,
+          messageId: messageId,
+          reference: reference,
+          serverId: serverId,
+          time: time,
+          logLevel: logLevel,
+          message: message,
+          error: error,
+          stackTrace: stackTrace,
+          order: order,
+        );
+
+  @override
+  LogEntry copyWith({
+    Object? id = _Undefined,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    Object? reference = _Undefined,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    int? order,
+  }) {
+    return LogEntry(
+      id: id is int? ? id : this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId is int? ? messageId : this.messageId,
+      reference: reference is String? ? reference : this.reference,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      logLevel: logLevel ?? this.logLevel,
+      message: message ?? this.message,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      order: order ?? this.order,
+    );
+  }
 }
 
 typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
 
 class LogEntryTable extends _i1.Table {
-  LogEntryTable() : super(tableName: 'serverpod_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  LogEntryTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_log') {
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    reference = _i1.ColumnString(
+      'reference',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    logLevel = _i1.ColumnEnum<_i2.LogLevel>(
+      'logLevel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    message = _i1.ColumnString(
+      'message',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    error = _i1.ColumnString(
+      'error',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the session this log entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
   /// The message id this entry is associated with, if in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// Currently unused.
-  final reference = _i1.ColumnString('reference');
+  late final _i1.ColumnString reference;
 
   /// The id of the server which created this log entry.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// Timpstamp of this log entry.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.
-  final logLevel = _i1.ColumnEnum<_i2.LogLevel>('logLevel');
+  late final _i1.ColumnEnum<_i2.LogLevel> logLevel;
 
   /// The logging message.
-  final message = _i1.ColumnString('message');
+  late final _i1.ColumnString message;
 
   /// Optional error associated with this log entry.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// Optional stack trace associated with this log entry.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// The order of this log entry, used for sorting.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [
@@ -349,3 +489,12 @@ class LogEntryTable extends _i1.Table {
 
 @Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();
+
+class LogEntryInclude extends _i1.Include {
+  LogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => LogEntry.t;
+}

@@ -152,7 +152,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.id'],
+              parameters: ['int? id'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -172,6 +172,14 @@ void main() {
         skip: maybeClassNamedExample == null
             ? 'Could not run test because $testClassName class was not found.'
             : false);
+
+    test('then a class named ${testClassName}Include does NOT exist.', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
+              name: '${testClassName}Include'),
+          isFalse,
+          reason: 'Class ${testClassName}Include should not be generated.');
+    });
   });
 
   group('Given a class with a none nullable field when generating code', () {
@@ -200,7 +208,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['required this.title'],
+              parameters: ['required String title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -249,7 +257,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.title'],
+              parameters: ['String? title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');

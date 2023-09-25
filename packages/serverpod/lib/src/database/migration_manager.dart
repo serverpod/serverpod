@@ -5,6 +5,7 @@ import 'package:serverpod/protocol.dart';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../generated/protocol.dart' as internal;
 import 'extensions.dart';
@@ -27,7 +28,7 @@ const _queryGetMigrations =
 class MigrationManager {
   /// List of installed migration versions. Available after [initialize] has
   /// been called.
-  final List<MigrationVersion> installedVersions = [];
+  final List<DatabaseMigrationVersion> installedVersions = [];
 
   /// List of available migration versions as loaded from the migrations
   /// directory. Available after [initialize] has been called.
@@ -39,7 +40,7 @@ class MigrationManager {
     await session.db.query(_queryCreateMigrations);
 
     // Get installed versions
-    var versions = <MigrationVersion>[];
+    var versions = <DatabaseMigrationVersion>[];
     var result = await session.db.query(_queryGetMigrations);
     for (var row in result) {
       assert(row.length == 4);
@@ -49,7 +50,7 @@ class MigrationManager {
       DateTime timestamp = row[3];
 
       versions.add(
-        MigrationVersion(
+        DatabaseMigrationVersion(
           module: module,
           version: version,
           priority: priority,
@@ -61,16 +62,10 @@ class MigrationManager {
     installedVersions.addAll(versions);
 
     // Get available migrations
-    var migrationDirectory = Directory(
-      path.join(Directory.current.path, 'migrations'),
-    );
-    var migrationModules = await _listAvailableModules(
-      directory: migrationDirectory,
-    );
+    var migrationModules = MigrationVersions.listAvailableModules();
 
     for (var module in migrationModules) {
-      availableVersions[module] = await _listMigrationVersions(
-        directory: migrationDirectory,
+      availableVersions[module] = MigrationVersions.listVersions(
         module: module,
       );
     }
@@ -111,7 +106,7 @@ class MigrationManager {
   /// Lists all available modules in the migrations directory.
   List<String> get availableModules => availableVersions.keys.toList();
 
-  /// Returns the latest version of the given module from aviailable migrations.
+  /// Returns the latest version of the given module from available migrations.
   String getLatestVersion(String module) {
     var versions = availableVersions[module];
     if (versions == null || versions.isEmpty) {
@@ -211,74 +206,6 @@ class MigrationManager {
         stderr.writeln('$e');
       }
     }
-  }
-
-  Future<List<String>> _listAvailableModules({
-    required Directory directory,
-  }) async {
-    try {
-      var modules = <String>[];
-      var entities = directory.listSync();
-      for (var entity in entities) {
-        if (entity is Directory) {
-          modules.add(path.basename(entity.path));
-        }
-      }
-      modules.sort();
-      return modules;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Future<List<String>> _listMigrationVersions({
-    required Directory directory,
-    required String module,
-  }) async {
-    try {
-      var versionDir = Directory(path.join(directory.path, module));
-
-      var versions = <String>[];
-      var entities = versionDir.listSync();
-      for (var entity in entities) {
-        if (entity is Directory) {
-          versions.add(path.basename(entity.path));
-        }
-      }
-      versions.sort();
-      return versions;
-    } catch (e) {
-      return [];
-    }
-  }
-}
-
-/// A migration to a version of the database that has been applied.
-class MigrationVersion {
-  /// Creates a new version.
-  MigrationVersion(
-      {required this.module,
-      required this.version,
-      required this.priority,
-      required this.timestamp});
-
-  /// The name of the module associated with the migration.
-  final String module;
-
-  /// The name of the version. Should correspond to the name of the
-  /// migration directory.
-  final String version;
-
-  /// The priority of the migration. Migrations with lower priority will be
-  /// applied first.
-  final int priority;
-
-  /// The timestamp of when the migration was applied.
-  final DateTime timestamp;
-
-  @override
-  String toString() {
-    return '$module:$version';
   }
 }
 

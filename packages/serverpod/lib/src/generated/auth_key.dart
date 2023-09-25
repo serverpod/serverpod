@@ -9,8 +9,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-class AuthKey extends _i1.TableRow {
-  AuthKey({
+abstract class AuthKey extends _i1.TableRow {
+  AuthKey._({
     int? id,
     required this.userId,
     required this.hash,
@@ -18,6 +18,15 @@ class AuthKey extends _i1.TableRow {
     required this.scopeNames,
     required this.method,
   }) : super(id);
+
+  factory AuthKey({
+    int? id,
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) = _AuthKeyImpl;
 
   factory AuthKey.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -55,7 +64,15 @@ class AuthKey extends _i1.TableRow {
   String method;
 
   @override
-  String get tableName => 'serverpod_auth_key';
+  _i1.Table get table => t;
+  AuthKey copyWith({
+    int? id,
+    int? userId,
+    String? hash,
+    String? key,
+    List<String>? scopeNames,
+    String? method,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -69,6 +86,7 @@ class AuthKey extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -224,30 +242,92 @@ class AuthKey extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static AuthKeyInclude include() {
+    return AuthKeyInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _AuthKeyImpl extends AuthKey {
+  _AuthKeyImpl({
+    int? id,
+    required int userId,
+    required String hash,
+    String? key,
+    required List<String> scopeNames,
+    required String method,
+  }) : super._(
+          id: id,
+          userId: userId,
+          hash: hash,
+          key: key,
+          scopeNames: scopeNames,
+          method: method,
+        );
+
+  @override
+  AuthKey copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? hash,
+    Object? key = _Undefined,
+    List<String>? scopeNames,
+    String? method,
+  }) {
+    return AuthKey(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      hash: hash ?? this.hash,
+      key: key is String? ? key : this.key,
+      scopeNames: scopeNames ?? this.scopeNames.clone(),
+      method: method ?? this.method,
+    );
+  }
 }
 
 typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
 
 class AuthKeyTable extends _i1.Table {
-  AuthKeyTable() : super(tableName: 'serverpod_auth_key');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  AuthKeyTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'serverpod_auth_key') {
+    userId = _i1.ColumnInt(
+      'userId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    hash = _i1.ColumnString(
+      'hash',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    scopeNames = _i1.ColumnSerializable(
+      'scopeNames',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    method = _i1.ColumnString(
+      'method',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The id of the user to provide access to.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The hashed version of the key.
-  final hash = _i1.ColumnString('hash');
+  late final _i1.ColumnString hash;
 
   /// The scopes this key provides access to.
-  final scopeNames = _i1.ColumnSerializable('scopeNames');
+  late final _i1.ColumnSerializable scopeNames;
 
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.
-  final method = _i1.ColumnString('method');
+  late final _i1.ColumnString method;
 
   @override
   List<_i1.Column> get columns => [
@@ -261,3 +341,12 @@ class AuthKeyTable extends _i1.Table {
 
 @Deprecated('Use AuthKeyTable.t instead.')
 AuthKeyTable tAuthKey = AuthKeyTable();
+
+class AuthKeyInclude extends _i1.Include {
+  AuthKeyInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => AuthKey.t;
+}

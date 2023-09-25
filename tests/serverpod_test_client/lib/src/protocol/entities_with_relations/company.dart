@@ -1,0 +1,111 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: implementation_imports
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import '../protocol.dart' as _i2;
+
+abstract class Company extends _i1.SerializableEntity {
+  Company._({
+    this.id,
+    required this.name,
+    required this.townId,
+    this.town,
+    this.employees,
+  });
+
+  factory Company({
+    int? id,
+    required String name,
+    required int townId,
+    _i2.Town? town,
+    List<_i2.Citizen>? employees,
+  }) = _CompanyImpl;
+
+  factory Company.fromJson(
+    Map<String, dynamic> jsonSerialization,
+    _i1.SerializationManager serializationManager,
+  ) {
+    return Company(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      townId:
+          serializationManager.deserialize<int>(jsonSerialization['townId']),
+      town: serializationManager
+          .deserialize<_i2.Town?>(jsonSerialization['town']),
+      employees: serializationManager
+          .deserialize<List<_i2.Citizen>?>(jsonSerialization['employees']),
+    );
+  }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
+  String name;
+
+  int townId;
+
+  _i2.Town? town;
+
+  List<_i2.Citizen>? employees;
+
+  Company copyWith({
+    int? id,
+    String? name,
+    int? townId,
+    _i2.Town? town,
+    List<_i2.Citizen>? employees,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'townId': townId,
+      'town': town,
+      'employees': employees,
+    };
+  }
+}
+
+class _Undefined {}
+
+class _CompanyImpl extends Company {
+  _CompanyImpl({
+    int? id,
+    required String name,
+    required int townId,
+    _i2.Town? town,
+    List<_i2.Citizen>? employees,
+  }) : super._(
+          id: id,
+          name: name,
+          townId: townId,
+          town: town,
+          employees: employees,
+        );
+
+  @override
+  Company copyWith({
+    Object? id = _Undefined,
+    String? name,
+    int? townId,
+    Object? town = _Undefined,
+    Object? employees = _Undefined,
+  }) {
+    return Company(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      townId: townId ?? this.townId,
+      town: town is _i2.Town? ? town : this.town?.copyWith(),
+      employees:
+          employees is List<_i2.Citizen>? ? employees : this.employees?.clone(),
+    );
+  }
+}

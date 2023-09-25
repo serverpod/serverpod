@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -162,6 +164,7 @@ Future<bool> performCreate(
           dbPassword: dbPassword,
           dbProductionPassword: dbProductionPassword,
           dbStagingPassword: dbStagingPassword,
+          customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
@@ -179,17 +182,18 @@ Future<bool> performCreate(
     });
 
     if (dockerConfigured) {
-      if (Platform.isWindows) {
-        success &= await CommandLineTools.cleanupForWindows(
-          serverpodDirs.projectDir,
+      await log.progress('Creating default database migration.', () {
+        return DatabaseSetup.createDefaultMigration(
+          serverpodDirs.serverDir,
           name,
         );
-      } else {
-        success &= await log.progress(
-            'Downloading and configuring Docker image.',
-            () =>
-                CommandLineTools.createTables(serverpodDirs.projectDir, name));
-      }
+      });
+
+      await log.progress('Downloading and configuring Docker image.', () {
+        return DatabaseSetup.applyDefaultMigration(
+          serverpodDirs.serverDir,
+        );
+      });
     }
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
@@ -306,6 +310,7 @@ void _copyServerTemplates(
   required String dbPassword,
   required String dbProductionPassword,
   required String dbStagingPassword,
+  String? customServerpodPath,
 }) {
   log.debug('Copying server files');
   var copier = Copier(
@@ -331,7 +336,7 @@ void _copyServerTemplates(
       ),
       Replacement(
         slotName: 'VERSION',
-        replacement: templateVersion,
+        replacement: customServerpodPath == null ? templateVersion : '',
       ),
       Replacement(
         slotName: 'SERVICE_SECRET_DEVELOPMENT',
@@ -361,6 +366,11 @@ void _copyServerTemplates(
         slotName: 'REDIS_PASSWORD',
         replacement: generateRandomString(),
       ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/serverpod',
+          replacement: 'path: $customServerpodPath/packages/serverpod',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -376,7 +386,9 @@ void _copyServerTemplates(
         replacement: '.gcloudignore',
       ),
     ],
-    removePrefixes: ['path'],
+    removePrefixes: [
+      if (customServerpodPath == null) 'path',
+    ],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
@@ -397,8 +409,13 @@ void _copyServerTemplates(
       ),
       Replacement(
         slotName: 'VERSION',
-        replacement: templateVersion,
+        replacement: customServerpodPath == null ? templateVersion : '',
       ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/serverpod_client',
+          replacement: 'path: $customServerpodPath/packages/serverpod_client',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -410,7 +427,9 @@ void _copyServerTemplates(
         replacement: '.gitignore',
       ),
     ],
-    removePrefixes: ['path'],
+    removePrefixes: [
+      if (customServerpodPath == null) 'path',
+    ],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
@@ -431,8 +450,13 @@ void _copyServerTemplates(
       ),
       Replacement(
         slotName: 'VERSION',
-        replacement: templateVersion,
+        replacement: customServerpodPath == null ? templateVersion : '',
       ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/serverpod_flutter',
+          replacement: 'path: $customServerpodPath/packages/serverpod_flutter',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -445,7 +469,8 @@ void _copyServerTemplates(
       ),
     ],
     removePrefixes: [
-      'path: ../../../packages/serverpod_flutter',
+      if (customServerpodPath == null)
+        'path: ../../../packages/serverpod_flutter',
     ],
     ignoreFileNames: [
       'pubspec.lock',

@@ -9,12 +9,18 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents a chat channel.
-class Channel extends _i1.TableRow {
-  Channel({
+abstract class Channel extends _i1.TableRow {
+  Channel._({
     int? id,
     required this.name,
     required this.channel,
   }) : super(id);
+
+  factory Channel({
+    int? id,
+    required String name,
+    required String channel,
+  }) = _ChannelImpl;
 
   factory Channel.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,7 +43,12 @@ class Channel extends _i1.TableRow {
   String channel;
 
   @override
-  String get tableName => 'channel';
+  _i1.Table get table => t;
+  Channel copyWith({
+    int? id,
+    String? name,
+    String? channel,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -48,6 +59,7 @@ class Channel extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
@@ -192,23 +204,63 @@ class Channel extends _i1.TableRow {
       transaction: transaction,
     );
   }
+
+  static ChannelInclude include() {
+    return ChannelInclude._();
+  }
+}
+
+class _Undefined {}
+
+class _ChannelImpl extends Channel {
+  _ChannelImpl({
+    int? id,
+    required String name,
+    required String channel,
+  }) : super._(
+          id: id,
+          name: name,
+          channel: channel,
+        );
+
+  @override
+  Channel copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? channel,
+  }) {
+    return Channel(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      channel: channel ?? this.channel,
+    );
+  }
 }
 
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
 class ChannelTable extends _i1.Table {
-  ChannelTable() : super(tableName: 'channel');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  ChannelTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'channel') {
+    name = _i1.ColumnString(
+      'name',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    channel = _i1.ColumnString(
+      'channel',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+  }
 
   /// The name of the channel.
-  final name = _i1.ColumnString('name');
+  late final _i1.ColumnString name;
 
   /// The id of the channel.
-  final channel = _i1.ColumnString('channel');
+  late final _i1.ColumnString channel;
 
   @override
   List<_i1.Column> get columns => [
@@ -220,3 +272,12 @@ class ChannelTable extends _i1.Table {
 
 @Deprecated('Use ChannelTable.t instead.')
 ChannelTable tChannel = ChannelTable();
+
+class ChannelInclude extends _i1.Include {
+  ChannelInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+  @override
+  _i1.Table get table => Channel.t;
+}
