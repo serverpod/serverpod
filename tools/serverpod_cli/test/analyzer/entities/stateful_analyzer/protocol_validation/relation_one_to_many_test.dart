@@ -68,6 +68,15 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
+    test('then the implicit field is false.', () {
+      expect(relation.runtimeType, ListRelationDefinition);
+      expect(
+        (relation as ListRelationDefinition).implicitForeignField,
+        isFalse,
+        reason: 'Expected implicit field to be false.',
+      );
+    }, skip: errors.isNotEmpty);
+
     test('has the nullableRelation set to false', () {
       expect((relation as ListRelationDefinition).nullableRelation, false);
     }, skip: relation is! ListRelationDefinition);
@@ -138,6 +147,17 @@ void main() {
           (relation as ListRelationDefinition).fieldName,
           'id',
           reason: 'Expected the reference field to be set.',
+        );
+      });
+
+      test('with the is implicit flag set to true on the list relation.', () {
+        var relation = companyDefinition.findField('employees')?.relation;
+
+        expect(relation.runtimeType, ListRelationDefinition);
+        expect(
+          (relation as ListRelationDefinition).implicitForeignField,
+          isTrue,
+          reason: 'Expected implicit field is true.',
         );
       });
 
