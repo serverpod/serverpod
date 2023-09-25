@@ -291,7 +291,7 @@ class CompanyTable extends CompanyWithoutManyRelationsTable {
       fieldName: 'employees',
       foreignTableName: _i2.Citizen.t.tableName,
       column: id,
-      foreignColumnName: _i2.Citizen.t._companyEmployeesCompanyId.columnName,
+      foreignColumnName: _i2.Citizen.t.$_companyEmployeesCompanyId.columnName,
       createTable: (
         relationQueryPrefix,
         foreignTableRelation,
