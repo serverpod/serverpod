@@ -11,11 +11,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_test_module_server/module.dart' as _i3;
 import 'package:serverpod_auth_server/module.dart' as _i4;
-import 'entities_with_relations/address.dart' as _i5;
-import 'entities_with_relations/citizen.dart' as _i6;
-import 'entities_with_relations/company.dart' as _i7;
-import 'entities_with_relations/post.dart' as _i8;
-import 'entities_with_relations/town.dart' as _i9;
+import 'entities_with_relations/deep_nested_relation/address.dart' as _i5;
+import 'entities_with_relations/deep_nested_relation/citizen.dart' as _i6;
+import 'entities_with_relations/deep_nested_relation/company.dart' as _i7;
+import 'entities_with_relations/named_relation/post.dart' as _i8;
+import 'entities_with_relations/named_relation/town.dart' as _i9;
 import 'exception_with_data.dart' as _i10;
 import 'module_datatype.dart' as _i11;
 import 'nullability.dart' as _i12;
@@ -46,22 +46,22 @@ import 'dart:typed_data' as _i36;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i37;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i38;
 import 'package:uuid/uuid.dart' as _i39;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/citizen.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/deep_nested_relation/citizen.dart'
     as _i40;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/deep_nested_relation/address.dart'
     as _i41;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/named_relation/post.dart'
     as _i42;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/company.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/deep_nested_relation/company.dart'
     as _i43;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i44;
 import 'package:serverpod_test_server/src/custom_classes.dart' as _i45;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i46;
-export 'entities_with_relations/address.dart';
-export 'entities_with_relations/citizen.dart';
-export 'entities_with_relations/company.dart';
-export 'entities_with_relations/post.dart';
-export 'entities_with_relations/town.dart';
+export 'entities_with_relations/deep_nested_relation/address.dart';
+export 'entities_with_relations/deep_nested_relation/citizen.dart';
+export 'entities_with_relations/deep_nested_relation/company.dart';
+export 'entities_with_relations/named_relation/post.dart';
+export 'entities_with_relations/named_relation/town.dart';
 export 'exception_with_data.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
