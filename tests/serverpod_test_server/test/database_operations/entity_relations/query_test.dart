@@ -1,7 +1,7 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
-import '../config.dart';
+import '../../config.dart';
 
 Future<void> _createTestDatabase(Client client) async {
   // Towns
@@ -420,6 +420,7 @@ void main() async {
     });
 
     test('then the second address is linked with isak', () async {
+      print(addresses);
       expect(addresses[1].inhabitant?.name, 'Isak');
     });
   });

@@ -1,7 +1,7 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
-import '../config.dart';
+import '../../config.dart';
 
 Future<void> _createTestDatabase(Client client) async {
   var town = Town(name: 'Stockholm');

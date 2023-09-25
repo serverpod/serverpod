@@ -8,8 +8,8 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 Future<void> setupTestData(Client client) async {
-  await client.basicDatabase.deleteAllSimpleTestData();
-  await client.basicDatabase.createSimpleTestData(100);
+  await client.basicDatabaseLegacy.deleteAllSimpleTestData();
+  await client.basicDatabaseLegacy.createSimpleTestData(100);
 }
 
 ByteData createByteData() {
@@ -844,17 +844,17 @@ void main() {
         // aByteData: createByteData(),
       );
 
-      var count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabaseLegacy.countTypesRows();
       expect(count, isNotNull);
 
-      var id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabaseLegacy.storeTypes(types);
       expect(id, isNotNull);
 
-      var newCount = await client.basicDatabase.countTypesRows();
+      var newCount = await client.basicDatabaseLegacy.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      var storedTypes = await client.basicDatabase.getTypes(id!);
+      var storedTypes = await client.basicDatabaseLegacy.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -874,17 +874,17 @@ void main() {
     test('Write and read null values', () async {
       var types = Types();
 
-      var count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabaseLegacy.countTypesRows();
       expect(count, isNotNull);
 
-      var id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabaseLegacy.storeTypes(types);
       expect(id, isNotNull);
 
-      var newCount = await client.basicDatabase.countTypesRows();
+      var newCount = await client.basicDatabaseLegacy.countTypesRows();
       expect(newCount, isNotNull);
       expect(newCount, equals(count! + 1));
 
-      var storedTypes = await client.basicDatabase.getTypes(id!);
+      var storedTypes = await client.basicDatabaseLegacy.getTypes(id!);
       expect(storedTypes, isNotNull);
 
       if (storedTypes != null) {
@@ -915,11 +915,11 @@ void main() {
         [TestEnum.two, TestEnum.one]
       ]);
 
-      var objectId = await client.basicDatabase.storeObjectWithEnum(object);
+      var objectId = await client.basicDatabaseLegacy.storeObjectWithEnum(object);
       expect(objectId, isNotNull);
 
       var returnedObject =
-          await client.basicDatabase.getObjectWithEnum(objectId!);
+          await client.basicDatabaseLegacy.getObjectWithEnum(objectId!);
       expect(returnedObject, isNotNull);
       expect(returnedObject!.testEnum, equals(TestEnum.two));
       expect(returnedObject.enumListList.length, equals(2));
@@ -934,57 +934,57 @@ void main() {
     test('Raw query', () async {
       var types = Types();
 
-      var id = await client.basicDatabase.storeTypes(types);
+      var id = await client.basicDatabaseLegacy.storeTypes(types);
       expect(id, isNotNull);
 
-      var storedId = await client.basicDatabase.getTypesRawQuery(id!);
+      var storedId = await client.basicDatabaseLegacy.getTypesRawQuery(id!);
       expect(storedId, equals(id));
     });
 
     test('Delete all', () async {
-      var removedRows = await client.basicDatabase.deleteAllInTypes();
+      var removedRows = await client.basicDatabaseLegacy.deleteAllInTypes();
       expect(removedRows, greaterThan(0));
 
-      var count = await client.basicDatabase.countTypesRows();
+      var count = await client.basicDatabaseLegacy.countTypesRows();
       expect(count, equals(0));
     });
 
     test('Delete where', () async {
       await setupTestData(client);
 
-      var count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, equals(100));
 
-      await client.basicDatabase.deleteSimpleTestDataLessThan(50);
-      count = await client.basicDatabase.countSimpleData();
+      await client.basicDatabaseLegacy.deleteSimpleTestDataLessThan(50);
+      count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, equals(50));
     });
 
     test('Delete single row', () async {
       await setupTestData(client);
 
-      var count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, equals(100));
 
-      var success = await client.basicDatabase.findAndDeleteSimpleTestData(50);
+      var success = await client.basicDatabaseLegacy.findAndDeleteSimpleTestData(50);
       expect(success, equals(true));
 
-      count = await client.basicDatabase.countSimpleData();
+      count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, equals(99));
     });
 
     test('Update row', () async {
       await setupTestData(client);
 
-      var result = await client.basicDatabase.updateSimpleDataRow(0, 1000);
+      var result = await client.basicDatabaseLegacy.updateSimpleDataRow(0, 1000);
       expect(result, isNotNull);
       expect(result, equals(true));
 
-      var count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, isNotNull);
       expect(count, equals(100));
 
-      var list = await client.basicDatabase
+      var list = await client.basicDatabaseLegacy
           .findSimpleDataRowsLessThan(100, 0, 100, true);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(99));
@@ -995,7 +995,7 @@ void main() {
 
       await client.transactionsDatabase.removeRow(50);
 
-      var count = await client.basicDatabase.countSimpleData();
+      var count = await client.basicDatabaseLegacy.countSimpleData();
       expect(count, isNotNull);
       expect(count, equals(99));
     });
@@ -1008,7 +1008,7 @@ void main() {
       expect(result, isNotNull);
       expect(result, equals(true));
 
-      var list = await client.basicDatabase
+      var list = await client.basicDatabaseLegacy
           .findSimpleDataRowsLessThan(10000, 0, 200, false);
       expect(list, isNotNull);
       expect(list!.rows.length, equals(100));
@@ -1025,10 +1025,10 @@ void main() {
         listWithNullableData: [SimpleData(num: 10), null],
       );
 
-      var id = await client.basicDatabase.storeObjectWithObject(object);
+      var id = await client.basicDatabaseLegacy.storeObjectWithObject(object);
       expect(id, isNotNull);
 
-      var result = await client.basicDatabase.getObjectWithObject(id!);
+      var result = await client.basicDatabaseLegacy.getObjectWithObject(id!);
 
       expect(result, isNotNull);
       expect(result!.data.num, equals(42));
@@ -1062,7 +1062,7 @@ void main() {
     });
 
     test('Write and read ByteData', () async {
-      var result = await client.basicDatabase.testByteDataStore();
+      var result = await client.basicDatabaseLegacy.testByteDataStore();
 
       expect(result, equals(true));
     });
@@ -1073,13 +1073,13 @@ void main() {
       await setupTestData(client);
 
       await client.asyncTasks.insertRowToSimpleDataAfterDelay(1000, 1);
-      var numRows = await client.basicDatabase.countSimpleData();
+      var numRows = await client.basicDatabaseLegacy.countSimpleData();
       expect(numRows, isNotNull);
       expect(numRows, equals(100));
 
       await Future.delayed(const Duration(seconds: 2));
 
-      numRows = await client.basicDatabase.countSimpleData();
+      numRows = await client.basicDatabaseLegacy.countSimpleData();
       expect(numRows, isNotNull);
       expect(numRows, equals(101));
     });
