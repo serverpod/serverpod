@@ -32,29 +32,29 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    test('then a class named ${testClassName}AttachRepository is NOT generated',
+    test('then a class named ${testClassName}AttachRowRepository is NOT generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
           compilationUnit,
-          name: '${testClassName}AttachRepository',
+          name: '${testClassName}AttachRowRepository',
         ),
         isFalse,
         reason:
-            'The class ${testClassName}AttachRepository was found but was expected to not exist.',
+            'The class ${testClassName}AttachRowRepository was found but was expected to not exist.',
       );
     });
 
-    test('then a class named ${testClassName}DetachRepository is NOT generated',
+    test('then a class named ${testClassName}DetachRowRepository is NOT generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
           compilationUnit,
-          name: '${testClassName}DetachRepository',
+          name: '${testClassName}DetachRowRepository',
         ),
         isFalse,
         reason:
-            'The class ${testClassName}DetachRepository was found but was expected to not exist.',
+            'The class ${testClassName}DetachRowRepository was found but was expected to not exist.',
       );
     });
   });
@@ -97,12 +97,12 @@ void main() {
       test('has a final attach field', () {
         var field = CompilationUnitHelpers.tryFindFieldDeclaration(
           repositoryClass!,
-          name: 'attach',
+          name: 'attachRow',
         );
 
         expect(
           field?.toSource(),
-          'final attach = const ${testClassName}AttachRepository._();',
+          'final attachRow = const ${testClassName}AttachRowRepository._();',
           reason: 'Missing static instance field.',
         );
       });
@@ -110,36 +110,36 @@ void main() {
       test('has a final detach field', () {
         var field = CompilationUnitHelpers.tryFindFieldDeclaration(
           repositoryClass!,
-          name: 'detach',
+          name: 'detachRow',
         );
 
         expect(
           field?.toSource(),
-          'final detach = const ${testClassName}DetachRepository._();',
+          'final detachRow = const ${testClassName}DetachRowRepository._();',
           reason: 'Missing static instance field.',
         );
       });
     }, skip: repositoryClass == null);
 
-    test('then a class named ${testClassName}AttachRepository is generated',
+    test('then a class named ${testClassName}AttachRowRepository is generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
           compilationUnit,
-          name: '${testClassName}AttachRepository',
+          name: '${testClassName}AttachRowRepository',
         ),
         isTrue,
         reason:
-            'Expected the class ${testClassName}AttachRepository to be generated.',
+            'Expected the class ${testClassName}AttachRowRepository to be generated.',
       );
     });
 
     var repositoryAttachClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}AttachRepository',
+      name: '${testClassName}AttachRowRepository',
     );
 
-    group('then the ${testClassName}AttachRepository', () {
+    group('then the ${testClassName}AttachRowRepository', () {
       test('has a private constructor', () {
         var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
           repositoryAttachClass!,
@@ -147,7 +147,7 @@ void main() {
         );
         expect(
           constructor?.toSource(),
-          'const ${testClassName}AttachRepository._();',
+          'const ${testClassName}AttachRowRepository._();',
           reason: 'Missing private constructor.',
         );
       });
@@ -223,24 +223,24 @@ void main() {
       });
     }, skip: repositoryClass == null);
 
-    test('then a class named ${testClassName}DetachRepository is generated',
+    test('then a class named ${testClassName}DetachRowRepository is generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
           compilationUnit,
-          name: '${testClassName}DetachRepository',
+          name: '${testClassName}DetachRowRepository',
         ),
         isTrue,
         reason:
-            'Expected the class ${testClassName}DetachRepository to be generated.',
+            'Expected the class ${testClassName}DetachRowRepository to be generated.',
       );
     });
 
     var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}DetachRepository',
+      name: '${testClassName}DetachRowRepository',
     );
-    group('then the ${testClassName}DetachRepository', () {
+    group('then the ${testClassName}DetachRowRepository', () {
       test('has a private constructor', () {
         var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
           repositoryDetachClass!,
@@ -248,7 +248,7 @@ void main() {
         );
         expect(
           constructor?.toSource(),
-          'const ${testClassName}DetachRepository._();',
+          'const ${testClassName}DetachRowRepository._();',
           reason: 'Missing private constructor.',
         );
       });
@@ -336,7 +336,7 @@ void main() {
 
     var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}DetachRepository',
+      name: '${testClassName}DetachRowRepository',
     );
 
     test('then no detach repository is generated', () {
@@ -344,7 +344,7 @@ void main() {
         repositoryDetachClass,
         isNull,
         reason:
-            'The class ${testClassName}DetachRepository was found but was expected to not exist.',
+            'The class ${testClassName}DetachRowRepository was found but was expected to not exist.',
       );
     });
   });
@@ -380,7 +380,7 @@ void main() {
 
     var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}DetachRepository',
+      name: '${testClassName}DetachRowRepository',
     );
 
     group(
@@ -421,14 +421,14 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var attachRepository = CompilationUnitHelpers.tryFindClassDeclaration(
+    var AttachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
-      name: '${testClassName}AttachRepository',
+      name: '${testClassName}AttachRowRepository',
     );
 
     group('then the attach method for example', () {
       var method = CompilationUnitHelpers.tryFindMethodDeclaration(
-        attachRepository!,
+        AttachRowRepository!,
         name: 'example',
       );
 
@@ -444,7 +444,7 @@ void main() {
 
     test('then the class name ${testClassName}Repository is generated', () {
       expect(
-        attachRepository,
+        AttachRowRepository,
         isNotNull,
         reason: 'Missing class named ${testClassName}Repository.',
       );

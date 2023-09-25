@@ -31,16 +31,16 @@ class BuildRepositoryClass {
           if (hasAttachOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
-                ..name = 'attach'
+                ..name = 'attachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}AttachRepository._()');
+                ..assignment = Code('const ${className}AttachRowRepository._()');
             }),
           if (hasDetachOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
-                ..name = 'detach'
+                ..name = 'detachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}DetachRepository._()');
+                ..assignment = Code('const ${className}DetachRowRepository._()');
             }),
         ])
         ..methods.addAll([
@@ -63,7 +63,7 @@ class BuildRepositoryClass {
   ) {
     return Class((classBuilder) {
       classBuilder
-        ..name = '${className}AttachRepository'
+        ..name = '${className}AttachRowRepository'
         ..constructors.add(Constructor((constructorBuilder) {
           constructorBuilder
             ..name = '_'
@@ -84,7 +84,7 @@ class BuildRepositoryClass {
   ) {
     return Class((classBuilder) {
       classBuilder
-        ..name = '${className}DetachRepository'
+        ..name = '${className}DetachRowRepository'
         ..constructors.add(Constructor((constructorBuilder) {
           constructorBuilder
             ..name = '_'
