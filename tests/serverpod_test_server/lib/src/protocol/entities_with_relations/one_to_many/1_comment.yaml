@@ -1,0 +1,6 @@
+class: Comment
+table: comment
+fields:
+  description: String
+  orderId: int
+  order: Order?, relation(name=order_comment, field=orderId)

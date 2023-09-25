@@ -1,0 +1,5 @@
+class: Customer
+table: customer
+fields:
+  name: String
+  orders: List<Order>?, relation(name=customer_order)

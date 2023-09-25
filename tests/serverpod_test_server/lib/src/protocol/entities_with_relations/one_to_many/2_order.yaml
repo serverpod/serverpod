@@ -1,0 +1,7 @@
+class: Order
+table: order
+fields:
+  description: String
+  comments: List<Comment>?, relation(name=order_comment)
+  customerId: int
+  customer: Customer?, relation(name=customer_order, field=customerId)
