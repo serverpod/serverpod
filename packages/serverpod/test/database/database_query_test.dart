@@ -390,6 +390,13 @@ void main() {
       expect(query, 'DELETE FROM "citizen" RETURNING *');
     });
 
+    test('when query return id is build then the output is a return id query.',
+        () {
+      var query = DeleteQueryBuilder(table: 'citizen').withReturnId().build();
+
+      expect(query, 'DELETE FROM "citizen" RETURNING "citizen".id');
+    });
+
     test(
         'when where expression depends on relations then output includes using according to table relations.',
         () {
