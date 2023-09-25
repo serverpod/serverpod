@@ -150,6 +150,54 @@ void main() {
   });
 
   group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleWithoutManyRelationsTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}WithoutManyRelationsTable');
+
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
+      test('has private field for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+                maybeClassNamedExampleWithoutManyRelationsTable!,
+                type: 'CompanyTable?',
+                name: '_company'),
+            isTrue,
+            reason: 'Missing private field declaration for relation table.');
+      });
+
+      test('has getter method for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
+              name: 'company',
+            ),
+            isTrue,
+            reason: 'Missing declaration for relation table getter.');
+      });
+    },
+        skip: maybeClassNamedExampleWithoutManyRelationsTable == null
+            ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found.'
+            : false);
+  });
+
+  group(
       'Given a class with table name and persistent field when generating code',
       () {
     var entities = [
