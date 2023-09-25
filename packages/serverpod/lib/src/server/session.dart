@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database_legacy.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
 
@@ -42,7 +43,11 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  late final Database db;
+  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
+  late final DatabaseLegacy db;
+
+  /// Access to the database. Replaces db in the future.
+  late final Database dbNext;
 
   String? _authenticationKey;
 
@@ -87,7 +92,8 @@ abstract class Session {
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    db = Database(session: this);
+    db = DatabaseLegacy(session: this);
+    dbNext = Database(session: this);
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =

@@ -51,11 +51,13 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     );
 
     var session = await pod.createSession(enableLogging: false);
-    await databaseConnection.insert(entry, session: session);
+    await databaseConnection.legacy.insert(entry, session: session);
 
     // Read entry
-    entry = await databaseConnection.findById<ReadWriteTestEntry>(entry.id!,
-        session: session);
+    entry = await databaseConnection.findById<ReadWriteTestEntry>(
+      session,
+      entry.id!,
+    );
     await session.close();
 
     // Verify random number
