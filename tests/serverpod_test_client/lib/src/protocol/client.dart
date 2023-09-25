@@ -38,8 +38,14 @@ import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i20;
 import 'package:serverpod_test_module_client/module.dart' as _i21;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i22;
-import 'dart:io' as _i23;
-import 'protocol.dart' as _i24;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/3_customer.dart'
+    as _i23;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/1_comment.dart'
+    as _i24;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/2_order.dart'
+    as _i25;
+import 'dart:io' as _i26;
+import 'protocol.dart' as _i27;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2176,6 +2182,80 @@ class EndpointNamedParameters extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointOneToMany extends _i1.EndpointRef {
+  EndpointOneToMany(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'oneToMany';
+
+  _i2.Future<List<_i23.Customer>> customerFindWhereOrderDescriptionIs(
+          {required String description}) =>
+      caller.callServerEndpoint<List<_i23.Customer>>(
+        'oneToMany',
+        'customerFindWhereOrderDescriptionIs',
+        {'description': description},
+      );
+
+  _i2.Future<List<_i23.Customer>> customerFindWhereOrdersGreaterThan(
+          {required int numberOfOrders}) =>
+      caller.callServerEndpoint<List<_i23.Customer>>(
+        'oneToMany',
+        'customerFindWhereOrdersGreaterThan',
+        {'numberOfOrders': numberOfOrders},
+      );
+
+  _i2.Future<List<_i23.Customer>> customerOrderByOrderCountAscending() =>
+      caller.callServerEndpoint<List<_i23.Customer>>(
+        'oneToMany',
+        'customerOrderByOrderCountAscending',
+        {},
+      );
+
+  _i2.Future<int> customerCountWhereOrdersGreaterThan(
+          {required int numberOfOrders}) =>
+      caller.callServerEndpoint<int>(
+        'oneToMany',
+        'customerCountWhereOrdersGreaterThan',
+        {'numberOfOrders': numberOfOrders},
+      );
+
+  _i2.Future<int> customerCountWhereOrderDescriptionIs(
+          {required String description}) =>
+      caller.callServerEndpoint<int>(
+        'oneToMany',
+        'customerCountWhereOrderDescriptionIs',
+        {'description': description},
+      );
+
+  _i2.Future<int?> commentInsert(_i24.Comment comment) =>
+      caller.callServerEndpoint<int?>(
+        'oneToMany',
+        'commentInsert',
+        {'comment': comment},
+      );
+
+  _i2.Future<int?> orderInsert(_i25.Order order) =>
+      caller.callServerEndpoint<int?>(
+        'oneToMany',
+        'orderInsert',
+        {'order': order},
+      );
+
+  _i2.Future<int?> customerInsert(_i23.Customer customer) =>
+      caller.callServerEndpoint<int?>(
+        'oneToMany',
+        'customerInsert',
+        {'customer': customer},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'oneToMany',
+        'deleteAll',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointOptionalParameters extends _i1.EndpointRef {
   EndpointOptionalParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -2380,11 +2460,11 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i23.SecurityContext? context,
+    _i26.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i24.Protocol(),
+          _i27.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
@@ -2415,6 +2495,7 @@ class Client extends _i1.ServerpodClient {
     mapParameters = EndpointMapParameters(this);
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
+    oneToMany = EndpointOneToMany(this);
     optionalParameters = EndpointOptionalParameters(this);
     redis = EndpointRedis(this);
     signInRequired = EndpointSignInRequired(this);
@@ -2480,6 +2561,8 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointNamedParameters namedParameters;
 
+  late final EndpointOneToMany oneToMany;
+
   late final EndpointOptionalParameters optionalParameters;
 
   late final EndpointRedis redis;
@@ -2527,6 +2610,7 @@ class Client extends _i1.ServerpodClient {
         'mapParameters': mapParameters,
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
+        'oneToMany': oneToMany,
         'optionalParameters': optionalParameters,
         'redis': redis,
         'signInRequired': signInRequired,

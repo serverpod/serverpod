@@ -58,8 +58,10 @@ import 'package:serverpod_test_server/src/generated/entities_with_relations/name
 import 'package:serverpod_test_server/src/generated/entities_with_relations/deep_nested_relation/company.dart'
     as _i46;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i47;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i48;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i49;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_many/3_customer.dart'
+    as _i48;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i49;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i50;
 export 'entities_with_relations/deep_nested_relation/address.dart';
 export 'entities_with_relations/deep_nested_relation/citizen.dart';
 export 'entities_with_relations/deep_nested_relation/company.dart';
@@ -1956,26 +1958,30 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i48.CustomClass) {
-      return _i48.CustomClass.fromJson(data, this) as T;
+    if (t == List<_i48.Customer>) {
+      return (data as List).map((e) => deserialize<_i48.Customer>(e)).toList()
+          as dynamic;
     }
-    if (t == _i49.ExternalCustomClass) {
-      return _i49.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i49.CustomClass) {
+      return _i49.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i49.FreezedCustomClass) {
-      return _i49.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i50.ExternalCustomClass) {
+      return _i50.ExternalCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i48.CustomClass?>()) {
-      return (data != null ? _i48.CustomClass.fromJson(data, this) : null) as T;
+    if (t == _i50.FreezedCustomClass) {
+      return _i50.FreezedCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i49.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i49.CustomClass?>()) {
+      return (data != null ? _i49.CustomClass.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i50.ExternalCustomClass?>()) {
       return (data != null
-          ? _i49.ExternalCustomClass.fromJson(data, this)
+          ? _i50.ExternalCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i49.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i50.FreezedCustomClass?>()) {
       return (data != null
-          ? _i49.FreezedCustomClass.fromJson(data, this)
+          ? _i50.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
@@ -2001,13 +2007,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i48.CustomClass) {
+    if (data is _i49.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i49.ExternalCustomClass) {
+    if (data is _i50.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i49.FreezedCustomClass) {
+    if (data is _i50.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i5.Address) {
@@ -2123,13 +2129,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i4.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i48.CustomClass>(data['data']);
+      return deserialize<_i49.CustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i49.ExternalCustomClass>(data['data']);
+      return deserialize<_i50.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i49.FreezedCustomClass>(data['data']);
+      return deserialize<_i50.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'Address') {
       return deserialize<_i5.Address>(data['data']);

@@ -54,9 +54,11 @@ import 'package:serverpod_test_client/src/protocol/entities_with_relations/named
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/deep_nested_relation/company.dart'
     as _i42;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i43;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i44;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i45;
-import 'package:serverpod_auth_client/module.dart' as _i46;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/3_customer.dart'
+    as _i44;
+import 'package:serverpod_test_client/src/custom_classes.dart' as _i45;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i46;
+import 'package:serverpod_auth_client/module.dart' as _i47;
 export 'entities_with_relations/deep_nested_relation/address.dart';
 export 'entities_with_relations/deep_nested_relation/citizen.dart';
 export 'entities_with_relations/deep_nested_relation/company.dart';
@@ -862,33 +864,37 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i44.CustomClass) {
-      return _i44.CustomClass.fromJson(data, this) as T;
+    if (t == List<_i44.Customer>) {
+      return (data as List).map((e) => deserialize<_i44.Customer>(e)).toList()
+          as dynamic;
     }
-    if (t == _i45.ExternalCustomClass) {
-      return _i45.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i45.CustomClass) {
+      return _i45.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i45.FreezedCustomClass) {
-      return _i45.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i46.ExternalCustomClass) {
+      return _i46.ExternalCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i44.CustomClass?>()) {
-      return (data != null ? _i44.CustomClass.fromJson(data, this) : null) as T;
+    if (t == _i46.FreezedCustomClass) {
+      return _i46.FreezedCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i45.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i45.CustomClass?>()) {
+      return (data != null ? _i45.CustomClass.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i46.ExternalCustomClass?>()) {
       return (data != null
-          ? _i45.ExternalCustomClass.fromJson(data, this)
+          ? _i46.ExternalCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i45.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i46.FreezedCustomClass?>()) {
       return (data != null
-          ? _i45.FreezedCustomClass.fromJson(data, this)
+          ? _i46.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
       return _i34.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
-      return _i46.Protocol().deserialize<T>(data, t);
+      return _i47.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -900,17 +906,17 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
-    className = _i46.Protocol().getClassNameForObject(data);
+    className = _i47.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i44.CustomClass) {
+    if (data is _i45.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i45.ExternalCustomClass) {
+    if (data is _i46.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i45.FreezedCustomClass) {
+    if (data is _i46.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i2.Address) {
@@ -1017,16 +1023,16 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i46.Protocol().deserializeByClassName(data);
+      return _i47.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i44.CustomClass>(data['data']);
+      return deserialize<_i45.CustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i45.ExternalCustomClass>(data['data']);
+      return deserialize<_i46.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i45.FreezedCustomClass>(data['data']);
+      return deserialize<_i46.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'Address') {
       return deserialize<_i2.Address>(data['data']);
