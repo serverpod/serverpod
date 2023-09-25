@@ -409,6 +409,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassCountMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.count instead.')")
+      ])
       ..static = true
       ..name = 'count'
       ..returns = TypeReference(
@@ -467,6 +470,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassInsertMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.insert instead.')")
+      ])
       ..static = true
       ..name = 'insert'
       ..returns = TypeReference(
@@ -506,6 +512,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassUpdateMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.update instead.')")
+      ])
       ..static = true
       ..name = 'update'
       ..returns = TypeReference(
@@ -545,6 +554,10 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassDeleteRowMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')")
+      ])
       ..static = true
       ..name = 'deleteRow'
       ..returns = TypeReference(
@@ -584,6 +597,10 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassDeleteMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')")
+      ])
       ..static = true
       ..name = 'delete'
       ..returns = TypeReference(
@@ -627,6 +644,10 @@ class SerializableEntityLibraryGenerator {
   Method _buildEntityClassFindByIdMethod(String className,
       Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')")
+      ])
       ..static = true
       ..name = 'findById'
       ..returns = TypeReference(
@@ -673,6 +694,10 @@ class SerializableEntityLibraryGenerator {
   Method _buildEntityClassFindSingleRowMethod(String className,
       Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')")
+      ])
       ..static = true
       ..name = 'findSingleRow'
       ..returns = TypeReference(
@@ -760,6 +785,9 @@ class SerializableEntityLibraryGenerator {
     Iterable<SerializableEntityFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.find instead.')")
+      ])
       ..static = true
       ..name = 'find'
       ..returns = TypeReference(
