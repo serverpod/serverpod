@@ -345,6 +345,112 @@ class AddressRepository {
   final attach = const AddressAttachRepository._();
 
   final detach = const AddressDetachRepository._();
+
+  Future<List<Address>> find(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.find<Address>(
+      where: where?.call(Address.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address?> findRow(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.findRow<Address>(
+      where: where?.call(Address.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.findById<Address>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address> insertRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Address> updateRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required AddressExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Address>(
+      where: where(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Address>(
+      where: where?.call(Address.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
 class AddressAttachRepository {

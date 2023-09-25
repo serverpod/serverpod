@@ -32,6 +32,8 @@ abstract class SimpleData extends _i1.TableRow {
 
   static final t = SimpleDataTable();
 
+  static final db = SimpleDataRepository._();
+
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
@@ -257,4 +259,108 @@ class SimpleDataInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SimpleData.t;
+}
+
+class SimpleDataRepository {
+  const SimpleDataRepository._();
+
+  Future<List<SimpleData>> find(
+    _i1.Session session, {
+    SimpleDataExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<SimpleData>(
+      where: where?.call(SimpleData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleData?> findRow(
+    _i1.Session session, {
+    SimpleDataExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<SimpleData>(
+      where: where?.call(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleData?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<SimpleData>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleData> insertRow(
+    _i1.Session session,
+    SimpleData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<SimpleData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleData> updateRow(
+    _i1.Session session,
+    SimpleData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<SimpleData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    SimpleData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<SimpleData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required SimpleDataExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<SimpleData>(
+      where: where(SimpleData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    SimpleDataExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<SimpleData>(
+      where: where?.call(SimpleData.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

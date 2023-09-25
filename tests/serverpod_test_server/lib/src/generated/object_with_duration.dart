@@ -32,6 +32,8 @@ abstract class ObjectWithDuration extends _i1.TableRow {
 
   static final t = ObjectWithDurationTable();
 
+  static final db = ObjectWithDurationRepository._();
+
   Duration duration;
 
   @override
@@ -252,4 +254,108 @@ class ObjectWithDurationInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithDuration.t;
+}
+
+class ObjectWithDurationRepository {
+  const ObjectWithDurationRepository._();
+
+  Future<List<ObjectWithDuration>> find(
+    _i1.Session session, {
+    ObjectWithDurationExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration?> findRow(
+    _i1.Session session, {
+    ObjectWithDurationExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithDuration>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration> insertRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithDuration>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration> updateRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithDuration>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithDuration>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithDurationExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithDuration>(
+      where: where(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithDurationExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

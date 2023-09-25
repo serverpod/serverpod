@@ -41,6 +41,8 @@ abstract class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
+  static final db = EmailResetRepository._();
+
   /// The id of the user that is resetting his/her password.
   int userId;
 
@@ -308,4 +310,108 @@ class EmailResetInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailReset.t;
+}
+
+class EmailResetRepository {
+  const EmailResetRepository._();
+
+  Future<List<EmailReset>> find(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<EmailReset>(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findRow(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<EmailReset>(
+      where: where?.call(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<EmailReset>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> insertRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> updateRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required EmailResetExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<EmailReset>(
+      where: where(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<EmailReset>(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

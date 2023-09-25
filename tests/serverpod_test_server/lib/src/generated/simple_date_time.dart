@@ -33,6 +33,8 @@ abstract class SimpleDateTime extends _i1.TableRow {
 
   static final t = SimpleDateTimeTable();
 
+  static final db = SimpleDateTimeRepository._();
+
   /// The only field of [SimpleDateTime]
   DateTime dateTime;
 
@@ -255,4 +257,108 @@ class SimpleDateTimeInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SimpleDateTime.t;
+}
+
+class SimpleDateTimeRepository {
+  const SimpleDateTimeRepository._();
+
+  Future<List<SimpleDateTime>> find(
+    _i1.Session session, {
+    SimpleDateTimeExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleDateTime?> findRow(
+    _i1.Session session, {
+    SimpleDateTimeExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleDateTime?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<SimpleDateTime>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleDateTime> insertRow(
+    _i1.Session session,
+    SimpleDateTime row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<SimpleDateTime>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<SimpleDateTime> updateRow(
+    _i1.Session session,
+    SimpleDateTime row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<SimpleDateTime>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    SimpleDateTime row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<SimpleDateTime>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required SimpleDateTimeExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<SimpleDateTime>(
+      where: where(SimpleDateTime.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    SimpleDateTimeExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

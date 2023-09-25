@@ -53,6 +53,8 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   static final t = CloudStorageEntryTable();
 
+  static final db = CloudStorageEntryRepository._();
+
   /// The storageId, typically `public` or `private`.
   String storageId;
 
@@ -390,4 +392,108 @@ class CloudStorageEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => CloudStorageEntry.t;
+}
+
+class CloudStorageEntryRepository {
+  const CloudStorageEntryRepository._();
+
+  Future<List<CloudStorageEntry>> find(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry?> findRow(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<CloudStorageEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry> insertRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry> updateRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required CloudStorageEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<CloudStorageEntry>(
+      where: where(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

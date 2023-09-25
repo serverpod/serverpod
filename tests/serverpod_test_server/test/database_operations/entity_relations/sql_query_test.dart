@@ -22,6 +22,7 @@ SELECT
  citizen."name" AS "citizen.name",
  citizen."companyId" AS "citizen.companyId",
  citizen."oldCompanyId" AS "citizen.oldCompanyId",
+ citizen."_companyEmployeesCompanyId" AS "citizen._companyEmployeesCompanyId",
  citizen_company_company."id" AS "citizen_company_company.id",
  citizen_company_company."name" AS "citizen_company_company.name",
  citizen_company_company."townId" AS "citizen_company_company.townId" 

@@ -80,6 +80,8 @@ abstract class SessionLogEntry extends _i1.TableRow {
 
   static final t = SessionLogEntryTable();
 
+  static final db = SessionLogEntryRepository._();
+
   /// The id of the server that handled this session.
   String serverId;
 
@@ -588,4 +590,108 @@ class SessionLogEntryInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => SessionLogEntry.t;
+}
+
+class SessionLogEntryRepository {
+  const SessionLogEntryRepository._();
+
+  Future<List<SessionLogEntry>> find(
+    _i1.Session session, {
+    SessionLogEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<SessionLogEntry>(
+      where: where?.call(SessionLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<SessionLogEntry?> findRow(
+    _i1.Session session, {
+    SessionLogEntryExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<SessionLogEntry>(
+      where: where?.call(SessionLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<SessionLogEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<SessionLogEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<SessionLogEntry> insertRow(
+    _i1.Session session,
+    SessionLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<SessionLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<SessionLogEntry> updateRow(
+    _i1.Session session,
+    SessionLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<SessionLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    SessionLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<SessionLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required SessionLogEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<SessionLogEntry>(
+      where: where(SessionLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    SessionLogEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<SessionLogEntry>(
+      where: where?.call(SessionLogEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

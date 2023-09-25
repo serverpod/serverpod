@@ -343,6 +343,112 @@ class TownRepository {
   final attach = const TownAttachRepository._();
 
   final detach = const TownDetachRepository._();
+
+  Future<List<Town>> find(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.find<Town>(
+      where: where?.call(Town.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Town?> findRow(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.findRow<Town>(
+      where: where?.call(Town.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Town?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.findById<Town>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Town> insertRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Town> updateRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required TownExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Town>(
+      where: where(Town.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Town>(
+      where: where?.call(Town.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
 class TownAttachRepository {

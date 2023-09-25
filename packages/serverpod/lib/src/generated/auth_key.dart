@@ -47,6 +47,8 @@ abstract class AuthKey extends _i1.TableRow {
 
   static final t = AuthKeyTable();
 
+  static final db = AuthKeyRepository._();
+
   /// The id of the user to provide access to.
   int userId;
 
@@ -349,4 +351,108 @@ class AuthKeyInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => AuthKey.t;
+}
+
+class AuthKeyRepository {
+  const AuthKeyRepository._();
+
+  Future<List<AuthKey>> find(
+    _i1.Session session, {
+    AuthKeyExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<AuthKey>(
+      where: where?.call(AuthKey.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<AuthKey?> findRow(
+    _i1.Session session, {
+    AuthKeyExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<AuthKey>(
+      where: where?.call(AuthKey.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<AuthKey?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<AuthKey>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<AuthKey> insertRow(
+    _i1.Session session,
+    AuthKey row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<AuthKey>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<AuthKey> updateRow(
+    _i1.Session session,
+    AuthKey row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<AuthKey>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    AuthKey row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<AuthKey>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required AuthKeyExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<AuthKey>(
+      where: where(AuthKey.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    AuthKeyExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<AuthKey>(
+      where: where?.call(AuthKey.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

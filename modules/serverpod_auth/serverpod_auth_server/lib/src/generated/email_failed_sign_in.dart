@@ -42,6 +42,8 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
 
   static final t = EmailFailedSignInTable();
 
+  static final db = EmailFailedSignInRepository._();
+
   /// Email attempting to sign in with.
   String email;
 
@@ -310,4 +312,108 @@ class EmailFailedSignInInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailFailedSignIn.t;
+}
+
+class EmailFailedSignInRepository {
+  const EmailFailedSignInRepository._();
+
+  Future<List<EmailFailedSignIn>> find(
+    _i1.Session session, {
+    EmailFailedSignInExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<EmailFailedSignIn>(
+      where: where?.call(EmailFailedSignIn.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailFailedSignIn?> findRow(
+    _i1.Session session, {
+    EmailFailedSignInExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<EmailFailedSignIn>(
+      where: where?.call(EmailFailedSignIn.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailFailedSignIn?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<EmailFailedSignIn>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailFailedSignIn> insertRow(
+    _i1.Session session,
+    EmailFailedSignIn row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<EmailFailedSignIn>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailFailedSignIn> updateRow(
+    _i1.Session session,
+    EmailFailedSignIn row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<EmailFailedSignIn>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailFailedSignIn row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<EmailFailedSignIn>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required EmailFailedSignInExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<EmailFailedSignIn>(
+      where: where(EmailFailedSignIn.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    EmailFailedSignInExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<EmailFailedSignIn>(
+      where: where?.call(EmailFailedSignIn.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -36,6 +36,8 @@ abstract class Channel extends _i1.TableRow {
 
   static final t = ChannelTable();
 
+  static final db = ChannelRepository._();
+
   /// The name of the channel.
   String name;
 
@@ -280,4 +282,108 @@ class ChannelInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => Channel.t;
+}
+
+class ChannelRepository {
+  const ChannelRepository._();
+
+  Future<List<Channel>> find(
+    _i1.Session session, {
+    ChannelExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<Channel>(
+      where: where?.call(Channel.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<Channel?> findRow(
+    _i1.Session session, {
+    ChannelExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<Channel>(
+      where: where?.call(Channel.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<Channel?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<Channel>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<Channel> insertRow(
+    _i1.Session session,
+    Channel row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Channel>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Channel> updateRow(
+    _i1.Session session,
+    Channel row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Channel>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Channel row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Channel>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ChannelExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Channel>(
+      where: where(Channel.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ChannelExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Channel>(
+      where: where?.call(Channel.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -65,6 +65,8 @@ abstract class Types extends _i1.TableRow {
 
   static final t = TypesTable();
 
+  static final db = TypesRepository._();
+
   int? anInt;
 
   bool? aBool;
@@ -453,4 +455,108 @@ class TypesInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => Types.t;
+}
+
+class TypesRepository {
+  const TypesRepository._();
+
+  Future<List<Types>> find(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<Types>(
+      where: where?.call(Types.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types?> findRow(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<Types>(
+      where: where?.call(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<Types?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<Types>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types> insertRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types> updateRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required TypesExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Types>(
+      where: where(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Types>(
+      where: where?.call(Types.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

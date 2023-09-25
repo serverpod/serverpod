@@ -355,6 +355,112 @@ class CompanyRepository {
   const CompanyRepository._();
 
   final attach = const CompanyAttachRepository._();
+
+  Future<List<Company>> find(
+    _i1.Session session, {
+    CompanyExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    CompanyInclude? include,
+  }) async {
+    return session.dbNext.find<Company>(
+      where: where?.call(Company.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Company?> findRow(
+    _i1.Session session, {
+    CompanyExpressionBuilder? where,
+    _i1.Transaction? transaction,
+    CompanyInclude? include,
+  }) async {
+    return session.dbNext.findRow<Company>(
+      where: where?.call(Company.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Company?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    CompanyInclude? include,
+  }) async {
+    return session.dbNext.findById<Company>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Company> insertRow(
+    _i1.Session session,
+    Company row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Company>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Company> updateRow(
+    _i1.Session session,
+    Company row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Company>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Company row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Company>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required CompanyExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Company>(
+      where: where(Company.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    CompanyExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Company>(
+      where: where?.call(Company.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
 class CompanyAttachRepository {

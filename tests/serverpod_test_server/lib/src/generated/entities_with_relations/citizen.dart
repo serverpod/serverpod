@@ -488,6 +488,112 @@ class CitizenRepository {
   final attach = const CitizenAttachRepository._();
 
   final detach = const CitizenDetachRepository._();
+
+  Future<List<Citizen>> find(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.find<Citizen>(
+      where: where?.call(Citizen.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen?> findRow(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.findRow<Citizen>(
+      where: where?.call(Citizen.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.findById<Citizen>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen> insertRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Citizen> updateRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required CitizenExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Citizen>(
+      where: where(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Citizen>(
+      where: where?.call(Citizen.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
 class CitizenAttachRepository {

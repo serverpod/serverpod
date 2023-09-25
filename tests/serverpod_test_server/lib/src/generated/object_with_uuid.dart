@@ -36,6 +36,8 @@ abstract class ObjectWithUuid extends _i1.TableRow {
 
   static final t = ObjectWithUuidTable();
 
+  static final db = ObjectWithUuidRepository._();
+
   _i1.UuidValue uuid;
 
   _i1.UuidValue? uuidNullable;
@@ -278,4 +280,108 @@ class ObjectWithUuidInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithUuid.t;
+}
+
+class ObjectWithUuidRepository {
+  const ObjectWithUuidRepository._();
+
+  Future<List<ObjectWithUuid>> find(
+    _i1.Session session, {
+    ObjectWithUuidExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithUuid>(
+      where: where?.call(ObjectWithUuid.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithUuid?> findRow(
+    _i1.Session session, {
+    ObjectWithUuidExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithUuid>(
+      where: where?.call(ObjectWithUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithUuid?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithUuid>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithUuid> insertRow(
+    _i1.Session session,
+    ObjectWithUuid row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithUuid>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithUuid> updateRow(
+    _i1.Session session,
+    ObjectWithUuid row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithUuid>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithUuid row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithUuid>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithUuidExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithUuid>(
+      where: where(ObjectWithUuid.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithUuidExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithUuid>(
+      where: where?.call(ObjectWithUuid.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -31,6 +31,8 @@ abstract class ObjectWithParent extends _i1.TableRow {
 
   static final t = ObjectWithParentTable();
 
+  static final db = ObjectWithParentRepository._();
+
   int other;
 
   @override
@@ -251,4 +253,108 @@ class ObjectWithParentInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithParent.t;
+}
+
+class ObjectWithParentRepository {
+  const ObjectWithParentRepository._();
+
+  Future<List<ObjectWithParent>> find(
+    _i1.Session session, {
+    ObjectWithParentExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithParent?> findRow(
+    _i1.Session session, {
+    ObjectWithParentExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithParent?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithParent>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithParent> insertRow(
+    _i1.Session session,
+    ObjectWithParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithParent> updateRow(
+    _i1.Session session,
+    ObjectWithParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithParentExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithParent>(
+      where: where(ObjectWithParent.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithParentExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

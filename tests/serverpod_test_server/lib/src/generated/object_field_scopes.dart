@@ -39,6 +39,8 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
 
   static final t = ObjectFieldScopesTable();
 
+  static final db = ObjectFieldScopesRepository._();
+
   String normal;
 
   String? api;
@@ -288,4 +290,108 @@ class ObjectFieldScopesInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectFieldScopes.t;
+}
+
+class ObjectFieldScopesRepository {
+  const ObjectFieldScopesRepository._();
+
+  Future<List<ObjectFieldScopes>> find(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes?> findRow(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectFieldScopes>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes> insertRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes> updateRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectFieldScopesExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectFieldScopes>(
+      where: where(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

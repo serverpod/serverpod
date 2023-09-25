@@ -49,6 +49,8 @@ abstract class ObjectWithEnum extends _i1.TableRow {
 
   static final t = ObjectWithEnumTable();
 
+  static final db = ObjectWithEnumRepository._();
+
   _i2.TestEnum testEnum;
 
   _i2.TestEnum? nullableEnum;
@@ -354,4 +356,108 @@ class ObjectWithEnumInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithEnum.t;
+}
+
+class ObjectWithEnumRepository {
+  const ObjectWithEnumRepository._();
+
+  Future<List<ObjectWithEnum>> find(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum?> findRow(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithEnum>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum> insertRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum> updateRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithEnumExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithEnum>(
+      where: where(ObjectWithEnum.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

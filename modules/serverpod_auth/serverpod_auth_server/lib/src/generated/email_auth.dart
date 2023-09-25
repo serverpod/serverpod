@@ -40,6 +40,8 @@ abstract class EmailAuth extends _i1.TableRow {
 
   static final t = EmailAuthTable();
 
+  static final db = EmailAuthRepository._();
+
   /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;
 
@@ -307,4 +309,108 @@ class EmailAuthInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailAuth.t;
+}
+
+class EmailAuthRepository {
+  const EmailAuthRepository._();
+
+  Future<List<EmailAuth>> find(
+    _i1.Session session, {
+    EmailAuthExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<EmailAuth>(
+      where: where?.call(EmailAuth.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailAuth?> findRow(
+    _i1.Session session, {
+    EmailAuthExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<EmailAuth>(
+      where: where?.call(EmailAuth.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailAuth?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<EmailAuth>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailAuth> insertRow(
+    _i1.Session session,
+    EmailAuth row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<EmailAuth>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailAuth> updateRow(
+    _i1.Session session,
+    EmailAuth row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<EmailAuth>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailAuth row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<EmailAuth>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required EmailAuthExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<EmailAuth>(
+      where: where(EmailAuth.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    EmailAuthExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<EmailAuth>(
+      where: where?.call(EmailAuth.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

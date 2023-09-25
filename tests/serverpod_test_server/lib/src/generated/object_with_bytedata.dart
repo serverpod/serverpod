@@ -33,6 +33,8 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static final t = ObjectWithByteDataTable();
 
+  static final db = ObjectWithByteDataRepository._();
+
   _i2.ByteData byteData;
 
   @override
@@ -253,4 +255,108 @@ class ObjectWithByteDataInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ObjectWithByteData.t;
+}
+
+class ObjectWithByteDataRepository {
+  const ObjectWithByteDataRepository._();
+
+  Future<List<ObjectWithByteData>> find(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData?> findRow(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithByteData>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData> insertRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData> updateRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithByteDataExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithByteData>(
+      where: where(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

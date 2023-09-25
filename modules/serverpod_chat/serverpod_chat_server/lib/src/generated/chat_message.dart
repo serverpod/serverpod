@@ -67,6 +67,8 @@ abstract class ChatMessage extends _i1.TableRow {
 
   static final t = ChatMessageTable();
 
+  static final db = ChatMessageRepository._();
+
   /// The channel this message was posted to.
   String channel;
 
@@ -439,4 +441,108 @@ class ChatMessageInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => ChatMessage.t;
+}
+
+class ChatMessageRepository {
+  const ChatMessageRepository._();
+
+  Future<List<ChatMessage>> find(
+    _i1.Session session, {
+    ChatMessageExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ChatMessage>(
+      where: where?.call(ChatMessage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ChatMessage?> findRow(
+    _i1.Session session, {
+    ChatMessageExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ChatMessage>(
+      where: where?.call(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ChatMessage?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ChatMessage>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ChatMessage> insertRow(
+    _i1.Session session,
+    ChatMessage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ChatMessage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ChatMessage> updateRow(
+    _i1.Session session,
+    ChatMessage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ChatMessage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ChatMessage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ChatMessage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ChatMessageExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ChatMessage>(
+      where: where(ChatMessage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ChatMessageExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ChatMessage>(
+      where: where?.call(ChatMessage.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

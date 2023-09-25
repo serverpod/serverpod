@@ -65,6 +65,8 @@ abstract class UserInfo extends _i1.TableRow {
 
   static final t = UserInfoTable();
 
+  static final db = UserInfoRepository._();
+
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
   String userIdentifier;
@@ -449,4 +451,108 @@ class UserInfoInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => UserInfo.t;
+}
+
+class UserInfoRepository {
+  const UserInfoRepository._();
+
+  Future<List<UserInfo>> find(
+    _i1.Session session, {
+    UserInfoExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<UserInfo>(
+      where: where?.call(UserInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserInfo?> findRow(
+    _i1.Session session, {
+    UserInfoExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<UserInfo>(
+      where: where?.call(UserInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<UserInfo?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<UserInfo>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserInfo> insertRow(
+    _i1.Session session,
+    UserInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<UserInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserInfo> updateRow(
+    _i1.Session session,
+    UserInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<UserInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    UserInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<UserInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required UserInfoExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<UserInfo>(
+      where: where(UserInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    UserInfoExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<UserInfo>(
+      where: where?.call(UserInfo.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

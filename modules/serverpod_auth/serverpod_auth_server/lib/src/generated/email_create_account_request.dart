@@ -45,6 +45,8 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
 
   static final t = EmailCreateAccountRequestTable();
 
+  static final db = EmailCreateAccountRequestRepository._();
+
   /// The name of the user.
   String userName;
 
@@ -337,4 +339,108 @@ class EmailCreateAccountRequestInclude extends _i1.Include {
   Map<String, _i1.Include?> get includes => {};
   @override
   _i1.Table get table => EmailCreateAccountRequest.t;
+}
+
+class EmailCreateAccountRequestRepository {
+  const EmailCreateAccountRequestRepository._();
+
+  Future<List<EmailCreateAccountRequest>> find(
+    _i1.Session session, {
+    EmailCreateAccountRequestExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<EmailCreateAccountRequest>(
+      where: where?.call(EmailCreateAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailCreateAccountRequest?> findRow(
+    _i1.Session session, {
+    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<EmailCreateAccountRequest>(
+      where: where?.call(EmailCreateAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailCreateAccountRequest?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<EmailCreateAccountRequest>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailCreateAccountRequest> insertRow(
+    _i1.Session session,
+    EmailCreateAccountRequest row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<EmailCreateAccountRequest>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailCreateAccountRequest> updateRow(
+    _i1.Session session,
+    EmailCreateAccountRequest row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<EmailCreateAccountRequest>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailCreateAccountRequest row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<EmailCreateAccountRequest>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required EmailCreateAccountRequestExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<EmailCreateAccountRequest>(
+      where: where(EmailCreateAccountRequest.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    EmailCreateAccountRequestExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<EmailCreateAccountRequest>(
+      where: where?.call(EmailCreateAccountRequest.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
