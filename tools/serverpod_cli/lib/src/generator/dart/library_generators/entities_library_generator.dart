@@ -1259,7 +1259,7 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(field.name)
+              refer(_createTableFieldName(serverCode, field))
         ]).code,
     );
   }
@@ -1325,6 +1325,11 @@ class SerializableEntityLibraryGenerator {
     Iterable<SerializableEntityFieldDefinition> manyRelationFields,
     ClassDefinition classDefinition,
   ) {
+    String foreignFieldName(ListRelationDefinition listRelation) =>
+        listRelation.isImplicit
+            ? '\$${listRelation.foreignFieldName}'
+            : listRelation.foreignFieldName;
+
     return manyRelationFields.fold([], (list, field) {
       var listRelation = field.relation as ListRelationDefinition;
 
@@ -1335,7 +1340,7 @@ class SerializableEntityLibraryGenerator {
           classDefinition,
           methodName: '_${field.name}Table',
           objectRelationFieldName: listRelation.fieldName,
-          objectRelationForeignFieldName: listRelation.foreignFieldName,
+          objectRelationForeignFieldName: foreignFieldName(listRelation),
           objectRelationReference: field.type.generics.first.reference(
             serverCode,
             subDirParts: classDefinition.subDirParts,
@@ -1365,7 +1370,7 @@ class SerializableEntityLibraryGenerator {
         c.fields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = field.name
+          ..name = _createTableFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1499,7 +1504,7 @@ class SerializableEntityLibraryGenerator {
           for (var field in fields.where(
               (field) => field.shouldSerializeFieldForDatabase(serverCode)))
             if (!(field.name == 'id' && serverCode))
-              refer(field.name)
+              refer(_createTableFieldName(serverCode, field))
                   .assign(TypeReference((t) => t
                     ..symbol = field.type.columnType
                     ..url = 'package:serverpod/serverpod.dart'
@@ -2059,5 +2064,16 @@ class SerializableEntityLibraryGenerator {
     }
 
     return refer(field.name);
+  }
+
+  String _createTableFieldName(
+    bool serverCode,
+    SerializableEntityFieldDefinition field,
+  ) {
+    if (field.hiddenSerializableField(serverCode)) {
+      return '\$${field.name}';
+    }
+
+    return field.name;
   }
 }

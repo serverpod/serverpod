@@ -359,6 +359,76 @@ void main() {
   });
 
   group(
+      'Given a class with table name and persistent field with scope none when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('_fieldName')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.none)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleWithoutManyRelationsTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}WithoutManyRelationsTable',
+    );
+
+    group('then the class named ${testClassName}WithoutManyRelationsTable', () {
+      test('has \$ prefixed class variable for field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleWithoutManyRelationsTable!,
+              name: '\$_fieldName',
+            ),
+            isTrue,
+            reason: 'Missing declaration for "\$_fieldName" field.');
+      });
+
+      test('has \$ prefixed class variable included in columns getter.', () {
+        var columnsGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleWithoutManyRelationsTable!,
+          name: 'columns',
+        );
+
+        expect(columnsGetter?.toSource(), contains('\$_fieldName'),
+            reason: '"\$_fieldName" is missing in columns getter.');
+      });
+
+      test('has \$ prefixed class variable included constructor.', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          maybeClassNamedExampleWithoutManyRelationsTable!,
+          name: null,
+        );
+
+        expect(
+          constructor?.toSource(),
+          contains('\$_fieldName'),
+          reason: '"\$_fieldName" is missing in constructor getter.',
+        );
+      },
+          skip: maybeClassNamedExampleWithoutManyRelationsTable == null
+              ? 'Could not run test because ${testClassName}WithoutManyRelationsTable class was not found.'
+              : false);
+    });
+  });
+
+  group(
       'Given a class with many relation object relation field when generating code',
       () {
     var relationFieldName = 'employees';
