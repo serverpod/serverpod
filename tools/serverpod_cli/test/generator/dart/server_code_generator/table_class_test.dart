@@ -267,4 +267,74 @@ void main() {
             ? 'Could not run test because ${testClassName}Table class was not found.'
             : false);
   });
+
+  group(
+      'Given a class with table name and persistent field with scope none when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withField(
+            FieldDefinitionBuilder()
+                .withName('_fieldName')
+                .withTypeDefinition('String', true)
+                .withScope(EntityFieldScopeDefinition.none)
+                .withShouldPersist(true)
+                .build(),
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
+
+    group('then the class named ${testClassName}Table', () {
+      test('has \$ prefixed class variable for field.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: '\$_fieldName',
+            ),
+            isTrue,
+            reason: 'Missing declaration for "\$_fieldName" field.');
+      });
+
+      test('has \$ prefixed class variable included in columns getter.', () {
+        var columnsGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+          maybeClassNamedExampleTable!,
+          name: 'columns',
+        );
+
+        expect(columnsGetter?.toSource(), contains('\$_fieldName'),
+            reason: '"\$_fieldName" is missing in columns getter.');
+      });
+
+      test('has \$ prefixed class variable included constructor.', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          maybeClassNamedExampleTable!,
+          name: null,
+        );
+
+        expect(
+          constructor?.toSource(),
+          contains('\$_fieldName'),
+          reason: '"\$_fieldName" is missing in constructor getter.',
+        );
+      },
+          skip: maybeClassNamedExampleTable == null
+              ? 'Could not run test because ${testClassName}Table class was not found.'
+              : false);
+    });
+  });
 }
