@@ -92,6 +92,42 @@ void main() {
       }, skip: nestedRelationAccess.tableRelations == null);
     });
   });
+
+  group('Given entities with many relation field', () {
+    group('when building expression from filtering on many relation field', () {
+      Expression expression =
+          Customer.t.orders((o) => o.description.equals('first')).count > 3;
+      test('then query prefix is built based on relations.', () {
+        expect(expression.toString(),
+            'customer_orders_order."description" = \'first\'');
+      });
+
+      test('then each expression column is retrievable.', () {
+        expect(expression.columns, hasLength(2));
+      });
+
+      test('then each column expression has table relation.', () {
+        var columns = expression.columns;
+        var columnWithTableRelations =
+            columns.where((element) => element.tableRelations != null);
+
+        expect(columnWithTableRelations.length, 2,
+            reason:
+                'Table relation should exists for each column in expression since we traverse a relation field.');
+      });
+
+      test('then aggregated expression is retrievable.', () {
+        expect(expression.aggregateExpressions, hasLength(1));
+      });
+
+      test('then aggregated expression is retrievable.', () {
+        expect(
+            expression.aggregateExpressions.first.aggregateExpression
+                .toString(),
+            '(COUNT(customer_orders_order."customerId") > 3)');
+      });
+    });
+  });
 }
 
 void expectTableRelationWith({
