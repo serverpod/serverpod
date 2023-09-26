@@ -20,7 +20,7 @@ class CreateCommand extends ServerpodCommand {
       'force',
       abbr: 'f',
       negatable: false,
-      help: 'Create the project even if there are issues that prevents if from '
+      help: 'Create the project even if there are issues that prevent it from '
           'running out of the box.',
     );
     argParser.addOption(
