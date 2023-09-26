@@ -248,7 +248,16 @@ class DatabaseConnection {
       var result =
           await context.query(query, allowReuse: false, substitutionValues: {});
 
-      if (result.length != 1) return 0;
+      if (result.length != 1) {
+        _logQuery(
+          session,
+          query,
+          startTime,
+          numRowsAffected: result.affectedRowCount,
+        );
+
+        return result.length;
+      }
 
       List returnedRow = result[0];
       if (returnedRow.length != 1) return 0;

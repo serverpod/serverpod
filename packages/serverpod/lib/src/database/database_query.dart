@@ -114,7 +114,7 @@ class CountQueryBuilder {
   /// Creates a new [CountQueryBuilder].
   CountQueryBuilder({required table})
       : _table = table,
-        _field = '*';
+        _field = 'id';
 
   /// Sets the alias for the count query.
   CountQueryBuilder withCountAlias(String alias) {
@@ -146,14 +146,20 @@ class CountQueryBuilder {
   /// Builds the SQL query.
   String build() {
     _validateTableReferences(_table, where: _where);
+    var countField = ColumnString(_field, queryPrefix: _table);
 
     var join = _buildJoinQuery(where: _where);
+    var groupBy = _buildGroupByQuery(
+        where: _where, fields: [countField], useColumnAlias: false);
+    var having = _buildHavingQuery(where: _where);
 
-    var query = 'SELECT COUNT($_field)';
+    var query = 'SELECT COUNT($countField)';
     if (_alias != null) query += ' AS $_alias';
     query += ' FROM "$_table"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
+    if (groupBy != null) query += ' $groupBy';
+    if (having != null) query += ' $having';
     if (_limit != null) query += ' LIMIT $_limit';
     return query;
   }
@@ -222,6 +228,7 @@ String? _buildGroupByQuery({
   List<Order>? orderBy,
   List<Column>? fields,
   Include? include,
+  bool useColumnAlias = true,
 }) {
   var manyRelationInWhereExpression =
       where?.aggregateExpressions.isNotEmpty ?? false;
@@ -238,7 +245,8 @@ String? _buildGroupByQuery({
     return null;
   }
 
-  return _groupByStatementFromColumns(selectColumns);
+  return _groupByStatementFromColumns(selectColumns,
+      useColumnAlias: useColumnAlias);
 }
 
 String? _buildHavingQuery({
@@ -389,10 +397,17 @@ String _selectStatementFromColumns(List<Column> columns) {
   return 'SELECT ${selectStatements.join(', ')}';
 }
 
-String _groupByStatementFromColumns(List<Column> columns) {
+String _groupByStatementFromColumns(
+  List<Column> columns, {
+  bool useColumnAlias = true,
+}) {
   List<String> selectStatements = [];
   for (var column in columns) {
-    selectStatements.add(column.queryAlias);
+    if (useColumnAlias) {
+      selectStatements.add(column.queryAlias);
+    } else {
+      selectStatements.add(column.toString());
+    }
   }
   return 'GROUP BY ${selectStatements.join(', ')}';
 }

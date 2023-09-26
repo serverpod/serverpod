@@ -379,21 +379,21 @@ void main() {
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = CountQueryBuilder(table: 'citizen').build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."id") FROM "citizen"');
     });
     test('when query with alias is built then count result has defined alias.',
         () {
       var query =
           CountQueryBuilder(table: 'citizen').withCountAlias('c').build();
 
-      expect(query, 'SELECT COUNT(*) AS c FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."id") AS c FROM "citizen"');
     });
 
     test('when query with field is built then count is based on that field.',
         () {
       var query = CountQueryBuilder(table: 'citizen').withField('age').build();
 
-      expect(query, 'SELECT COUNT(age) FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."age") FROM "citizen"');
     });
 
     test(
@@ -403,14 +403,15 @@ void main() {
           .withWhere(const Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" WHERE "test"=@test');
+      expect(query,
+          'SELECT COUNT(citizen."id") FROM "citizen" WHERE "test"=@test');
     });
 
     test('when query with limit is built then output is a query with limit.',
         () {
       var query = CountQueryBuilder(table: 'citizen').withLimit(10).build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" LIMIT 10');
+      expect(query, 'SELECT COUNT(citizen."id") FROM "citizen" LIMIT 10');
     });
 
     test(
@@ -433,7 +434,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT COUNT(citizen."id") FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
     });
 
     test(
@@ -464,7 +465,34 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT COUNT(citizen."id") FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+    });
+
+    test(
+        'when where expression is aggregate column then output includes HAVING and GROUP BY in query.',
+        () {
+      var innerWhere = Constant.bool(true);
+      var table = 'company';
+      var queryPrefix = '${table}_employees_';
+      var queryPrefixForColumn = '${queryPrefix}citizen';
+      var query = CountQueryBuilder(table: table)
+          .withWhere(ColumnCountAggregate(
+            'companyId',
+            queryPrefix: queryPrefixForColumn,
+            innerWhere: innerWhere,
+            tableRelations: [
+              TableRelation.foreign(
+                foreignTableName: 'citizen',
+                column: ColumnInt('id', queryPrefix: table),
+                foreignColumnName: 'companyId',
+                relationQueryPrefix: queryPrefix,
+              )
+            ],
+          ).equals(10))
+          .build();
+
+      expect(query,
+          'SELECT COUNT(company."id") FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY company."id" HAVING COUNT(company_employees_citizen."companyId") = 10');
     });
 
     test(
@@ -490,7 +518,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(age) AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
+          'SELECT COUNT(citizen."age") AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
     });
 
     test(
