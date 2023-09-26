@@ -51,6 +51,7 @@ abstract class Address extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Address copyWith({
     int? id,
     String? street,
@@ -322,6 +323,7 @@ class AddressTable extends _i1.Table {
         street,
         inhabitantId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'inhabitant') {
@@ -343,6 +345,7 @@ class AddressInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
+
   @override
   _i1.Table get table => Address.t;
 }

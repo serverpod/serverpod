@@ -44,6 +44,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ObjectWithUuid copyWith({
     int? id,
     _i1.UuidValue? uuid,
@@ -286,6 +287,7 @@ class ObjectWithUuidInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ObjectWithUuid.t;
 }

@@ -57,6 +57,7 @@ abstract class Post extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Post copyWith({
     int? id,
     String? content,
@@ -365,6 +366,7 @@ class PostTable extends _i1.Table {
         content,
         nextId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'previous') {
@@ -398,6 +400,7 @@ class PostInclude extends _i1.Include {
         'previous': _previous,
         'next': _next,
       };
+
   @override
   _i1.Table get table => Post.t;
 }

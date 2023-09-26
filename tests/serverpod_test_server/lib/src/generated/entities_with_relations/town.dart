@@ -50,6 +50,7 @@ abstract class Town extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Town copyWith({
     int? id,
     String? name,
@@ -320,6 +321,7 @@ class TownTable extends _i1.Table {
         name,
         mayorId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'mayor') {
@@ -341,6 +343,7 @@ class TownInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
+
   @override
   _i1.Table get table => Town.t;
 }

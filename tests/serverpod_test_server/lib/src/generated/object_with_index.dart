@@ -44,6 +44,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -285,6 +286,7 @@ class ObjectWithIndexInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ObjectWithIndex.t;
 }

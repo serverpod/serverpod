@@ -56,6 +56,7 @@ abstract class Company extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Company copyWith({
     int? id,
     String? name,
@@ -334,6 +335,7 @@ class CompanyTable extends _i1.Table {
         name,
         townId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'town') {
@@ -355,6 +357,7 @@ class CompanyInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'town': _town};
+
   @override
   _i1.Table get table => Company.t;
 }

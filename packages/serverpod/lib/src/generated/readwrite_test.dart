@@ -41,6 +41,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
@@ -264,6 +265,7 @@ class ReadWriteTestEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ReadWriteTestEntry.t;
 }
