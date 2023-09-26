@@ -76,7 +76,7 @@ class OpenApiDefinition {
       //map['security']=security
     }
     if (tags != null) {
-      //map['tags']=tags
+      map['tags'] = tags!.map((tag) => tag.toJson()).toList();
     }
     if (externalDocs != null) {
       //map['externalDocs'] = externalDocs
@@ -92,7 +92,6 @@ class OpenApiDefinition {
         InfoObject(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
 
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
-
     return OpenApiDefinition(
       info: infoObject,
       tags: tags,
