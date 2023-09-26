@@ -368,6 +368,21 @@ void _validateTableReferences(
             .add('"orderBy" expression referencing column $column.');
       }
     }
+    var innerWhereColumns = orderBy.fold(<Column>[], (columns, order) {
+      var column = order.column;
+      if (column is! ColumnCountAggregate) {
+        return columns;
+      }
+
+      return [...columns, ...column.innerWhere.columns];
+    });
+
+    for (var column in innerWhereColumns) {
+      if (!column.hasBaseTable(tableName)) {
+        exceptionMessages
+            .add('"orderBy" expression referencing column $column.');
+      }
+    }
   }
 
   if (where != null) {
@@ -391,6 +406,6 @@ extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
     // Regex matches 'tableName_' and 'tableName.'
-    return toString().startsWith(RegExp(table + r'[_\.]'));
+    return queryAlias.startsWith(RegExp(table + r'[_\.]'));
   }
 }

@@ -226,6 +226,96 @@ void main() {
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company."name".'),
           )));
     });
+
+    test(
+        'when where expression is aggregate column with different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = const Expression('test');
+      var queryBuilder = SelectQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('employees',
+                  queryPrefix: differentTable, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column COUNT(company."employees").'),
+          )));
+    });
+
+    test(
+        'when where expression is aggregate column with inner where referencing other table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = ColumnBool('active', queryPrefix: differentTable).equals(
+        false,
+      );
+      var queryBuilder = SelectQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('vehicles',
+                  queryPrefix: table, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."active".'),
+          )));
+    });
+
+    test(
+        'when order by aggregate column that has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = const Expression('test');
+      var queryBuilder = SelectQueryBuilder(table: table).withOrderBy([
+        Order(
+            column: ColumnCountAggregate('employees',
+                queryPrefix: differentTable, innerWhere: innerWhere))
+      ]);
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column COUNT(company."employees").'),
+          )));
+    });
+
+    test(
+        'when order by aggregate column with inner where that has different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = ColumnBool('active', queryPrefix: differentTable).equals(
+        false,
+      );
+      var queryBuilder = SelectQueryBuilder(table: table).withOrderBy([
+        Order(
+            column: ColumnCountAggregate('vehicles',
+                queryPrefix: table, innerWhere: innerWhere))
+      ]);
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company."active".'),
+          )));
+    });
   });
 
   group('Given CountQueryBuilder', () {
@@ -364,6 +454,50 @@ void main() {
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
           )));
     });
+
+    test(
+        'when where expression is aggregate column with different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = const Expression('test');
+      var queryBuilder = CountQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('employees',
+                  queryPrefix: differentTable, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column COUNT(company."employees").'),
+          )));
+    });
+
+    test(
+        'when where expression is aggregate column with inner where referencing other table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = ColumnBool('active', queryPrefix: differentTable).equals(
+        false,
+      );
+      var queryBuilder = CountQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('vehicles',
+                  queryPrefix: table, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."active".'),
+          )));
+    });
   });
 
   group('Given DeleteQueryBuilder', () {
@@ -484,6 +618,50 @@ void main() {
             'message',
             equals(
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+          )));
+    });
+
+    test(
+        'when where expression is aggregate column with different table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = const Expression('test');
+      var queryBuilder = DeleteQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('employees',
+                  queryPrefix: differentTable, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column COUNT(company."employees").'),
+          )));
+    });
+
+    test(
+        'when where expression is aggregate column with inner where referencing other table as base then exception is thrown.',
+        () {
+      var table = 'citizen';
+      var differentTable = 'company';
+      var innerWhere = ColumnBool('active', queryPrefix: differentTable).equals(
+        false,
+      );
+      var queryBuilder = DeleteQueryBuilder(table: table).withWhere(
+          ColumnCountAggregate('vehicles',
+                  queryPrefix: table, innerWhere: innerWhere)
+              .equals(10));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."active".'),
           )));
     });
   });
