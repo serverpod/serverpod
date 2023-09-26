@@ -47,7 +47,7 @@ abstract class AuthKey extends _i1.TableRow {
 
   static final t = AuthKeyTable();
 
-  static final db = AuthKeyRepository._();
+  static const db = AuthKeyRepository._();
 
   /// The id of the user to provide access to.
   int userId;

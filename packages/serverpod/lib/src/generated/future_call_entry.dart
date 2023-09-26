@@ -48,7 +48,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
 
   static final t = FutureCallEntryTable();
 
-  static final db = FutureCallEntryRepository._();
+  static const db = FutureCallEntryRepository._();
 
   /// Name of the future call. Used to find the correct method to call.
   String name;

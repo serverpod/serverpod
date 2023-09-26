@@ -65,7 +65,7 @@ abstract class Types extends _i1.TableRow {
 
   static final t = TypesTable();
 
-  static final db = TypesRepository._();
+  static const db = TypesRepository._();
 
   int? anInt;
 

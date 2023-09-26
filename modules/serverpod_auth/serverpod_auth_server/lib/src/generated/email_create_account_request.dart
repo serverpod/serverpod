@@ -45,7 +45,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
 
   static final t = EmailCreateAccountRequestTable();
 
-  static final db = EmailCreateAccountRequestRepository._();
+  static const db = EmailCreateAccountRequestRepository._();
 
   /// The name of the user.
   String userName;

@@ -80,7 +80,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
 
   static final t = SessionLogEntryTable();
 
-  static final db = SessionLogEntryRepository._();
+  static const db = SessionLogEntryRepository._();
 
   /// The id of the server that handled this session.
   String serverId;

@@ -36,7 +36,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
 
   static final t = ObjectWithUuidTable();
 
-  static final db = ObjectWithUuidRepository._();
+  static const db = ObjectWithUuidRepository._();
 
   _i1.UuidValue uuid;
 

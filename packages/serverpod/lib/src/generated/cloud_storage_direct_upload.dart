@@ -44,7 +44,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
 
   static final t = CloudStorageDirectUploadEntryTable();
 
-  static final db = CloudStorageDirectUploadEntryRepository._();
+  static const db = CloudStorageDirectUploadEntryRepository._();
 
   /// The storageId, typically `public` or `private`.
   String storageId;

@@ -67,7 +67,7 @@ abstract class ChatMessage extends _i1.TableRow {
 
   static final t = ChatMessageTable();
 
-  static final db = ChatMessageRepository._();
+  static const db = ChatMessageRepository._();
 
   /// The channel this message was posted to.
   String channel;

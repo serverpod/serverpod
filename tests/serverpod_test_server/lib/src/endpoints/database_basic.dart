@@ -75,15 +75,10 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<int> countSimpleData(
-    Session session, {
-    Expression? where,
-    Transaction? transaction,
-  }) async {
+  Future<int> countSimpleData(Session session) async {
     return SimpleData.db.count(
       session,
       where: (t) => Constant.bool(true),
-      transaction: transaction,
     );
   }
 }

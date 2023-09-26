@@ -32,7 +32,7 @@ abstract class SimpleData extends _i1.TableRow {
 
   static final t = SimpleDataTable();
 
-  static final db = SimpleDataRepository._();
+  static const db = SimpleDataRepository._();
 
   /// The only field of [SimpleData]
   ///

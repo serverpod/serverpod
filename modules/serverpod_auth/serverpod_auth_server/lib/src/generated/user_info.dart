@@ -65,7 +65,7 @@ abstract class UserInfo extends _i1.TableRow {
 
   static final t = UserInfoTable();
 
-  static final db = UserInfoRepository._();
+  static const db = UserInfoRepository._();
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.

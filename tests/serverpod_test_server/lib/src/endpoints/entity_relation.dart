@@ -4,7 +4,7 @@ import 'package:serverpod/serverpod.dart';
 class RelationEndpoint extends Endpoint {
   Future<List<Citizen>> citizenFindWhereCompanyNameIs(Session session,
       {required String companyName}) async {
-    return await Citizen.find(
+    return await Citizen.db.find(
       session,
       where: (t) => t.company.name.equals(companyName),
     );
@@ -12,7 +12,7 @@ class RelationEndpoint extends Endpoint {
 
   Future<List<Citizen>> citizenFindWhereCompanyTownNameIs(Session session,
       {required String townName}) async {
-    return await Citizen.find(
+    return await Citizen.db.find(
       session,
       where: (t) => t.company.town.name.equals(townName),
     );
@@ -21,34 +21,38 @@ class RelationEndpoint extends Endpoint {
   Future<List<Citizen>> citizenFindOrderedByCompanyName(
     Session session,
   ) async {
-    return await Citizen.find(session, orderBy: Citizen.t.company.name);
+    return await Citizen.db.find(session, orderBy: Citizen.t.company.name);
   }
 
   Future<List<Citizen>> citizenFindOrderedByCompanyTownName(
     Session session,
   ) async {
-    return await Citizen.find(session, orderBy: Citizen.t.company.town.name);
+    return await Citizen.db.find(session, orderBy: Citizen.t.company.town.name);
   }
 
   Future<int> citizenDeleteWhereCompanyNameIs(Session session,
       {required String companyName}) async {
-    return await Citizen.delete(
+    var deleted = await Citizen.db.deleteWhere(
       session,
       where: (t) => t.company.name.equals(companyName),
     );
+
+    return deleted.length;
   }
 
   Future<int> citizenDeleteWhereCompanyTownNameIs(Session session,
       {required String townName}) async {
-    return await Citizen.delete(
+    var deleted = await Citizen.db.deleteWhere(
       session,
       where: (t) => t.company.town.name.equals(townName),
     );
+
+    return deleted.length;
   }
 
   Future<int> citizenCountWhereCompanyNameIs(Session session,
       {required String companyName}) async {
-    return await Citizen.count(
+    return await Citizen.db.count(
       session,
       where: (t) => t.company.name.equals(companyName),
     );
@@ -56,19 +60,19 @@ class RelationEndpoint extends Endpoint {
 
   Future<int> citizenCountWhereCompanyTownNameIs(Session session,
       {required String townName}) async {
-    return await Citizen.count(
+    return await Citizen.db.count(
       session,
       where: (t) => t.company.town.name.equals(townName),
     );
   }
 
   Future<List<Citizen>> citizenFindAll(Session session) async {
-    return await Citizen.find(session, orderBy: Citizen.t.id);
+    return await Citizen.db.find(session, orderBy: Citizen.t.id);
   }
 
   /// Includes company and oldCompany and their respective towns
   Future<List<Citizen>> citizenFindAllWithDeepIncludes(Session session) async {
-    return await Citizen.find(
+    return await Citizen.db.find(
       session,
       orderBy: Citizen.t.id,
       include: Citizen.include(
@@ -82,7 +86,7 @@ class RelationEndpoint extends Endpoint {
   Future<List<Citizen>> citizenFindAllWithNamedRelationNoneOriginSide(
     Session session,
   ) async {
-    return await Citizen.find(
+    return await Citizen.db.find(
       session,
       orderBy: Citizen.t.id,
       include: Citizen.include(
@@ -95,7 +99,7 @@ class RelationEndpoint extends Endpoint {
   Future<List<Citizen>> citizenFindAllWithShallowIncludes(
     Session session,
   ) async {
-    return await Citizen.find(
+    return await Citizen.db.find(
       session,
       orderBy: Citizen.t.id,
       include: Citizen.include(
@@ -106,12 +110,12 @@ class RelationEndpoint extends Endpoint {
   }
 
   Future<Citizen?> citizenFindByIdWithIncludes(Session session, int id) async {
-    return await Citizen.findById(session, id,
+    return await Citizen.db.findById(session, id,
         include: Citizen.include(company: Company.include()));
   }
 
   Future<List<Address>> addressFindAll(Session session) async {
-    return await Address.find(
+    return await Address.db.find(
       session,
       orderBy: Address.t.id,
       include: Address.include(
@@ -121,13 +125,13 @@ class RelationEndpoint extends Endpoint {
   }
 
   Future<Address?> addressFindById(Session session, int id) async {
-    return await Address.findById(session, id);
+    return await Address.db.findById(session, id);
   }
 
   Future<List<Post>> findAllPostsIncludingNextAndPrevious(
     Session session,
   ) async {
-    return await Post.find(
+    return await Post.db.find(
       session,
       include: Post.include(
         previous: Post.include(),
@@ -175,50 +179,50 @@ class RelationEndpoint extends Endpoint {
   }
 
   Future<List<Company>> companyFindAll(Session session) async {
-    return await Company.find(session, orderBy: Company.t.id);
+    return await Company.db.find(session, orderBy: Company.t.id);
   }
 
   Future<int?> citizenInsert(Session session, Citizen citizen) async {
-    await Citizen.insert(session, citizen);
-    return citizen.id;
+    var insertedCitizen = await Citizen.db.insertRow(session, citizen);
+    return insertedCitizen.id;
   }
 
   Future<int?> companyInsert(Session session, Company company) async {
-    await Company.insert(session, company);
-    return company.id;
+    var insertedCompany = await Company.db.insertRow(session, company);
+    return insertedCompany.id;
   }
 
   Future<int?> townInsert(Session session, Town town) async {
-    await Town.insert(session, town);
-    return town.id;
+    var insertedTown = await Town.db.insertRow(session, town);
+    return insertedTown.id;
   }
 
   Future<int?> addressInsert(Session session, Address address) async {
-    await Address.insert(session, address);
-    return address.id;
+    var insertedAddress = await Address.db.insertRow(session, address);
+    return insertedAddress.id;
   }
 
   Future<int?> postInsert(Session session, Post post) async {
-    await Post.insert(session, post);
-    return post.id;
+    var insertedPost = await Post.db.insertRow(session, post);
+    return insertedPost.id;
   }
 
   Future<int> deleteAll(Session session) async {
     var townDeletions =
-        await Town.delete(session, where: (_) => Constant.bool(true));
-    var companyDeletions =
-        await Company.delete(session, where: (_) => Constant.bool(true));
-    var citizenDeletions =
-        await Citizen.delete(session, where: (_) => Constant.bool(true));
-    var addressDeletions =
-        await Address.delete(session, where: (_) => Constant.bool(true));
+        await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
+    var companyDeletions = await Company.db
+        .deleteWhere(session, where: (_) => Constant.bool(true));
+    var citizenDeletions = await Citizen.db
+        .deleteWhere(session, where: (_) => Constant.bool(true));
+    var addressDeletions = await Address.db
+        .deleteWhere(session, where: (_) => Constant.bool(true));
     var postDeletions =
-        await Post.delete(session, where: (_) => Constant.bool(true));
+        await Post.db.deleteWhere(session, where: (_) => Constant.bool(true));
 
-    return townDeletions +
-        companyDeletions +
-        citizenDeletions +
-        addressDeletions +
-        postDeletions;
+    return townDeletions.length +
+        companyDeletions.length +
+        citizenDeletions.length +
+        addressDeletions.length +
+        postDeletions.length;
   }
 }

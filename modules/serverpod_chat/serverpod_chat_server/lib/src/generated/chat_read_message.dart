@@ -41,7 +41,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
 
   static final t = ChatReadMessageTable();
 
-  static final db = ChatReadMessageRepository._();
+  static const db = ChatReadMessageRepository._();
 
   /// The channel this that has been read.
   String channel;

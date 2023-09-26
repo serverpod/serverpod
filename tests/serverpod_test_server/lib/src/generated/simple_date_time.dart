@@ -33,7 +33,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
 
   static final t = SimpleDateTimeTable();
 
-  static final db = SimpleDateTimeRepository._();
+  static const db = SimpleDateTimeRepository._();
 
   /// The only field of [SimpleDateTime]
   DateTime dateTime;

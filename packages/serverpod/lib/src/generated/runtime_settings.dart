@@ -47,7 +47,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
 
   static final t = RuntimeSettingsTable();
 
-  static final db = RuntimeSettingsRepository._();
+  static const db = RuntimeSettingsRepository._();
 
   /// Log settings.
   _i2.LogSettings logSettings;

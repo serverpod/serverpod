@@ -49,7 +49,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
 
   static final t = ObjectWithEnumTable();
 
-  static final db = ObjectWithEnumRepository._();
+  static const db = ObjectWithEnumRepository._();
 
   _i2.TestEnum testEnum;
 

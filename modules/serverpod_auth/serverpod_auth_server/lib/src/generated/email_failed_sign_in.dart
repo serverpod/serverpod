@@ -42,7 +42,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
 
   static final t = EmailFailedSignInTable();
 
-  static final db = EmailFailedSignInRepository._();
+  static const db = EmailFailedSignInRepository._();
 
   /// Email attempting to sign in with.
   String email;

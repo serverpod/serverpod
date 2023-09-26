@@ -37,7 +37,7 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
 
   static final t = GoogleRefreshTokenTable();
 
-  static final db = GoogleRefreshTokenRepository._();
+  static const db = GoogleRefreshTokenRepository._();
 
   /// The user id associated with the token.
   int userId;

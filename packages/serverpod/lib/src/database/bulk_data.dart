@@ -6,7 +6,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod/src/database/database_legacy.dart';
+import 'package:serverpod/src/database/database.dart';
 import 'package:serverpod/src/database/extensions.dart';
 
 /// Provides a way to export raw data from the database. The data is serialized
@@ -14,7 +14,7 @@ import 'package:serverpod/src/database/extensions.dart';
 class DatabaseBulkData {
   /// Exports data from the provided [table].
   static Future<BulkData> exportTableData({
-    required DatabaseLegacy database,
+    required Database database,
     required String table,
     int lastId = 0,
     int limit = 100,
@@ -68,7 +68,7 @@ class DatabaseBulkData {
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
-      data = await database.query(query);
+      data = await database.queryDangerously(query);
     } catch (e) {
       throw BulkDataException(
         message: 'Failed to query database ($e).',
@@ -84,7 +84,7 @@ class DatabaseBulkData {
 
   /// Returns the approximate number of rows in the provided [table].
   static Future<int> approximateRowCount({
-    required DatabaseLegacy database,
+    required Database database,
     required String table,
   }) async {
     var tableDefinition = await _getLiveTableDefinition(database, table);
@@ -98,7 +98,7 @@ class DatabaseBulkData {
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
         'WHERE relname = \'$table\' AND nspname = \'public\'';
 
-    var result = await database.query(query);
+    var result = await database.queryDangerously(query);
 
     if (result.isEmpty) {
       return 0;
@@ -110,7 +110,7 @@ class DatabaseBulkData {
   /// Executes a series of queries and returns the last result as a
   /// [BulkQueryResult].
   static Future<BulkQueryResult> executeQueries({
-    required DatabaseLegacy database,
+    required Database database,
     required List<String> queries,
   }) async {
     var result =
@@ -120,7 +120,8 @@ class DatabaseBulkData {
       int numAffectedRows = 0;
 
       for (var query in queries) {
-        result = await database.query(query, transaction: transaction);
+        result =
+            await database.queryDangerously(query, transaction: transaction);
         numAffectedRows += result.affectedRowCount;
       }
       result!;
@@ -144,7 +145,7 @@ class DatabaseBulkData {
   }
 
   static Future<TableDefinition?> _getTargetTableDefinition(
-    DatabaseLegacy database,
+    Database database,
     String table,
   ) async {
     var databaseDefinition =
@@ -157,7 +158,7 @@ class DatabaseBulkData {
   }
 
   static Future<TableDefinition?> _getLiveTableDefinition(
-    DatabaseLegacy database,
+    Database database,
     String table,
   ) async {
     var databaseDefinition = await _getLiveDatabaseDefinition(database);
@@ -171,7 +172,7 @@ class DatabaseBulkData {
   static DatabaseDefinition? _cachedDatabaseDefinition;
 
   static Future<DatabaseDefinition> _getLiveDatabaseDefinition(
-    DatabaseLegacy database,
+    Database database,
   ) async {
     if (_cachedDatabaseDefinition == null) {
       _cachedDatabaseDefinition = await DatabaseAnalyzer.analyze(database);

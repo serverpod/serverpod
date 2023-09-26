@@ -175,7 +175,7 @@ class LogManager {
         enableLogging: false,
       );
       try {
-        await LogEntry.insert(tempSession, entry);
+        await LogEntry.db.insertRow(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING ENTRY');
@@ -206,7 +206,7 @@ class LogManager {
         enableLogging: false,
       );
       try {
-        await QueryLogEntry.insert(tempSession, entry);
+        await QueryLogEntry.db.insertRow(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr
             .writeln('${DateTime.now().toUtc()} FAILED TO LOG STREAMING QUERY');
@@ -238,7 +238,7 @@ class LogManager {
       );
       try {
         entry.sessionLogId = session.sessionLogId!;
-        await MessageLogEntry.insert(tempSession, entry);
+        await MessageLogEntry.db.insertRow(tempSession, entry);
       } catch (exception, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} FAILED TO LOG STREAMING MESSAGE');
@@ -296,8 +296,9 @@ class LogManager {
         isOpen: true,
       );
 
-      await SessionLogEntry.insert(tempSession, sessionLogEntry);
-      session.sessionLogId = sessionLogEntry.id;
+      var sessionLog =
+          await SessionLogEntry.db.insertRow(tempSession, sessionLogEntry);
+      session.sessionLogId = sessionLog.id;
 
       await tempSession.close();
     });
@@ -383,27 +384,28 @@ class LogManager {
           sessionLogId = session.sessionLogId!;
           sessionLogEntry.id = sessionLogId;
           sessionLogEntry.isOpen = false;
-          await SessionLogEntry.update(tempSession, sessionLogEntry);
+          await SessionLogEntry.db.updateRow(tempSession, sessionLogEntry);
         } else {
           // Create new session row.
-          await tempSession.db.insert(sessionLogEntry);
-          sessionLogId = sessionLogEntry.id!;
+          var sessionLog = await tempSession.dbNext
+              .insertRow<SessionLogEntry>(sessionLogEntry);
+          sessionLogId = sessionLog.id!;
         }
 
         // Write log entries
         for (var logInfo in cachedEntry.logEntries) {
           logInfo.sessionLogId = sessionLogId;
-          await tempSession.db.insert(logInfo);
+          await tempSession.dbNext.insertRow<LogEntry>(logInfo);
         }
         // Write queries
         for (var queryInfo in cachedEntry.queries) {
           queryInfo.sessionLogId = sessionLogId;
-          await tempSession.db.insert(queryInfo);
+          await tempSession.dbNext.insertRow<QueryLogEntry>(queryInfo);
         }
         // Write streaming messages
         for (var messageInfo in cachedEntry.messages) {
           messageInfo.sessionLogId = sessionLogId;
-          await tempSession.db.insert(messageInfo);
+          await tempSession.dbNext.insertRow<MessageLogEntry>(messageInfo);
         }
       } catch (e, logStackTrace) {
         stderr.writeln('${DateTime.now().toUtc()} FAILED TO LOG SESSION');

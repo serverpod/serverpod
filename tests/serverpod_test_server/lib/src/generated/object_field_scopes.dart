@@ -39,7 +39,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
 
   static final t = ObjectFieldScopesTable();
 
-  static final db = ObjectFieldScopesRepository._();
+  static const db = ObjectFieldScopesRepository._();
 
   String normal;
 

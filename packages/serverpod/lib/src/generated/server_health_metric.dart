@@ -54,7 +54,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
 
   static final t = ServerHealthMetricTable();
 
-  static final db = ServerHealthMetricRepository._();
+  static const db = ServerHealthMetricRepository._();
 
   /// The name of the metric.
   String name;

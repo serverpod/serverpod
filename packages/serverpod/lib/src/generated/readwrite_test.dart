@@ -34,7 +34,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
 
   static final t = ReadWriteTestEntryTable();
 
-  static final db = ReadWriteTestEntryRepository._();
+  static const db = ReadWriteTestEntryRepository._();
 
   /// A random number, to verify that the write/read was performed correctly.
   int number;

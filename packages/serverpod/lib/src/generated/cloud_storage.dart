@@ -53,7 +53,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   static final t = CloudStorageEntryTable();
 
-  static final db = CloudStorageEntryRepository._();
+  static const db = CloudStorageEntryRepository._();
 
   /// The storageId, typically `public` or `private`.
   String storageId;

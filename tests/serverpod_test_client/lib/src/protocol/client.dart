@@ -11,37 +11,35 @@ import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/module.dart' as _i3;
 import 'dart:typed_data' as _i4;
 import 'package:uuid/uuid.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol/types.dart' as _i6;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i7;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i8;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i9;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i10;
-import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i11;
-import 'package:serverpod/src/database/expressions.dart' as _i12;
-import 'package:serverpod/src/database/database_connection.dart' as _i13;
+import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i6;
+import 'package:serverpod_test_client/src/protocol/types.dart' as _i7;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i8;
+import 'package:serverpod_test_client/src/custom_classes.dart' as _i9;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i10;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i11;
 import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
-    as _i14;
+    as _i12;
 import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
-    as _i15;
+    as _i13;
 import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
-    as _i16;
+    as _i14;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/citizen.dart'
-    as _i17;
+    as _i15;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/address.dart'
-    as _i18;
+    as _i16;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/post.dart'
-    as _i19;
+    as _i17;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/company.dart'
-    as _i20;
+    as _i18;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/town.dart'
-    as _i21;
+    as _i19;
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
-    as _i22;
-import 'package:serverpod_test_module_client/module.dart' as _i23;
+    as _i20;
+import 'package:serverpod_test_module_client/module.dart' as _i21;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
-    as _i24;
-import 'dart:io' as _i25;
-import 'protocol.dart' as _i26;
+    as _i22;
+import 'dart:io' as _i23;
+import 'protocol.dart' as _i24;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -186,6 +184,21 @@ class EndpointBasicTypes extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointBatchOperations extends _i1.EndpointRef {
+  EndpointBatchOperations(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'batchOperations';
+
+  _i2.Future<List<_i6.SimpleData>> batchInsert(List<_i6.SimpleData> value) =>
+      caller.callServerEndpoint<List<_i6.SimpleData>>(
+        'batchOperations',
+        'batchInsert',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointCloudStorage extends _i1.EndpointRef {
   EndpointCloudStorage(_i1.EndpointCaller caller) : super(caller);
 
@@ -324,7 +337,7 @@ class EndpointColumnBool extends _i1.EndpointRef {
   @override
   String get name => 'columnBool';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnBool',
         'insert',
@@ -337,50 +350,50 @@ class EndpointColumnBool extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(bool? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(bool? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(bool? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(bool? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<bool> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<bool> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<bool> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<bool> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(bool value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(bool value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnBool',
         'isNotDistinctFrom',
         {'value': value},
@@ -394,7 +407,7 @@ class EndpointColumnDateTime extends _i1.EndpointRef {
   @override
   String get name => 'columnDateTime';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnDateTime',
         'insert',
@@ -407,88 +420,88 @@ class EndpointColumnDateTime extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(DateTime? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(DateTime? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(DateTime? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(DateTime? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<DateTime> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<DateTime> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<DateTime> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<DateTime> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'isNotDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'greaterThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterOrEqualThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'greaterOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'lessThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessOrEqualThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'lessOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> between(
+  _i2.Future<List<_i7.Types>> between(
     DateTime min,
     DateTime max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'between',
         {
@@ -497,11 +510,11 @@ class EndpointColumnDateTime extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i6.Types>> notBetween(
+  _i2.Future<List<_i7.Types>> notBetween(
     DateTime min,
     DateTime max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDateTime',
         'notBetween',
         {
@@ -518,7 +531,7 @@ class EndpointColumnDouble extends _i1.EndpointRef {
   @override
   String get name => 'columnDouble';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnDouble',
         'insert',
@@ -531,88 +544,88 @@ class EndpointColumnDouble extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(double? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(double? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(double? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(double? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<double> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<double> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<double> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<double> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'isNotDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterThan(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterThan(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'greaterThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterOrEqualThan(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'greaterOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessThan(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessThan(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'lessThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessOrEqualThan(double value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'lessOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> between(
+  _i2.Future<List<_i7.Types>> between(
     double min,
     double max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'between',
         {
@@ -621,11 +634,11 @@ class EndpointColumnDouble extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i6.Types>> notBetween(
+  _i2.Future<List<_i7.Types>> notBetween(
     double min,
     double max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDouble',
         'notBetween',
         {
@@ -642,7 +655,7 @@ class EndpointColumnDuration extends _i1.EndpointRef {
   @override
   String get name => 'columnDuration';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnDuration',
         'insert',
@@ -655,88 +668,88 @@ class EndpointColumnDuration extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(Duration? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(Duration? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(Duration? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(Duration? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<Duration> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<Duration> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<Duration> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<Duration> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'isNotDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterThan(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterThan(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'greaterThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterOrEqualThan(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'greaterOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessThan(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessThan(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'lessThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessOrEqualThan(Duration value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'lessOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> between(
+  _i2.Future<List<_i7.Types>> between(
     Duration min,
     Duration max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'between',
         {
@@ -745,11 +758,11 @@ class EndpointColumnDuration extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i6.Types>> notBetween(
+  _i2.Future<List<_i7.Types>> notBetween(
     Duration min,
     Duration max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnDuration',
         'notBetween',
         {
@@ -766,7 +779,7 @@ class EndpointColumnEnum extends _i1.EndpointRef {
   @override
   String get name => 'columnEnum';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnEnum',
         'insert',
@@ -779,50 +792,50 @@ class EndpointColumnEnum extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(_i7.TestEnum? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(_i8.TestEnum? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(_i7.TestEnum? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(_i8.TestEnum? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<_i7.TestEnum> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<_i8.TestEnum> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<_i7.TestEnum> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<_i8.TestEnum> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(_i7.TestEnum value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(_i8.TestEnum value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i7.TestEnum value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(_i8.TestEnum value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnEnum',
         'isNotDistinctFrom',
         {'value': value},
@@ -836,7 +849,7 @@ class EndpointColumnInt extends _i1.EndpointRef {
   @override
   String get name => 'columnInt';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnInt',
         'insert',
@@ -849,88 +862,88 @@ class EndpointColumnInt extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(int? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(int? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(int? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(int? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<int> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<int> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<int> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<int> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'isNotDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterThan(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'greaterThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> greaterOrEqualThan(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'greaterOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessThan(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'lessThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> lessOrEqualThan(int value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'lessOrEqualThan',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> between(
+  _i2.Future<List<_i7.Types>> between(
     int min,
     int max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'between',
         {
@@ -939,11 +952,11 @@ class EndpointColumnInt extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i6.Types>> notBetween(
+  _i2.Future<List<_i7.Types>> notBetween(
     int min,
     int max,
   ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnInt',
         'notBetween',
         {
@@ -960,7 +973,7 @@ class EndpointColumnString extends _i1.EndpointRef {
   @override
   String get name => 'columnString';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnString',
         'insert',
@@ -973,64 +986,64 @@ class EndpointColumnString extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(String? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(String? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(String? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(String? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<String> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<String> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<String> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<String> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(String value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(String value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'isNotDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> like(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> like(String value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'like',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> ilike(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> ilike(String value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnString',
         'ilike',
         {'value': value},
@@ -1044,7 +1057,7 @@ class EndpointColumnUuid extends _i1.EndpointRef {
   @override
   String get name => 'columnUuid';
 
-  _i2.Future<void> insert(List<_i6.Types> types) =>
+  _i2.Future<void> insert(List<_i7.Types> types) =>
       caller.callServerEndpoint<void>(
         'columnUuid',
         'insert',
@@ -1057,50 +1070,50 @@ class EndpointColumnUuid extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'findAll',
         {},
       );
 
-  _i2.Future<List<_i6.Types>> equals(_i5.UuidValue? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> equals(_i5.UuidValue? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'equals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notEquals(_i5.UuidValue? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notEquals(_i5.UuidValue? value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'notEquals',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> inSet(List<_i5.UuidValue> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> inSet(List<_i5.UuidValue> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'inSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> notInSet(List<_i5.UuidValue> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> notInSet(List<_i5.UuidValue> value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'notInSet',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isDistinctFrom(_i5.UuidValue value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'isDistinctFrom',
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
+  _i2.Future<List<_i7.Types>> isNotDistinctFrom(_i5.UuidValue value) =>
+      caller.callServerEndpoint<List<_i7.Types>>(
         'columnUuid',
         'isNotDistinctFrom',
         {'value': value},
@@ -1114,63 +1127,63 @@ class EndpointCustomTypes extends _i1.EndpointRef {
   @override
   String get name => 'customTypes';
 
-  _i2.Future<_i8.CustomClass> returnCustomClass(_i8.CustomClass data) =>
-      caller.callServerEndpoint<_i8.CustomClass>(
+  _i2.Future<_i9.CustomClass> returnCustomClass(_i9.CustomClass data) =>
+      caller.callServerEndpoint<_i9.CustomClass>(
         'customTypes',
         'returnCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i8.CustomClass?> returnCustomClassNullable(
-          _i8.CustomClass? data) =>
-      caller.callServerEndpoint<_i8.CustomClass?>(
+  _i2.Future<_i9.CustomClass?> returnCustomClassNullable(
+          _i9.CustomClass? data) =>
+      caller.callServerEndpoint<_i9.CustomClass?>(
         'customTypes',
         'returnCustomClassNullable',
         {'data': data},
       );
 
-  _i2.Future<_i8.CustomClass2> returnCustomClass2(_i8.CustomClass2 data) =>
-      caller.callServerEndpoint<_i8.CustomClass2>(
+  _i2.Future<_i9.CustomClass2> returnCustomClass2(_i9.CustomClass2 data) =>
+      caller.callServerEndpoint<_i9.CustomClass2>(
         'customTypes',
         'returnCustomClass2',
         {'data': data},
       );
 
-  _i2.Future<_i8.CustomClass2?> returnCustomClass2Nullable(
-          _i8.CustomClass2? data) =>
-      caller.callServerEndpoint<_i8.CustomClass2?>(
+  _i2.Future<_i9.CustomClass2?> returnCustomClass2Nullable(
+          _i9.CustomClass2? data) =>
+      caller.callServerEndpoint<_i9.CustomClass2?>(
         'customTypes',
         'returnCustomClass2Nullable',
         {'data': data},
       );
 
-  _i2.Future<_i9.ExternalCustomClass> returnExternalCustomClass(
-          _i9.ExternalCustomClass data) =>
-      caller.callServerEndpoint<_i9.ExternalCustomClass>(
+  _i2.Future<_i10.ExternalCustomClass> returnExternalCustomClass(
+          _i10.ExternalCustomClass data) =>
+      caller.callServerEndpoint<_i10.ExternalCustomClass>(
         'customTypes',
         'returnExternalCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i9.ExternalCustomClass?> returnExternalCustomClassNullable(
-          _i9.ExternalCustomClass? data) =>
-      caller.callServerEndpoint<_i9.ExternalCustomClass?>(
+  _i2.Future<_i10.ExternalCustomClass?> returnExternalCustomClassNullable(
+          _i10.ExternalCustomClass? data) =>
+      caller.callServerEndpoint<_i10.ExternalCustomClass?>(
         'customTypes',
         'returnExternalCustomClassNullable',
         {'data': data},
       );
 
-  _i2.Future<_i10.FreezedCustomClass> returnFreezedCustomClass(
-          _i10.FreezedCustomClass data) =>
-      caller.callServerEndpoint<_i10.FreezedCustomClass>(
+  _i2.Future<_i11.FreezedCustomClass> returnFreezedCustomClass(
+          _i11.FreezedCustomClass data) =>
+      caller.callServerEndpoint<_i11.FreezedCustomClass>(
         'customTypes',
         'returnFreezedCustomClass',
         {'data': data},
       );
 
-  _i2.Future<_i10.FreezedCustomClass?> returnFreezedCustomClassNullable(
-          _i10.FreezedCustomClass? data) =>
-      caller.callServerEndpoint<_i10.FreezedCustomClass?>(
+  _i2.Future<_i11.FreezedCustomClass?> returnFreezedCustomClassNullable(
+          _i11.FreezedCustomClass? data) =>
+      caller.callServerEndpoint<_i11.FreezedCustomClass?>(
         'customTypes',
         'returnFreezedCustomClassNullable',
         {'data': data},
@@ -1184,11 +1197,11 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
   @override
   String get name => 'basicDatabase';
 
-  _i2.Future<List<_i11.SimpleData>> findSimpleData({
+  _i2.Future<List<_i6.SimpleData>> findSimpleData({
     required int limit,
     required int offset,
   }) =>
-      caller.callServerEndpoint<List<_i11.SimpleData>>(
+      caller.callServerEndpoint<List<_i6.SimpleData>>(
         'basicDatabase',
         'findSimpleData',
         {
@@ -1197,35 +1210,35 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i11.SimpleData?> findRowSimpleData(int num) =>
-      caller.callServerEndpoint<_i11.SimpleData?>(
+  _i2.Future<_i6.SimpleData?> findRowSimpleData(int num) =>
+      caller.callServerEndpoint<_i6.SimpleData?>(
         'basicDatabase',
         'findRowSimpleData',
         {'num': num},
       );
 
-  _i2.Future<_i11.SimpleData?> findByIdSimpleData(int id) =>
-      caller.callServerEndpoint<_i11.SimpleData?>(
+  _i2.Future<_i6.SimpleData?> findByIdSimpleData(int id) =>
+      caller.callServerEndpoint<_i6.SimpleData?>(
         'basicDatabase',
         'findByIdSimpleData',
         {'id': id},
       );
 
-  _i2.Future<_i11.SimpleData> insertRowSimpleData(_i11.SimpleData simpleData) =>
-      caller.callServerEndpoint<_i11.SimpleData>(
+  _i2.Future<_i6.SimpleData> insertRowSimpleData(_i6.SimpleData simpleData) =>
+      caller.callServerEndpoint<_i6.SimpleData>(
         'basicDatabase',
         'insertRowSimpleData',
         {'simpleData': simpleData},
       );
 
-  _i2.Future<_i11.SimpleData> updateRowSimpleData(_i11.SimpleData simpleData) =>
-      caller.callServerEndpoint<_i11.SimpleData>(
+  _i2.Future<_i6.SimpleData> updateRowSimpleData(_i6.SimpleData simpleData) =>
+      caller.callServerEndpoint<_i6.SimpleData>(
         'basicDatabase',
         'updateRowSimpleData',
         {'simpleData': simpleData},
       );
 
-  _i2.Future<int> deleteRowSimpleData(_i11.SimpleData simpleData) =>
+  _i2.Future<int> deleteRowSimpleData(_i6.SimpleData simpleData) =>
       caller.callServerEndpoint<int>(
         'basicDatabase',
         'deleteRowSimpleData',
@@ -1245,17 +1258,10 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<int> countSimpleData({
-    _i12.Expression<dynamic>? where,
-    _i13.Transaction? transaction,
-  }) =>
-      caller.callServerEndpoint<int>(
+  _i2.Future<int> countSimpleData() => caller.callServerEndpoint<int>(
         'basicDatabase',
         'countSimpleData',
-        {
-          'where': where,
-          'transaction': transaction,
-        },
+        {},
       );
 }
 
@@ -1266,29 +1272,29 @@ class EndpointBasicDatabaseLegacy extends _i1.EndpointRef {
   @override
   String get name => 'basicDatabaseLegacy';
 
-  _i2.Future<int?> storeTypes(_i6.Types types) =>
+  _i2.Future<int?> storeTypes(_i7.Types types) =>
       caller.callServerEndpoint<int?>(
         'basicDatabaseLegacy',
         'storeTypes',
         {'types': types},
       );
 
-  _i2.Future<_i6.Types?> getTypes(int id) =>
-      caller.callServerEndpoint<_i6.Types?>(
+  _i2.Future<_i7.Types?> getTypes(int id) =>
+      caller.callServerEndpoint<_i7.Types?>(
         'basicDatabaseLegacy',
         'getTypes',
         {'id': id},
       );
 
-  _i2.Future<int?> storeObjectWithEnum(_i14.ObjectWithEnum object) =>
+  _i2.Future<int?> storeObjectWithEnum(_i12.ObjectWithEnum object) =>
       caller.callServerEndpoint<int?>(
         'basicDatabaseLegacy',
         'storeObjectWithEnum',
         {'object': object},
       );
 
-  _i2.Future<_i14.ObjectWithEnum?> getObjectWithEnum(int id) =>
-      caller.callServerEndpoint<_i14.ObjectWithEnum?>(
+  _i2.Future<_i12.ObjectWithEnum?> getObjectWithEnum(int id) =>
+      caller.callServerEndpoint<_i12.ObjectWithEnum?>(
         'basicDatabaseLegacy',
         'getObjectWithEnum',
         {'id': id},
@@ -1345,13 +1351,13 @@ class EndpointBasicDatabaseLegacy extends _i1.EndpointRef {
         {'num': num},
       );
 
-  _i2.Future<_i15.SimpleDataList?> findSimpleDataRowsLessThan(
+  _i2.Future<_i13.SimpleDataList?> findSimpleDataRowsLessThan(
     int num,
     int offset,
     int limit,
     bool descending,
   ) =>
-      caller.callServerEndpoint<_i15.SimpleDataList?>(
+      caller.callServerEndpoint<_i13.SimpleDataList?>(
         'basicDatabaseLegacy',
         'findSimpleDataRowsLessThan',
         {
@@ -1375,15 +1381,15 @@ class EndpointBasicDatabaseLegacy extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<int?> storeObjectWithObject(_i16.ObjectWithObject object) =>
+  _i2.Future<int?> storeObjectWithObject(_i14.ObjectWithObject object) =>
       caller.callServerEndpoint<int?>(
         'basicDatabaseLegacy',
         'storeObjectWithObject',
         {'object': object},
       );
 
-  _i2.Future<_i16.ObjectWithObject?> getObjectWithObject(int id) =>
-      caller.callServerEndpoint<_i16.ObjectWithObject?>(
+  _i2.Future<_i14.ObjectWithObject?> getObjectWithObject(int id) =>
+      caller.callServerEndpoint<_i14.ObjectWithObject?>(
         'basicDatabaseLegacy',
         'getObjectWithObject',
         {'id': id},
@@ -1438,31 +1444,31 @@ class EndpointRelation extends _i1.EndpointRef {
   @override
   String get name => 'relation';
 
-  _i2.Future<List<_i17.Citizen>> citizenFindWhereCompanyNameIs(
+  _i2.Future<List<_i15.Citizen>> citizenFindWhereCompanyNameIs(
           {required String companyName}) =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindWhereCompanyNameIs',
         {'companyName': companyName},
       );
 
-  _i2.Future<List<_i17.Citizen>> citizenFindWhereCompanyTownNameIs(
+  _i2.Future<List<_i15.Citizen>> citizenFindWhereCompanyTownNameIs(
           {required String townName}) =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindWhereCompanyTownNameIs',
         {'townName': townName},
       );
 
-  _i2.Future<List<_i17.Citizen>> citizenFindOrderedByCompanyName() =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+  _i2.Future<List<_i15.Citizen>> citizenFindOrderedByCompanyName() =>
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindOrderedByCompanyName',
         {},
       );
 
-  _i2.Future<List<_i17.Citizen>> citizenFindOrderedByCompanyTownName() =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+  _i2.Future<List<_i15.Citizen>> citizenFindOrderedByCompanyTownName() =>
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindOrderedByCompanyTownName',
         {},
@@ -1500,69 +1506,69 @@ class EndpointRelation extends _i1.EndpointRef {
         {'townName': townName},
       );
 
-  _i2.Future<List<_i17.Citizen>> citizenFindAll() =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+  _i2.Future<List<_i15.Citizen>> citizenFindAll() =>
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindAll',
         {},
       );
 
   /// Includes company and oldCompany and their respective towns
-  _i2.Future<List<_i17.Citizen>> citizenFindAllWithDeepIncludes() =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+  _i2.Future<List<_i15.Citizen>> citizenFindAllWithDeepIncludes() =>
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindAllWithDeepIncludes',
         {},
       );
 
   /// Includes the address
-  _i2.Future<List<_i17.Citizen>>
+  _i2.Future<List<_i15.Citizen>>
       citizenFindAllWithNamedRelationNoneOriginSide() =>
-          caller.callServerEndpoint<List<_i17.Citizen>>(
+          caller.callServerEndpoint<List<_i15.Citizen>>(
             'relation',
             'citizenFindAllWithNamedRelationNoneOriginSide',
             {},
           );
 
   /// Includes company and oldCompany
-  _i2.Future<List<_i17.Citizen>> citizenFindAllWithShallowIncludes() =>
-      caller.callServerEndpoint<List<_i17.Citizen>>(
+  _i2.Future<List<_i15.Citizen>> citizenFindAllWithShallowIncludes() =>
+      caller.callServerEndpoint<List<_i15.Citizen>>(
         'relation',
         'citizenFindAllWithShallowIncludes',
         {},
       );
 
-  _i2.Future<_i17.Citizen?> citizenFindByIdWithIncludes(int id) =>
-      caller.callServerEndpoint<_i17.Citizen?>(
+  _i2.Future<_i15.Citizen?> citizenFindByIdWithIncludes(int id) =>
+      caller.callServerEndpoint<_i15.Citizen?>(
         'relation',
         'citizenFindByIdWithIncludes',
         {'id': id},
       );
 
-  _i2.Future<List<_i18.Address>> addressFindAll() =>
-      caller.callServerEndpoint<List<_i18.Address>>(
+  _i2.Future<List<_i16.Address>> addressFindAll() =>
+      caller.callServerEndpoint<List<_i16.Address>>(
         'relation',
         'addressFindAll',
         {},
       );
 
-  _i2.Future<_i18.Address?> addressFindById(int id) =>
-      caller.callServerEndpoint<_i18.Address?>(
+  _i2.Future<_i16.Address?> addressFindById(int id) =>
+      caller.callServerEndpoint<_i16.Address?>(
         'relation',
         'addressFindById',
         {'id': id},
       );
 
-  _i2.Future<List<_i19.Post>> findAllPostsIncludingNextAndPrevious() =>
-      caller.callServerEndpoint<List<_i19.Post>>(
+  _i2.Future<List<_i17.Post>> findAllPostsIncludingNextAndPrevious() =>
+      caller.callServerEndpoint<List<_i17.Post>>(
         'relation',
         'findAllPostsIncludingNextAndPrevious',
         {},
       );
 
   _i2.Future<void> citizenAttachCompany(
-    _i17.Citizen citizen,
-    _i20.Company company,
+    _i15.Citizen citizen,
+    _i18.Company company,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -1574,8 +1580,8 @@ class EndpointRelation extends _i1.EndpointRef {
       );
 
   _i2.Future<void> citizenAttachAddress(
-    _i17.Citizen citizen,
-    _i18.Address address,
+    _i15.Citizen citizen,
+    _i16.Address address,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -1586,7 +1592,7 @@ class EndpointRelation extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<void> citizenDetachAddress(_i17.Citizen citizen) =>
+  _i2.Future<void> citizenDetachAddress(_i15.Citizen citizen) =>
       caller.callServerEndpoint<void>(
         'relation',
         'citizenDetachAddress',
@@ -1594,8 +1600,8 @@ class EndpointRelation extends _i1.EndpointRef {
       );
 
   _i2.Future<void> addressAttachCitizen(
-    _i18.Address address,
-    _i17.Citizen citizen,
+    _i16.Address address,
+    _i15.Citizen citizen,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -1606,49 +1612,49 @@ class EndpointRelation extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<void> addressDetachCitizen(_i18.Address address) =>
+  _i2.Future<void> addressDetachCitizen(_i16.Address address) =>
       caller.callServerEndpoint<void>(
         'relation',
         'addressDetachCitizen',
         {'address': address},
       );
 
-  _i2.Future<List<_i20.Company>> companyFindAll() =>
-      caller.callServerEndpoint<List<_i20.Company>>(
+  _i2.Future<List<_i18.Company>> companyFindAll() =>
+      caller.callServerEndpoint<List<_i18.Company>>(
         'relation',
         'companyFindAll',
         {},
       );
 
-  _i2.Future<int?> citizenInsert(_i17.Citizen citizen) =>
+  _i2.Future<int?> citizenInsert(_i15.Citizen citizen) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'citizenInsert',
         {'citizen': citizen},
       );
 
-  _i2.Future<int?> companyInsert(_i20.Company company) =>
+  _i2.Future<int?> companyInsert(_i18.Company company) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'companyInsert',
         {'company': company},
       );
 
-  _i2.Future<int?> townInsert(_i21.Town town) =>
+  _i2.Future<int?> townInsert(_i19.Town town) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'townInsert',
         {'town': town},
       );
 
-  _i2.Future<int?> addressInsert(_i18.Address address) =>
+  _i2.Future<int?> addressInsert(_i16.Address address) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'addressInsert',
         {'address': address},
       );
 
-  _i2.Future<int?> postInsert(_i19.Post post) =>
+  _i2.Future<int?> postInsert(_i17.Post post) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'postInsert',
@@ -1737,15 +1743,15 @@ class EndpointFieldScopes extends _i1.EndpointRef {
   @override
   String get name => 'fieldScopes';
 
-  _i2.Future<void> storeObject(_i22.ObjectFieldScopes object) =>
+  _i2.Future<void> storeObject(_i20.ObjectFieldScopes object) =>
       caller.callServerEndpoint<void>(
         'fieldScopes',
         'storeObject',
         {'object': object},
       );
 
-  _i2.Future<_i22.ObjectFieldScopes?> retrieveObject() =>
-      caller.callServerEndpoint<_i22.ObjectFieldScopes?>(
+  _i2.Future<_i20.ObjectFieldScopes?> retrieveObject() =>
+      caller.callServerEndpoint<_i20.ObjectFieldScopes?>(
         'fieldScopes',
         'retrieveObject',
         {},
@@ -1759,7 +1765,7 @@ class EndpointFutureCalls extends _i1.EndpointRef {
   @override
   String get name => 'futureCalls';
 
-  _i2.Future<void> makeFutureCall(_i11.SimpleData? data) =>
+  _i2.Future<void> makeFutureCall(_i6.SimpleData? data) =>
       caller.callServerEndpoint<void>(
         'futureCalls',
         'makeFutureCall',
@@ -1899,34 +1905,34 @@ class EndpointListParameters extends _i1.EndpointRef {
         {'list': list},
       );
 
-  _i2.Future<List<_i11.SimpleData>> returnSimpleDataList(
-          List<_i11.SimpleData> list) =>
-      caller.callServerEndpoint<List<_i11.SimpleData>>(
+  _i2.Future<List<_i6.SimpleData>> returnSimpleDataList(
+          List<_i6.SimpleData> list) =>
+      caller.callServerEndpoint<List<_i6.SimpleData>>(
         'listParameters',
         'returnSimpleDataList',
         {'list': list},
       );
 
-  _i2.Future<List<_i11.SimpleData?>> returnSimpleDataListNullableSimpleData(
-          List<_i11.SimpleData?> list) =>
-      caller.callServerEndpoint<List<_i11.SimpleData?>>(
+  _i2.Future<List<_i6.SimpleData?>> returnSimpleDataListNullableSimpleData(
+          List<_i6.SimpleData?> list) =>
+      caller.callServerEndpoint<List<_i6.SimpleData?>>(
         'listParameters',
         'returnSimpleDataListNullableSimpleData',
         {'list': list},
       );
 
-  _i2.Future<List<_i11.SimpleData>?> returnSimpleDataListNullable(
-          List<_i11.SimpleData>? list) =>
-      caller.callServerEndpoint<List<_i11.SimpleData>?>(
+  _i2.Future<List<_i6.SimpleData>?> returnSimpleDataListNullable(
+          List<_i6.SimpleData>? list) =>
+      caller.callServerEndpoint<List<_i6.SimpleData>?>(
         'listParameters',
         'returnSimpleDataListNullable',
         {'list': list},
       );
 
-  _i2.Future<List<_i11.SimpleData?>?>
+  _i2.Future<List<_i6.SimpleData?>?>
       returnNullableSimpleDataListNullableSimpleData(
-              List<_i11.SimpleData?>? list) =>
-          caller.callServerEndpoint<List<_i11.SimpleData?>?>(
+              List<_i6.SimpleData?>? list) =>
+          caller.callServerEndpoint<List<_i6.SimpleData?>?>(
             'listParameters',
             'returnNullableSimpleDataListNullableSimpleData',
             {'list': list},
@@ -2049,17 +2055,17 @@ class EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<_i7.TestEnum, int>> returnEnumIntMap(
-          Map<_i7.TestEnum, int> map) =>
-      caller.callServerEndpoint<Map<_i7.TestEnum, int>>(
+  _i2.Future<Map<_i8.TestEnum, int>> returnEnumIntMap(
+          Map<_i8.TestEnum, int> map) =>
+      caller.callServerEndpoint<Map<_i8.TestEnum, int>>(
         'mapParameters',
         'returnEnumIntMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i7.TestEnum>> returnEnumMap(
-          Map<String, _i7.TestEnum> map) =>
-      caller.callServerEndpoint<Map<String, _i7.TestEnum>>(
+  _i2.Future<Map<String, _i8.TestEnum>> returnEnumMap(
+          Map<String, _i8.TestEnum> map) =>
+      caller.callServerEndpoint<Map<String, _i8.TestEnum>>(
         'mapParameters',
         'returnEnumMap',
         {'map': map},
@@ -2142,35 +2148,34 @@ class EndpointMapParameters extends _i1.EndpointRef {
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i11.SimpleData>> returnSimpleDataMap(
-          Map<String, _i11.SimpleData> map) =>
-      caller.callServerEndpoint<Map<String, _i11.SimpleData>>(
+  _i2.Future<Map<String, _i6.SimpleData>> returnSimpleDataMap(
+          Map<String, _i6.SimpleData> map) =>
+      caller.callServerEndpoint<Map<String, _i6.SimpleData>>(
         'mapParameters',
         'returnSimpleDataMap',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i11.SimpleData?>>
-      returnSimpleDataMapNullableSimpleData(
-              Map<String, _i11.SimpleData?> map) =>
-          caller.callServerEndpoint<Map<String, _i11.SimpleData?>>(
+  _i2.Future<Map<String, _i6.SimpleData?>>
+      returnSimpleDataMapNullableSimpleData(Map<String, _i6.SimpleData?> map) =>
+          caller.callServerEndpoint<Map<String, _i6.SimpleData?>>(
             'mapParameters',
             'returnSimpleDataMapNullableSimpleData',
             {'map': map},
           );
 
-  _i2.Future<Map<String, _i11.SimpleData>?> returnSimpleDataMapNullable(
-          Map<String, _i11.SimpleData>? map) =>
-      caller.callServerEndpoint<Map<String, _i11.SimpleData>?>(
+  _i2.Future<Map<String, _i6.SimpleData>?> returnSimpleDataMapNullable(
+          Map<String, _i6.SimpleData>? map) =>
+      caller.callServerEndpoint<Map<String, _i6.SimpleData>?>(
         'mapParameters',
         'returnSimpleDataMapNullable',
         {'map': map},
       );
 
-  _i2.Future<Map<String, _i11.SimpleData?>?>
+  _i2.Future<Map<String, _i6.SimpleData?>?>
       returnNullableSimpleDataMapNullableSimpleData(
-              Map<String, _i11.SimpleData?>? map) =>
-          caller.callServerEndpoint<Map<String, _i11.SimpleData?>?>(
+              Map<String, _i6.SimpleData?>? map) =>
+          caller.callServerEndpoint<Map<String, _i6.SimpleData?>?>(
             'mapParameters',
             'returnNullableSimpleDataMapNullableSimpleData',
             {'map': map},
@@ -2206,15 +2211,15 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i23.ModuleClass> modifyModuleObject(_i23.ModuleClass object) =>
-      caller.callServerEndpoint<_i23.ModuleClass>(
+  _i2.Future<_i21.ModuleClass> modifyModuleObject(_i21.ModuleClass object) =>
+      caller.callServerEndpoint<_i21.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
       );
 
-  _i2.Future<_i24.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i24.ModuleDatatype>(
+  _i2.Future<_i22.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i22.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -2283,7 +2288,7 @@ class EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> setSimpleData(
     String key,
-    _i11.SimpleData data,
+    _i6.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -2296,7 +2301,7 @@ class EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> setSimpleDataWithLifetime(
     String key,
-    _i11.SimpleData data,
+    _i6.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -2307,8 +2312,8 @@ class EndpointRedis extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i11.SimpleData?> getSimpleData(String key) =>
-      caller.callServerEndpoint<_i11.SimpleData?>(
+  _i2.Future<_i6.SimpleData?> getSimpleData(String key) =>
+      caller.callServerEndpoint<_i6.SimpleData?>(
         'redis',
         'getSimpleData',
         {'key': key},
@@ -2327,8 +2332,8 @@ class EndpointRedis extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i11.SimpleData?> listenToChannel(String channel) =>
-      caller.callServerEndpoint<_i11.SimpleData?>(
+  _i2.Future<_i6.SimpleData?> listenToChannel(String channel) =>
+      caller.callServerEndpoint<_i6.SimpleData?>(
         'redis',
         'listenToChannel',
         {'channel': channel},
@@ -2336,7 +2341,7 @@ class EndpointRedis extends _i1.EndpointRef {
 
   _i2.Future<void> postToChannel(
     String channel,
-    _i11.SimpleData data,
+    _i6.SimpleData data,
   ) =>
       caller.callServerEndpoint<void>(
         'redis',
@@ -2452,11 +2457,11 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i23.Caller(client);
+    module = _i21.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i23.Caller module;
+  late final _i21.Caller module;
 
   late final _i3.Caller auth;
 }
@@ -2464,17 +2469,18 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i25.SecurityContext? context,
+    _i23.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i26.Protocol(),
+          _i24.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);
     basicTypes = EndpointBasicTypes(this);
+    batchOperations = EndpointBatchOperations(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
     columnBool = EndpointColumnBool(this);
@@ -2516,6 +2522,8 @@ class Client extends _i1.ServerpodClient {
   late final EndpointAuthentication authentication;
 
   late final EndpointBasicTypes basicTypes;
+
+  late final EndpointBatchOperations batchOperations;
 
   late final EndpointCloudStorage cloudStorage;
 
@@ -2590,6 +2598,7 @@ class Client extends _i1.ServerpodClient {
         'asyncTasks': asyncTasks,
         'authentication': authentication,
         'basicTypes': basicTypes,
+        'batchOperations': batchOperations,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
         'columnBool': columnBool,

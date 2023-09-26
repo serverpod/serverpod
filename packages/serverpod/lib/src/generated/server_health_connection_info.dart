@@ -54,7 +54,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
 
   static final t = ServerHealthConnectionInfoTable();
 
-  static final db = ServerHealthConnectionInfoRepository._();
+  static const db = ServerHealthConnectionInfoRepository._();
 
   /// The server associated with this connection info.
   String serverId;

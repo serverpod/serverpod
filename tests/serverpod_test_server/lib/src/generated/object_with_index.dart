@@ -36,7 +36,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static final t = ObjectWithIndexTable();
 
-  static final db = ObjectWithIndexRepository._();
+  static const db = ObjectWithIndexRepository._();
 
   int indexed;
 

@@ -45,7 +45,7 @@ abstract class Post extends _i1.TableRow {
 
   static final t = PostTable();
 
-  static final db = PostRepository._();
+  static const db = PostRepository._();
 
   String content;
 
@@ -532,7 +532,7 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
     );
@@ -551,7 +551,7 @@ class PostAttachRowRepository {
     }
 
     var $post = post.copyWith(nextId: next.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
     );
@@ -578,7 +578,7 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
     );
@@ -593,7 +593,7 @@ class PostDetachRowRepository {
     }
 
     var $post = post.copyWith(nextId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
     );

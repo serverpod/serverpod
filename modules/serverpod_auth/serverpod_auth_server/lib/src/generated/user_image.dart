@@ -40,7 +40,7 @@ abstract class UserImage extends _i1.TableRow {
 
   static final t = UserImageTable();
 
-  static final db = UserImageRepository._();
+  static const db = UserImageRepository._();
 
   /// The id of the user.
   int userId;

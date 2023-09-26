@@ -37,11 +37,11 @@ class MigrationManager {
   /// Initializing the [MigrationManager] by loading the current version
   /// from the database and available migrations.
   Future<void> initialize(Session session) async {
-    await session.db.query(_queryCreateMigrations);
+    await session.dbNext.queryDangerously(_queryCreateMigrations);
 
     // Get installed versions
     var versions = <DatabaseMigrationVersion>[];
-    var result = await session.db.query(_queryGetMigrations);
+    var result = await session.dbNext.queryDangerously(_queryGetMigrations);
     for (var row in result) {
       assert(row.length == 4);
       String module = row[0];
@@ -76,7 +76,7 @@ class MigrationManager {
   Future<bool> verifyDatabaseIntegrity(Session session) async {
     var warnings = <String>[];
 
-    var liveDatabase = await DatabaseAnalyzer.analyze(session.db);
+    var liveDatabase = await DatabaseAnalyzer.analyze(session.dbNext);
     var targetDatabase =
         session.serverpod.serializationManager.getTargetDatabaseDefinition();
 
@@ -188,7 +188,7 @@ class MigrationManager {
       for (var newerVersion in newerVersions) {
         var migration = await Migration.load(module, newerVersion);
         try {
-          await session.db.execute(migration.sqlMigration);
+          await session.dbNext.executeDangerously(migration.sqlMigration);
         } catch (e) {
           stderr.writeln('Failed to apply migration $newerVersion on $module');
           stderr.writeln('$e');
@@ -200,7 +200,7 @@ class MigrationManager {
       var migration = await Migration.load(module, latest);
 
       try {
-        await session.db.execute(migration.sqlDefinition);
+        await session.dbNext.executeDangerously(migration.sqlDefinition);
       } catch (e) {
         stderr.writeln('Failed to apply definition $latest on $module');
         stderr.writeln('$e');

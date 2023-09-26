@@ -69,7 +69,7 @@ abstract class LogEntry extends _i1.TableRow {
 
   static final t = LogEntryTable();
 
-  static final db = LogEntryRepository._();
+  static const db = LogEntryRepository._();
 
   /// The id of the session this log entry is associated with.
   int sessionLogId;

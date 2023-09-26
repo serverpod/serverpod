@@ -1,5 +1,7 @@
-import 'package:serverpod/serverpod.dart';
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'package:serverpod_test_server/src/generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
 
 class ColumnDateTimeEndpoint extends Endpoint {
   Future<void> insert(Session session, List<Types> types) async {

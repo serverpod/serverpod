@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:serverpod/server.dart';
 
 class FailedCallsEndpoint extends Endpoint {

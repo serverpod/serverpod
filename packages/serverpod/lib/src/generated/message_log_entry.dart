@@ -67,7 +67,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
 
   static final t = MessageLogEntryTable();
 
-  static final db = MessageLogEntryRepository._();
+  static const db = MessageLogEntryRepository._();
 
   /// Id of the session this entry is associated with.
   int sessionLogId;

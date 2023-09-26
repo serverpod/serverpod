@@ -37,7 +37,7 @@ abstract class MethodInfo extends _i1.TableRow {
 
   static final t = MethodInfoTable();
 
-  static final db = MethodInfoRepository._();
+  static const db = MethodInfoRepository._();
 
   /// The endpoint of this method.
   String endpoint;

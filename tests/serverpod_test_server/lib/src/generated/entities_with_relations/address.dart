@@ -41,7 +41,7 @@ abstract class Address extends _i1.TableRow {
 
   static final t = AddressTable();
 
-  static final db = AddressRepository._();
+  static const db = AddressRepository._();
 
   String street;
 
@@ -477,7 +477,7 @@ class AddressAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );
@@ -496,7 +496,7 @@ class AddressDetachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );

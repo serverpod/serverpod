@@ -31,7 +31,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
 
   static final t = ObjectWithParentTable();
 
-  static final db = ObjectWithParentRepository._();
+  static const db = ObjectWithParentRepository._();
 
   int other;
 

@@ -31,7 +31,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
 
   static final t = ObjectWithSelfParentTable();
 
-  static final db = ObjectWithSelfParentRepository._();
+  static const db = ObjectWithSelfParentRepository._();
 
   int? other;
 

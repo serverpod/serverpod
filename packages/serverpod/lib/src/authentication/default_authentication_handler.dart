@@ -24,7 +24,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
       enableLogging: false,
     );
 
-    var authKey = await tempSession.db.findById<AuthKey>(keyId);
+    var authKey = await tempSession.dbNext.findById<AuthKey>(keyId);
     await tempSession.close();
 
     if (authKey == null) return null;

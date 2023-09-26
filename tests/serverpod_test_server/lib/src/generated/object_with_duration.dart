@@ -32,7 +32,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
 
   static final t = ObjectWithDurationTable();
 
-  static final db = ObjectWithDurationRepository._();
+  static const db = ObjectWithDurationRepository._();
 
   Duration duration;
 

@@ -41,7 +41,7 @@ abstract class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
-  static final db = EmailResetRepository._();
+  static const db = EmailResetRepository._();
 
   /// The id of the user that is resetting his/her password.
   int userId;

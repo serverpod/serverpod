@@ -52,7 +52,7 @@ abstract class Citizen extends _i1.TableRow {
 
   static final t = CitizenTable();
 
-  static final db = CitizenRepository._();
+  static const db = CitizenRepository._();
 
   String name;
 
@@ -620,7 +620,7 @@ class CitizenAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Address>(
       $address,
       columns: [_i2.Address.t.inhabitantId],
     );
@@ -639,7 +639,7 @@ class CitizenAttachRowRepository {
     }
 
     var $citizen = citizen.copyWith(companyId: company.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.companyId],
     );
@@ -658,7 +658,7 @@ class CitizenAttachRowRepository {
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: oldCompany.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
     );
@@ -685,7 +685,7 @@ class CitizenDetachRowRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Address>(
       $$address,
       columns: [_i2.Address.t.inhabitantId],
     );
@@ -700,7 +700,7 @@ class CitizenDetachRowRepository {
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
     );

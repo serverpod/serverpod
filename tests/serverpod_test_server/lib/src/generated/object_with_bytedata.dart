@@ -33,7 +33,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static final t = ObjectWithByteDataTable();
 
-  static final db = ObjectWithByteDataRepository._();
+  static const db = ObjectWithByteDataRepository._();
 
   _i2.ByteData byteData;
 

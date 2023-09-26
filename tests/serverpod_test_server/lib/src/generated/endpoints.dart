@@ -10,67 +10,66 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/async_tasks.dart' as _i2;
 import '../endpoints/authentication.dart' as _i3;
 import '../endpoints/basic_types.dart' as _i4;
-import '../endpoints/cloud_storage.dart' as _i5;
-import '../endpoints/cloud_storage_s3.dart' as _i6;
-import '../endpoints/column_operations/column_bool.dart' as _i7;
-import '../endpoints/column_operations/column_date_time.dart' as _i8;
-import '../endpoints/column_operations/column_double.dart' as _i9;
-import '../endpoints/column_operations/column_duration.dart' as _i10;
-import '../endpoints/column_operations/column_enum.dart' as _i11;
-import '../endpoints/column_operations/column_int.dart' as _i12;
-import '../endpoints/column_operations/column_string.dart' as _i13;
-import '../endpoints/column_operations/column_uuid.dart' as _i14;
-import '../endpoints/custom_types.dart' as _i15;
-import '../endpoints/database_basic.dart' as _i16;
-import '../endpoints/database_basic_legacy.dart' as _i17;
-import '../endpoints/database_transactions.dart' as _i18;
-import '../endpoints/entity_relation.dart' as _i19;
-import '../endpoints/exception_test_endpoint.dart' as _i20;
-import '../endpoints/failed_calls.dart' as _i21;
-import '../endpoints/field_scopes.dart' as _i22;
-import '../endpoints/future_calls.dart' as _i23;
-import '../endpoints/list_parameters.dart' as _i24;
-import '../endpoints/logging.dart' as _i25;
-import '../endpoints/logging_disabled.dart' as _i26;
-import '../endpoints/map_parameters.dart' as _i27;
-import '../endpoints/module_serialization.dart' as _i28;
-import '../endpoints/named_parameters.dart' as _i29;
-import '../endpoints/optional_parameters.dart' as _i30;
-import '../endpoints/redis.dart' as _i31;
-import '../endpoints/signin_required.dart' as _i32;
-import '../endpoints/simple.dart' as _i33;
-import '../endpoints/streaming.dart' as _i34;
-import '../endpoints/streaming_logging.dart' as _i35;
-import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i36;
-import '../endpoints/subDir/subdir_test_endpoint.dart' as _i37;
-import 'dart:typed_data' as _i38;
-import 'package:uuid/uuid.dart' as _i39;
-import 'package:serverpod_test_server/src/generated/types.dart' as _i40;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i41;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i42;
-import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i43;
-import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i44;
-import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i45;
-import 'package:serverpod/src/database/expressions.dart' as _i46;
-import 'package:serverpod/src/database/database_connection.dart' as _i47;
+import '../endpoints/batch_operations.dart' as _i5;
+import '../endpoints/cloud_storage.dart' as _i6;
+import '../endpoints/cloud_storage_s3.dart' as _i7;
+import '../endpoints/column_operations/column_bool.dart' as _i8;
+import '../endpoints/column_operations/column_date_time.dart' as _i9;
+import '../endpoints/column_operations/column_double.dart' as _i10;
+import '../endpoints/column_operations/column_duration.dart' as _i11;
+import '../endpoints/column_operations/column_enum.dart' as _i12;
+import '../endpoints/column_operations/column_int.dart' as _i13;
+import '../endpoints/column_operations/column_string.dart' as _i14;
+import '../endpoints/column_operations/column_uuid.dart' as _i15;
+import '../endpoints/custom_types.dart' as _i16;
+import '../endpoints/database_basic.dart' as _i17;
+import '../endpoints/database_basic_legacy.dart' as _i18;
+import '../endpoints/database_transactions.dart' as _i19;
+import '../endpoints/entity_relation.dart' as _i20;
+import '../endpoints/exception_test_endpoint.dart' as _i21;
+import '../endpoints/failed_calls.dart' as _i22;
+import '../endpoints/field_scopes.dart' as _i23;
+import '../endpoints/future_calls.dart' as _i24;
+import '../endpoints/list_parameters.dart' as _i25;
+import '../endpoints/logging.dart' as _i26;
+import '../endpoints/logging_disabled.dart' as _i27;
+import '../endpoints/map_parameters.dart' as _i28;
+import '../endpoints/module_serialization.dart' as _i29;
+import '../endpoints/named_parameters.dart' as _i30;
+import '../endpoints/optional_parameters.dart' as _i31;
+import '../endpoints/redis.dart' as _i32;
+import '../endpoints/signin_required.dart' as _i33;
+import '../endpoints/simple.dart' as _i34;
+import '../endpoints/streaming.dart' as _i35;
+import '../endpoints/streaming_logging.dart' as _i36;
+import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i37;
+import '../endpoints/subDir/subdir_test_endpoint.dart' as _i38;
+import 'dart:typed_data' as _i39;
+import 'package:uuid/uuid.dart' as _i40;
+import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i41;
+import 'package:serverpod_test_server/src/generated/types.dart' as _i42;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i43;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i44;
+import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i45;
+import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i46;
 import 'package:serverpod_test_server/src/generated/object_with_enum.dart'
-    as _i48;
+    as _i47;
 import 'package:serverpod_test_server/src/generated/object_with_object.dart'
-    as _i49;
+    as _i48;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/citizen.dart'
-    as _i50;
+    as _i49;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/company.dart'
-    as _i51;
+    as _i50;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
-    as _i52;
+    as _i51;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/town.dart'
-    as _i53;
+    as _i52;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
-    as _i54;
+    as _i53;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
-    as _i55;
-import 'package:serverpod_test_module_server/module.dart' as _i56;
-import 'package:serverpod_auth_server/module.dart' as _i57;
+    as _i54;
+import 'package:serverpod_test_module_server/module.dart' as _i55;
+import 'package:serverpod_auth_server/module.dart' as _i56;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -94,199 +93,205 @@ class Endpoints extends _i1.EndpointDispatch {
           'basicTypes',
           null,
         ),
-      'cloudStorage': _i5.CloudStorageEndpoint()
+      'batchOperations': _i5.BatchOperations()
+        ..initialize(
+          server,
+          'batchOperations',
+          null,
+        ),
+      'cloudStorage': _i6.CloudStorageEndpoint()
         ..initialize(
           server,
           'cloudStorage',
           null,
         ),
-      's3CloudStorage': _i6.S3CloudStorageEndpoint()
+      's3CloudStorage': _i7.S3CloudStorageEndpoint()
         ..initialize(
           server,
           's3CloudStorage',
           null,
         ),
-      'columnBool': _i7.ColumnBoolEndpoint()
+      'columnBool': _i8.ColumnBoolEndpoint()
         ..initialize(
           server,
           'columnBool',
           null,
         ),
-      'columnDateTime': _i8.ColumnDateTimeEndpoint()
+      'columnDateTime': _i9.ColumnDateTimeEndpoint()
         ..initialize(
           server,
           'columnDateTime',
           null,
         ),
-      'columnDouble': _i9.ColumnDoubleEndpoint()
+      'columnDouble': _i10.ColumnDoubleEndpoint()
         ..initialize(
           server,
           'columnDouble',
           null,
         ),
-      'columnDuration': _i10.ColumnDurationEndpoint()
+      'columnDuration': _i11.ColumnDurationEndpoint()
         ..initialize(
           server,
           'columnDuration',
           null,
         ),
-      'columnEnum': _i11.ColumnEnumEndpoint()
+      'columnEnum': _i12.ColumnEnumEndpoint()
         ..initialize(
           server,
           'columnEnum',
           null,
         ),
-      'columnInt': _i12.ColumnIntEndpoint()
+      'columnInt': _i13.ColumnIntEndpoint()
         ..initialize(
           server,
           'columnInt',
           null,
         ),
-      'columnString': _i13.ColumnStringEndpoint()
+      'columnString': _i14.ColumnStringEndpoint()
         ..initialize(
           server,
           'columnString',
           null,
         ),
-      'columnUuid': _i14.ColumnUuidEndpoint()
+      'columnUuid': _i15.ColumnUuidEndpoint()
         ..initialize(
           server,
           'columnUuid',
           null,
         ),
-      'customTypes': _i15.CustomTypesEndpoint()
+      'customTypes': _i16.CustomTypesEndpoint()
         ..initialize(
           server,
           'customTypes',
           null,
         ),
-      'basicDatabase': _i16.BasicDatabase()
+      'basicDatabase': _i17.BasicDatabase()
         ..initialize(
           server,
           'basicDatabase',
           null,
         ),
-      'basicDatabaseLegacy': _i17.BasicDatabaseLegacy()
+      'basicDatabaseLegacy': _i18.BasicDatabaseLegacy()
         ..initialize(
           server,
           'basicDatabaseLegacy',
           null,
         ),
-      'transactionsDatabase': _i18.TransactionsDatabaseEndpoint()
+      'transactionsDatabase': _i19.TransactionsDatabaseEndpoint()
         ..initialize(
           server,
           'transactionsDatabase',
           null,
         ),
-      'relation': _i19.RelationEndpoint()
+      'relation': _i20.RelationEndpoint()
         ..initialize(
           server,
           'relation',
           null,
         ),
-      'exceptionTest': _i20.ExceptionTestEndpoint()
+      'exceptionTest': _i21.ExceptionTestEndpoint()
         ..initialize(
           server,
           'exceptionTest',
           null,
         ),
-      'failedCalls': _i21.FailedCallsEndpoint()
+      'failedCalls': _i22.FailedCallsEndpoint()
         ..initialize(
           server,
           'failedCalls',
           null,
         ),
-      'fieldScopes': _i22.FieldScopesEndpoint()
+      'fieldScopes': _i23.FieldScopesEndpoint()
         ..initialize(
           server,
           'fieldScopes',
           null,
         ),
-      'futureCalls': _i23.FutureCallsEndpoint()
+      'futureCalls': _i24.FutureCallsEndpoint()
         ..initialize(
           server,
           'futureCalls',
           null,
         ),
-      'listParameters': _i24.ListParametersEndpoint()
+      'listParameters': _i25.ListParametersEndpoint()
         ..initialize(
           server,
           'listParameters',
           null,
         ),
-      'logging': _i25.LoggingEndpoint()
+      'logging': _i26.LoggingEndpoint()
         ..initialize(
           server,
           'logging',
           null,
         ),
-      'loggingDisabled': _i26.LoggingDisabledEndpoint()
+      'loggingDisabled': _i27.LoggingDisabledEndpoint()
         ..initialize(
           server,
           'loggingDisabled',
           null,
         ),
-      'mapParameters': _i27.MapParametersEndpoint()
+      'mapParameters': _i28.MapParametersEndpoint()
         ..initialize(
           server,
           'mapParameters',
           null,
         ),
-      'moduleSerialization': _i28.ModuleSerializationEndpoint()
+      'moduleSerialization': _i29.ModuleSerializationEndpoint()
         ..initialize(
           server,
           'moduleSerialization',
           null,
         ),
-      'namedParameters': _i29.NamedParametersEndpoint()
+      'namedParameters': _i30.NamedParametersEndpoint()
         ..initialize(
           server,
           'namedParameters',
           null,
         ),
-      'optionalParameters': _i30.OptionalParametersEndpoint()
+      'optionalParameters': _i31.OptionalParametersEndpoint()
         ..initialize(
           server,
           'optionalParameters',
           null,
         ),
-      'redis': _i31.RedisEndpoint()
+      'redis': _i32.RedisEndpoint()
         ..initialize(
           server,
           'redis',
           null,
         ),
-      'signInRequired': _i32.SignInRequiredEndpoint()
+      'signInRequired': _i33.SignInRequiredEndpoint()
         ..initialize(
           server,
           'signInRequired',
           null,
         ),
-      'simple': _i33.SimpleEndpoint()
+      'simple': _i34.SimpleEndpoint()
         ..initialize(
           server,
           'simple',
           null,
         ),
-      'streaming': _i34.StreamingEndpoint()
+      'streaming': _i35.StreamingEndpoint()
         ..initialize(
           server,
           'streaming',
           null,
         ),
-      'streamingLogging': _i35.StreamingLoggingEndpoint()
+      'streamingLogging': _i36.StreamingLoggingEndpoint()
         ..initialize(
           server,
           'streamingLogging',
           null,
         ),
-      'subSubDirTest': _i36.SubSubDirTestEndpoint()
+      'subSubDirTest': _i37.SubSubDirTestEndpoint()
         ..initialize(
           server,
           'subSubDirTest',
           null,
         ),
-      'subDirTest': _i37.SubDirTestEndpoint()
+      'subDirTest': _i38.SubDirTestEndpoint()
         ..initialize(
           server,
           'subDirTest',
@@ -528,7 +533,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i38.ByteData?>(),
+              type: _i1.getType<_i39.ByteData?>(),
               nullable: true,
             )
           },
@@ -564,7 +569,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i39.UuidValue?>(),
+              type: _i1.getType<_i40.UuidValue?>(),
               nullable: true,
             )
           },
@@ -579,6 +584,30 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['batchOperations'] = _i1.EndpointConnector(
+      name: 'batchOperations',
+      endpoint: endpoints['batchOperations']!,
+      methodConnectors: {
+        'batchInsert': _i1.MethodConnector(
+          name: 'batchInsert',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<List<_i41.SimpleData>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['batchOperations'] as _i5.BatchOperations).batchInsert(
+            session,
+            params['value'],
+          ),
+        )
+      },
+    );
     connectors['cloudStorage'] = _i1.EndpointConnector(
       name: 'cloudStorage',
       endpoint: endpoints['cloudStorage']!,
@@ -590,7 +619,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .reset(session),
         ),
         'storePublicFile': _i1.MethodConnector(
@@ -603,7 +632,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i38.ByteData>(),
+              type: _i1.getType<_i39.ByteData>(),
               nullable: false,
             ),
           },
@@ -611,7 +640,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .storePublicFile(
             session,
             params['path'],
@@ -631,7 +660,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .retrievePublicFile(
             session,
             params['path'],
@@ -650,7 +679,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .existsPublicFile(
             session,
             params['path'],
@@ -669,7 +698,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .deletePublicFile(
             session,
             params['path'],
@@ -688,7 +717,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .getPublicUrlForFile(
             session,
             params['path'],
@@ -707,7 +736,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .getDirectFilePostUrl(
             session,
             params['path'],
@@ -726,7 +755,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['cloudStorage'] as _i5.CloudStorageEndpoint)
+              (endpoints['cloudStorage'] as _i6.CloudStorageEndpoint)
                   .verifyDirectFileUpload(
             session,
             params['path'],
@@ -748,7 +777,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'byteData': _i1.ParameterDescription(
               name: 'byteData',
-              type: _i1.getType<_i38.ByteData>(),
+              type: _i1.getType<_i39.ByteData>(),
               nullable: false,
             ),
           },
@@ -756,7 +785,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .storePublicFile(
             session,
             params['path'],
@@ -776,7 +805,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .retrievePublicFile(
             session,
             params['path'],
@@ -795,7 +824,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .existsPublicFile(
             session,
             params['path'],
@@ -814,7 +843,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .deletePublicFile(
             session,
             params['path'],
@@ -833,7 +862,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .getPublicUrlForFile(
             session,
             params['path'],
@@ -852,7 +881,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .getDirectFilePostUrl(
             session,
             params['path'],
@@ -871,7 +900,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['s3CloudStorage'] as _i6.S3CloudStorageEndpoint)
+              (endpoints['s3CloudStorage'] as _i7.S3CloudStorageEndpoint)
                   .verifyDirectFileUpload(
             session,
             params['path'],
@@ -888,7 +917,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -896,7 +925,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint).insert(
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint).insert(
             session,
             params['types'],
           ),
@@ -908,7 +937,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint)
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -918,7 +947,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint)
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -934,7 +963,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint).equals(
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint).equals(
             session,
             params['value'],
           ),
@@ -952,7 +981,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint).notEquals(
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint).notEquals(
             session,
             params['value'],
           ),
@@ -970,7 +999,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint).inSet(
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -988,7 +1017,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint).notInSet(
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -1006,7 +1035,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint)
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -1025,7 +1054,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnBool'] as _i7.ColumnBoolEndpoint)
+              (endpoints['columnBool'] as _i8.ColumnBoolEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -1042,7 +1071,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -1050,7 +1079,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .insert(
             session,
             params['types'],
@@ -1063,7 +1092,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -1073,7 +1102,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -1089,7 +1118,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .equals(
             session,
             params['value'],
@@ -1108,7 +1137,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .notEquals(
             session,
             params['value'],
@@ -1127,7 +1156,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint).inSet(
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -1145,7 +1174,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .notInSet(
             session,
             params['value'],
@@ -1164,7 +1193,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -1183,7 +1212,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -1202,7 +1231,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .greaterThan(
             session,
             params['value'],
@@ -1221,7 +1250,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .greaterOrEqualThan(
             session,
             params['value'],
@@ -1240,7 +1269,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .lessThan(
             session,
             params['value'],
@@ -1259,7 +1288,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .lessOrEqualThan(
             session,
             params['value'],
@@ -1283,7 +1312,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .between(
             session,
             params['min'],
@@ -1308,7 +1337,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDateTime'] as _i8.ColumnDateTimeEndpoint)
+              (endpoints['columnDateTime'] as _i9.ColumnDateTimeEndpoint)
                   .notBetween(
             session,
             params['min'],
@@ -1326,7 +1355,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -1334,7 +1363,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).insert(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).insert(
             session,
             params['types'],
           ),
@@ -1346,7 +1375,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -1356,7 +1385,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -1372,7 +1401,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).equals(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).equals(
             session,
             params['value'],
           ),
@@ -1390,7 +1419,8 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).notEquals(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
+                  .notEquals(
             session,
             params['value'],
           ),
@@ -1408,7 +1438,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).inSet(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -1426,7 +1456,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).notInSet(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -1444,7 +1474,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -1463,7 +1493,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -1482,7 +1512,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .greaterThan(
             session,
             params['value'],
@@ -1501,7 +1531,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .greaterOrEqualThan(
             session,
             params['value'],
@@ -1520,7 +1550,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).lessThan(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).lessThan(
             session,
             params['value'],
           ),
@@ -1538,7 +1568,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .lessOrEqualThan(
             session,
             params['value'],
@@ -1562,7 +1592,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint).between(
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint).between(
             session,
             params['min'],
             params['max'],
@@ -1586,7 +1616,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDouble'] as _i9.ColumnDoubleEndpoint)
+              (endpoints['columnDouble'] as _i10.ColumnDoubleEndpoint)
                   .notBetween(
             session,
             params['min'],
@@ -1604,7 +1634,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -1612,7 +1642,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .insert(
             session,
             params['types'],
@@ -1625,7 +1655,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -1635,7 +1665,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -1651,7 +1681,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .equals(
             session,
             params['value'],
@@ -1670,7 +1700,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .notEquals(
             session,
             params['value'],
@@ -1689,7 +1719,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .inSet(
             session,
             params['value'],
@@ -1708,7 +1738,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .notInSet(
             session,
             params['value'],
@@ -1727,7 +1757,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -1746,7 +1776,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -1765,7 +1795,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .greaterThan(
             session,
             params['value'],
@@ -1784,7 +1814,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .greaterOrEqualThan(
             session,
             params['value'],
@@ -1803,7 +1833,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .lessThan(
             session,
             params['value'],
@@ -1822,7 +1852,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .lessOrEqualThan(
             session,
             params['value'],
@@ -1846,7 +1876,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .between(
             session,
             params['min'],
@@ -1871,7 +1901,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnDuration'] as _i10.ColumnDurationEndpoint)
+              (endpoints['columnDuration'] as _i11.ColumnDurationEndpoint)
                   .notBetween(
             session,
             params['min'],
@@ -1889,7 +1919,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -1897,7 +1927,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint).insert(
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint).insert(
             session,
             params['types'],
           ),
@@ -1909,7 +1939,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint)
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -1919,7 +1949,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint)
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -1927,7 +1957,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i41.TestEnum?>(),
+              type: _i1.getType<_i43.TestEnum?>(),
               nullable: true,
             )
           },
@@ -1935,7 +1965,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint).equals(
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint).equals(
             session,
             params['value'],
           ),
@@ -1945,7 +1975,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i41.TestEnum?>(),
+              type: _i1.getType<_i43.TestEnum?>(),
               nullable: true,
             )
           },
@@ -1953,7 +1983,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint).notEquals(
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint).notEquals(
             session,
             params['value'],
           ),
@@ -1963,7 +1993,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<List<_i41.TestEnum>>(),
+              type: _i1.getType<List<_i43.TestEnum>>(),
               nullable: false,
             )
           },
@@ -1971,7 +2001,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint).inSet(
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -1981,7 +2011,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<List<_i41.TestEnum>>(),
+              type: _i1.getType<List<_i43.TestEnum>>(),
               nullable: false,
             )
           },
@@ -1989,7 +2019,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint).notInSet(
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -1999,7 +2029,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i41.TestEnum>(),
+              type: _i1.getType<_i43.TestEnum>(),
               nullable: false,
             )
           },
@@ -2007,7 +2037,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint)
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -2018,7 +2048,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i41.TestEnum>(),
+              type: _i1.getType<_i43.TestEnum>(),
               nullable: false,
             )
           },
@@ -2026,7 +2056,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnEnum'] as _i11.ColumnEnumEndpoint)
+              (endpoints['columnEnum'] as _i12.ColumnEnumEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -2043,7 +2073,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -2051,7 +2081,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).insert(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).insert(
             session,
             params['types'],
           ),
@@ -2063,7 +2093,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint)
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -2073,7 +2103,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint)
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -2089,7 +2119,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).equals(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).equals(
             session,
             params['value'],
           ),
@@ -2107,7 +2137,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).notEquals(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).notEquals(
             session,
             params['value'],
           ),
@@ -2125,7 +2155,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).inSet(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -2143,7 +2173,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).notInSet(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -2161,7 +2191,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).isDistinctFrom(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).isDistinctFrom(
             session,
             params['value'],
           ),
@@ -2179,7 +2209,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint)
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -2198,7 +2228,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).greaterThan(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).greaterThan(
             session,
             params['value'],
           ),
@@ -2216,7 +2246,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint)
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint)
                   .greaterOrEqualThan(
             session,
             params['value'],
@@ -2235,7 +2265,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).lessThan(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).lessThan(
             session,
             params['value'],
           ),
@@ -2253,7 +2283,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint)
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint)
                   .lessOrEqualThan(
             session,
             params['value'],
@@ -2277,7 +2307,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).between(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).between(
             session,
             params['min'],
             params['max'],
@@ -2301,7 +2331,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnInt'] as _i12.ColumnIntEndpoint).notBetween(
+              (endpoints['columnInt'] as _i13.ColumnIntEndpoint).notBetween(
             session,
             params['min'],
             params['max'],
@@ -2318,7 +2348,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -2326,7 +2356,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).insert(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).insert(
             session,
             params['types'],
           ),
@@ -2338,7 +2368,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint)
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -2348,7 +2378,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint)
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -2364,7 +2394,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).equals(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).equals(
             session,
             params['value'],
           ),
@@ -2382,7 +2412,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint)
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint)
                   .notEquals(
             session,
             params['value'],
@@ -2401,7 +2431,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).inSet(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -2419,7 +2449,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).notInSet(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -2437,7 +2467,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint)
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -2456,7 +2486,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint)
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -2475,7 +2505,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).like(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).like(
             session,
             params['value'],
           ),
@@ -2493,7 +2523,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnString'] as _i13.ColumnStringEndpoint).ilike(
+              (endpoints['columnString'] as _i14.ColumnStringEndpoint).ilike(
             session,
             params['value'],
           ),
@@ -2509,7 +2539,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<List<_i40.Types>>(),
+              type: _i1.getType<List<_i42.Types>>(),
               nullable: false,
             )
           },
@@ -2517,7 +2547,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint).insert(
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint).insert(
             session,
             params['types'],
           ),
@@ -2529,7 +2559,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint)
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint)
                   .deleteAll(session),
         ),
         'findAll': _i1.MethodConnector(
@@ -2539,7 +2569,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint)
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint)
                   .findAll(session),
         ),
         'equals': _i1.MethodConnector(
@@ -2547,7 +2577,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i39.UuidValue?>(),
+              type: _i1.getType<_i40.UuidValue?>(),
               nullable: true,
             )
           },
@@ -2555,7 +2585,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint).equals(
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint).equals(
             session,
             params['value'],
           ),
@@ -2565,7 +2595,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i39.UuidValue?>(),
+              type: _i1.getType<_i40.UuidValue?>(),
               nullable: true,
             )
           },
@@ -2573,7 +2603,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint).notEquals(
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint).notEquals(
             session,
             params['value'],
           ),
@@ -2583,7 +2613,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<List<_i39.UuidValue>>(),
+              type: _i1.getType<List<_i40.UuidValue>>(),
               nullable: false,
             )
           },
@@ -2591,7 +2621,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint).inSet(
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint).inSet(
             session,
             params['value'],
           ),
@@ -2601,7 +2631,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<List<_i39.UuidValue>>(),
+              type: _i1.getType<List<_i40.UuidValue>>(),
               nullable: false,
             )
           },
@@ -2609,7 +2639,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint).notInSet(
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint).notInSet(
             session,
             params['value'],
           ),
@@ -2619,7 +2649,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i39.UuidValue>(),
+              type: _i1.getType<_i40.UuidValue>(),
               nullable: false,
             )
           },
@@ -2627,7 +2657,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint)
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint)
                   .isDistinctFrom(
             session,
             params['value'],
@@ -2638,7 +2668,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i39.UuidValue>(),
+              type: _i1.getType<_i40.UuidValue>(),
               nullable: false,
             )
           },
@@ -2646,7 +2676,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['columnUuid'] as _i14.ColumnUuidEndpoint)
+              (endpoints['columnUuid'] as _i15.ColumnUuidEndpoint)
                   .isNotDistinctFrom(
             session,
             params['value'],
@@ -2663,7 +2693,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass>(),
+              type: _i1.getType<_i44.CustomClass>(),
               nullable: false,
             )
           },
@@ -2671,7 +2701,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnCustomClass(
             session,
             params['data'],
@@ -2682,7 +2712,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass?>(),
+              type: _i1.getType<_i44.CustomClass?>(),
               nullable: true,
             )
           },
@@ -2690,7 +2720,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnCustomClassNullable(
             session,
             params['data'],
@@ -2701,7 +2731,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass2>(),
+              type: _i1.getType<_i44.CustomClass2>(),
               nullable: false,
             )
           },
@@ -2709,7 +2739,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnCustomClass2(
             session,
             params['data'],
@@ -2720,7 +2750,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i42.CustomClass2?>(),
+              type: _i1.getType<_i44.CustomClass2?>(),
               nullable: true,
             )
           },
@@ -2728,7 +2758,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnCustomClass2Nullable(
             session,
             params['data'],
@@ -2739,7 +2769,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i43.ExternalCustomClass>(),
+              type: _i1.getType<_i45.ExternalCustomClass>(),
               nullable: false,
             )
           },
@@ -2747,7 +2777,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnExternalCustomClass(
             session,
             params['data'],
@@ -2758,7 +2788,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i43.ExternalCustomClass?>(),
+              type: _i1.getType<_i45.ExternalCustomClass?>(),
               nullable: true,
             )
           },
@@ -2766,7 +2796,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnExternalCustomClassNullable(
             session,
             params['data'],
@@ -2777,7 +2807,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i44.FreezedCustomClass>(),
+              type: _i1.getType<_i46.FreezedCustomClass>(),
               nullable: false,
             )
           },
@@ -2785,7 +2815,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnFreezedCustomClass(
             session,
             params['data'],
@@ -2796,7 +2826,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i44.FreezedCustomClass?>(),
+              type: _i1.getType<_i46.FreezedCustomClass?>(),
               nullable: true,
             )
           },
@@ -2804,7 +2834,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['customTypes'] as _i15.CustomTypesEndpoint)
+              (endpoints['customTypes'] as _i16.CustomTypesEndpoint)
                   .returnFreezedCustomClassNullable(
             session,
             params['data'],
@@ -2834,7 +2864,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase).findSimpleData(
+              (endpoints['basicDatabase'] as _i17.BasicDatabase).findSimpleData(
             session,
             limit: params['limit'],
             offset: params['offset'],
@@ -2853,7 +2883,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .findRowSimpleData(
             session,
             params['num'],
@@ -2872,7 +2902,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .findByIdSimpleData(
             session,
             params['id'],
@@ -2883,7 +2913,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             )
           },
@@ -2891,7 +2921,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .insertRowSimpleData(
             session,
             params['simpleData'],
@@ -2902,7 +2932,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             )
           },
@@ -2910,7 +2940,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .updateRowSimpleData(
             session,
             params['simpleData'],
@@ -2921,7 +2951,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'simpleData': _i1.ParameterDescription(
               name: 'simpleData',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             )
           },
@@ -2929,7 +2959,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .deleteRowSimpleData(
             session,
             params['simpleData'],
@@ -2942,7 +2972,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .deleteWhereSimpleData(session),
         ),
         'deleteAll': _i1.MethodConnector(
@@ -2952,33 +2982,18 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
                   .deleteAll(session),
         ),
         'countSimpleData': _i1.MethodConnector(
           name: 'countSimpleData',
-          params: {
-            'where': _i1.ParameterDescription(
-              name: 'where',
-              type: _i1.getType<_i46.Expression<dynamic>?>(),
-              nullable: true,
-            ),
-            'transaction': _i1.ParameterDescription(
-              name: 'transaction',
-              type: _i1.getType<_i47.Transaction?>(),
-              nullable: true,
-            ),
-          },
+          params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabase'] as _i16.BasicDatabase)
-                  .countSimpleData(
-            session,
-            where: params['where'],
-            transaction: params['transaction'],
-          ),
+              (endpoints['basicDatabase'] as _i17.BasicDatabase)
+                  .countSimpleData(session),
         ),
       },
     );
@@ -2991,7 +3006,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'types': _i1.ParameterDescription(
               name: 'types',
-              type: _i1.getType<_i40.Types>(),
+              type: _i1.getType<_i42.Types>(),
               nullable: false,
             )
           },
@@ -2999,7 +3014,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .storeTypes(
             session,
             params['types'],
@@ -3018,7 +3033,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .getTypes(
             session,
             params['id'],
@@ -3029,7 +3044,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i48.ObjectWithEnum>(),
+              type: _i1.getType<_i47.ObjectWithEnum>(),
               nullable: false,
             )
           },
@@ -3037,7 +3052,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .storeObjectWithEnum(
             session,
             params['object'],
@@ -3056,7 +3071,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .getObjectWithEnum(
             session,
             params['id'],
@@ -3075,7 +3090,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .getTypesRawQuery(
             session,
             params['id'],
@@ -3088,7 +3103,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .countTypesRows(session),
         ),
         'deleteAllInTypes': _i1.MethodConnector(
@@ -3098,7 +3113,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .deleteAllInTypes(session),
         ),
         'createSimpleTestData': _i1.MethodConnector(
@@ -3114,7 +3129,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .createSimpleTestData(
             session,
             params['numRows'],
@@ -3127,7 +3142,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .countSimpleData(session),
         ),
         'deleteAllSimpleTestData': _i1.MethodConnector(
@@ -3137,7 +3152,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .deleteAllSimpleTestData(session),
         ),
         'deleteSimpleTestDataLessThan': _i1.MethodConnector(
@@ -3153,7 +3168,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .deleteSimpleTestDataLessThan(
             session,
             params['num'],
@@ -3172,7 +3187,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .findAndDeleteSimpleTestData(
             session,
             params['num'],
@@ -3206,7 +3221,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .findSimpleDataRowsLessThan(
             session,
             params['num'],
@@ -3233,7 +3248,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .updateSimpleDataRow(
             session,
             params['num'],
@@ -3245,7 +3260,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i49.ObjectWithObject>(),
+              type: _i1.getType<_i48.ObjectWithObject>(),
               nullable: false,
             )
           },
@@ -3253,7 +3268,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .storeObjectWithObject(
             session,
             params['object'],
@@ -3272,7 +3287,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .getObjectWithObject(
             session,
             params['id'],
@@ -3285,7 +3300,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .testByteDataStore(session),
         ),
         'testDurationStore': _i1.MethodConnector(
@@ -3295,7 +3310,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['basicDatabaseLegacy'] as _i17.BasicDatabaseLegacy)
+              (endpoints['basicDatabaseLegacy'] as _i18.BasicDatabaseLegacy)
                   .testDurationStore(session),
         ),
       },
@@ -3318,7 +3333,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['transactionsDatabase']
-                      as _i18.TransactionsDatabaseEndpoint)
+                      as _i19.TransactionsDatabaseEndpoint)
                   .removeRow(
             session,
             params['num'],
@@ -3348,7 +3363,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['transactionsDatabase']
-                      as _i18.TransactionsDatabaseEndpoint)
+                      as _i19.TransactionsDatabaseEndpoint)
                   .updateInsertDelete(
             session,
             params['numUpdate'],
@@ -3375,7 +3390,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindWhereCompanyNameIs(
             session,
             companyName: params['companyName'],
@@ -3394,7 +3409,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindWhereCompanyTownNameIs(
             session,
             townName: params['townName'],
@@ -3407,7 +3422,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindOrderedByCompanyName(session),
         ),
         'citizenFindOrderedByCompanyTownName': _i1.MethodConnector(
@@ -3417,7 +3432,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindOrderedByCompanyTownName(session),
         ),
         'citizenDeleteWhereCompanyNameIs': _i1.MethodConnector(
@@ -3433,7 +3448,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenDeleteWhereCompanyNameIs(
             session,
             companyName: params['companyName'],
@@ -3452,7 +3467,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenDeleteWhereCompanyTownNameIs(
             session,
             townName: params['townName'],
@@ -3471,7 +3486,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenCountWhereCompanyNameIs(
             session,
             companyName: params['companyName'],
@@ -3490,7 +3505,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenCountWhereCompanyTownNameIs(
             session,
             townName: params['townName'],
@@ -3503,7 +3518,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindAll(session),
         ),
         'citizenFindAllWithDeepIncludes': _i1.MethodConnector(
@@ -3513,7 +3528,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindAllWithDeepIncludes(session),
         ),
         'citizenFindAllWithNamedRelationNoneOriginSide': _i1.MethodConnector(
@@ -3523,7 +3538,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindAllWithNamedRelationNoneOriginSide(session),
         ),
         'citizenFindAllWithShallowIncludes': _i1.MethodConnector(
@@ -3533,7 +3548,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindAllWithShallowIncludes(session),
         ),
         'citizenFindByIdWithIncludes': _i1.MethodConnector(
@@ -3549,7 +3564,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenFindByIdWithIncludes(
             session,
             params['id'],
@@ -3562,7 +3577,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .addressFindAll(session),
         ),
         'addressFindById': _i1.MethodConnector(
@@ -3578,7 +3593,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).addressFindById(
+              (endpoints['relation'] as _i20.RelationEndpoint).addressFindById(
             session,
             params['id'],
           ),
@@ -3590,7 +3605,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .findAllPostsIncludingNextAndPrevious(session),
         ),
         'citizenAttachCompany': _i1.MethodConnector(
@@ -3598,12 +3613,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'citizen': _i1.ParameterDescription(
               name: 'citizen',
-              type: _i1.getType<_i50.Citizen>(),
+              type: _i1.getType<_i49.Citizen>(),
               nullable: false,
             ),
             'company': _i1.ParameterDescription(
               name: 'company',
-              type: _i1.getType<_i51.Company>(),
+              type: _i1.getType<_i50.Company>(),
               nullable: false,
             ),
           },
@@ -3611,7 +3626,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenAttachCompany(
             session,
             params['citizen'],
@@ -3623,12 +3638,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'citizen': _i1.ParameterDescription(
               name: 'citizen',
-              type: _i1.getType<_i50.Citizen>(),
+              type: _i1.getType<_i49.Citizen>(),
               nullable: false,
             ),
             'address': _i1.ParameterDescription(
               name: 'address',
-              type: _i1.getType<_i52.Address>(),
+              type: _i1.getType<_i51.Address>(),
               nullable: false,
             ),
           },
@@ -3636,7 +3651,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenAttachAddress(
             session,
             params['citizen'],
@@ -3648,7 +3663,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'citizen': _i1.ParameterDescription(
               name: 'citizen',
-              type: _i1.getType<_i50.Citizen>(),
+              type: _i1.getType<_i49.Citizen>(),
               nullable: false,
             )
           },
@@ -3656,7 +3671,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .citizenDetachAddress(
             session,
             params['citizen'],
@@ -3667,12 +3682,12 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'address': _i1.ParameterDescription(
               name: 'address',
-              type: _i1.getType<_i52.Address>(),
+              type: _i1.getType<_i51.Address>(),
               nullable: false,
             ),
             'citizen': _i1.ParameterDescription(
               name: 'citizen',
-              type: _i1.getType<_i50.Citizen>(),
+              type: _i1.getType<_i49.Citizen>(),
               nullable: false,
             ),
           },
@@ -3680,7 +3695,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .addressAttachCitizen(
             session,
             params['address'],
@@ -3692,7 +3707,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'address': _i1.ParameterDescription(
               name: 'address',
-              type: _i1.getType<_i52.Address>(),
+              type: _i1.getType<_i51.Address>(),
               nullable: false,
             )
           },
@@ -3700,7 +3715,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .addressDetachCitizen(
             session,
             params['address'],
@@ -3713,7 +3728,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .companyFindAll(session),
         ),
         'citizenInsert': _i1.MethodConnector(
@@ -3721,7 +3736,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'citizen': _i1.ParameterDescription(
               name: 'citizen',
-              type: _i1.getType<_i50.Citizen>(),
+              type: _i1.getType<_i49.Citizen>(),
               nullable: false,
             )
           },
@@ -3729,7 +3744,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).citizenInsert(
+              (endpoints['relation'] as _i20.RelationEndpoint).citizenInsert(
             session,
             params['citizen'],
           ),
@@ -3739,7 +3754,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'company': _i1.ParameterDescription(
               name: 'company',
-              type: _i1.getType<_i51.Company>(),
+              type: _i1.getType<_i50.Company>(),
               nullable: false,
             )
           },
@@ -3747,7 +3762,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).companyInsert(
+              (endpoints['relation'] as _i20.RelationEndpoint).companyInsert(
             session,
             params['company'],
           ),
@@ -3757,7 +3772,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'town': _i1.ParameterDescription(
               name: 'town',
-              type: _i1.getType<_i53.Town>(),
+              type: _i1.getType<_i52.Town>(),
               nullable: false,
             )
           },
@@ -3765,7 +3780,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).townInsert(
+              (endpoints['relation'] as _i20.RelationEndpoint).townInsert(
             session,
             params['town'],
           ),
@@ -3775,7 +3790,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'address': _i1.ParameterDescription(
               name: 'address',
-              type: _i1.getType<_i52.Address>(),
+              type: _i1.getType<_i51.Address>(),
               nullable: false,
             )
           },
@@ -3783,7 +3798,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).addressInsert(
+              (endpoints['relation'] as _i20.RelationEndpoint).addressInsert(
             session,
             params['address'],
           ),
@@ -3793,7 +3808,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'post': _i1.ParameterDescription(
               name: 'post',
-              type: _i1.getType<_i54.Post>(),
+              type: _i1.getType<_i53.Post>(),
               nullable: false,
             )
           },
@@ -3801,7 +3816,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint).postInsert(
+              (endpoints['relation'] as _i20.RelationEndpoint).postInsert(
             session,
             params['post'],
           ),
@@ -3813,7 +3828,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['relation'] as _i19.RelationEndpoint)
+              (endpoints['relation'] as _i20.RelationEndpoint)
                   .deleteAll(session),
         ),
       },
@@ -3829,7 +3844,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i20.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i21.ExceptionTestEndpoint)
                   .throwNormalException(session),
         ),
         'throwExceptionWithData': _i1.MethodConnector(
@@ -3839,7 +3854,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i20.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i21.ExceptionTestEndpoint)
                   .throwExceptionWithData(session),
         ),
         'workingWithoutException': _i1.MethodConnector(
@@ -3849,7 +3864,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['exceptionTest'] as _i20.ExceptionTestEndpoint)
+              (endpoints['exceptionTest'] as _i21.ExceptionTestEndpoint)
                   .workingWithoutException(session),
         ),
       },
@@ -3865,7 +3880,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i21.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i22.FailedCallsEndpoint)
                   .failedCall(session),
         ),
         'failedDatabaseQuery': _i1.MethodConnector(
@@ -3875,7 +3890,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i21.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i22.FailedCallsEndpoint)
                   .failedDatabaseQuery(session),
         ),
         'failedDatabaseQueryCaughtException': _i1.MethodConnector(
@@ -3885,7 +3900,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i21.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i22.FailedCallsEndpoint)
                   .failedDatabaseQueryCaughtException(session),
         ),
         'slowCall': _i1.MethodConnector(
@@ -3895,7 +3910,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i21.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i22.FailedCallsEndpoint)
                   .slowCall(session),
         ),
         'caughtException': _i1.MethodConnector(
@@ -3905,7 +3920,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['failedCalls'] as _i21.FailedCallsEndpoint)
+              (endpoints['failedCalls'] as _i22.FailedCallsEndpoint)
                   .caughtException(session),
         ),
       },
@@ -3919,7 +3934,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i55.ObjectFieldScopes>(),
+              type: _i1.getType<_i54.ObjectFieldScopes>(),
               nullable: false,
             )
           },
@@ -3927,7 +3942,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['fieldScopes'] as _i22.FieldScopesEndpoint)
+              (endpoints['fieldScopes'] as _i23.FieldScopesEndpoint)
                   .storeObject(
             session,
             params['object'],
@@ -3940,7 +3955,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['fieldScopes'] as _i22.FieldScopesEndpoint)
+              (endpoints['fieldScopes'] as _i23.FieldScopesEndpoint)
                   .retrieveObject(session),
         ),
       },
@@ -3954,7 +3969,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData?>(),
+              type: _i1.getType<_i41.SimpleData?>(),
               nullable: true,
             )
           },
@@ -3962,7 +3977,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['futureCalls'] as _i23.FutureCallsEndpoint)
+              (endpoints['futureCalls'] as _i24.FutureCallsEndpoint)
                   .makeFutureCall(
             session,
             params['data'],
@@ -3987,7 +4002,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntList(
             session,
             params['list'],
@@ -4006,7 +4021,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntListList(
             session,
             params['list'],
@@ -4025,7 +4040,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntListNullable(
             session,
             params['list'],
@@ -4044,7 +4059,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntListNullableList(
             session,
             params['list'],
@@ -4063,7 +4078,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntListListNullable(
             session,
             params['list'],
@@ -4082,7 +4097,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnIntListNullableInts(
             session,
             params['list'],
@@ -4101,7 +4116,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnNullableIntListNullableInts(
             session,
             params['list'],
@@ -4120,7 +4135,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDoubleList(
             session,
             params['list'],
@@ -4139,7 +4154,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDoubleListNullableDoubles(
             session,
             params['list'],
@@ -4158,7 +4173,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnBoolList(
             session,
             params['list'],
@@ -4177,7 +4192,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnBoolListNullableBools(
             session,
             params['list'],
@@ -4196,7 +4211,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnStringList(
             session,
             params['list'],
@@ -4215,7 +4230,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnStringListNullableStrings(
             session,
             params['list'],
@@ -4234,7 +4249,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDateTimeList(
             session,
             params['list'],
@@ -4253,7 +4268,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDateTimeListNullableDateTimes(
             session,
             params['list'],
@@ -4264,7 +4279,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i38.ByteData>>(),
+              type: _i1.getType<List<_i39.ByteData>>(),
               nullable: false,
             )
           },
@@ -4272,7 +4287,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnByteDataList(
             session,
             params['list'],
@@ -4283,7 +4298,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i38.ByteData?>>(),
+              type: _i1.getType<List<_i39.ByteData?>>(),
               nullable: false,
             )
           },
@@ -4291,7 +4306,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnByteDataListNullableByteDatas(
             session,
             params['list'],
@@ -4302,7 +4317,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData>>(),
+              type: _i1.getType<List<_i41.SimpleData>>(),
               nullable: false,
             )
           },
@@ -4310,7 +4325,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnSimpleDataList(
             session,
             params['list'],
@@ -4321,7 +4336,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData?>>(),
+              type: _i1.getType<List<_i41.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -4329,7 +4344,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnSimpleDataListNullableSimpleData(
             session,
             params['list'],
@@ -4340,7 +4355,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData>?>(),
+              type: _i1.getType<List<_i41.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -4348,7 +4363,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnSimpleDataListNullable(
             session,
             params['list'],
@@ -4359,7 +4374,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'list': _i1.ParameterDescription(
               name: 'list',
-              type: _i1.getType<List<_i45.SimpleData?>?>(),
+              type: _i1.getType<List<_i41.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -4367,7 +4382,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnNullableSimpleDataListNullableSimpleData(
             session,
             params['list'],
@@ -4386,7 +4401,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDurationList(
             session,
             params['list'],
@@ -4405,7 +4420,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['listParameters'] as _i24.ListParametersEndpoint)
+              (endpoints['listParameters'] as _i25.ListParametersEndpoint)
                   .returnDurationListNullableDurations(
             session,
             params['list'],
@@ -4430,7 +4445,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i25.LoggingEndpoint).logInfo(
+              (endpoints['logging'] as _i26.LoggingEndpoint).logInfo(
             session,
             params['message'],
           ),
@@ -4458,7 +4473,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i25.LoggingEndpoint)
+              (endpoints['logging'] as _i26.LoggingEndpoint)
                   .logDebugAndInfoAndError(
             session,
             params['debug'],
@@ -4473,7 +4488,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['logging'] as _i25.LoggingEndpoint)
+              (endpoints['logging'] as _i26.LoggingEndpoint)
                   .twoQueries(session),
         ),
       },
@@ -4495,7 +4510,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['loggingDisabled'] as _i26.LoggingDisabledEndpoint)
+              (endpoints['loggingDisabled'] as _i27.LoggingDisabledEndpoint)
                   .logInfo(
             session,
             params['message'],
@@ -4520,7 +4535,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnIntMap(
             session,
             params['map'],
@@ -4539,7 +4554,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnIntMapNullable(
             session,
             params['map'],
@@ -4558,7 +4573,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnNestedIntMap(
             session,
             params['map'],
@@ -4577,7 +4592,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnIntMapNullableInts(
             session,
             params['map'],
@@ -4596,7 +4611,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnNullableIntMapNullableInts(
             session,
             params['map'],
@@ -4615,7 +4630,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnIntIntMap(
             session,
             params['map'],
@@ -4626,7 +4641,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<_i41.TestEnum, int>>(),
+              type: _i1.getType<Map<_i43.TestEnum, int>>(),
               nullable: false,
             )
           },
@@ -4634,7 +4649,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnEnumIntMap(
             session,
             params['map'],
@@ -4645,7 +4660,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i41.TestEnum>>(),
+              type: _i1.getType<Map<String, _i43.TestEnum>>(),
               nullable: false,
             )
           },
@@ -4653,7 +4668,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnEnumMap(
             session,
             params['map'],
@@ -4672,7 +4687,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDoubleMap(
             session,
             params['map'],
@@ -4691,7 +4706,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDoubleMapNullableDoubles(
             session,
             params['map'],
@@ -4710,7 +4725,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnBoolMap(
             session,
             params['map'],
@@ -4729,7 +4744,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnBoolMapNullableBools(
             session,
             params['map'],
@@ -4748,7 +4763,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnStringMap(
             session,
             params['map'],
@@ -4767,7 +4782,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnStringMapNullableStrings(
             session,
             params['map'],
@@ -4786,7 +4801,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDateTimeMap(
             session,
             params['map'],
@@ -4805,7 +4820,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDateTimeMapNullableDateTimes(
             session,
             params['map'],
@@ -4816,7 +4831,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i38.ByteData>>(),
+              type: _i1.getType<Map<String, _i39.ByteData>>(),
               nullable: false,
             )
           },
@@ -4824,7 +4839,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnByteDataMap(
             session,
             params['map'],
@@ -4835,7 +4850,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i38.ByteData?>>(),
+              type: _i1.getType<Map<String, _i39.ByteData?>>(),
               nullable: false,
             )
           },
@@ -4843,7 +4858,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnByteDataMapNullableByteDatas(
             session,
             params['map'],
@@ -4854,7 +4869,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData>>(),
+              type: _i1.getType<Map<String, _i41.SimpleData>>(),
               nullable: false,
             )
           },
@@ -4862,7 +4877,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnSimpleDataMap(
             session,
             params['map'],
@@ -4873,7 +4888,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData?>>(),
+              type: _i1.getType<Map<String, _i41.SimpleData?>>(),
               nullable: false,
             )
           },
@@ -4881,7 +4896,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnSimpleDataMapNullableSimpleData(
             session,
             params['map'],
@@ -4892,7 +4907,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData>?>(),
+              type: _i1.getType<Map<String, _i41.SimpleData>?>(),
               nullable: true,
             )
           },
@@ -4900,7 +4915,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnSimpleDataMapNullable(
             session,
             params['map'],
@@ -4911,7 +4926,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'map': _i1.ParameterDescription(
               name: 'map',
-              type: _i1.getType<Map<String, _i45.SimpleData?>?>(),
+              type: _i1.getType<Map<String, _i41.SimpleData?>?>(),
               nullable: true,
             )
           },
@@ -4919,7 +4934,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnNullableSimpleDataMapNullableSimpleData(
             session,
             params['map'],
@@ -4938,7 +4953,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDurationMap(
             session,
             params['map'],
@@ -4957,7 +4972,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['mapParameters'] as _i27.MapParametersEndpoint)
+              (endpoints['mapParameters'] as _i28.MapParametersEndpoint)
                   .returnDurationMapNullableDurations(
             session,
             params['map'],
@@ -4977,7 +4992,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i28.ModuleSerializationEndpoint)
+                      as _i29.ModuleSerializationEndpoint)
                   .serializeModuleObject(session),
         ),
         'modifyModuleObject': _i1.MethodConnector(
@@ -4985,7 +5000,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'object': _i1.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i56.ModuleClass>(),
+              type: _i1.getType<_i55.ModuleClass>(),
               nullable: false,
             )
           },
@@ -4994,7 +5009,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i28.ModuleSerializationEndpoint)
+                      as _i29.ModuleSerializationEndpoint)
                   .modifyModuleObject(
             session,
             params['object'],
@@ -5008,7 +5023,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['moduleSerialization']
-                      as _i28.ModuleSerializationEndpoint)
+                      as _i29.ModuleSerializationEndpoint)
                   .serializeNestedModuleObject(session),
         ),
       },
@@ -5045,7 +5060,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['namedParameters'] as _i29.NamedParametersEndpoint)
+              (endpoints['namedParameters'] as _i30.NamedParametersEndpoint)
                   .namedParametersMethod(
             session,
             namedInt: params['namedInt'],
@@ -5072,7 +5087,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['namedParameters'] as _i29.NamedParametersEndpoint)
+              (endpoints['namedParameters'] as _i30.NamedParametersEndpoint)
                   .namedParametersMethodEqualInts(
             session,
             namedInt: params['namedInt'],
@@ -5099,7 +5114,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['optionalParameters']
-                      as _i30.OptionalParametersEndpoint)
+                      as _i31.OptionalParametersEndpoint)
                   .returnOptionalInt(
             session,
             params['optionalInt'],
@@ -5121,7 +5136,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             ),
           },
@@ -5129,7 +5144,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint).setSimpleData(
+              (endpoints['redis'] as _i32.RedisEndpoint).setSimpleData(
             session,
             params['key'],
             params['data'],
@@ -5145,7 +5160,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             ),
           },
@@ -5153,7 +5168,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint)
+              (endpoints['redis'] as _i32.RedisEndpoint)
                   .setSimpleDataWithLifetime(
             session,
             params['key'],
@@ -5173,7 +5188,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint).getSimpleData(
+              (endpoints['redis'] as _i32.RedisEndpoint).getSimpleData(
             session,
             params['key'],
           ),
@@ -5191,7 +5206,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint).deleteSimpleData(
+              (endpoints['redis'] as _i32.RedisEndpoint).deleteSimpleData(
             session,
             params['key'],
           ),
@@ -5203,7 +5218,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint)
+              (endpoints['redis'] as _i32.RedisEndpoint)
                   .resetMessageCentralTest(session),
         ),
         'listenToChannel': _i1.MethodConnector(
@@ -5219,7 +5234,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint).listenToChannel(
+              (endpoints['redis'] as _i32.RedisEndpoint).listenToChannel(
             session,
             params['channel'],
           ),
@@ -5234,7 +5249,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'data': _i1.ParameterDescription(
               name: 'data',
-              type: _i1.getType<_i45.SimpleData>(),
+              type: _i1.getType<_i41.SimpleData>(),
               nullable: false,
             ),
           },
@@ -5242,7 +5257,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint).postToChannel(
+              (endpoints['redis'] as _i32.RedisEndpoint).postToChannel(
             session,
             params['channel'],
             params['data'],
@@ -5255,7 +5270,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['redis'] as _i31.RedisEndpoint)
+              (endpoints['redis'] as _i32.RedisEndpoint)
                   .countSubscribedChannels(session),
         ),
       },
@@ -5271,7 +5286,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['signInRequired'] as _i32.SignInRequiredEndpoint)
+              (endpoints['signInRequired'] as _i33.SignInRequiredEndpoint)
                   .testMethod(session),
         )
       },
@@ -5298,7 +5313,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint).setGlobalInt(
+              (endpoints['simple'] as _i34.SimpleEndpoint).setGlobalInt(
             session,
             params['value'],
             params['secondValue'],
@@ -5311,7 +5326,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint)
+              (endpoints['simple'] as _i34.SimpleEndpoint)
                   .addToGlobalInt(session),
         ),
         'getGlobalInt': _i1.MethodConnector(
@@ -5321,7 +5336,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i33.SimpleEndpoint)
+              (endpoints['simple'] as _i34.SimpleEndpoint)
                   .getGlobalInt(session),
         ),
       },
@@ -5347,7 +5362,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['subSubDirTest'] as _i36.SubSubDirTestEndpoint)
+              (endpoints['subSubDirTest'] as _i37.SubSubDirTestEndpoint)
                   .testMethod(session),
         )
       },
@@ -5363,13 +5378,13 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['subDirTest'] as _i37.SubDirTestEndpoint)
+              (endpoints['subDirTest'] as _i38.SubDirTestEndpoint)
                   .testMethod(session),
         )
       },
     );
-    modules['serverpod_test_module'] = _i56.Endpoints()
+    modules['serverpod_test_module'] = _i55.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i57.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i56.Endpoints()..initializeEndpoints(server);
   }
 }

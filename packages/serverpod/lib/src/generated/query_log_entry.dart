@@ -67,7 +67,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
 
   static final t = QueryLogEntryTable();
 
-  static final db = QueryLogEntryRepository._();
+  static const db = QueryLogEntryRepository._();
 
   /// The id of the server that handled the query.
   String serverId;

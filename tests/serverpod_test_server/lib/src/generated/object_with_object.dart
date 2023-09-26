@@ -55,7 +55,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
 
   static final t = ObjectWithObjectTable();
 
-  static final db = ObjectWithObjectRepository._();
+  static const db = ObjectWithObjectRepository._();
 
   _i2.SimpleData data;
 

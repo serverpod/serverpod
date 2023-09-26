@@ -40,7 +40,7 @@ abstract class EmailAuth extends _i1.TableRow {
 
   static final t = EmailAuthTable();
 
-  static final db = EmailAuthRepository._();
+  static const db = EmailAuthRepository._();
 
   /// The id of the user, corresponds to the id field in [UserInfo].
   int userId;

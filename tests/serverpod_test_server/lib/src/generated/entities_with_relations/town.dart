@@ -40,7 +40,7 @@ abstract class Town extends _i1.TableRow {
 
   static final t = TownTable();
 
-  static final db = TownRepository._();
+  static const db = TownRepository._();
 
   String name;
 
@@ -475,7 +475,7 @@ class TownAttachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: mayor.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );
@@ -494,7 +494,7 @@ class TownDetachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );

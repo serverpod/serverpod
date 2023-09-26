@@ -36,7 +36,7 @@ abstract class Channel extends _i1.TableRow {
 
   static final t = ChannelTable();
 
-  static final db = ChannelRepository._();
+  static const db = ChannelRepository._();
 
   /// The name of the channel.
   String name;

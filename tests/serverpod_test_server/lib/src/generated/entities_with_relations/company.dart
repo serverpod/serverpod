@@ -44,7 +44,7 @@ abstract class Company extends _i1.TableRow {
 
   static final t = CompanyTable();
 
-  static final db = CompanyRepository._();
+  static const db = CompanyRepository._();
 
   String name;
 
@@ -487,7 +487,7 @@ class CompanyAttachRowRepository {
     }
 
     var $company = company.copyWith(townId: town.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
     );
