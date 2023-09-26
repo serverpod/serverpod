@@ -25,12 +25,21 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Watch for changes and continuously generate code.',
     );
+    argParser.addFlag(
+      'open-api',
+      abbr: 'o',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Generate open-api schema.',
+    );
   }
 
   @override
   Future<void> run() async {
     // Always do a full generate.
     bool watch = argResults!['watch'];
+    // Whether to generate an OpenAPI schema or not
+    bool genOpenApi = argResults!['open-api'];
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
@@ -59,9 +68,9 @@ class GenerateCommand extends ServerpodCommand {
     bool success = await log.progress(
       'Generating code',
       () => performGenerate(
-        config: config,
-        endpointsAnalyzer: endpointsAnalyzer,
-      ),
+          config: config,
+          endpointsAnalyzer: endpointsAnalyzer,
+          genOpenApi: genOpenApi),
     );
     if (watch) {
       log.info('Initial code generation complete. Listening for changes.');

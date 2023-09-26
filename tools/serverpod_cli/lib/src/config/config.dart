@@ -84,6 +84,16 @@ class GeneratorConfig {
   List<String> get generatedServerProtocolPathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 
+  /// The path parts of the directory, where the generated code is stored in the
+  /// server package.
+  List<String> get generatedServerOpenApiPathParts => [
+        ...serverPackageDirectoryPathParts,
+        'lib',
+        'src',
+        'generated',
+        'openapi'
+      ];
+
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
 

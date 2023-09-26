@@ -9,6 +9,7 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 Future<bool> performGenerate({
   bool dartFormat = true,
   String? changedFile,
+  bool genOpenApi = false,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
@@ -71,6 +72,15 @@ Future<bool> performGenerate({
     collector: collector,
   );
 
+  String? generatedOpenApiFile;
+  if (genOpenApi) {
+    log.info('Generating open-api schema');
+    generatedOpenApiFile = await ServerpodCodeGenerator.generateOpenApiSchema(
+        protocolDefinition: protocolDefinition,
+        config: config,
+        collector: collector);
+  }
+
   if (collector.hasSeverErrors) {
     success = false;
   }
@@ -79,11 +89,16 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
+  Set<String> generatedFile = <String>{
+    ...generatedEntityFiles,
+    ...generatedProtocolFiles,
+  };
+  if (generatedOpenApiFile != null && generatedOpenApiFile.isNotEmpty) {
+    generatedFile.add(generatedOpenApiFile);
+  }
+
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-    generatedFiles: <String>{
-      ...generatedEntityFiles,
-      ...generatedProtocolFiles
-    },
+    generatedFiles: generatedFile,
     protocolDefinition: protocolDefinition,
     config: config,
   );
