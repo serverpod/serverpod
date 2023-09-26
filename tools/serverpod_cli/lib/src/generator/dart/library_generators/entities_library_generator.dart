@@ -367,7 +367,7 @@ class SerializableEntityLibraryGenerator {
   Field _buildEntityClassDBField(String className) {
     return Field((f) => f
       ..static = true
-      ..modifier = FieldModifier.final$
+      ..modifier = FieldModifier.constant
       ..name = 'db'
       ..assignment =
           refer('${className}Repository').property('_').call([]).code);

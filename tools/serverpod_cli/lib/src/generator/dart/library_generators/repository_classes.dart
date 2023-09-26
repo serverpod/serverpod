@@ -33,14 +33,16 @@ class BuildRepositoryClass {
               fieldBuilder
                 ..name = 'attachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}AttachRowRepository._()');
+                ..assignment =
+                    Code('const ${className}AttachRowRepository._()');
             }),
           if (hasDetachOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
                 ..name = 'detachRow'
                 ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}DetachRowRepository._()');
+                ..assignment =
+                    Code('const ${className}DetachRowRepository._()');
             }),
         ])
         ..methods.addAll([
@@ -779,15 +781,17 @@ class BuildRepositoryClass {
                 }))
                 .statement,
             refer('session')
-                .property('db')
-                .property('update')
+                .property('dbNext')
+                .property('updateRow')
                 .call([
                   refer(localCopyVariable)
                 ], {
                   'columns': literalList(
                     [classReference.property('t').property(fieldName)],
                   )
-                })
+                }, [
+                  classReference,
+                ])
                 .awaited
                 .statement,
           ]))

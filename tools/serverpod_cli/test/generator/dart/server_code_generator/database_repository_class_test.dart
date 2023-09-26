@@ -46,7 +46,7 @@ void main() {
 
       expect(
         dbField?.fields.toSource(),
-        'final db = $repositoryClassName._()',
+        'const db = $repositoryClassName._()',
       );
     });
 

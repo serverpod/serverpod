@@ -32,7 +32,8 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    test('then a class named ${testClassName}AttachRowRepository is NOT generated',
+    test(
+        'then a class named ${testClassName}AttachRowRepository is NOT generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
@@ -45,7 +46,8 @@ void main() {
       );
     });
 
-    test('then a class named ${testClassName}DetachRowRepository is NOT generated',
+    test(
+        'then a class named ${testClassName}DetachRowRepository is NOT generated',
         () {
       expect(
         CompilationUnitHelpers.hasClassDeclaration(
@@ -421,14 +423,14 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var AttachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
+    var attachRowRepository = CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}AttachRowRepository',
     );
 
     group('then the attach method for example', () {
       var method = CompilationUnitHelpers.tryFindMethodDeclaration(
-        AttachRowRepository!,
+        attachRowRepository!,
         name: 'example',
       );
 
@@ -444,7 +446,7 @@ void main() {
 
     test('then the class name ${testClassName}Repository is generated', () {
       expect(
-        AttachRowRepository,
+        attachRowRepository,
         isNotNull,
         reason: 'Missing class named ${testClassName}Repository.',
       );
