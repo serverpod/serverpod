@@ -29,10 +29,21 @@ class SelectQueryBuilder {
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
 
+    var groupBy = _buildGroupByQuery(
+      where: _where,
+      orderBy: _orderBy,
+      fields: _fields,
+      include: _include,
+    );
+
+    var having = _buildHavingQuery(where: _where);
+
     var query = _buildSelectQuery(_fields, _include);
     query += ' FROM "$_table"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
+    if (groupBy != null) query += ' $groupBy';
+    if (having != null) query += ' $having';
     if (_orderBy != null) {
       query +=
           ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
@@ -206,6 +217,45 @@ String _buildSelectQuery(List<Column>? fields, Include? include) {
   return _selectStatementFromColumns(selectColumns);
 }
 
+String? _buildGroupByQuery({
+  Expression? where,
+  List<Order>? orderBy,
+  List<Column>? fields,
+  Include? include,
+}) {
+  var manyRelationInWhereExpression =
+      where?.aggregateExpressions.isNotEmpty ?? false;
+  var manyRelationInOrderBy =
+      orderBy?.any((order) => order.column is ColumnCountAggregate) ?? false;
+
+  if (!manyRelationInWhereExpression && !manyRelationInOrderBy) {
+    return null;
+  }
+
+  var selectColumns = [...?fields, ..._gatherIncludeColumns(include)];
+
+  if (selectColumns.isEmpty) {
+    return null;
+  }
+
+  return _groupByStatementFromColumns(selectColumns);
+}
+
+String? _buildHavingQuery({
+  Expression? where,
+}) {
+  if (where == null) {
+    return null;
+  }
+
+  var aggregateExpressions = where.aggregateExpressions;
+  if (aggregateExpressions.isEmpty) {
+    return null;
+  }
+
+  return 'HAVING ${aggregateExpressions.map((e) => e.aggregateExpression.toString()).join(' AND ')}';
+}
+
 List<Column> _gatherIncludeColumns(Include? include) {
   if (include == null) {
     return [];
@@ -337,6 +387,14 @@ String _selectStatementFromColumns(List<Column> columns) {
     selectStatements.add('$column AS "${column.queryAlias}"');
   }
   return 'SELECT ${selectStatements.join(', ')}';
+}
+
+String _groupByStatementFromColumns(List<Column> columns) {
+  List<String> selectStatements = [];
+  for (var column in columns) {
+    selectStatements.add(column.queryAlias);
+  }
+  return 'GROUP BY ${selectStatements.join(', ')}';
 }
 
 _UsingQuery _usingQueryFromTableRelations(

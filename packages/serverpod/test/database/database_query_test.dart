@@ -157,6 +157,63 @@ void main() {
           'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
     });
 
+    test(
+        'when ordering by an aggregate column then output joins and orders by aggregated column.',
+        () {
+      var innerWhere = Constant.bool(true);
+      var table = 'company';
+      var queryPrefix = '${table}_employees_';
+      var queryPrefixForColumn = '${queryPrefix}citizen';
+      var query = SelectQueryBuilder(table: table).withSelectFields(
+          [ColumnString('name', queryPrefix: table)]).withOrderBy([
+        Order(
+            column: ColumnCountAggregate(
+          'companyId',
+          queryPrefix: queryPrefixForColumn,
+          tableRelations: [
+            TableRelation.foreign(
+              foreignTableName: 'citizen',
+              column: ColumnInt('id', queryPrefix: table),
+              foreignColumnName: 'companyId',
+              relationQueryPrefix: queryPrefix,
+            )
+          ],
+          innerWhere: innerWhere,
+        ))
+      ]).build();
+
+      expect(query,
+          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" GROUP BY company.name ORDER BY COUNT(company_employees_citizen."companyId")');
+    });
+
+    test(
+        'when where expression is aggregate column then output includes HAVING and GROUP BY in query.',
+        () {
+      var innerWhere = Constant.bool(true);
+      var table = 'company';
+      var queryPrefix = '${table}_employees_';
+      var queryPrefixForColumn = '${queryPrefix}citizen';
+      var query = SelectQueryBuilder(table: table)
+          .withSelectFields([ColumnString('name', queryPrefix: table)])
+          .withWhere(ColumnCountAggregate(
+            'companyId',
+            queryPrefix: queryPrefixForColumn,
+            innerWhere: innerWhere,
+            tableRelations: [
+              TableRelation.foreign(
+                foreignTableName: 'citizen',
+                column: ColumnInt('id', queryPrefix: table),
+                foreignColumnName: 'companyId',
+                relationQueryPrefix: queryPrefix,
+              )
+            ],
+          ).equals(10))
+          .build();
+
+      expect(query,
+          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY company.name HAVING COUNT(company_employees_citizen."companyId") = 10');
+    });
+
     test('when all properties configured is built then output is valid SQL.',
         () {
       var table = 'citizen';
