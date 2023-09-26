@@ -5,7 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/open_api_generator.dart';
+import 'package:serverpod_cli/src/generator/open_api/open_api_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
@@ -131,7 +131,9 @@ abstract class ServerpodCodeGenerator {
       await _removeOldFilesInPath(
         dir,
         generatedFiles,
-        ['.dart', '.json'],
+        [
+          '.dart',
+        ],
       );
     }
   }

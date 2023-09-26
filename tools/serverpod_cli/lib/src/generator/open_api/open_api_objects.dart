@@ -1,56 +1,10 @@
-/// OpenAPI Object
-/// This is the root object of the OpenAPI document.
-class OpenApiDefinition {
-  final String openApi;
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
-  /// REQUIRED. Provides metadata about the API.
-  /// The metadata MAY be used by tooling as required.
-  final InfoObject info;
+import 'package:recase/recase.dart';
 
-  /// The default value for the $schema keyword within Schema Objects contained within this OAS document.
-  /// This MUST be in the form of a URI.
-  final String jsonSchemaDialect;
+import '../../../analyzer.dart';
 
-  /// An array of Server Objects, which provide connectivity information to a target server.
-  /// If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.
-  final List<ServerObject> servers;
-
-  /// The available paths and operations for the API.
-  final PathsObject paths;
-
-  ///TODO: add webhook
-
-  /// An element to hold various schemas for the document.
-  final ComponentsObject components;
-
-  /// A declaration of which security mechanisms can be used across the API.
-  /// The list of values includes alternative security requirement objects that can be used.
-  /// Only one of the security requirement objects need to be satisfied to authorize a request.
-  /// Individual operations can override this definition.
-  /// To make security optional, an empty security requirement ({}) can be included in the array.
-  final SecurityRequirementObject security;
-
-  /// A list of tags used by the document with additional metadata.
-  /// The order of the tags can be used to reflect on their order by the parsing tools.
-  /// Not all tags that are used by the Operation Object must be declared.
-  /// The tags that are not declared MAY be organized randomly or based on the tools' logic.
-  /// Each tag name in the list MUST be unique.
-  final List<TagObject> tags;
-
-  /// Additional external documentation.
-  final ExternalDocumentationObject externalDocs;
-  OpenApiDefinition({
-    this.openApi = '3.1.0',
-    required this.info,
-    required this.jsonSchemaDialect,
-    required this.servers,
-    required this.paths,
-    required this.components,
-    required this.security,
-    required this.tags,
-    required this.externalDocs,
-  });
-}
+part 'open_api_definition.dart';
 
 /// eg.
 /// ```
@@ -73,15 +27,23 @@ class OpenApiDefinition {
 /// ```
 class InfoObject {
   final String title;
-  final String summary;
-  final String description;
-  final String termsOfService;
+
+  /// A short summary of the API.
+  final String? summary;
+
+  /// A description of the API.
+  /// CommonMark syntax MAY be used for rich text representation.
+  final String? description;
+
+  /// A URL to the Terms of Service for the API.
+  /// This MUST be in the form of a URL.
+  final Uri? termsOfService;
 
   /// Contact information for the exposed API.
-  final ContactObject contact;
+  final ContactObject? contact;
 
   /// License information for the exposed API.
-  final LicenseObject license;
+  final LicenseObject? license;
 
   /// REQUIRED. The version of the OpenAPI document
   /// (which is distinct from the OpenAPI Specification version or
@@ -89,13 +51,37 @@ class InfoObject {
   final String version;
   InfoObject({
     required this.title,
-    required this.summary,
-    required this.description,
-    required this.termsOfService,
-    required this.contact,
-    required this.license,
+    this.summary,
+    this.description,
+    this.termsOfService,
+    this.contact,
+    this.license,
     required this.version,
   });
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{
+      'title': title,
+      'version': version,
+    };
+    if (summary != null) {
+      map['summary'] = summary;
+    }
+    if (description != null) {
+      map['description'] = description;
+    }
+    if (contact != null) {
+      map['contact'] = contact?.toJson();
+    }
+    if (license != null) {
+      map['license'] = license?.toJson();
+    }
+    if (termsOfService != null) {
+      map['termsOfService'] = termsOfService?.toString();
+    }
+
+    return map;
+  }
 }
 
 /// example
@@ -111,17 +97,30 @@ class LicenseObject {
 
   /// An SPDX license expression for the API.
   /// The identifier field is mutually exclusive of the url field.
-  final String identifier;
+  final String? identifier;
 
   /// A URL to the license used for the API.
   /// This MUST be in the form of a URL.
   /// The url field is mutually exclusive of the identifier field.
-  final String? url;
+  final Uri? url;
   LicenseObject({
     required this.name,
-    required this.identifier,
+    this.identifier,
     this.url,
   });
+
+  Map<String, String> toJson() {
+    var map = {
+      'name': name,
+    };
+    if (identifier != null) {
+      map['identifier'] = identifier!;
+    }
+    if (url != null) {
+      map['url'] = url.toString();
+    }
+    return map;
+  }
 }
 
 /// example.
@@ -140,7 +139,7 @@ class ContactObject {
   final String name;
 
   /// The URL pointing to the contact information. This MUST be in the form of a URL.
-  final String url;
+  final Uri url;
 
   /// The email address of the contact person/organization.
   /// This MUST be in the form of an email address.
@@ -150,6 +149,14 @@ class ContactObject {
     required this.url,
     required this.email,
   });
+
+  Map<String, String> toJson() {
+    return {
+      'name': name,
+      'url': url.toString(),
+      'email': email,
+    };
+  }
 }
 
 /// example
@@ -192,7 +199,7 @@ class ServerObject {
   /// This URL supports Server Variables and MAY be relative,
   /// to indicate that the host location is relative to the location where the OpenAPI document is being served.
   /// Variable substitutions will be made when a variable is named in {brackets}.
-  final String url;
+  final Uri url;
 
   /// An optional string describing the host designated by the URL.
   /// CommonMark syntax MAY be used for rich text representation.
@@ -206,16 +213,32 @@ class ServerObject {
     this.description,
     this.variables,
   });
+
+  Map<String, dynamic> toJson() {
+    var map = {
+      'url': url.toString(),
+    };
+    if (description != null) {
+      map['description'] = description!;
+    }
+    if (variables != null) {
+      //TODO: implement multiple servers
+    }
+
+    return map;
+  }
 }
 
 /// An object representing a Server Variable for server URL template substitution.
 class ServerVariableObject {
-  final String? enumField;
+  /// key - [enum]
+  final List<String>? enumField;
 
   /// REQUIRED. The default value to use for substitution, which SHALL be sent if an alternate value is not supplied.
   /// Note this behavior is different than the Schema Object's treatment of default values,
   /// because in those cases parameter values are optional.
   /// If the enum is defined, the value MUST exist in the enum's values.
+  /// key - [default]
   final String defaultField;
 
   ///An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.
@@ -225,6 +248,19 @@ class ServerVariableObject {
     required this.defaultField,
     this.description,
   });
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{
+      'default': defaultField,
+    };
+    if (enumField?.isNotEmpty ?? false) {
+      map['enum'] = enumField!;
+    }
+    if (description != null) {
+      map['description'] = description;
+    }
+    return map;
+  }
 }
 
 /// Holds a set of reusable objects for different aspects of the OAS.
@@ -361,7 +397,7 @@ class ComponentsObject {
   /// An object to hold reusable Callback Objects.
   final Map<String, CallbackObject>? callbacks;
 
-  final Map<String, PathItemObject> pathItems;
+  final Map<String, PathItemObject>? pathItems;
   ComponentsObject({
     this.schemas,
     this.responses,
@@ -380,7 +416,7 @@ class RequestBodyObject {}
 
 class ExampleObject {}
 
-///  Holds the relative paths to the individual endpoints and their operations.
+/// Holds the relative paths to the individual endpoints and their operations.
 /// The path is appended to the URL from the Server Object in order to construct the full URL.
 /// The Paths MAY be empty, due to Access Control List (ACL) constraints.
 class PathsObject {
@@ -432,7 +468,54 @@ class ParameterObject {
 
 class SecurityRequirementObject {}
 
-class TagObject {}
+///  example
+/// ```
+/// {
+///  "name": "pet",
+///  "description": "Pets operations"
+/// }
+///```
+/// must be unique
+/// used for grouping endpoints
+class TagObject {
+  final String name;
+  final String? description;
+  final ExternalDocumentationObject? externalDocumentationObject;
+  TagObject({
+    required this.name,
+    this.description,
+    this.externalDocumentationObject,
+  });
+
+  Map<String, dynamic> toJson() {
+    var map = {
+      'name': name,
+    };
+    if (description != null) {
+      map['description'] = description!;
+    }
+    if (externalDocumentationObject != null) {
+      ///TODO: implement
+      // map['externalDocumentationObject'] = externalDocumentationObject.;
+    }
+    return map;
+  }
+
+  @override
+  bool operator ==(covariant TagObject other) {
+    if (identical(this, other)) return true;
+
+    return other.name == name &&
+        other.description == description &&
+        other.externalDocumentationObject == externalDocumentationObject;
+  }
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      description.hashCode ^
+      externalDocumentationObject.hashCode;
+}
 
 /// Allows referencing an external resource for extended documentation.
 /// ```json
@@ -452,7 +535,43 @@ class ExternalDocumentationObject {
 
 class SchemaObject {}
 
-class ReferenceObject {}
+/// A simple object to allow referencing other components in the OpenAPI document,
+/// internally and externally.
+/// The $ref string value contains a URI RFC3986, which identifies the location of the value being referenced.
+class ReferenceObject {
+  /// REQUIRED. The reference identifier. This MUST be in the form of a URI.
+  /// key - [$ref]
+  /// ```
+  /// {
+  /// "$ref": "#/components/schemas/Pet"
+  /// }
+  ///
+  /// ref = 'Pet';
+  /// ```
+  ///
+
+  final String ref;
+  final String? summary;
+  final String? description;
+  ReferenceObject({
+    required this.ref,
+    this.summary,
+    this.description,
+  });
+
+  Map<String, String> toJson() {
+    var map = {
+      '\$ref': '#/components/schemas/$ref',
+    };
+    if (summary != null) {
+      map['summary'] = summary!;
+    }
+    if (description != null) {
+      map['description'] = description!;
+    }
+    return map;
+  }
+}
 
 class HeaderObject {}
 
@@ -540,7 +659,7 @@ class OperationObject {
   /// The id MUST be unique among all operations described in the API.
   /// The operationId value is case-sensitive.
   /// Tools and libraries MAY use the operationId to uniquely identify an operation, therefore, it is RECOMMENDED to follow common programming naming conventions.
-
+  /// it should be serverpod endpoint's method name
   final String? operationId;
 
   /// A list of parameters that are applicable for this operation.

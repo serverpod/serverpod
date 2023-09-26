@@ -1,0 +1,26 @@
+import 'dart:convert';
+
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+
+class OpenApiGenerator {
+  OpenApiGenerator();
+
+  String getOpenApiSchema(
+      ProtocolDefinition protocolDefinition, GeneratorConfig config) {
+    OpenApiDefinition definition =
+        OpenApiDefinition.fromProtocolDefinition(protocolDefinition, config);
+    return jsonEncode(definition.toJson());
+  }
+
+  Map<String, String> generateOpenApiSchema({
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+  }) {
+    return {
+      p.joinAll([...config.generatedServerOpenApiPathParts, 'openapi.json']):
+          getOpenApiSchema(protocolDefinition, config),
+    };
+  }
+}
