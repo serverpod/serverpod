@@ -10,7 +10,9 @@ class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
   static Future<DatabaseDefinition> analyze(Database database) async {
     return DatabaseDefinition(
-      name: (await database.queryDangerously('SELECT current_database();')).first.first,
+      name: (await database.queryDangerously('SELECT current_database();'))
+          .first
+          .first,
       tables: await Future.wait((await database.queryDangerously(
 // Get list of all tables and the schema they are in.
           '''
@@ -166,7 +168,8 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
     var migrations = <DatabaseMigrationVersion>[];
 
     try {
-      var rows = await database.queryDangerously('SELECT * FROM serverpod_migrations');
+      var rows =
+          await database.queryDangerously('SELECT * FROM serverpod_migrations');
       for (var row in rows) {
         migrations.add(
           DatabaseMigrationVersion(
