@@ -186,7 +186,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithEnumExpressionBuilder where,
+    required ObjectWithEnumWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithEnum>(

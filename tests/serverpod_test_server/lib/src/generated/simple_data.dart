@@ -136,7 +136,7 @@ abstract class SimpleData extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required SimpleDataExpressionBuilder where,
+    required SimpleDataWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SimpleData>(

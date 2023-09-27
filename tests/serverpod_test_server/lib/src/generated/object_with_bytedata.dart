@@ -134,7 +134,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithByteDataExpressionBuilder where,
+    required ObjectWithByteDataWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithByteData>(

@@ -163,7 +163,7 @@ abstract class EmailReset extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required EmailResetExpressionBuilder where,
+    required EmailResetWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailReset>(

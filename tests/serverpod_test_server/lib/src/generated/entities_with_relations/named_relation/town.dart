@@ -165,7 +165,7 @@ abstract class Town extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required TownExpressionBuilder where,
+    required TownWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Town>(

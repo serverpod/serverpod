@@ -146,7 +146,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithIndexExpressionBuilder where,
+    required ObjectWithIndexWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithIndex>(

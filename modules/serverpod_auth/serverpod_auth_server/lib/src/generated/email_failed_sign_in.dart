@@ -164,7 +164,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required EmailFailedSignInExpressionBuilder where,
+    required EmailFailedSignInWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailFailedSignIn>(

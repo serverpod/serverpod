@@ -203,7 +203,7 @@ abstract class Citizen extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required CitizenExpressionBuilder where,
+    required CitizenWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Citizen>(

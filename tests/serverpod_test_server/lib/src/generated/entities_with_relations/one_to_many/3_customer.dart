@@ -142,7 +142,7 @@ abstract class Customer extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required CustomerExpressionBuilder where,
+    required CustomerWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Customer>(

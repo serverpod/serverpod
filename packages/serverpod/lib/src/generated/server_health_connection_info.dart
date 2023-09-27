@@ -207,7 +207,8 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required ServerHealthConnectionInfoExpressionBuilder where,
+    required ServerHealthConnectionInfoWithoutManyRelationsExpressionBuilder
+        where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(

@@ -237,7 +237,7 @@ abstract class ChatMessage extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required ChatMessageExpressionBuilder where,
+    required ChatMessageWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChatMessage>(

@@ -175,7 +175,7 @@ abstract class Order extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required OrderExpressionBuilder where,
+    required OrderWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Order>(

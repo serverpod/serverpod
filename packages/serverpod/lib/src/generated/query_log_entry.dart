@@ -261,7 +261,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required QueryLogEntryExpressionBuilder where,
+    required QueryLogEntryWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<QueryLogEntry>(

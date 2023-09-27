@@ -162,7 +162,7 @@ abstract class EmailAuth extends _i1.TableRow {
 
   static Future<int> delete(
     _i1.Session session, {
-    required EmailAuthExpressionBuilder where,
+    required EmailAuthWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailAuth>(
