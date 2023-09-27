@@ -599,7 +599,7 @@ class SerializableEntityLibraryGenerator {
       ..optionalParameters.addAll([
         Parameter((p) => p
           ..required = true
-          ..type = refer('${className}ExpressionBuilder')
+          ..type = refer('${className}WithoutManyRelationsExpressionBuilder')
           ..name = 'where'
           ..named = true),
         Parameter((p) => p

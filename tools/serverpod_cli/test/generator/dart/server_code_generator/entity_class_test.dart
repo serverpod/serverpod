@@ -242,16 +242,28 @@ void main() {
             reason: 'Missing declaration for static findById method.');
       });
 
+      var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        maybeClassNamedExample!,
+        name: 'delete',
+        isStatic: true,
+      );
+
       test('has a static delete method.', () {
         expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'delete',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static delete method.');
+          deleteMethod,
+          isNotNull,
+          reason: 'Missing declaration for static delete method.',
+        );
       });
+
+      test(
+          'has a static delete method using WithoutManyRelationsExpressionBuilder.',
+          () {
+        expect(deleteMethod?.toSource(),
+            contains('WithoutManyRelationsExpressionBuilder'),
+            reason:
+                'Static delete method does not use WithoutManyRelationsExpressionBuilder.');
+      }, skip: deleteMethod == null);
 
       test('has a static deleteRow method.', () {
         expect(
