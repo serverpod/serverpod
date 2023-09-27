@@ -121,9 +121,7 @@ void main() {
       });
 
       test('then aggregated expression is retrievable.', () {
-        expect(
-            expression.aggregateExpressions.first.aggregateExpression
-                .toString(),
+        expect(expression.aggregateExpressions.first.toString(),
             '(COUNT(customer_orders_order."customerId") > 3)');
       });
     });

@@ -261,7 +261,7 @@ String? _buildHavingQuery({
     return null;
   }
 
-  return 'HAVING ${aggregateExpressions.map((e) => e.aggregateExpression.toString()).join(' AND ')}';
+  return 'HAVING ${aggregateExpressions.map((e) => e.toString()).join(' AND ')}';
 }
 
 List<Column> _gatherIncludeColumns(Include? include) {
@@ -413,7 +413,8 @@ String _groupByStatementFromColumns(
 }
 
 _UsingQuery _usingQueryFromTableRelations(
-    LinkedHashMap<String, TableRelation> tableRelations) {
+  LinkedHashMap<String, TableRelation> tableRelations,
+) {
   List<String> usingStatements = [];
   List<String> whereStatements = [];
   for (var tableRelation in tableRelations.values) {

@@ -186,15 +186,17 @@ void main() {
     });
 
     group('when retrieving aggregate expressions', () {
-      List<AggregateExpression> aggregateExpressions =
-          expression.aggregateExpressions;
+      List<Expression> aggregateExpressions = expression.aggregateExpressions;
 
       test('then aggregate expression is represented.', () {
         expect(aggregateExpressions, hasLength(1));
       });
 
       test('then first is aggregate expression.', () {
-        expect(aggregateExpressions.first, expression);
+        expect(
+          aggregateExpressions.first.toString(),
+          (expression as AggregateExpression).aggregateExpression.toString(),
+        );
       }, skip: aggregateExpressions.length != 1);
     });
   });
@@ -228,15 +230,17 @@ void main() {
     });
 
     group('when retrieving aggregate expressions', () {
-      List<AggregateExpression> aggregateExpressions =
-          expression.aggregateExpressions;
+      List<Expression> aggregateExpressions = expression.aggregateExpressions;
 
       test('then aggregate expression is represented.', () {
         expect(aggregateExpressions, hasLength(1));
       });
 
       test('then first is aggregate expression.', () {
-        expect(aggregateExpressions.first, expression);
+        expect(
+          aggregateExpressions.first.toString(),
+          (expression as AggregateExpression).aggregateExpression.toString(),
+        );
       }, skip: aggregateExpressions.length != 1);
     });
   });
@@ -266,15 +270,19 @@ void main() {
     });
 
     group('when retrieving aggregate expressions', () {
-      List<AggregateExpression> aggregateExpressions =
-          expression.aggregateExpressions;
+      List<Expression> aggregateExpressions = expression.aggregateExpressions;
 
       test('then aggregate expression is represented.', () {
         expect(aggregateExpressions, hasLength(1));
       });
 
       test('then first is aggregate expression.', () {
-        expect(aggregateExpressions.first, columnAggregateExpression);
+        expect(
+          aggregateExpressions.first.toString(),
+          (columnAggregateExpression as AggregateExpression)
+              .aggregateExpression
+              .toString(),
+        );
       }, skip: aggregateExpressions.length != 1);
     });
   });
@@ -314,19 +322,27 @@ void main() {
     });
 
     group('when retrieving aggregate expressions', () {
-      List<AggregateExpression> aggregateExpressions =
-          expression.aggregateExpressions;
+      List<Expression> aggregateExpressions = expression.aggregateExpressions;
 
       test('then aggregate expressions are represented.', () {
         expect(aggregateExpressions, hasLength(2));
       });
 
       test('then first is firstColumnAggregateExpression.', () {
-        expect(aggregateExpressions.first, firstColumnAggregateExpression);
+        expect(
+          aggregateExpressions.first.toString(),
+          (firstColumnAggregateExpression as AggregateExpression)
+              .aggregateExpression
+              .toString(),
+        );
       }, skip: aggregateExpressions.length != 2);
 
       test('then last is secondColumnAggregateExpression.', () {
-        expect(aggregateExpressions.last, secondColumnAggregateExpression);
+        expect(
+            aggregateExpressions.last.toString(),
+            (secondColumnAggregateExpression as AggregateExpression)
+                .aggregateExpression
+                .toString());
       }, skip: aggregateExpressions.length != 2);
     });
   });

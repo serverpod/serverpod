@@ -24,7 +24,7 @@ class Expression<T> {
   List<Column> get columns => [];
 
   /// Returns a list of all [AggregateExpression]s in the expression.
-  List<AggregateExpression> get aggregateExpressions => [];
+  List<Expression> get aggregateExpressions => [];
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
@@ -100,7 +100,7 @@ class AggregateExpression extends Expression {
   ) : super(innerWhere);
 
   @override
-  List<AggregateExpression> get aggregateExpressions => [this];
+  List<Expression> get aggregateExpressions => [aggregateExpression];
 }
 
 abstract class _TwoPartExpression extends Expression {
@@ -112,7 +112,7 @@ abstract class _TwoPartExpression extends Expression {
   List<Column> get columns => [..._expression.columns, ...other.columns];
 
   @override
-  List<AggregateExpression> get aggregateExpressions => [
+  List<Expression> get aggregateExpressions => [
         ..._expression.aggregateExpressions,
         ...other.aggregateExpressions,
       ];
