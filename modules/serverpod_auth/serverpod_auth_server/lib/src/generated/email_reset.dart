@@ -52,6 +52,7 @@ abstract class EmailReset extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -306,6 +307,7 @@ class EmailResetInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => EmailReset.t;
 }

@@ -73,6 +73,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -388,6 +389,7 @@ class CloudStorageEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => CloudStorageEntry.t;
 }

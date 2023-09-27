@@ -70,6 +70,7 @@ abstract class Citizen extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Citizen copyWith({
     int? id,
     String? name,
@@ -437,6 +438,7 @@ class CitizenTable extends _i1.Table {
         oldCompanyId,
         _companyEmployeesCompanyId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'address') {
@@ -478,6 +480,7 @@ class CitizenInclude extends _i1.Include {
         'company': _company,
         'oldCompany': _oldCompany,
       };
+
   @override
   _i1.Table get table => Citizen.t;
 }

@@ -85,6 +85,7 @@ abstract class Types extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Types copyWith({
     int? id,
     int? anInt,
@@ -451,6 +452,7 @@ class TypesInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => Types.t;
 }

@@ -75,6 +75,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -392,6 +393,7 @@ class ServerHealthConnectionInfoInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ServerHealthConnectionInfo.t;
 }

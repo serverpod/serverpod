@@ -39,6 +39,7 @@ abstract class SimpleData extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   SimpleData copyWith({
     int? id,
     int? num,
@@ -255,6 +256,7 @@ class SimpleDataInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => SimpleData.t;
 }

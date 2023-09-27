@@ -65,6 +65,7 @@ abstract class AuthKey extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   AuthKey copyWith({
     int? id,
     int? userId,
@@ -347,6 +348,7 @@ class AuthKeyInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => AuthKey.t;
 }

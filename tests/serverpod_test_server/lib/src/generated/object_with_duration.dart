@@ -36,6 +36,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
@@ -250,6 +251,7 @@ class ObjectWithDurationInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ObjectWithDuration.t;
 }
