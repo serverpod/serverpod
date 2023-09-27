@@ -161,4 +161,173 @@ void main() {
       expect(columns.first, column);
     }, skip: columns.length != 1);
   });
+
+  group('Given ColumnCountAggregate expression', () {
+    Expression innerWhere = Constant.bool(true);
+    ColumnCountAggregate column =
+        ColumnCountAggregate('test', innerWhere: innerWhere);
+    Expression expression = column.equals(10);
+
+    test('when checking expression type then expression is AggregateExpression',
+        () {
+      expect(expression, isA<AggregateExpression>());
+    });
+
+    group('when retrieving columns', () {
+      List<Column> columns = expression.columns;
+
+      test('then column is represented.', () {
+        expect(columns, hasLength(1));
+      });
+
+      test('then first is column.', () {
+        expect(columns.first, column);
+      }, skip: columns.length != 1);
+    });
+
+    group('when retrieving aggregate expressions', () {
+      List<AggregateExpression> aggregateExpressions =
+          expression.aggregateExpressions;
+
+      test('then aggregate expression is represented.', () {
+        expect(aggregateExpressions, hasLength(1));
+      });
+
+      test('then first is aggregate expression.', () {
+        expect(aggregateExpressions.first, expression);
+      }, skip: aggregateExpressions.length != 1);
+    });
+  });
+
+  group('Given ColumnCountAggregate expression with column in inner where', () {
+    var innerColumn = ColumnInt('inner');
+    Expression innerWhere = innerColumn.equals(20);
+    ColumnCountAggregate aggregateColumn =
+        ColumnCountAggregate('outer', innerWhere: innerWhere);
+    Expression expression = aggregateColumn.equals(10);
+
+    test('when checking expression type then expression is AggregateExpression',
+        () {
+      expect(expression, isA<AggregateExpression>());
+    });
+
+    group('when retrieving columns', () {
+      List<Column> columns = expression.columns;
+
+      test('then columns represented are represented.', () {
+        expect(columns, hasLength(2));
+      });
+
+      test('then first is aggregateColumn.', () {
+        expect(columns.first, aggregateColumn);
+      }, skip: columns.length != 2);
+
+      test('then last is inner column.', () {
+        expect(columns.last, innerColumn);
+      }, skip: columns.length != 2);
+    });
+
+    group('when retrieving aggregate expressions', () {
+      List<AggregateExpression> aggregateExpressions =
+          expression.aggregateExpressions;
+
+      test('then aggregate expression is represented.', () {
+        expect(aggregateExpressions, hasLength(1));
+      });
+
+      test('then first is aggregate expression.', () {
+        expect(aggregateExpressions.first, expression);
+      }, skip: aggregateExpressions.length != 1);
+    });
+  });
+
+  group('Given ColumnCountAggregate combined with Column expression', () {
+    var intColumn = ColumnInt('column');
+    Expression innerWhere = Constant.bool(true);
+    ColumnCountAggregate aggregateColumn =
+        ColumnCountAggregate('aggregate', innerWhere: innerWhere);
+    Expression columnAggregateExpression = aggregateColumn.equals(10);
+    Expression expression = columnAggregateExpression & intColumn.equals(20);
+
+    group('when retrieving columns', () {
+      List<Column> columns = expression.columns;
+
+      test('then columns are represented.', () {
+        expect(columns, hasLength(2));
+      });
+
+      test('then first is aggregateColumn.', () {
+        expect(columns.first, aggregateColumn);
+      }, skip: columns.length != 2);
+
+      test('then last is int column.', () {
+        expect(columns.last, intColumn);
+      }, skip: columns.length != 2);
+    });
+
+    group('when retrieving aggregate expressions', () {
+      List<AggregateExpression> aggregateExpressions =
+          expression.aggregateExpressions;
+
+      test('then aggregate expression is represented.', () {
+        expect(aggregateExpressions, hasLength(1));
+      });
+
+      test('then first is aggregate expression.', () {
+        expect(aggregateExpressions.first, columnAggregateExpression);
+      }, skip: aggregateExpressions.length != 1);
+    });
+  });
+
+  group('Given Multiple ColumnCountAggregate combined with Column expression',
+      () {
+    var intColumn = ColumnInt('inner');
+    Expression innerWhere = Constant.bool(true);
+    ColumnCountAggregate firstAggregateColumn =
+        ColumnCountAggregate('first', innerWhere: innerWhere);
+    ColumnCountAggregate secondAggregateColumn =
+        ColumnCountAggregate('second', innerWhere: innerWhere);
+    Expression firstColumnAggregateExpression = firstAggregateColumn.equals(10);
+    Expression secondColumnAggregateExpression =
+        secondAggregateColumn.equals(20);
+    Expression expression = firstColumnAggregateExpression &
+        (secondColumnAggregateExpression & intColumn.equals(30));
+
+    group('when retrieving columns', () {
+      List<Column> columns = expression.columns;
+
+      test('then columns are represented.', () {
+        expect(columns, hasLength(3));
+      });
+
+      test('then first is firstAggregateColumn.', () {
+        expect(columns.first, firstAggregateColumn);
+      }, skip: columns.length != 3);
+
+      test('then second is secondAggregateColumn.', () {
+        expect(columns[1], secondAggregateColumn);
+      }, skip: columns.length != 3);
+
+      test('then last is int column.', () {
+        expect(columns.last, intColumn);
+      }, skip: columns.length != 3);
+    });
+
+    group('when retrieving aggregate expressions', () {
+      List<AggregateExpression> aggregateExpressions =
+          expression.aggregateExpressions;
+
+      test('then aggregate expressions are represented.', () {
+        expect(aggregateExpressions, hasLength(2));
+      });
+
+      test('then first is firstColumnAggregateExpression.', () {
+        expect(aggregateExpressions.first, firstColumnAggregateExpression);
+      }, skip: aggregateExpressions.length != 2);
+
+      test('then last is secondColumnAggregateExpression.', () {
+        expect(aggregateExpressions.last, secondColumnAggregateExpression);
+      }, skip: aggregateExpressions.length != 2);
+    });
+  });
 }

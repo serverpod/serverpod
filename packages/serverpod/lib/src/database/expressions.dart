@@ -110,6 +110,12 @@ abstract class _TwoPartExpression extends Expression {
 
   @override
   List<Column> get columns => [..._expression.columns, ...other.columns];
+
+  @override
+  List<AggregateExpression> get aggregateExpressions => [
+        ..._expression.aggregateExpressions,
+        ...other.aggregateExpressions,
+      ];
 }
 
 class _AndExpression extends _TwoPartExpression {
