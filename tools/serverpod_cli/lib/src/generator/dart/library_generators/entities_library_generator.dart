@@ -1162,22 +1162,22 @@ class SerializableEntityLibraryGenerator {
     return Class((c) {
       c.name = '${className}Table';
       c.extend = refer('${className}WithoutManyRelationsTable');
-      c.constructors.add(_buildEntityTableClassConstructor(
+      c.constructors.add(_buildTableClassConstructor(
         tableName,
         fields,
         classDefinition,
-        isWithoutManyRelations: false,
+        withoutManyRelations: false,
       ));
-      c.fields.addAll(_buildTableWithoutManyRelationClassFields(
+      c.fields.addAll(_buildTableClassFields(
         manyRelationFields,
         classDefinition,
       ));
       c.methods.addAll([
-        ..._buildTableWithoutManyRelationClassGetters(
+        ..._buildTableClassGetters(
           manyRelationFields,
           classDefinition,
         ),
-        ..._buildTableWithoutManyRelationClassManyRelationMethod(
+        ..._buildTableClassManyRelationMethod(
             manyRelationFields, classDefinition)
       ]);
     });
@@ -1193,25 +1193,33 @@ class SerializableEntityLibraryGenerator {
       c.name = '${className}WithoutManyRelationsTable';
       c.extend = refer('Table', serverpodUrl(serverCode));
 
-      c.constructors.add(_buildEntityTableClassConstructor(
-          tableName, fields, classDefinition,
-          isWithoutManyRelations: true));
+      c.constructors.add(_buildTableClassConstructor(
+        tableName,
+        fields,
+        classDefinition,
+        withoutManyRelations: true,
+      ));
 
       // TODO - Fields and getters should be separated
-      _buildEntityTableClassFieldsAndGetters(fields, c, classDefinition);
+      _buildTableWithoutManyRelationsClassFieldsAndGetters(
+        fields,
+        c,
+        classDefinition,
+      );
 
-      c.methods.add(_buildEntityTableClassColumnGetter(fields));
+      c.methods.add(_buildTableWithoutManyRelationsClassColumnGetter(fields));
 
       var objectRelationFields =
           fields.where((f) => f.relation is ObjectRelationDefinition);
       if (objectRelationFields.isNotEmpty) {
-        c.methods
-            .add(_buildEntityTableClassGetRelationTable(objectRelationFields));
+        c.methods.add(_buildTableWithoutManyRelationsClassGetRelationTable(
+          objectRelationFields,
+        ));
       }
     });
   }
 
-  Method _buildEntityTableClassGetRelationTable(
+  Method _buildTableWithoutManyRelationsClassGetRelationTable(
       Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
     return Method(
       (m) => m
@@ -1245,7 +1253,7 @@ class SerializableEntityLibraryGenerator {
     );
   }
 
-  Method _buildEntityTableClassColumnGetter(
+  Method _buildTableWithoutManyRelationsClassColumnGetter(
       List<SerializableEntityFieldDefinition> fields) {
     return Method(
       (m) => m
@@ -1264,7 +1272,7 @@ class SerializableEntityLibraryGenerator {
     );
   }
 
-  List<Field> _buildTableWithoutManyRelationClassFields(
+  List<Field> _buildTableClassFields(
     Iterable<SerializableEntityFieldDefinition> manyRelationFields,
     ClassDefinition classDefinition,
   ) {
@@ -1285,7 +1293,7 @@ class SerializableEntityLibraryGenerator {
             ]);
   }
 
-  List<Method> _buildTableWithoutManyRelationClassManyRelationMethod(
+  List<Method> _buildTableClassManyRelationMethod(
     Iterable<SerializableEntityFieldDefinition> manyRelationFields,
     ClassDefinition classDefinition,
   ) {
@@ -1321,7 +1329,7 @@ class SerializableEntityLibraryGenerator {
     });
   }
 
-  List<Method> _buildTableWithoutManyRelationClassGetters(
+  List<Method> _buildTableClassGetters(
     Iterable<SerializableEntityFieldDefinition> manyRelationFields,
     ClassDefinition classDefinition,
   ) {
@@ -1359,7 +1367,7 @@ class SerializableEntityLibraryGenerator {
     });
   }
 
-  void _buildEntityTableClassFieldsAndGetters(
+  void _buildTableWithoutManyRelationsClassFieldsAndGetters(
       List<SerializableEntityFieldDefinition> fields,
       ClassBuilder c,
       ClassDefinition classDefinition) {
@@ -1473,11 +1481,11 @@ class SerializableEntityLibraryGenerator {
       ]));
   }
 
-  Constructor _buildEntityTableClassConstructor(
+  Constructor _buildTableClassConstructor(
       String tableName,
       List<SerializableEntityFieldDefinition> fields,
       ClassDefinition classDefinition,
-      {required bool isWithoutManyRelations}) {
+      {required bool withoutManyRelations}) {
     return Constructor((constructorBuilder) {
       constructorBuilder.optionalParameters.add(
         Parameter(
@@ -1496,7 +1504,7 @@ class SerializableEntityLibraryGenerator {
         ),
       );
 
-      if (isWithoutManyRelations) {
+      if (withoutManyRelations) {
         constructorBuilder.initializers.add(refer('super')
             .call([], {'tableName': literalString(tableName)}).code);
 
