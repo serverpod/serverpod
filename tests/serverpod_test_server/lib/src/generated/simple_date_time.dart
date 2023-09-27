@@ -38,6 +38,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -262,6 +263,7 @@ class SimpleDateTimeInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => SimpleDateTime.t;
 }

@@ -42,6 +42,7 @@ abstract class Customer extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Customer copyWith({
     int? id,
     String? name,
@@ -305,6 +306,7 @@ class CustomerInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => Customer.t;
 }

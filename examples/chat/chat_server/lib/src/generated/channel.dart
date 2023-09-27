@@ -44,6 +44,7 @@ abstract class Channel extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Channel copyWith({
     int? id,
     String? name,
@@ -287,6 +288,7 @@ class ChannelInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => Channel.t;
 }

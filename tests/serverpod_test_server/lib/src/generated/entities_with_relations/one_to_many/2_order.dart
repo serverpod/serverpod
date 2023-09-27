@@ -57,6 +57,7 @@ abstract class Order extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Order copyWith({
     int? id,
     String? description,
@@ -371,6 +372,7 @@ class OrderWithoutManyRelationsTable extends _i1.Table {
         description,
         customerId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'customer') {
@@ -392,6 +394,7 @@ class OrderInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'customer': _customer};
+
   @override
   _i1.Table get table => Order.t;
 }

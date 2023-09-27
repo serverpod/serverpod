@@ -35,6 +35,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ObjectWithParent copyWith({
     int? id,
     int? other,
@@ -258,6 +259,7 @@ class ObjectWithParentInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ObjectWithParent.t;
 }

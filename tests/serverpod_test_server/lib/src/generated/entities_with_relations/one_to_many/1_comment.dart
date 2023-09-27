@@ -51,6 +51,7 @@ abstract class Comment extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Comment copyWith({
     int? id,
     String? description,
@@ -322,6 +323,7 @@ class CommentWithoutManyRelationsTable extends _i1.Table {
         description,
         orderId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'order') {
@@ -343,6 +345,7 @@ class CommentInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'order': _order};
+
   @override
   _i1.Table get table => Comment.t;
 }

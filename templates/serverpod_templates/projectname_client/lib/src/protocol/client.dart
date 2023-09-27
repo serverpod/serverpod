@@ -43,6 +43,7 @@ class Client extends _i1.ServerpodClient {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
 }
