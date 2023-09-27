@@ -268,7 +268,7 @@ void main() {
       test('has a static deleteRow method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'deleteRow',
               isStatic: true,
             ),
@@ -279,7 +279,7 @@ void main() {
       test('has a static update method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'update',
               isStatic: true,
             ),
@@ -290,7 +290,7 @@ void main() {
       test('has a static insert method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'insert',
               isStatic: true,
             ),
@@ -301,7 +301,7 @@ void main() {
       test('has a static count method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'count',
               isStatic: true,
             ),
@@ -312,7 +312,7 @@ void main() {
       test('has a static include method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
+              maybeClassNamedExample,
               name: 'include',
               isStatic: true,
             ),

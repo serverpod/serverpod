@@ -1326,7 +1326,7 @@ class SerializableEntityLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     String foreignFieldName(ListRelationDefinition listRelation) =>
-        listRelation.isImplicit
+        listRelation.implicitForeignField
             ? '\$${listRelation.foreignFieldName}'
             : listRelation.foreignFieldName;
 

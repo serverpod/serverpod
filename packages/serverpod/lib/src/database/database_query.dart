@@ -442,13 +442,14 @@ void _validateTableReferences(
             .add('"orderBy" expression referencing column $column.');
       }
     }
-    var innerWhereColumns = orderBy.fold(<Column>[], (columns, order) {
+
+    var innerWhereColumns = orderBy.expand<Column>((order) {
       var column = order.column;
       if (column is! ColumnCountAggregate) {
-        return columns;
+        return [];
       }
 
-      return [...columns, ...column.innerWhere.columns];
+      return column.innerWhere.columns;
     });
 
     for (var column in innerWhereColumns) {

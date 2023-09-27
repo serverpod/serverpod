@@ -286,7 +286,7 @@ class EntityDependencyResolver {
         fieldName: 'id',
         foreignFieldName: foreignFieldName,
         nullableRelation: true,
-        isImplicit: true,
+        implicitForeignField: true,
       );
     } else {
       var foreignFields = referenceClass.fields.where((field) {

@@ -450,10 +450,11 @@ abstract class _TwoPartColumnExpression<T> extends _ColumnExpression<T> {
 
   _TwoPartColumnExpression(super.column, this.other);
 
-  static Expression create(
-      {required Column column,
-      required Expression other,
-      required _TwoPartColumnExpressionConstructor constructor}) {
+  static Expression create({
+    required Column column,
+    required Expression other,
+    required _TwoPartColumnExpressionConstructor constructor,
+  }) {
     if (column is ColumnCountAggregate) {
       return _AggregateColumnExpression(column, constructor(column, other));
     }
@@ -564,11 +565,12 @@ abstract class _MinMaxColumnExpression<T> extends _ColumnExpression<T> {
 
   _MinMaxColumnExpression(super.column, this.min, this.max);
 
-  static Expression create(
-      {required Column column,
-      required Expression min,
-      required Expression max,
-      required _MinMaxColumnExpressionConstructor constructor}) {
+  static Expression create({
+    required Column column,
+    required Expression min,
+    required Expression max,
+    required _MinMaxColumnExpressionConstructor constructor,
+  }) {
     if (column is ColumnCountAggregate) {
       return _AggregateColumnExpression(column, constructor(column, min, max));
     }
@@ -607,10 +609,11 @@ abstract class _SetColumnExpression<T> extends _ColumnExpression<T> {
 
   _SetColumnExpression(super.column, this.values);
 
-  static Expression create(
-      {required Column column,
-      required List<Expression> values,
-      required _SetColumnExpressionConstructor constructor}) {
+  static Expression create({
+    required Column column,
+    required List<Expression> values,
+    required _SetColumnExpressionConstructor constructor,
+  }) {
     if (column is ColumnCountAggregate) {
       return _AggregateColumnExpression(column, constructor(column, values));
     }

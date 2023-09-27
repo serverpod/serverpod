@@ -225,26 +225,28 @@ T createRelationTable<T>({
 /// Many relation field between two tables.
 class ManyRelation {
   /// Where clause for the many side of the relation.
-  final Expression where;
+  final Expression _where;
 
   /// The table on the many side of the relation.
-  final Table table;
+  final Table _table;
 
   /// Id column name for foreign table.
-  final String foreignIdColumnName;
+  final String _foreignIdColumnName;
 
   /// Creates a new [ManyRelation].
   ManyRelation({
-    required this.where,
-    required this.table,
-    required this.foreignIdColumnName,
-  });
+    required Expression<dynamic> where,
+    required Table table,
+    required String foreignIdColumnName,
+  })  : _foreignIdColumnName = foreignIdColumnName,
+        _table = table,
+        _where = where;
 
   /// Returns a [ColumnCountAggregate] for the number of rows in the relation.
   ColumnCountAggregate get count => ColumnCountAggregate(
-        foreignIdColumnName,
-        queryPrefix: table.queryPrefix,
-        tableRelations: table.tableRelations,
-        innerWhere: where,
+        _foreignIdColumnName,
+        queryPrefix: _table.queryPrefix,
+        tableRelations: _table.tableRelations,
+        innerWhere: _where,
       );
 }

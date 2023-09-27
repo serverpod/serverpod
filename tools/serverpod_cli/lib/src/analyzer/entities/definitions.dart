@@ -254,14 +254,14 @@ class ListRelationDefinition extends RelationDefinition {
   final bool nullableRelation;
 
   /// If true, the foreign field is implicit.
-  final bool isImplicit;
+  final bool implicitForeignField;
 
   ListRelationDefinition({
     String? name,
     required this.fieldName,
     required this.foreignFieldName,
     required this.nullableRelation,
-    this.isImplicit = false,
+    this.implicitForeignField = false,
   }) : super(name, false);
 }
 

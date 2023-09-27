@@ -71,7 +71,7 @@ void main() {
     test('then the implicit field is false.', () {
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
-        (relation as ListRelationDefinition).isImplicit,
+        (relation as ListRelationDefinition).implicitForeignField,
         isFalse,
         reason: 'Expected implicit field to be false.',
       );
@@ -155,7 +155,7 @@ void main() {
 
         expect(relation.runtimeType, ListRelationDefinition);
         expect(
-          (relation as ListRelationDefinition).isImplicit,
+          (relation as ListRelationDefinition).implicitForeignField,
           isTrue,
           reason: 'Expected implicit field is true.',
         );
