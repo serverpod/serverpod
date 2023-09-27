@@ -418,17 +418,18 @@ class ExampleObject {}
 class PathsObject {
   /// name of the path
   /// ```
-  /// /pets
+  /// /pets <- pathName (ServerPod Endpoint Name)
+  ///     - post/ <- pathItemObject (Serverpod Endpoint's method name)
   /// ```
   final String pathName;
-  final PathItemObject path;
+  final PathItemObject? path;
   PathsObject({
     required this.pathName,
-    required this.path,
+    this.path,
   });
 
   Map<String, dynamic> toJson() {
-    return {'/$pathName': path};
+    return {'/$pathName': path ?? {}};
   }
 }
 
@@ -752,6 +753,9 @@ class PathItemObject {
     if (servers?.isNotEmpty ?? false) {
       ///
     }
+    if (postOperation != null) {
+      map['post'] = postOperation!.toJson();
+    }
 
     if (ref != null) {
       map['\$ref'] = _getRef(ref!);
@@ -759,6 +763,23 @@ class PathItemObject {
 
     if (postOperation != null) {}
     return map;
+  }
+
+  factory PathItemObject.fromMethod(MethodDefinition method, String tag) {
+    String? description = method.documentationComment;
+    String operationId = method.name;
+
+//TODO: implement  OperationObject.fromMethod
+    return PathItemObject(
+      description: description,
+      postOperation: OperationObject(
+        description: description,
+        operationId: operationId,
+        responses: ResponseObject(),
+        tags: [tag],
+        security: SecurityRequirementObject(),
+      ),
+    );
   }
 }
 
@@ -821,6 +842,7 @@ class OperationObject {
   });
 
   Map<String, dynamic> toJson() {
+    //TODO: implement all
     var map = <String, dynamic>{
       'operationId': operationId,
     };
@@ -847,5 +869,3 @@ class OperationObject {
     return map;
   }
 }
-
-
