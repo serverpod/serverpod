@@ -219,22 +219,38 @@ void main() {
       var table = 'citizen';
       var queryPrefix = 'citizen_company_';
       var queryPrefixForColumn = 'citizen_company_company';
+      var innerWhere = Constant.bool(true);
       var query = SelectQueryBuilder(table: table)
           .withSelectFields([
             ColumnString('id', queryPrefix: table),
             ColumnString('name', queryPrefix: table),
             ColumnString('age', queryPrefix: table),
           ])
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+          .withWhere(
+            ColumnString('name',
+                    queryPrefix: queryPrefixForColumn,
+                    tableRelations: [
+                      TableRelation.foreign(
+                        foreignTableName: 'company',
+                        column: ColumnInt('companyId', queryPrefix: table),
+                        foreignColumnName: 'id',
+                        relationQueryPrefix: queryPrefix,
+                      )
+                    ]).equals('Serverpod') &
+                ColumnCountAggregate(
+                  'citizenId',
+                  queryPrefix: queryPrefixForColumn,
+                  innerWhere: innerWhere,
+                  tableRelations: [
+                    TableRelation.foreign(
+                      foreignTableName: 'company',
+                      column: ColumnInt('companyId', queryPrefix: table),
+                      foreignColumnName: 'id',
+                      relationQueryPrefix: queryPrefix,
+                    )
+                  ],
+                ).equals(10),
+          )
           .withOrderBy([
             Order(
                 column: ColumnString('id', queryPrefix: table),
@@ -245,7 +261,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE (citizen_company_company."name" = \'Serverpod\' AND TRUE) GROUP BY citizen.id, citizen.name, citizen.age HAVING COUNT(citizen_company_company."citizenId") = 10 ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
     });
 
     test(
@@ -501,24 +517,38 @@ void main() {
       var table = 'citizen';
       var queryPrefix = 'citizen_company_';
       var queryPrefixForColumn = 'citizen_company_company';
+      var innerWhere = Constant.bool(true);
       var query = CountQueryBuilder(table: table)
           .withCountAlias('c')
-          .withField('age')
+          .withField('id')
           .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+                  queryPrefix: queryPrefixForColumn,
+                  tableRelations: [
+                    TableRelation.foreign(
+                      foreignTableName: 'company',
+                      column: ColumnInt('companyId', queryPrefix: table),
+                      foreignColumnName: 'id',
+                      relationQueryPrefix: queryPrefix,
+                    )
+                  ]).equals('Serverpod') &
+              ColumnCountAggregate(
+                'companyId',
+                queryPrefix: queryPrefixForColumn,
+                innerWhere: innerWhere,
+                tableRelations: [
+                  TableRelation.foreign(
+                    foreignTableName: 'citizen',
+                    column: ColumnInt('id', queryPrefix: table),
+                    foreignColumnName: 'companyId',
+                    relationQueryPrefix: queryPrefix,
+                  )
+                ],
+              ).equals(10))
           .withLimit(10)
           .build();
 
       expect(query,
-          'SELECT COUNT(citizen."age") AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
+          'SELECT COUNT(citizen."id") AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_citizen ON citizen."id" = citizen_company_citizen."companyId" WHERE (citizen_company_company."name" = \'Serverpod\' AND TRUE) GROUP BY citizen."id" HAVING COUNT(citizen_company_company."companyId") = 10 LIMIT 10');
     });
 
     test(
