@@ -226,7 +226,7 @@ class MethodCallSession extends Session {
   late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
-  final String endpointName;
+  late final String endpointName;
 
   /// The name of the method that is being called.
   late final String methodName;
@@ -239,7 +239,7 @@ class MethodCallSession extends Session {
     required Server server,
     required this.uri,
     required this.body,
-    required this.endpointName,
+    required String path,
     required this.httpRequest,
     String? authenticationKey,
     bool enableLogging = true,
@@ -257,8 +257,17 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    var methodName = queryParameters['method'];
-    if (methodName == null && endpointName == 'webserver') methodName = '';
+    String? methodName;
+    if (path.contains('/')) {
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      endpointName = path;
+    }
+
+    methodName ??= queryParameters['method'];
+    if (methodName == null && path == 'webserver') methodName = '';
     this.methodName = methodName!;
 
     // Get the the authentication key, if any
