@@ -1,4 +1,11 @@
-part of 'open_api_objects.dart';
+library openapi_definition;
+
+import 'package:recase/recase.dart';
+
+import '../../../analyzer.dart';
+
+part 'open_api_objects.dart';
+part 'open_api_utils.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 /// OpenAPI Object
@@ -92,6 +99,7 @@ class OpenApiDefinition {
         InfoObject(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
 
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
+
     return OpenApiDefinition(
       info: infoObject,
       tags: tags,

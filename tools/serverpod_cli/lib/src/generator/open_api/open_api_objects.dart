@@ -1,11 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:recase/recase.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
-
-import '../../../analyzer.dart';
-
-part 'open_api_definition.dart';
+part of openapi_definition;
 
 /// eg.
 /// ```
@@ -421,10 +416,20 @@ class ExampleObject {}
 /// The path is appended to the URL from the Server Object in order to construct the full URL.
 /// The Paths MAY be empty, due to Access Control List (ACL) constraints.
 class PathsObject {
+  /// name of the path
+  /// ```
+  /// /pets
+  /// ```
+  final String pathName;
   final PathItemObject path;
   PathsObject({
+    required this.pathName,
     required this.path,
   });
+
+  Map<String, dynamic> toJson() {
+    return {'/$pathName': path};
+  }
 }
 
 class ResponseObject {}
@@ -442,10 +447,11 @@ class ResponseObject {}
 ///  - header - Custom headers that are expected as part of the request. Note that RFC7230 states header names are case insensitive.
 ///  - cookie - Used to pass a specific cookie value to the API.
 class ParameterObject {
+  ///param name
   final String name;
 
   /// REQUIRED. The location of the parameter. Possible values are "query", "header", "path" or "cookie".
-  final String inField;
+  final ParameterLocation inField;
   final String? description;
 
   /// required
@@ -457,14 +463,70 @@ class ParameterObject {
 
   /// Sets the ability to pass empty-valued parameters. This is valid only for query parameters and allows sending a parameter with an empty value. Default value is false. If style is used, and if behavior is n/a (cannot be serialized), the value of allowEmptyValue SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is likely to be removed in a later revision.
   final bool allowEmptyValue;
+
+  /// Describes how the parameter value will be serialized depending on the type of the parameter value.
+  /// Default values (based on value of in): for query - form; for path - simple; for header - simple; for cookie - form.
+  final ParameterStyle? style;
+
+  /// When this is true, parameter values of type array or object generate separate parameters for each value of the array or key-value pair of the map.
+  /// For other types of parameters this property has no effect.
+  /// When style is form, the default value is true. For all other styles, the default value is false.
+  final bool explode;
+
+  /// Determines whether the parameter value SHOULD allow reserved characters, as defined by RFC3986 :/?#[]@!$&'()*+,;= to be included without percent-encoding.
+  /// This property only applies to parameters with an in value of query. The default value is false.
+  final bool allowReserved;
+
+  /// The schema defining the type used for the parameter.
+  final SchemaObject? schema;
   ParameterObject({
     required this.name,
     required this.inField,
     this.description,
-    this.requiredField = false,
+    required this.requiredField,
     this.deprecated = false,
     required this.allowEmptyValue,
+    this.style,
+    this.explode = false,
+    this.allowReserved = false,
+    this.schema,
   });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'name': name,
+      'in': inField.name,
+      'required': requiredField,
+    };
+    if (description != null) {
+      map['description'] = description!;
+    }
+    if (deprecated) {
+      map['deprecated'] = deprecated;
+    }
+    if (allowEmptyValue) {
+      map['allowEmptyValue'] = allowEmptyValue;
+    }
+
+    if (style != null) {
+      map['style'] = style!.toKebabCase;
+    }
+
+    if (explode) {
+      map['explode'] = explode;
+    }
+
+    if (allowReserved) {
+      map['allowReserved'] = allowReserved;
+    }
+
+    if (schema != null) {
+      ///TODO:
+      map['schema'] = schema;
+    }
+
+    return map;
+  }
 }
 
 class SecurityRequirementObject {}
@@ -489,15 +551,15 @@ class TagObject {
   });
 
   Map<String, dynamic> toJson() {
-    var map = {
+    var map = <String, dynamic>{
       'name': name,
     };
     if (description != null) {
       map['description'] = description!;
     }
     if (externalDocumentationObject != null) {
-      ///TODO: implement
-      // map['externalDocumentationObject'] = externalDocumentationObject.;
+      map['externalDocumentationObject'] =
+          externalDocumentationObject!.toJson();
     }
     return map;
   }
@@ -532,9 +594,41 @@ class ExternalDocumentationObject {
     this.description,
     required this.url,
   });
+
+  Map<String, String> toJson() {
+    var map = {'url': url.toString()};
+    if (description != null) {
+      map['description'] = description!;
+    }
+    return map;
+  }
 }
 
-class SchemaObject {}
+/// The Schema Object allows the definition of input and output data types.
+/// These types can be objects, but also primitives and arrays.
+/// This object is a superset of the JSON Schema Specification Draft 2020-12.
+class SchemaObject {
+  /// Adds support for polymorphism.
+  /// The discriminator is an object name that is used to differentiate between other schemas which may satisfy the payload description.
+  /// See Composition and Inheritance for more details.
+  final DiscriminatorObject? discriminator;
+
+  ///TODO: xmlobject
+  final ExternalDocumentationObject externalDocs;
+
+  // final String? type;
+  // final String? format;
+  // final String? description;
+  // final bool? nullable;
+  // final OpenAPISchemaObject? items;
+  // final Map<String, dynamic>? properties;
+  SchemaObject({
+    this.discriminator,
+    required this.externalDocs,
+  });
+}
+
+class DiscriminatorObject {}
 
 /// A simple object to allow referencing other components in the OpenAPI document,
 /// internally and externally.
@@ -562,7 +656,7 @@ class ReferenceObject {
 
   Map<String, String> toJson() {
     var map = {
-      '\$ref': '#/components/schemas/$ref',
+      '\$ref': _getRef(ref),
     };
     if (summary != null) {
       map['summary'] = summary!;
@@ -642,6 +736,30 @@ class PathItemObject {
     this.servers,
     this.parameters,
   });
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{};
+    if (summary != null) {
+      map['summary'] = summary;
+    }
+    if (description != null) {
+      map['description'] = description;
+    }
+    if (parameters?.isNotEmpty ?? false) {
+      ///
+    }
+
+    if (servers?.isNotEmpty ?? false) {
+      ///
+    }
+
+    if (ref != null) {
+      map['\$ref'] = _getRef(ref!);
+    }
+
+    if (postOperation != null) {}
+    return map;
+  }
 }
 
 /// Describes a single API operation on a path.
@@ -661,6 +779,7 @@ class OperationObject {
   /// The operationId value is case-sensitive.
   /// Tools and libraries MAY use the operationId to uniquely identify an operation, therefore, it is RECOMMENDED to follow common programming naming conventions.
   /// it should be serverpod endpoint's method name
+  /// eg ``` findPetById ```
   final String? operationId;
 
   /// A list of parameters that are applicable for this operation.
@@ -682,7 +801,6 @@ class OperationObject {
 
   /// Declares this operation to be deprecated. Consumers SHOULD refrain from usage of the declared operation.
   /// Default value is false.
-
   final bool deprecated;
 
   final SecurityRequirementObject security;
@@ -701,4 +819,33 @@ class OperationObject {
     required this.security,
     this.servers,
   });
+
+  Map<String, dynamic> toJson() {
+    var map = <String, dynamic>{
+      'operationId': operationId,
+    };
+
+    if (tags?.isNotEmpty ?? false) {
+      map['tags'] = tags!;
+    }
+
+    if (summary != null) {
+      map['summary'] = summary;
+    }
+
+    if (description != null) {
+      map['description'] = description;
+    }
+    if (externalDocs != null) {
+      map['externalDocs'] = externalDocs;
+    }
+
+    if (parameters?.isNotEmpty ?? false) {
+      // map['parameters']=parameters.
+    }
+
+    return map;
+  }
 }
+
+

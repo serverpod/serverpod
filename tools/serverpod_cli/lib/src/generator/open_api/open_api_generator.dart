@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+import 'open_api_definition.dart';
 
 class OpenApiGenerator {
   OpenApiGenerator();
