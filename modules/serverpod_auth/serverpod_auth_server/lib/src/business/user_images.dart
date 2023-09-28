@@ -66,6 +66,7 @@ class UserImages {
     // Find the latest version of the user image if any.
     var oldImageRefs = await UserImage.db.find(
       session,
+      limit: 1,
       where: (t) => t.userId.equals(userId),
       orderDescending: true,
       orderBy: UserImage.t.version,
