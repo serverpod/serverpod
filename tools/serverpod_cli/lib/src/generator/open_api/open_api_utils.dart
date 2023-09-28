@@ -1,11 +1,5 @@
 part of openapi_definition;
 
-extension on ParameterStyle {
-  /// convert queryFrom -> query-form
-  String get toKebabCase => name.replaceAllMapped(RegExp(r'([a-z])([A-Z])'),
-      (match) => '${match.group(1)}-${match.group(2)?.toLowerCase()}');
-}
-
 String _getRef(String ref) {
   return '#/components/schemas/$ref';
 }
@@ -26,4 +20,56 @@ enum ParameterStyle {
   pathSimple,
   headerSimple,
   cookieSimple,
+}
+
+/// example
+/// ```
+///  schema:
+///       type: object
+/// ```
+enum SchemaObjectType {
+  /// Represents a JSON object with key-value pairs.
+  /// You can define the properties of the object within the properties attribute.
+  object,
+  string,
+  integer,
+  number,
+  array,
+  // nullType,
+  // enumType,
+  boolean,
+
+  ///eg [Map] mark a other
+  other,
+}
+
+enum SchemaObjectFormat {
+  /// full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
+  date,
+
+  /// the date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+  dateTime,
+
+  /// a hint to UIs to mask the input
+  password,
+
+  /// base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
+  byte,
+
+  /// binary data, used to describe files
+  binary,
+
+  /// unsupported
+  email,
+  int32,
+  int64,
+  uri,
+  uuid,
+  hostname,
+  ipv4,
+  ipv6,
+  float,
+  double,
+  time,
+  any,
 }

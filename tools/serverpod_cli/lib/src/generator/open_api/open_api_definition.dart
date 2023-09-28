@@ -4,9 +4,11 @@ import 'package:recase/recase.dart';
 
 import '../../../analyzer.dart';
 import '../../analyzer/dart/definitions.dart';
+import '../../logger/logger.dart';
 
 part 'open_api_objects.dart';
 part 'open_api_utils.dart';
+part 'open_api_extensions.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 /// OpenAPI Object
@@ -52,7 +54,7 @@ class OpenApiDefinition {
   /// Additional external documentation.
   final ExternalDocumentationObject? externalDocs;
   OpenApiDefinition({
-    this.openApi = '3.1.0',
+    this.openApi = '3.0.0',
     required this.info,
     this.jsonSchemaDialect,
     this.servers,
@@ -64,15 +66,15 @@ class OpenApiDefinition {
   });
 
   Map<String, dynamic> toJson() {
-    var map = {
-      'openApi': openApi,
+    Map<String, dynamic> map = {
+      'openapi': openApi,
       'info': info.toJson(),
     };
     if (jsonSchemaDialect != null) {
       map['jsonSchemaDialect'] = jsonSchemaDialect!;
     }
     if (servers != null) {
-      // map['servers']=servers;
+      map['servers'] = servers!.map((e) => e.toJson()).toList();
     }
     if (tags != null) {
       map['tags'] = tags!.map((tag) => tag.toJson()).toList();
@@ -81,7 +83,7 @@ class OpenApiDefinition {
       map['paths'] = _allPathsToJson(paths!);
     }
     if (components != null) {
-      // map['components'] = components;
+      map.addAll(components!.toJson());
     }
     if (security != null) {
       //map['security']=security
@@ -103,10 +105,23 @@ class OpenApiDefinition {
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
     Set<PathsObject> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
+
+    Set<SchemaObject> schemas =
+        _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
+
+    ComponentsObject componentsObject = ComponentsObject(schemas: schemas);
+
+    var servers = {
+      ServerObject(
+          url: Uri.http('localhost:8080'), description: 'Development Server')
+    };
+
     return OpenApiDefinition(
       info: infoObject,
+      servers: servers,
       tags: tags,
       paths: paths,
+      components: componentsObject,
     );
   }
 }
@@ -143,8 +158,9 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
       // eg
       // ```/pet/findByTags```
 
+      method.parameters;
       var pathsObject = PathsObject(
-        pathName: '$extraPath${endpoint.className}/${method.name}',
+        pathName: '/$extraPath${endpoint.name}/${method.name}',
         path: PathItemObject.fromMethod(method, endpoint.name),
       );
       paths.add(pathsObject);
@@ -166,4 +182,19 @@ Set<TagObject> _getTagsFromProtocolDefinition(
     tags.add(tag);
   }
   return tags;
+}
+
+/// example```
+///   Set<SchemaObject> schemas =
+///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
+/// ```
+Set<SchemaObject> _getSchemaObjectFromClassDefinitions(
+    List<SerializableEntityDefinition> classDefs) {
+  Set<SchemaObject> schemas = {};
+  for (var classInfo in classDefs) {
+    assert(classInfo is ClassDefinition, 'classInfo should be ClassDefinition');
+    classInfo as ClassDefinition;
+    schemas.add(SchemaObject.fromClassDefinition(classInfo));
+  }
+  return schemas;
 }

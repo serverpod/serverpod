@@ -367,7 +367,7 @@ class ServerVariableObject {
 ///
 class ComponentsObject {
   /// An object to hold reusable Schema Objects.
-  final Map<String, SchemaObject>? schemas;
+  final Set<SchemaObject>? schemas;
 
   /// An object to hold reusable Response Objects.
   final Map<String, ResponseObject>? responses;
@@ -393,6 +393,7 @@ class ComponentsObject {
   /// An object to hold reusable Callback Objects.
   final Map<String, CallbackObject>? callbacks;
 
+  /// An object to hold reusable Path Item Object.
   final Map<String, PathItemObject>? pathItems;
   ComponentsObject({
     this.schemas,
@@ -404,11 +405,92 @@ class ComponentsObject {
     this.securitySchemes,
     this.links,
     this.callbacks,
-    required this.pathItems,
+    this.pathItems,
   });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['components'] = {};
+    if (schemas != null) {
+      map['components'] = _getSchemaMapFromSetSchema(schemas!);
+    }
+    return map;
+  }
+
+  Map<String, dynamic> _getSchemaMapFromSetSchema(Set<SchemaObject>? schemas) {
+    Map<String, dynamic> map = {};
+    for (var schema in schemas!) {
+      map.addAll(schema.toJson());
+    }
+    return map;
+  }
 }
 
-class RequestBodyObject {}
+class RequestBodyObject {
+  final String? description;
+  final ContentObject? content;
+  final bool requiredField;
+  RequestBodyObject({
+    this.description,
+    this.content,
+    this.requiredField = true,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    if (description != null) map['description'] = map;
+    if (content != null) map['content'] = content;
+    map['required'] = requiredField;
+    return map;
+  }
+
+  // factory RequestBodyObject.fromMethod(MethodDefinition methodDefinition) {
+
+  // }
+}
+
+///example
+///```
+///"content": {
+///               "application/json": {
+///                 "schema": {
+///                   "$ref": "#/components/schemas/Pet"
+///                 }
+///               },
+///               "application/xml": {
+///                 "schema": {
+///                   "$ref": "#/components/schemas/Pet"
+///                 }
+///               }
+///             }
+///           },
+/// ```
+class ContentObject {
+  final List<String> contentTypes;
+  final SchemaObject schemaObject;
+
+  ContentObject({
+    required this.contentTypes,
+    required this.schemaObject,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> contentMap = {};
+    for (var type in contentTypes) {
+      contentMap[type] = schemaObject.toRefJson();
+    }
+    return contentMap;
+  }
+}
+
+class ContentType {
+  static const applicationJson = 'application/json';
+  static const applicationXml = 'application/xml';
+  static const applicationForm = 'application/x-www-form-urlencoded';
+  static const any = '*/*';
+  static const image = 'image/png';
+  static const applicationOctetStream = 'application/octet-stream';
+}
 
 class ExampleObject {}
 
@@ -433,7 +515,32 @@ class PathsObject {
   }
 }
 
-class ResponseObject {}
+class ResponseObject {
+  final ContentObject responseType;
+  ResponseObject({
+    required this.responseType,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    //200 response
+    map['200'] = <String, dynamic>{'description': 'Success'};
+    map['200']['content'] = responseType.toJson();
+    //400 bad request
+    map['400'] = {
+      'description':
+          'Bad request (the query passed to the server was incorrect).'
+    };
+    //403 forbidden
+    map['403'] = {
+      'description':
+          'Forbidden (the caller is trying to call a restricted endpoint, but doesn\'t have the correct credentials/scope).'
+    };
+    //500 internal server error
+    map['500'] = {'description': 'Internal server error '};
+    return map;
+  }
+}
 
 /// Holds the relative paths to the individual endpoints and their operations.
 /// The path is appended to the URL from the Server Object in order to construct the full URL.
@@ -510,7 +617,7 @@ class ParameterObject {
     }
 
     if (style != null) {
-      map['style'] = style!.toKebabCase;
+      map['style'] = style!.name.camelToKebabCase;
     }
 
     if (explode) {
@@ -523,7 +630,7 @@ class ParameterObject {
 
     if (schema != null) {
       ///TODO:
-      map['schema'] = schema;
+      map['schema'] = schema!.toJson();
     }
 
     return map;
@@ -614,19 +721,163 @@ class SchemaObject {
   /// See Composition and Inheritance for more details.
   final DiscriminatorObject? discriminator;
 
-  ///TODO: xmlobject
-  final ExternalDocumentationObject externalDocs;
+  //TODO: xmlobject
+  /// external docs
+  final ExternalDocumentationObject? externalDocs;
 
-  // final String? type;
-  // final String? format;
-  // final String? description;
-  // final bool? nullable;
-  // final OpenAPISchemaObject? items;
-  // final Map<String, dynamic>? properties;
+  /// example
+  /// ```
+  /// "Order": {
+  ///     "type": "object",
+  ///     "properties": {
+  ///       "id": {
+  ///         "type": "integer",
+  ///         "format": "int64",
+  ///         "example": 10
+  ///       },
+  /// ```
+  /// [Order] and [id] are schemaName
+  final String schemaName;
+
+  /// the type of object schema [integer,string,etc]
+  final SchemaObjectType type;
+
+  /// format of the type eg.[int64,string,password]
+  final SchemaObjectFormat? format;
+
+  /// whether the object schema is nullable or not
+  final bool nullable;
+
+  ///if type is array items must not null
+  final SchemaObject? items;
+
+  ///example
+  ///``` "Order": {
+  ///       "type": "object",
+  ///       "properties": {
+  ///         "id": {
+  ///           "type": "integer",
+  ///           "format": "int64",
+  ///         },
+  ///```
+  final List<SchemaObject>? properties;
+
+  ///if type is object properties cannot be null
+  /// ```
+  /// "status": {
+  ///   "type": "string",
+  ///   "description": "Order Status",
+  ///   "example": "approved",
+  ///   "enum": [
+  ///     "placed",
+  ///     "approved",
+  ///     "delivered"
+  ///   ]
+  /// },
+  /// ```
+  final List<String>? enumField;
+
   SchemaObject({
+    required this.schemaName,
+    this.externalDocs,
+    required this.type,
+    this.items,
+    this.format,
+    this.nullable = false,
     this.discriminator,
-    required this.externalDocs,
+    this.properties,
+    this.enumField,
   });
+
+  /// only to be use in component
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {schemaName: {}};
+    map[schemaName]['type'] = type.type;
+
+    if (type != SchemaObjectType.object) {
+      if (format != null) {
+        map[schemaName]['format'] = format!.name;
+      }
+    } else {
+      if (properties != null) {
+        Map<String, dynamic> props = {};
+        for (var p in properties!) {
+          props.addAll(p.toJson());
+        }
+        map[schemaName]['properties'] = props;
+      }
+    }
+
+    return map;
+  }
+
+  /// To be used, for example, on `requestBody`.
+  Map<String, dynamic> toRefJson() {
+    Map<String, dynamic> map = {'schema': {}};
+
+    /// if type is object use ref`# $ref: '#/components/schemas/Pet'`
+    if (type == SchemaObjectType.object) {
+      map['schema']['\$ref'] = _getRef(schemaName);
+    } else {
+      map['schema']['type'] = type.type;
+      if (format != null && type != SchemaObjectType.array) {
+        map[schemaName]['format'] = format!.name;
+      }
+      if (type == SchemaObjectType.array) {
+        map['schemaName']['items'] = items!.toItemsJson();
+      }
+    }
+    return map;
+  }
+
+  /// To be used, for example, on `items`.
+  Map<String, dynamic> toItemsJson() {
+    Map<String, dynamic> map = {};
+    if (items != null) {
+      if (items!.type == SchemaObjectType.object) {
+        map['\$ref'] = _getRef(items!.schemaName);
+      } else {
+        map['type'] = items!.type;
+        if (items!.format != null) {
+          map['format'] = items!.format;
+        }
+      }
+    }
+    return map;
+  }
+
+  factory SchemaObject.fromClassDefinition(ClassDefinition classDefinition) {
+    List<SchemaObject> properties = [];
+    for (var field in classDefinition.fields) {
+      var prop = SchemaObject(
+          schemaName: field.name,
+          type: field.type.toSchemaObjectType,
+          format: field.type.toSchemaObjectFormat);
+      properties.add(prop);
+    }
+    return SchemaObject(
+        schemaName: classDefinition.className,
+        type: SchemaObjectType.object,
+        properties: properties);
+  }
+
+  /// call from [ResponseObject]
+  factory SchemaObject.fromMethod(MethodDefinition methodDefinition) {
+    ///return is Future<List<String>
+    ///return is Future<int>
+    ///return is Future<object>
+    SchemaObjectType? returnType;
+    String? schemaName;
+    var generics = methodDefinition.returnType.generics;
+    if (generics.first.className == 'List') {
+      returnType = generics.last.toSchemaObjectType;
+      schemaName = generics.last.className;
+    } else {
+      returnType = generics.first.toSchemaObjectType;
+      schemaName = generics.first.className;
+    }
+    return SchemaObject(schemaName: schemaName, type: returnType);
+  }
 }
 
 class DiscriminatorObject {}
@@ -747,11 +998,11 @@ class PathItemObject {
       map['description'] = description;
     }
     if (parameters?.isNotEmpty ?? false) {
-      ///
+      ///TODO
     }
 
     if (servers?.isNotEmpty ?? false) {
-      ///
+      ///TODO
     }
     if (postOperation != null) {
       map['post'] = postOperation!.toJson();
@@ -761,22 +1012,27 @@ class PathItemObject {
       map['\$ref'] = _getRef(ref!);
     }
 
-    if (postOperation != null) {}
     return map;
   }
 
   factory PathItemObject.fromMethod(MethodDefinition method, String tag) {
     String? description = method.documentationComment;
     String operationId = method.name;
+    ResponseObject responseObject = ResponseObject(
+      responseType: ContentObject(
+        contentTypes: [ContentType.applicationJson],
+        schemaObject: SchemaObject.fromMethod(method),
+      ),
+    );
 
-//TODO: implement  OperationObject.fromMethod
     return PathItemObject(
       description: description,
       postOperation: OperationObject(
         description: description,
         operationId: operationId,
-        responses: ResponseObject(),
+        responses: responseObject,
         tags: [tag],
+        // requestBody: RequestBodyObjec,
         security: SecurityRequirementObject(),
       ),
     );
@@ -862,9 +1118,14 @@ class OperationObject {
       map['externalDocs'] = externalDocs;
     }
 
+    if (requestBody != null) {
+      map['requestBody'] = requestBody!.toJson();
+    }
+
     if (parameters?.isNotEmpty ?? false) {
       // map['parameters']=parameters.
     }
+    map['responses'] = responses.toJson();
 
     return map;
   }
