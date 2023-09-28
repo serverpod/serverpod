@@ -13,6 +13,16 @@ class ManyToManyEndpoint extends Endpoint {
     );
   }
 
+  Future<int> countAllNonBlockedPosts(
+    Session session, {
+    required Author reader,
+  }) async {
+    return await Posts.count(
+      session,
+      where: (t) => t.author.blockedBy((b) => b.blockeeId.notEquals(reader.id)),
+    );
+  }
+
   Future<int?> postInsert(Session session, Posts post) async {
     await Posts.insert(session, post);
     return post.id;
