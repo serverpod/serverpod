@@ -49,21 +49,41 @@ void main() async {
   var alex = Author(name: 'Alex');
   var client = Client(serverUrl);
 
-  late var allUnblockedPostsForAlex;
+  group(
+      'Given entities with many relations when filtering on number of many relations',
+      () {
+    late var allUnblockedPostsForAlex;
+    setUpAll(() async {
+      await _createTestDatabase(client, alex);
+      allUnblockedPostsForAlex =
+          await client.manyToMany.findAllNonBlockedPosts(reader: alex);
+    });
 
-  setUpAll(() async {
-    await _createTestDatabase(client, alex);
-    allUnblockedPostsForAlex =
-        await client.manyToMany.findAllNonBlockedPosts(reader: alex);
+    tearDownAll(() async => await client.manyToMany.deleteAll());
+
+    test('all posts that are not authored someone blocked by Alex', () {
+      var postTexts = allUnblockedPostsForAlex.map((e) => e.text);
+      expect(
+          postTexts,
+          containsAll(
+              ['Post 1', 'Post 2', 'Post 3', 'Post 7', 'Post 8', 'Post 9']));
+    });
   });
 
-  tearDownAll(() async => await client.manyToMany.deleteAll());
+  group(
+      'Given entities with many relations when filtering and counting number of many relations',
+      () {
+    late var numberOfUnblockedPostsForAlex;
+    setUpAll(() async {
+      await _createTestDatabase(client, alex);
+      numberOfUnblockedPostsForAlex =
+          await client.manyToMany.countAllNonBlockedPosts(reader: alex);
+    });
 
-  test('all posts that are not authored someone blocked by Alex', () {
-    var postTexts = allUnblockedPostsForAlex.map((e) => e.text);
-    expect(
-        postTexts,
-        containsAll(
-            ['Post 1', 'Post 2', 'Post 3', 'Post 7', 'Post 8', 'Post 9']));
+    tearDownAll(() async => await client.manyToMany.deleteAll());
+
+    test('all posts that are not authored someone blocked by Alex', () {
+      expect(numberOfUnblockedPostsForAlex, 6);
+    });
   });
 }
