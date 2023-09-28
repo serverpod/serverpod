@@ -420,7 +420,6 @@ void main() async {
     });
 
     test('then the second address is linked with isak', () async {
-      print(addresses);
       expect(addresses[1].inhabitant?.name, 'Isak');
     });
   });
