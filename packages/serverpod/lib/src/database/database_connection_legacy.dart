@@ -242,10 +242,10 @@ Current type was $T''');
     var startTime = DateTime.now();
     var query = '';
     try {
-      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       var encoded = byteData.base64encodedString();
       query =
           'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
+
       await _postgresConnection.query(
         query,
         allowReuse: false,
@@ -272,7 +272,6 @@ Current type was $T''');
     var startTime = DateTime.now();
     var query = '';
     try {
-      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
       query =
           'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
 

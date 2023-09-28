@@ -9,6 +9,9 @@ abstract class Column<T> {
   /// Corresponding dart [Type].
   final Type type;
 
+  /// Database type name.
+  final String dbTypeName;
+
   final String _columnName;
 
   /// Name of the [Column].
@@ -26,6 +29,7 @@ abstract class Column<T> {
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
     this._columnName, {
+    required this.dbTypeName,
     this.queryPrefix = '',
     this.tableRelations,
   }) : type = T;
@@ -47,7 +51,7 @@ class ColumnByteData extends Column<ByteData> {
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'bytea');
 }
 
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the
@@ -58,7 +62,7 @@ class ColumnSerializable extends Column<String> {
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'json');
 
 // TODO: Add comparisons and possibly other operations
 }
@@ -67,6 +71,7 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   _ValueOperatorColumn(
     super.columnName, {
     super.queryPrefix,
+    required super.dbTypeName,
     super.tableRelations,
   });
 
@@ -82,7 +87,7 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'integer');
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value.index);
@@ -100,7 +105,7 @@ class ColumnString extends _ValueOperatorColumn<String>
     this.varcharLength,
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'text');
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value. See Postgresql docs for more info on the LIKE operator.
@@ -127,7 +132,7 @@ class ColumnBool extends _ValueOperatorColumn<bool>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'boolean');
 
   @override
   Expression _encodeValueForQuery(bool value) => Expression(value);
@@ -142,7 +147,7 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'timestamp');
 
   @override
   Expression _encodeValueForQuery(DateTime value) => EscapedExpression(value);
@@ -156,7 +161,7 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'bigint');
 
   @override
   Expression _encodeValueForQuery(Duration value) => EscapedExpression(value);
@@ -170,7 +175,7 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'uuid');
 
   @override
   Expression _encodeValueForQuery(UuidValue value) => EscapedExpression(value);
@@ -184,7 +189,7 @@ class ColumnInt extends _ValueOperatorColumn<int>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'integer');
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
@@ -198,7 +203,7 @@ class ColumnDouble extends _ValueOperatorColumn<double>
     super.columnName, {
     super.queryPrefix,
     super.tableRelations,
-  });
+  }) : super(dbTypeName: 'numeric');
 
   @override
   Expression _encodeValueForQuery(double value) => Expression(value);

@@ -87,11 +87,24 @@ class Database {
     );
   }
 
+  Future<List<T>> update<T extends TableRow>(
+    List<T> rows, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.update<T>(
+      _session,
+      rows,
+      columns: columns,
+      transaction: transaction,
+    );
+  }
+
   /// Updates a single [TableRow]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<T> updateRow<T extends TableRow>(
-    TableRow row, {
+    T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
@@ -103,9 +116,23 @@ class Database {
     );
   }
 
+  /// Inserts all [TableRow]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// insert, none of the rows will be inserted.
+  Future<List<T>> insert<T extends TableRow>(
+    List<T> rows, {
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.insert<T>(
+      _session,
+      rows,
+      transaction: transaction,
+    );
+  }
+
   /// Inserts a single [TableRow] and returns the inserted row.
   Future<T> insertRow<T extends TableRow>(
-    TableRow row, {
+    T row, {
     Transaction? transaction,
   }) async {
     return _databaseConnection.insertRow<T>(
@@ -115,12 +142,23 @@ class Database {
     );
   }
 
-  /// Deletes a single [TableRow].
-  Future<int> deleteRow<T extends TableRow>(
-    TableRow row, {
+  Future<List<int>> delete<T extends TableRow>(
+    List<T> rows, {
     Transaction? transaction,
   }) async {
-    return await _databaseConnection.deleteRow(
+    return _databaseConnection.delete<T>(
+      _session,
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [TableRow].
+  Future<int> deleteRow<T extends TableRow>(
+    T row, {
+    Transaction? transaction,
+  }) async {
+    return await _databaseConnection.deleteRow<T>(
       _session,
       row,
       transaction: transaction,

@@ -119,43 +119,48 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> insert<T extends TableRow>(
+    Session session,
+    List<TableRow> rows, {
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    var table = rows.first.table;
+
+    var selectedColumns =
+        table.columns.where((column) => column.columnName != 'id');
+
+    var columnNames =
+        selectedColumns.map((e) => '"${e.columnName}"').join(', ');
+
+    var values = rows.map((row) => row.allToJson()).map((row) {
+      var values = selectedColumns.map((column) {
+        var unformattedValue = row[column.columnName];
+        return DatabasePoolManager.encoder.convert(unformattedValue);
+      }).join(', ');
+      return '($values)';
+    }).join(', ');
+
+    var query =
+        'INSERT INTO ${table.tableName} ($columnNames) VALUES $values RETURNING *';
+
+    var result =
+        await _mappedResultsQuery(session, query, transaction: transaction);
+
+    return result
+        .map((t) => t[table.tableName])
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
   Future<T> insertRow<T extends TableRow>(
     Session session,
     TableRow row, {
     Transaction? transaction,
   }) async {
-    Map data = row.allToJson();
-
-    for (var column in row.table.columns) {
-      if (!data.containsKey(column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
-    }
-
-    var selectedColumns = row.table.columns.where((column) {
-      return column.columnName != 'id';
-    });
-
-    var columns =
-        selectedColumns.map((column) => '"${column.columnName}"').join(', ');
-
-    var values = selectedColumns.map((column) {
-      var unformattedValue = data[column.columnName];
-      return DatabasePoolManager.encoder.convert(unformattedValue);
-    }).join(', ');
-
-    var query =
-        'INSERT INTO "${row.table.tableName}" ($columns) VALUES ($values) RETURNING *';
-
-    var result = await _deserializedQuery<T>(
-      session,
-      query,
-      transaction: transaction,
-    );
+    var result = await insert<T>(session, [row], transaction: transaction);
 
     if (result.length != 1) {
       throw PostgreSQLException(
@@ -166,22 +171,61 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T> updateRow<T extends TableRow>(
+  Future<List<T>> update<T extends TableRow>(
     Session session,
-    TableRow row, {
+    List<TableRow> rows, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
-    var selectedColumns = columns ?? row.table.columns;
-    Map data = row.allToJson();
-
-    int? id = data['id'];
-    if (id == null) {
+    if (rows.isEmpty) return [];
+    if (rows.any((column) => column.id == null)) {
       throw ArgumentError.notNull('row.id');
     }
 
-    for (var column in selectedColumns) {
-      if (!data.containsKey(column.columnName)) {
+    var table = rows.first.table;
+
+    if (columns != null) {
+      _validateColumnsExists(columns, table);
+    }
+
+    var selectedColumns = columns ?? table.columns;
+
+    if (columns != null) {
+      var idColumn = table.columns.firstWhere(
+        (column) => column.columnName == 'id',
+      );
+      selectedColumns = [idColumn, ...columns];
+    }
+
+    var selectedColumnNames = selectedColumns.map((e) => e.columnName);
+
+    var columnNames =
+        selectedColumnNames.map((columnName) => '"$columnName"').join(', ');
+
+    var values = _createQueryValueList(rows, selectedColumns);
+
+    var setColumns = selectedColumnNames
+        .where((columnName) => columnName != 'id')
+        .map((columnName) => '"$columnName" = data."$columnName"')
+        .join(', ');
+
+    selectedColumns.first.type.toString();
+
+    var query =
+        'UPDATE ${table.tableName} AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+
+    var result =
+        await _mappedResultsQuery(session, query, transaction: transaction);
+
+    return result
+        .map((t) => t[table.tableName])
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
+  }
+
+  void _validateColumnsExists(List<Column> columns, Table table) {
+    for (var column in columns) {
+      if (!table.columns.any((c) => c.columnName == column.columnName)) {
         throw ArgumentError.value(
           column,
           column.columnName,
@@ -189,20 +233,54 @@ class DatabaseConnection {
         );
       }
     }
+  }
 
-    var updates = selectedColumns
-        .where((column) => column.columnName != 'id')
-        .map((column) {
-      var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
-      return '"${column.columnName}" = $value';
+  String _createQueryValueList(
+    Iterable<TableRow> rows,
+    Iterable<Column> column,
+  ) {
+    return rows
+        .map((row) => row.allToJson() as Map<String, dynamic>)
+        .map((row) {
+      var values = column.map((column) {
+        var unformattedValue = row[column.columnName];
+
+        var formattedValue =
+            DatabasePoolManager.encoder.convert(unformattedValue);
+
+        return '$formattedValue::${_convertToPostgresType(column)}';
+      }).join(', ');
+
+      return '($values)';
     }).join(', ');
+  }
 
-    var query =
-        'UPDATE ${row.table.tableName} SET $updates WHERE id = $id RETURNING *';
+  String _convertToPostgresType(Column column) {
+    if (column is ColumnString) return 'text';
+    if (column is ColumnBool) return 'boolean';
+    if (column is ColumnInt) return 'integer';
+    if (column is ColumnEnum) return 'integer';
+    if (column is ColumnDouble) return 'double precision';
+    if (column is ColumnDateTime) return 'timestamp without time zone';
+    if (column is ColumnByteData) return 'bytea';
+    if (column is ColumnDuration) return 'bigint';
+    if (column is ColumnUuid) return 'uuid';
+    if (column is ColumnSerializable) return 'json';
 
-    var updated = await _deserializedQuery<T>(
+    return 'json';
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T> updateRow<T extends TableRow>(
+    Session session,
+    TableRow row, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    var updated = await update<T>(
       session,
-      query,
+      [row],
+      columns: columns,
       transaction: transaction,
     );
 
@@ -214,11 +292,43 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> deleteRow(
+  Future<List<int>> delete<T extends TableRow>(
+    Session session,
+    List<TableRow> rows, {
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+    if (rows.any((column) => column.id == null)) {
+      throw ArgumentError.notNull('row.id');
+    }
+
+    var table = rows.first.table;
+
+    return deleteWhere<T>(
+      session,
+      table.id.inSet(rows.map((row) => row.id!).toSet()),
+    );
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<int> deleteRow<T extends TableRow>(
     Session session,
     TableRow row, {
     Transaction? transaction,
   }) async {
+    var result = await delete<T>(
+      session,
+      [row],
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      throw PostgreSQLException('Failed to delete row, no rows deleted.');
+    }
+
+    return result.first;
+
+    /*
     int? id = row.id;
     if (id == null) {
       throw ArgumentError.notNull('row.id');
@@ -234,7 +344,7 @@ class DatabaseConnection {
     if (result.isEmpty) {
       throw PostgreSQLException('Failed to delete row, no rows deleted.');
     }
-    return result.first.first;
+    return result.first.first;*/
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -286,6 +396,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    Map<String, dynamic>? substitutionValues = const {},
   }) async {
     var startTime = DateTime.now();
 
@@ -296,7 +407,7 @@ class DatabaseConnection {
         query,
         allowReuse: false,
         timeoutInSeconds: timeoutInSeconds,
-        substitutionValues: {},
+        substitutionValues: substitutionValues,
       );
 
       _logQuery(
