@@ -24,6 +24,7 @@ typedef _LogQuery = void Function(
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
+@Deprecated('Will be removed in 2.0.0. Use DatabaseConnection instead.')
 class DatabaseConnectionLegacy {
   /// Database configuration.
   final DatabasePoolManager _poolManager;
