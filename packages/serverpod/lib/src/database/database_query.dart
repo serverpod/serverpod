@@ -245,8 +245,10 @@ String? _buildGroupByQuery({
     return null;
   }
 
-  return _groupByStatementFromColumns(selectColumns,
-      useColumnAlias: useColumnAlias);
+  return _groupByStatementFromColumns(
+    selectColumns,
+    useColumnAlias: useColumnAlias,
+  );
 }
 
 String? _buildHavingQuery({
