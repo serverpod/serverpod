@@ -1106,6 +1106,796 @@ class EndpointColumnUuid extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointColumnBoolLegacy extends _i1.EndpointRef {
+  EndpointColumnBoolLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnBoolLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnBoolLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnBoolLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(bool? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(bool? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<bool> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<bool> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(bool value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(bool value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnBoolLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnDateTimeLegacy extends _i1.EndpointRef {
+  EndpointColumnDateTimeLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnDateTimeLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnDateTimeLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnDateTimeLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(DateTime? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(DateTime? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<DateTime> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<DateTime> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'greaterThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterOrEqualThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'greaterOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'lessThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessOrEqualThan(DateTime value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'lessOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> between(
+    DateTime min,
+    DateTime max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'between',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+
+  _i2.Future<List<_i6.Types>> notBetween(
+    DateTime min,
+    DateTime max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDateTimeLegacy',
+        'notBetween',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnDoubleLegacy extends _i1.EndpointRef {
+  EndpointColumnDoubleLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnDoubleLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnDoubleLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnDoubleLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(double? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(double? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<double> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<double> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterThan(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'greaterThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterOrEqualThan(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'greaterOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessThan(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'lessThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessOrEqualThan(double value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'lessOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> between(
+    double min,
+    double max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'between',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+
+  _i2.Future<List<_i6.Types>> notBetween(
+    double min,
+    double max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDoubleLegacy',
+        'notBetween',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnDurationLegacy extends _i1.EndpointRef {
+  EndpointColumnDurationLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnDurationLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnDurationLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnDurationLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(Duration? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(Duration? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<Duration> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<Duration> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterThan(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'greaterThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterOrEqualThan(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'greaterOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessThan(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'lessThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessOrEqualThan(Duration value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'lessOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> between(
+    Duration min,
+    Duration max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'between',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+
+  _i2.Future<List<_i6.Types>> notBetween(
+    Duration min,
+    Duration max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnDurationLegacy',
+        'notBetween',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnEnumLegacy extends _i1.EndpointRef {
+  EndpointColumnEnumLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnEnumLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnEnumLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnEnumLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(_i7.TestEnum? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(_i7.TestEnum? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<_i7.TestEnum> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<_i7.TestEnum> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(_i7.TestEnum value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i7.TestEnum value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnEnumLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnIntLegacy extends _i1.EndpointRef {
+  EndpointColumnIntLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnIntLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnIntLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnIntLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(int? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(int? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<int> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<int> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterThan(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'greaterThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> greaterOrEqualThan(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'greaterOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessThan(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'lessThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> lessOrEqualThan(int value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'lessOrEqualThan',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> between(
+    int min,
+    int max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'between',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+
+  _i2.Future<List<_i6.Types>> notBetween(
+    int min,
+    int max,
+  ) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnIntLegacy',
+        'notBetween',
+        {
+          'min': min,
+          'max': max,
+        },
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnStringLegacy extends _i1.EndpointRef {
+  EndpointColumnStringLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnStringLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnStringLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnStringLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(String? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(String? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<String> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<String> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(String value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(String value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> like(String value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'like',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> ilike(String value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnStringLegacy',
+        'ilike',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointColumnUuidLegacy extends _i1.EndpointRef {
+  EndpointColumnUuidLegacy(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'columnUuidLegacy';
+
+  _i2.Future<void> insert(List<_i6.Types> types) =>
+      caller.callServerEndpoint<void>(
+        'columnUuidLegacy',
+        'insert',
+        {'types': types},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'columnUuidLegacy',
+        'deleteAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> findAll() =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<List<_i6.Types>> equals(_i5.UuidValue? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'equals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notEquals(_i5.UuidValue? value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'notEquals',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> inSet(List<_i5.UuidValue> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'inSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> notInSet(List<_i5.UuidValue> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'notInSet',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isDistinctFrom(_i5.UuidValue value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'isDistinctFrom',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i5.UuidValue value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'columnUuidLegacy',
+        'isNotDistinctFrom',
+        {'value': value},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointCustomTypes extends _i1.EndpointRef {
   EndpointCustomTypes(_i1.EndpointCaller caller) : super(caller);
 
@@ -2476,6 +3266,14 @@ class Client extends _i1.ServerpodClient {
     columnInt = EndpointColumnInt(this);
     columnString = EndpointColumnString(this);
     columnUuid = EndpointColumnUuid(this);
+    columnBoolLegacy = EndpointColumnBoolLegacy(this);
+    columnDateTimeLegacy = EndpointColumnDateTimeLegacy(this);
+    columnDoubleLegacy = EndpointColumnDoubleLegacy(this);
+    columnDurationLegacy = EndpointColumnDurationLegacy(this);
+    columnEnumLegacy = EndpointColumnEnumLegacy(this);
+    columnIntLegacy = EndpointColumnIntLegacy(this);
+    columnStringLegacy = EndpointColumnStringLegacy(this);
+    columnUuidLegacy = EndpointColumnUuidLegacy(this);
     customTypes = EndpointCustomTypes(this);
     basicDatabase = EndpointBasicDatabase(this);
     basicDatabaseLegacy = EndpointBasicDatabaseLegacy(this);
@@ -2527,6 +3325,22 @@ class Client extends _i1.ServerpodClient {
   late final EndpointColumnString columnString;
 
   late final EndpointColumnUuid columnUuid;
+
+  late final EndpointColumnBoolLegacy columnBoolLegacy;
+
+  late final EndpointColumnDateTimeLegacy columnDateTimeLegacy;
+
+  late final EndpointColumnDoubleLegacy columnDoubleLegacy;
+
+  late final EndpointColumnDurationLegacy columnDurationLegacy;
+
+  late final EndpointColumnEnumLegacy columnEnumLegacy;
+
+  late final EndpointColumnIntLegacy columnIntLegacy;
+
+  late final EndpointColumnStringLegacy columnStringLegacy;
+
+  late final EndpointColumnUuidLegacy columnUuidLegacy;
 
   late final EndpointCustomTypes customTypes;
 
@@ -2591,6 +3405,14 @@ class Client extends _i1.ServerpodClient {
         'columnInt': columnInt,
         'columnString': columnString,
         'columnUuid': columnUuid,
+        'columnBoolLegacy': columnBoolLegacy,
+        'columnDateTimeLegacy': columnDateTimeLegacy,
+        'columnDoubleLegacy': columnDoubleLegacy,
+        'columnDurationLegacy': columnDurationLegacy,
+        'columnEnumLegacy': columnEnumLegacy,
+        'columnIntLegacy': columnIntLegacy,
+        'columnStringLegacy': columnStringLegacy,
+        'columnUuidLegacy': columnUuidLegacy,
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'basicDatabaseLegacy': basicDatabaseLegacy,
