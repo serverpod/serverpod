@@ -223,10 +223,7 @@ T createRelationTable<T>({
 }
 
 /// Many relation field between two tables.
-class ManyRelation {
-  /// Where clause for the many side of the relation.
-  final Expression _where;
-
+class ManyRelation extends Expression {
   /// The table on the many side of the relation.
   final Table _table;
 
@@ -235,18 +232,34 @@ class ManyRelation {
 
   /// Creates a new [ManyRelation].
   ManyRelation({
+    /// Where clause for the many side of the relation.
     required Expression<dynamic> where,
     required Table table,
     required String foreignIdColumnName,
   })  : _foreignIdColumnName = foreignIdColumnName,
         _table = table,
-        _where = where;
+        super(where);
 
   /// Returns a [ColumnCountAggregate] for the number of rows in the relation.
   ColumnCountAggregate get count => ColumnCountAggregate(
         _foreignIdColumnName,
         queryPrefix: _table.queryPrefix,
         tableRelations: _table.tableRelations,
-        innerWhere: _where,
+        innerWhere: super._expression,
       );
+
+  /// Returns a list of all [Column]s in the expression.
+  @override
+  List<Column> get columns => [
+        // TODO: This is a hack to make sure that columns used in the where
+        // query are joined in the query even if there is no aggregate expression.
+        //
+        // This will be replaced as part of the work to make the query builder more robust.
+        ColumnBool(
+          _foreignIdColumnName,
+          queryPrefix: _table.queryPrefix,
+          tableRelations: _table.tableRelations,
+        ),
+        ...super._expression.columns
+      ];
 }

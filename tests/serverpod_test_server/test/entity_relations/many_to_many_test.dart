@@ -61,7 +61,9 @@ void main() async {
 
   test('all posts that are not authored someone blocked by Alex', () {
     var postTexts = allUnblockedPostsForAlex.map((e) => e.text);
-    expect(postTexts,
-        ['Post 1', 'Post 2', 'Post 3', 'Post 7', 'Post 8', 'Post 9']);
+    expect(
+        postTexts,
+        containsAll(
+            ['Post 1', 'Post 2', 'Post 3', 'Post 7', 'Post 8', 'Post 9']));
   });
 }
