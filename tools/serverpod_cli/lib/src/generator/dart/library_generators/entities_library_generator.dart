@@ -1,7 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/repository_classes.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
