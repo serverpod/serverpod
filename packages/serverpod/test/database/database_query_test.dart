@@ -183,7 +183,7 @@ void main() {
       ]).build();
 
       expect(query,
-          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" GROUP BY company.name ORDER BY COUNT(company_employees_citizen."companyId")');
+          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" GROUP BY "company.name" ORDER BY COUNT(company_employees_citizen."companyId")');
     });
 
     test(
@@ -211,7 +211,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY company.name HAVING COUNT(company_employees_citizen."companyId") = 10');
+          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY "company.name" HAVING COUNT(company_employees_citizen."companyId") = 10');
     });
 
     test('when all properties configured is built then output is valid SQL.',
@@ -261,7 +261,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE (citizen_company_company."name" = \'Serverpod\' AND TRUE) GROUP BY citizen.id, citizen.name, citizen.age HAVING COUNT(citizen_company_company."citizenId") = 10 ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
+          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE (citizen_company_company."name" = \'Serverpod\' AND TRUE) GROUP BY "citizen.id", "citizen.name", "citizen.age" HAVING COUNT(citizen_company_company."citizenId") = 10 ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
     });
 
     test(

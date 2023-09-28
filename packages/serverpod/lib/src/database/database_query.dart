@@ -404,7 +404,7 @@ String _groupByStatementFromColumns(
   List<String> selectStatements = [];
   for (var column in columns) {
     if (useColumnAlias) {
-      selectStatements.add(column.queryAlias);
+      selectStatements.add('"${column.queryAlias}"');
     } else {
       selectStatements.add(column.toString());
     }
