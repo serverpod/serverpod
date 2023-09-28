@@ -223,15 +223,15 @@ T createRelationTable<T>({
 }
 
 /// Many relation field between two tables.
-class ManyRelation extends Expression {
+class ManyRelationExpression extends Expression {
   /// The table on the many side of the relation.
   final Table _table;
 
   /// Id column name for foreign table.
   final String _foreignIdColumnName;
 
-  /// Creates a new [ManyRelation].
-  ManyRelation({
+  /// Creates a new [ManyRelationExpression].
+  ManyRelationExpression({
     /// Where clause for the many side of the relation.
     required Expression<dynamic> where,
     required Table table,

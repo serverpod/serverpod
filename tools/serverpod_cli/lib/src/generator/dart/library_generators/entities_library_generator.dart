@@ -1305,7 +1305,8 @@ class SerializableEntityLibraryGenerator {
         Method(
           (m) => m
             ..name = field.name
-            ..returns = refer('ManyRelation', serverpodUrl(serverCode))
+            ..returns =
+                refer('ManyRelationExpression', serverpodUrl(serverCode))
             ..requiredParameters.add(Parameter((p) => p
               ..name = 'where'
               ..type = field.type.generics.first.reference(
@@ -1315,7 +1316,7 @@ class SerializableEntityLibraryGenerator {
                 nullable: false,
                 typeSuffix: 'WithoutManyRelationsExpressionBuilder',
               )))
-            ..body = refer('ManyRelation', serverpodUrl(serverCode))
+            ..body = refer('ManyRelationExpression', serverpodUrl(serverCode))
                 .call([], {
                   'table': refer('_${field.name}Table'),
                   'where': refer('where').call([refer('_${field.name}Table')]),
