@@ -4371,6 +4371,25 @@ class Endpoints extends _i1.EndpointDispatch {
             reader: params['reader'],
           ),
         ),
+        'countAllNonBlockedPosts': _i1.MethodConnector(
+          name: 'countAllNonBlockedPosts',
+          params: {
+            'reader': _i1.ParameterDescription(
+              name: 'reader',
+              type: _i1.getType<_i55.Author>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['manyToMany'] as _i26.ManyToManyEndpoint)
+                  .countAllNonBlockedPosts(
+            session,
+            reader: params['reader'],
+          ),
+        ),
         'postInsert': _i1.MethodConnector(
           name: 'postInsert',
           params: {

@@ -1940,6 +1940,13 @@ class EndpointManyToMany extends _i1.EndpointRef {
         {'reader': reader},
       );
 
+  _i2.Future<int> countAllNonBlockedPosts({required _i22.Author reader}) =>
+      caller.callServerEndpoint<int>(
+        'manyToMany',
+        'countAllNonBlockedPosts',
+        {'reader': reader},
+      );
+
   _i2.Future<int?> postInsert(_i21.Posts post) =>
       caller.callServerEndpoint<int?>(
         'manyToMany',
