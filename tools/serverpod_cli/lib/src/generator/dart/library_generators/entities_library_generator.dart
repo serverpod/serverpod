@@ -471,7 +471,8 @@ class SerializableEntityLibraryGenerator {
   Method _buildEntityClassInsertMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
-        refer("Deprecated('Will be removed in 2.0.0. Use: db.insert instead.')")
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')")
       ])
       ..static = true
       ..name = 'insert'
