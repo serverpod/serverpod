@@ -32,4 +32,31 @@ LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_
               .replaceAll("\n", ""));
     });
   });
+
+  group('Given many relation when using many relation in select query builder',
+      () {
+    var where = Posts.t.author.blockedBy((b) => b.blockeeId.notEquals(5));
+    var query = SelectQueryBuilder(table: Posts.t.tableName)
+        .withSelectFields(Posts.t.columns)
+        .withWhere(where)
+        .build();
+    test('then query is formatted with group by but not having.', () {
+      expect(
+          query,
+          '''
+SELECT
+ posts."id" AS "posts.id",
+ posts."text" AS "posts.text",
+ posts."authorId" AS "posts.authorId" 
+FROM "posts" 
+LEFT JOIN "author" AS posts_author_author
+ ON posts."authorId" = posts_author_author."id" 
+LEFT JOIN "blocked" AS posts_author_author_blockedBy_blocked
+ ON posts_author_author."id" = posts_author_author_blockedBy_blocked."blockerId" 
+WHERE (posts_author_author_blockedBy_blocked."blockeeId" != 5 OR posts_author_author_blockedBy_blocked."blockeeId" IS NULL) 
+GROUP BY "posts.id", "posts.text", "posts.authorId"
+'''
+              .replaceAll("\n", ""));
+    });
+  });
 }

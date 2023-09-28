@@ -255,7 +255,7 @@ class ManyRelationExpression extends Expression {
         // query are joined in the query even if there is no aggregate expression.
         //
         // This will be replaced as part of the work to make the query builder more robust.
-        ColumnBool(
+        ColumnManyRelation(
           _foreignIdColumnName,
           queryPrefix: _table.queryPrefix,
           tableRelations: _table.tableRelations,

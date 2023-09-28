@@ -214,6 +214,39 @@ void main() {
           'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY "company.name" HAVING COUNT(company_employees_citizen."companyId") = 10');
     });
 
+    test(
+        'when where expression includes column many relation without aggregate expression then output includes GROUP BY but not having in query.',
+        () {
+      var tableName = 'company';
+      var queryPrefix = '${tableName}_employees_';
+      var queryPrefixForColumn = '${queryPrefix}citizen';
+      var tableRelations = [
+        TableRelation.foreign(
+          foreignTableName: 'citizen',
+          column: ColumnInt('id', queryPrefix: tableName),
+          foreignColumnName: 'companyId',
+          relationQueryPrefix: queryPrefix,
+        )
+      ];
+      var table = Table(
+        tableName: tableName,
+        queryPrefix: queryPrefix,
+        tableRelations: tableRelations,
+      );
+
+      var where = ColumnString('name',
+              queryPrefix: queryPrefixForColumn, tableRelations: tableRelations)
+          .equals('Serverpod');
+      var query = SelectQueryBuilder(table: tableName)
+          .withSelectFields([ColumnString('name', queryPrefix: tableName)])
+          .withWhere(ManyRelationExpression(
+              where: where, table: table, foreignIdColumnName: 'companyId'))
+          .build();
+
+      expect(query,
+          'SELECT company."name" AS "company.name" FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE company_employees_citizen."name" = \'Serverpod\' GROUP BY "company.name"');
+    });
+
     test('when all properties configured is built then output is valid SQL.',
         () {
       var table = 'citizen';
@@ -509,6 +542,38 @@ void main() {
 
       expect(query,
           'SELECT COUNT(company."id") FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE TRUE GROUP BY company."id" HAVING COUNT(company_employees_citizen."companyId") = 10');
+    });
+
+    test(
+        'when where expression includes column many relation without aggregate expression then output includes GROUP BY but not having in query.',
+        () {
+      var tableName = 'company';
+      var queryPrefix = '${tableName}_employees_';
+      var queryPrefixForColumn = '${queryPrefix}citizen';
+      var tableRelations = [
+        TableRelation.foreign(
+          foreignTableName: 'citizen',
+          column: ColumnInt('id', queryPrefix: tableName),
+          foreignColumnName: 'companyId',
+          relationQueryPrefix: queryPrefix,
+        )
+      ];
+      var table = Table(
+        tableName: tableName,
+        queryPrefix: queryPrefix,
+        tableRelations: tableRelations,
+      );
+
+      var where = ColumnString('name',
+              queryPrefix: queryPrefixForColumn, tableRelations: tableRelations)
+          .equals('Serverpod');
+      var query = CountQueryBuilder(table: tableName)
+          .withWhere(ManyRelationExpression(
+              where: where, table: table, foreignIdColumnName: 'companyId'))
+          .build();
+
+      expect(query,
+          'SELECT COUNT(company."id") FROM "company" LEFT JOIN "citizen" AS company_employees_citizen ON company."id" = company_employees_citizen."companyId" WHERE company_employees_citizen."name" = \'Serverpod\' GROUP BY company."id"');
     });
 
     test(

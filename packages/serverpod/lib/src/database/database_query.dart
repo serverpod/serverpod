@@ -230,12 +230,16 @@ String? _buildGroupByQuery({
   Include? include,
   bool useColumnAlias = true,
 }) {
-  var manyRelationInWhereExpression =
+  var aggregateExpressionInWhere =
       where?.aggregateExpressions.isNotEmpty ?? false;
-  var manyRelationInOrderBy =
+  var manyRelationColumnInWhere =
+      where?.columns.any((column) => column is ColumnManyRelation) ?? false;
+  var columnCountAggregateInOrderBy =
       orderBy?.any((order) => order.column is ColumnCountAggregate) ?? false;
 
-  if (!manyRelationInWhereExpression && !manyRelationInOrderBy) {
+  if (!aggregateExpressionInWhere &&
+      !columnCountAggregateInOrderBy &&
+      !manyRelationColumnInWhere) {
     return null;
   }
 

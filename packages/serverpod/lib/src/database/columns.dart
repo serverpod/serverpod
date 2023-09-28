@@ -63,6 +63,16 @@ class ColumnSerializable extends Column<String> {
 // TODO: Add comparisons and possibly other operations
 }
 
+/// A [Column] representing a many relation.
+class ColumnManyRelation extends Column<bool> {
+  /// Creates a new [Column], this is typically done in generated code only
+  ColumnManyRelation(
+    super.columnName, {
+    super.queryPrefix,
+    super.tableRelations,
+  });
+}
+
 abstract class _ValueOperatorColumn<T> extends Column<T> {
   _ValueOperatorColumn(
     super.columnName, {
