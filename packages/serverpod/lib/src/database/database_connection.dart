@@ -84,6 +84,7 @@ class DatabaseConnection {
     var rows = await find<T>(
       session,
       where: where,
+      limit: 1,
       transaction: transaction,
       include: include,
     );
