@@ -1,0 +1,9 @@
+class: Blocked
+table: blocked
+fields:
+  blocker: Author?, relation(name=blocked_by)
+  blockee: Author?, relation(name=my_blocked)
+indexes:
+  blocked_blocker_blockee_idx:
+    fields: blockerId, blockeeId
+    unique: true

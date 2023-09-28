@@ -1,0 +1,6 @@
+class: Author
+table: author
+fields:
+  name: String
+  blockedBy: List<Blocked>?, relation(name=blocked_by) 
+  blocked: List<Blocked>?, relation(name=my_blocked) 

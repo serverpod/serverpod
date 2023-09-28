@@ -1,0 +1,5 @@
+class: Posts
+table: posts
+fields:
+  text: String
+  author: Author?, relation
