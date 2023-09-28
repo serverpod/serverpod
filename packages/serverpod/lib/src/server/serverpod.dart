@@ -365,10 +365,8 @@ class Serverpod {
               'Runtime settings not found, creating default settings.',
             );
 
-            // Store default settings.
-            _runtimeSettings = _defaultRuntimeSettings;
-            _runtimeSettings =
-                await RuntimeSettings.db.insertRow(session, _runtimeSettings!);
+            _runtimeSettings = await RuntimeSettings.db
+                .insertRow(session, _defaultRuntimeSettings);
           } else {
             logVerbose('Runtime settings loaded.');
           }

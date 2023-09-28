@@ -51,17 +51,12 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     );
 
     var session = await pod.createSession(enableLogging: false);
-    await databaseConnection.insertRow(session, entry);
+    entry = await databaseConnection.insertRow(session, entry);
 
-    // Read entry
-    entry = await databaseConnection.findById<ReadWriteTestEntry>(
-      session,
-      entry.id!,
-    );
     await session.close();
 
     // Verify random number
-    dbHealthy = entry?.number == rnd;
+    dbHealthy = entry.number == rnd;
 
     dbResponseTime =
         DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
