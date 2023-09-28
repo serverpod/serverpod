@@ -12,6 +12,33 @@ ALTER TABLE ONLY "address"
   ADD CONSTRAINT address_pkey PRIMARY KEY (id);
 
 --
+-- Class Author as table author
+--
+
+CREATE TABLE "author" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "author"
+  ADD CONSTRAINT author_pkey PRIMARY KEY (id);
+
+--
+-- Class Blocked as table blocked
+--
+
+CREATE TABLE "blocked" (
+  "id" serial,
+  "blockerId" integer NOT NULL,
+  "blockeeId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "blocked"
+  ADD CONSTRAINT blocked_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX blocked_blocker_blockee_idx ON "blocked" USING btree ("blockerId", "blockeeId");
+
+--
 -- Class Citizen as table citizen
 --
 
@@ -213,6 +240,19 @@ ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_pkey PRIMARY KEY (id);
 
 --
+-- Class Posts as table posts
+--
+
+CREATE TABLE "posts" (
+  "id" serial,
+  "text" text NOT NULL,
+  "authorId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "posts"
+  ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -277,6 +317,21 @@ ALTER TABLE ONLY "address"
   ADD CONSTRAINT address_fk_0
     FOREIGN KEY("inhabitantId")
       REFERENCES citizen(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "blocked" table
+--
+
+ALTER TABLE ONLY "blocked"
+  ADD CONSTRAINT blocked_fk_0
+    FOREIGN KEY("blockerId")
+      REFERENCES author(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "blocked"
+  ADD CONSTRAINT blocked_fk_1
+    FOREIGN KEY("blockeeId")
+      REFERENCES author(id)
         ON DELETE CASCADE;
 
 --
@@ -357,6 +412,16 @@ ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_fk_0
     FOREIGN KEY("nextId")
       REFERENCES post(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "posts" table
+--
+
+ALTER TABLE ONLY "posts"
+  ADD CONSTRAINT posts_fk_0
+    FOREIGN KEY("authorId")
+      REFERENCES author(id)
         ON DELETE CASCADE;
 
 --

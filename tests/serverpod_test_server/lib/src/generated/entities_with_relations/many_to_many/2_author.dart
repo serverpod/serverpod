@@ -9,51 +9,59 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Customer extends _i1.TableRow {
-  Customer._({
+abstract class Author extends _i1.TableRow {
+  Author._({
     int? id,
     required this.name,
-    this.orders,
+    this.blockedBy,
+    this.blocked,
   }) : super(id);
 
-  factory Customer({
+  factory Author({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
-  }) = _CustomerImpl;
+    List<_i2.Blocked>? blockedBy,
+    List<_i2.Blocked>? blocked,
+  }) = _AuthorImpl;
 
-  factory Customer.fromJson(
+  factory Author.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Customer(
+    return Author(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      orders: serializationManager
-          .deserialize<List<_i2.Order>?>(jsonSerialization['orders']),
+      blockedBy: serializationManager
+          .deserialize<List<_i2.Blocked>?>(jsonSerialization['blockedBy']),
+      blocked: serializationManager
+          .deserialize<List<_i2.Blocked>?>(jsonSerialization['blocked']),
     );
   }
 
-  static final t = CustomerTable();
+  static final t = AuthorTable();
 
   String name;
 
-  List<_i2.Order>? orders;
+  List<_i2.Blocked>? blockedBy;
+
+  List<_i2.Blocked>? blocked;
 
   @override
   _i1.Table get table => t;
 
-  Customer copyWith({
+  Author copyWith({
     int? id,
     String? name,
-    List<_i2.Order>? orders,
+    List<_i2.Blocked>? blockedBy,
+    List<_i2.Blocked>? blocked,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'orders': orders,
+      'blockedBy': blockedBy,
+      'blocked': blocked,
     };
   }
 
@@ -71,7 +79,8 @@ abstract class Customer extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
-      'orders': orders,
+      'blockedBy': blockedBy,
+      'blocked': blocked,
     };
   }
 
@@ -92,9 +101,9 @@ abstract class Customer extends _i1.TableRow {
     }
   }
 
-  static Future<List<Customer>> find(
+  static Future<List<Author>> find(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    AuthorExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -103,8 +112,8 @@ abstract class Customer extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.find<Author>(
+      where: where != null ? where(Author.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -115,17 +124,17 @@ abstract class Customer extends _i1.TableRow {
     );
   }
 
-  static Future<Customer?> findSingleRow(
+  static Future<Author?> findSingleRow(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    AuthorExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.findSingleRow<Author>(
+      where: where != null ? where(Author.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -134,27 +143,27 @@ abstract class Customer extends _i1.TableRow {
     );
   }
 
-  static Future<Customer?> findById(
+  static Future<Author?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<Customer>(id);
+    return session.db.findById<Author>(id);
   }
 
   static Future<int> delete(
     _i1.Session session, {
-    required CustomerWithoutManyRelationsExpressionBuilder where,
+    required AuthorWithoutManyRelationsExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Customer>(
-      where: where(Customer.t),
+    return session.db.delete<Author>(
+      where: where(Author.t),
       transaction: transaction,
     );
   }
 
   static Future<bool> deleteRow(
     _i1.Session session,
-    Customer row, {
+    Author row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -165,7 +174,7 @@ abstract class Customer extends _i1.TableRow {
 
   static Future<bool> update(
     _i1.Session session,
-    Customer row, {
+    Author row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -176,7 +185,7 @@ abstract class Customer extends _i1.TableRow {
 
   static Future<void> insert(
     _i1.Session session,
-    Customer row, {
+    Author row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -187,76 +196,83 @@ abstract class Customer extends _i1.TableRow {
 
   static Future<int> count(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    AuthorExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.count<Author>(
+      where: where != null ? where(Author.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static CustomerInclude include() {
-    return CustomerInclude._();
+  static AuthorInclude include() {
+    return AuthorInclude._();
   }
 }
 
 class _Undefined {}
 
-class _CustomerImpl extends Customer {
-  _CustomerImpl({
+class _AuthorImpl extends Author {
+  _AuthorImpl({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_i2.Blocked>? blockedBy,
+    List<_i2.Blocked>? blocked,
   }) : super._(
           id: id,
           name: name,
-          orders: orders,
+          blockedBy: blockedBy,
+          blocked: blocked,
         );
 
   @override
-  Customer copyWith({
+  Author copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? orders = _Undefined,
+    Object? blockedBy = _Undefined,
+    Object? blocked = _Undefined,
   }) {
-    return Customer(
+    return Author(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>? ? orders : this.orders?.clone(),
+      blockedBy:
+          blockedBy is List<_i2.Blocked>? ? blockedBy : this.blockedBy?.clone(),
+      blocked: blocked is List<_i2.Blocked>? ? blocked : this.blocked?.clone(),
     );
   }
 }
 
-typedef CustomerExpressionBuilder = _i1.Expression Function(CustomerTable);
-typedef CustomerWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
-    CustomerWithoutManyRelationsTable);
+typedef AuthorExpressionBuilder = _i1.Expression Function(AuthorTable);
+typedef AuthorWithoutManyRelationsExpressionBuilder = _i1.Expression Function(
+    AuthorWithoutManyRelationsTable);
 
-class CustomerTable extends CustomerWithoutManyRelationsTable {
-  CustomerTable({
+class AuthorTable extends AuthorWithoutManyRelationsTable {
+  AuthorTable({
     super.queryPrefix,
     super.tableRelations,
   });
 
-  _i2.OrderWithoutManyRelationsTable? _orders;
+  _i2.BlockedWithoutManyRelationsTable? _blockedBy;
 
-  _i2.OrderWithoutManyRelationsTable get _ordersTable {
-    if (_orders != null) return _orders!;
-    _orders = _i1.createRelationTable(
+  _i2.BlockedWithoutManyRelationsTable? _blocked;
+
+  _i2.BlockedWithoutManyRelationsTable get _blockedByTable {
+    if (_blockedBy != null) return _blockedBy!;
+    _blockedBy = _i1.createRelationTable(
       queryPrefix: queryPrefix,
-      fieldName: 'orders',
-      foreignTableName: _i2.Order.t.tableName,
+      fieldName: 'blockedBy',
+      foreignTableName: _i2.Blocked.t.tableName,
       column: id,
-      foreignColumnName: _i2.Order.t.customerId.columnName,
+      foreignColumnName: _i2.Blocked.t.blockerId.columnName,
       createTable: (
         relationQueryPrefix,
         foreignTableRelation,
       ) =>
-          _i2.OrderWithoutManyRelationsTable(
+          _i2.BlockedWithoutManyRelationsTable(
         queryPrefix: relationQueryPrefix,
         tableRelations: [
           ...?tableRelations,
@@ -264,24 +280,56 @@ class CustomerTable extends CustomerWithoutManyRelationsTable {
         ],
       ),
     );
-    return _orders!;
+    return _blockedBy!;
   }
 
-  _i1.ManyRelationExpression orders(
-      _i2.OrderWithoutManyRelationsExpressionBuilder where) {
+  _i2.BlockedWithoutManyRelationsTable get _blockedTable {
+    if (_blocked != null) return _blocked!;
+    _blocked = _i1.createRelationTable(
+      queryPrefix: queryPrefix,
+      fieldName: 'blocked',
+      foreignTableName: _i2.Blocked.t.tableName,
+      column: id,
+      foreignColumnName: _i2.Blocked.t.blockeeId.columnName,
+      createTable: (
+        relationQueryPrefix,
+        foreignTableRelation,
+      ) =>
+          _i2.BlockedWithoutManyRelationsTable(
+        queryPrefix: relationQueryPrefix,
+        tableRelations: [
+          ...?tableRelations,
+          foreignTableRelation,
+        ],
+      ),
+    );
+    return _blocked!;
+  }
+
+  _i1.ManyRelationExpression blockedBy(
+      _i2.BlockedWithoutManyRelationsExpressionBuilder where) {
     return _i1.ManyRelationExpression(
-      table: _ordersTable,
-      where: where(_ordersTable),
-      foreignIdColumnName: 'customerId',
+      table: _blockedByTable,
+      where: where(_blockedByTable),
+      foreignIdColumnName: 'blockerId',
+    );
+  }
+
+  _i1.ManyRelationExpression blocked(
+      _i2.BlockedWithoutManyRelationsExpressionBuilder where) {
+    return _i1.ManyRelationExpression(
+      table: _blockedTable,
+      where: where(_blockedTable),
+      foreignIdColumnName: 'blockeeId',
     );
   }
 }
 
-class CustomerWithoutManyRelationsTable extends _i1.Table {
-  CustomerWithoutManyRelationsTable({
+class AuthorWithoutManyRelationsTable extends _i1.Table {
+  AuthorWithoutManyRelationsTable({
     super.queryPrefix,
     super.tableRelations,
-  }) : super(tableName: 'customer') {
+  }) : super(tableName: 'author') {
     name = _i1.ColumnString(
       'name',
       queryPrefix: super.queryPrefix,
@@ -298,15 +346,15 @@ class CustomerWithoutManyRelationsTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use CustomerTable.t instead.')
-CustomerTable tCustomer = CustomerTable();
+@Deprecated('Use AuthorTable.t instead.')
+AuthorTable tAuthor = AuthorTable();
 
-class CustomerInclude extends _i1.Include {
-  CustomerInclude._();
+class AuthorInclude extends _i1.Include {
+  AuthorInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Customer.t;
+  _i1.Table get table => Author.t;
 }

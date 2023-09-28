@@ -308,9 +308,9 @@ class CompanyTable extends CompanyWithoutManyRelationsTable {
     return _employees!;
   }
 
-  _i1.ManyRelation employees(
+  _i1.ManyRelationExpression employees(
       _i2.CitizenWithoutManyRelationsExpressionBuilder where) {
-    return _i1.ManyRelation(
+    return _i1.ManyRelationExpression(
       table: _employeesTable,
       where: where(_employeesTable),
       foreignIdColumnName: '_companyEmployeesCompanyId',

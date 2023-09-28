@@ -310,9 +310,9 @@ class OrderTable extends OrderWithoutManyRelationsTable {
     return _comments!;
   }
 
-  _i1.ManyRelation comments(
+  _i1.ManyRelationExpression comments(
       _i2.CommentWithoutManyRelationsExpressionBuilder where) {
-    return _i1.ManyRelation(
+    return _i1.ManyRelationExpression(
       table: _commentsTable,
       where: where(_commentsTable),
       foreignIdColumnName: 'orderId',

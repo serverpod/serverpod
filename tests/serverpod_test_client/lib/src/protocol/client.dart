@@ -35,17 +35,23 @@ import 'package:serverpod_test_client/src/protocol/entities_with_relations/named
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i19;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i20;
-import 'package:serverpod_test_module_client/module.dart' as _i21;
-import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/many_to_many/3_posts.dart'
+    as _i21;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/many_to_many/2_author.dart'
     as _i22;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/3_customer.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/many_to_many/1_blocked.dart'
     as _i23;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/1_comment.dart'
-    as _i24;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/2_order.dart'
+import 'package:serverpod_test_module_client/module.dart' as _i24;
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i25;
-import 'dart:io' as _i26;
-import 'protocol.dart' as _i27;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/3_customer.dart'
+    as _i26;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/1_comment.dart'
+    as _i27;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/2_order.dart'
+    as _i28;
+import 'dart:io' as _i29;
+import 'protocol.dart' as _i30;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -1920,6 +1926,49 @@ class EndpointLoggingDisabled extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointManyToMany extends _i1.EndpointRef {
+  EndpointManyToMany(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'manyToMany';
+
+  _i2.Future<List<_i21.Posts>> findAllNonBlockedPosts(
+          {required _i22.Author reader}) =>
+      caller.callServerEndpoint<List<_i21.Posts>>(
+        'manyToMany',
+        'findAllNonBlockedPosts',
+        {'reader': reader},
+      );
+
+  _i2.Future<int?> postInsert(_i21.Posts post) =>
+      caller.callServerEndpoint<int?>(
+        'manyToMany',
+        'postInsert',
+        {'post': post},
+      );
+
+  _i2.Future<int?> authorInsert(_i22.Author author) =>
+      caller.callServerEndpoint<int?>(
+        'manyToMany',
+        'authorInsert',
+        {'author': author},
+      );
+
+  _i2.Future<int?> blockedInsert(_i23.Blocked blocked) =>
+      caller.callServerEndpoint<int?>(
+        'manyToMany',
+        'blockedInsert',
+        {'blocked': blocked},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'manyToMany',
+        'deleteAll',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointMapParameters extends _i1.EndpointRef {
   EndpointMapParameters(_i1.EndpointCaller caller) : super(caller);
 
@@ -2128,15 +2177,15 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i21.ModuleClass> modifyModuleObject(_i21.ModuleClass object) =>
-      caller.callServerEndpoint<_i21.ModuleClass>(
+  _i2.Future<_i24.ModuleClass> modifyModuleObject(_i24.ModuleClass object) =>
+      caller.callServerEndpoint<_i24.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
       );
 
-  _i2.Future<_i22.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i22.ModuleDatatype>(
+  _i2.Future<_i25.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i25.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -2188,24 +2237,24 @@ class EndpointOneToMany extends _i1.EndpointRef {
   @override
   String get name => 'oneToMany';
 
-  _i2.Future<List<_i23.Customer>> customerFindWhereOrderDescriptionIs(
+  _i2.Future<List<_i26.Customer>> customerFindWhereOrderDescriptionIs(
           {required String description}) =>
-      caller.callServerEndpoint<List<_i23.Customer>>(
+      caller.callServerEndpoint<List<_i26.Customer>>(
         'oneToMany',
         'customerFindWhereOrderDescriptionIs',
         {'description': description},
       );
 
-  _i2.Future<List<_i23.Customer>> customerFindWhereOrdersGreaterThan(
+  _i2.Future<List<_i26.Customer>> customerFindWhereOrdersGreaterThan(
           {required int numberOfOrders}) =>
-      caller.callServerEndpoint<List<_i23.Customer>>(
+      caller.callServerEndpoint<List<_i26.Customer>>(
         'oneToMany',
         'customerFindWhereOrdersGreaterThan',
         {'numberOfOrders': numberOfOrders},
       );
 
-  _i2.Future<List<_i23.Customer>> customerOrderByOrderCountAscending() =>
-      caller.callServerEndpoint<List<_i23.Customer>>(
+  _i2.Future<List<_i26.Customer>> customerOrderByOrderCountAscending() =>
+      caller.callServerEndpoint<List<_i26.Customer>>(
         'oneToMany',
         'customerOrderByOrderCountAscending',
         {},
@@ -2227,21 +2276,21 @@ class EndpointOneToMany extends _i1.EndpointRef {
         {'description': description},
       );
 
-  _i2.Future<int?> commentInsert(_i24.Comment comment) =>
+  _i2.Future<int?> commentInsert(_i27.Comment comment) =>
       caller.callServerEndpoint<int?>(
         'oneToMany',
         'commentInsert',
         {'comment': comment},
       );
 
-  _i2.Future<int?> orderInsert(_i25.Order order) =>
+  _i2.Future<int?> orderInsert(_i28.Order order) =>
       caller.callServerEndpoint<int?>(
         'oneToMany',
         'orderInsert',
         {'order': order},
       );
 
-  _i2.Future<int?> customerInsert(_i23.Customer customer) =>
+  _i2.Future<int?> customerInsert(_i26.Customer customer) =>
       caller.callServerEndpoint<int?>(
         'oneToMany',
         'customerInsert',
@@ -2448,11 +2497,11 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i21.Caller(client);
+    module = _i24.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i21.Caller module;
+  late final _i24.Caller module;
 
   late final _i3.Caller auth;
 }
@@ -2460,11 +2509,11 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i26.SecurityContext? context,
+    _i29.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i27.Protocol(),
+          _i30.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
@@ -2492,6 +2541,7 @@ class Client extends _i1.ServerpodClient {
     listParameters = EndpointListParameters(this);
     logging = EndpointLogging(this);
     loggingDisabled = EndpointLoggingDisabled(this);
+    manyToMany = EndpointManyToMany(this);
     mapParameters = EndpointMapParameters(this);
     moduleSerialization = EndpointModuleSerialization(this);
     namedParameters = EndpointNamedParameters(this);
@@ -2555,6 +2605,8 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointLoggingDisabled loggingDisabled;
 
+  late final EndpointManyToMany manyToMany;
+
   late final EndpointMapParameters mapParameters;
 
   late final EndpointModuleSerialization moduleSerialization;
@@ -2607,6 +2659,7 @@ class Client extends _i1.ServerpodClient {
         'listParameters': listParameters,
         'logging': logging,
         'loggingDisabled': loggingDisabled,
+        'manyToMany': manyToMany,
         'mapParameters': mapParameters,
         'moduleSerialization': moduleSerialization,
         'namedParameters': namedParameters,
