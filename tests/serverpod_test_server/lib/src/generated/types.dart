@@ -278,7 +278,8 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
-  @Deprecated('Will be removed in 2.0.0. Use: db.insert instead.')
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     Types row, {
