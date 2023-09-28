@@ -41,7 +41,7 @@ class DatabaseConnectionLegacy {
     this._logQuery,
   ) : _postgresConnection = _poolManager.pool;
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<bool> update(
     TableRow row, {
     required Session session,
@@ -91,7 +91,7 @@ class DatabaseConnectionLegacy {
     }
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<void> insert(
     TableRow row, {
     required Session session,
@@ -158,7 +158,7 @@ class DatabaseConnectionLegacy {
     row.setColumn('id', insertedId);
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<List<T>> deleteAndReturn<T extends TableRow>({
     required Expression where,
     required Session session,
@@ -199,7 +199,7 @@ class DatabaseConnectionLegacy {
     return list.cast<T>();
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<bool> deleteRow(
     TableRow row, {
     required Session session,
@@ -234,7 +234,7 @@ Current type was $T''');
     return table!;
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<void> storeFile(String storageId, String path, ByteData byteData,
       DateTime? expiration, bool verified,
       {required Session session}) async {
@@ -265,7 +265,7 @@ Current type was $T''');
     }
   }
 
-  /// For most cases use the corresponding method in [Database] instead.
+  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
   Future<ByteData?> retrieveFile(String storageId, String path,
       {required Session session}) async {
     var startTime = DateTime.now();

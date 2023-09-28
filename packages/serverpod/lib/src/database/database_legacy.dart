@@ -11,6 +11,7 @@ import 'expressions.dart';
 import 'table.dart';
 
 /// Provides easy access to the database in relation to the current [Session].
+@Deprecated('Will be removed in 2.0.0. Use Database instead.')
 class DatabaseLegacy {
   /// The [Session] the database is currently related to.
   Session session;
@@ -113,7 +114,6 @@ class DatabaseLegacy {
   /// Updates a single [TableRow]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
-  @Deprecated('Will be removed in 2.0.0. Use: updateRow instead')
   Future<bool> update<T extends TableRow>(
     TableRow row, {
     List<Column>? columns,
