@@ -381,6 +381,9 @@ class RuntimeSettingsRepository {
   Future<RuntimeSettings?> findRow(
     _i1.Session session, {
     RuntimeSettingsExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<RuntimeSettings>(

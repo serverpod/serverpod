@@ -542,6 +542,9 @@ class MessageLogEntryRepository {
   Future<MessageLogEntry?> findRow(
     _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<MessageLogEntry>(

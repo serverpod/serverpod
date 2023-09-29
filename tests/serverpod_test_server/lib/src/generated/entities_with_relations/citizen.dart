@@ -527,6 +527,9 @@ class CitizenRepository {
   Future<Citizen?> findRow(
     _i1.Session session, {
     CitizenExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {

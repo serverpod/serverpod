@@ -382,6 +382,9 @@ class TownRepository {
   Future<Town?> findRow(
     _i1.Session session, {
     TownExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {

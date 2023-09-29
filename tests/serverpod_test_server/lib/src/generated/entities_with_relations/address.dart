@@ -384,6 +384,9 @@ class AddressRepository {
   Future<Address?> findRow(
     _i1.Session session, {
     AddressExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {

@@ -293,6 +293,9 @@ class ObjectWithSelfParentRepository {
   Future<ObjectWithSelfParent?> findRow(
     _i1.Session session, {
     ObjectWithSelfParentExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<ObjectWithSelfParent>(

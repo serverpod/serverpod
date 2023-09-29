@@ -391,6 +391,9 @@ class AuthKeyRepository {
   Future<AuthKey?> findRow(
     _i1.Session session, {
     AuthKeyExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<AuthKey>(

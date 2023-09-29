@@ -378,6 +378,9 @@ class CloudStorageDirectUploadEntryRepository {
   Future<CloudStorageDirectUploadEntry?> findRow(
     _i1.Session session, {
     CloudStorageDirectUploadEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<CloudStorageDirectUploadEntry>(

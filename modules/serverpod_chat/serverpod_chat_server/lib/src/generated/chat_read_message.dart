@@ -351,6 +351,9 @@ class ChatReadMessageRepository {
   Future<ChatReadMessage?> findRow(
     _i1.Session session, {
     ChatReadMessageExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<ChatReadMessage>(

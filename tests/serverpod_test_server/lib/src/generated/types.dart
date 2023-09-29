@@ -495,6 +495,9 @@ class TypesRepository {
   Future<Types?> findRow(
     _i1.Session session, {
     TypesExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<Types>(

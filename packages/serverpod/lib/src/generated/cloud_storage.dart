@@ -432,6 +432,9 @@ class CloudStorageEntryRepository {
   Future<CloudStorageEntry?> findRow(
     _i1.Session session, {
     CloudStorageEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<CloudStorageEntry>(

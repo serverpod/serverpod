@@ -349,6 +349,9 @@ class EmailAuthRepository {
   Future<EmailAuth?> findRow(
     _i1.Session session, {
     EmailAuthExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<EmailAuth>(

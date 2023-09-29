@@ -491,6 +491,9 @@ class UserInfoRepository {
   Future<UserInfo?> findRow(
     _i1.Session session, {
     UserInfoExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<UserInfo>(

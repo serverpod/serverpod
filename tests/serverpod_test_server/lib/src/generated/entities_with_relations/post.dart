@@ -439,6 +439,9 @@ class PostRepository {
   Future<Post?> findRow(
     _i1.Session session, {
     PostExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {

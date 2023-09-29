@@ -324,6 +324,9 @@ class GoogleRefreshTokenRepository {
   Future<GoogleRefreshToken?> findRow(
     _i1.Session session, {
     GoogleRefreshTokenExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<GoogleRefreshToken>(

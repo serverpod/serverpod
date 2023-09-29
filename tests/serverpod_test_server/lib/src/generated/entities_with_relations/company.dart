@@ -394,6 +394,9 @@ class CompanyRepository {
   Future<Company?> findRow(
     _i1.Session session, {
     CompanyExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {

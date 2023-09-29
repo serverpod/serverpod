@@ -299,6 +299,9 @@ class SimpleDataRepository {
   Future<SimpleData?> findRow(
     _i1.Session session, {
     SimpleDataExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<SimpleData>(

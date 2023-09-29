@@ -379,6 +379,9 @@ class EmailCreateAccountRequestRepository {
   Future<EmailCreateAccountRequest?> findRow(
     _i1.Session session, {
     EmailCreateAccountRequestExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<EmailCreateAccountRequest>(
