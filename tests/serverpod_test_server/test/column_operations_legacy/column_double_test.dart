@@ -9,7 +9,8 @@ Future<void> _createTestDatabase(Client client) async {
   var thirdInt = Types(aDouble: 3.0);
   var nullInt = Types(aDouble: null);
 
-  await client.columnDoubleLegacy.insert([firstInt, secondInt, thirdInt, nullInt]);
+  await client.columnDoubleLegacy
+      .insert([firstInt, secondInt, thirdInt, nullInt]);
 }
 
 void main() async {

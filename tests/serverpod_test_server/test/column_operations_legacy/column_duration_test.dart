@@ -13,7 +13,8 @@ Future<void> _createTestDatabase(Client client) async {
   var third = Types(aDuration: thirdDuration);
   var nullDuration = Types(aDuration: null);
 
-  await client.columnDurationLegacy.insert([first, second, third, nullDuration]);
+  await client.columnDurationLegacy
+      .insert([first, second, third, nullDuration]);
 }
 
 void main() async {
@@ -77,7 +78,8 @@ void main() async {
 
     test('when filtering using isDistinctFrom then matching rows are returned.',
         () async {
-      var result = await client.columnDurationLegacy.isDistinctFrom(firstDuration);
+      var result =
+          await client.columnDurationLegacy.isDistinctFrom(firstDuration);
 
       expect(result.length, 3);
     });
@@ -85,7 +87,8 @@ void main() async {
     test(
         'when filtering using isNotDistinctFrom then matching row is returned.',
         () async {
-      var result = await client.columnDurationLegacy.isNotDistinctFrom(firstDuration);
+      var result =
+          await client.columnDurationLegacy.isNotDistinctFrom(firstDuration);
 
       expect(result.first.aDuration, firstDuration);
     });
@@ -116,23 +119,24 @@ void main() async {
     test(
         'when filtering using less or equal than then matching rows are returned.',
         () async {
-      var result = await client.columnDurationLegacy.lessOrEqualThan(thirdDuration);
+      var result =
+          await client.columnDurationLegacy.lessOrEqualThan(thirdDuration);
 
       expect(result.length, 3);
     });
 
     test('when filtering using between then matching rows are returned.',
         () async {
-      var result =
-          await client.columnDurationLegacy.between(firstDuration, secondDuration);
+      var result = await client.columnDurationLegacy
+          .between(firstDuration, secondDuration);
 
       expect(result.length, 2);
     });
 
     test('when filtering using not between then matching row is returned.',
         () async {
-      var result =
-          await client.columnDurationLegacy.notBetween(firstDuration, secondDuration);
+      var result = await client.columnDurationLegacy
+          .notBetween(firstDuration, secondDuration);
 
       expect(result.first.aDuration, thirdDuration);
     });

@@ -80,7 +80,8 @@ void main() async {
     test(
         'when filtering using isNotDistinctFrom then matching row is returned.',
         () async {
-      var result = await client.columnEnumLegacy.isNotDistinctFrom(TestEnum.one);
+      var result =
+          await client.columnEnumLegacy.isNotDistinctFrom(TestEnum.one);
 
       expect(result.first.anEnum, TestEnum.one);
     });

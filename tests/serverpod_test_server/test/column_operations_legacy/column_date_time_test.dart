@@ -13,7 +13,8 @@ Future<void> _createTestDatabase(Client client) async {
   var third = Types(aDateTime: thirdDate);
   var nullDateTime = Types(aDateTime: null);
 
-  await client.columnDateTimeLegacy.insert([first, second, third, nullDateTime]);
+  await client.columnDateTimeLegacy
+      .insert([first, second, third, nullDateTime]);
 }
 
 void main() async {
@@ -85,7 +86,8 @@ void main() async {
     test(
         'when filtering using isNotDistinctFrom then matching row is returned.',
         () async {
-      var result = await client.columnDateTimeLegacy.isNotDistinctFrom(firstDate);
+      var result =
+          await client.columnDateTimeLegacy.isNotDistinctFrom(firstDate);
 
       expect(result.first.aDateTime, firstDate);
     });
@@ -100,7 +102,8 @@ void main() async {
     test(
         'when filtering using greater or equal than then matching rows are returned.',
         () async {
-      var result = await client.columnDateTimeLegacy.greaterOrEqualThan(firstDate);
+      var result =
+          await client.columnDateTimeLegacy.greaterOrEqualThan(firstDate);
 
       expect(result.length, 3);
     });
@@ -122,7 +125,8 @@ void main() async {
 
     test('when filtering using between then matching rows are returned.',
         () async {
-      var result = await client.columnDateTimeLegacy.between(firstDate, secondDate);
+      var result =
+          await client.columnDateTimeLegacy.between(firstDate, secondDate);
 
       expect(result.length, 2);
     });
