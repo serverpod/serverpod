@@ -156,9 +156,15 @@ class _UsingQuery {
   _UsingQuery({required this.using, required this.where});
 }
 
+/// Sets the return statement of queries
 enum Returning {
+  /// Returns all columns of the table.
   all,
+
+  /// Returns only the id column of the table.
   id,
+
+  /// Returns no columns.
   none,
 }
 
@@ -209,6 +215,7 @@ class DeleteQueryBuilder {
     if (using != null) query += ' USING ${using.using}';
     if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
+    if (_returningStatement != null) query += _returningStatement!;
     return query;
   }
 }

@@ -385,14 +385,17 @@ void main() {
 
     test('when query returning all is built then output is a return all query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen').withReturnAll().build();
+      var query = DeleteQueryBuilder(table: 'citizen')
+          .withReturn(Returning.all)
+          .build();
 
       expect(query, 'DELETE FROM "citizen" RETURNING *');
     });
 
     test('when query return id is build then the output is a return id query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen').withReturnId().build();
+      var query =
+          DeleteQueryBuilder(table: 'citizen').withReturn(Returning.id).build();
 
       expect(query, 'DELETE FROM "citizen" RETURNING "citizen".id');
     });
@@ -468,7 +471,7 @@ void main() {
                   relationQueryPrefix: queryPrefix,
                 )
               ]).equals('Serverpod'))
-          .withReturnAll()
+          .withReturn(Returning.all)
           .build();
 
       expect(query,

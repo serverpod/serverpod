@@ -22,6 +22,7 @@ class DatabaseConnection {
   final PgPool _postgresConnection;
 
   /// Access to legacy database methods.
+  // ignore: deprecated_member_use_from_same_package
   late final DatabaseConnectionLegacy legacy;
 
   /// Creates a new database connection from the configuration. For most cases
@@ -29,6 +30,7 @@ class DatabaseConnection {
   /// access the database.
   DatabaseConnection(this._poolManager)
       : _postgresConnection = _poolManager.pool {
+    // ignore: deprecated_member_use_from_same_package
     legacy = DatabaseConnectionLegacy(_poolManager, _logQuery);
   }
 
