@@ -53,12 +53,18 @@ class Database {
   /// Find a single [TableRow] from a table, using the provided [where]
   Future<T?> findRow<T extends TableRow>({
     Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
   }) async {
     return await _databaseConnection.findRow<T>(
       _session,
       where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );

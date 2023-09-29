@@ -77,6 +77,9 @@ class DatabaseConnection {
   Future<T?> findRow<T extends TableRow>(
     Session session, {
     Expression? where,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -84,6 +87,9 @@ class DatabaseConnection {
     var rows = await find<T>(
       session,
       where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
       include: include,

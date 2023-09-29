@@ -248,6 +248,24 @@ class BuildRepositoryClass {
         Parameter((p) => p
           ..type = TypeReference((b) => b
             ..isNullable = true
+            ..symbol = 'int')
+          ..name = 'offset'
+          ..named = true),
+        Parameter((p) => p
+          ..type = TypeReference((b) => b
+            ..isNullable = true
+            ..symbol = 'Column'
+            ..url = 'package:serverpod/serverpod.dart')
+          ..name = 'orderBy'
+          ..named = true),
+        Parameter((p) => p
+          ..type = refer('bool')
+          ..name = 'orderDescending'
+          ..defaultTo = const Code('false')
+          ..named = true),
+        Parameter((p) => p
+          ..type = TypeReference((b) => b
+            ..isNullable = true
             ..symbol = 'Transaction'
             ..url = 'package:serverpod/serverpod.dart')
           ..name = 'transaction'

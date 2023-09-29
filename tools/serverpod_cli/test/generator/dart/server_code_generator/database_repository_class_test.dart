@@ -191,6 +191,32 @@ void main() {
           );
         });
 
+        test('that takes the offset as a named optional param', () {
+          var params = insertRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('int? offset'),
+          );
+        });
+
+        test('that takes the orderBy as a named optional param', () {
+          var params = insertRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('Column? orderBy'),
+          );
+        });
+
+        test(
+            'that takes the orderDescending as a named param with the default value false',
+            () {
+          var params = insertRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('bool orderDescending = false'),
+          );
+        });
+
         test('that takes the transaction object as an optional param', () {
           expect(
             insertRowMethod?.parameters?.toSource(),

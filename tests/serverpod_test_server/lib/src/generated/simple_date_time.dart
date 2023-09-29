@@ -297,6 +297,9 @@ class SimpleDateTimeRepository {
   Future<SimpleDateTime?> findRow(
     _i1.Session session, {
     SimpleDateTimeExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findRow<SimpleDateTime>(
