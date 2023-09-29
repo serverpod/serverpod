@@ -172,7 +172,7 @@ class DatabaseConnectionLegacy {
     var tableName = table.tableName;
     var query = DeleteQueryBuilder(table: tableName)
         .withWhere(where)
-        .withReturnAll()
+        .withReturn(Returning.all)
         .build();
 
     List<TableRow?> list = <TableRow>[];

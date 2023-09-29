@@ -224,7 +224,7 @@ class DatabaseConnection {
 
     var query = DeleteQueryBuilder(table: row.table.tableName)
         .withWhere(Expression('id = $id'))
-        .withReturnId()
+        .withReturn(Returning.id)
         .build();
 
     var result = await this.query(session, query, transaction: transaction);
@@ -244,7 +244,7 @@ class DatabaseConnection {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
     var query = DeleteQueryBuilder(table: table.tableName)
-        .withReturnId()
+        .withReturn(Returning.id)
         .withWhere(where)
         .build();
 
