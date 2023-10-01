@@ -1198,13 +1198,8 @@ class CallbackObject {}
 /// The path itself is still exposed to the documentation viewer
 /// but they will not know which operations and parameters are available.
 class PathItemObject {
-  /// Allows for a referenced definition of this path item.
-  /// The referenced structure must be in the form of a Path Item Object.
-  /// In case a Path Item Object field appears both in the defined object and the referenced object, the behavior is undefined.
-  /// See the rules for resolving Relative References.
-  final String? ref;
-
-  /// An optional, string summary, intended to apply to all operations in this path.
+  /// An optional, string summary, intended to apply to all operations in this
+  /// path.
   final String? summary;
 
   /// An optional, string description, intended to apply to all operations in this path. CommonMark syntax may be used for rich text representation.
@@ -1239,7 +1234,6 @@ class PathItemObject {
 
   final List<ParameterObject>? parameters;
   PathItemObject({
-    this.ref,
     this.summary,
     this.description,
     this.getOperation,
@@ -1265,10 +1259,6 @@ class PathItemObject {
 
     if (postOperation != null) {
       map['post'] = postOperation!.toJson();
-    }
-
-    if (ref != null) {
-      map['\$ref'] = _getRef(ref!);
     }
 
     return map;

@@ -4,10 +4,11 @@ import 'package:test/test.dart';
 
 void main() {
   group('Validate on ContentSchemaObject', () {
-    test('returnType is Future<Example>', () {
+    test('When returnType is Future<Example>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
+          url: 'dart:core',
           nullable: false,
           generics: [
             TypeDefinition(
@@ -23,23 +24,28 @@ void main() {
       }, contentSchemaObject.toJson());
     });
 
-    test('returnType is Future<Map<String,String>>', () {
+    test('When returnType is Future<Map<String,String>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'Map',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
+             
             ),
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -55,19 +61,22 @@ void main() {
       );
     });
 
-    test('returnType is Future<Map<String,Example>>', () {
+    test('When returnType is Future<Map<String,Example>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'Map',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'Example',
@@ -87,7 +96,7 @@ void main() {
       );
     });
 
-    test('returnType is Future<List<Example>>', () {
+    test('When returnType is Future<List<Example>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
@@ -96,6 +105,7 @@ void main() {
             TypeDefinition(
               className: 'List',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'Example',
@@ -116,7 +126,7 @@ void main() {
       );
     });
 
-    test('returnType is Future<List<int>>', () {
+    test('When returnType is Future<List<int>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
@@ -125,10 +135,12 @@ void main() {
             TypeDefinition(
               className: 'List',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'int',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -144,7 +156,7 @@ void main() {
       );
     });
 
-    test('returnType is Future<List<String>>', () {
+    test('When returnType is Future<List<String>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
@@ -153,10 +165,12 @@ void main() {
             TypeDefinition(
               className: 'List',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -172,7 +186,7 @@ void main() {
       );
     });
 
-    test('returnType is Future<List<double>>', () {
+    test('When returnType is Future<List<double>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
@@ -181,10 +195,12 @@ void main() {
             TypeDefinition(
               className: 'List',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'double',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -200,19 +216,22 @@ void main() {
       );
     });
 
-    test('returnType is Future<List<Map>>', () {
+    test('When returnType is Future<List<Map>>', () {
       ContentSchemaObject contentSchemaObject = ContentSchemaObject(
         returnType: TypeDefinition(
           className: 'Future',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'List',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'Map',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),

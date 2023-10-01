@@ -32,18 +32,25 @@ void main() {
         requiredField: true,
         allowEmptyValue: false,
         schema: ParameterSchemaObject(
-          TypeDefinition(className: 'String', nullable: false),
+          TypeDefinition(
+            className: 'String',
+            nullable: false,
+            url: 'dart:core',
+          ),
         ),
       );
 
-      expect({
-        'name': 'status',
-        'in': 'path',
-        'required': true,
-        'schema': {
-          'type': 'string',
-        }
-      }, object.toJson());
+      expect(
+        {
+          'name': 'status',
+          'in': 'path',
+          'required': true,
+          'schema': {
+            'type': 'string',
+          }
+        },
+        object.toJson(),
+      );
     });
 
     test('when header name is Authorization and type is String', () {
@@ -53,7 +60,11 @@ void main() {
         requiredField: true,
         allowEmptyValue: false,
         schema: ParameterSchemaObject(
-          TypeDefinition(className: 'String', nullable: false),
+          TypeDefinition(
+            className: 'String',
+            nullable: false,
+            url: 'dart:core',
+          ),
         ),
       );
 

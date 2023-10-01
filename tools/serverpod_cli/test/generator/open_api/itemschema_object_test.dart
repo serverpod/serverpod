@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Validate on ItemSchemaObject: ', () {
-    test('typeDefinition is CustomClass [Example]', () {
+    test('When typeDefinition is CustomClass [Example]', () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'Example',
@@ -21,11 +21,12 @@ void main() {
       );
     });
 
-    test('typeDefinition is int', () {
+    test('When typeDefinition is int', () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'int',
           nullable: false,
+          url: 'dart:core',
         ),
       );
 
@@ -37,11 +38,12 @@ void main() {
       );
     });
 
-    test('typeDefinition is String', () {
+    test('When typeDefinition is String', () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'String',
           nullable: false,
+          url: 'dart:core',
         ),
       );
 
@@ -53,11 +55,12 @@ void main() {
       );
     });
 
-    test('typeDefinition is double', () {
+    test('When typeDefinition is double', () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'double',
           nullable: false,
+          url: 'dart:core',
         ),
       );
 
@@ -69,11 +72,12 @@ void main() {
       );
     });
 
-    test('typeDefinition is Map', () {
+    test('When typeDefinition is Map', () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'Map',
           nullable: false,
+          url: 'dart:core',
         ),
       );
 
@@ -86,13 +90,14 @@ void main() {
     });
 
     test(
-        'typeDefinition is CustomClass [Example] and additionalProperties is true',
+        'When typeDefinition is CustomClass [Example] and additionalProperties is true',
         () {
       ItemSchemaObject object = ItemSchemaObject(
         TypeDefinition(
           className: 'Example',
           nullable: false,
         ),
+        additionalProperties: true,
       );
 
       expect(

@@ -12,8 +12,7 @@ extension on String {
 }
 
 extension CheckDartCoreType on TypeDefinition {
-  bool get isDartCoreType =>
-      (url == 'dart:typed_data') || (url == 'dart:core') || (url == null);
+  bool get isDartCoreType => (url == 'dart:typed_data') || (url == 'dart:core');
 }
 
 /// example

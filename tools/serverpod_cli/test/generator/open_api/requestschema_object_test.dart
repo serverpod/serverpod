@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Validate RequestSchemaObject :', () {
-    test('requestBody is Example', () {
+    test('When requestBody is Example', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'Example',
@@ -19,19 +19,22 @@ void main() {
       );
     });
 
-    test('requestBody is Map<String,dynamic>', () {
+    test('When requestBody is Map<String,dynamic>', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'Map',
+          url: 'dart:core',
           nullable: false,
           generics: [
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
             ),
             TypeDefinition(
               className: 'dynamic',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -47,15 +50,17 @@ void main() {
       );
     });
 
-    test('requestBody is List<int>', () {
+    test('When requestBody is List<int>', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'List',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'int',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -71,15 +76,17 @@ void main() {
       );
     });
 
-    test('requestBody is List<String>', () {
+    test('When requestBody is List<String>', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'List',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'String',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -95,15 +102,17 @@ void main() {
       );
     });
 
-    test('requestBody is List<Map>', () {
+    test('When requestBody is List<Map>', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'List',
           nullable: false,
+          url: 'dart:core',
           generics: [
             TypeDefinition(
               className: 'Map',
               nullable: false,
+              url: 'dart:core',
             ),
           ],
         ),
@@ -119,7 +128,7 @@ void main() {
       );
     });
 
-    test('requestBody is List<Example>', () {
+    test('When requestBody is List<Example>', () {
       RequestSchemaObject contentSchemaObject = RequestSchemaObject(
         typeDefinition: TypeDefinition(
           className: 'List',
