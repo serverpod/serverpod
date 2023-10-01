@@ -131,9 +131,7 @@ abstract class ServerpodCodeGenerator {
       await _removeOldFilesInPath(
         dir,
         generatedFiles,
-        [
-          '.dart',
-        ],
+        ['.dart'],
       );
     }
   }

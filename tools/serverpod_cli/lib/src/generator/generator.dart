@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 
@@ -9,7 +10,7 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 Future<bool> performGenerate({
   bool dartFormat = true,
   String? changedFile,
-  bool genOpenApi = false,
+  required Set<CodeGenerationType> codeGenerationType,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
@@ -73,12 +74,13 @@ Future<bool> performGenerate({
   );
 
   String? generatedOpenApiFile;
-  if (genOpenApi) {
-    log.info('Generating open-api schema');
+  if (codeGenerationType.contains(CodeGenerationType.openapi)) {
+    log.debug('Generating open-api schema');
     generatedOpenApiFile = await ServerpodCodeGenerator.generateOpenApiSchema(
-        protocolDefinition: protocolDefinition,
-        config: config,
-        collector: collector);
+      protocolDefinition: protocolDefinition,
+      config: config,
+      collector: collector,
+    );
   }
 
   if (collector.hasSeverErrors) {

@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
@@ -39,7 +40,7 @@ class GenerateCommand extends ServerpodCommand {
     // Always do a full generate.
     bool watch = argResults!['watch'];
     // Whether to generate an OpenAPI schema or not
-    bool genOpenApi = argResults!['open-api'];
+    bool generateOpenApi = argResults!['open-api'];
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
@@ -64,13 +65,18 @@ class GenerateCommand extends ServerpodCommand {
     await copyMigrations(config);
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
-
+    Set<CodeGenerationType> codeGenerationType = {
+      CodeGenerationType.dart,
+    };
+    if (generateOpenApi) {
+      codeGenerationType.add(CodeGenerationType.openapi);
+    }
     bool success = await log.progress(
       'Generating code',
       () => performGenerate(
           config: config,
           endpointsAnalyzer: endpointsAnalyzer,
-          genOpenApi: genOpenApi),
+          codeGenerationType: codeGenerationType),
     );
     if (watch) {
       log.info('Initial code generation complete. Listening for changes.');

@@ -28,11 +28,11 @@ class InfoObject {
   final String? summary;
 
   /// A description of the API.
-  /// CommonMark syntax MAY be used for rich text representation.
+  /// CommonMark syntax may be used for rich text representation.
   final String? description;
 
   /// A URL to the Terms of Service for the API.
-  /// This MUST be in the form of a URL.
+  /// This must be in the form of a URL.
   final Uri? termsOfService;
 
   /// Contact information for the exposed API.
@@ -41,7 +41,7 @@ class InfoObject {
   /// License information for the exposed API.
   final LicenseObject? license;
 
-  /// REQUIRED. The version of the OpenAPI document
+  /// The version of the OpenAPI document
   /// (which is distinct from the OpenAPI Specification version or
   /// the API implementation version).
   final String version;
@@ -88,7 +88,7 @@ class InfoObject {
 ///  }
 ///```
 class LicenseObject {
-  /// REQUIRED. The license name used for the API.
+  /// The license name used for the API.
   final String name;
 
   /// An SPDX license expression for the API.
@@ -96,7 +96,7 @@ class LicenseObject {
   final String? identifier;
 
   /// A URL to the license used for the API.
-  /// This MUST be in the form of a URL.
+  /// This must be in the form of a URL.
   /// The url field is mutually exclusive of the identifier field.
   final Uri? url;
   LicenseObject({
@@ -131,14 +131,13 @@ class LicenseObject {
 ///
 class ContactObject {
   /// The identifying name of the contact person/organization.
-
   final String name;
 
-  /// The URL pointing to the contact information. This MUST be in the form of a URL.
+  /// The URL pointing to the contact information.
   final Uri url;
 
   /// The email address of the contact person/organization.
-  /// This MUST be in the form of an email address.
+  /// This must be in the form of an email address.
   final String email;
   ContactObject({
     required this.name,
@@ -191,14 +190,15 @@ class ContactObject {
 /// }
 /// ```
 class ServerObject {
-  /// REQUIRED. A URL to the target host.
-  /// This URL supports Server Variables and MAY be relative,
-  /// to indicate that the host location is relative to the location where the OpenAPI document is being served.
-  /// Variable substitutions will be made when a variable is named in {brackets}.
+  /// A URL to the target host. This URL supports Server Variables and
+  ///  may be relative, to indicate that the host location is relative
+  ///  to the location where the OpenAPI document is being served.
+  /// Variable substitutions will be made when a variable is named in
+  /// {brackets}.
   final Uri url;
 
   /// An optional string describing the host designated by the URL.
-  /// CommonMark syntax MAY be used for rich text representation.
+  /// CommonMark syntax may be used for rich text representation.
   final String? description;
 
   /// A map between a variable name and its value.
@@ -218,26 +218,29 @@ class ServerObject {
       map['description'] = description!;
     }
     if (variables != null) {
-      //TODO: implement multiple servers
+      // TODO: implement multiple servers
     }
 
     return map;
   }
 }
 
-/// An object representing a Server Variable for server URL template substitution.
+/// An object representing a Server Variable for server URL template
+/// substitution.
 class ServerVariableObject {
   /// key - [enum]
   final List<String>? enumField;
 
-  /// REQUIRED. The default value to use for substitution, which SHALL be sent if an alternate value is not supplied.
-  /// Note this behavior is different than the Schema Object's treatment of default values,
-  /// because in those cases parameter values are optional.
-  /// If the enum is defined, the value MUST exist in the enum's values.
+  /// The default value to use for substitution, which SHALL be sent if an
+  /// alternate value is not supplied.
+  /// Note this behavior is different than the Schema Object's treatment of
+  /// default values, because in those cases parameter values are optional.
+  /// If the enum is defined, the value must exist in the enum's values.
   /// key - [default]
   final String defaultField;
 
-  ///An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.
+  /// An optional description for the server variable. CommonMark syntax
+  /// may be used for rich text representation.
   final String? description;
   ServerVariableObject({
     this.enumField,
@@ -260,9 +263,10 @@ class ServerVariableObject {
 }
 
 /// Holds a set of reusable objects for different aspects of the OAS.
-/// All objects defined within the components object will have no effect on the API
-/// unless they are explicitly referenced from properties outside the components object.
-/// example
+/// All objects defined within the components object will have no effect
+/// on the API unless they are explicitly referenced from properties outside the
+/// components object.
+/// example.
 /// ```json
 ///    "components": {
 ///      "schemas": {
@@ -426,6 +430,13 @@ class ComponentsObject {
   }
 }
 
+/// [RequestBodyObject] Request bodies are typically used with “create” and
+/// “update” operations
+/// (POST, PUT, PATCH). For example, when creating a resource using POST or
+/// PUT, the request body usually contains the representation of the resource
+/// to be created. OpenAPI 3.0 provides the requestBody keyword to describe
+/// request bodies.
+
 class RequestBodyObject {
   final String? description;
   final ContentObject? content;
@@ -477,7 +488,7 @@ class ContentObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> contentMap = {};
     for (var type in contentTypes) {
-      contentMap[type] = schemaObject.toRefJson();
+      contentMap[type] = schemaObject.toContentJson();
     }
     return contentMap;
   }
@@ -495,8 +506,9 @@ class ContentType {
 class ExampleObject {}
 
 /// Holds the relative paths to the individual endpoints and their operations.
-/// The path is appended to the URL from the Server Object in order to construct the full URL.
-/// The Paths MAY be empty, due to Access Control List (ACL) constraints.
+/// The path is appended to the URL from the Server Object in order to
+///  construct the full URL.
+/// The Paths may be empty, due to Access Control List (ACL) constraints.
 class PathsObject {
   /// name of the path
   /// ```
@@ -515,6 +527,10 @@ class PathsObject {
   }
 }
 
+/// An API specification needs to specify the responses for all API operations.
+/// Each operation must have at least one response defined, usually a
+/// successful response. A response is defined by its HTTP status code and the
+/// data returned in the response body and/or headers.
 class ResponseObject {
   final ContentObject responseType;
   ResponseObject({
@@ -543,46 +559,66 @@ class ResponseObject {
 }
 
 /// Holds the relative paths to the individual endpoints and their operations.
-/// The path is appended to the URL from the Server Object in order to construct the full URL.
-/// The Paths MAY be empty, due to Access Control List (ACL) constraints.
-///
+/// The path is appended to the URL from the Server Object in order to
+///  construct the full URL.
+/// The Paths may be empty, due to Access Control List (ACL) constraints.
 /// ***Parameter Locations***
-///
 /// There are four possible parameter locations specified by the in field:
-///
-///  - path - Used together with Path Templating, where the parameter value is actually part of the operation's URL. This does not include the host or base path of the API. For example, in /items/{itemId}, the path parameter is itemId.
-///  - query - Parameters that are appended to the URL. For example, in /items?id=###, the query parameter is id.
-///  - header - Custom headers that are expected as part of the request. Note that RFC7230 states header names are case insensitive.
+///  - path - Used together with Path Templating, where the parameter value is
+///    actually part of the operation's URL. This does not include the host or
+///    base path of the API. For example, in /items/{itemId}, the path
+///    parameter is itemId.
+///  - query - Parameters that are appended to the URL. For example, in /items?
+///    id=###, the query parameter is id.
+///  - header - Custom headers that are expected as part of the request.
+///    Note that RFC7230 states header names are case insensitive.
 ///  - cookie - Used to pass a specific cookie value to the API.
 class ParameterObject {
-  ///param name
+  /// parameter name
   final String name;
 
-  /// REQUIRED. The location of the parameter. Possible values are "query", "header", "path" or "cookie".
+  /// The location of the parameter. Possible values are "query", "header",
+  /// "path" or "cookie". key - [in]
   final ParameterLocation inField;
   final String? description;
 
-  /// required
-  /// Determines whether this parameter is mandatory. If the parameter location is "path", this property is REQUIRED and its value MUST be true. Otherwise, the property MAY be included and its default value is false.
+  /// Determines whether this parameter is mandatory. I
+  /// If the parameter location is "path",
+  /// this property is required and its value must be true.
+  /// Otherwise, the property may be included and
+  /// its default value is false.
   final bool requiredField;
 
-  /// Specifies that a parameter is deprecated and SHOULD be transitioned out of usage. Default value is false.
+  /// Specifies that a parameter is deprecated and should be transitioned
+  /// out of usage. Default value is false.
   final bool deprecated;
 
-  /// Sets the ability to pass empty-valued parameters. This is valid only for query parameters and allows sending a parameter with an empty value. Default value is false. If style is used, and if behavior is n/a (cannot be serialized), the value of allowEmptyValue SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is likely to be removed in a later revision.
+  /// Sets the ability to pass empty-valued parameters.
+  /// This is valid only for query parameters and allows sending a
+  /// parameter
+  /// with an empty value. Default value is false. If style is used,
+  /// and if behavior is n/a (cannot be serialized), the value of
+  /// allowEmptyValue SHALL be ignored. Use of this property is not
+  /// recommended, as it is likely to be removed in a later revision.
   final bool allowEmptyValue;
 
-  /// Describes how the parameter value will be serialized depending on the type of the parameter value.
-  /// Default values (based on value of in): for query - form; for path - simple; for header - simple; for cookie - form.
+  /// Describes how the parameter value will be serialized depending
+  /// on the type of the parameter value. Default values (based on value of in)
+  /// query -> form; path -> simple; header -> simple; cookie -> form.
   final ParameterStyle? style;
 
-  /// When this is true, parameter values of type array or object generate separate parameters for each value of the array or key-value pair of the map.
+  /// When this is true, parameter values of type array or
+  /// object generate separate parameters for each value of the array
+  /// or key-value pair of the map.
   /// For other types of parameters this property has no effect.
-  /// When style is form, the default value is true. For all other styles, the default value is false.
+  /// When style is form, the default value is true. For all other styles,
+  /// the default value is false.
   final bool explode;
 
-  /// Determines whether the parameter value SHOULD allow reserved characters, as defined by RFC3986 :/?#[]@!$&'()*+,;= to be included without percent-encoding.
-  /// This property only applies to parameters with an in value of query. The default value is false.
+  /// Determines whether the parameter value should allow reserved characters,
+  /// as defined by RFC3986 :/?#[]@!$&'()*+,;= to be included without
+  /// percent-encoding. This property only applies to parameters
+  /// with an in value of query. The default value is false.
   final bool allowReserved;
 
   /// The schema defining the type used for the parameter.
@@ -629,7 +665,6 @@ class ParameterObject {
     }
 
     if (schema != null) {
-      ///TODO:
       map['schema'] = schema!.toJson();
     }
 
@@ -715,13 +750,13 @@ class ExternalDocumentationObject {
 /// The Schema Object allows the definition of input and output data types.
 /// These types can be objects, but also primitives and arrays.
 /// This object is a superset of the JSON Schema Specification Draft 2020-12.
+// TODO: rewrite schema object
 class SchemaObject {
   /// Adds support for polymorphism.
   /// The discriminator is an object name that is used to differentiate between other schemas which may satisfy the payload description.
   /// See Composition and Inheritance for more details.
   final DiscriminatorObject? discriminator;
 
-  //TODO: xmlobject
   /// external docs
   final ExternalDocumentationObject? externalDocs;
 
@@ -830,6 +865,21 @@ class SchemaObject {
     return map;
   }
 
+  /// To be used, on ContentObject
+  Map<String, dynamic> toContentJson() {
+    Map<String, dynamic> map = {'schema': {}};
+    if (type == SchemaObjectType.object) {
+      map['schema']['\$ref'] = _getRef(schemaName);
+    }
+    //
+    else if (type == SchemaObjectType.array) {
+      map['schema']['type'] = type.type;
+      map['schema']['items'] = {};
+      map['schema']['items']['\$ref'] = _getRef(schemaName);
+    }
+    return map;
+  }
+
   /// To be used, for example, on `items`.
   Map<String, dynamic> toItemsJson() {
     Map<String, dynamic> map = {};
@@ -886,7 +936,7 @@ class DiscriminatorObject {}
 /// internally and externally.
 /// The $ref string value contains a URI RFC3986, which identifies the location of the value being referenced.
 class ReferenceObject {
-  /// REQUIRED. The reference identifier. This MUST be in the form of a URI.
+  /// The reference identifier. This must be in the form of a URI.
   /// key - [$ref]
   /// ```
   /// {
@@ -929,12 +979,12 @@ class LinkObject {}
 class CallbackObject {}
 
 /// Describes the operations available on a single path.
-/// A Path Item MAY be empty, due to ACL constraints.
+/// A Path Item may be empty, due to ACL constraints.
 /// The path itself is still exposed to the documentation viewer
 /// but they will not know which operations and parameters are available.
 class PathItemObject {
   /// Allows for a referenced definition of this path item.
-  /// The referenced structure MUST be in the form of a Path Item Object.
+  /// The referenced structure must be in the form of a Path Item Object.
   /// In case a Path Item Object field appears both in the defined object and the referenced object, the behavior is undefined.
   /// See the rules for resolving Relative References.
   final String? ref;
@@ -942,7 +992,7 @@ class PathItemObject {
   /// An optional, string summary, intended to apply to all operations in this path.
   final String? summary;
 
-  /// An optional, string description, intended to apply to all operations in this path. CommonMark syntax MAY be used for rich text representation.
+  /// An optional, string description, intended to apply to all operations in this path. CommonMark syntax may be used for rich text representation.
   final String? description;
 
   /// A definition of a GET operation on this path.
@@ -997,13 +1047,7 @@ class PathItemObject {
     if (description != null) {
       map['description'] = description;
     }
-    if (parameters?.isNotEmpty ?? false) {
-      ///TODO
-    }
 
-    if (servers?.isNotEmpty ?? false) {
-      ///TODO
-    }
     if (postOperation != null) {
       map['post'] = postOperation!.toJson();
     }
@@ -1052,31 +1096,39 @@ class OperationObject {
   final ExternalDocumentationObject? externalDocs;
 
   /// Unique string used to identify the operation.
-  /// The id MUST be unique among all operations described in the API.
+  /// The id must be unique among all operations described in the API.
   /// The operationId value is case-sensitive.
-  /// Tools and libraries MAY use the operationId to uniquely identify an operation, therefore, it is RECOMMENDED to follow common programming naming conventions.
-  /// it should be serverpod endpoint's method name
+  /// Tools and libraries may use the operationId to uniquely identify an
+  /// operation, therefore, it is recommended to follow common
+  /// programming naming conventions.
+  /// It should be serverpod endpoint's method name
   /// eg ``` findPetById ```
   final String? operationId;
 
   /// A list of parameters that are applicable for this operation.
-  /// If a parameter is already defined at the Path Item, the new definition will override it but can never remove it.
-  /// The list MUST NOT include duplicated parameters.
-  /// A unique parameter is defined by a combination of a name and location. T
-  /// he list can use the Reference Object to link to parameters that are defined at the OpenAPI Object's components/parameters.
+  /// If a parameter is already defined at the Path Item, the new definition
+  /// will override it but can never remove it. The list must not include
+  /// duplicated parameters. A unique parameter is defined by a combination of
+  /// a name and location.The list can use the Reference Object to link to
+  /// parameters that are defined at the OpenAPI Object's components/parameters.
   final List<ParameterObject>? parameters;
 
   /// The request body applicable for this operation.
-  /// The requestBody is fully supported in HTTP methods where the HTTP 1.1 specification RFC7231 has explicitly defined semantics for request bodies.
-  /// In other cases where the HTTP spec is vague (such as GET, HEAD and DELETE),
-  /// requestBody is permitted but does not have well-defined semantics and SHOULD be avoided if possible.
+  /// The requestBody is fully supported in HTTP methods where the HTTP 1.1
+  /// specification RFC7231 has explicitly defined semantics for request bodies.
+  /// In other cases where the HTTP spec is vague
+  /// (such as GET, HEAD and DELETE),
+  /// requestBody is permitted but does not have well-defined semantics
+  /// and should be avoided if possible.
 
   final RequestBodyObject? requestBody;
 
-  /// The list of possible responses as they are returned from executing this operation.
+  /// The list of possible responses as they are returned from executing
+  /// this operation.
   final ResponseObject responses;
 
-  /// Declares this operation to be deprecated. Consumers SHOULD refrain from usage of the declared operation.
+  /// Declares this operation to be deprecated. Consumers should refrain
+  /// from usage of the declared operation.
   /// Default value is false.
   final bool deprecated;
 
@@ -1098,7 +1150,7 @@ class OperationObject {
   });
 
   Map<String, dynamic> toJson() {
-    //TODO: implement all
+    // TODO: implement all
     var map = <String, dynamic>{
       'operationId': operationId,
     };

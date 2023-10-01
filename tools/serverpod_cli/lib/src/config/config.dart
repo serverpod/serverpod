@@ -91,7 +91,7 @@ class GeneratorConfig {
         'lib',
         'src',
         'generated',
-        'openapi'
+        'openapi',
       ];
 
   /// Path parts from the server package to the dart client package.

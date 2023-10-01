@@ -1,5 +1,6 @@
 import 'package:async/async.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:watcher/watcher.dart';
 import 'package:path/path.dart' as p;
@@ -27,10 +28,10 @@ Future<bool> performGenerateContinuously({
     success = await log.progress(
         'Generating code',
         () => performGenerate(
-              changedFile: event.path,
-              config: config,
-              endpointsAnalyzer: endpointsAnalyzer,
-            ));
+            changedFile: event.path,
+            config: config,
+            endpointsAnalyzer: endpointsAnalyzer,
+            codeGenerationType: {CodeGenerationType.dart}));
     log.info('Incremental code generation complete.');
   }
 

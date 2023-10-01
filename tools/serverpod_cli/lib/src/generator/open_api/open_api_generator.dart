@@ -8,9 +8,13 @@ class OpenApiGenerator {
   OpenApiGenerator();
 
   String getOpenApiSchema(
-      ProtocolDefinition protocolDefinition, GeneratorConfig config) {
-    OpenApiDefinition definition =
-        OpenApiDefinition.fromProtocolDefinition(protocolDefinition, config);
+    ProtocolDefinition protocolDefinition,
+    GeneratorConfig config,
+  ) {
+    OpenApiDefinition definition = OpenApiDefinition.fromProtocolDefinition(
+      protocolDefinition,
+      config,
+    );
     return jsonEncode(definition.toJson());
   }
 
@@ -20,7 +24,10 @@ class OpenApiGenerator {
   }) {
     return {
       p.joinAll([...config.generatedServerOpenApiPathParts, 'openapi.json']):
-          getOpenApiSchema(protocolDefinition, config),
+          getOpenApiSchema(
+        protocolDefinition,
+        config,
+      ),
     };
   }
 }

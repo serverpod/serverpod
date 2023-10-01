@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element
-
 part of openapi_definition;
 
 extension on String {
@@ -25,7 +23,7 @@ extension on SchemaObjectType {
 /// convert [string] -> [string]
 ///
 extension ChangeFormat on SchemaObjectFormat {
-  String get format => name.camelToKebabCase;
+  String get formattedName => name.camelToKebabCase;
 }
 
 /// convert [TypeDefinition] className to [SchemaObjetType]
@@ -41,6 +39,7 @@ extension TypeConvert on TypeDefinition {
     if (className == 'Duration') return SchemaObjectType.string;
     if (className == 'UuidValue') return SchemaObjectType.string;
     if (className == 'List') return SchemaObjectType.array;
+    // WIP
     // if ((className == 'Map') || (className == 'List')) {
     //   return SchemaObjectType.;
     // }

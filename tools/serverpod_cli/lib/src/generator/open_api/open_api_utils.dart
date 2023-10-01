@@ -4,7 +4,8 @@ String _getRef(String ref) {
   return '#/components/schemas/$ref';
 }
 
-///. The location of the parameter. Possible values are "query", "header", "path" or "cookie".
+/// The location of the parameter. Possible values are "query", "header",
+/// "path" or "cookie".
 enum ParameterLocation {
   query,
   header,
@@ -12,8 +13,9 @@ enum ParameterLocation {
   cookie,
 }
 
-///Describes how the parameter value will be serialized depending on the type of the parameter value.
-///Default values (based on value of in): for query - form; for path - simple;
+/// Describes how the parameter value will be serialized depending on the type
+/// of the parameter value.
+/// Default values (based on value of in): for query - form; for path - simple;
 /// for header - simple; for cookie - form.
 enum ParameterStyle {
   queryForm,
@@ -29,7 +31,8 @@ enum ParameterStyle {
 /// ```
 enum SchemaObjectType {
   /// Represents a JSON object with key-value pairs.
-  /// You can define the properties of the object within the properties attribute.
+  /// You can define the properties of the object within the properties
+  /// attribute.
   object,
   string,
   integer,
@@ -39,18 +42,20 @@ enum SchemaObjectType {
   // enumType,
   boolean,
 
-  ///eg [Map] mark a other
+  ///eg [Map] mark as other
   other,
 }
 
 enum SchemaObjectFormat {
-  /// full-date notation as defined by RFC 3339, section 5.6, for example, 2017-07-21
+  /// Full-date notation as defined by RFC 3339, section 5.6, for example,
+  /// 2017-07-21
   date,
 
-  /// the date-time notation as defined by RFC 3339, section 5.6, for example, 2017-07-21T17:32:28Z
+  /// The date-time notation as defined by RFC 3339, section 5.6,
+  /// for example, 2017-07-21T17:32:28Z
   dateTime,
 
-  /// a hint to UIs to mask the input
+  /// A hint to UIs to mask the input
   password,
 
   /// base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
