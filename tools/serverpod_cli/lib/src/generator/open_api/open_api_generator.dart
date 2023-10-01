@@ -23,8 +23,10 @@ class OpenApiGenerator {
     required GeneratorConfig config,
   }) {
     return {
-      p.joinAll([...config.generatedServerOpenApiPathParts, 'openapi.json']):
-          getOpenApiSchema(
+      p.joinAll([
+        ...config.generatedServerOpenApiPathParts,
+        'openapi.json',
+      ]): getOpenApiSchema(
         protocolDefinition,
         config,
       ),

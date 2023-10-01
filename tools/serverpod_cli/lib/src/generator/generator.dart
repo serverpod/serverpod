@@ -10,7 +10,9 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 Future<bool> performGenerate({
   bool dartFormat = true,
   String? changedFile,
-  required Set<CodeGenerationType> codeGenerationType,
+  Set<CodeGenerationType> codeGenerationType = const {
+    CodeGenerationType.dart,
+  },
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
