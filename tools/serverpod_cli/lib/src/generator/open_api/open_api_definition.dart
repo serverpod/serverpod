@@ -1,4 +1,4 @@
-library openapi_definition;
+
 
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';

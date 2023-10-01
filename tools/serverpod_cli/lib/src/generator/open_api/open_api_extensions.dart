@@ -1,4 +1,4 @@
-part of openapi_definition;
+part of './open_api_definition.dart';
 
 extension on String {
   /// convert queryFrom -> query-form

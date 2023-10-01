@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-part of openapi_definition;
+part of './open_api_definition.dart';
 
 /// eg.
 /// ```
