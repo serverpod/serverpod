@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_definition.dart';
 import 'package:test/test.dart';
 
@@ -91,47 +92,34 @@ void main() {
           object.toJson());
     });
 
-    test('Validate Content Object with object [Pet]  ', () {
-      ContentObject object = ContentObject(
-        contentTypes: [ContentType.applicationJson],
-        schemaObject: SchemaObject(
-          schemaName: 'Pet',
-          type: SchemaObjectType.object,
-        ),
-      );
-      expect(
-        {
-          'application/json': {
-            'schema': {
-              '\$ref': '#/components/schemas/Pet',
-            }
-          }
-        },
-        object.toJson(),
-      );
-    });
+    /// Just to check. we will validate more in [ContentSchemaObject]
+    test(
+      'Validate Content Object',
+      () {
+        ContentObject contentObject = ContentObject(
+          contentTypes: [
+            ContentType.applicationJson,
+          ],
+          schemaObject: ContentSchemaObject(
+            returnType: TypeDefinition(
+              className: 'Future',
+              nullable: false,
+              generics: [
+                TypeDefinition(
+                  className: 'String',
+                  nullable: false,
+                ),
+              ],
+            ),
+          ),
+        );
 
-    test('Validate Content Object with array of [Pet]', () {
-      ContentObject object = ContentObject(
-        contentTypes: [ContentType.applicationJson],
-        schemaObject: SchemaObject(
-          schemaName: 'Pet',
-          type: SchemaObjectType.array,
-        ),
-      );
-      expect(
-        {
+        expect({
           'application/json': {
-            'schema': {
-              'type': 'array',
-              'items': {
-                '\$ref': '#/components/schemas/Pet',
-              }
-            }
-          }
-        },
-        object.toJson(),
-      );
-    });
+            'schema': {'type': 'string'}
+          },
+        }, contentObject.toJson());
+      },
+    );
   });
 }

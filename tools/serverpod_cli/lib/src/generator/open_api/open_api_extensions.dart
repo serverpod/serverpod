@@ -11,6 +11,11 @@ extension on String {
   }
 }
 
+extension CheckDartCoreType on TypeDefinition {
+  bool get isDartCoreType =>
+      (url == 'dart:typed_data') || (url == 'dart:core') || (url == null);
+}
+
 /// example
 /// convert [nullType] -> [null]
 ///
@@ -30,7 +35,7 @@ extension ChangeFormat on SchemaObjectFormat {
 extension TypeConvert on TypeDefinition {
   SchemaObjectType get toSchemaObjectType {
     if (className == 'int') return SchemaObjectType.integer;
-    if (isEnum) return SchemaObjectType.other;
+    // if (isEnum) return SchemaObjectType.other;
     if (className == 'double') return SchemaObjectType.number;
     if (className == 'bool') return SchemaObjectType.boolean;
     if (className == 'String') return SchemaObjectType.string;
@@ -39,11 +44,8 @@ extension TypeConvert on TypeDefinition {
     if (className == 'Duration') return SchemaObjectType.string;
     if (className == 'UuidValue') return SchemaObjectType.string;
     if (className == 'List') return SchemaObjectType.array;
-    // WIP
-    // if ((className == 'Map') || (className == 'List')) {
-    //   return SchemaObjectType.;
-    // }
-    return SchemaObjectType.other;
+    // if (className == 'Map') return SchemaObjectType.object;
+    return SchemaObjectType.object;
   }
 }
 

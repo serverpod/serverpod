@@ -369,9 +369,10 @@ class ServerVariableObject {
 ///    }
 /// ```
 ///
+
 class ComponentsObject {
   /// An object to hold reusable Schema Objects.
-  final Set<SchemaObject>? schemas;
+  final Set<ComponentSchemaObject>? schemas;
 
   /// An object to hold reusable Response Objects.
   final Map<String, ResponseObject>? responses;
@@ -416,12 +417,14 @@ class ComponentsObject {
     Map<String, dynamic> map = {};
     map['components'] = {};
     if (schemas != null) {
-      map['components'] = _getSchemaMapFromSetSchema(schemas!);
+      // TODO: Add Error Model
+      map['components']['schemas'] = _getSchemaMapFromSetSchema(schemas!);
     }
     return map;
   }
 
-  Map<String, dynamic> _getSchemaMapFromSetSchema(Set<SchemaObject>? schemas) {
+  Map<String, dynamic> _getSchemaMapFromSetSchema(
+      Set<ComponentSchemaObject>? schemas) {
     Map<String, dynamic> map = {};
     for (var schema in schemas!) {
       map.addAll(schema.toJson());
@@ -460,6 +463,31 @@ class RequestBodyObject {
   // }
 }
 
+/// A Schema object which will use in [ComponentObject]
+class ComponentSchemaObject {
+  final ClassDefinition classDefinition;
+
+  ComponentSchemaObject(
+    this.classDefinition,
+  );
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+
+    Map<String, dynamic> objectMap = {};
+    objectMap['type'] = SchemaObjectType.object.name;
+    objectMap['properties'] = {};
+    for (var field in classDefinition.fields) {
+      objectMap['properties'][field.name] = {
+        'type': field.type.toSchemaObjectType.name,
+      };
+    }
+    map[classDefinition.className] = objectMap;
+
+    return map;
+  }
+}
+
 ///example
 ///```
 ///"content": {
@@ -478,7 +506,7 @@ class RequestBodyObject {
 /// ```
 class ContentObject {
   final List<String> contentTypes;
-  final SchemaObject schemaObject;
+  final ContentSchemaObject schemaObject;
 
   ContentObject({
     required this.contentTypes,
@@ -488,7 +516,8 @@ class ContentObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> contentMap = {};
     for (var type in contentTypes) {
-      contentMap[type] = schemaObject.toContentJson();
+      contentMap[type] = {};
+      contentMap[type]['schema'] = schemaObject.toJson();
     }
     return contentMap;
   }
@@ -622,7 +651,7 @@ class ParameterObject {
   final bool allowReserved;
 
   /// The schema defining the type used for the parameter.
-  final SchemaObject? schema;
+  final ParameterSchemaObject? schema;
   ParameterObject({
     required this.name,
     required this.inField,
@@ -665,7 +694,8 @@ class ParameterObject {
     }
 
     if (schema != null) {
-      map['schema'] = schema!.toJson();
+      // TODO: implement parameter schema
+      // map['schema'] = schema!.toJson();
     }
 
     return map;
@@ -751,186 +781,347 @@ class ExternalDocumentationObject {
 /// These types can be objects, but also primitives and arrays.
 /// This object is a superset of the JSON Schema Specification Draft 2020-12.
 // TODO: rewrite schema object
-class SchemaObject {
-  /// Adds support for polymorphism.
-  /// The discriminator is an object name that is used to differentiate between other schemas which may satisfy the payload description.
-  /// See Composition and Inheritance for more details.
-  final DiscriminatorObject? discriminator;
+// class SchemaObject {
+//   /// Adds support for polymorphism.
+//   /// The discriminator is an object name that is used to differentiate between other schemas which may satisfy the payload description.
+//   /// See Composition and Inheritance for more details.
+//   final DiscriminatorObject? discriminator;
 
-  /// external docs
-  final ExternalDocumentationObject? externalDocs;
+//   /// external docs
+//   final ExternalDocumentationObject? externalDocs;
 
-  /// example
-  /// ```
-  /// "Order": {
-  ///     "type": "object",
-  ///     "properties": {
-  ///       "id": {
-  ///         "type": "integer",
-  ///         "format": "int64",
-  ///         "example": 10
-  ///       },
-  /// ```
-  /// [Order] and [id] are schemaName
-  final String schemaName;
+//   /// example
+//   /// ```
+//   /// "Order": {
+//   ///     "type": "object",
+//   ///     "properties": {
+//   ///       "id": {
+//   ///         "type": "integer",
+//   ///         "format": "int64",
+//   ///         "example": 10
+//   ///       },
+//   /// ```
+//   /// [Order] and [id] are schemaName
+//   final String schemaName;
 
-  /// the type of object schema [integer,string,etc]
-  final SchemaObjectType type;
+//   /// the type of object schema [integer,string,etc]
+//   final SchemaObjectType type;
 
-  /// format of the type eg.[int64,string,password]
-  final SchemaObjectFormat? format;
+//   /// format of the type eg.[int64,string,password]
+//   final SchemaObjectFormat? format;
 
-  /// whether the object schema is nullable or not
-  final bool nullable;
+//   /// whether the object schema is nullable or not
+//   final bool nullable;
 
-  ///if type is array items must not null
-  final SchemaObject? items;
+//   ///if type is array items must not null
+//   final SchemaObject? items;
 
-  ///example
-  ///``` "Order": {
-  ///       "type": "object",
-  ///       "properties": {
-  ///         "id": {
-  ///           "type": "integer",
-  ///           "format": "int64",
-  ///         },
-  ///```
-  final List<SchemaObject>? properties;
+//   ///example
+//   ///``` "Order": {
+//   ///       "type": "object",
+//   ///       "properties": {
+//   ///         "id": {
+//   ///           "type": "integer",
+//   ///           "format": "int64",
+//   ///         },
+//   ///```
+//   final List<SchemaObject>? properties;
 
-  ///if type is object properties cannot be null
-  /// ```
-  /// "status": {
-  ///   "type": "string",
-  ///   "description": "Order Status",
-  ///   "example": "approved",
-  ///   "enum": [
-  ///     "placed",
-  ///     "approved",
-  ///     "delivered"
-  ///   ]
-  /// },
-  /// ```
-  final List<String>? enumField;
+//   ///if type is object properties cannot be null
+//   /// ```
+//   /// "status": {
+//   ///   "type": "string",
+//   ///   "description": "Order Status",
+//   ///   "example": "approved",
+//   ///   "enum": [
+//   ///     "placed",
+//   ///     "approved",
+//   ///     "delivered"
+//   ///   ]
+//   /// },
+//   /// ```
+//   final List<String>? enumField;
 
-  SchemaObject({
-    required this.schemaName,
-    this.externalDocs,
-    required this.type,
-    this.items,
-    this.format,
-    this.nullable = false,
-    this.discriminator,
-    this.properties,
-    this.enumField,
+//   SchemaObject({
+//     required this.schemaName,
+//     this.externalDocs,
+//     required this.type,
+//     this.items,
+//     this.format,
+//     this.nullable = false,
+//     this.discriminator,
+//     this.properties,
+//     this.enumField,
+//   });
+
+//   /// only to be use in component
+//   Map<String, dynamic> toJson() {
+//     Map<String, dynamic> map = {schemaName: {}};
+//     map[schemaName]['type'] = type.type;
+
+//     if (type != SchemaObjectType.object) {
+//       if (format != null) {
+//         map[schemaName]['format'] = format!.name;
+//       }
+//     } else {
+//       if (properties != null) {
+//         Map<String, dynamic> props = {};
+//         for (var p in properties!) {
+//           props.addAll(p.toJson());
+//         }
+//         map[schemaName]['properties'] = props;
+//       }
+//     }
+
+//     return map;
+//   }
+
+//   /// To be used, for example, on `requestBody`.
+//   Map<String, dynamic> toRefJson() {
+//     Map<String, dynamic> map = {'schema': {}};
+
+//     /// if type is object use ref`# $ref: '#/components/schemas/Pet'`
+//     if (type == SchemaObjectType.object) {
+//       map['schema']['\$ref'] = _getRef(schemaName);
+//     } else {
+//       map['schema']['type'] = type.type;
+//       if (format != null && type != SchemaObjectType.array) {
+//         map[schemaName]['format'] = format!.name;
+//       }
+//       if (type == SchemaObjectType.array) {
+//         map['schemaName']['items'] = items!.toItemsJson();
+//       }
+//     }
+//     return map;
+//   }
+
+//   /// To be used, on ContentObject
+//   Map<String, dynamic> toContentJson() {
+//     Map<String, dynamic> map = {'schema': {}};
+//     if (type == SchemaObjectType.object) {
+//       map['schema']['\$ref'] = _getRef(schemaName);
+//     }
+//     //
+//     else if (type == SchemaObjectType.array) {
+//       map['schema']['type'] = type.type;
+//       map['schema']['items'] = {};
+//       map['schema']['items']['\$ref'] = _getRef(schemaName);
+//     }
+//     return map;
+//   }
+
+//   /// To be used, for example, on `items`.
+//   Map<String, dynamic> toItemsJson() {
+//     Map<String, dynamic> map = {};
+//     if (items != null) {
+//       if (items!.type == SchemaObjectType.object) {
+//         map['\$ref'] = _getRef(items!.schemaName);
+//       } else {
+//         map['type'] = items!.type;
+//         if (items!.format != null) {
+//           map['format'] = items!.format;
+//         }
+//       }
+//     }
+//     return map;
+//   }
+
+//   factory SchemaObject.fromClassDefinition(ClassDefinition classDefinition) {
+//     List<SchemaObject> properties = [];
+//     for (var field in classDefinition.fields) {
+//       var prop = SchemaObject(
+//           schemaName: field.name,
+//           type: field.type.toSchemaObjectType,
+//           format: field.type.toSchemaObjectFormat);
+//       properties.add(prop);
+//     }
+//     return SchemaObject(
+//         schemaName: classDefinition.className,
+//         type: SchemaObjectType.object,
+//         properties: properties);
+//   }
+
+//   /// call from [ResponseObject]
+//   factory SchemaObject.fromMethod(MethodDefinition methodDefinition) {
+//     ///return is Future<List<String>
+//     ///return is Future<int>
+//     ///return is Future<object>
+//     SchemaObjectType? returnType;
+//     String? schemaName;
+//     var generics = methodDefinition.returnType.generics;
+//     if (generics.first.className == 'List') {
+//       returnType = generics.last.toSchemaObjectType;
+//       schemaName = generics.last.className;
+//     } else {
+//       returnType = generics.first.toSchemaObjectType;
+//       schemaName = generics.first.className;
+//     }
+//     return SchemaObject(schemaName: schemaName, type: returnType);
+//   }
+// }
+
+class DiscriminatorObject {}
+
+/// A Schema Object that will be used in ParameterObject
+class ParameterSchemaObject {}
+
+/// A Schema Object that will be used in ContentObject
+class ContentSchemaObject {
+  /// Should be [returnType] from [MethodDefinition]
+  final TypeDefinition returnType;
+
+  ContentSchemaObject({
+    required this.returnType,
   });
 
-  /// only to be use in component
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {schemaName: {}};
-    map[schemaName]['type'] = type.type;
-
-    if (type != SchemaObjectType.object) {
-      if (format != null) {
-        map[schemaName]['format'] = format!.name;
-      }
-    } else {
-      if (properties != null) {
-        Map<String, dynamic> props = {};
-        for (var p in properties!) {
-          props.addAll(p.toJson());
-        }
-        map[schemaName]['properties'] = props;
-      }
-    }
-
-    return map;
-  }
-
-  /// To be used, for example, on `requestBody`.
-  Map<String, dynamic> toRefJson() {
-    Map<String, dynamic> map = {'schema': {}};
-
-    /// if type is object use ref`# $ref: '#/components/schemas/Pet'`
-    if (type == SchemaObjectType.object) {
-      map['schema']['\$ref'] = _getRef(schemaName);
-    } else {
-      map['schema']['type'] = type.type;
-      if (format != null && type != SchemaObjectType.array) {
-        map[schemaName]['format'] = format!.name;
-      }
-      if (type == SchemaObjectType.array) {
-        map['schemaName']['items'] = items!.toItemsJson();
-      }
-    }
-    return map;
-  }
-
-  /// To be used, on ContentObject
-  Map<String, dynamic> toContentJson() {
-    Map<String, dynamic> map = {'schema': {}};
-    if (type == SchemaObjectType.object) {
-      map['schema']['\$ref'] = _getRef(schemaName);
-    }
-    //
-    else if (type == SchemaObjectType.array) {
-      map['schema']['type'] = type.type;
-      map['schema']['items'] = {};
-      map['schema']['items']['\$ref'] = _getRef(schemaName);
-    }
-    return map;
-  }
-
-  /// To be used, for example, on `items`.
-  Map<String, dynamic> toItemsJson() {
     Map<String, dynamic> map = {};
-    if (items != null) {
-      if (items!.type == SchemaObjectType.object) {
-        map['\$ref'] = _getRef(items!.schemaName);
-      } else {
-        map['type'] = items!.type;
-        if (items!.format != null) {
-          map['format'] = items!.format;
-        }
+    log.info(returnType.generics.toString());
+    List<TypeDefinition> generics = returnType.generics;
+
+    /// If type is [Map] set [SchemaObjectType] to [object]
+    /// and should contain key [additionalProperties]
+    /// If type is dart:core type
+    /// ```
+    ///   "type":"string",
+    ///
+    /// ```
+    /// else
+    /// ```
+    /// "\$ref":"#/components/schemas/ComplexModel"
+    /// ```
+    ///
+    if (returnType.generics.first.isMapType) {
+      map['type'] = SchemaObjectType.object.name;
+      if (returnType.generics.length > 1) {
+        map['additionalProperties'] = ItemSchemaObject(
+          generics.last,
+          additionalProperties: true,
+        ).toJson();
       }
+      return map;
     }
-    return map;
-  }
 
-  factory SchemaObject.fromClassDefinition(ClassDefinition classDefinition) {
-    List<SchemaObject> properties = [];
-    for (var field in classDefinition.fields) {
-      var prop = SchemaObject(
-          schemaName: field.name,
-          type: field.type.toSchemaObjectType,
-          format: field.type.toSchemaObjectFormat);
-      properties.add(prop);
+    /// If type is [List] set [SchemaObjectType] to [array]
+    /// and should contain key [items]
+    /// example
+    /// ```
+    /// {
+    ///   'type':'array',
+    ///   'items':{
+    ///      # 1. "type": "string"
+    ///      # 2."type":"object"
+    ///      #   "$ref": "#/components/schemas/ComplexModel"
+    ///     }
+    /// }
+    /// ```
+    if (generics.first.isListType) {
+      map['type'] = SchemaObjectType.array.name;
+      var items = ItemSchemaObject(generics.last);
+      map['items'] = items.toJson();
+      return map;
     }
-    return SchemaObject(
-        schemaName: classDefinition.className,
-        type: SchemaObjectType.object,
-        properties: properties);
-  }
 
-  /// call from [ResponseObject]
-  factory SchemaObject.fromMethod(MethodDefinition methodDefinition) {
-    ///return is Future<List<String>
-    ///return is Future<int>
-    ///return is Future<object>
-    SchemaObjectType? returnType;
-    String? schemaName;
-    var generics = methodDefinition.returnType.generics;
-    if (generics.first.className == 'List') {
-      returnType = generics.last.toSchemaObjectType;
-      schemaName = generics.last.className;
+    log.info('generics.first.url ${generics.first.isDartCoreType}');
+
+    if (!generics.first.isDartCoreType) {
+      map['type'] = SchemaObjectType.object.name;
+      map['\$ref'] = _getRef(generics.first.className);
+      return map;
     } else {
-      returnType = generics.first.toSchemaObjectType;
-      schemaName = generics.first.className;
+      map['type'] = generics.first.toSchemaObjectType.name;
     }
-    return SchemaObject(schemaName: schemaName, type: returnType);
+
+    /// Binary file and an arbitrary binary file can omit schema .Just return {}
+    return map;
   }
 }
 
-class DiscriminatorObject {}
+/// A SchemaObject used in [items]
+class ItemSchemaObject {
+  /// Use in Map items if true remove type.
+  final bool additionalProperties;
+  final TypeDefinition typeDefinition;
+
+  ItemSchemaObject(this.typeDefinition, {this.additionalProperties = false});
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+
+    ///if type is custom class return ref
+    if (!typeDefinition.isDartCoreType) {
+      if (!additionalProperties) {
+        map['type'] = SchemaObjectType.object.name;
+      }
+      map['\$ref'] = _getRef(typeDefinition.className);
+    } else {
+      map['type'] = typeDefinition.toSchemaObjectType.name;
+    }
+
+    return map;
+  }
+}
+
+class RequestSchemaObject {
+  final TypeDefinition typeDefinition;
+  RequestSchemaObject({
+    required this.typeDefinition,
+  });
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+
+    /// If type is [Map] set [SchemaObjectType] to [object]
+    /// and should contain key [additionalProperties]
+    /// If type is dart:core type
+    /// ```
+    ///   "type":"string",
+    ///
+    /// ```
+    /// else
+    /// ```
+    /// "\$ref":"#/components/schemas/ComplexModel"
+    /// ```
+    ///
+    if (typeDefinition.isMapType) {
+      map['type'] = SchemaObjectType.object.name;
+      if (typeDefinition.generics.length > 1) {
+        map['additionalProperties'] = ItemSchemaObject(
+          typeDefinition.generics.last,
+          additionalProperties: true,
+        ).toJson();
+      }
+      return map;
+    }
+
+    /// If type is [List] set [SchemaObjectType] to [array]
+    /// and should contain key [items]
+    /// example
+    /// ```
+    /// {
+    ///   'type':'array',
+    ///   'items':{
+    ///      # 1. "type": "string"
+    ///      # 2."type":"object"
+    ///      #   "$ref": "#/components/schemas/ComplexModel"
+    ///     }
+    /// }
+    /// ```
+    if (typeDefinition.isListType) {
+      map['type'] = SchemaObjectType.array.name;
+      var items = ItemSchemaObject(typeDefinition.generics.last);
+      map['items'] = items.toJson();
+      return map;
+    }
+
+    if (!typeDefinition.isDartCoreType) {
+      map['\$ref'] = _getRef(typeDefinition.className);
+      return map;
+    }
+
+    /// Binary file and an arbitrary binary file can omit schema .Just return {}
+    return map;
+  }
+}
 
 /// A simple object to allow referencing other components in the OpenAPI document,
 /// internally and externally.
@@ -1065,7 +1256,9 @@ class PathItemObject {
     ResponseObject responseObject = ResponseObject(
       responseType: ContentObject(
         contentTypes: [ContentType.applicationJson],
-        schemaObject: SchemaObject.fromMethod(method),
+        schemaObject: ContentSchemaObject(
+          returnType: method.returnType,
+        ),
       ),
     );
 
@@ -1095,14 +1288,12 @@ class OperationObject {
 
   final ExternalDocumentationObject? externalDocs;
 
-  /// Unique string used to identify the operation.
-  /// The id must be unique among all operations described in the API.
-  /// The operationId value is case-sensitive.
-  /// Tools and libraries may use the operationId to uniquely identify an
-  /// operation, therefore, it is recommended to follow common
-  /// programming naming conventions.
-  /// It should be serverpod endpoint's method name
-  /// eg ``` findPetById ```
+  /// Unique string used to identify the operation.The id must be unique among
+  /// all operations described in the API.The operationId value is
+  /// case-sensitive. Tools and libraries may use the operationId to uniquely
+  /// identify an operation, therefore, it is recommended to follow common
+  /// programming naming conventions. It should be serverpod endpoint's method
+  /// name eg ``` findPetById ```
   final String? operationId;
 
   /// A list of parameters that are applicable for this operation.
@@ -1120,7 +1311,6 @@ class OperationObject {
   /// (such as GET, HEAD and DELETE),
   /// requestBody is permitted but does not have well-defined semantics
   /// and should be avoided if possible.
-
   final RequestBodyObject? requestBody;
 
   /// The list of possible responses as they are returned from executing

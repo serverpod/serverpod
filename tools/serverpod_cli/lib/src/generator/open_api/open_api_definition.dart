@@ -1,8 +1,8 @@
-
-
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+
+import '../../logger/logger.dart';
 
 part 'open_api_objects.dart';
 part 'open_api_utils.dart';
@@ -110,7 +110,7 @@ class OpenApiDefinition {
     Set<PathsObject> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
-    Set<SchemaObject> schemas =
+    Set<ComponentSchemaObject> schemas =
         _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 
     ComponentsObject componentsObject = ComponentsObject(schemas: schemas);
@@ -187,13 +187,13 @@ Set<TagObject> _getTagsFromProtocolDefinition(
 ///   Set<SchemaObject> schemas =
 ///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 /// ```
-Set<SchemaObject> _getSchemaObjectFromClassDefinitions(
+Set<ComponentSchemaObject> _getSchemaObjectFromClassDefinitions(
     List<SerializableEntityDefinition> classDefs) {
-  Set<SchemaObject> schemas = {};
+  Set<ComponentSchemaObject> schemas = {};
   for (var classInfo in classDefs) {
     assert(classInfo is ClassDefinition, 'classInfo should be ClassDefinition');
     classInfo as ClassDefinition;
-    schemas.add(SchemaObject.fromClassDefinition(classInfo));
+    schemas.add(ComponentSchemaObject(classInfo));
   }
   return schemas;
 }
