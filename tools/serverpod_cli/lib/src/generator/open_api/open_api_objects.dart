@@ -694,8 +694,7 @@ class ParameterObject {
     }
 
     if (schema != null) {
-      // TODO: implement parameter schema
-      // map['schema'] = schema!.toJson();
+      map['schema'] = schema!.toJson();
     }
 
     return map;
@@ -963,7 +962,34 @@ class ExternalDocumentationObject {
 class DiscriminatorObject {}
 
 /// A Schema Object that will be used in ParameterObject
-class ParameterSchemaObject {}
+class ParameterSchemaObject {
+  final TypeDefinition typeDefinition;
+
+  ParameterSchemaObject(this.typeDefinition);
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    if (typeDefinition.isEnum) {
+      map['type'] = SchemaObjectType.string.name;
+      map['enum'] = {};
+      return map;
+    }
+    if (typeDefinition.isListType) {
+      map['type'] = SchemaObjectType.array.name;
+      map['items'] = {
+        'type': typeDefinition.generics.first.toSchemaObjectType.name,
+      };
+      return map;
+    }
+
+    if ((typeDefinition.className == 'String') ||
+        (typeDefinition.className == 'int') ||
+        (typeDefinition.className == 'double')) {
+      map['type'] = typeDefinition.toSchemaObjectType.name;
+    }
+    return map;
+  }
+}
 
 /// A Schema Object that will be used in ContentObject
 class ContentSchemaObject {
@@ -976,7 +1002,6 @@ class ContentSchemaObject {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    log.info(returnType.generics.toString());
     List<TypeDefinition> generics = returnType.generics;
 
     /// If type is [Map] set [SchemaObjectType] to [object]
@@ -1022,8 +1047,6 @@ class ContentSchemaObject {
       return map;
     }
 
-    log.info('generics.first.url ${generics.first.isDartCoreType}');
-
     if (!generics.first.isDartCoreType) {
       map['type'] = SchemaObjectType.object.name;
       map['\$ref'] = _getRef(generics.first.className);
@@ -1062,6 +1085,7 @@ class ItemSchemaObject {
   }
 }
 
+/// A SchemaObject that will use in Request
 class RequestSchemaObject {
   final TypeDefinition typeDefinition;
   RequestSchemaObject({
@@ -1340,7 +1364,6 @@ class OperationObject {
   });
 
   Map<String, dynamic> toJson() {
-    // TODO: implement all
     var map = <String, dynamic>{
       'operationId': operationId,
     };
@@ -1365,7 +1388,7 @@ class OperationObject {
     }
 
     if (parameters?.isNotEmpty ?? false) {
-      // map['parameters']=parameters.
+      map['parameters'] = parameters!.map((e) => e.toJson()).toList();
     }
     map['responses'] = responses.toJson();
 

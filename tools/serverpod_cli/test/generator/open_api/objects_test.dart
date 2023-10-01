@@ -121,5 +121,91 @@ void main() {
         }, contentObject.toJson());
       },
     );
+
+    test('Validate OperationObject', () {
+      var responses = ResponseObject(
+        responseType: ContentObject(
+          contentTypes: [ContentType.applicationJson],
+          schemaObject: ContentSchemaObject(
+            returnType: TypeDefinition(
+              className: 'Future',
+              nullable: false,
+              generics: [
+                TypeDefinition(
+                  className: 'int',
+                  nullable: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      var authParam = ParameterObject(
+        name: 'api_key',
+        inField: ParameterLocation.header,
+        requiredField: true,
+        allowEmptyValue: false,
+        schema: ParameterSchemaObject(
+          TypeDefinition(className: 'String', nullable: false),
+        ),
+      );
+      var petIdParam = ParameterObject(
+        name: 'petId',
+        inField: ParameterLocation.path,
+        requiredField: true,
+        allowEmptyValue: false,
+        schema: ParameterSchemaObject(
+          TypeDefinition(className: 'int', nullable: false),
+        ),
+      );
+      OperationObject object = OperationObject(
+        responses: responses,
+        security: SecurityRequirementObject(),
+        parameters: [authParam, petIdParam],
+        tags: ['pet'],
+        operationId: 'getPetById',
+      );
+
+      expect({
+        'tags': ['pet'],
+        'operationId': 'getPetById',
+        'parameters': [
+          {
+            'name': 'api_key',
+            'in': 'header',
+            'required': true,
+            'schema': {'type': 'string'}
+          },
+          {
+            'name': 'petId',
+            'in': 'path',
+            'required': true,
+            'schema': {'type': 'integer'}
+          }
+        ],
+        'responses': {
+          '200': {
+            'description': 'Success',
+            'content': {
+              'application/json': {
+                'schema': {
+                  'type': 'integer',
+                }
+              }
+            }
+          },
+          '400': {
+            'description':
+                'Bad request (the query passed to the server was incorrect).'
+          },
+          '403': {
+            'description':
+                "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
+          },
+          '500': {'description': 'Internal server error '}
+        }
+      }, object.toJson());
+    });
   });
 }
