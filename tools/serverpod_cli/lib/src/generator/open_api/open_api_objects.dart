@@ -682,7 +682,7 @@ class ParameterObject {
     }
 
     if (style != null) {
-      map['style'] = style!.name.camelToKebabCase;
+      map['style'] = style!.name.paramCase;
     }
 
     if (explode) {

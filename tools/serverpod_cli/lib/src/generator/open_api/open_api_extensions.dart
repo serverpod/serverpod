@@ -1,16 +1,5 @@
 part of './open_api_definition.dart';
 
-extension on String {
-  /// convert queryFrom -> query-form
-  String get camelToKebabCase {
-    if (!contains(RegExp(r'[A-Z]'))) {
-      return this;
-    }
-    return replaceAllMapped(RegExp(r'([a-z])([A-Z])'),
-        (match) => '${match.group(1)}-${match.group(2)?.toLowerCase()}');
-  }
-}
-
 extension CheckDartCoreType on TypeDefinition {
   bool get isDartCoreType => (url == 'dart:typed_data') || (url == 'dart:core');
 }
@@ -27,7 +16,7 @@ extension on SchemaObjectType {
 /// convert [string] -> [string]
 ///
 extension ChangeFormat on SchemaObjectFormat {
-  String get formattedName => name.camelToKebabCase;
+  String get formattedName => name.paramCase;
 }
 
 /// convert [TypeDefinition] className to [SchemaObjetType]
