@@ -4901,7 +4901,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i48.Types>(),
+              type: _i1.getType<_i50.Types>(),
               nullable: false,
             )
           },
@@ -4919,7 +4919,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'value': _i1.ParameterDescription(
               name: 'value',
-              type: _i1.getType<_i48.Types>(),
+              type: _i1.getType<_i50.Types>(),
               nullable: false,
             )
           },
