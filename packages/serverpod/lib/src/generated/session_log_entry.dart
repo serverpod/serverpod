@@ -125,6 +125,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -586,6 +587,7 @@ class SessionLogEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => SessionLogEntry.t;
 }

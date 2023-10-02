@@ -65,6 +65,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -362,6 +363,7 @@ class FutureCallEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => FutureCallEntry.t;
 }

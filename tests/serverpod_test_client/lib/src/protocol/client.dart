@@ -2536,6 +2536,7 @@ class Client extends _i1.ServerpodClient {
         'subSubDirTest': subSubDirTest,
         'subDirTest': subDirTest,
       };
+
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
         'module': modules.module,
