@@ -274,6 +274,50 @@ void main() {
         });
       });
 
+      group('has an insert method', () {
+        var insertMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'insert',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'insert',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            insertMethod?.returnType?.toSource(),
+            contains('Future<List<$testClassName>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            insertMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
       group('has an insert row method', () {
         var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
@@ -323,6 +367,50 @@ void main() {
         });
       });
 
+      group('has an update method', () {
+        var updateMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'update',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'update',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            updateMethod?.returnType?.toSource(),
+            contains('Future<List<$testClassName>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            updateMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
       group('has an update row method', () {
         var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
@@ -367,6 +455,50 @@ void main() {
         test('that takes the transaction object as an optional param', () {
           expect(
             updateRowMethod?.parameters?.toSource(),
+            contains('Transaction? transaction'),
+          );
+        });
+      });
+
+      group('has an delete method', () {
+        var deleteMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          repositoryClass!,
+          name: 'delete',
+        );
+        test('defined', () {
+          expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              repositoryClass,
+              name: 'delete',
+            ),
+            isTrue,
+          );
+        });
+
+        test('that returns a future with the base class', () {
+          expect(
+            deleteMethod?.returnType?.toSource(),
+            contains('Future<List<int>>'),
+          );
+        });
+
+        test('that takes the session as a required param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('Session session'),
+          );
+        });
+
+        test('that takes the row as a required param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
+            contains('List<$testClassName> rows'),
+          );
+        });
+
+        test('that takes the transaction object as an optional param', () {
+          expect(
+            deleteMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });

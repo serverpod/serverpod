@@ -49,8 +49,11 @@ class BuildRepositoryClass {
           _buildFindMethod(className, objectRelationFields),
           _buildFindRow(className, objectRelationFields),
           _buildFindByIdMethod(className, objectRelationFields),
+          _buildInsertMethod(className),
           _buildInsertRowMethod(className),
+          _buildUpdateMethod(className),
           _buildUpdateRowMethod(className),
+          _buildDeleteMethod(className),
           _buildDeleteRowMethod(className),
           _buildDeleteWhereMethod(className),
           _buildCountMethod(className),
@@ -350,6 +353,48 @@ class BuildRepositoryClass {
           .statement);
   }
 
+  Method _buildInsertMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'insert'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer('List<$className>')),
+        )
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
+            ..name = 'session'),
+          Parameter((p) => p
+            ..type = refer('List<$className>')
+            ..name = 'rows'),
+        ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('dbNext')
+            .property('insert')
+            .call([
+              refer('rows')
+            ], {
+              'transaction': refer('transaction'),
+            }, [
+              refer(className)
+            ])
+            .returned
+            .statement;
+    });
+  }
+
   Method _buildInsertRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
@@ -392,6 +437,48 @@ class BuildRepositoryClass {
     });
   }
 
+  Method _buildUpdateMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'update'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(refer('List<$className>')),
+        )
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
+            ..name = 'session'),
+          Parameter((p) => p
+            ..type = refer('List<$className>')
+            ..name = 'rows'),
+        ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('dbNext')
+            .property('update')
+            .call([
+              refer('rows')
+            ], {
+              'transaction': refer('transaction'),
+            }, [
+              refer(className)
+            ])
+            .returned
+            .statement;
+    });
+  }
+
   Method _buildUpdateRowMethod(String className) {
     return Method((methodBuilder) {
       methodBuilder
@@ -424,6 +511,48 @@ class BuildRepositoryClass {
             .property('updateRow')
             .call([
               refer('row')
+            ], {
+              'transaction': refer('transaction'),
+            }, [
+              refer(className)
+            ])
+            .returned
+            .statement;
+    });
+  }
+
+  Method _buildDeleteMethod(String className) {
+    return Method((methodBuilder) {
+      methodBuilder
+        ..name = 'delete'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add((refer('List<int>'))),
+        )
+        ..requiredParameters.addAll([
+          Parameter((p) => p
+            ..type = refer('Session', 'package:serverpod/serverpod.dart')
+            ..name = 'session'),
+          Parameter((p) => p
+            ..type = refer('List<$className>')
+            ..name = 'rows'),
+        ])
+        ..optionalParameters.addAll([
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
+              ..symbol = 'Transaction'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'transaction'
+            ..named = true),
+        ])
+        ..modifier = MethodModifier.async
+        ..body = refer('session')
+            .property('dbNext')
+            .property('delete')
+            .call([
+              refer('rows')
             ], {
               'transaction': refer('transaction'),
             }, [
