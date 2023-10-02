@@ -87,6 +87,11 @@ class Database {
     );
   }
 
+  /// Update all [TableRow]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// update, none of the rows will be updated.
   Future<List<T>> update<T extends TableRow>(
     List<T> rows, {
     List<Column>? columns,
@@ -142,6 +147,9 @@ class Database {
     );
   }
 
+  /// Deletes all [TableRow]s in the list and returns the deleted ids.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
   Future<List<int>> delete<T extends TableRow>(
     List<T> rows, {
     Transaction? transaction,
