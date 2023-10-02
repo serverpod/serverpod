@@ -322,5 +322,19 @@ void main() {
         },
       }, pathItemObject.toJson());
     });
+
+    test('Validate ServerObject', () {
+      ServerObject serverObject = ServerObject(
+        url: Uri.https('serverpod.dev'),
+        description: 'Serverpod Endpoint',
+      );
+      expect(
+        {
+          'url': 'https://serverpod.dev',
+          'description': 'Serverpod Endpoint',
+        },
+        serverObject.toJson(),
+      );
+    });
   });
 }

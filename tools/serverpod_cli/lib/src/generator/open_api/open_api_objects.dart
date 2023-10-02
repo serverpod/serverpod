@@ -218,7 +218,7 @@ class ServerObject {
       map['description'] = description!;
     }
     if (variables != null) {
-      // TODO: implement multiple servers
+      // TODO : implement server variable object
     }
 
     return map;
@@ -282,30 +282,6 @@ class ServerVariableObject {
 ///            }
 ///          }
 ///        },
-///        "Category": {
-///          "type": "object",
-///          "properties": {
-///            "id": {
-///              "type": "integer",
-///              "format": "int64"
-///            },
-///            "name": {
-///              "type": "string"
-///            }
-///          }
-///        },
-///        "Tag": {
-///          "type": "object",
-///          "properties": {
-///            "id": {
-///              "type": "integer",
-///              "format": "int64"
-///            },
-///            "name": {
-///              "type": "string"
-///            }
-///          }
-///        }
 ///      },
 ///      "parameters": {
 ///        "skipParam": {
@@ -417,7 +393,6 @@ class ComponentsObject {
     Map<String, dynamic> map = {};
     map['components'] = {};
     if (schemas != null) {
-      // TODO: Add Error Model
       map['components']['schemas'] = _getSchemaMapFromSetSchema(schemas!);
     }
     return map;
@@ -529,6 +504,8 @@ class ContentType {
   static const applicationForm = 'application/x-www-form-urlencoded';
   static const any = '*/*';
   static const image = 'image/png';
+  static const imageAny = 'image/*';
+  static const imageJpeg = 'image/jpeg';
   static const applicationOctetStream = 'application/octet-stream';
 }
 
@@ -776,191 +753,6 @@ class ExternalDocumentationObject {
   }
 }
 
-/// The Schema Object allows the definition of input and output data types.
-/// These types can be objects, but also primitives and arrays.
-/// This object is a superset of the JSON Schema Specification Draft 2020-12.
-// TODO: rewrite schema object
-// class SchemaObject {
-//   /// Adds support for polymorphism.
-//   /// The discriminator is an object name that is used to differentiate between other schemas which may satisfy the payload description.
-//   /// See Composition and Inheritance for more details.
-//   final DiscriminatorObject? discriminator;
-
-//   /// external docs
-//   final ExternalDocumentationObject? externalDocs;
-
-//   /// example
-//   /// ```
-//   /// "Order": {
-//   ///     "type": "object",
-//   ///     "properties": {
-//   ///       "id": {
-//   ///         "type": "integer",
-//   ///         "format": "int64",
-//   ///         "example": 10
-//   ///       },
-//   /// ```
-//   /// [Order] and [id] are schemaName
-//   final String schemaName;
-
-//   /// the type of object schema [integer,string,etc]
-//   final SchemaObjectType type;
-
-//   /// format of the type eg.[int64,string,password]
-//   final SchemaObjectFormat? format;
-
-//   /// whether the object schema is nullable or not
-//   final bool nullable;
-
-//   ///if type is array items must not null
-//   final SchemaObject? items;
-
-//   ///example
-//   ///``` "Order": {
-//   ///       "type": "object",
-//   ///       "properties": {
-//   ///         "id": {
-//   ///           "type": "integer",
-//   ///           "format": "int64",
-//   ///         },
-//   ///```
-//   final List<SchemaObject>? properties;
-
-//   ///if type is object properties cannot be null
-//   /// ```
-//   /// "status": {
-//   ///   "type": "string",
-//   ///   "description": "Order Status",
-//   ///   "example": "approved",
-//   ///   "enum": [
-//   ///     "placed",
-//   ///     "approved",
-//   ///     "delivered"
-//   ///   ]
-//   /// },
-//   /// ```
-//   final List<String>? enumField;
-
-//   SchemaObject({
-//     required this.schemaName,
-//     this.externalDocs,
-//     required this.type,
-//     this.items,
-//     this.format,
-//     this.nullable = false,
-//     this.discriminator,
-//     this.properties,
-//     this.enumField,
-//   });
-
-//   /// only to be use in component
-//   Map<String, dynamic> toJson() {
-//     Map<String, dynamic> map = {schemaName: {}};
-//     map[schemaName]['type'] = type.type;
-
-//     if (type != SchemaObjectType.object) {
-//       if (format != null) {
-//         map[schemaName]['format'] = format!.name;
-//       }
-//     } else {
-//       if (properties != null) {
-//         Map<String, dynamic> props = {};
-//         for (var p in properties!) {
-//           props.addAll(p.toJson());
-//         }
-//         map[schemaName]['properties'] = props;
-//       }
-//     }
-
-//     return map;
-//   }
-
-//   /// To be used, for example, on `requestBody`.
-//   Map<String, dynamic> toRefJson() {
-//     Map<String, dynamic> map = {'schema': {}};
-
-//     /// if type is object use ref`# $ref: '#/components/schemas/Pet'`
-//     if (type == SchemaObjectType.object) {
-//       map['schema']['\$ref'] = _getRef(schemaName);
-//     } else {
-//       map['schema']['type'] = type.type;
-//       if (format != null && type != SchemaObjectType.array) {
-//         map[schemaName]['format'] = format!.name;
-//       }
-//       if (type == SchemaObjectType.array) {
-//         map['schemaName']['items'] = items!.toItemsJson();
-//       }
-//     }
-//     return map;
-//   }
-
-//   /// To be used, on ContentObject
-//   Map<String, dynamic> toContentJson() {
-//     Map<String, dynamic> map = {'schema': {}};
-//     if (type == SchemaObjectType.object) {
-//       map['schema']['\$ref'] = _getRef(schemaName);
-//     }
-//     //
-//     else if (type == SchemaObjectType.array) {
-//       map['schema']['type'] = type.type;
-//       map['schema']['items'] = {};
-//       map['schema']['items']['\$ref'] = _getRef(schemaName);
-//     }
-//     return map;
-//   }
-
-//   /// To be used, for example, on `items`.
-//   Map<String, dynamic> toItemsJson() {
-//     Map<String, dynamic> map = {};
-//     if (items != null) {
-//       if (items!.type == SchemaObjectType.object) {
-//         map['\$ref'] = _getRef(items!.schemaName);
-//       } else {
-//         map['type'] = items!.type;
-//         if (items!.format != null) {
-//           map['format'] = items!.format;
-//         }
-//       }
-//     }
-//     return map;
-//   }
-
-//   factory SchemaObject.fromClassDefinition(ClassDefinition classDefinition) {
-//     List<SchemaObject> properties = [];
-//     for (var field in classDefinition.fields) {
-//       var prop = SchemaObject(
-//           schemaName: field.name,
-//           type: field.type.toSchemaObjectType,
-//           format: field.type.toSchemaObjectFormat);
-//       properties.add(prop);
-//     }
-//     return SchemaObject(
-//         schemaName: classDefinition.className,
-//         type: SchemaObjectType.object,
-//         properties: properties);
-//   }
-
-//   /// call from [ResponseObject]
-//   factory SchemaObject.fromMethod(MethodDefinition methodDefinition) {
-//     ///return is Future<List<String>
-//     ///return is Future<int>
-//     ///return is Future<object>
-//     SchemaObjectType? returnType;
-//     String? schemaName;
-//     var generics = methodDefinition.returnType.generics;
-//     if (generics.first.className == 'List') {
-//       returnType = generics.last.toSchemaObjectType;
-//       schemaName = generics.last.className;
-//     } else {
-//       returnType = generics.first.toSchemaObjectType;
-//       schemaName = generics.first.className;
-//     }
-//     return SchemaObject(schemaName: schemaName, type: returnType);
-//   }
-// }
-
-class DiscriminatorObject {}
-
 /// A Schema Object that will be used in ParameterObject
 class ParameterSchemaObject {
   final TypeDefinition typeDefinition;
@@ -1147,9 +939,10 @@ class RequestSchemaObject {
   }
 }
 
-/// A simple object to allow referencing other components in the OpenAPI document,
-/// internally and externally.
-/// The $ref string value contains a URI RFC3986, which identifies the location of the value being referenced.
+/// A simple object to allow referencing other components in the OpenAPI
+/// document, internally and externally.
+/// The $ref string value contains a URI RFC3986, which identifies the location
+/// of the value being referenced.
 class ReferenceObject {
   /// The reference identifier. This must be in the form of a URI.
   /// key - [$ref]
@@ -1187,7 +980,122 @@ class ReferenceObject {
 
 class HeaderObject {}
 
-class SecuritySchemeObject {}
+/// Defines a security scheme that can be used by the operations.
+abstract class SecuritySchemeObject {
+  /// The type of the security scheme.
+
+  final String? description;
+  SecuritySchemeObject({
+    this.description,
+  });
+  Map<String, dynamic> toJson();
+}
+
+class HttpSecurityScheme extends SecuritySchemeObject {
+  /// The name of the HTTP Authorization scheme to be used in the Authorization
+  /// header as defined in RFC7235. Applies to [http]
+  /// `basic` `bearer`
+  final String scheme;
+
+  /// A hint to the client to identify how the bearer token
+  /// is formatted.  Applies to [http] ("bearer")
+  /// example ```
+  /// "bearerFormat": "JWT",
+  /// ```
+  final String? bearerFormat;
+  HttpSecurityScheme({
+    required this.scheme,
+    super.description,
+    this.bearerFormat,
+  })  : assert(
+          (scheme == 'basic') || (scheme == 'bearer'),
+          '`scheme` must be one of `basic or bearer`.',
+        ),
+        assert(
+            (scheme == 'basic') || (scheme == 'bearer' && bearerFormat != null),
+            'When `scheme` is bearer `bearerFormat` should not be null');
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['type'] = SecuritySchemeType.http.name;
+    if (description != null) map['description'] = description!;
+    map['scheme'] = scheme;
+    if (bearerFormat != null) map['bearerFormat'] = bearerFormat;
+    return map;
+  }
+}
+
+class ApiKeySecurityScheme extends SecuritySchemeObject {
+  /// The name of the header, query or cookie parameter to be used. Applies to
+  /// [apiKey]
+  final String name;
+
+  /// The location of the API key. Valid values are "query", "header" or
+  /// "cookie". Applies to [apiKey]
+  final String inField;
+  ApiKeySecurityScheme({
+    super.description,
+    required this.name,
+    required this.inField,
+  }) : assert(
+          ['query', 'header', 'cookie'].contains(inField),
+          'inField only accept query,header and cookie',
+        );
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['type'] = SecuritySchemeType.apiKey.name;
+    if (description != null) map['description'] = description!;
+    map['name'] = name;
+    map['in'] = inField;
+    return map;
+  }
+}
+
+class OauthSecurityScheme extends SecuritySchemeObject {
+  final OauthFlowObject flows;
+  OauthSecurityScheme({
+    super.description,
+    required this.flows,
+  });
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['type'] = SecuritySchemeType.oauth2.name;
+    if (description != null) map['description'] = description!;
+    map['flows'] = flows.toJson();
+    return map;
+  }
+}
+
+class OpenIdSecurityScheme extends SecuritySchemeObject {
+  /// OpenId Connect URL to discover OAuth2 configuration values.
+  /// This must be in the form of a URL. The OpenID Connect standard requires
+  /// the use of TLS.
+  final String openIdConnectUrl;
+  OpenIdSecurityScheme({
+    super.description,
+    required this.openIdConnectUrl,
+  });
+
+  @override
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['type'] = SecuritySchemeType.openIdConnect.name;
+    if (description != null) map['description'] = description!;
+    map['openIdConnectUrl'] = openIdConnectUrl;
+    return map;
+  }
+}
+
+class OauthFlowObject {
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
 
 class LinkObject {}
 
@@ -1202,7 +1110,8 @@ class PathItemObject {
   /// path.
   final String? summary;
 
-  /// An optional, string description, intended to apply to all operations in this path. CommonMark syntax may be used for rich text representation.
+  /// An optional, string description, intended to apply to all operations in
+  /// this path. CommonMark syntax may be used for rich text representation.
   final String? description;
 
   /// A definition of a GET operation on this path.

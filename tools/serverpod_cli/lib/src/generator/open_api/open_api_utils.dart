@@ -64,6 +64,8 @@ enum SchemaObjectFormat {
   /// binary data, used to describe files
   binary,
 
+  boolean,
+
   /// unsupported
   email,
   int32,
@@ -77,4 +79,12 @@ enum SchemaObjectFormat {
   double,
   time,
   any,
+}
+
+enum SecuritySchemeType {
+  http,
+  apiKey,
+  mutualTLS,
+  oauth2,
+  openIdConnect,
 }

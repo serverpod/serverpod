@@ -21,6 +21,11 @@ void main() {
               .toSchemaObjectType
               .name);
       expect(
+          'boolean',
+          TypeDefinition(className: 'bool', nullable: false)
+              .toSchemaObjectType
+              .name);
+      expect(
           'number',
           TypeDefinition(className: 'double', nullable: false)
               .toSchemaObjectType

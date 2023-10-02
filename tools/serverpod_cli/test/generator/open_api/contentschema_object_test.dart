@@ -40,7 +40,6 @@ void main() {
               className: 'String',
               nullable: false,
               url: 'dart:core',
-             
             ),
             TypeDefinition(
               className: 'String',
