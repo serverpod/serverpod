@@ -410,6 +410,17 @@ class AddressRepository {
     );
   }
 
+  Future<List<Address>> insert(
+    _i1.Session session,
+    List<Address> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Address>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Address> insertRow(
     _i1.Session session,
     Address row, {
@@ -421,6 +432,17 @@ class AddressRepository {
     );
   }
 
+  Future<List<Address>> update(
+    _i1.Session session,
+    List<Address> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Address>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Address> updateRow(
     _i1.Session session,
     Address row, {
@@ -428,6 +450,17 @@ class AddressRepository {
   }) async {
     return session.dbNext.updateRow<Address>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Address> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Address>(
+      rows,
       transaction: transaction,
     );
   }

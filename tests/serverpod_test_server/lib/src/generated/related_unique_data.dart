@@ -410,6 +410,17 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  Future<List<RelatedUniqueData>> insert(
+    _i1.Session session,
+    List<RelatedUniqueData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<RelatedUniqueData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<RelatedUniqueData> insertRow(
     _i1.Session session,
     RelatedUniqueData row, {
@@ -421,6 +432,17 @@ class RelatedUniqueDataRepository {
     );
   }
 
+  Future<List<RelatedUniqueData>> update(
+    _i1.Session session,
+    List<RelatedUniqueData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<RelatedUniqueData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<RelatedUniqueData> updateRow(
     _i1.Session session,
     RelatedUniqueData row, {
@@ -428,6 +450,17 @@ class RelatedUniqueDataRepository {
   }) async {
     return session.dbNext.updateRow<RelatedUniqueData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<RelatedUniqueData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<RelatedUniqueData>(
+      rows,
       transaction: transaction,
     );
   }

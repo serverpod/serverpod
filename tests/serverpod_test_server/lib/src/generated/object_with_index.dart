@@ -341,6 +341,17 @@ class ObjectWithIndexRepository {
     );
   }
 
+  Future<List<ObjectWithIndex>> insert(
+    _i1.Session session,
+    List<ObjectWithIndex> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithIndex>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithIndex> insertRow(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -352,6 +363,17 @@ class ObjectWithIndexRepository {
     );
   }
 
+  Future<List<ObjectWithIndex>> update(
+    _i1.Session session,
+    List<ObjectWithIndex> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithIndex>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithIndex> updateRow(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -359,6 +381,17 @@ class ObjectWithIndexRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithIndex>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithIndex> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithIndex>(
+      rows,
       transaction: transaction,
     );
   }

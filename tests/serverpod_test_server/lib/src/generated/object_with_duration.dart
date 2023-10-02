@@ -316,6 +316,17 @@ class ObjectWithDurationRepository {
     );
   }
 
+  Future<List<ObjectWithDuration>> insert(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithDuration>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithDuration> insertRow(
     _i1.Session session,
     ObjectWithDuration row, {
@@ -327,6 +338,17 @@ class ObjectWithDurationRepository {
     );
   }
 
+  Future<List<ObjectWithDuration>> update(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithDuration>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithDuration> updateRow(
     _i1.Session session,
     ObjectWithDuration row, {
@@ -334,6 +356,17 @@ class ObjectWithDurationRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithDuration>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithDuration>(
+      rows,
       transaction: transaction,
     );
   }

@@ -321,6 +321,17 @@ class SimpleDataRepository {
     );
   }
 
+  Future<List<SimpleData>> insert(
+    _i1.Session session,
+    List<SimpleData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<SimpleData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<SimpleData> insertRow(
     _i1.Session session,
     SimpleData row, {
@@ -332,6 +343,17 @@ class SimpleDataRepository {
     );
   }
 
+  Future<List<SimpleData>> update(
+    _i1.Session session,
+    List<SimpleData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<SimpleData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<SimpleData> updateRow(
     _i1.Session session,
     SimpleData row, {
@@ -339,6 +361,17 @@ class SimpleDataRepository {
   }) async {
     return session.dbNext.updateRow<SimpleData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<SimpleData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<SimpleData>(
+      rows,
       transaction: transaction,
     );
   }

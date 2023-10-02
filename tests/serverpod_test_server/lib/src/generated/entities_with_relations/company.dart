@@ -420,6 +420,17 @@ class CompanyRepository {
     );
   }
 
+  Future<List<Company>> insert(
+    _i1.Session session,
+    List<Company> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Company>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Company> insertRow(
     _i1.Session session,
     Company row, {
@@ -431,6 +442,17 @@ class CompanyRepository {
     );
   }
 
+  Future<List<Company>> update(
+    _i1.Session session,
+    List<Company> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Company>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Company> updateRow(
     _i1.Session session,
     Company row, {
@@ -438,6 +460,17 @@ class CompanyRepository {
   }) async {
     return session.dbNext.updateRow<Company>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Company> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Company>(
+      rows,
       transaction: transaction,
     );
   }

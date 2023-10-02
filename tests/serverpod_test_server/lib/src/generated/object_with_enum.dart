@@ -418,6 +418,17 @@ class ObjectWithEnumRepository {
     );
   }
 
+  Future<List<ObjectWithEnum>> insert(
+    _i1.Session session,
+    List<ObjectWithEnum> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithEnum>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithEnum> insertRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -429,6 +440,17 @@ class ObjectWithEnumRepository {
     );
   }
 
+  Future<List<ObjectWithEnum>> update(
+    _i1.Session session,
+    List<ObjectWithEnum> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithEnum>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithEnum> updateRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -436,6 +458,17 @@ class ObjectWithEnumRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithEnum>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithEnum> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithEnum>(
+      rows,
       transaction: transaction,
     );
   }

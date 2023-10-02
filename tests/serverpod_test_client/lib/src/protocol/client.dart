@@ -2295,6 +2295,84 @@ class EndpointDatabaseBatch extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointDatabaseBatchGenerated extends _i1.EndpointRef {
+  EndpointDatabaseBatchGenerated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'databaseBatchGenerated';
+
+  _i2.Future<List<_i15.UniqueData>> batchInsert(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'batchInsert',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchInsertTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatchGenerated',
+        'batchInsertTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> batchUpdate(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'batchUpdate',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchUpdateTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatchGenerated',
+        'batchUpdateTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<int>> batchDelete(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<int>>(
+        'databaseBatchGenerated',
+        'batchDelete',
+        {'value': value},
+      );
+
+  _i2.Future<_i16.RelatedUniqueData> insertRelatedUniqueData(
+          _i16.RelatedUniqueData value) =>
+      caller.callServerEndpoint<_i16.RelatedUniqueData>(
+        'databaseBatchGenerated',
+        'insertRelatedUniqueData',
+        {'value': value},
+      );
+
+  _i2.Future<_i15.UniqueData?> findByEmail(String email) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatchGenerated',
+        'findByEmail',
+        {'email': email},
+      );
+
+  _i2.Future<_i15.UniqueData?> findById(int id) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatchGenerated',
+        'findById',
+        {'id': id},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> findAll() =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<void> deleteAll() => caller.callServerEndpoint<void>(
+        'databaseBatchGenerated',
+        'deleteAll',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointTransactionsDatabase extends _i1.EndpointRef {
   EndpointTransactionsDatabase(_i1.EndpointCaller caller) : super(caller);
 
@@ -3389,6 +3467,7 @@ class Client extends _i1.ServerpodClient {
     basicDatabase = EndpointBasicDatabase(this);
     basicDatabaseLegacy = EndpointBasicDatabaseLegacy(this);
     databaseBatch = EndpointDatabaseBatch(this);
+    databaseBatchGenerated = EndpointDatabaseBatchGenerated(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
     relation = EndpointRelation(this);
     exceptionTest = EndpointExceptionTest(this);
@@ -3462,6 +3541,8 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointDatabaseBatch databaseBatch;
 
+  late final EndpointDatabaseBatchGenerated databaseBatchGenerated;
+
   late final EndpointTransactionsDatabase transactionsDatabase;
 
   late final EndpointRelation relation;
@@ -3531,6 +3612,7 @@ class Client extends _i1.ServerpodClient {
         'basicDatabase': basicDatabase,
         'basicDatabaseLegacy': basicDatabaseLegacy,
         'databaseBatch': databaseBatch,
+        'databaseBatchGenerated': databaseBatchGenerated,
         'transactionsDatabase': transactionsDatabase,
         'relation': relation,
         'exceptionTest': exceptionTest,
