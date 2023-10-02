@@ -428,6 +428,17 @@ class FutureCallEntryRepository {
     );
   }
 
+  Future<List<FutureCallEntry>> insert(
+    _i1.Session session,
+    List<FutureCallEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<FutureCallEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<FutureCallEntry> insertRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -439,6 +450,17 @@ class FutureCallEntryRepository {
     );
   }
 
+  Future<List<FutureCallEntry>> update(
+    _i1.Session session,
+    List<FutureCallEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<FutureCallEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<FutureCallEntry> updateRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -446,6 +468,17 @@ class FutureCallEntryRepository {
   }) async {
     return session.dbNext.updateRow<FutureCallEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<FutureCallEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<FutureCallEntry>(
+      rows,
       transaction: transaction,
     );
   }

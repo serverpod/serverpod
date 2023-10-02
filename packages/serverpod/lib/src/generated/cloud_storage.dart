@@ -454,6 +454,17 @@ class CloudStorageEntryRepository {
     );
   }
 
+  Future<List<CloudStorageEntry>> insert(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<CloudStorageEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<CloudStorageEntry> insertRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -465,6 +476,17 @@ class CloudStorageEntryRepository {
     );
   }
 
+  Future<List<CloudStorageEntry>> update(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<CloudStorageEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<CloudStorageEntry> updateRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -472,6 +494,17 @@ class CloudStorageEntryRepository {
   }) async {
     return session.dbNext.updateRow<CloudStorageEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<CloudStorageEntry>(
+      rows,
       transaction: transaction,
     );
   }

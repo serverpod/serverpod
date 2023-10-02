@@ -457,6 +457,17 @@ class ServerHealthMetricRepository {
     );
   }
 
+  Future<List<ServerHealthMetric>> insert(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ServerHealthMetric>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ServerHealthMetric> insertRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -468,6 +479,17 @@ class ServerHealthMetricRepository {
     );
   }
 
+  Future<List<ServerHealthMetric>> update(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ServerHealthMetric>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ServerHealthMetric> updateRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -475,6 +497,17 @@ class ServerHealthMetricRepository {
   }) async {
     return session.dbNext.updateRow<ServerHealthMetric>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ServerHealthMetric>(
+      rows,
       transaction: transaction,
     );
   }

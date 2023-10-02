@@ -401,6 +401,17 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  Future<List<EmailCreateAccountRequest>> insert(
+    _i1.Session session,
+    List<EmailCreateAccountRequest> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<EmailCreateAccountRequest>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailCreateAccountRequest> insertRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
@@ -412,6 +423,17 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
+  Future<List<EmailCreateAccountRequest>> update(
+    _i1.Session session,
+    List<EmailCreateAccountRequest> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<EmailCreateAccountRequest>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailCreateAccountRequest> updateRow(
     _i1.Session session,
     EmailCreateAccountRequest row, {
@@ -419,6 +441,17 @@ class EmailCreateAccountRequestRepository {
   }) async {
     return session.dbNext.updateRow<EmailCreateAccountRequest>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<EmailCreateAccountRequest> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<EmailCreateAccountRequest>(
+      rows,
       transaction: transaction,
     );
   }
