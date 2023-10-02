@@ -175,6 +175,19 @@ ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_pkey PRIMARY KEY (id);
 
 --
+-- Class RelatedUniqueData as table related_unique_data
+--
+
+CREATE TABLE "related_unique_data" (
+  "id" serial,
+  "uniqueDataId" integer NOT NULL,
+  "number" integer NOT NULL
+);
+
+ALTER TABLE ONLY "related_unique_data"
+  ADD CONSTRAINT related_unique_data_pkey PRIMARY KEY (id);
+
+--
 -- Class SimpleData as table simple_data
 --
 
@@ -230,6 +243,21 @@ CREATE TABLE "types" (
 
 ALTER TABLE ONLY "types"
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
+
+--
+-- Class UniqueData as table unique_data
+--
+
+CREATE TABLE "unique_data" (
+  "id" serial,
+  "number" integer NOT NULL,
+  "email" text NOT NULL
+);
+
+ALTER TABLE ONLY "unique_data"
+  ADD CONSTRAINT unique_data_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX email_index_idx ON "unique_data" USING btree ("email");
 
 --
 -- Foreign relations for "address" table
@@ -299,6 +327,16 @@ ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_fk_0
     FOREIGN KEY("nextId")
       REFERENCES post(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "related_unique_data" table
+--
+
+ALTER TABLE ONLY "related_unique_data"
+  ADD CONSTRAINT related_unique_data_fk_0
+    FOREIGN KEY("uniqueDataId")
+      REFERENCES unique_data(id)
         ON DELETE CASCADE;
 
 --
