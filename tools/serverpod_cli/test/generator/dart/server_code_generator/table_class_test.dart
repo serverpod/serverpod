@@ -337,4 +337,51 @@ void main() {
               : false);
     });
   });
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withObjectRelationField('company', 'Company', 'company')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(compilationUnit,
+            name: '${testClassName}Table');
+
+    group('then the class named ${testClassName}Table', () {
+      test('has private field for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+                maybeClassNamedExampleTable!,
+                type: 'CompanyTable?',
+                name: '_company'),
+            isTrue,
+            reason: 'Missing private field declaration for relation table.');
+      });
+
+      test('has getter method for relation table.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: 'company',
+            ),
+            isTrue,
+            reason: 'Missing declaration for relation table getter.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
+  });
 }
