@@ -65,7 +65,7 @@ void main() {
 
     group('then the $repositoryClassName class', () {
       group('has a find method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var findMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'find',
         );
@@ -81,25 +81,25 @@ void main() {
 
         test('that returns a future with a list of the base class', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findMethod?.returnType?.toSource(),
             contains('List<$testClassName>'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the where callback as a named optional param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = findMethod?.parameters?.toSource();
           expect(
             params,
             contains('${testClassName}ExpressionBuilder? where'),
@@ -108,49 +108,49 @@ void main() {
 
         test('that takes the limit int as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('int? limit'),
           );
         });
 
         test('that takes the offset int as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('int? offset'),
           );
         });
 
         test('that takes the orderBy column as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('Column? orderBy'),
           );
         });
 
         test('that takes the orderDescending bool as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('bool orderDescending'),
           );
         });
 
         test('that takes the orderByList as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('orderByList'),
           );
         });
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
       });
 
       group('has a findRow method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'findRow',
         );
@@ -166,25 +166,25 @@ void main() {
 
         test('that returns a future with a nullable base class', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findRowMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findRowMethod?.returnType?.toSource(),
             contains('$testClassName?'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findRowMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the where callback as a named optional param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
             contains('${testClassName}ExpressionBuilder? where'),
@@ -192,7 +192,7 @@ void main() {
         });
 
         test('that takes the offset as a named optional param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
             contains('int? offset'),
@@ -200,7 +200,7 @@ void main() {
         });
 
         test('that takes the orderBy as a named optional param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
             contains('Column? orderBy'),
@@ -210,7 +210,7 @@ void main() {
         test(
             'that takes the orderDescending as a named param with the default value false',
             () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
             contains('bool orderDescending = false'),
@@ -219,14 +219,14 @@ void main() {
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
       });
 
       group('has a findById method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var findByIdMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'findById',
         );
@@ -242,33 +242,33 @@ void main() {
 
         test('that returns a future with a nullable base class', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findByIdMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            findByIdMethod?.returnType?.toSource(),
             contains('$testClassName?'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findByIdMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes an int as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findByIdMethod?.parameters?.toSource(),
             contains('int id'),
           );
         });
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            findByIdMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
@@ -324,7 +324,7 @@ void main() {
       });
 
       group('has an update row method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var updateRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'updateRow',
         );
@@ -340,40 +340,40 @@ void main() {
 
         test('that returns a future with the base class', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            updateRowMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            updateRowMethod?.returnType?.toSource(),
             contains(testClassName),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            updateRowMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the row as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            updateRowMethod?.parameters?.toSource(),
             contains('$testClassName row'),
           );
         });
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            updateRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
       });
 
       group('has an delete row method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var deleteRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'deleteRow',
         );
@@ -389,40 +389,40 @@ void main() {
 
         test('that returns a future with the base class', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            deleteRowMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            deleteRowMethod?.returnType?.toSource(),
             contains('int'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            deleteRowMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the row as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            deleteRowMethod?.parameters?.toSource(),
             contains('$testClassName row'),
           );
         });
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            deleteRowMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
       });
 
       group('has an delete where method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var deleteWhereMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'deleteWhere',
         );
@@ -438,25 +438,25 @@ void main() {
 
         test('that returns a future with a list of int', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            deleteWhereMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            deleteWhereMethod?.returnType?.toSource(),
             contains('List<int>'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            deleteWhereMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the where callback as a named required param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = deleteWhereMethod?.parameters?.toSource();
           expect(
             params,
             contains('required ${testClassName}ExpressionBuilder where'),
@@ -465,14 +465,14 @@ void main() {
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            deleteWhereMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
       });
 
       group('has an count method', () {
-        var insertRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        var countMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
           name: 'count',
         );
@@ -488,25 +488,25 @@ void main() {
 
         test('that returns a future with a list of int', () {
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            countMethod?.returnType?.toSource(),
             contains('Future'),
           );
 
           expect(
-            insertRowMethod?.returnType?.toSource(),
+            countMethod?.returnType?.toSource(),
             contains('int'),
           );
         });
 
         test('that takes the session as a required param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            countMethod?.parameters?.toSource(),
             contains('Session session'),
           );
         });
 
         test('that takes the where callback as a named optional param', () {
-          var params = insertRowMethod?.parameters?.toSource();
+          var params = countMethod?.parameters?.toSource();
           expect(
             params,
             contains('${testClassName}ExpressionBuilder? where'),
@@ -515,14 +515,14 @@ void main() {
 
         test('that takes the limit int as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            countMethod?.parameters?.toSource(),
             contains('int? limit'),
           );
         });
 
         test('that takes the transaction object as an optional param', () {
           expect(
-            insertRowMethod?.parameters?.toSource(),
+            countMethod?.parameters?.toSource(),
             contains('Transaction? transaction'),
           );
         });
