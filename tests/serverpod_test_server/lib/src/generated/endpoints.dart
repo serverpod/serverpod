@@ -4869,16 +4869,6 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['basicDatabase'] as _i24.BasicDatabase)
                   .deleteWhereSimpleData(session),
         ),
-        'deleteAll': _i1.MethodConnector(
-          name: 'deleteAll',
-          params: {},
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['basicDatabase'] as _i24.BasicDatabase)
-                  .deleteAll(session),
-        ),
         'countSimpleData': _i1.MethodConnector(
           name: 'countSimpleData',
           params: {},
@@ -4888,6 +4878,52 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['basicDatabase'] as _i24.BasicDatabase)
                   .countSimpleData(session),
+        ),
+        'insertTypes': _i1.MethodConnector(
+          name: 'insertTypes',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i48.Types>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i24.BasicDatabase).insertTypes(
+            session,
+            params['value'],
+          ),
+        ),
+        'updateTypes': _i1.MethodConnector(
+          name: 'updateTypes',
+          params: {
+            'value': _i1.ParameterDescription(
+              name: 'value',
+              type: _i1.getType<_i48.Types>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i24.BasicDatabase).updateTypes(
+            session,
+            params['value'],
+          ),
+        ),
+        'deleteAll': _i1.MethodConnector(
+          name: 'deleteAll',
+          params: {},
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['basicDatabase'] as _i24.BasicDatabase)
+                  .deleteAll(session),
         ),
       },
     );

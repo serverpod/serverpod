@@ -68,17 +68,37 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<List<int>> deleteAll(Session session) async {
-    return SimpleData.db.deleteWhere(
-      session,
-      where: (t) => Constant.bool(true),
-    );
-  }
-
   Future<int> countSimpleData(Session session) async {
     return SimpleData.db.count(
       session,
       where: (t) => Constant.bool(true),
     );
+  }
+
+  Future<Types> insertTypes(
+    Session session,
+    Types value,
+  ) async {
+    return session.dbNext.insertRow<Types>(value);
+  }
+
+  Future<Types> updateTypes(
+    Session session,
+    Types value,
+  ) async {
+    return session.dbNext.updateRow<Types>(value);
+  }
+
+  Future<int> deleteAll(Session session) async {
+    var simpleDataIds = await SimpleData.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
+    var typesIds = await Types.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
+
+    return simpleDataIds.length + typesIds.length;
   }
 }

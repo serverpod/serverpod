@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
 
@@ -146,5 +148,285 @@ void main() {
     expect(ids, hasLength(2));
     expect(ids, contains(inserted1.id));
     expect(ids, contains(inserted2.id));
+  });
+
+  group('Given a typed entry in the database', () {
+    var data = Types(
+      anInt: 1,
+      aBool: true,
+      aDouble: 1.0,
+      aString: 'string',
+      aDateTime: DateTime.now(),
+      aByteData: ByteData.view(Uint8List(8).buffer),
+      aDuration: Duration(milliseconds: 1000),
+      aUuid: UuidValue(Uuid().v4()),
+      anEnum: TestEnum.one,
+    );
+
+    late Types type;
+
+    setUp(() async {
+      type = await client.basicDatabase.insertTypes(data);
+    });
+
+    test(
+        'when updating anInt to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        anInt: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.anInt, isNull);
+    });
+
+    test(
+        'when updating aBool to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBool: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aBool, isNull);
+    });
+
+    test(
+        'when updating aDouble to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aDouble: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDouble, isNull);
+    });
+
+    test(
+        'when updating aString to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aString: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aString, isNull);
+    });
+
+    test(
+        'when updating aDateTime to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aDateTime: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDateTime, isNull);
+    });
+
+    test(
+        'when updating aByteData to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aByteData: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aByteData, isNull);
+    });
+
+    test(
+        'when updating aDuration to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aDuration: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDuration, isNull);
+    });
+
+    test(
+        'when updating aUuid to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aUuid: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aUuid, isNull);
+    });
+
+    test(
+        'when updating anEnum to null then the database is updated with null value.',
+        () async {
+      var value = Types(
+        id: type.id,
+        anEnum: null,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.anEnum, isNull);
+    });
+  });
+
+  group('Given a typed entry in the database', () {
+    var data = Types(
+      anInt: null,
+      aBool: null,
+      aDouble: null,
+      aString: null,
+      aDateTime: null,
+      aByteData: null,
+      aDuration: null,
+      aUuid: null,
+      anEnum: null,
+    );
+
+    late Types type;
+
+    setUp(() async {
+      type = await client.basicDatabase.insertTypes(data);
+    });
+
+    test('when updating anInt to 1 then the database is updated with value 1.',
+        () async {
+      var value = Types(
+        id: type.id,
+        anInt: 1,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.anInt, equals(1));
+    });
+
+    test(
+        'when updating aBool to true then the database is updated with value true.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aBool: true,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aBool, equals(true));
+    });
+
+    test(
+        'when updating aDouble to 1.0 then the database is updated with value 1.0.',
+        () async {
+      var value = Types(
+        id: type.id,
+        aDouble: 1.0,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDouble, equals(1.0));
+    });
+
+    test(
+        'when updating aString to "string" then the database is updated with value "string".',
+        () async {
+      var value = Types(
+        id: type.id,
+        aString: 'string',
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aString, equals('string'));
+    });
+
+    test(
+        'when updating aDateTime to a real value then the database is updated with the real value.',
+        () async {
+      var now = DateTime.now().toUtc();
+      var value = Types(
+        id: type.id,
+        aDateTime: now,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDateTime, equals(now));
+    });
+
+    test(
+        'when updating aByteData to a real value then the database is updated with the real value.',
+        () async {
+      var byteData = ByteData.view(Uint8List(8).buffer);
+      var value = Types(
+        id: type.id,
+        aByteData: byteData,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(
+        updated.aByteData?.buffer.asUint8List(),
+        equals(byteData.buffer.asUint8List()),
+      );
+    });
+
+    test(
+        'when updating aDuration to a real value then the database is updated with the real value.',
+        () async {
+      var duration = Duration(milliseconds: 1000);
+      var value = Types(
+        id: type.id,
+        aDuration: duration,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aDuration, equals(duration));
+    });
+
+    test(
+        'when updating aUuid to a real value then the database is updated with the real value.',
+        () async {
+      var uuidValue = UuidValue(Uuid().v4());
+      var value = Types(
+        id: type.id,
+        aUuid: uuidValue,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.aUuid, equals(uuidValue));
+    });
+
+    test(
+        'when updating anEnum to TestEnum.one then the database is updated with value TestEnum.one.',
+        () async {
+      var value = Types(
+        id: type.id,
+        anEnum: TestEnum.one,
+      );
+
+      var updated = await client.basicDatabase.updateTypes(value);
+
+      expect(updated.anEnum, equals(TestEnum.one));
+    });
   });
 }

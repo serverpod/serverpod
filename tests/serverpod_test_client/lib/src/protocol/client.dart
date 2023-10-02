@@ -2027,15 +2027,29 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<List<int>> deleteAll() => caller.callServerEndpoint<List<int>>(
-        'basicDatabase',
-        'deleteAll',
-        {},
-      );
-
   _i2.Future<int> countSimpleData() => caller.callServerEndpoint<int>(
         'basicDatabase',
         'countSimpleData',
+        {},
+      );
+
+  _i2.Future<_i6.Types> insertTypes(_i6.Types value) =>
+      caller.callServerEndpoint<_i6.Types>(
+        'basicDatabase',
+        'insertTypes',
+        {'value': value},
+      );
+
+  _i2.Future<_i6.Types> updateTypes(_i6.Types value) =>
+      caller.callServerEndpoint<_i6.Types>(
+        'basicDatabase',
+        'updateTypes',
+        {'value': value},
+      );
+
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'basicDatabase',
+        'deleteAll',
         {},
       );
 }
