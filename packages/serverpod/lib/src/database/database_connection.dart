@@ -327,24 +327,6 @@ class DatabaseConnection {
     }
 
     return result.first;
-
-    /*
-    int? id = row.id;
-    if (id == null) {
-      throw ArgumentError.notNull('row.id');
-    }
-
-    var query = DeleteQueryBuilder(table: row.table.tableName)
-        .withWhere(Expression('id = $id'))
-        .withReturn(Returning.id)
-        .build();
-
-    var result = await this.query(session, query, transaction: transaction);
-
-    if (result.isEmpty) {
-      throw PostgreSQLException('Failed to delete row, no rows deleted.');
-    }
-    return result.first.first;*/
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -477,25 +459,6 @@ class DatabaseConnection {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
-  }
-
-  Future<List<T>> _deserializedQuery<T extends TableRow>(
-    Session session,
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-  }) async {
-    var result = await this.query(
-      session,
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
-    );
-
-    return result
-        .map((row) => row.toColumnMap())
-        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
-        .toList();
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
