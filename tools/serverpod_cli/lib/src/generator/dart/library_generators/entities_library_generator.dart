@@ -1,9 +1,9 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
-import 'package:super_string/super_string.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -33,6 +33,11 @@ class SerializableEntityLibraryGenerator {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
     var fields = classDefinition.fields;
+
+    var buildRepository = BuildRepositoryClass(
+      serverCode: serverCode,
+      config: config,
+    );
 
     return Library(
       (libraryBuilder) {
@@ -74,21 +79,19 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
-            // TODO: remove when this class supports db operations
-            if (_hasAttachOperations(fields) || _hasDetachOperations(fields))
-              _buildEntityRepositoryClass(
+            buildRepository.buildEntityRepositoryClass(
+              className,
+              fields,
+              classDefinition,
+            ),
+            if (buildRepository.hasAttachOperations(fields))
+              buildRepository.buildEntityAttachRepositoryClass(
                 className,
                 fields,
                 classDefinition,
               ),
-            if (_hasAttachOperations(fields))
-              _buildEntityAttachRepositoryClass(
-                className,
-                fields,
-                classDefinition,
-              ),
-            if (_hasDetachOperations(fields))
-              _buildEntityDetachRepositoryClass(
+            if (buildRepository.hasDetachOperations(fields))
+              buildRepository.buildEntityDetachRepositoryClass(
                 className,
                 fields,
                 classDefinition,
@@ -126,10 +129,7 @@ class SerializableEntityLibraryGenerator {
           _buildEntityClassTableField(className),
         ]);
 
-        // TODO: remove when we support db operations on this class.
-        if (_hasAttachOperations(fields) || _hasDetachOperations(fields)) {
-          classBuilder.fields.add(_buildEntityClassDBField(className));
-        }
+        classBuilder.fields.add(_buildEntityClassDBField(className));
 
         classBuilder.methods.add(_buildEntityClassTableGetter());
       } else {
@@ -367,7 +367,7 @@ class SerializableEntityLibraryGenerator {
   Field _buildEntityClassDBField(String className) {
     return Field((f) => f
       ..static = true
-      ..modifier = FieldModifier.final$
+      ..modifier = FieldModifier.constant
       ..name = 'db'
       ..assignment =
           refer('${className}Repository').property('_').call([]).code);
@@ -409,6 +409,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassCountMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.count instead.')")
+      ])
       ..static = true
       ..name = 'count'
       ..returns = TypeReference(
@@ -467,6 +470,10 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassInsertMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')")
+      ])
       ..static = true
       ..name = 'insert'
       ..returns = TypeReference(
@@ -506,6 +513,9 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassUpdateMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.update instead.')")
+      ])
       ..static = true
       ..name = 'update'
       ..returns = TypeReference(
@@ -545,6 +555,10 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassDeleteRowMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')")
+      ])
       ..static = true
       ..name = 'deleteRow'
       ..returns = TypeReference(
@@ -584,6 +598,10 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassDeleteMethod(String className) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')")
+      ])
       ..static = true
       ..name = 'delete'
       ..returns = TypeReference(
@@ -627,6 +645,10 @@ class SerializableEntityLibraryGenerator {
   Method _buildEntityClassFindByIdMethod(String className,
       Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')")
+      ])
       ..static = true
       ..name = 'findById'
       ..returns = TypeReference(
@@ -673,6 +695,10 @@ class SerializableEntityLibraryGenerator {
   Method _buildEntityClassFindSingleRowMethod(String className,
       Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer(
+            "Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')")
+      ])
       ..static = true
       ..name = 'findSingleRow'
       ..returns = TypeReference(
@@ -755,9 +781,14 @@ class SerializableEntityLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassFindMethod(String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+  Method _buildEntityClassFindMethod(
+    String className,
+    Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+  ) {
     return Method((m) => m
+      ..annotations.addAll([
+        refer("Deprecated('Will be removed in 2.0.0. Use: db.find instead.')")
+      ])
       ..static = true
       ..name = 'find'
       ..returns = TypeReference(
@@ -1418,321 +1449,6 @@ class SerializableEntityLibraryGenerator {
     }));
   }
 
-  Class _buildEntityRepositoryClass(
-    String className,
-    List<SerializableEntityFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
-    return Class((classBuilder) {
-      classBuilder
-        ..name = '${className}Repository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..fields.addAll([
-          if (_hasAttachOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'attach'
-                ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}AttachRepository._()');
-            }),
-          if (_hasDetachOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'detach'
-                ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}DetachRepository._()');
-            }),
-        ]);
-    });
-  }
-
-  Class _buildEntityAttachRepositoryClass(
-    String className,
-    List<SerializableEntityFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
-    return Class((classBuilder) {
-      classBuilder
-        ..name = '${className}AttachRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildAttachMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
-    });
-  }
-
-  Class _buildEntityDetachRepositoryClass(
-    String className,
-    List<SerializableEntityFieldDefinition> fields,
-    ClassDefinition classDefinition,
-  ) {
-    return Class((classBuilder) {
-      classBuilder
-        ..name = '${className}DetachRepository'
-        ..constructors.add(Constructor((constructorBuilder) {
-          constructorBuilder
-            ..name = '_'
-            ..constant = true;
-        }))
-        ..methods.addAll(_buildDetachMethods(
-          fields,
-          className,
-          classDefinition,
-        ));
-    });
-  }
-
-  Iterable<Method> _buildAttachMethods(
-      List<SerializableEntityFieldDefinition> fields,
-      String className,
-      ClassDefinition classDefinition) {
-    return fields.where(_shouldCreateAttachMethodFromField).map(
-          (field) => Method((methodBuilder) {
-            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-            var otherClassFieldName =
-                field.name == classFieldName ? 'nested$className' : field.name;
-
-            var relation = field.relation;
-            (relation as ObjectRelationDefinition);
-
-            methodBuilder
-              ..returns = refer('Future<void>')
-              ..name = field.name
-              ..requiredParameters.addAll([
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = 'session'
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart');
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = classFieldName
-                    ..type = refer(className);
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = otherClassFieldName
-                    ..type = field.type.reference(
-                      serverCode,
-                      nullable: false,
-                      subDirParts: classDefinition.subDirParts,
-                      config: config,
-                    );
-                })
-              ])
-              ..modifier = MethodModifier.async
-              ..body = relation.isForeignKeyOrigin
-                  ? _buildAttachImplementationBlock(
-                      classFieldName,
-                      otherClassFieldName,
-                      relation.fieldName,
-                      refer(className),
-                    )
-                  : _buildAttachImplementationBlock(
-                      otherClassFieldName,
-                      classFieldName,
-                      relation.foreignFieldName,
-                      field.type.reference(
-                        serverCode,
-                        nullable: false,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      ));
-            const Code('');
-          }),
-        );
-  }
-
-  Block _buildAttachImplementationBlock(
-    String classFieldName,
-    String otherClassFieldName,
-    String foreignKeyField,
-    Reference classReference,
-  ) {
-    return (BlockBuilder()
-          ..statements.addAll([
-            _buildCodeBlockThrowIfIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
-            const Code(''),
-            _buildUpdateSingleField(
-              classFieldName,
-              foreignKeyField,
-              classReference,
-              refer(otherClassFieldName).property('id'),
-            ),
-          ]))
-        .build();
-  }
-
-  Iterable<Method> _buildDetachMethods(
-      List<SerializableEntityFieldDefinition> fields,
-      String className,
-      ClassDefinition classDefinition) {
-    return fields.where(_shouldCreateDetachMethodFromField).map(
-          (field) => Method((methodBuilder) {
-            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-            var fieldName = field.name;
-
-            var relation = field.relation;
-            (relation as ObjectRelationDefinition);
-
-            methodBuilder
-              ..name = field.name
-              ..requiredParameters.addAll([
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = 'session'
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart');
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = classFieldName
-                    ..type = refer(className);
-                })
-              ])
-              ..returns = refer('Future<void>')
-              ..modifier = MethodModifier.async
-              ..body = relation.isForeignKeyOrigin
-                  ? _buildDetachImplementationBlockOriginSide(
-                      fieldName,
-                      classFieldName,
-                      relation.fieldName,
-                      className,
-                    )
-                  : _buildDetachImplementationBlockForeignSide(
-                      fieldName,
-                      classFieldName,
-                      relation.foreignFieldName,
-                      field.type.reference(
-                        serverCode,
-                        nullable: false,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      ));
-            const Code('');
-          }),
-        );
-  }
-
-  Block _buildDetachImplementationBlockOriginSide(
-    String fieldName,
-    String classFieldName,
-    String foreignKeyField,
-    String className,
-  ) {
-    return (BlockBuilder()
-          ..statements.addAll(
-            [
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
-              const Code(''),
-              _buildUpdateSingleField(
-                classFieldName,
-                foreignKeyField,
-                refer(className),
-                refer('null'),
-              ),
-            ],
-          ))
-        .build();
-  }
-
-  Block _buildDetachImplementationBlockForeignSide(
-    String fieldName,
-    String classFieldName,
-    String foreignKeyField,
-    Reference foreignClass,
-  ) {
-    var localCopyVariable = '\$$fieldName';
-    return (BlockBuilder()
-          ..statements.addAll(
-            [
-              declareVar(localCopyVariable)
-                  .assign(refer(classFieldName).property(fieldName))
-                  .statement,
-              const Code(''),
-              _buildCodeBlockThrowIfFieldIsNull(
-                localCopyVariable,
-                '$classFieldName.$fieldName',
-              ),
-              _buildCodeBlockThrowIfIdIsNull(
-                localCopyVariable,
-                '$classFieldName.$fieldName.id',
-              ),
-              _buildCodeBlockThrowIfIdIsNull(classFieldName),
-              const Code(''),
-              _buildUpdateSingleField(
-                localCopyVariable,
-                foreignKeyField,
-                foreignClass,
-                refer('null'),
-              ),
-            ],
-          ))
-        .build();
-  }
-
-  Block _buildCodeBlockThrowIfIdIsNull(String className, [String? errorRef]) {
-    return _buildCodeBlockThrowIfFieldIsNull('$className.id', errorRef);
-  }
-
-  Block _buildCodeBlockThrowIfFieldIsNull(
-    String nullCheckRef, [
-    String? errorRef,
-  ]) {
-    var error = errorRef ?? nullCheckRef;
-    return Block.of([
-      Code('if ($nullCheckRef == null) {'),
-      refer('ArgumentError', 'dart:core')
-          .property('notNull')
-          .call([refer('\'$error\'')])
-          .thrown
-          .statement,
-      const Code('}'),
-    ]);
-  }
-
-  Code _buildUpdateSingleField(
-    String rowName,
-    String fieldName,
-    Reference classReference,
-    Expression assignment,
-  ) {
-    var localCopyVariable = '\$$rowName';
-    return (BlockBuilder()
-          ..statements.addAll([
-            declareVar(localCopyVariable)
-                .assign(refer(rowName).property('copyWith').call([], {
-                  fieldName: assignment,
-                }))
-                .statement,
-            refer('session')
-                .property('db')
-                .property('update')
-                .call([
-                  refer(localCopyVariable)
-                ], {
-                  'columns': literalList(
-                    [classReference.property('t').property(fieldName)],
-                  )
-                })
-                .awaited
-                .statement,
-          ]))
-        .build();
-  }
-
   Method _buildEntityIncludeClassTableGetter(String className) {
     return Method(
       (m) => m
@@ -1883,27 +1599,6 @@ class SerializableEntityLibraryGenerator {
     ]);
 
     return library.build();
-  }
-
-  bool _hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any(_shouldCreateAttachMethodFromField);
-  }
-
-  bool _shouldCreateAttachMethodFromField(
-    SerializableEntityFieldDefinition field,
-  ) {
-    return field.relation is ObjectRelationDefinition;
-  }
-
-  bool _hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any(_shouldCreateDetachMethodFromField);
-  }
-
-  bool _shouldCreateDetachMethodFromField(
-    SerializableEntityFieldDefinition field,
-  ) {
-    var relation = field.relation;
-    return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 
   Reference _createSerializableFieldNameReference(

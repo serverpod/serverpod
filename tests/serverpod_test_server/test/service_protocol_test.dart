@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 import 'config.dart';
 
 Future<void> setupTestData(Client client) async {
-  await client.basicDatabase.deleteAllSimpleTestData();
-  await client.basicDatabase.createSimpleTestData(100);
+  await client.basicDatabaseLegacy.deleteAllSimpleTestData();
+  await client.basicDatabaseLegacy.createSimpleTestData(100);
 }
 
 void main() {

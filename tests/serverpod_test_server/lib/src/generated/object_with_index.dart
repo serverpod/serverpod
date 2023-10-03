@@ -36,6 +36,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static final t = ObjectWithIndexTable();
 
+  static const db = ObjectWithIndexRepository._();
+
   int indexed;
 
   int indexed2;
@@ -96,6 +98,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithIndex>> find(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
@@ -119,6 +122,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithIndex?> findSingleRow(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
@@ -138,6 +142,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithIndex?> findById(
     _i1.Session session,
     int id,
@@ -145,6 +150,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     return session.db.findById<ObjectWithIndex>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithIndexExpressionBuilder where,
@@ -156,6 +162,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -167,6 +174,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -178,6 +186,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithIndex row, {
@@ -189,6 +199,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithIndexExpressionBuilder? where,
@@ -279,4 +290,111 @@ class ObjectWithIndexInclude extends _i1.Include {
 
   @override
   _i1.Table get table => ObjectWithIndex.t;
+}
+
+class ObjectWithIndexRepository {
+  const ObjectWithIndexRepository._();
+
+  Future<List<ObjectWithIndex>> find(
+    _i1.Session session, {
+    ObjectWithIndexExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithIndex>(
+      where: where?.call(ObjectWithIndex.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithIndex?> findRow(
+    _i1.Session session, {
+    ObjectWithIndexExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithIndex>(
+      where: where?.call(ObjectWithIndex.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithIndex?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithIndex>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithIndex> insertRow(
+    _i1.Session session,
+    ObjectWithIndex row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithIndex>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithIndex> updateRow(
+    _i1.Session session,
+    ObjectWithIndex row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithIndex>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithIndex row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithIndex>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithIndexExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithIndex>(
+      where: where(ObjectWithIndex.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithIndexExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithIndex>(
+      where: where?.call(ObjectWithIndex.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

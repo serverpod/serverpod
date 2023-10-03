@@ -53,7 +53,7 @@ class FutureCallManager {
     );
 
     var session = await _server.serverpod.createSession(enableLogging: false);
-    await session.db.insert(entry);
+    await FutureCallEntry.db.insertRow(session, entry);
     await session.close();
   }
 
@@ -62,7 +62,7 @@ class FutureCallManager {
   Future<void> cancelFutureCall(String identifier) async {
     var session = await _server.serverpod.createSession(enableLogging: false);
 
-    await FutureCallEntry.delete(
+    await FutureCallEntry.db.deleteWhere(
       session,
       where: (t) => t.identifier.equals(identifier),
     );
@@ -107,6 +107,9 @@ class FutureCallManager {
       var tempSession = await _server.serverpod.createSession(
         enableLogging: false,
       );
+
+      // TODO: replace when we got batch ops.
+      // ignore: deprecated_member_use_from_same_package
       var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
         where: (FutureCallEntry.t.time <= now),
       );

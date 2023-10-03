@@ -1,1 +1,0 @@
-{"className":"DatabaseMigration","data":{"actions":[{"type":1,"deleteTable":"migrated_table_2","alterTable":null,"createTable":null},{"type":1,"deleteTable":"migrated_table","alterTable":null,"createTable":null}],"warnings":[],"priority":2}}

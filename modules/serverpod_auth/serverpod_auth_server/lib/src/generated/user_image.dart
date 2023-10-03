@@ -40,6 +40,8 @@ abstract class UserImage extends _i1.TableRow {
 
   static final t = UserImageTable();
 
+  static const db = UserImageRepository._();
+
   /// The id of the user.
   int userId;
 
@@ -112,6 +114,7 @@ abstract class UserImage extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<UserImage>> find(
     _i1.Session session, {
     UserImageExpressionBuilder? where,
@@ -135,6 +138,7 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<UserImage?> findSingleRow(
     _i1.Session session, {
     UserImageExpressionBuilder? where,
@@ -154,6 +158,7 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<UserImage?> findById(
     _i1.Session session,
     int id,
@@ -161,6 +166,7 @@ abstract class UserImage extends _i1.TableRow {
     return session.db.findById<UserImage>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required UserImageExpressionBuilder where,
@@ -172,6 +178,7 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     UserImage row, {
@@ -183,6 +190,7 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     UserImage row, {
@@ -194,6 +202,8 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     UserImage row, {
@@ -205,6 +215,7 @@ abstract class UserImage extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     UserImageExpressionBuilder? where,
@@ -309,4 +320,111 @@ class UserImageInclude extends _i1.Include {
 
   @override
   _i1.Table get table => UserImage.t;
+}
+
+class UserImageRepository {
+  const UserImageRepository._();
+
+  Future<List<UserImage>> find(
+    _i1.Session session, {
+    UserImageExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<UserImage>(
+      where: where?.call(UserImage.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage?> findRow(
+    _i1.Session session, {
+    UserImageExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<UserImage>(
+      where: where?.call(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<UserImage>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage> insertRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<UserImage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage> updateRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<UserImage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<UserImage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required UserImageExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<UserImage>(
+      where: where(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    UserImageExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<UserImage>(
+      where: where?.call(UserImage.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

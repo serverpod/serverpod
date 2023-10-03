@@ -55,6 +55,8 @@ abstract class ObjectWithObject extends _i1.TableRow {
 
   static final t = ObjectWithObjectTable();
 
+  static const db = ObjectWithObjectRepository._();
+
   _i2.SimpleData data;
 
   _i2.SimpleData? nullableData;
@@ -151,6 +153,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithObject>> find(
     _i1.Session session, {
     ObjectWithObjectExpressionBuilder? where,
@@ -174,6 +177,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithObject?> findSingleRow(
     _i1.Session session, {
     ObjectWithObjectExpressionBuilder? where,
@@ -193,6 +197,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithObject?> findById(
     _i1.Session session,
     int id,
@@ -200,6 +205,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     return session.db.findById<ObjectWithObject>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithObjectExpressionBuilder where,
@@ -211,6 +217,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithObject row, {
@@ -222,6 +229,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithObject row, {
@@ -233,6 +241,8 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithObject row, {
@@ -244,6 +254,7 @@ abstract class ObjectWithObject extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithObjectExpressionBuilder? where,
@@ -390,4 +401,111 @@ class ObjectWithObjectInclude extends _i1.Include {
 
   @override
   _i1.Table get table => ObjectWithObject.t;
+}
+
+class ObjectWithObjectRepository {
+  const ObjectWithObjectRepository._();
+
+  Future<List<ObjectWithObject>> find(
+    _i1.Session session, {
+    ObjectWithObjectExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithObject>(
+      where: where?.call(ObjectWithObject.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithObject?> findRow(
+    _i1.Session session, {
+    ObjectWithObjectExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithObject>(
+      where: where?.call(ObjectWithObject.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithObject?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithObject>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithObject> insertRow(
+    _i1.Session session,
+    ObjectWithObject row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithObject>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithObject> updateRow(
+    _i1.Session session,
+    ObjectWithObject row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithObject>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithObject row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithObject>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithObjectExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithObject>(
+      where: where(ObjectWithObject.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithObjectExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithObject>(
+      where: where?.call(ObjectWithObject.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -49,6 +49,8 @@ abstract class ObjectWithEnum extends _i1.TableRow {
 
   static final t = ObjectWithEnumTable();
 
+  static const db = ObjectWithEnumRepository._();
+
   _i2.TestEnum testEnum;
 
   _i2.TestEnum? nullableEnum;
@@ -136,6 +138,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithEnum>> find(
     _i1.Session session, {
     ObjectWithEnumExpressionBuilder? where,
@@ -159,6 +162,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithEnum?> findSingleRow(
     _i1.Session session, {
     ObjectWithEnumExpressionBuilder? where,
@@ -178,6 +182,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithEnum?> findById(
     _i1.Session session,
     int id,
@@ -185,6 +190,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     return session.db.findById<ObjectWithEnum>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithEnumExpressionBuilder where,
@@ -196,6 +202,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -207,6 +214,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -218,6 +226,8 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithEnum row, {
@@ -229,6 +239,7 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithEnumExpressionBuilder? where,
@@ -356,4 +367,111 @@ class ObjectWithEnumInclude extends _i1.Include {
 
   @override
   _i1.Table get table => ObjectWithEnum.t;
+}
+
+class ObjectWithEnumRepository {
+  const ObjectWithEnumRepository._();
+
+  Future<List<ObjectWithEnum>> find(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum?> findRow(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithEnum>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum> insertRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithEnum> updateRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithEnum row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithEnum>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithEnumExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithEnum>(
+      where: where(ObjectWithEnum.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithEnumExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -17,7 +17,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<void> deleteFile(
       {required Session session, required String path}) async {
     try {
-      await session.db.delete<CloudStorageEntry>(
+      await session.dbNext.deleteWhere<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -30,7 +30,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<bool> fileExists(
       {required Session session, required String path}) async {
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
+      var numRows = await session.dbNext.count<CloudStorageEntry>(
         where: CloudStorageEntry.t.storageId.equals(storageId) &
             CloudStorageEntry.t.path.equals(path),
       );
@@ -66,7 +66,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<ByteData?> retrieveFile(
       {required Session session, required String path}) async {
     try {
-      return await session.db.retrieveFile(storageId, path);
+      return await session.dbNext.retrieveFile(storageId, path);
     } catch (e) {
       throw CloudStorageException('Failed to retrieve file. ($e)');
     }
@@ -81,7 +81,7 @@ class DatabaseCloudStorage extends CloudStorage {
     bool verified = true,
   }) async {
     try {
-      await session.db
+      await session.dbNext
           .storeFile(storageId, path, byteData, expiration, verified);
     } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
@@ -104,8 +104,8 @@ class DatabaseCloudStorage extends CloudStorage {
       expiration: expiration,
       authKey: _generateAuthKey(),
     );
-    await session.db.insert(uploadEntry);
-    if (uploadEntry.id == null) return null;
+    var inserted = await session.dbNext
+        .insertRow<CloudStorageDirectUploadEntry>(uploadEntry);
 
     var uri = Uri(
       scheme: config.apiServer.publicScheme,
@@ -116,7 +116,7 @@ class DatabaseCloudStorage extends CloudStorage {
         'method': 'upload',
         'storage': storageId,
         'path': path,
-        'key': uploadEntry.authKey,
+        'key': inserted.authKey,
       },
     );
 
@@ -133,7 +133,7 @@ class DatabaseCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
-    return await session.db.verifyFile(storageId, path);
+    return await session.dbNext.verifyFile(storageId, path);
   }
 
   static String _generateAuthKey() {

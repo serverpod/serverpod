@@ -41,7 +41,7 @@ abstract class Address extends _i1.TableRow {
 
   static final t = AddressTable();
 
-  static final db = AddressRepository._();
+  static const db = AddressRepository._();
 
   String street;
 
@@ -108,6 +108,7 @@ abstract class Address extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Address>> find(
     _i1.Session session, {
     AddressExpressionBuilder? where,
@@ -133,6 +134,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Address?> findSingleRow(
     _i1.Session session, {
     AddressExpressionBuilder? where,
@@ -154,6 +156,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<Address?> findById(
     _i1.Session session,
     int id, {
@@ -165,6 +168,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required AddressExpressionBuilder where,
@@ -176,6 +180,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     Address row, {
@@ -187,6 +192,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     Address row, {
@@ -198,6 +204,8 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     Address row, {
@@ -209,6 +217,7 @@ abstract class Address extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     AddressExpressionBuilder? where,
@@ -345,13 +354,122 @@ class AddressInclude extends _i1.Include {
 class AddressRepository {
   const AddressRepository._();
 
-  final attach = const AddressAttachRepository._();
+  final attachRow = const AddressAttachRowRepository._();
 
-  final detach = const AddressDetachRepository._();
+  final detachRow = const AddressDetachRowRepository._();
+
+  Future<List<Address>> find(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.find<Address>(
+      where: where?.call(Address.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address?> findRow(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.findRow<Address>(
+      where: where?.call(Address.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    AddressInclude? include,
+  }) async {
+    return session.dbNext.findById<Address>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Address> insertRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Address> updateRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Address row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Address>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required AddressExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Address>(
+      where: where(Address.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    AddressExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Address>(
+      where: where?.call(Address.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
-class AddressAttachRepository {
-  const AddressAttachRepository._();
+class AddressAttachRowRepository {
+  const AddressAttachRowRepository._();
 
   Future<void> inhabitant(
     _i1.Session session,
@@ -366,15 +484,15 @@ class AddressAttachRepository {
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );
   }
 }
 
-class AddressDetachRepository {
-  const AddressDetachRepository._();
+class AddressDetachRowRepository {
+  const AddressDetachRowRepository._();
 
   Future<void> inhabitant(
     _i1.Session session,
@@ -385,7 +503,7 @@ class AddressDetachRepository {
     }
 
     var $address = address.copyWith(inhabitantId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );

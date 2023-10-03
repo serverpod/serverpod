@@ -41,6 +41,8 @@ abstract class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
+  static const db = EmailResetRepository._();
+
   /// The id of the user that is resetting his/her password.
   int userId;
 
@@ -113,6 +115,7 @@ abstract class EmailReset extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<EmailReset>> find(
     _i1.Session session, {
     EmailResetExpressionBuilder? where,
@@ -136,6 +139,7 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<EmailReset?> findSingleRow(
     _i1.Session session, {
     EmailResetExpressionBuilder? where,
@@ -155,6 +159,7 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<EmailReset?> findById(
     _i1.Session session,
     int id,
@@ -162,6 +167,7 @@ abstract class EmailReset extends _i1.TableRow {
     return session.db.findById<EmailReset>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required EmailResetExpressionBuilder where,
@@ -173,6 +179,7 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     EmailReset row, {
@@ -184,6 +191,7 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     EmailReset row, {
@@ -195,6 +203,8 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     EmailReset row, {
@@ -206,6 +216,7 @@ abstract class EmailReset extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     EmailResetExpressionBuilder? where,
@@ -310,4 +321,111 @@ class EmailResetInclude extends _i1.Include {
 
   @override
   _i1.Table get table => EmailReset.t;
+}
+
+class EmailResetRepository {
+  const EmailResetRepository._();
+
+  Future<List<EmailReset>> find(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<EmailReset>(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findRow(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<EmailReset>(
+      where: where?.call(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<EmailReset>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> insertRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> updateRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required EmailResetExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<EmailReset>(
+      where: where(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    EmailResetExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<EmailReset>(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
