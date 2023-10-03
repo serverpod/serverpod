@@ -68,7 +68,7 @@ class DatabaseBulkData {
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
-      data = await database.query(query);
+      data = await database.queryDangerously(query);
     } catch (e) {
       throw BulkDataException(
         message: 'Failed to query database ($e).',
@@ -98,7 +98,7 @@ class DatabaseBulkData {
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
         'WHERE relname = \'$table\' AND nspname = \'public\'';
 
-    var result = await database.query(query);
+    var result = await database.queryDangerously(query);
 
     if (result.isEmpty) {
       return 0;
@@ -120,7 +120,8 @@ class DatabaseBulkData {
       int numAffectedRows = 0;
 
       for (var query in queries) {
-        result = await database.query(query, transaction: transaction);
+        result =
+            await database.queryDangerously(query, transaction: transaction);
         numAffectedRows += result.affectedRowCount;
       }
       result!;

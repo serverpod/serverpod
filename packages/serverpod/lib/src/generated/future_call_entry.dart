@@ -48,6 +48,8 @@ abstract class FutureCallEntry extends _i1.TableRow {
 
   static final t = FutureCallEntryTable();
 
+  static const db = FutureCallEntryRepository._();
+
   /// Name of the future call. Used to find the correct method to call.
   String name;
 
@@ -65,6 +67,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -139,6 +142,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<FutureCallEntry>> find(
     _i1.Session session, {
     FutureCallEntryExpressionBuilder? where,
@@ -162,6 +166,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<FutureCallEntry?> findSingleRow(
     _i1.Session session, {
     FutureCallEntryExpressionBuilder? where,
@@ -181,6 +186,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<FutureCallEntry?> findById(
     _i1.Session session,
     int id,
@@ -188,6 +194,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     return session.db.findById<FutureCallEntry>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required FutureCallEntryExpressionBuilder where,
@@ -199,6 +206,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     FutureCallEntry row, {
@@ -210,6 +218,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     FutureCallEntry row, {
@@ -221,6 +230,8 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     FutureCallEntry row, {
@@ -232,6 +243,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     FutureCallEntryExpressionBuilder? where,
@@ -362,6 +374,114 @@ class FutureCallEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => FutureCallEntry.t;
+}
+
+class FutureCallEntryRepository {
+  const FutureCallEntryRepository._();
+
+  Future<List<FutureCallEntry>> find(
+    _i1.Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<FutureCallEntry>(
+      where: where?.call(FutureCallEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<FutureCallEntry?> findRow(
+    _i1.Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<FutureCallEntry>(
+      where: where?.call(FutureCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<FutureCallEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<FutureCallEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<FutureCallEntry> insertRow(
+    _i1.Session session,
+    FutureCallEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<FutureCallEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<FutureCallEntry> updateRow(
+    _i1.Session session,
+    FutureCallEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<FutureCallEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    FutureCallEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<FutureCallEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required FutureCallEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<FutureCallEntry>(
+      where: where(FutureCallEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    FutureCallEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<FutureCallEntry>(
+      where: where?.call(FutureCallEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

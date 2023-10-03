@@ -37,6 +37,8 @@ abstract class MethodInfo extends _i1.TableRow {
 
   static final t = MethodInfoTable();
 
+  static const db = MethodInfoRepository._();
+
   /// The endpoint of this method.
   String endpoint;
 
@@ -45,6 +47,7 @@ abstract class MethodInfo extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   MethodInfo copyWith({
     int? id,
     String? endpoint,
@@ -98,6 +101,7 @@ abstract class MethodInfo extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<MethodInfo>> find(
     _i1.Session session, {
     MethodInfoExpressionBuilder? where,
@@ -121,6 +125,7 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<MethodInfo?> findSingleRow(
     _i1.Session session, {
     MethodInfoExpressionBuilder? where,
@@ -140,6 +145,7 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<MethodInfo?> findById(
     _i1.Session session,
     int id,
@@ -147,6 +153,7 @@ abstract class MethodInfo extends _i1.TableRow {
     return session.db.findById<MethodInfo>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required MethodInfoExpressionBuilder where,
@@ -158,6 +165,7 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     MethodInfo row, {
@@ -169,6 +177,7 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     MethodInfo row, {
@@ -180,6 +189,8 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     MethodInfo row, {
@@ -191,6 +202,7 @@ abstract class MethodInfo extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     MethodInfoExpressionBuilder? where,
@@ -279,6 +291,114 @@ class MethodInfoInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => MethodInfo.t;
+}
+
+class MethodInfoRepository {
+  const MethodInfoRepository._();
+
+  Future<List<MethodInfo>> find(
+    _i1.Session session, {
+    MethodInfoExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<MethodInfo>(
+      where: where?.call(MethodInfo.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<MethodInfo?> findRow(
+    _i1.Session session, {
+    MethodInfoExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<MethodInfo>(
+      where: where?.call(MethodInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<MethodInfo?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<MethodInfo>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<MethodInfo> insertRow(
+    _i1.Session session,
+    MethodInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<MethodInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<MethodInfo> updateRow(
+    _i1.Session session,
+    MethodInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<MethodInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    MethodInfo row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<MethodInfo>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required MethodInfoExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<MethodInfo>(
+      where: where(MethodInfo.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    MethodInfoExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<MethodInfo>(
+      where: where?.call(MethodInfo.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

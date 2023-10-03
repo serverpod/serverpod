@@ -52,7 +52,7 @@ abstract class Citizen extends _i1.TableRow {
 
   static final t = CitizenTable();
 
-  static final db = CitizenRepository._();
+  static const db = CitizenRepository._();
 
   String name;
 
@@ -70,6 +70,7 @@ abstract class Citizen extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Citizen copyWith({
     int? id,
     String? name,
@@ -144,6 +145,7 @@ abstract class Citizen extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Citizen>> find(
     _i1.Session session, {
     CitizenExpressionBuilder? where,
@@ -169,6 +171,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Citizen?> findSingleRow(
     _i1.Session session, {
     CitizenExpressionBuilder? where,
@@ -190,6 +193,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<Citizen?> findById(
     _i1.Session session,
     int id, {
@@ -201,6 +205,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required CitizenExpressionBuilder where,
@@ -212,6 +217,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     Citizen row, {
@@ -223,6 +229,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     Citizen row, {
@@ -234,6 +241,8 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     Citizen row, {
@@ -245,6 +254,7 @@ abstract class Citizen extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     CitizenExpressionBuilder? where,
@@ -437,6 +447,7 @@ class CitizenTable extends _i1.Table {
         oldCompanyId,
         _companyEmployeesCompanyId,
       ];
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'address') {
@@ -478,6 +489,7 @@ class CitizenInclude extends _i1.Include {
         'company': _company,
         'oldCompany': _oldCompany,
       };
+
   @override
   _i1.Table get table => Citizen.t;
 }
@@ -485,13 +497,122 @@ class CitizenInclude extends _i1.Include {
 class CitizenRepository {
   const CitizenRepository._();
 
-  final attach = const CitizenAttachRepository._();
+  final attachRow = const CitizenAttachRowRepository._();
 
-  final detach = const CitizenDetachRepository._();
+  final detachRow = const CitizenDetachRowRepository._();
+
+  Future<List<Citizen>> find(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.find<Citizen>(
+      where: where?.call(Citizen.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen?> findRow(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.findRow<Citizen>(
+      where: where?.call(Citizen.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    CitizenInclude? include,
+  }) async {
+    return session.dbNext.findById<Citizen>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Citizen> insertRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<Citizen> updateRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Citizen row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Citizen>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required CitizenExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Citizen>(
+      where: where(Citizen.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    CitizenExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Citizen>(
+      where: where?.call(Citizen.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
-class CitizenAttachRepository {
-  const CitizenAttachRepository._();
+class CitizenAttachRowRepository {
+  const CitizenAttachRowRepository._();
 
   Future<void> address(
     _i1.Session session,
@@ -506,7 +627,7 @@ class CitizenAttachRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Address>(
       $address,
       columns: [_i2.Address.t.inhabitantId],
     );
@@ -525,7 +646,7 @@ class CitizenAttachRepository {
     }
 
     var $citizen = citizen.copyWith(companyId: company.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.companyId],
     );
@@ -544,15 +665,15 @@ class CitizenAttachRepository {
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: oldCompany.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
     );
   }
 }
 
-class CitizenDetachRepository {
-  const CitizenDetachRepository._();
+class CitizenDetachRowRepository {
+  const CitizenDetachRowRepository._();
 
   Future<void> address(
     _i1.Session session,
@@ -571,7 +692,7 @@ class CitizenDetachRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<_i2.Address>(
       $$address,
       columns: [_i2.Address.t.inhabitantId],
     );
@@ -586,7 +707,7 @@ class CitizenDetachRepository {
     }
 
     var $citizen = citizen.copyWith(oldCompanyId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Citizen>(
       $citizen,
       columns: [Citizen.t.oldCompanyId],
     );
