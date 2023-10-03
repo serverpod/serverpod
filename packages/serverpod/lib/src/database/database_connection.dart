@@ -377,7 +377,8 @@ class DatabaseConnection {
     }
   }
 
-  Future<List<Map<String, Map<String, dynamic>>>> _mappedResultsQuery(
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<Map<String, Map<String, dynamic>>>> mappedResultsQuery(
     Session session,
     String query, {
     int? timeoutInSeconds,
@@ -416,7 +417,7 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
-    var result = await _mappedResultsQuery(
+    var result = await mappedResultsQuery(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
