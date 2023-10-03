@@ -1,4 +1,4 @@
-part of './open_api_definition.dart';
+part of '../open_api_objects.dart';
 
 extension CheckDartCoreType on TypeDefinition {
   bool get isDartCoreType => (url == 'dart:typed_data') || (url == 'dart:core');

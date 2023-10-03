@@ -15,7 +15,10 @@ class OpenApiGenerator {
       protocolDefinition,
       config,
     );
-    return jsonEncode(definition.toJson());
+    var encoder = const JsonEncoder.withIndent('    ');
+    return encoder.convert(
+      definition.toJson(),
+    );
   }
 
   Map<String, String> generateOpenApiSchema({

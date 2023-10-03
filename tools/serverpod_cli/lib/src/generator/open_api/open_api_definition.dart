@@ -1,12 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
-import '../../logger/logger.dart';
-
-part 'open_api_objects.dart';
-part 'open_api_utils.dart';
-part 'open_api_extensions.dart';
+import 'open_api_objects.dart';
 
 /// OpenAPI Object
 /// This is the root object of the OpenAPI document.
@@ -86,8 +81,7 @@ class OpenApiDefinition {
       map['paths'] = _allPathsToJson(paths!);
     }
     if (components != null) {
-      // TODO: change to map['components]
-      map.addAll(components!.toJson());
+      map['components'] = components!.toJson();
     }
     if (security != null) {
       //map['security']=security
