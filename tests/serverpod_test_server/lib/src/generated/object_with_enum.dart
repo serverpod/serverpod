@@ -304,27 +304,34 @@ typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
     ObjectWithEnumTable);
 
 class ObjectWithEnumTable extends _i1.Table {
-  ObjectWithEnumTable({super.tableRelation})
-      : super(tableName: 'object_with_enum') {
+  ObjectWithEnumTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_enum') {
     testEnum = _i1.ColumnEnum<_i2.TestEnum>(
       'testEnum',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     nullableEnum = _i1.ColumnEnum<_i2.TestEnum>(
       'nullableEnum',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     enumList = _i1.ColumnSerializable(
       'enumList',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     nullableEnumList = _i1.ColumnSerializable(
       'nullableEnumList',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     enumListList = _i1.ColumnSerializable(
       'enumListList',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 

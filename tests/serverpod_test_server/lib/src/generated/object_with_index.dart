@@ -251,15 +251,19 @@ typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
     ObjectWithIndexTable);
 
 class ObjectWithIndexTable extends _i1.Table {
-  ObjectWithIndexTable({super.tableRelation})
-      : super(tableName: 'object_with_index') {
+  ObjectWithIndexTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_index') {
     indexed = _i1.ColumnInt(
       'indexed',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     indexed2 = _i1.ColumnInt(
       'indexed2',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 

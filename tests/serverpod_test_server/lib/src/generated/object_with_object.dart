@@ -330,31 +330,39 @@ typedef ObjectWithObjectExpressionBuilder = _i1.Expression Function(
     ObjectWithObjectTable);
 
 class ObjectWithObjectTable extends _i1.Table {
-  ObjectWithObjectTable({super.tableRelation})
-      : super(tableName: 'object_with_object') {
+  ObjectWithObjectTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_object') {
     data = _i1.ColumnSerializable(
       'data',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     nullableData = _i1.ColumnSerializable(
       'nullableData',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     dataList = _i1.ColumnSerializable(
       'dataList',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     nullableDataList = _i1.ColumnSerializable(
       'nullableDataList',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     listWithNullableData = _i1.ColumnSerializable(
       'listWithNullableData',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     nullableListWithNullableData = _i1.ColumnSerializable(
       'nullableListWithNullableData',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 

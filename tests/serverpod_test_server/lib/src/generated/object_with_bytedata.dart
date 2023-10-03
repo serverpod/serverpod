@@ -235,11 +235,14 @@ typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
     ObjectWithByteDataTable);
 
 class ObjectWithByteDataTable extends _i1.Table {
-  ObjectWithByteDataTable({super.tableRelation})
-      : super(tableName: 'object_with_bytedata') {
+  ObjectWithByteDataTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'object_with_bytedata') {
     byteData = _i1.ColumnByteData(
       'byteData',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 

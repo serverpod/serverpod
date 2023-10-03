@@ -371,42 +371,54 @@ class _TypesImpl extends Types {
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
-  TypesTable({super.tableRelation}) : super(tableName: 'types') {
+  TypesTable({
+    super.queryPrefix,
+    super.tableRelations,
+  }) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aBool = _i1.ColumnBool(
       'aBool',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aDouble = _i1.ColumnDouble(
       'aDouble',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aDateTime = _i1.ColumnDateTime(
       'aDateTime',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aString = _i1.ColumnString(
       'aString',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aByteData = _i1.ColumnByteData(
       'aByteData',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aDuration = _i1.ColumnDuration(
       'aDuration',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     aUuid = _i1.ColumnUuid(
       'aUuid',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
     anEnum = _i1.ColumnEnum<_i3.TestEnum>(
       'anEnum',
-      this,
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 

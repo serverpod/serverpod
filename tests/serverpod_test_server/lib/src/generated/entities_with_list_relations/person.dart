@@ -7,63 +7,65 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../protocol.dart' as _i2;
 
-abstract class Town extends _i1.TableRow {
-  Town._({
+abstract class Person extends _i1.TableRow {
+  Person._({
     int? id,
     required this.name,
-    this.mayorId,
-    this.mayor,
+    required this.organizationId,
+    this.organization,
   }) : super(id);
 
-  factory Town({
+  factory Person({
     int? id,
     required String name,
-    int? mayorId,
-    _i2.Citizen? mayor,
-  }) = _TownImpl;
+    required int organizationId,
+    _i2.Organization? organization,
+  }) = _PersonImpl;
 
-  factory Town.fromJson(
+  factory Person.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Town(
+    return Person(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      mayorId:
-          serializationManager.deserialize<int?>(jsonSerialization['mayorId']),
-      mayor: serializationManager
-          .deserialize<_i2.Citizen?>(jsonSerialization['mayor']),
+      organizationId: serializationManager
+          .deserialize<int>(jsonSerialization['organizationId']),
+      organization: serializationManager
+          .deserialize<_i2.Organization?>(jsonSerialization['organization']),
     );
   }
 
-  static final t = TownTable();
+  static final t = PersonTable();
 
-  static const db = TownRepository._();
+  static const db = PersonRepository._();
 
   String name;
 
-  int? mayorId;
+  int organizationId;
 
-  _i2.Citizen? mayor;
+  _i2.Organization? organization;
+
+  int? _cityCitizensCityId;
 
   @override
   _i1.Table get table => t;
 
-  Town copyWith({
+  Person copyWith({
     int? id,
     String? name,
-    int? mayorId,
-    _i2.Citizen? mayor,
+    int? organizationId,
+    _i2.Organization? organization,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'mayorId': mayorId,
-      'mayor': mayor,
+      'organizationId': organizationId,
+      'organization': organization,
     };
   }
 
@@ -73,7 +75,8 @@ abstract class Town extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
-      'mayorId': mayorId,
+      'organizationId': organizationId,
+      '_cityCitizensCityId': _cityCitizensCityId,
     };
   }
 
@@ -82,8 +85,9 @@ abstract class Town extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
-      'mayorId': mayorId,
-      'mayor': mayor,
+      'organizationId': organizationId,
+      'organization': organization,
+      '_cityCitizensCityId': _cityCitizensCityId,
     };
   }
 
@@ -99,8 +103,11 @@ abstract class Town extends _i1.TableRow {
       case 'name':
         name = value;
         return;
-      case 'mayorId':
-        mayorId = value;
+      case 'organizationId':
+        organizationId = value;
+        return;
+      case '_cityCitizensCityId':
+        _cityCitizensCityId = value;
         return;
       default:
         throw UnimplementedError();
@@ -108,9 +115,9 @@ abstract class Town extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Town>> find(
+  static Future<List<Person>> find(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -118,10 +125,10 @@ abstract class Town extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.db.find<Town>(
-      where: where != null ? where(Town.t) : null,
+    return session.db.find<Person>(
+      where: where != null ? where(Person.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -134,18 +141,18 @@ abstract class Town extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Town?> findSingleRow(
+  static Future<Person?> findSingleRow(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.db.findSingleRow<Town>(
-      where: where != null ? where(Town.t) : null,
+    return session.db.findSingleRow<Person>(
+      where: where != null ? where(Person.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -156,12 +163,12 @@ abstract class Town extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Town?> findById(
+  static Future<Person?> findById(
     _i1.Session session,
     int id, {
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.db.findById<Town>(
+    return session.db.findById<Person>(
       id,
       include: include,
     );
@@ -170,11 +177,11 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required TownExpressionBuilder where,
+    required PersonExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Town>(
-      where: where(Town.t),
+    return session.db.delete<Person>(
+      where: where(Person.t),
       transaction: transaction,
     );
   }
@@ -182,7 +189,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -194,7 +201,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -207,7 +214,7 @@ abstract class Town extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -219,69 +226,113 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Town>(
-      where: where != null ? where(Town.t) : null,
+    return session.db.count<Person>(
+      where: where != null ? where(Person.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static TownInclude include({_i2.CitizenInclude? mayor}) {
-    return TownInclude._(mayor: mayor);
+  static PersonInclude include({_i2.OrganizationInclude? organization}) {
+    return PersonInclude._(organization: organization);
   }
 }
 
 class _Undefined {}
 
-class _TownImpl extends Town {
-  _TownImpl({
+class _PersonImpl extends Person {
+  _PersonImpl({
     int? id,
     required String name,
-    int? mayorId,
-    _i2.Citizen? mayor,
+    required int organizationId,
+    _i2.Organization? organization,
   }) : super._(
           id: id,
           name: name,
-          mayorId: mayorId,
-          mayor: mayor,
+          organizationId: organizationId,
+          organization: organization,
         );
 
   @override
-  Town copyWith({
+  Person copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? mayorId = _Undefined,
-    Object? mayor = _Undefined,
+    int? organizationId,
+    Object? organization = _Undefined,
   }) {
-    return Town(
+    return Person(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
+      organizationId: organizationId ?? this.organizationId,
+      organization: organization is _i2.Organization?
+          ? organization
+          : this.organization?.copyWith(),
     );
   }
 }
 
-typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
+class PersonImplicit extends _PersonImpl {
+  PersonImplicit._({
+    int? id,
+    required String name,
+    required int organizationId,
+    _i2.Organization? organization,
+    this.$_cityCitizensCityId,
+  }) : super(
+          id: id,
+          name: name,
+          organizationId: organizationId,
+          organization: organization,
+        );
 
-class TownTable extends _i1.Table {
-  TownTable({
+  factory PersonImplicit(
+    Person person, {
+    int? $_cityCitizensCityId,
+  }) {
+    return PersonImplicit._(
+      id: person.id,
+      name: person.name,
+      organizationId: person.organizationId,
+      organization: person.organization,
+      $_cityCitizensCityId: $_cityCitizensCityId,
+    );
+  }
+
+  int? $_cityCitizensCityId;
+
+  @override
+  Map<String, dynamic> allToJson() {
+    var jsonMap = super.allToJson();
+    jsonMap.addAll({'_cityCitizensCityId': $_cityCitizensCityId});
+    return jsonMap;
+  }
+}
+
+typedef PersonExpressionBuilder = _i1.Expression Function(PersonTable);
+
+class PersonTable extends _i1.Table {
+  PersonTable({
     super.queryPrefix,
     super.tableRelations,
-  }) : super(tableName: 'town') {
+  }) : super(tableName: 'person') {
     name = _i1.ColumnString(
       'name',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
-    mayorId = _i1.ColumnInt(
-      'mayorId',
+    organizationId = _i1.ColumnInt(
+      'organizationId',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
+    );
+    $_cityCitizensCityId = _i1.ColumnInt(
+      '_cityCitizensCityId',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
@@ -289,23 +340,25 @@ class TownTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
-  late final _i1.ColumnInt mayorId;
+  late final _i1.ColumnInt organizationId;
 
-  _i2.CitizenTable? _mayor;
+  _i2.OrganizationTable? _organization;
 
-  _i2.CitizenTable get mayor {
-    if (_mayor != null) return _mayor!;
-    _mayor = _i1.createRelationTable(
+  late final _i1.ColumnInt $_cityCitizensCityId;
+
+  _i2.OrganizationTable get organization {
+    if (_organization != null) return _organization!;
+    _organization = _i1.createRelationTable(
       queryPrefix: queryPrefix,
-      fieldName: 'mayor',
-      foreignTableName: _i2.Citizen.t.tableName,
-      column: mayorId,
-      foreignColumnName: _i2.Citizen.t.id.columnName,
+      fieldName: 'organization',
+      foreignTableName: _i2.Organization.t.tableName,
+      column: organizationId,
+      foreignColumnName: _i2.Organization.t.id.columnName,
       createTable: (
         relationQueryPrefix,
         foreignTableRelation,
       ) =>
-          _i2.CitizenTable(
+          _i2.OrganizationTable(
         queryPrefix: relationQueryPrefix,
         tableRelations: [
           ...?tableRelations,
@@ -313,62 +366,61 @@ class TownTable extends _i1.Table {
         ],
       ),
     );
-    return _mayor!;
+    return _organization!;
   }
 
   @override
   List<_i1.Column> get columns => [
         id,
         name,
-        mayorId,
+        organizationId,
+        $_cityCitizensCityId,
       ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'mayor') {
-      return mayor;
+    if (relationField == 'organization') {
+      return organization;
     }
     return null;
   }
 }
 
-@Deprecated('Use TownTable.t instead.')
-TownTable tTown = TownTable();
+@Deprecated('Use PersonTable.t instead.')
+PersonTable tPerson = PersonTable();
 
-class TownInclude extends _i1.Include {
-  TownInclude._({_i2.CitizenInclude? mayor}) {
-    _mayor = mayor;
+class PersonInclude extends _i1.Include {
+  PersonInclude._({_i2.OrganizationInclude? organization}) {
+    _organization = organization;
   }
 
-  _i2.CitizenInclude? _mayor;
+  _i2.OrganizationInclude? _organization;
 
   @override
-  Map<String, _i1.Include?> get includes => {'mayor': _mayor};
+  Map<String, _i1.Include?> get includes => {'organization': _organization};
 
   @override
-  _i1.Table get table => Town.t;
+  _i1.Table get table => Person.t;
 }
 
-class TownRepository {
-  const TownRepository._();
+class PersonRepository {
+  const PersonRepository._();
 
-  final attachRow = const TownAttachRowRepository._();
+  final attachRow = const PersonAttachRowRepository._();
 
-  final detachRow = const TownDetachRowRepository._();
-
-  Future<List<Town>> find(
+  Future<List<Person>> find(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.dbNext.find<Town>(
-      where: where?.call(Town.t),
+    return session.dbNext.find<Person>(
+      where: where?.call(Person.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -379,74 +431,74 @@ class TownRepository {
     );
   }
 
-  Future<Town?> findRow(
+  Future<Person?> findRow(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.dbNext.findRow<Town>(
-      where: where?.call(Town.t),
+    return session.dbNext.findRow<Person>(
+      where: where?.call(Person.t),
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<Town?> findById(
+  Future<Person?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
-    TownInclude? include,
+    PersonInclude? include,
   }) async {
-    return session.dbNext.findById<Town>(
+    return session.dbNext.findById<Person>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<List<Town>> insert(
+  Future<List<Person>> insert(
     _i1.Session session,
-    List<Town> rows, {
+    List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Town>(
+    return session.dbNext.insert<Person>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Town> insertRow(
+  Future<Person> insertRow(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Town>(
+    return session.dbNext.insertRow<Person>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<Town>> update(
+  Future<List<Person>> update(
     _i1.Session session,
-    List<Town> rows, {
+    List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Town>(
+    return session.dbNext.update<Person>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Town> updateRow(
+  Future<Person> updateRow(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Town>(
+    return session.dbNext.updateRow<Person>(
       row,
       transaction: transaction,
     );
@@ -454,10 +506,10 @@ class TownRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<Town> rows, {
+    List<Person> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Town>(
+    return session.dbNext.delete<Person>(
       rows,
       transaction: transaction,
     );
@@ -465,10 +517,10 @@ class TownRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    Town row, {
+    Person row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Town>(
+    return session.dbNext.deleteRow<Person>(
       row,
       transaction: transaction,
     );
@@ -476,67 +528,48 @@ class TownRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required TownExpressionBuilder where,
+    required PersonExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Town>(
-      where: where(Town.t),
+    return session.dbNext.deleteWhere<Person>(
+      where: where(Person.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    PersonExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Town>(
-      where: where?.call(Town.t),
+    return session.dbNext.count<Person>(
+      where: where?.call(Person.t),
       limit: limit,
       transaction: transaction,
     );
   }
 }
 
-class TownAttachRowRepository {
-  const TownAttachRowRepository._();
+class PersonAttachRowRepository {
+  const PersonAttachRowRepository._();
 
-  Future<void> mayor(
+  Future<void> organization(
     _i1.Session session,
-    Town town,
-    _i2.Citizen mayor,
+    Person person,
+    _i2.Organization organization,
   ) async {
-    if (town.id == null) {
-      throw ArgumentError.notNull('town.id');
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
     }
-    if (mayor.id == null) {
-      throw ArgumentError.notNull('mayor.id');
-    }
-
-    var $town = town.copyWith(mayorId: mayor.id);
-    await session.dbNext.updateRow<Town>(
-      $town,
-      columns: [Town.t.mayorId],
-    );
-  }
-}
-
-class TownDetachRowRepository {
-  const TownDetachRowRepository._();
-
-  Future<void> mayor(
-    _i1.Session session,
-    Town town,
-  ) async {
-    if (town.id == null) {
-      throw ArgumentError.notNull('town.id');
+    if (organization.id == null) {
+      throw ArgumentError.notNull('organization.id');
     }
 
-    var $town = town.copyWith(mayorId: null);
-    await session.dbNext.updateRow<Town>(
-      $town,
-      columns: [Town.t.mayorId],
+    var $person = person.copyWith(organizationId: organization.id);
+    await session.dbNext.updateRow<Person>(
+      $person,
+      columns: [Person.t.organizationId],
     );
   }
 }

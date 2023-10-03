@@ -7,55 +7,55 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import '../protocol.dart' as _i2;
 
-abstract class UniqueData extends _i1.TableRow {
-  UniqueData._({
+abstract class City extends _i1.TableRow {
+  City._({
     int? id,
-    required this.number,
-    required this.email,
+    required this.name,
+    this.citizens,
   }) : super(id);
 
-  factory UniqueData({
+  factory City({
     int? id,
-    required int number,
-    required String email,
-  }) = _UniqueDataImpl;
+    required String name,
+    List<_i2.Person>? citizens,
+  }) = _CityImpl;
 
-  factory UniqueData.fromJson(
+  factory City.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return UniqueData(
+    return City(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      citizens: serializationManager
+          .deserialize<List<_i2.Person>?>(jsonSerialization['citizens']),
     );
   }
 
-  static final t = UniqueDataTable();
+  static final t = CityTable();
 
-  static const db = UniqueDataRepository._();
+  static const db = CityRepository._();
 
-  int number;
+  String name;
 
-  String email;
+  List<_i2.Person>? citizens;
 
   @override
   _i1.Table get table => t;
 
-  UniqueData copyWith({
+  City copyWith({
     int? id,
-    int? number,
-    String? email,
+    String? name,
+    List<_i2.Person>? citizens,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'number': number,
-      'email': email,
+      'name': name,
+      'citizens': citizens,
     };
   }
 
@@ -64,8 +64,7 @@ abstract class UniqueData extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'number': number,
-      'email': email,
+      'name': name,
     };
   }
 
@@ -73,8 +72,8 @@ abstract class UniqueData extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'number': number,
-      'email': email,
+      'name': name,
+      'citizens': citizens,
     };
   }
 
@@ -87,11 +86,8 @@ abstract class UniqueData extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'number':
-        number = value;
-        return;
-      case 'email':
-        email = value;
+      case 'name':
+        name = value;
         return;
       default:
         throw UnimplementedError();
@@ -99,9 +95,9 @@ abstract class UniqueData extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UniqueData>> find(
+  static Future<List<City>> find(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -110,8 +106,8 @@ abstract class UniqueData extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
+    return session.db.find<City>(
+      where: where != null ? where(City.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -123,17 +119,17 @@ abstract class UniqueData extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UniqueData?> findSingleRow(
+  static Future<City?> findSingleRow(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
+    return session.db.findSingleRow<City>(
+      where: where != null ? where(City.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -143,21 +139,21 @@ abstract class UniqueData extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UniqueData?> findById(
+  static Future<City?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<UniqueData>(id);
+    return session.db.findById<City>(id);
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required UniqueDataExpressionBuilder where,
+    required CityExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UniqueData>(
-      where: where(UniqueData.t),
+    return session.db.delete<City>(
+      where: where(City.t),
       transaction: transaction,
     );
   }
@@ -165,7 +161,7 @@ abstract class UniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -177,7 +173,7 @@ abstract class UniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -190,7 +186,7 @@ abstract class UniqueData extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -202,101 +198,102 @@ abstract class UniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UniqueData>(
-      where: where != null ? where(UniqueData.t) : null,
+    return session.db.count<City>(
+      where: where != null ? where(City.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static UniqueDataInclude include() {
-    return UniqueDataInclude._();
+  static CityInclude include() {
+    return CityInclude._();
   }
 }
 
 class _Undefined {}
 
-class _UniqueDataImpl extends UniqueData {
-  _UniqueDataImpl({
+class _CityImpl extends City {
+  _CityImpl({
     int? id,
-    required int number,
-    required String email,
+    required String name,
+    List<_i2.Person>? citizens,
   }) : super._(
           id: id,
-          number: number,
-          email: email,
+          name: name,
+          citizens: citizens,
         );
 
   @override
-  UniqueData copyWith({
+  City copyWith({
     Object? id = _Undefined,
-    int? number,
-    String? email,
+    String? name,
+    Object? citizens = _Undefined,
   }) {
-    return UniqueData(
+    return City(
       id: id is int? ? id : this.id,
-      number: number ?? this.number,
-      email: email ?? this.email,
+      name: name ?? this.name,
+      citizens:
+          citizens is List<_i2.Person>? ? citizens : this.citizens?.clone(),
     );
   }
 }
 
-typedef UniqueDataExpressionBuilder = _i1.Expression Function(UniqueDataTable);
+typedef CityExpressionBuilder = _i1.Expression Function(CityTable);
 
-class UniqueDataTable extends _i1.Table {
-  UniqueDataTable({
+class CityTable extends _i1.Table {
+  CityTable({
     super.queryPrefix,
     super.tableRelations,
-  }) : super(tableName: 'unique_data') {
-    number = _i1.ColumnInt(
-      'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
-    email = _i1.ColumnString(
-      'email',
+  }) : super(tableName: 'city') {
+    name = _i1.ColumnString(
+      'name',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
   }
 
-  late final _i1.ColumnInt number;
-
-  late final _i1.ColumnString email;
+  late final _i1.ColumnString name;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        number,
-        email,
+        name,
       ];
 }
 
-@Deprecated('Use UniqueDataTable.t instead.')
-UniqueDataTable tUniqueData = UniqueDataTable();
+@Deprecated('Use CityTable.t instead.')
+CityTable tCity = CityTable();
 
-class UniqueDataInclude extends _i1.Include {
-  UniqueDataInclude._();
+class CityInclude extends _i1.Include {
+  CityInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UniqueData.t;
+  _i1.Table get table => City.t;
 }
 
-class UniqueDataRepository {
-  const UniqueDataRepository._();
+class CityRepository {
+  const CityRepository._();
 
-  Future<List<UniqueData>> find(
+  final attach = const CityAttachRepository._();
+
+  final attachRow = const CityAttachRowRepository._();
+
+  final detach = const CityDetachRepository._();
+
+  final detachRow = const CityDetachRowRepository._();
+
+  Future<List<City>> find(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -304,8 +301,8 @@ class UniqueDataRepository {
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<UniqueData>(
-      where: where?.call(UniqueData.t),
+    return session.dbNext.find<City>(
+      where: where?.call(City.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -315,70 +312,70 @@ class UniqueDataRepository {
     );
   }
 
-  Future<UniqueData?> findRow(
+  Future<City?> findRow(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UniqueData>(
-      where: where?.call(UniqueData.t),
+    return session.dbNext.findRow<City>(
+      where: where?.call(City.t),
       transaction: transaction,
     );
   }
 
-  Future<UniqueData?> findById(
+  Future<City?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<UniqueData>(
+    return session.dbNext.findById<City>(
       id,
       transaction: transaction,
     );
   }
 
-  Future<List<UniqueData>> insert(
+  Future<List<City>> insert(
     _i1.Session session,
-    List<UniqueData> rows, {
+    List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UniqueData>(
+    return session.dbNext.insert<City>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<UniqueData> insertRow(
+  Future<City> insertRow(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UniqueData>(
+    return session.dbNext.insertRow<City>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<UniqueData>> update(
+  Future<List<City>> update(
     _i1.Session session,
-    List<UniqueData> rows, {
+    List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UniqueData>(
+    return session.dbNext.update<City>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<UniqueData> updateRow(
+  Future<City> updateRow(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UniqueData>(
+    return session.dbNext.updateRow<City>(
       row,
       transaction: transaction,
     );
@@ -386,10 +383,10 @@ class UniqueDataRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<UniqueData> rows, {
+    List<City> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UniqueData>(
+    return session.dbNext.delete<City>(
       rows,
       transaction: transaction,
     );
@@ -397,10 +394,10 @@ class UniqueDataRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    UniqueData row, {
+    City row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UniqueData>(
+    return session.dbNext.deleteRow<City>(
       row,
       transaction: transaction,
     );
@@ -408,25 +405,125 @@ class UniqueDataRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required UniqueDataExpressionBuilder where,
+    required CityExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UniqueData>(
-      where: where(UniqueData.t),
+    return session.dbNext.deleteWhere<City>(
+      where: where(City.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    UniqueDataExpressionBuilder? where,
+    CityExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UniqueData>(
-      where: where?.call(UniqueData.t),
+    return session.dbNext.count<City>(
+      where: where?.call(City.t),
       limit: limit,
       transaction: transaction,
+    );
+  }
+}
+
+class CityAttachRepository {
+  const CityAttachRepository._();
+
+  Future<void> citizens(
+    _i1.Session session,
+    City city,
+    List<_i2.Person> person,
+  ) async {
+    if (person.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('person.id');
+    }
+    if (city.id == null) {
+      throw ArgumentError.notNull('city.id');
+    }
+
+    var $person = person
+        .map((e) => _i2.PersonImplicit(
+              e,
+              $_cityCitizensCityId: city.id,
+            ))
+        .toList();
+    await session.dbNext.update<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.$_cityCitizensCityId],
+    );
+  }
+}
+
+class CityAttachRowRepository {
+  const CityAttachRowRepository._();
+
+  Future<void> citizens(
+    _i1.Session session,
+    City city,
+    _i2.Person person,
+  ) async {
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
+    }
+    if (city.id == null) {
+      throw ArgumentError.notNull('city.id');
+    }
+
+    var $person = _i2.PersonImplicit(
+      person,
+      $_cityCitizensCityId: city.id,
+    );
+    await session.dbNext.updateRow<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.$_cityCitizensCityId],
+    );
+  }
+}
+
+class CityDetachRepository {
+  const CityDetachRepository._();
+
+  Future<void> citizens(
+    _i1.Session session,
+    List<_i2.Person> person,
+  ) async {
+    if (person.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('person.id');
+    }
+
+    var $person = person
+        .map((e) => _i2.PersonImplicit(
+              e,
+              $_cityCitizensCityId: null,
+            ))
+        .toList();
+    await session.dbNext.update<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.$_cityCitizensCityId],
+    );
+  }
+}
+
+class CityDetachRowRepository {
+  const CityDetachRowRepository._();
+
+  Future<void> citizens(
+    _i1.Session session,
+    _i2.Person person,
+  ) async {
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
+    }
+
+    var $person = _i2.PersonImplicit(
+      person,
+      $_cityCitizensCityId: null,
+    );
+    await session.dbNext.updateRow<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.$_cityCitizensCityId],
     );
   }
 }
