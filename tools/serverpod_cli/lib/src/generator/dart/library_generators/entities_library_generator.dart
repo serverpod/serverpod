@@ -1245,7 +1245,7 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(field.name)
+              refer(_createTableFieldName(serverCode, field))
         ]).code,
     );
   }
@@ -1261,7 +1261,7 @@ class SerializableEntityLibraryGenerator {
         c.fields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = field.name
+          ..name = _createTableFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1388,7 +1388,7 @@ class SerializableEntityLibraryGenerator {
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
-            refer(field.name)
+            refer(_createTableFieldName(serverCode, field))
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
@@ -1611,5 +1611,16 @@ class SerializableEntityLibraryGenerator {
     }
 
     return refer(field.name);
+  }
+
+  String _createTableFieldName(
+    bool serverCode,
+    SerializableEntityFieldDefinition field,
+  ) {
+    if (field.hiddenSerializableField(serverCode)) {
+      return '\$${field.name}';
+    }
+
+    return field.name;
   }
 }

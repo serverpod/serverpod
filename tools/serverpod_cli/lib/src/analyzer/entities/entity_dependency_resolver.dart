@@ -282,9 +282,12 @@ class EntityDependencyResolver {
       );
 
       fieldDefinition.relation = ListRelationDefinition(
-          name: autoRelationName,
-          foreignFieldName: foreignFieldName,
-          nullableRelation: true);
+        name: autoRelationName,
+        fieldName: 'id',
+        foreignFieldName: foreignFieldName,
+        nullableRelation: true,
+        implicitForeignField: true,
+      );
     } else {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
@@ -296,6 +299,7 @@ class EntityDependencyResolver {
       if (foreignFields.isNotEmpty) {
         fieldDefinition.relation = ListRelationDefinition(
           name: relation.name,
+          fieldName: 'id',
           foreignFieldName: foreignFields.first.name,
           nullableRelation: foreignFields.first.type.nullable,
         );

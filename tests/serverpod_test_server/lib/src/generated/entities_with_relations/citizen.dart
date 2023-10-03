@@ -349,7 +349,7 @@ class CitizenTable extends _i1.Table {
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
-    _companyEmployeesCompanyId = _i1.ColumnInt(
+    $_companyEmployeesCompanyId = _i1.ColumnInt(
       '_companyEmployeesCompanyId',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
@@ -368,7 +368,7 @@ class CitizenTable extends _i1.Table {
 
   _i2.CompanyTable? _oldCompany;
 
-  late final _i1.ColumnInt _companyEmployeesCompanyId;
+  late final _i1.ColumnInt $_companyEmployeesCompanyId;
 
   _i2.AddressTable get address {
     if (_address != null) return _address!;
@@ -445,7 +445,7 @@ class CitizenTable extends _i1.Table {
         name,
         companyId,
         oldCompanyId,
-        _companyEmployeesCompanyId,
+        $_companyEmployeesCompanyId,
       ];
 
   @override
