@@ -19,7 +19,7 @@ class ParameterObject {
   /// parameter name
   final String name;
 
-  /// The location of the parameter. Possible values are "query", "header",
+  /// The location of the parameter. Possible values are "query", "header", "body"
   /// "path" or "cookie". key - [in]
   final ParameterLocation inField;
   final String? description;
@@ -65,6 +65,7 @@ class ParameterObject {
 
   /// The schema defining the type used for the parameter.
   final ParameterSchemaObject? schema;
+
   ParameterObject({
     required this.name,
     required this.inField,
@@ -111,5 +112,18 @@ class ParameterObject {
     }
 
     return map;
+  }
+
+  factory ParameterObject.fromParameterDefinition(
+      ParameterDefinition parameterDefinition) {
+    return ParameterObject(
+      name: parameterDefinition.name,
+      inField: ParameterLocation.body,
+      requiredField: parameterDefinition.required,
+      allowEmptyValue: false,
+      schema: ParameterSchemaObject(
+        parameterDefinition.type,
+      ),
+    );
   }
 }

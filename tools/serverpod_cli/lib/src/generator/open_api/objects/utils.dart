@@ -11,6 +11,7 @@ enum ParameterLocation {
   header,
   path,
   cookie,
+  body,
 }
 
 /// Describes how the parameter value will be serialized depending on the type

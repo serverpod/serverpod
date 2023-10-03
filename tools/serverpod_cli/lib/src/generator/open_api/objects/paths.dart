@@ -62,7 +62,6 @@ class PathItemObject {
   /// An alternative server array to service all operations in this path.
   final List<ServerObject>? servers;
 
-  final List<ParameterObject>? parameters;
   PathItemObject({
     this.summary,
     this.description,
@@ -75,7 +74,6 @@ class PathItemObject {
     this.patchOperation,
     this.traceOperation,
     this.servers,
-    this.parameters,
   });
 
   Map<String, dynamic> toJson() {
@@ -96,6 +94,8 @@ class PathItemObject {
 
   factory PathItemObject.fromMethod(MethodDefinition method, String tag) {
     String? description = method.documentationComment;
+
+    /// Method name is operationId
     String operationId = method.name;
     ResponseObject responseObject = ResponseObject(
       responseType: ContentObject(
@@ -105,7 +105,41 @@ class PathItemObject {
         ),
       ),
     );
+    // log.info('''
+    // ${method.name}
+    // ${method.returnType}
+    // ${method.returnType.className}
+    // ${method.returnType.generics.first.className}
+    // ${method.returnType.generics.map(
+    //           (e) => e.generics.map(
+    //             (e) => e.className,
+    //           ),
+    //         ).toList()}
 
+    // ''');
+    // log.info(method.parameters
+    //     .map((ParameterDefinition param) =>
+    //         'param required ${param.name} | type ${param.type.className}')
+    //     .toList()
+    //     .toString());
+
+    // log.info(method.parametersNamed
+    //     .map((ParameterDefinition param) =>
+    //         'param named ${param.name} | type ${param.type.className}')
+    //     .toList()
+    //     .toString());
+    // log.info(method.parametersPositional
+    //     .map((ParameterDefinition param) =>
+    //         'param p name ${param.name} | type ${param.type.className}')
+    //     .toList()
+    //     .toString());
+    List<ParameterDefinition> params = [
+      ...method.parameters,
+      ...method.parametersNamed,
+      ...method.parametersPositional
+    ];
+
+    // TODO : Change to OperationObject.fromParameterDefinitionList
     return PathItemObject(
       description: description,
       postOperation: OperationObject(
@@ -113,7 +147,10 @@ class PathItemObject {
         operationId: operationId,
         responses: responseObject,
         tags: [tag],
-        // requestBody: RequestBodyObjec,
+
+        /// No need in OpeApi 2.0
+        parameters: [],
+        requestBody: RequestBodyObject.fromParameterDefinitionList(params),
         security: SecurityRequirementObject(),
       ),
     );

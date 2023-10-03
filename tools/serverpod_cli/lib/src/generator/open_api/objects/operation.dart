@@ -26,7 +26,7 @@ class OperationObject {
   /// duplicated parameters. A unique parameter is defined by a combination of
   /// a name and location.The list can use the Reference Object to link to
   /// parameters that are defined at the OpenAPI Object's components/parameters.
-  final List<ParameterObject>? parameters;
+  final List<ParameterObject> parameters;
 
   /// The request body applicable for this operation.
   /// The requestBody is fully supported in HTTP methods where the HTTP 1.1
@@ -55,7 +55,7 @@ class OperationObject {
     this.description,
     this.externalDocs,
     this.operationId,
-    this.parameters,
+    required this.parameters,
     this.requestBody,
     this.deprecated = false,
     required this.responses,
@@ -87,8 +87,8 @@ class OperationObject {
       map['requestBody'] = requestBody!.toJson();
     }
 
-    if (parameters?.isNotEmpty ?? false) {
-      map['parameters'] = parameters!.map((e) => e.toJson()).toList();
+    if (parameters.isNotEmpty) {
+      map['parameters'] = parameters.map((e) => e.toJson()).toList();
     }
     map['responses'] = responses.toJson();
 

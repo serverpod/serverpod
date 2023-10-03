@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 /// A Schema Object that will be used in ParameterObject
@@ -26,6 +27,13 @@ class ParameterSchemaObject {
         (typeDefinition.className == 'double')) {
       map['type'] = typeDefinition.toSchemaObjectType.name;
     }
+
+    if (!typeDefinition.isDartCoreType) {
+      map['schema'] = {
+        '\$ref': getRef(typeDefinition.className),
+      };
+      return map;
+    }
     return map;
   }
 }
@@ -41,6 +49,7 @@ class ContentSchemaObject {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
+
     List<TypeDefinition> generics = returnType.generics;
 
     /// If type is [Map] set [SchemaObjectType] to [object]
@@ -57,11 +66,13 @@ class ContentSchemaObject {
     ///
     if (returnType.generics.first.isMapType) {
       map['type'] = SchemaObjectType.object.name;
-      if (returnType.generics.length > 1) {
-        map['additionalProperties'] = ItemSchemaObject(
-          generics.last,
-          additionalProperties: true,
-        ).toJson();
+      if (returnType.generics.isNotEmpty) {
+        if (returnType.generics.last.generics.isNotEmpty) {
+          map['additionalProperties'] = ItemSchemaObject(
+            generics.last.generics.last,
+            additionalProperties: true,
+          ).toJson();
+        }
       }
       return map;
     }
@@ -81,7 +92,9 @@ class ContentSchemaObject {
     /// ```
     if (generics.first.isListType) {
       map['type'] = SchemaObjectType.array.name;
-      var items = ItemSchemaObject(generics.last);
+      var items = ItemSchemaObject(
+        generics.last.generics.first,
+      );
       map['items'] = items.toJson();
       return map;
     }
@@ -95,6 +108,24 @@ class ContentSchemaObject {
     }
 
     /// Binary file and an arbitrary binary file can omit schema .Just return {}
+    return map;
+  }
+}
+
+class RequestContentSchemaObject {
+  final List<ParameterDefinition> params;
+  RequestContentSchemaObject({
+    required this.params,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+    map['type'] = SchemaObjectType.object.name;
+    map['properties'] = {};
+    for (var param in params) {
+      map['properties'][param.name] = ItemSchemaObject(param.type).toJson();
+    }
+
     return map;
   }
 }

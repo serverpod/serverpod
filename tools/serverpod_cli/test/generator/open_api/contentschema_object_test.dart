@@ -32,20 +32,21 @@ void main() {
           url: 'dart:core',
           generics: [
             TypeDefinition(
-              className: 'Map',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'String',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'String',
-              nullable: false,
-              url: 'dart:core',
-            ),
+                className: 'Map',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'String',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                  TypeDefinition(
+                    className: 'String',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                ]),
           ],
         ),
       );
@@ -68,19 +69,20 @@ void main() {
           url: 'dart:core',
           generics: [
             TypeDefinition(
-              className: 'Map',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'String',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'Example',
-              nullable: false,
-            ),
+                className: 'Map',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'String',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                  TypeDefinition(
+                    className: 'Example',
+                    nullable: false,
+                  ),
+                ]),
           ],
         ),
       );
@@ -102,14 +104,15 @@ void main() {
           nullable: false,
           generics: [
             TypeDefinition(
-              className: 'List',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'Example',
-              nullable: false,
-            ),
+                className: 'List',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'Example',
+                    nullable: false,
+                  ),
+                ]),
           ],
         ),
       );
@@ -132,15 +135,16 @@ void main() {
           nullable: false,
           generics: [
             TypeDefinition(
-              className: 'List',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'int',
-              nullable: false,
-              url: 'dart:core',
-            ),
+                className: 'List',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'int',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                ]),
           ],
         ),
       );
@@ -162,15 +166,16 @@ void main() {
           nullable: false,
           generics: [
             TypeDefinition(
-              className: 'List',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'String',
-              nullable: false,
-              url: 'dart:core',
-            ),
+                className: 'List',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'String',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                ]),
           ],
         ),
       );
@@ -192,15 +197,16 @@ void main() {
           nullable: false,
           generics: [
             TypeDefinition(
-              className: 'List',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'double',
-              nullable: false,
-              url: 'dart:core',
-            ),
+                className: 'List',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'double',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                ]),
           ],
         ),
       );
@@ -223,15 +229,16 @@ void main() {
           url: 'dart:core',
           generics: [
             TypeDefinition(
-              className: 'List',
-              nullable: false,
-              url: 'dart:core',
-            ),
-            TypeDefinition(
-              className: 'Map',
-              nullable: false,
-              url: 'dart:core',
-            ),
+                className: 'List',
+                nullable: false,
+                url: 'dart:core',
+                generics: [
+                  TypeDefinition(
+                    className: 'Map',
+                    nullable: false,
+                    url: 'dart:core',
+                  ),
+                ]),
           ],
         ),
       );

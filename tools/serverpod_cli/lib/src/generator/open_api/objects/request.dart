@@ -19,13 +19,25 @@ class RequestBodyObject {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    if (description != null) map['description'] = map;
-    if (content != null) map['content'] = content;
+    if (description != null) map['description'] = description;
+    if (content != null) map['content'] = content!.toJson();
     map['required'] = requiredField;
     return map;
   }
 
-  // factory RequestBodyObject.fromMethod(MethodDefinition methodDefinition) {
-
-  // }
+  factory RequestBodyObject.fromParameterDefinitionList(
+      List<ParameterDefinition> parameterDefinitions) {
+    ContentObject contentObject = ContentObject(
+      contentTypes: [
+        ContentType.applicationJson,
+      ],
+      requestContentSchemaObject: RequestContentSchemaObject(
+        params: parameterDefinitions,
+      ),
+    );
+    return RequestBodyObject(
+      content: contentObject,
+      requiredField: parameterDefinitions.length > 1 ? false : true,
+    );
+  }
 }
