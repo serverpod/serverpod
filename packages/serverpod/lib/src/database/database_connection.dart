@@ -223,53 +223,6 @@ class DatabaseConnection {
         .toList();
   }
 
-  void _validateColumnsExists(List<Column> columns, Table table) {
-    for (var column in columns) {
-      if (!table.columns.any((c) => c.columnName == column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
-    }
-  }
-
-  String _createQueryValueList(
-    Iterable<TableRow> rows,
-    Iterable<Column> column,
-  ) {
-    return rows
-        .map((row) => row.allToJson() as Map<String, dynamic>)
-        .map((row) {
-      var values = column.map((column) {
-        var unformattedValue = row[column.columnName];
-
-        var formattedValue =
-            DatabasePoolManager.encoder.convert(unformattedValue);
-
-        return '$formattedValue::${_convertToPostgresType(column)}';
-      }).join(', ');
-
-      return '($values)';
-    }).join(', ');
-  }
-
-  String _convertToPostgresType(Column column) {
-    if (column is ColumnString) return 'text';
-    if (column is ColumnBool) return 'boolean';
-    if (column is ColumnInt) return 'integer';
-    if (column is ColumnEnum) return 'integer';
-    if (column is ColumnDouble) return 'double precision';
-    if (column is ColumnDateTime) return 'timestamp without time zone';
-    if (column is ColumnByteData) return 'bytea';
-    if (column is ColumnDuration) return 'bigint';
-    if (column is ColumnUuid) return 'uuid';
-    if (column is ColumnSerializable) return 'json';
-
-    return 'json';
-  }
-
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> updateRow<T extends TableRow>(
     Session session,
@@ -547,6 +500,53 @@ class DatabaseConnection {
       orElse: orElse,
       retryIf: retryIf,
     );
+  }
+
+  void _validateColumnsExists(List<Column> columns, Table table) {
+    for (var column in columns) {
+      if (!table.columns.any((c) => c.columnName == column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
+    }
+  }
+
+  String _createQueryValueList(
+    Iterable<TableRow> rows,
+    Iterable<Column> column,
+  ) {
+    return rows
+        .map((row) => row.allToJson() as Map<String, dynamic>)
+        .map((row) {
+      var values = column.map((column) {
+        var unformattedValue = row[column.columnName];
+
+        var formattedValue =
+            DatabasePoolManager.encoder.convert(unformattedValue);
+
+        return '$formattedValue::${_convertToPostgresType(column)}';
+      }).join(', ');
+
+      return '($values)';
+    }).join(', ');
+  }
+
+  String _convertToPostgresType(Column column) {
+    if (column is ColumnString) return 'text';
+    if (column is ColumnBool) return 'boolean';
+    if (column is ColumnInt) return 'integer';
+    if (column is ColumnEnum) return 'integer';
+    if (column is ColumnDouble) return 'double precision';
+    if (column is ColumnDateTime) return 'timestamp without time zone';
+    if (column is ColumnByteData) return 'bytea';
+    if (column is ColumnDuration) return 'bigint';
+    if (column is ColumnUuid) return 'uuid';
+    if (column is ColumnSerializable) return 'json';
+
+    return 'json';
   }
 }
 
