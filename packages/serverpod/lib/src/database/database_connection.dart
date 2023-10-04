@@ -146,7 +146,7 @@ class DatabaseConnection {
         'INSERT INTO ${table.tableName} ($columnNames) VALUES $values RETURNING *';
 
     var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
+        await mappedResultsQuery(session, query, transaction: transaction);
 
     return result
         .map((t) => t[table.tableName])
@@ -209,7 +209,7 @@ class DatabaseConnection {
         'UPDATE ${table.tableName} AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     var result =
-        await _mappedResultsQuery(session, query, transaction: transaction);
+        await mappedResultsQuery(session, query, transaction: transaction);
 
     return result
         .map((t) => t[table.tableName])
@@ -377,7 +377,8 @@ class DatabaseConnection {
     }
   }
 
-  Future<List<Map<String, Map<String, dynamic>>>> _mappedResultsQuery(
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<Map<String, Map<String, dynamic>>>> mappedResultsQuery(
     Session session,
     String query, {
     int? timeoutInSeconds,
@@ -416,7 +417,7 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
-    var result = await _mappedResultsQuery(
+    var result = await mappedResultsQuery(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
