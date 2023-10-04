@@ -110,12 +110,12 @@ class HealthCheckManager {
       // Touch all sessions that have been opened by this server.
       var touchQuery =
           'UPDATE serverpod_session_log SET touched = $now WHERE "serverId" = $serverId AND "isOpen" = TRUE AND "time" > $serverStartTime';
-      await session.dbNext.queryDangerously(touchQuery);
+      await session.dbNext.dangerouslyQuery(touchQuery);
 
       // Close sessions that haven't been touched in 3 minutes.
       var closeQuery =
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
-      await session.dbNext.queryDangerously(closeQuery);
+      await session.dbNext.dangerouslyQuery(closeQuery);
     } catch (e, stackTrace) {
       stderr.writeln('Failed to cleanup closed sessions: $e');
       stderr.write('$stackTrace');

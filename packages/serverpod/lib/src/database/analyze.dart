@@ -10,10 +10,10 @@ class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
   static Future<DatabaseDefinition> analyze(Database database) async {
     return DatabaseDefinition(
-      name: (await database.queryDangerously('SELECT current_database();'))
+      name: (await database.dangerouslyQuery('SELECT current_database();'))
           .first
           .first,
-      tables: await Future.wait((await database.queryDangerously(
+      tables: await Future.wait((await database.dangerouslyQuery(
 // Get list of all tables and the schema they are in.
           '''
 SELECT schemaname, tablename
@@ -23,7 +23,7 @@ WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
         var schemaName = tableInfo.first;
         var tableName = tableInfo.last;
 
-        var columns = (await database.queryDangerously(
+        var columns = (await database.dangerouslyQuery(
 // Get the columns of this table and sort them based on their position.
                 '''
 SELECT column_name, column_default, is_nullable, data_type
@@ -39,7 +39,7 @@ ORDER BY ordinal_position;
                 isNullable: e[2] == 'YES'))
             .toList();
 
-        var indexes = (await database.queryDangerously(
+        var indexes = (await database.dangerouslyQuery(
 // We want to get the name (0), tablespace (1), isUnique (2), isPrimary (3),
 // elements (4), isElementAColumn (5), predicate (6) and type of each index for this table.
 //
@@ -105,7 +105,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
           );
         }).toList();
 
-        var foreignKeys = (await database.queryDangerously(
+        var foreignKeys = (await database.dangerouslyQuery(
 // We want to get the constraint name (0), on update type (1),
 // on delete type (2), match type (3), constraint columns (4)
 // referenced table (5), namespace / schema of the referenced table (6),
@@ -169,7 +169,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
 
     try {
       var rows =
-          await database.queryDangerously('SELECT * FROM serverpod_migrations');
+          await database.dangerouslyQuery('SELECT * FROM serverpod_migrations');
       for (var row in rows) {
         migrations.add(
           DatabaseMigrationVersion(
