@@ -100,7 +100,7 @@ class PathItemObject {
     ResponseObject responseObject = ResponseObject(
       responseType: ContentObject(
         contentTypes: [ContentType.applicationJson],
-        schemaObject: ContentSchemaObject(
+        responseSchemaObject: ContentSchemaObject(
           returnType: method.returnType,
         ),
       ),

@@ -128,28 +128,3 @@ class ComponentsObject {
     return map;
   }
 }
-
-/// A Schema object which will use in [ComponentObject]
-class ComponentSchemaObject {
-  final ClassDefinition classDefinition;
-
-  ComponentSchemaObject(
-    this.classDefinition,
-  );
-
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {};
-
-    Map<String, dynamic> objectMap = {};
-    objectMap['type'] = SchemaObjectType.object.name;
-    objectMap['properties'] = {};
-    for (var field in classDefinition.fields) {
-      objectMap['properties'][field.name] = {
-        'type': field.type.toSchemaObjectType.name,
-      };
-    }
-    map[classDefinition.className] = objectMap;
-
-    return map;
-  }
-}

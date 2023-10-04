@@ -101,7 +101,7 @@ void main() {
           contentTypes: [
             ContentType.applicationJson,
           ],
-          schemaObject: ContentSchemaObject(
+          responseSchemaObject: ContentSchemaObject(
             returnType: TypeDefinition(
               className: 'Future',
               nullable: false,
@@ -128,7 +128,7 @@ void main() {
       var responses = ResponseObject(
         responseType: ContentObject(
           contentTypes: [ContentType.applicationJson],
-          schemaObject: ContentSchemaObject(
+          responseSchemaObject: ContentSchemaObject(
             returnType: TypeDefinition(
               className: 'Future',
               url: 'dart:core',
@@ -224,7 +224,7 @@ void main() {
       var responses = ResponseObject(
         responseType: ContentObject(
           contentTypes: [ContentType.applicationJson],
-          schemaObject: ContentSchemaObject(
+          responseSchemaObject: ContentSchemaObject(
             returnType: TypeDefinition(
               className: 'Future',
               nullable: false,

@@ -97,7 +97,7 @@ void main() {
           className: 'Example',
           nullable: false,
         ),
-        additionalProperties: true,
+        removeTypeKey: true,
       );
 
       expect(

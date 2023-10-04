@@ -52,6 +52,8 @@ class ContentSchemaObject {
 
     List<TypeDefinition> generics = returnType.generics;
 
+    if (generics.first.className == 'void') return map;
+
     /// If type is [Map] set [SchemaObjectType] to [object]
     /// and should contain key [additionalProperties]
     /// If type is dart:core type
@@ -70,7 +72,7 @@ class ContentSchemaObject {
         if (returnType.generics.last.generics.isNotEmpty) {
           map['additionalProperties'] = ItemSchemaObject(
             generics.last.generics.last,
-            additionalProperties: true,
+            removeTypeKey: true,
           ).toJson();
         }
       }
@@ -123,7 +125,10 @@ class RequestContentSchemaObject {
     map['type'] = SchemaObjectType.object.name;
     map['properties'] = {};
     for (var param in params) {
-      map['properties'][param.name] = ItemSchemaObject(param.type).toJson();
+      map['properties'][param.name] = ItemSchemaObject(
+        param.type,
+        removeTypeKey: !param.type.isDartCoreType,
+      ).toJson();
     }
 
     return map;
@@ -132,27 +137,52 @@ class RequestContentSchemaObject {
 
 /// A SchemaObject used in [items]
 class ItemSchemaObject {
-  /// Use in Map items if true remove type.
-  final bool additionalProperties;
+  /// Use in Map items if true remove [type] key.
+  final bool removeTypeKey;
   final TypeDefinition typeDefinition;
 
-  ItemSchemaObject(this.typeDefinition, {this.additionalProperties = false});
+  ItemSchemaObject(this.typeDefinition, {this.removeTypeKey = false});
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
 
     ///if type is custom class return ref
     if (!typeDefinition.isDartCoreType) {
-      if (!additionalProperties) {
+      if (!removeTypeKey) {
         map['type'] = SchemaObjectType.object.name;
       }
       map['\$ref'] = getRef(typeDefinition.className);
+    } else if (typeDefinition.isListType) {
+      map['type'] = SchemaObjectType.array.name;
+      map['items'] = {};
+      TypeDefinition generic = typeDefinition.generics.first;
+      if (generic.isDartCoreType) {
+        map['items']['type'] = generic.toSchemaObjectType.name;
+      } else {
+        map['items']['\$ref'] = getRef(
+          generic.className,
+        );
+      }
     } else {
       map['type'] = typeDefinition.toSchemaObjectType.name;
     }
 
     return map;
   }
+}
+
+// TODO: create reusable mapToJson and listToJson
+Map<String, dynamic> mapToJson(TypeDefinition type) {
+  assert(type.isMapType,
+      'Use mapToJson only when the typeDefinition is of the MapType.');
+
+  Map<String, dynamic> map = {};
+  map['type'] = SchemaObjectType.object.name;
+  if (!type.isDartCoreType) {
+    map['properties'] = {};
+  }
+
+  return map;
 }
 
 /// A SchemaObject that will use in Request
@@ -181,7 +211,7 @@ class RequestSchemaObject {
       if (typeDefinition.generics.length > 1) {
         map['additionalProperties'] = ItemSchemaObject(
           typeDefinition.generics.last,
-          additionalProperties: true,
+          removeTypeKey: true,
         ).toJson();
       }
       return map;
@@ -252,6 +282,31 @@ class ReferenceObject {
     if (description != null) {
       map['description'] = description!;
     }
+    return map;
+  }
+}
+
+/// A Schema object which will use in [ComponentObject]
+class ComponentSchemaObject {
+  final ClassDefinition classDefinition;
+
+  ComponentSchemaObject(
+    this.classDefinition,
+  );
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {};
+
+    Map<String, dynamic> objectMap = {};
+    objectMap['type'] = SchemaObjectType.object.name;
+    objectMap['properties'] = {};
+    for (var field in classDefinition.fields) {
+      objectMap['properties'][field.name] = {
+        'type': field.type.toSchemaObjectType.name,
+      };
+    }
+    map[classDefinition.className] = objectMap;
+
     return map;
   }
 }

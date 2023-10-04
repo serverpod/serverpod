@@ -18,11 +18,11 @@ part of '../open_api_objects.dart';
 /// ```
 class ContentObject {
   final List<String> contentTypes;
-  final ContentSchemaObject? schemaObject;
+  final ContentSchemaObject? responseSchemaObject;
   final RequestContentSchemaObject? requestContentSchemaObject;
   ContentObject({
     required this.contentTypes,
-    this.schemaObject,
+    this.responseSchemaObject,
     this.requestContentSchemaObject,
   });
 
@@ -30,8 +30,8 @@ class ContentObject {
     Map<String, dynamic> contentMap = {};
     for (var type in contentTypes) {
       contentMap[type] = {};
-      if (schemaObject != null) {
-        contentMap[type]['schema'] = schemaObject!.toJson();
+      if (responseSchemaObject != null) {
+        contentMap[type]['schema'] = responseSchemaObject!.toJson();
       }
       if (requestContentSchemaObject != null) {
         contentMap[type]['schema'] = requestContentSchemaObject!.toJson();
