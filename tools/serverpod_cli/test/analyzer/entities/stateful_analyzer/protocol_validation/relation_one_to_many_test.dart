@@ -59,6 +59,24 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
+    test('then the foreign field name is set on the list relation.', () {
+      expect(relation.runtimeType, ListRelationDefinition);
+      expect(
+        (relation as ListRelationDefinition).fieldName,
+        'id',
+        reason: 'Expected the reference field to be set to "id".',
+      );
+    }, skip: errors.isNotEmpty);
+
+    test('then the implicit field is false.', () {
+      expect(relation.runtimeType, ListRelationDefinition);
+      expect(
+        (relation as ListRelationDefinition).implicitForeignField,
+        isFalse,
+        reason: 'Expected implicit field to be false.',
+      );
+    }, skip: errors.isNotEmpty);
+
     test('has the nullableRelation set to false', () {
       expect((relation as ListRelationDefinition).nullableRelation, false);
     }, skip: relation is! ListRelationDefinition);
@@ -118,6 +136,28 @@ void main() {
           (relation as ListRelationDefinition).foreignFieldName,
           '_companyEmployeesCompanyId',
           reason: 'Expected the reference field to be set.',
+        );
+      });
+
+      test('with the foreign field name set on the list relation.', () {
+        var relation = companyDefinition.findField('employees')?.relation;
+
+        expect(relation.runtimeType, ListRelationDefinition);
+        expect(
+          (relation as ListRelationDefinition).fieldName,
+          'id',
+          reason: 'Expected the reference field to be set.',
+        );
+      });
+
+      test('with the is implicit flag set to true on the list relation.', () {
+        var relation = companyDefinition.findField('employees')?.relation;
+
+        expect(relation.runtimeType, ListRelationDefinition);
+        expect(
+          (relation as ListRelationDefinition).implicitForeignField,
+          isTrue,
+          reason: 'Expected implicit field is true.',
         );
       });
 
@@ -430,6 +470,115 @@ void main() {
           employeeDefinition.findField('_companyTableEmployeesCompanyTableId');
 
       expect(field, isNotNull);
+    });
+  });
+
+  group(
+      'Given a named list relation protocol ordered before the primary key protocol, when parsing the protocols',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('customer').withYaml(
+        '''
+        class: Customer
+        table: customer
+        fields:
+          name: String
+          orders: List<Order>?, relation(name=customer_order)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('order').withYaml(
+        '''
+        class: Order
+        table: order
+        fields:
+          description: String
+          customerId: int
+          customer: Customer?, relation(name=customer_order, field=customerId)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+    var classDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Customer');
+
+    var errors = collector.errors;
+
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    test('then customer has list orders field', () {
+      expect(classDefinition.findField('orders'), isNotNull);
+    });
+
+    test('then orders is list relation', () {
+      expect(classDefinition.findField('orders')?.relation.runtimeType,
+          ListRelationDefinition);
+    });
+  });
+
+  group(
+      'Given an unnamed list relation protocol linked to another protocol with an unname object relation, when parsing the protocols',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('customer').withYaml(
+        '''
+        class: Customer
+        table: customer
+        fields:
+          name: String
+          orders: List<Order>?, relation
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('order').withYaml(
+        '''
+        class: Order
+        table: order
+        fields:
+          description: String
+          customerId: int
+          customer: Customer?, relation(field=customerId)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+    var classDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Customer');
+
+    var errors = collector.errors;
+
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    test('then customer has list orders field', () {
+      expect(classDefinition.findField('orders'), isNotNull);
+    });
+
+    test('then orders is list relation', () {
+      expect(classDefinition.findField('orders')?.relation.runtimeType,
+          ListRelationDefinition);
+    });
+
+    test('then the list relation is NOT linked with the customerId field', () {
+      var relation = classDefinition.findField('orders')?.relation
+          as ListRelationDefinition;
+
+      expect(relation.foreignFieldName, isNot('customerId'));
     });
   });
 }

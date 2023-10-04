@@ -40,7 +40,7 @@ abstract class Town extends _i1.TableRow {
 
   static final t = TownTable();
 
-  static final db = TownRepository._();
+  static const db = TownRepository._();
 
   String name;
 
@@ -107,6 +107,7 @@ abstract class Town extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Town>> find(
     _i1.Session session, {
     TownExpressionBuilder? where,
@@ -132,6 +133,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Town?> findSingleRow(
     _i1.Session session, {
     TownExpressionBuilder? where,
@@ -153,6 +155,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<Town?> findById(
     _i1.Session session,
     int id, {
@@ -164,6 +167,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required TownExpressionBuilder where,
@@ -175,6 +179,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     Town row, {
@@ -186,6 +191,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     Town row, {
@@ -197,6 +203,8 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     Town row, {
@@ -208,6 +216,7 @@ abstract class Town extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     TownExpressionBuilder? where,
@@ -343,13 +352,155 @@ class TownInclude extends _i1.Include {
 class TownRepository {
   const TownRepository._();
 
-  final attach = const TownAttachRepository._();
+  final attachRow = const TownAttachRowRepository._();
 
-  final detach = const TownDetachRepository._();
+  final detachRow = const TownDetachRowRepository._();
+
+  Future<List<Town>> find(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.find<Town>(
+      where: where?.call(Town.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Town?> findRow(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.findRow<Town>(
+      where: where?.call(Town.t),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<Town?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+    TownInclude? include,
+  }) async {
+    return session.dbNext.findById<Town>(
+      id,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  Future<List<Town>> insert(
+    _i1.Session session,
+    List<Town> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Town>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<Town> insertRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<Town>> update(
+    _i1.Session session,
+    List<Town> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Town>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<Town> updateRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Town> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Town>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Town row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Town>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required TownExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Town>(
+      where: where(Town.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    TownExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Town>(
+      where: where?.call(Town.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
 
-class TownAttachRepository {
-  const TownAttachRepository._();
+class TownAttachRowRepository {
+  const TownAttachRowRepository._();
 
   Future<void> mayor(
     _i1.Session session,
@@ -364,15 +515,15 @@ class TownAttachRepository {
     }
 
     var $town = town.copyWith(mayorId: mayor.id);
-    await session.db.update(
+    await session.dbNext.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );
   }
 }
 
-class TownDetachRepository {
-  const TownDetachRepository._();
+class TownDetachRowRepository {
+  const TownDetachRowRepository._();
 
   Future<void> mayor(
     _i1.Session session,
@@ -383,7 +534,7 @@ class TownDetachRepository {
     }
 
     var $town = town.copyWith(mayorId: null);
-    await session.db.update(
+    await session.dbNext.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );

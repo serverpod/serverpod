@@ -39,6 +39,8 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
 
   static final t = ObjectFieldScopesTable();
 
+  static const db = ObjectFieldScopesRepository._();
+
   String normal;
 
   String? api;
@@ -103,6 +105,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectFieldScopes>> find(
     _i1.Session session, {
     ObjectFieldScopesExpressionBuilder? where,
@@ -126,6 +129,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectFieldScopes?> findSingleRow(
     _i1.Session session, {
     ObjectFieldScopesExpressionBuilder? where,
@@ -145,6 +149,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectFieldScopes?> findById(
     _i1.Session session,
     int id,
@@ -152,6 +157,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     return session.db.findById<ObjectFieldScopes>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectFieldScopesExpressionBuilder where,
@@ -163,6 +169,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -174,6 +181,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -185,6 +193,8 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -196,6 +206,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectFieldScopesExpressionBuilder? where,
@@ -290,4 +301,144 @@ class ObjectFieldScopesInclude extends _i1.Include {
 
   @override
   _i1.Table get table => ObjectFieldScopes.t;
+}
+
+class ObjectFieldScopesRepository {
+  const ObjectFieldScopesRepository._();
+
+  Future<List<ObjectFieldScopes>> find(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes?> findRow(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectFieldScopes>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectFieldScopes>> insert(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectFieldScopes>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes> insertRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectFieldScopes>> update(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectFieldScopes>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectFieldScopes> updateRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectFieldScopes>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectFieldScopes row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectFieldScopes>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectFieldScopesExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectFieldScopes>(
+      where: where(ObjectFieldScopes.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectFieldScopesExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

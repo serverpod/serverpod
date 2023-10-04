@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:retry/retry.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/database_connection_legacy.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_result.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../generated/protocol.dart';
 import '../server/session.dart';
@@ -19,131 +16,38 @@ import 'table.dart';
 /// the [Session] object should be used when connecting with the database.
 class DatabaseConnection {
   /// Database configuration.
-  final DatabasePoolManager poolManager;
+  final DatabasePoolManager _poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  late PgPool postgresConnection;
+  final PgPool _postgresConnection;
+
+  /// Access to legacy database methods.
+  // ignore: deprecated_member_use_from_same_package
+  late final DatabaseConnectionLegacy legacy;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
-  DatabaseConnection(this.poolManager) {
-    postgresConnection = poolManager.pool;
-  }
-
-  /// Returns a list of names of all tables in the current database.
-  Future<List<String>> getTableNames() async {
-    List<String> tableNames = <String>[];
-
-    var query = 'SELECT * FROM pg_catalog.pg_tables';
-    var result = await postgresConnection.mappedResultsQuery(
-      query,
-      allowReuse: false,
-      timeoutInSeconds: 60,
-      substitutionValues: {},
-    );
-
-    for (Map row in result) {
-      row = row.values.first;
-      if (row['schemaname'] == 'public') tableNames.add(row['tablename']);
-    }
-
-    return tableNames;
-  }
-
-  /// Returns a description for a table in the database.
-  Future<Table?> getTableDescription(String tableName) async {
-    var query =
-        'select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name =\'$tableName\'';
-    var result = await postgresConnection.mappedResultsQuery(
-      query,
-      allowReuse: false,
-      timeoutInSeconds: 60,
-      substitutionValues: {},
-    );
-    var columns = <Column>[];
-
-    var hasID = false;
-    for (Map row in result) {
-      row = row.values.first;
-      String? columnName = row['column_name'];
-      String? sqlType = row['data_type'];
-      int? varcharLength = row['character_maximum_length'];
-      var type = _sqlTypeToDartType(sqlType);
-
-      if (columnName == 'id' && type == int) hasID = true;
-
-      if (type == null) {
-        return null;
-      }
-
-      if (type == String) {
-        columns.add(ColumnString(columnName!, varcharLength: varcharLength));
-      } else if (type == int) {
-        columns.add(ColumnInt(columnName!));
-      } else if (type == double) {
-        columns.add(ColumnDouble(columnName!));
-      } else if (type == DateTime) {
-        columns.add(ColumnDateTime(columnName!));
-      }
-    }
-
-    if (!hasID) {
-      return null;
-    }
-
-    return Table(
-      tableName: tableName,
-      columns: columns,
-    );
-  }
-
-  Type? _sqlTypeToDartType(String? type) {
-    if (type == 'character varying' || type == 'text') return String;
-    if (type == 'integer') return int;
-    if (type == 'boolean') return bool;
-    if (type == 'double precision') return double;
-    if (type == 'timestamp without time zone' || type == 'date') {
-      return DateTime;
-    }
-    return null;
+  DatabaseConnection(this._poolManager)
+      : _postgresConnection = _poolManager.pool {
+    // ignore: deprecated_member_use_from_same_package
+    legacy = DatabaseConnectionLegacy(_poolManager, _logQuery);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findById<T extends TableRow>(
-    int id, {
-    required Session session,
-    Transaction? transaction,
-    Include? include,
-  }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'findById');
-    var result = await find<T>(
-      where: table.id.equals(id),
-      session: session,
-      transaction: transaction,
-      include: include,
-    );
-    if (result.isEmpty) return null;
-    return result[0];
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> find<T extends TableRow>({
+  Future<List<T>> find<T extends TableRow>(
+    Session session, {
     Expression? where,
     int? limit,
     int? offset,
     Column? orderBy,
-    List<Order>? orderByList,
     bool orderDescending = false,
-    bool useCache = true,
-    required Session session,
-    Transaction? transaction,
+    List<Order>? orderByList,
     Include? include,
+    Transaction? transaction,
   }) async {
     assert(orderByList == null || orderBy == null);
     var table = _getTableOrAssert<T>(session, operation: 'find');
-
-    var startTime = DateTime.now();
 
     if (orderBy != null) {
       // If order by is set then order by list is overriden.
@@ -161,458 +65,286 @@ class DatabaseConnection {
         .withInclude(include)
         .build();
 
-    List<TableRow?> list = <TableRow>[];
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      var result = await context.mappedResultsQuery(
-        query,
-        allowReuse: false,
-        timeoutInSeconds: 60,
-        substitutionValues: {},
-      );
-      for (var rawRow in result) {
-        var rawTableRow = resolvePrefixedQueryRow(
-          table,
-          rawRow,
-          include: include,
-        );
-
-        list.add(poolManager.serializationManager.deserialize<T>(rawTableRow));
-      }
-    } catch (e, trace) {
-      _logQuery(session, query, startTime, exception: e, trace: trace);
-      rethrow;
-    }
-
-    _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list.cast<T>();
+    return _deserializedMappedQuery<T>(
+      session,
+      query,
+      timeoutInSeconds: 60,
+      transaction: transaction,
+      include: include,
+      table: table,
+    );
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findSingleRow<T extends TableRow>({
+  Future<T?> findRow<T extends TableRow>(
+    Session session, {
     Expression? where,
     int? offset,
     Column? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    required Session session,
     Transaction? transaction,
     Include? include,
   }) async {
-    var result = await find<T>(
+    _getTableOrAssert<T>(session, operation: 'findRow');
+    var rows = await find<T>(
+      session,
       where: where,
+      offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
-      useCache: useCache,
       limit: 1,
-      offset: offset,
-      session: session,
       transaction: transaction,
       include: include,
     );
 
-    if (result.isEmpty) {
-      return null;
-    } else {
-      return result[0];
-    }
+    if (rows.isEmpty) return null;
+
+    return rows.first;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> count<T extends TableRow>({
+  Future<T?> findById<T extends TableRow>(
+    Session session,
+    int id, {
+    Transaction? transaction,
+    Include? include,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'findById');
+    return await findRow<T>(
+      session,
+      where: table.id.equals(id),
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> insert<T extends TableRow>(
+    Session session,
+    List<T> rows, {
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+
+    var table = rows.first.table;
+
+    var selectedColumns =
+        table.columns.where((column) => column.columnName != 'id');
+
+    var columnNames =
+        selectedColumns.map((e) => '"${e.columnName}"').join(', ');
+
+    var values = rows.map((row) => row.allToJson()).map((row) {
+      var values = selectedColumns.map((column) {
+        var unformattedValue = row[column.columnName];
+        return DatabasePoolManager.encoder.convert(unformattedValue);
+      }).join(', ');
+      return '($values)';
+    }).join(', ');
+
+    var query =
+        'INSERT INTO ${table.tableName} ($columnNames) VALUES $values RETURNING *';
+
+    var result =
+        await mappedResultsQuery(session, query, transaction: transaction);
+
+    return result
+        .map((t) => t[table.tableName])
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T> insertRow<T extends TableRow>(
+    Session session,
+    T row, {
+    Transaction? transaction,
+  }) async {
+    var result = await insert<T>(session, [row], transaction: transaction);
+
+    if (result.length != 1) {
+      throw PostgreSQLException(
+          'Failed to insert row, updated number of rows is ${result.length} != 1');
+    }
+
+    return result.first;
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<T>> update<T extends TableRow>(
+    Session session,
+    List<T> rows, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+    if (rows.any((column) => column.id == null)) {
+      throw ArgumentError.notNull('row.id');
+    }
+
+    var table = rows.first.table;
+
+    var selectedColumns = columns ?? table.columns;
+
+    if (columns != null) {
+      _validateColumnsExists(columns, table);
+      selectedColumns = [table.id, ...columns];
+    }
+
+    var selectedColumnNames = selectedColumns.map((e) => e.columnName);
+
+    var columnNames =
+        selectedColumnNames.map((columnName) => '"$columnName"').join(', ');
+
+    var values = _createQueryValueList(rows, selectedColumns);
+
+    var setColumns = selectedColumnNames
+        .where((columnName) => columnName != 'id')
+        .map((columnName) => '"$columnName" = data."$columnName"')
+        .join(', ');
+
+    selectedColumns.first.type.toString();
+
+    var query =
+        'UPDATE ${table.tableName} AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+
+    var result =
+        await mappedResultsQuery(session, query, transaction: transaction);
+
+    return result
+        .map((t) => t[table.tableName])
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<T> updateRow<T extends TableRow>(
+    Session session,
+    T row, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    var updated = await update<T>(
+      session,
+      [row],
+      columns: columns,
+      transaction: transaction,
+    );
+
+    if (updated.isEmpty) {
+      throw PostgreSQLException('Failed to update row, no rows updated');
+    }
+
+    return updated.first;
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<int>> delete<T extends TableRow>(
+    Session session,
+    List<T> rows, {
+    Transaction? transaction,
+  }) async {
+    if (rows.isEmpty) return [];
+    if (rows.any((column) => column.id == null)) {
+      throw ArgumentError.notNull('row.id');
+    }
+
+    var table = rows.first.table;
+
+    return deleteWhere<T>(
+      session,
+      table.id.inSet(rows.map((row) => row.id!).toSet()),
+    );
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<int> deleteRow<T extends TableRow>(
+    Session session,
+    T row, {
+    Transaction? transaction,
+  }) async {
+    var result = await delete<T>(
+      session,
+      [row],
+      transaction: transaction,
+    );
+
+    if (result.isEmpty) {
+      throw PostgreSQLException('Failed to delete row, no rows deleted.');
+    }
+
+    return result.first;
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<int>> deleteWhere<T extends TableRow>(
+    Session session,
+    Expression where, {
+    Transaction? transaction,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
+
+    var query = DeleteQueryBuilder(table: table.tableName)
+        .withReturn(Returning.id)
+        .withWhere(where)
+        .build();
+
+    var result = await this.query(session, query, transaction: transaction);
+
+    return result.toList().map((r) => r.first as int).toList();
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<int> count<T extends TableRow>(
+    Session session, {
     Expression? where,
     int? limit,
-    bool useCache = true,
-    required Session session,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'count');
 
-    var startTime = DateTime.now();
-
-    var tableName = table.tableName;
-    var query = CountQueryBuilder(table: tableName)
+    var query = CountQueryBuilder(table: table.tableName)
         .withCountAlias('c')
         .withWhere(where)
         .withLimit(limit)
         .build();
 
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
+    var result = await this.query(session, query, transaction: transaction);
 
-      var result =
-          await context.query(query, allowReuse: false, substitutionValues: {});
+    if (result.length != 1) return 0;
 
-      if (result.length != 1) return 0;
+    List rows = result.first;
+    if (rows.length != 1) return 0;
 
-      List returnedRow = result[0];
-      if (returnedRow.length != 1) return 0;
-
-      _logQuery(session, query, startTime, numRowsAffected: 1);
-      return returnedRow[0];
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> update(
-    TableRow row, {
-    required Session session,
-    List<Column>? columns,
-    Transaction? transaction,
-  }) async {
-    var startTime = DateTime.now();
-
-    var selectedColumns = columns ?? row.table.columns;
-    Map data = row.allToJson();
-
-    int? id = data['id'];
-    if (id == null) {
-      throw ArgumentError.notNull('row.id');
-    }
-
-    for (var column in selectedColumns) {
-      if (!data.containsKey(column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
-    }
-
-    var updates = selectedColumns
-        .where((column) => column.columnName != 'id')
-        .map((column) {
-      var value = DatabasePoolManager.encoder.convert(data[column.columnName]);
-      return '"${column.columnName}" = $value';
-    }).join(', ');
-
-    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
-
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      var affectedRows = await context.execute(query, substitutionValues: {});
-      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
-      return affectedRows == 1;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<void> insert(
-    TableRow row, {
-    required Session session,
-    Transaction? transaction,
-  }) async {
-    var startTime = DateTime.now();
-
-    Map data = row.allToJson();
-
-    for (var column in row.table.columns) {
-      if (!data.containsKey(column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
-    }
-
-    var selectedColumns = row.table.columns.where((column) {
-      return column.columnName != 'id';
-    });
-
-    var columns =
-        selectedColumns.map((column) => '"${column.columnName}"').join(', ');
-
-    var values = selectedColumns.map((column) {
-      var unformattedValue = data[column.columnName];
-      return DatabasePoolManager.encoder.convert(unformattedValue);
-    }).join(', ');
-
-    var query =
-        'INSERT INTO "${row.table.tableName}" ($columns) VALUES ($values) RETURNING id';
-
-    int insertedId;
-    try {
-      List<List<dynamic>> result;
-
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      result =
-          await context.query(query, allowReuse: false, substitutionValues: {});
-      if (result.length != 1) {
-        throw PostgreSQLException(
-            'Failed to insert row, updated number of rows is ${result.length} != 1');
-      }
-
-      var returnedRow = result[0];
-      if (returnedRow.length != 1) {
-        throw PostgreSQLException(
-            'Failed to insert row, updated number of columns is ${returnedRow.length} != 1');
-      }
-
-      insertedId = returnedRow[0];
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-
-    _logQuery(session, query, startTime, numRowsAffected: 1);
-
-    row.setColumn('id', insertedId);
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<int> delete<T extends TableRow>({
-    required Expression where,
-    required Session session,
-    Transaction? transaction,
-  }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'delete');
-
-    var startTime = DateTime.now();
-
-    var tableName = table.tableName;
-
-    var query = DeleteQueryBuilder(table: tableName).withWhere(where).build();
-
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      var affectedRows = await context.execute(query, substitutionValues: {});
-      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
-      return affectedRows;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<List<T>> deleteAndReturn<T extends TableRow>({
-    required Expression where,
-    required Session session,
-    Transaction? transaction,
-  }) async {
-    var table = _getTableOrAssert<T>(session, operation: 'deleteAndReturn');
-
-    var startTime = DateTime.now();
-
-    var tableName = table.tableName;
-    var query = DeleteQueryBuilder(table: tableName)
-        .withWhere(where)
-        .withReturnAll()
-        .build();
-
-    List<TableRow?> list = <TableRow>[];
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      var result = await context.mappedResultsQuery(
-        query,
-        allowReuse: false,
-        timeoutInSeconds: 60,
-        substitutionValues: {},
-      );
-      for (var rawRow in result) {
-        list.add(
-            poolManager.serializationManager.deserialize<T>(rawRow[tableName]));
-      }
-    } catch (e, trace) {
-      _logQuery(session, query, startTime, exception: e, trace: trace);
-      rethrow;
-    }
-
-    _logQuery(session, query, startTime, numRowsAffected: list.length);
-    return list.cast<T>();
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<bool> deleteRow(
-    TableRow row, {
-    required Session session,
-    Transaction? transaction,
-  }) async {
-    var startTime = DateTime.now();
-
-    var query = DeleteQueryBuilder(table: row.table.tableName)
-        .withWhere(Expression('id = ${row.id}'))
-        .build();
-
-    try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
-
-      var affectedRows = await context.execute(query, substitutionValues: {});
-      _logQuery(session, query, startTime, numRowsAffected: affectedRows);
-      return affectedRows == 1;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  Table _getTableOrAssert<T>(Session session, {required String operation}) {
-    var table = session.serverpod.serializationManager.getTableForType(T);
-    assert(table is Table, '''
-You need to specify a template type that is a subclass of TableRow.
-E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
-Current type was $T''');
-    return table!;
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<void> storeFile(String storageId, String path, ByteData byteData,
-      DateTime? expiration, bool verified,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
-      var encoded = byteData.base64encodedString();
-      query =
-          'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
-      await postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'addedTime': DateTime.now().toUtc(),
-          'expiration': expiration?.toUtc(),
-          'verified': verified,
-          // TODO: Use substitution value for the data for efficiency (seems not to work with the driver currently).
-          // 'byteData': byteData.buffer.asUint8List(),
-        },
-      );
-      _logQuery(session, query, startTime);
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// For most cases use the corresponding method in [Database] instead.
-  Future<ByteData?> retrieveFile(String storageId, String path,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      // query = 'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @byteData';
-      query =
-          'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
-
-      var result = await postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'verified': true,
-        },
-      );
-      _logQuery(session, query, startTime);
-      if (result.isNotEmpty) {
-        var encoded = (result.first.first as String).replaceAll('\n', '');
-        return ByteData.view(base64Decode(encoded).buffer);
-      }
-      return null;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// Returns true if the specified file has been successfully uploaded to the
-  /// database cloud storage.
-  Future<bool> verifyFile(String storageId, String path,
-      {required Session session}) async {
-    // Check so that the file is saved, but not
-    var startTime = DateTime.now();
-    var query =
-        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
-    try {
-      var result = await postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-        },
-      );
-      _logQuery(session, query, startTime);
-
-      if (result.isEmpty) return false;
-
-      var verified = result.first.first as bool;
-      if (verified) return false;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-
-    startTime = DateTime.now();
-    try {
-      var query =
-          'UPDATE serverpod_cloud_storage SET "verified"=@verified WHERE "storageId"=@storageId AND "path"=@path';
-      await postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'verified': true,
-        },
-      );
-      _logQuery(session, query, startTime);
-
-      return true;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
+    return rows.first;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<PostgreSQLResult> query(
+    Session session,
     String query, {
-    required Session session,
     int? timeoutInSeconds,
     Transaction? transaction,
+    Map<String, dynamic>? substitutionValues = const {},
   }) async {
     var startTime = DateTime.now();
 
     try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
+      var context = transaction?.postgresContext ?? _postgresConnection;
 
-      var result = await context.query(query,
-          allowReuse: false,
-          timeoutInSeconds: timeoutInSeconds,
-          substitutionValues: {});
-      _logQuery(session, query, startTime);
+      var result = await context.query(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: timeoutInSeconds,
+        substitutionValues: substitutionValues,
+      );
+
+      _logQuery(
+        session,
+        query,
+        startTime,
+        numRowsAffected: result.affectedRowCount,
+      );
       return result;
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
@@ -622,17 +354,15 @@ Current type was $T''');
 
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> execute(
+    Session session,
     String query, {
-    required Session session,
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
     var startTime = DateTime.now();
 
     try {
-      var context = transaction != null
-          ? transaction.postgresContext
-          : postgresConnection;
+      var context = transaction?.postgresContext ?? _postgresConnection;
 
       var result = await context.execute(
         query,
@@ -645,6 +375,63 @@ Current type was $T''');
       _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<List<Map<String, Map<String, dynamic>>>> mappedResultsQuery(
+    Session session,
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var startTime = DateTime.now();
+
+    try {
+      var context = transaction?.postgresContext ?? _postgresConnection;
+
+      var result = await context.mappedResultsQuery(
+        query,
+        allowReuse: false,
+        timeoutInSeconds: timeoutInSeconds,
+        substitutionValues: {},
+      );
+
+      _logQuery(
+        session,
+        query,
+        startTime,
+        numRowsAffected: result.length,
+      );
+      return result;
+    } catch (exception, trace) {
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
+      rethrow;
+    }
+  }
+
+  Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
+    Session session,
+    String query, {
+    required Table table,
+    int? timeoutInSeconds,
+    Transaction? transaction,
+    Include? include,
+  }) async {
+    var result = await mappedResultsQuery(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+
+    return result
+        .map((rawRow) => resolvePrefixedQueryRow(
+              table,
+              rawRow,
+              include: include,
+            ))
+        .map((row) => _poolManager.serializationManager.deserialize<T>(row))
+        .toList();
   }
 
   void _logQuery(
@@ -699,7 +486,7 @@ Current type was $T''');
     FutureOr<R> Function()? orElse,
     FutureOr<bool> Function(Exception exception)? retryIf,
   }) {
-    return postgresConnection.runTx<R>(
+    return _postgresConnection.runTx<R>(
       (ctx) {
         var transaction = Transaction._(ctx);
         return transactionFunction(transaction);
@@ -709,6 +496,62 @@ Current type was $T''');
       retryIf: retryIf,
     );
   }
+
+  void _validateColumnsExists(List<Column> columns, Table table) {
+    for (var column in columns) {
+      if (!table.columns.any((c) => c.columnName == column.columnName)) {
+        throw ArgumentError.value(
+          column,
+          column.columnName,
+          'does not exist in row',
+        );
+      }
+    }
+  }
+
+  String _createQueryValueList(
+    Iterable<TableRow> rows,
+    Iterable<Column> column,
+  ) {
+    return rows
+        .map((row) => row.allToJson() as Map<String, dynamic>)
+        .map((row) {
+      var values = column.map((column) {
+        var unformattedValue = row[column.columnName];
+
+        var formattedValue =
+            DatabasePoolManager.encoder.convert(unformattedValue);
+
+        return '$formattedValue::${_convertToPostgresType(column)}';
+      }).join(', ');
+
+      return '($values)';
+    }).join(', ');
+  }
+
+  String _convertToPostgresType(Column column) {
+    if (column is ColumnString) return 'text';
+    if (column is ColumnBool) return 'boolean';
+    if (column is ColumnInt) return 'integer';
+    if (column is ColumnEnum) return 'integer';
+    if (column is ColumnDouble) return 'double precision';
+    if (column is ColumnDateTime) return 'timestamp without time zone';
+    if (column is ColumnByteData) return 'bytea';
+    if (column is ColumnDuration) return 'bigint';
+    if (column is ColumnUuid) return 'uuid';
+    if (column is ColumnSerializable) return 'json';
+
+    return 'json';
+  }
+}
+
+Table _getTableOrAssert<T>(Session session, {required String operation}) {
+  var table = session.serverpod.serializationManager.getTableForType(T);
+  assert(table is Table, '''
+You need to specify a template type that is a subclass of TableRow.
+E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
+Current type was $T''');
+  return table!;
 }
 
 /// A function performing a transaction, passed to the transaction method.

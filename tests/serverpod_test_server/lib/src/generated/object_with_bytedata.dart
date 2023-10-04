@@ -33,6 +33,8 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static final t = ObjectWithByteDataTable();
 
+  static const db = ObjectWithByteDataRepository._();
+
   _i2.ByteData byteData;
 
   @override
@@ -84,6 +86,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithByteData>> find(
     _i1.Session session, {
     ObjectWithByteDataExpressionBuilder? where,
@@ -107,6 +110,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithByteData?> findSingleRow(
     _i1.Session session, {
     ObjectWithByteDataExpressionBuilder? where,
@@ -126,6 +130,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithByteData?> findById(
     _i1.Session session,
     int id,
@@ -133,6 +138,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     return session.db.findById<ObjectWithByteData>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithByteDataExpressionBuilder where,
@@ -144,6 +150,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithByteData row, {
@@ -155,6 +162,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithByteData row, {
@@ -166,6 +174,8 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithByteData row, {
@@ -177,6 +187,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithByteDataExpressionBuilder? where,
@@ -255,4 +266,144 @@ class ObjectWithByteDataInclude extends _i1.Include {
 
   @override
   _i1.Table get table => ObjectWithByteData.t;
+}
+
+class ObjectWithByteDataRepository {
+  const ObjectWithByteDataRepository._();
+
+  Future<List<ObjectWithByteData>> find(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData?> findRow(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithByteData>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithByteData>> insert(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithByteData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData> insertRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithByteData>> update(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithByteData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithByteData> updateRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithByteData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithByteData row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithByteData>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithByteDataExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithByteData>(
+      where: where(ObjectWithByteData.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithByteDataExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
