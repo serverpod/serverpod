@@ -149,7 +149,7 @@ class EntityDependencyResolver {
         : TypeDefinition.int;
 
     var foreignRelationField = SerializableEntityFieldDefinition(
-      name: _createImplicitForeignFieldName(fieldDefinition.name),
+      name: _createImplicitForeignIdFieldName(fieldDefinition.name),
       relation: ForeignRelationDefinition(
         name: relation.name,
         parentTable: tableName,
@@ -307,7 +307,7 @@ class EntityDependencyResolver {
         foreignFieldName = foreignField.name;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
         foreignFieldName = foreignRelation.fieldName ??
-            _createImplicitForeignFieldName(foreignField.name);
+            _createImplicitForeignIdFieldName(foreignField.name);
       }
 
       if (foreignFieldName == null) return;
@@ -321,7 +321,7 @@ class EntityDependencyResolver {
     }
   }
 
-  static String _createImplicitForeignFieldName(String fieldName) {
+  static String _createImplicitForeignIdFieldName(String fieldName) {
     return '${fieldName}Id';
   }
 }
