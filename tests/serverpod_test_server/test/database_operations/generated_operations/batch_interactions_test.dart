@@ -10,7 +10,6 @@ void main() {
 
   tearDown(() async => await client.databaseBatch.deleteAll());
   group('Given an empty database', () {
-    tearDown(() async => await client.databaseBatch.deleteAll());
     test(
         'when batch inserting then all the entries are created in the database.',
         () async {
@@ -75,8 +74,6 @@ void main() {
     late List<UniqueData> inserted;
 
     setUp(() async => inserted = await client.databaseBatch.batchInsert(data));
-
-    tearDown(() async => await client.databaseBatch.deleteAll());
 
     test('then the returned values contains the updates', () async {
       var firstNumber = 5;
