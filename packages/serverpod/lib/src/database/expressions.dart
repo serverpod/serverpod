@@ -378,7 +378,7 @@ abstract class _ColumnEnum<E extends Enum> extends Column<E> {
   _ColumnEnum(String name) : super(name);
 
   /// Overridden in subclasses
-  abstract String _encodeValueForQuery();
+  String _encodeValueForQuery(E value);
 
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
@@ -425,16 +425,18 @@ class ColumnEnumSerializedAsInteger<E extends Enum> extends _ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnEnumSerializedAsInteger(String name) : super(name);
 
-  @override String _encodeValueForQuery(E enumValue) => enumValue.index.toString();
+  @override
+  String _encodeValueForQuery(E enumValue) => enumValue.index.toString();
 }
 
 /// A [Column] holding an enum which is serialized to the database as a
 /// String (representing the enum value name).
-class ColumnEnumSerializedAsString<E extends Enum> extends Column {
+class ColumnEnumSerializedAsString<E extends Enum> extends _ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnumSerializedAsString(String name) : super(name, E);
+  ColumnEnumSerializedAsString(String name) : super(name);
 
-  @override String _encodeValueForQuery(E enumValue) => enumValue.name;
+  @override
+  String _encodeValueForQuery(E enumValue) => "'${enumValue.name}'";
 }
 
 /// A [Column] holding an [String].
