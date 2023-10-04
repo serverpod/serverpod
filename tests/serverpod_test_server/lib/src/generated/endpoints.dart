@@ -7698,7 +7698,7 @@ class Endpoints extends _i1.EndpointDispatch {
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['simple'] as _i32.SimpleEndpoint).hello(
+              (endpoints['simple'] as _i43.SimpleEndpoint).hello(
             session,
             params['name'],
           ),
