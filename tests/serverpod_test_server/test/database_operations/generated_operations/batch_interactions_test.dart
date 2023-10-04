@@ -32,10 +32,12 @@ void main() {
     test(
         'when batch inserting with one failing row then no entries are created in the database.',
         () async {
+      var email1 = 'info@serverpod.dev';
+      var email2 = 'dev@serverpod.dev';
       var data = <UniqueData>[
-        UniqueData(number: 2, email: 'info@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
-        UniqueData(number: 2, email: 'dev@serverpod.dev'),
+        UniqueData(number: 2, email: email1),
+        UniqueData(number: 2, email: email2),
+        UniqueData(number: 2, email: email2),
       ];
 
       expect(
@@ -43,10 +45,10 @@ void main() {
         throwsA(isA<ServerpodClientException>()),
       );
 
-      var first = await client.databaseBatch.findByEmail('info@serverpod.dev');
+      var first = await client.databaseBatch.findByEmail(email1);
       expect(first, isNull);
 
-      var second = await client.databaseBatch.findByEmail('dev@serverpod.dev');
+      var second = await client.databaseBatch.findByEmail(email2);
       expect(second, isNull);
     });
 
