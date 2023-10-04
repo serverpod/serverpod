@@ -121,7 +121,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> insert<T extends TableRow>(
     Session session,
-    List<TableRow> rows, {
+    List<T> rows, {
     Transaction? transaction,
   }) async {
     if (rows.isEmpty) return [];
@@ -157,7 +157,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> insertRow<T extends TableRow>(
     Session session,
-    TableRow row, {
+    T row, {
     Transaction? transaction,
   }) async {
     var result = await insert<T>(session, [row], transaction: transaction);
@@ -173,7 +173,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> update<T extends TableRow>(
     Session session,
-    List<TableRow> rows, {
+    List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
@@ -273,7 +273,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<T> updateRow<T extends TableRow>(
     Session session,
-    TableRow row, {
+    T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
@@ -294,7 +294,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<int>> delete<T extends TableRow>(
     Session session,
-    List<TableRow> rows, {
+    List<T> rows, {
     Transaction? transaction,
   }) async {
     if (rows.isEmpty) return [];
@@ -313,7 +313,7 @@ class DatabaseConnection {
   /// For most cases use the corresponding method in [Database] instead.
   Future<int> deleteRow<T extends TableRow>(
     Session session,
-    TableRow row, {
+    T row, {
     Transaction? transaction,
   }) async {
     var result = await delete<T>(
