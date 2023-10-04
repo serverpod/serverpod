@@ -257,13 +257,11 @@ class ObjectWithIndexTable extends _i1.Table {
   }) : super(tableName: 'object_with_index') {
     indexed = _i1.ColumnInt(
       'indexed',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     indexed2 = _i1.ColumnInt(
       'indexed2',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

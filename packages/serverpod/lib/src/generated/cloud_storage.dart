@@ -332,33 +332,27 @@ class CloudStorageEntryTable extends _i1.Table {
   }) : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
       'storageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     path = _i1.ColumnString(
       'path',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     addedTime = _i1.ColumnDateTime(
       'addedTime',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     expiration = _i1.ColumnDateTime(
       'expiration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     byteData = _i1.ColumnByteData(
       'byteData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     verified = _i1.ColumnBool(
       'verified',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

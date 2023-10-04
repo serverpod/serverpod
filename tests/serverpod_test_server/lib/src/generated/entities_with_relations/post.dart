@@ -297,13 +297,11 @@ class PostTable extends _i1.Table {
   }) : super(tableName: 'post') {
     content = _i1.ColumnString(
       'content',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nextId = _i1.ColumnInt(
       'nextId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

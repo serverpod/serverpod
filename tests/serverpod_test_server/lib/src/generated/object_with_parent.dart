@@ -239,8 +239,7 @@ class ObjectWithParentTable extends _i1.Table {
   }) : super(tableName: 'object_with_parent') {
     other = _i1.ColumnInt(
       'other',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

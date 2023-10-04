@@ -336,23 +336,19 @@ class CitizenTable extends _i1.Table {
   }) : super(tableName: 'citizen') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     companyId = _i1.ColumnInt(
       'companyId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     oldCompanyId = _i1.ColumnInt(
       'oldCompanyId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     $_companyEmployeesCompanyId = _i1.ColumnInt(
       '_companyEmployeesCompanyId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

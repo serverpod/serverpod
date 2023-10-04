@@ -310,28 +310,23 @@ class ObjectWithEnumTable extends _i1.Table {
   }) : super(tableName: 'object_with_enum') {
     testEnum = _i1.ColumnEnum<_i2.TestEnum>(
       'testEnum',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nullableEnum = _i1.ColumnEnum<_i2.TestEnum>(
       'nullableEnum',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     enumList = _i1.ColumnSerializable(
       'enumList',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nullableEnumList = _i1.ColumnSerializable(
       'nullableEnumList',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     enumListList = _i1.ColumnSerializable(
       'enumListList',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

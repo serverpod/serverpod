@@ -372,43 +372,35 @@ class UserInfoTable extends _i1.Table {
   }) : super(tableName: 'serverpod_user_info') {
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     userName = _i1.ColumnString(
       'userName',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     fullName = _i1.ColumnString(
       'fullName',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     email = _i1.ColumnString(
       'email',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     created = _i1.ColumnDateTime(
       'created',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     imageUrl = _i1.ColumnString(
       'imageUrl',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     scopeNames = _i1.ColumnSerializable(
       'scopeNames',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     blocked = _i1.ColumnBool(
       'blocked',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

@@ -299,23 +299,19 @@ class RuntimeSettingsTable extends _i1.Table {
   }) : super(tableName: 'serverpod_runtime_settings') {
     logSettings = _i1.ColumnSerializable(
       'logSettings',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     logSettingsOverrides = _i1.ColumnSerializable(
       'logSettingsOverrides',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     logServiceCalls = _i1.ColumnBool(
       'logServiceCalls',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     logMalformedCalls = _i1.ColumnBool(
       'logMalformedCalls',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

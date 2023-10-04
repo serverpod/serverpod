@@ -334,33 +334,27 @@ class ServerHealthMetricTable extends _i1.Table {
   }) : super(tableName: 'serverpod_health_metric') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     timestamp = _i1.ColumnDateTime(
       'timestamp',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     isHealthy = _i1.ColumnBool(
       'isHealthy',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     value = _i1.ColumnDouble(
       'value',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     granularity = _i1.ColumnInt(
       'granularity',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

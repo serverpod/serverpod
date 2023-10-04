@@ -243,8 +243,7 @@ class ReadWriteTestEntryTable extends _i1.Table {
   }) : super(tableName: 'serverpod_readwrite_test') {
     number = _i1.ColumnInt(
       'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

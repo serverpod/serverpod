@@ -241,8 +241,7 @@ class ObjectWithByteDataTable extends _i1.Table {
   }) : super(tableName: 'object_with_bytedata') {
     byteData = _i1.ColumnByteData(
       'byteData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

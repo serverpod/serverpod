@@ -242,8 +242,7 @@ class SimpleDataTable extends _i1.Table {
   }) : super(tableName: 'simple_data') {
     num = _i1.ColumnInt(
       'num',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

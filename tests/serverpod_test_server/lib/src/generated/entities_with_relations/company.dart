@@ -291,13 +291,11 @@ class CompanyTable extends _i1.Table {
   }) : super(tableName: 'company') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     townId = _i1.ColumnInt(
       'townId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

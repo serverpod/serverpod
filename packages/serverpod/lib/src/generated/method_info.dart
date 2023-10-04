@@ -259,13 +259,11 @@ class MethodInfoTable extends _i1.Table {
   }) : super(tableName: 'serverpod_method') {
     endpoint = _i1.ColumnString(
       'endpoint',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     method = _i1.ColumnString(
       'method',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

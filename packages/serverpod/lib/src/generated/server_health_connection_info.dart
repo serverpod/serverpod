@@ -334,33 +334,27 @@ class ServerHealthConnectionInfoTable extends _i1.Table {
   }) : super(tableName: 'serverpod_health_connection_info') {
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     timestamp = _i1.ColumnDateTime(
       'timestamp',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     active = _i1.ColumnInt(
       'active',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     closing = _i1.ColumnInt(
       'closing',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     idle = _i1.ColumnInt(
       'idle',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     granularity = _i1.ColumnInt(
       'granularity',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
