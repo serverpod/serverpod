@@ -22,10 +22,10 @@ void main() {
 
       expect(inserted, hasLength(2));
 
-      var simpleList = await client.databaseBatch.findAll();
+      var list = await client.databaseBatch.findAll();
 
-      expect(inserted.first.id, equals(simpleList.first.id));
-      expect(inserted.last.id, equals(simpleList.last.id));
+      expect(inserted.first.id, equals(list.first.id));
+      expect(inserted.last.id, equals(list.last.id));
     });
 
     test(
