@@ -564,6 +564,17 @@ class MessageLogEntryRepository {
     );
   }
 
+  Future<List<MessageLogEntry>> insert(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<MessageLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<MessageLogEntry> insertRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -575,6 +586,17 @@ class MessageLogEntryRepository {
     );
   }
 
+  Future<List<MessageLogEntry>> update(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<MessageLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<MessageLogEntry> updateRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -582,6 +604,17 @@ class MessageLogEntryRepository {
   }) async {
     return session.dbNext.updateRow<MessageLogEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<MessageLogEntry>(
+      rows,
       transaction: transaction,
     );
   }

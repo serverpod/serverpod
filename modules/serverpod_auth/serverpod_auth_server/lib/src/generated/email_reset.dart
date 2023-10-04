@@ -372,6 +372,17 @@ class EmailResetRepository {
     );
   }
 
+  Future<List<EmailReset>> insert(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<EmailReset>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailReset> insertRow(
     _i1.Session session,
     EmailReset row, {
@@ -383,6 +394,17 @@ class EmailResetRepository {
     );
   }
 
+  Future<List<EmailReset>> update(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<EmailReset>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailReset> updateRow(
     _i1.Session session,
     EmailReset row, {
@@ -390,6 +412,17 @@ class EmailResetRepository {
   }) async {
     return session.dbNext.updateRow<EmailReset>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<EmailReset>(
+      rows,
       transaction: transaction,
     );
   }

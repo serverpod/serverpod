@@ -319,6 +319,17 @@ class SimpleDateTimeRepository {
     );
   }
 
+  Future<List<SimpleDateTime>> insert(
+    _i1.Session session,
+    List<SimpleDateTime> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<SimpleDateTime>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<SimpleDateTime> insertRow(
     _i1.Session session,
     SimpleDateTime row, {
@@ -330,6 +341,17 @@ class SimpleDateTimeRepository {
     );
   }
 
+  Future<List<SimpleDateTime>> update(
+    _i1.Session session,
+    List<SimpleDateTime> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<SimpleDateTime>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<SimpleDateTime> updateRow(
     _i1.Session session,
     SimpleDateTime row, {
@@ -337,6 +359,17 @@ class SimpleDateTimeRepository {
   }) async {
     return session.dbNext.updateRow<SimpleDateTime>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<SimpleDateTime> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<SimpleDateTime>(
+      rows,
       transaction: transaction,
     );
   }

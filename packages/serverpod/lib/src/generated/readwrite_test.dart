@@ -320,6 +320,17 @@ class ReadWriteTestEntryRepository {
     );
   }
 
+  Future<List<ReadWriteTestEntry>> insert(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ReadWriteTestEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ReadWriteTestEntry> insertRow(
     _i1.Session session,
     ReadWriteTestEntry row, {
@@ -331,6 +342,17 @@ class ReadWriteTestEntryRepository {
     );
   }
 
+  Future<List<ReadWriteTestEntry>> update(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ReadWriteTestEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ReadWriteTestEntry> updateRow(
     _i1.Session session,
     ReadWriteTestEntry row, {
@@ -338,6 +360,17 @@ class ReadWriteTestEntryRepository {
   }) async {
     return session.dbNext.updateRow<ReadWriteTestEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ReadWriteTestEntry>(
+      rows,
       transaction: transaction,
     );
   }

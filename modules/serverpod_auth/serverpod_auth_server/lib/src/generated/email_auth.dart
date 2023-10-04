@@ -371,6 +371,17 @@ class EmailAuthRepository {
     );
   }
 
+  Future<List<EmailAuth>> insert(
+    _i1.Session session,
+    List<EmailAuth> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<EmailAuth>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailAuth> insertRow(
     _i1.Session session,
     EmailAuth row, {
@@ -382,6 +393,17 @@ class EmailAuthRepository {
     );
   }
 
+  Future<List<EmailAuth>> update(
+    _i1.Session session,
+    List<EmailAuth> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<EmailAuth>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailAuth> updateRow(
     _i1.Session session,
     EmailAuth row, {
@@ -389,6 +411,17 @@ class EmailAuthRepository {
   }) async {
     return session.dbNext.updateRow<EmailAuth>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<EmailAuth> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<EmailAuth>(
+      rows,
       transaction: transaction,
     );
   }

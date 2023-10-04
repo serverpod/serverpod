@@ -373,6 +373,17 @@ class ChatReadMessageRepository {
     );
   }
 
+  Future<List<ChatReadMessage>> insert(
+    _i1.Session session,
+    List<ChatReadMessage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ChatReadMessage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ChatReadMessage> insertRow(
     _i1.Session session,
     ChatReadMessage row, {
@@ -384,6 +395,17 @@ class ChatReadMessageRepository {
     );
   }
 
+  Future<List<ChatReadMessage>> update(
+    _i1.Session session,
+    List<ChatReadMessage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ChatReadMessage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ChatReadMessage> updateRow(
     _i1.Session session,
     ChatReadMessage row, {
@@ -391,6 +413,17 @@ class ChatReadMessageRepository {
   }) async {
     return session.dbNext.updateRow<ChatReadMessage>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ChatReadMessage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ChatReadMessage>(
+      rows,
       transaction: transaction,
     );
   }

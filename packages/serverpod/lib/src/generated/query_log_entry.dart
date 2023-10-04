@@ -564,6 +564,17 @@ class QueryLogEntryRepository {
     );
   }
 
+  Future<List<QueryLogEntry>> insert(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<QueryLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<QueryLogEntry> insertRow(
     _i1.Session session,
     QueryLogEntry row, {
@@ -575,6 +586,17 @@ class QueryLogEntryRepository {
     );
   }
 
+  Future<List<QueryLogEntry>> update(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<QueryLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<QueryLogEntry> updateRow(
     _i1.Session session,
     QueryLogEntry row, {
@@ -582,6 +604,17 @@ class QueryLogEntryRepository {
   }) async {
     return session.dbNext.updateRow<QueryLogEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<QueryLogEntry>(
+      rows,
       transaction: transaction,
     );
   }

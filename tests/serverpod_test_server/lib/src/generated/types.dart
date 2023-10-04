@@ -517,6 +517,17 @@ class TypesRepository {
     );
   }
 
+  Future<List<Types>> insert(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Types>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Types> insertRow(
     _i1.Session session,
     Types row, {
@@ -528,6 +539,17 @@ class TypesRepository {
     );
   }
 
+  Future<List<Types>> update(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Types>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Types> updateRow(
     _i1.Session session,
     Types row, {
@@ -535,6 +557,17 @@ class TypesRepository {
   }) async {
     return session.dbNext.updateRow<Types>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Types>(
+      rows,
       transaction: transaction,
     );
   }

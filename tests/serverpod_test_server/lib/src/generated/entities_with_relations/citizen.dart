@@ -553,6 +553,17 @@ class CitizenRepository {
     );
   }
 
+  Future<List<Citizen>> insert(
+    _i1.Session session,
+    List<Citizen> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Citizen>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Citizen> insertRow(
     _i1.Session session,
     Citizen row, {
@@ -564,6 +575,17 @@ class CitizenRepository {
     );
   }
 
+  Future<List<Citizen>> update(
+    _i1.Session session,
+    List<Citizen> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Citizen>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Citizen> updateRow(
     _i1.Session session,
     Citizen row, {
@@ -571,6 +593,17 @@ class CitizenRepository {
   }) async {
     return session.dbNext.updateRow<Citizen>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Citizen> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Citizen>(
+      rows,
       transaction: transaction,
     );
   }

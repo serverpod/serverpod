@@ -8,65 +8,54 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-/// Database bindings for a user image.
-abstract class UserImage extends _i1.TableRow {
-  UserImage._({
+abstract class UniqueData extends _i1.TableRow {
+  UniqueData._({
     int? id,
-    required this.userId,
-    required this.version,
-    required this.url,
+    required this.number,
+    required this.email,
   }) : super(id);
 
-  factory UserImage({
+  factory UniqueData({
     int? id,
-    required int userId,
-    required int version,
-    required String url,
-  }) = _UserImageImpl;
+    required int number,
+    required String email,
+  }) = _UniqueDataImpl;
 
-  factory UserImage.fromJson(
+  factory UniqueData.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return UserImage(
+    return UniqueData(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      version:
-          serializationManager.deserialize<int>(jsonSerialization['version']),
-      url: serializationManager.deserialize<String>(jsonSerialization['url']),
+      number:
+          serializationManager.deserialize<int>(jsonSerialization['number']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
     );
   }
 
-  static final t = UserImageTable();
+  static final t = UniqueDataTable();
 
-  static const db = UserImageRepository._();
+  static const db = UniqueDataRepository._();
 
-  /// The id of the user.
-  int userId;
+  int number;
 
-  /// Version of the image. Increased by one for every uploaded image.
-  int version;
-
-  /// The URL to the image.
-  String url;
+  String email;
 
   @override
   _i1.Table get table => t;
 
-  UserImage copyWith({
+  UniqueData copyWith({
     int? id,
-    int? userId,
-    int? version,
-    String? url,
+    int? number,
+    String? email,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -75,9 +64,8 @@ abstract class UserImage extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -85,9 +73,8 @@ abstract class UserImage extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -100,14 +87,11 @@ abstract class UserImage extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'userId':
-        userId = value;
+      case 'number':
+        number = value;
         return;
-      case 'version':
-        version = value;
-        return;
-      case 'url':
-        url = value;
+      case 'email':
+        email = value;
         return;
       default:
         throw UnimplementedError();
@@ -115,9 +99,9 @@ abstract class UserImage extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UserImage>> find(
+  static Future<List<UniqueData>> find(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -126,8 +110,8 @@ abstract class UserImage extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
+    return session.db.find<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -139,17 +123,17 @@ abstract class UserImage extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UserImage?> findSingleRow(
+  static Future<UniqueData?> findSingleRow(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
+    return session.db.findSingleRow<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -159,21 +143,21 @@ abstract class UserImage extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UserImage?> findById(
+  static Future<UniqueData?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<UserImage>(id);
+    return session.db.findById<UniqueData>(id);
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required UserImageExpressionBuilder where,
+    required UniqueDataExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<UserImage>(
-      where: where(UserImage.t),
+    return session.db.delete<UniqueData>(
+      where: where(UniqueData.t),
       transaction: transaction,
     );
   }
@@ -181,7 +165,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -193,7 +177,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -206,7 +190,7 @@ abstract class UserImage extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -218,116 +202,101 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
+    return session.db.count<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static UserImageInclude include() {
-    return UserImageInclude._();
+  static UniqueDataInclude include() {
+    return UniqueDataInclude._();
   }
 }
 
 class _Undefined {}
 
-class _UserImageImpl extends UserImage {
-  _UserImageImpl({
+class _UniqueDataImpl extends UniqueData {
+  _UniqueDataImpl({
     int? id,
-    required int userId,
-    required int version,
-    required String url,
+    required int number,
+    required String email,
   }) : super._(
           id: id,
-          userId: userId,
-          version: version,
-          url: url,
+          number: number,
+          email: email,
         );
 
   @override
-  UserImage copyWith({
+  UniqueData copyWith({
     Object? id = _Undefined,
-    int? userId,
-    int? version,
-    String? url,
+    int? number,
+    String? email,
   }) {
-    return UserImage(
+    return UniqueData(
       id: id is int? ? id : this.id,
-      userId: userId ?? this.userId,
-      version: version ?? this.version,
-      url: url ?? this.url,
+      number: number ?? this.number,
+      email: email ?? this.email,
     );
   }
 }
 
-typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
+typedef UniqueDataExpressionBuilder = _i1.Expression Function(UniqueDataTable);
 
-class UserImageTable extends _i1.Table {
-  UserImageTable({
+class UniqueDataTable extends _i1.Table {
+  UniqueDataTable({
     super.queryPrefix,
     super.tableRelations,
-  }) : super(tableName: 'serverpod_user_image') {
-    userId = _i1.ColumnInt(
-      'userId',
+  }) : super(tableName: 'unique_data') {
+    number = _i1.ColumnInt(
+      'number',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
-    version = _i1.ColumnInt(
-      'version',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
-    );
-    url = _i1.ColumnString(
-      'url',
+    email = _i1.ColumnString(
+      'email',
       queryPrefix: super.queryPrefix,
       tableRelations: super.tableRelations,
     );
   }
 
-  /// The id of the user.
-  late final _i1.ColumnInt userId;
+  late final _i1.ColumnInt number;
 
-  /// Version of the image. Increased by one for every uploaded image.
-  late final _i1.ColumnInt version;
-
-  /// The URL to the image.
-  late final _i1.ColumnString url;
+  late final _i1.ColumnString email;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        userId,
-        version,
-        url,
+        number,
+        email,
       ];
 }
 
-@Deprecated('Use UserImageTable.t instead.')
-UserImageTable tUserImage = UserImageTable();
+@Deprecated('Use UniqueDataTable.t instead.')
+UniqueDataTable tUniqueData = UniqueDataTable();
 
-class UserImageInclude extends _i1.Include {
-  UserImageInclude._();
+class UniqueDataInclude extends _i1.Include {
+  UniqueDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => UserImage.t;
+  _i1.Table get table => UniqueData.t;
 }
 
-class UserImageRepository {
-  const UserImageRepository._();
+class UniqueDataRepository {
+  const UniqueDataRepository._();
 
-  Future<List<UserImage>> find(
+  Future<List<UniqueData>> find(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -335,8 +304,8 @@ class UserImageRepository {
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<UserImage>(
-      where: where?.call(UserImage.t),
+    return session.dbNext.find<UniqueData>(
+      where: where?.call(UniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -346,70 +315,70 @@ class UserImageRepository {
     );
   }
 
-  Future<UserImage?> findRow(
+  Future<UniqueData?> findRow(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UserImage>(
-      where: where?.call(UserImage.t),
+    return session.dbNext.findRow<UniqueData>(
+      where: where?.call(UniqueData.t),
       transaction: transaction,
     );
   }
 
-  Future<UserImage?> findById(
+  Future<UniqueData?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<UserImage>(
+    return session.dbNext.findById<UniqueData>(
       id,
       transaction: transaction,
     );
   }
 
-  Future<List<UserImage>> insert(
+  Future<List<UniqueData>> insert(
     _i1.Session session,
-    List<UserImage> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserImage>(
+    return session.dbNext.insert<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<UserImage> insertRow(
+  Future<UniqueData> insertRow(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserImage>(
+    return session.dbNext.insertRow<UniqueData>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<UserImage>> update(
+  Future<List<UniqueData>> update(
     _i1.Session session,
-    List<UserImage> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserImage>(
+    return session.dbNext.update<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<UserImage> updateRow(
+  Future<UniqueData> updateRow(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserImage>(
+    return session.dbNext.updateRow<UniqueData>(
       row,
       transaction: transaction,
     );
@@ -417,10 +386,10 @@ class UserImageRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<UserImage> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserImage>(
+    return session.dbNext.delete<UniqueData>(
       rows,
       transaction: transaction,
     );
@@ -428,10 +397,10 @@ class UserImageRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    UserImage row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserImage>(
+    return session.dbNext.deleteRow<UniqueData>(
       row,
       transaction: transaction,
     );
@@ -439,23 +408,23 @@ class UserImageRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required UserImageExpressionBuilder where,
+    required UniqueDataExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserImage>(
-      where: where(UserImage.t),
+    return session.dbNext.deleteWhere<UniqueData>(
+      where: where(UniqueData.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserImage>(
-      where: where?.call(UserImage.t),
+    return session.dbNext.count<UniqueData>(
+      where: where?.call(UniqueData.t),
       limit: limit,
       transaction: transaction,
     );

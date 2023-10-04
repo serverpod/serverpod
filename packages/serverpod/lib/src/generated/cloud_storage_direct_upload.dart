@@ -400,6 +400,17 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  Future<List<CloudStorageDirectUploadEntry>> insert(
+    _i1.Session session,
+    List<CloudStorageDirectUploadEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<CloudStorageDirectUploadEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<CloudStorageDirectUploadEntry> insertRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
@@ -411,6 +422,17 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
+  Future<List<CloudStorageDirectUploadEntry>> update(
+    _i1.Session session,
+    List<CloudStorageDirectUploadEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<CloudStorageDirectUploadEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<CloudStorageDirectUploadEntry> updateRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
@@ -418,6 +440,17 @@ class CloudStorageDirectUploadEntryRepository {
   }) async {
     return session.dbNext.updateRow<CloudStorageDirectUploadEntry>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<CloudStorageDirectUploadEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<CloudStorageDirectUploadEntry>(
+      rows,
       transaction: transaction,
     );
   }

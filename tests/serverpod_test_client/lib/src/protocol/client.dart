@@ -23,23 +23,26 @@ import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
     as _i13;
 import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
     as _i14;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/citizen.dart'
-    as _i15;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/address.dart'
+import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i15;
+import 'package:serverpod_test_client/src/protocol/related_unique_data.dart'
     as _i16;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/citizen.dart'
     as _i17;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/company.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/address.dart'
     as _i18;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/town.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/post.dart'
     as _i19;
-import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/company.dart'
     as _i20;
-import 'package:serverpod_test_module_client/module.dart' as _i21;
-import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/town.dart'
+    as _i21;
+import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i22;
-import 'dart:io' as _i23;
-import 'protocol.dart' as _i24;
+import 'package:serverpod_test_module_client/module.dart' as _i23;
+import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
+    as _i24;
+import 'dart:io' as _i25;
+import 'protocol.dart' as _i26;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2198,6 +2201,178 @@ class EndpointBasicDatabaseLegacy extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointDatabaseBatch extends _i1.EndpointRef {
+  EndpointDatabaseBatch(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'databaseBatch';
+
+  _i2.Future<List<_i15.UniqueData>> batchInsert(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatch',
+        'batchInsert',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchInsertTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatch',
+        'batchInsertTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> batchUpdate(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatch',
+        'batchUpdate',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchUpdateTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatch',
+        'batchUpdateTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> batchUpdateWithInvalidColumn(
+          List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatch',
+        'batchUpdateWithInvalidColumn',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> batchUpdateNumberOnly(
+          List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatch',
+        'batchUpdateNumberOnly',
+        {'value': value},
+      );
+
+  _i2.Future<List<int>> batchDelete(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<int>>(
+        'databaseBatch',
+        'batchDelete',
+        {'value': value},
+      );
+
+  _i2.Future<_i16.RelatedUniqueData> insertRelatedUniqueData(
+          _i16.RelatedUniqueData value) =>
+      caller.callServerEndpoint<_i16.RelatedUniqueData>(
+        'databaseBatch',
+        'insertRelatedUniqueData',
+        {'value': value},
+      );
+
+  _i2.Future<_i15.UniqueData?> findByEmail(String email) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatch',
+        'findByEmail',
+        {'email': email},
+      );
+
+  _i2.Future<_i15.UniqueData?> findById(int id) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatch',
+        'findById',
+        {'id': id},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> findAll() =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatch',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<void> deleteAll() => caller.callServerEndpoint<void>(
+        'databaseBatch',
+        'deleteAll',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointDatabaseBatchGenerated extends _i1.EndpointRef {
+  EndpointDatabaseBatchGenerated(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'databaseBatchGenerated';
+
+  _i2.Future<List<_i15.UniqueData>> batchInsert(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'batchInsert',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchInsertTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatchGenerated',
+        'batchInsertTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> batchUpdate(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'batchUpdate',
+        {'value': value},
+      );
+
+  _i2.Future<List<_i6.Types>> batchUpdateTypes(List<_i6.Types> value) =>
+      caller.callServerEndpoint<List<_i6.Types>>(
+        'databaseBatchGenerated',
+        'batchUpdateTypes',
+        {'value': value},
+      );
+
+  _i2.Future<List<int>> batchDelete(List<_i15.UniqueData> value) =>
+      caller.callServerEndpoint<List<int>>(
+        'databaseBatchGenerated',
+        'batchDelete',
+        {'value': value},
+      );
+
+  _i2.Future<_i16.RelatedUniqueData> insertRelatedUniqueData(
+          _i16.RelatedUniqueData value) =>
+      caller.callServerEndpoint<_i16.RelatedUniqueData>(
+        'databaseBatchGenerated',
+        'insertRelatedUniqueData',
+        {'value': value},
+      );
+
+  _i2.Future<_i15.UniqueData?> findByEmail(String email) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatchGenerated',
+        'findByEmail',
+        {'email': email},
+      );
+
+  _i2.Future<_i15.UniqueData?> findById(int id) =>
+      caller.callServerEndpoint<_i15.UniqueData?>(
+        'databaseBatchGenerated',
+        'findById',
+        {'id': id},
+      );
+
+  _i2.Future<List<_i15.UniqueData>> findAll() =>
+      caller.callServerEndpoint<List<_i15.UniqueData>>(
+        'databaseBatchGenerated',
+        'findAll',
+        {},
+      );
+
+  _i2.Future<void> deleteAll() => caller.callServerEndpoint<void>(
+        'databaseBatchGenerated',
+        'deleteAll',
+        {},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointTransactionsDatabase extends _i1.EndpointRef {
   EndpointTransactionsDatabase(_i1.EndpointCaller caller) : super(caller);
 
@@ -2233,31 +2408,31 @@ class EndpointRelation extends _i1.EndpointRef {
   @override
   String get name => 'relation';
 
-  _i2.Future<List<_i15.Citizen>> citizenFindWhereCompanyNameIs(
+  _i2.Future<List<_i17.Citizen>> citizenFindWhereCompanyNameIs(
           {required String companyName}) =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindWhereCompanyNameIs',
         {'companyName': companyName},
       );
 
-  _i2.Future<List<_i15.Citizen>> citizenFindWhereCompanyTownNameIs(
+  _i2.Future<List<_i17.Citizen>> citizenFindWhereCompanyTownNameIs(
           {required String townName}) =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindWhereCompanyTownNameIs',
         {'townName': townName},
       );
 
-  _i2.Future<List<_i15.Citizen>> citizenFindOrderedByCompanyName() =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+  _i2.Future<List<_i17.Citizen>> citizenFindOrderedByCompanyName() =>
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindOrderedByCompanyName',
         {},
       );
 
-  _i2.Future<List<_i15.Citizen>> citizenFindOrderedByCompanyTownName() =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+  _i2.Future<List<_i17.Citizen>> citizenFindOrderedByCompanyTownName() =>
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindOrderedByCompanyTownName',
         {},
@@ -2295,69 +2470,69 @@ class EndpointRelation extends _i1.EndpointRef {
         {'townName': townName},
       );
 
-  _i2.Future<List<_i15.Citizen>> citizenFindAll() =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+  _i2.Future<List<_i17.Citizen>> citizenFindAll() =>
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindAll',
         {},
       );
 
   /// Includes company and oldCompany and their respective towns
-  _i2.Future<List<_i15.Citizen>> citizenFindAllWithDeepIncludes() =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+  _i2.Future<List<_i17.Citizen>> citizenFindAllWithDeepIncludes() =>
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindAllWithDeepIncludes',
         {},
       );
 
   /// Includes the address
-  _i2.Future<List<_i15.Citizen>>
+  _i2.Future<List<_i17.Citizen>>
       citizenFindAllWithNamedRelationNoneOriginSide() =>
-          caller.callServerEndpoint<List<_i15.Citizen>>(
+          caller.callServerEndpoint<List<_i17.Citizen>>(
             'relation',
             'citizenFindAllWithNamedRelationNoneOriginSide',
             {},
           );
 
   /// Includes company and oldCompany
-  _i2.Future<List<_i15.Citizen>> citizenFindAllWithShallowIncludes() =>
-      caller.callServerEndpoint<List<_i15.Citizen>>(
+  _i2.Future<List<_i17.Citizen>> citizenFindAllWithShallowIncludes() =>
+      caller.callServerEndpoint<List<_i17.Citizen>>(
         'relation',
         'citizenFindAllWithShallowIncludes',
         {},
       );
 
-  _i2.Future<_i15.Citizen?> citizenFindByIdWithIncludes(int id) =>
-      caller.callServerEndpoint<_i15.Citizen?>(
+  _i2.Future<_i17.Citizen?> citizenFindByIdWithIncludes(int id) =>
+      caller.callServerEndpoint<_i17.Citizen?>(
         'relation',
         'citizenFindByIdWithIncludes',
         {'id': id},
       );
 
-  _i2.Future<List<_i16.Address>> addressFindAll() =>
-      caller.callServerEndpoint<List<_i16.Address>>(
+  _i2.Future<List<_i18.Address>> addressFindAll() =>
+      caller.callServerEndpoint<List<_i18.Address>>(
         'relation',
         'addressFindAll',
         {},
       );
 
-  _i2.Future<_i16.Address?> addressFindById(int id) =>
-      caller.callServerEndpoint<_i16.Address?>(
+  _i2.Future<_i18.Address?> addressFindById(int id) =>
+      caller.callServerEndpoint<_i18.Address?>(
         'relation',
         'addressFindById',
         {'id': id},
       );
 
-  _i2.Future<List<_i17.Post>> findAllPostsIncludingNextAndPrevious() =>
-      caller.callServerEndpoint<List<_i17.Post>>(
+  _i2.Future<List<_i19.Post>> findAllPostsIncludingNextAndPrevious() =>
+      caller.callServerEndpoint<List<_i19.Post>>(
         'relation',
         'findAllPostsIncludingNextAndPrevious',
         {},
       );
 
   _i2.Future<void> citizenAttachCompany(
-    _i15.Citizen citizen,
-    _i18.Company company,
+    _i17.Citizen citizen,
+    _i20.Company company,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -2369,8 +2544,8 @@ class EndpointRelation extends _i1.EndpointRef {
       );
 
   _i2.Future<void> citizenAttachAddress(
-    _i15.Citizen citizen,
-    _i16.Address address,
+    _i17.Citizen citizen,
+    _i18.Address address,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -2381,7 +2556,7 @@ class EndpointRelation extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<void> citizenDetachAddress(_i15.Citizen citizen) =>
+  _i2.Future<void> citizenDetachAddress(_i17.Citizen citizen) =>
       caller.callServerEndpoint<void>(
         'relation',
         'citizenDetachAddress',
@@ -2389,8 +2564,8 @@ class EndpointRelation extends _i1.EndpointRef {
       );
 
   _i2.Future<void> addressAttachCitizen(
-    _i16.Address address,
-    _i15.Citizen citizen,
+    _i18.Address address,
+    _i17.Citizen citizen,
   ) =>
       caller.callServerEndpoint<void>(
         'relation',
@@ -2401,49 +2576,49 @@ class EndpointRelation extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<void> addressDetachCitizen(_i16.Address address) =>
+  _i2.Future<void> addressDetachCitizen(_i18.Address address) =>
       caller.callServerEndpoint<void>(
         'relation',
         'addressDetachCitizen',
         {'address': address},
       );
 
-  _i2.Future<List<_i18.Company>> companyFindAll() =>
-      caller.callServerEndpoint<List<_i18.Company>>(
+  _i2.Future<List<_i20.Company>> companyFindAll() =>
+      caller.callServerEndpoint<List<_i20.Company>>(
         'relation',
         'companyFindAll',
         {},
       );
 
-  _i2.Future<int?> citizenInsert(_i15.Citizen citizen) =>
+  _i2.Future<int?> citizenInsert(_i17.Citizen citizen) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'citizenInsert',
         {'citizen': citizen},
       );
 
-  _i2.Future<int?> companyInsert(_i18.Company company) =>
+  _i2.Future<int?> companyInsert(_i20.Company company) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'companyInsert',
         {'company': company},
       );
 
-  _i2.Future<int?> townInsert(_i19.Town town) =>
+  _i2.Future<int?> townInsert(_i21.Town town) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'townInsert',
         {'town': town},
       );
 
-  _i2.Future<int?> addressInsert(_i16.Address address) =>
+  _i2.Future<int?> addressInsert(_i18.Address address) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'addressInsert',
         {'address': address},
       );
 
-  _i2.Future<int?> postInsert(_i17.Post post) =>
+  _i2.Future<int?> postInsert(_i19.Post post) =>
       caller.callServerEndpoint<int?>(
         'relation',
         'postInsert',
@@ -2532,15 +2707,15 @@ class EndpointFieldScopes extends _i1.EndpointRef {
   @override
   String get name => 'fieldScopes';
 
-  _i2.Future<void> storeObject(_i20.ObjectFieldScopes object) =>
+  _i2.Future<void> storeObject(_i22.ObjectFieldScopes object) =>
       caller.callServerEndpoint<void>(
         'fieldScopes',
         'storeObject',
         {'object': object},
       );
 
-  _i2.Future<_i20.ObjectFieldScopes?> retrieveObject() =>
-      caller.callServerEndpoint<_i20.ObjectFieldScopes?>(
+  _i2.Future<_i22.ObjectFieldScopes?> retrieveObject() =>
+      caller.callServerEndpoint<_i22.ObjectFieldScopes?>(
         'fieldScopes',
         'retrieveObject',
         {},
@@ -3001,15 +3176,15 @@ class EndpointModuleSerialization extends _i1.EndpointRef {
         {},
       );
 
-  _i2.Future<_i21.ModuleClass> modifyModuleObject(_i21.ModuleClass object) =>
-      caller.callServerEndpoint<_i21.ModuleClass>(
+  _i2.Future<_i23.ModuleClass> modifyModuleObject(_i23.ModuleClass object) =>
+      caller.callServerEndpoint<_i23.ModuleClass>(
         'moduleSerialization',
         'modifyModuleObject',
         {'object': object},
       );
 
-  _i2.Future<_i22.ModuleDatatype> serializeNestedModuleObject() =>
-      caller.callServerEndpoint<_i22.ModuleDatatype>(
+  _i2.Future<_i24.ModuleDatatype> serializeNestedModuleObject() =>
+      caller.callServerEndpoint<_i24.ModuleDatatype>(
         'moduleSerialization',
         'serializeNestedModuleObject',
         {},
@@ -3247,11 +3422,11 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i21.Caller(client);
+    module = _i23.Caller(client);
     auth = _i3.Caller(client);
   }
 
-  late final _i21.Caller module;
+  late final _i23.Caller module;
 
   late final _i3.Caller auth;
 }
@@ -3259,11 +3434,11 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i23.SecurityContext? context,
+    _i25.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
   }) : super(
           host,
-          _i24.Protocol(),
+          _i26.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
         ) {
@@ -3291,6 +3466,8 @@ class Client extends _i1.ServerpodClient {
     customTypes = EndpointCustomTypes(this);
     basicDatabase = EndpointBasicDatabase(this);
     basicDatabaseLegacy = EndpointBasicDatabaseLegacy(this);
+    databaseBatch = EndpointDatabaseBatch(this);
+    databaseBatchGenerated = EndpointDatabaseBatchGenerated(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
     relation = EndpointRelation(this);
     exceptionTest = EndpointExceptionTest(this);
@@ -3362,6 +3539,10 @@ class Client extends _i1.ServerpodClient {
 
   late final EndpointBasicDatabaseLegacy basicDatabaseLegacy;
 
+  late final EndpointDatabaseBatch databaseBatch;
+
+  late final EndpointDatabaseBatchGenerated databaseBatchGenerated;
+
   late final EndpointTransactionsDatabase transactionsDatabase;
 
   late final EndpointRelation relation;
@@ -3430,6 +3611,8 @@ class Client extends _i1.ServerpodClient {
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
         'basicDatabaseLegacy': basicDatabaseLegacy,
+        'databaseBatch': databaseBatch,
+        'databaseBatchGenerated': databaseBatchGenerated,
         'transactionsDatabase': transactionsDatabase,
         'relation': relation,
         'exceptionTest': exceptionTest,

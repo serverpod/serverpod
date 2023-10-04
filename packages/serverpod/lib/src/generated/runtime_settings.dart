@@ -403,6 +403,17 @@ class RuntimeSettingsRepository {
     );
   }
 
+  Future<List<RuntimeSettings>> insert(
+    _i1.Session session,
+    List<RuntimeSettings> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<RuntimeSettings>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<RuntimeSettings> insertRow(
     _i1.Session session,
     RuntimeSettings row, {
@@ -414,6 +425,17 @@ class RuntimeSettingsRepository {
     );
   }
 
+  Future<List<RuntimeSettings>> update(
+    _i1.Session session,
+    List<RuntimeSettings> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<RuntimeSettings>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<RuntimeSettings> updateRow(
     _i1.Session session,
     RuntimeSettings row, {
@@ -421,6 +443,17 @@ class RuntimeSettingsRepository {
   }) async {
     return session.dbNext.updateRow<RuntimeSettings>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<RuntimeSettings> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<RuntimeSettings>(
+      rows,
       transaction: transaction,
     );
   }
