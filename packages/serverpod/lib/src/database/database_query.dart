@@ -317,9 +317,9 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
   var columnsWithTableRelations =
-      columns.where((column) => column.tableRelations != null);
+      columns.where((column) => column.table.tableRelations != null);
   for (var column in columnsWithTableRelations) {
-    for (var tableRelation in column.tableRelations!) {
+    for (var tableRelation in column.table.tableRelations!) {
       joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
     }
   }

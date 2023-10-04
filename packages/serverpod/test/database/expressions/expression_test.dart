@@ -3,6 +3,7 @@ import 'package:serverpod/src/database/expressions.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var testTable = Table(tableName: 'test');
   group('Given one expression', () {
     var expressionString = 'true = true';
     var expression = Expression(expressionString);
@@ -62,8 +63,8 @@ void main() {
   group(
       'Given two columns right combined using two part expressions when retrieving columns',
       () {
-    ColumnString firstColumn = ColumnString('test 1');
-    ColumnString secondColumn = ColumnString('test 2');
+    ColumnString firstColumn = ColumnString('test 1', testTable);
+    ColumnString secondColumn = ColumnString('test 2', testTable);
     Expression expression = firstColumn.equals('test 1') &
         (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
@@ -89,8 +90,8 @@ void main() {
   group(
       'Given two columns left combined using two part expressions when retrieving columns',
       () {
-    ColumnString firstColumn = ColumnString('test 1');
-    ColumnString secondColumn = ColumnString('test 2');
+    ColumnString firstColumn = ColumnString('test 1', testTable);
+    ColumnString secondColumn = ColumnString('test 2', testTable);
     Expression expression =
         (secondColumn.like('test 2') | firstColumn.equals('test 1')) &
             firstColumn.equals('test 1');
@@ -115,7 +116,7 @@ void main() {
   });
 
   group('Given column BETWEEN expression when retrieving columns', () {
-    ColumnInt column = ColumnInt('test 1');
+    ColumnInt column = ColumnInt('test 1', testTable);
     Expression expression = column.between(1, 2);
 
     List<Column> columns = expression.columns;
@@ -130,7 +131,7 @@ void main() {
   });
 
   group('Given column IN SET expression when retrieving columns', () {
-    ColumnInt column = ColumnInt('test 1');
+    ColumnInt column = ColumnInt('test 1', testTable);
     Expression expression = column.inSet(<int>{1, 2});
 
     List<Column> columns = expression.columns;
@@ -147,7 +148,7 @@ void main() {
   group(
       'Given column in BETWEEN and two part expression when retrieving columns',
       () {
-    ColumnInt column = ColumnInt('test 1');
+    ColumnInt column = ColumnInt('test 1', testTable);
     Expression constant = Constant.bool(true);
     Expression expression = column.between(1, 2) & constant;
 

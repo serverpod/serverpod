@@ -4,12 +4,12 @@ import 'package:test/test.dart';
 void main() {
   group('Given a ColumnString', () {
     var columnName = 'name';
-    var column = ColumnString(columnName);
+    var column = ColumnString(columnName, Table(tableName: 'test'));
 
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(column.toString(), '"$columnName"');
+      expect(column.toString(), 'test."$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {

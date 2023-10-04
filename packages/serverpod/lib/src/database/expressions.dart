@@ -141,8 +141,7 @@ class Table {
     _columns = columns;
     id = ColumnInt(
       'id',
-      queryPrefix: this.queryPrefix,
-      tableRelations: tableRelations,
+      this,
     );
   }
 
