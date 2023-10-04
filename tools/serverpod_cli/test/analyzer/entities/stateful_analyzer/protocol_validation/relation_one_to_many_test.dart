@@ -578,7 +578,7 @@ void main() {
       var relation = classDefinition.findField('orders')?.relation
           as ListRelationDefinition;
 
-      expect(relation.foreignFieldName, isNot('companyId'));
+      expect(relation.foreignFieldName, isNot('customerId'));
     });
   });
 }
