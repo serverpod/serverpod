@@ -104,8 +104,10 @@ class OpenApiDefinition {
     Set<PathsObject> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
+    var classDefinitionList =
+        protocolDefinition.entities.whereType<ClassDefinition>().toList();
     Set<ComponentSchemaObject> schemas =
-        _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
+        _getSchemaObjectFromClassDefinitions(classDefinitionList);
 
     ComponentsObject componentsObject = ComponentsObject(schemas: schemas);
 

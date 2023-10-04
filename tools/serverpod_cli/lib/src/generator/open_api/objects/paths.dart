@@ -95,8 +95,8 @@ class PathItemObject {
   factory PathItemObject.fromMethod(MethodDefinition method, String tag) {
     String? description = method.documentationComment;
 
-    /// Method name is operationId
-    String operationId = method.name;
+    /// Method name is operationId + Tag
+    String operationId = method.name + tag.pascalCase;
     ResponseObject responseObject = ResponseObject(
       responseType: ContentObject(
         contentTypes: [ContentType.applicationJson],
