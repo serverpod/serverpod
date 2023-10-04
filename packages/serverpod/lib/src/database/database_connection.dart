@@ -184,17 +184,11 @@ class DatabaseConnection {
 
     var table = rows.first.table;
 
-    if (columns != null) {
-      _validateColumnsExists(columns, table);
-    }
-
     var selectedColumns = columns ?? table.columns;
 
     if (columns != null) {
-      var idColumn = table.columns.firstWhere(
-        (column) => column.columnName == 'id',
-      );
-      selectedColumns = [idColumn, ...columns];
+      _validateColumnsExists(columns, table);
+      selectedColumns = [table.id, ...columns];
     }
 
     var selectedColumnNames = selectedColumns.map((e) => e.columnName);
