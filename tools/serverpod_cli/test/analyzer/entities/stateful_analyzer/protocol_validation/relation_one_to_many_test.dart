@@ -493,7 +493,7 @@ void main() {
         fields:
           description: String
           customerId: int
-          company: Customer?, relation(name=customer_order, field=customerId)
+          customer: Customer?, relation(name=customer_order, field=customerId)
         ''',
       ).build(),
     ];
@@ -544,7 +544,7 @@ void main() {
         fields:
           description: String
           customerId: int
-          company: Customer?, relation(field=customerId)
+          customer: Customer?, relation(field=customerId)
         ''',
       ).build(),
     ];
