@@ -574,7 +574,7 @@ void main() {
           ListRelationDefinition);
     });
 
-    test('then the list relation is NOT linked with the companyId field', () {
+    test('then the list relation is NOT linked with the customerId field', () {
       var relation = classDefinition.findField('orders')?.relation
           as ListRelationDefinition;
 
