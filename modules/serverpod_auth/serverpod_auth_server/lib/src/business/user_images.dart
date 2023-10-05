@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -22,19 +23,20 @@ class UserImages {
   /// Sets a user's image from image data. The image is resized before being
   /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(
-      Session session, int userId, Uint8List bytes) async {
-    var image = decodeImage(bytes);
-    if (image == null) return false;
+          Session session, int userId, Uint8List bytes) =>
+      Isolate.run(() async {
+        var image = decodeImage(bytes);
+        if (image == null) return false;
 
-    var imageSize = AuthConfig.current.userImageSize;
-    if (image.width != imageSize || image.height != imageSize) {
-      image = copyResizeCropSquare(image, size: imageSize);
-    }
+        var imageSize = AuthConfig.current.userImageSize;
+        if (image.width != imageSize || image.height != imageSize) {
+          image = copyResizeCropSquare(image, size: imageSize);
+        }
 
-    var imageData = _encodeImage(image);
+        var imageData = _encodeImage(image);
 
-    return await _setUserImage(session, userId, imageData);
-  }
+        return await _setUserImage(session, userId, imageData);
+      });
 
   /// Sets a user's image to the default image for that user.
   static Future<bool> setDefaultUserImage(Session session, int userId) async {
@@ -144,39 +146,41 @@ int _colorFromHexStr(String hexStr) {
 }
 
 /// The default [UserImageGenerator], mimics the default avatars used by Google.
-Future<Image> defaultUserImageGenerator(UserInfo userInfo) async {
-  var imageSize = AuthConfig.current.userImageSize;
-  var image = Image(width: 256, height: 256);
+Future<Image> defaultUserImageGenerator(UserInfo userInfo) => Isolate.run(() {
+      var imageSize = AuthConfig.current.userImageSize;
+      var image = Image(width: 256, height: 256);
 
-  var font = roboto_138;
+      var font = roboto_138;
 
-  // Get first letter of the user name (or * if not found in bitmap font).
-  var name = userInfo.userName;
-  var charCode =
-      (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*').codeUnits[0];
-  if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
+      // Get first letter of the user name (or * if not found in bitmap font).
+      var name = userInfo.userName;
+      var charCode =
+          (name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '*')
+              .codeUnits[0];
+      if (font.characters[charCode] == null) charCode = '*'.codeUnits[0];
 
-  // Draw the image.
-  var chWidth = font.characters[charCode]!.width;
-  var chHeight = font.characters[charCode]!.height;
-  var chOffsetY = font.characters[charCode]!.yOffset;
-  var chOffsetX = font.characters[charCode]!.xOffset;
-  var xPos = 128 - chWidth ~/ 2;
-  var yPos = 128 - chHeight ~/ 2;
+      // Draw the image.
+      var chWidth = font.characters[charCode]!.width;
+      var chHeight = font.characters[charCode]!.height;
+      var chOffsetY = font.characters[charCode]!.yOffset;
+      var chOffsetX = font.characters[charCode]!.xOffset;
+      var xPos = 128 - chWidth ~/ 2;
+      var yPos = 128 - chHeight ~/ 2;
 
-  // Pick color based on user id from the default colors (from material design).
-  var color =
-      _defaultUserImageColors[userInfo.id! % _defaultUserImageColors.length];
-  fill(image,
-      color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
-          color & 0xff, (color >> 24) & 0xff));
+      // Pick color based on user id from the default colors (from material design).
+      var color = _defaultUserImageColors[
+          userInfo.id! % _defaultUserImageColors.length];
+      fill(image,
+          color: ColorUint8.rgba((color >> 16) & 0xff, (color >> 16) & 0xff,
+              color & 0xff, (color >> 24) & 0xff));
 
-  // Draw the character on top of the solid filled image.
-  drawString(image, String.fromCharCode(charCode),
-      font: font, x: xPos - chOffsetX, y: yPos - chOffsetY);
+      // Draw the character on top of the solid filled image.
+      drawString(image, String.fromCharCode(charCode),
+          font: font, x: xPos - chOffsetX, y: yPos - chOffsetY);
 
-  // Resize image if it's not the preferred size.
-  if (imageSize != 256) image = copyResizeCropSquare(image, size: imageSize);
+      // Resize image if it's not the preferred size.
+      if (imageSize != 256)
+        image = copyResizeCropSquare(image, size: imageSize);
 
-  return image;
-}
+      return image;
+    });
