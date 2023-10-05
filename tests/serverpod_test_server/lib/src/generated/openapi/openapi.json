@@ -21415,6 +21415,55 @@
                 }
             }
         },
+        "/simple/hello": {
+            "post": {
+                "operationId": "helloSimple",
+                "tags": [
+                    "simple"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "security": [
+                    {
+                        "serverpodAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (the query passed to the server was incorrect)."
+                    },
+                    "403": {
+                        "description": "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
+                    },
+                    "500": {
+                        "description": "Internal server error "
+                    }
+                }
+            }
+        },
         "/subDir/subSubDir/subSubDirTest/testMethod": {
             "post": {
                 "operationId": "testMethodSubSubDirTest",
@@ -21619,7 +21668,7 @@
                     "customer": {
                         "$ref": "#/components/schemas/Customer"
                     },
-                    "items": {
+                    "comments": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/Comment"

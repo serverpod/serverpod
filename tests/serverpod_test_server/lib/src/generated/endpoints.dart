@@ -8112,6 +8112,24 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['simple'] as _i45.SimpleEndpoint)
                   .getGlobalInt(session),
         ),
+        'hello': _i1.MethodConnector(
+          name: 'hello',
+          params: {
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['simple'] as _i45.SimpleEndpoint).hello(
+            session,
+            params['name'],
+          ),
+        ),
       },
     );
     connectors['streaming'] = _i1.EndpointConnector(
