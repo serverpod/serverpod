@@ -8,54 +8,54 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class ObjectWithIndex extends _i1.TableRow {
-  ObjectWithIndex._({
+abstract class UniqueData extends _i1.TableRow {
+  UniqueData._({
     int? id,
-    required this.indexed,
-    required this.indexed2,
+    required this.number,
+    required this.email,
   }) : super(id);
 
-  factory ObjectWithIndex({
+  factory UniqueData({
     int? id,
-    required int indexed,
-    required int indexed2,
-  }) = _ObjectWithIndexImpl;
+    required int number,
+    required String email,
+  }) = _UniqueDataImpl;
 
-  factory ObjectWithIndex.fromJson(
+  factory UniqueData.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return ObjectWithIndex(
+    return UniqueData(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      indexed:
-          serializationManager.deserialize<int>(jsonSerialization['indexed']),
-      indexed2:
-          serializationManager.deserialize<int>(jsonSerialization['indexed2']),
+      number:
+          serializationManager.deserialize<int>(jsonSerialization['number']),
+      email:
+          serializationManager.deserialize<String>(jsonSerialization['email']),
     );
   }
 
-  static final t = ObjectWithIndexTable();
+  static final t = UniqueDataTable();
 
-  static const db = ObjectWithIndexRepository._();
+  static const db = UniqueDataRepository._();
 
-  int indexed;
+  int number;
 
-  int indexed2;
+  String email;
 
   @override
   _i1.Table get table => t;
 
-  ObjectWithIndex copyWith({
+  UniqueData copyWith({
     int? id,
-    int? indexed,
-    int? indexed2,
+    int? number,
+    String? email,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -64,8 +64,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -73,8 +73,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'indexed': indexed,
-      'indexed2': indexed2,
+      'number': number,
+      'email': email,
     };
   }
 
@@ -87,11 +87,11 @@ abstract class ObjectWithIndex extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'indexed':
-        indexed = value;
+      case 'number':
+        number = value;
         return;
-      case 'indexed2':
-        indexed2 = value;
+      case 'email':
+        email = value;
         return;
       default:
         throw UnimplementedError();
@@ -99,9 +99,9 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ObjectWithIndex>> find(
+  static Future<List<UniqueData>> find(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -110,8 +110,8 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
+    return session.db.find<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -123,17 +123,17 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ObjectWithIndex?> findSingleRow(
+  static Future<UniqueData?> findSingleRow(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
+    return session.db.findSingleRow<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -143,21 +143,21 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ObjectWithIndex?> findById(
+  static Future<UniqueData?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<ObjectWithIndex>(id);
+    return session.db.findById<UniqueData>(id);
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithIndexExpressionBuilder where,
+    required UniqueDataExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<ObjectWithIndex>(
-      where: where(ObjectWithIndex.t),
+    return session.db.delete<UniqueData>(
+      where: where(UniqueData.t),
       transaction: transaction,
     );
   }
@@ -165,7 +165,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -177,7 +177,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -190,7 +190,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -202,100 +202,101 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<ObjectWithIndex>(
-      where: where != null ? where(ObjectWithIndex.t) : null,
+    return session.db.count<UniqueData>(
+      where: where != null ? where(UniqueData.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static ObjectWithIndexInclude include() {
-    return ObjectWithIndexInclude._();
+  static UniqueDataInclude include() {
+    return UniqueDataInclude._();
   }
 }
 
 class _Undefined {}
 
-class _ObjectWithIndexImpl extends ObjectWithIndex {
-  _ObjectWithIndexImpl({
+class _UniqueDataImpl extends UniqueData {
+  _UniqueDataImpl({
     int? id,
-    required int indexed,
-    required int indexed2,
+    required int number,
+    required String email,
   }) : super._(
           id: id,
-          indexed: indexed,
-          indexed2: indexed2,
+          number: number,
+          email: email,
         );
 
   @override
-  ObjectWithIndex copyWith({
+  UniqueData copyWith({
     Object? id = _Undefined,
-    int? indexed,
-    int? indexed2,
+    int? number,
+    String? email,
   }) {
-    return ObjectWithIndex(
+    return UniqueData(
       id: id is int? ? id : this.id,
-      indexed: indexed ?? this.indexed,
-      indexed2: indexed2 ?? this.indexed2,
+      number: number ?? this.number,
+      email: email ?? this.email,
     );
   }
 }
 
-typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
-    ObjectWithIndexTable);
+typedef UniqueDataExpressionBuilder = _i1.Expression Function(UniqueDataTable);
 
-class ObjectWithIndexTable extends _i1.Table {
-  ObjectWithIndexTable({
+class UniqueDataTable extends _i1.Table {
+  UniqueDataTable({
     super.queryPrefix,
     super.tableRelations,
-  }) : super(tableName: 'object_with_index') {
-    indexed = _i1.ColumnInt(
-      'indexed',
-      this,
+  }) : super(tableName: 'unique_data') {
+    number = _i1.ColumnInt(
+      'number',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
-    indexed2 = _i1.ColumnInt(
-      'indexed2',
-      this,
+    email = _i1.ColumnString(
+      'email',
+      queryPrefix: super.queryPrefix,
+      tableRelations: super.tableRelations,
     );
   }
 
-  late final _i1.ColumnInt indexed;
+  late final _i1.ColumnInt number;
 
-  late final _i1.ColumnInt indexed2;
+  late final _i1.ColumnString email;
 
   @override
   List<_i1.Column> get columns => [
         id,
-        indexed,
-        indexed2,
+        number,
+        email,
       ];
 }
 
-@Deprecated('Use ObjectWithIndexTable.t instead.')
-ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
+@Deprecated('Use UniqueDataTable.t instead.')
+UniqueDataTable tUniqueData = UniqueDataTable();
 
-class ObjectWithIndexInclude extends _i1.Include {
-  ObjectWithIndexInclude._();
+class UniqueDataInclude extends _i1.Include {
+  UniqueDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => ObjectWithIndex.t;
+  _i1.Table get table => UniqueData.t;
 }
 
-class ObjectWithIndexRepository {
-  const ObjectWithIndexRepository._();
+class UniqueDataRepository {
+  const UniqueDataRepository._();
 
-  Future<List<ObjectWithIndex>> find(
+  Future<List<UniqueData>> find(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -303,8 +304,8 @@ class ObjectWithIndexRepository {
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithIndex>(
-      where: where?.call(ObjectWithIndex.t),
+    return session.dbNext.find<UniqueData>(
+      where: where?.call(UniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -314,70 +315,70 @@ class ObjectWithIndexRepository {
     );
   }
 
-  Future<ObjectWithIndex?> findRow(
+  Future<UniqueData?> findRow(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithIndex>(
-      where: where?.call(ObjectWithIndex.t),
+    return session.dbNext.findRow<UniqueData>(
+      where: where?.call(UniqueData.t),
       transaction: transaction,
     );
   }
 
-  Future<ObjectWithIndex?> findById(
+  Future<UniqueData?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithIndex>(
+    return session.dbNext.findById<UniqueData>(
       id,
       transaction: transaction,
     );
   }
 
-  Future<List<ObjectWithIndex>> insert(
+  Future<List<UniqueData>> insert(
     _i1.Session session,
-    List<ObjectWithIndex> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithIndex>(
+    return session.dbNext.insert<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<ObjectWithIndex> insertRow(
+  Future<UniqueData> insertRow(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithIndex>(
+    return session.dbNext.insertRow<UniqueData>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<ObjectWithIndex>> update(
+  Future<List<UniqueData>> update(
     _i1.Session session,
-    List<ObjectWithIndex> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithIndex>(
+    return session.dbNext.update<UniqueData>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<ObjectWithIndex> updateRow(
+  Future<UniqueData> updateRow(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithIndex>(
+    return session.dbNext.updateRow<UniqueData>(
       row,
       transaction: transaction,
     );
@@ -385,10 +386,10 @@ class ObjectWithIndexRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<ObjectWithIndex> rows, {
+    List<UniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithIndex>(
+    return session.dbNext.delete<UniqueData>(
       rows,
       transaction: transaction,
     );
@@ -396,10 +397,10 @@ class ObjectWithIndexRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    ObjectWithIndex row, {
+    UniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithIndex>(
+    return session.dbNext.deleteRow<UniqueData>(
       row,
       transaction: transaction,
     );
@@ -407,23 +408,23 @@ class ObjectWithIndexRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithIndexExpressionBuilder where,
+    required UniqueDataExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithIndex>(
-      where: where(ObjectWithIndex.t),
+    return session.dbNext.deleteWhere<UniqueData>(
+      where: where(UniqueData.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    UniqueDataExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithIndex>(
-      where: where?.call(ObjectWithIndex.t),
+    return session.dbNext.count<UniqueData>(
+      where: where?.call(UniqueData.t),
       limit: limit,
       transaction: transaction,
     );

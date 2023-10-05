@@ -342,6 +342,17 @@ class ChannelRepository {
     );
   }
 
+  Future<List<Channel>> insert(
+    _i1.Session session,
+    List<Channel> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Channel>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Channel> insertRow(
     _i1.Session session,
     Channel row, {
@@ -353,6 +364,17 @@ class ChannelRepository {
     );
   }
 
+  Future<List<Channel>> update(
+    _i1.Session session,
+    List<Channel> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Channel>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Channel> updateRow(
     _i1.Session session,
     Channel row, {
@@ -360,6 +382,17 @@ class ChannelRepository {
   }) async {
     return session.dbNext.updateRow<Channel>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Channel> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Channel>(
+      rows,
       transaction: transaction,
     );
   }

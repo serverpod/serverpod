@@ -87,11 +87,29 @@ class Database {
     );
   }
 
+  /// Update all [TableRow]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// update, none of the rows will be updated.
+  Future<List<T>> update<T extends TableRow>(
+    List<T> rows, {
+    List<Column>? columns,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.update<T>(
+      _session,
+      rows,
+      columns: columns,
+      transaction: transaction,
+    );
+  }
+
   /// Updates a single [TableRow]. The row needs to have its id set.
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<T> updateRow<T extends TableRow>(
-    TableRow row, {
+    T row, {
     List<Column>? columns,
     Transaction? transaction,
   }) async {
@@ -103,9 +121,23 @@ class Database {
     );
   }
 
+  /// Inserts all [TableRow]s in the list and returns the inserted rows.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// insert, none of the rows will be inserted.
+  Future<List<T>> insert<T extends TableRow>(
+    List<T> rows, {
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.insert<T>(
+      _session,
+      rows,
+      transaction: transaction,
+    );
+  }
+
   /// Inserts a single [TableRow] and returns the inserted row.
   Future<T> insertRow<T extends TableRow>(
-    TableRow row, {
+    T row, {
     Transaction? transaction,
   }) async {
     return _databaseConnection.insertRow<T>(
@@ -115,12 +147,26 @@ class Database {
     );
   }
 
-  /// Deletes a single [TableRow].
-  Future<int> deleteRow<T extends TableRow>(
-    TableRow row, {
+  /// Deletes all [TableRow]s in the list and returns the deleted ids.
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  Future<List<int>> delete<T extends TableRow>(
+    List<T> rows, {
     Transaction? transaction,
   }) async {
-    return await _databaseConnection.deleteRow(
+    return _databaseConnection.delete<T>(
+      _session,
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes a single [TableRow].
+  Future<int> deleteRow<T extends TableRow>(
+    T row, {
+    Transaction? transaction,
+  }) async {
+    return await _databaseConnection.deleteRow<T>(
       _session,
       row,
       transaction: transaction,
@@ -192,10 +238,28 @@ class Database {
     );
   }
 
+  /// Executes a single SQL query. A [List] of rows represented of a [Map] with
+  /// the table name and value is another [Map] with the keys as column names and
+  /// the value as the contents of the column.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  Future<List<Map<String, Map<String, dynamic>>>> dangerouslyQueryMappedResults(
+    Session session,
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.mappedResultsQuery(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<PostgreSQLResult> queryDangerously(
+  Future<PostgreSQLResult> dangerouslyQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -211,7 +275,7 @@ class Database {
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<int> executeDangerously(
+  Future<int> dangerouslyExecute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,

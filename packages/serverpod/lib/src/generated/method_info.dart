@@ -343,6 +343,17 @@ class MethodInfoRepository {
     );
   }
 
+  Future<List<MethodInfo>> insert(
+    _i1.Session session,
+    List<MethodInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<MethodInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<MethodInfo> insertRow(
     _i1.Session session,
     MethodInfo row, {
@@ -354,6 +365,17 @@ class MethodInfoRepository {
     );
   }
 
+  Future<List<MethodInfo>> update(
+    _i1.Session session,
+    List<MethodInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<MethodInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<MethodInfo> updateRow(
     _i1.Session session,
     MethodInfo row, {
@@ -361,6 +383,17 @@ class MethodInfoRepository {
   }) async {
     return session.dbNext.updateRow<MethodInfo>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<MethodInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<MethodInfo>(
+      rows,
       transaction: transaction,
     );
   }

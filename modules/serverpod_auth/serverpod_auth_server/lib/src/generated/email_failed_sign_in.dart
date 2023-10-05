@@ -371,6 +371,17 @@ class EmailFailedSignInRepository {
     );
   }
 
+  Future<List<EmailFailedSignIn>> insert(
+    _i1.Session session,
+    List<EmailFailedSignIn> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<EmailFailedSignIn>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailFailedSignIn> insertRow(
     _i1.Session session,
     EmailFailedSignIn row, {
@@ -382,6 +393,17 @@ class EmailFailedSignInRepository {
     );
   }
 
+  Future<List<EmailFailedSignIn>> update(
+    _i1.Session session,
+    List<EmailFailedSignIn> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<EmailFailedSignIn>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<EmailFailedSignIn> updateRow(
     _i1.Session session,
     EmailFailedSignIn row, {
@@ -389,6 +411,17 @@ class EmailFailedSignInRepository {
   }) async {
     return session.dbNext.updateRow<EmailFailedSignIn>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<EmailFailedSignIn> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<EmailFailedSignIn>(
+      rows,
       transaction: transaction,
     );
   }

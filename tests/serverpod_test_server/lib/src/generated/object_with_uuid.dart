@@ -340,6 +340,17 @@ class ObjectWithUuidRepository {
     );
   }
 
+  Future<List<ObjectWithUuid>> insert(
+    _i1.Session session,
+    List<ObjectWithUuid> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithUuid>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithUuid> insertRow(
     _i1.Session session,
     ObjectWithUuid row, {
@@ -351,6 +362,17 @@ class ObjectWithUuidRepository {
     );
   }
 
+  Future<List<ObjectWithUuid>> update(
+    _i1.Session session,
+    List<ObjectWithUuid> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithUuid>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithUuid> updateRow(
     _i1.Session session,
     ObjectWithUuid row, {
@@ -358,6 +380,17 @@ class ObjectWithUuidRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithUuid>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithUuid> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithUuid>(
+      rows,
       transaction: transaction,
     );
   }

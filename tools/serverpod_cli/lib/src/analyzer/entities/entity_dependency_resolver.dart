@@ -149,7 +149,7 @@ class EntityDependencyResolver {
         : TypeDefinition.int;
 
     var foreignRelationField = SerializableEntityFieldDefinition(
-      name: '${fieldDefinition.name}Id',
+      name: _createImplicitForeignIdFieldName(fieldDefinition.name),
       relation: ForeignRelationDefinition(
         name: relation.name,
         parentTable: tableName,
@@ -291,19 +291,37 @@ class EntityDependencyResolver {
     } else {
       var foreignFields = referenceClass.fields.where((field) {
         var fieldRelation = field.relation;
-        if (fieldRelation is! ForeignRelationDefinition) return false;
-        return fieldRelation.parentTable == classDefinition.tableName &&
-            fieldRelation.name == relation.name;
+        if (!(fieldRelation is UnresolvedObjectRelationDefinition ||
+            fieldRelation is ForeignRelationDefinition)) return false;
+        return fieldRelation?.name == relation.name;
       });
 
-      if (foreignFields.isNotEmpty) {
-        fieldDefinition.relation = ListRelationDefinition(
-          name: relation.name,
-          fieldName: 'id',
-          foreignFieldName: foreignFields.first.name,
-          nullableRelation: foreignFields.first.type.nullable,
-        );
+      if (foreignFields.isEmpty) return;
+
+      var foreignField = foreignFields.first;
+
+      String? foreignFieldName;
+
+      var foreignRelation = foreignField.relation;
+      if (foreignRelation is ForeignRelationDefinition) {
+        foreignFieldName = foreignField.name;
+      } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
+        foreignFieldName = foreignRelation.fieldName ??
+            _createImplicitForeignIdFieldName(foreignField.name);
       }
+
+      if (foreignFieldName == null) return;
+
+      fieldDefinition.relation = ListRelationDefinition(
+        name: relation.name,
+        fieldName: 'id',
+        foreignFieldName: foreignFieldName,
+        nullableRelation: foreignFields.first.type.nullable,
+      );
     }
+  }
+
+  static String _createImplicitForeignIdFieldName(String fieldName) {
+    return '${fieldName}Id';
   }
 }

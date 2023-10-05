@@ -344,6 +344,17 @@ class GoogleRefreshTokenRepository {
     );
   }
 
+  Future<List<GoogleRefreshToken>> insert(
+    _i1.Session session,
+    List<GoogleRefreshToken> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<GoogleRefreshToken>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<GoogleRefreshToken> insertRow(
     _i1.Session session,
     GoogleRefreshToken row, {
@@ -355,6 +366,17 @@ class GoogleRefreshTokenRepository {
     );
   }
 
+  Future<List<GoogleRefreshToken>> update(
+    _i1.Session session,
+    List<GoogleRefreshToken> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<GoogleRefreshToken>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<GoogleRefreshToken> updateRow(
     _i1.Session session,
     GoogleRefreshToken row, {
@@ -362,6 +384,17 @@ class GoogleRefreshTokenRepository {
   }) async {
     return session.dbNext.updateRow<GoogleRefreshToken>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<GoogleRefreshToken> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<GoogleRefreshToken>(
+      rows,
       transaction: transaction,
     );
   }

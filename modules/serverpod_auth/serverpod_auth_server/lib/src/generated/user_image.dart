@@ -368,6 +368,17 @@ class UserImageRepository {
     );
   }
 
+  Future<List<UserImage>> insert(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<UserImage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<UserImage> insertRow(
     _i1.Session session,
     UserImage row, {
@@ -379,6 +390,17 @@ class UserImageRepository {
     );
   }
 
+  Future<List<UserImage>> update(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<UserImage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<UserImage> updateRow(
     _i1.Session session,
     UserImage row, {
@@ -386,6 +408,17 @@ class UserImageRepository {
   }) async {
     return session.dbNext.updateRow<UserImage>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<UserImage>(
+      rows,
       transaction: transaction,
     );
   }

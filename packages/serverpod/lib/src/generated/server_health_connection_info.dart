@@ -452,6 +452,17 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  Future<List<ServerHealthConnectionInfo>> insert(
+    _i1.Session session,
+    List<ServerHealthConnectionInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ServerHealthConnectionInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ServerHealthConnectionInfo> insertRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
@@ -463,6 +474,17 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
+  Future<List<ServerHealthConnectionInfo>> update(
+    _i1.Session session,
+    List<ServerHealthConnectionInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ServerHealthConnectionInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ServerHealthConnectionInfo> updateRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
@@ -470,6 +492,17 @@ class ServerHealthConnectionInfoRepository {
   }) async {
     return session.dbNext.updateRow<ServerHealthConnectionInfo>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ServerHealthConnectionInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ServerHealthConnectionInfo>(
+      rows,
       transaction: transaction,
     );
   }

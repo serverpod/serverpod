@@ -170,9 +170,9 @@ class DatabaseLegacy {
     TableRow row, {
     Transaction? transaction,
   }) async {
-    await databaseConnection.deleteRow(
-      session,
+    await databaseConnection.legacy.deleteRow(
       row,
+      session: session,
       transaction: transaction,
     );
     return true;

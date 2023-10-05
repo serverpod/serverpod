@@ -505,6 +505,17 @@ class UserInfoRepository {
     );
   }
 
+  Future<List<UserInfo>> insert(
+    _i1.Session session,
+    List<UserInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<UserInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<UserInfo> insertRow(
     _i1.Session session,
     UserInfo row, {
@@ -516,6 +527,17 @@ class UserInfoRepository {
     );
   }
 
+  Future<List<UserInfo>> update(
+    _i1.Session session,
+    List<UserInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<UserInfo>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<UserInfo> updateRow(
     _i1.Session session,
     UserInfo row, {
@@ -523,6 +545,17 @@ class UserInfoRepository {
   }) async {
     return session.dbNext.updateRow<UserInfo>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<UserInfo> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<UserInfo>(
+      rows,
       transaction: transaction,
     );
   }

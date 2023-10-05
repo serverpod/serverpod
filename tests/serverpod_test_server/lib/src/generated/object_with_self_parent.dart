@@ -314,6 +314,17 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  Future<List<ObjectWithSelfParent>> insert(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithSelfParent>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithSelfParent> insertRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -325,6 +336,17 @@ class ObjectWithSelfParentRepository {
     );
   }
 
+  Future<List<ObjectWithSelfParent>> update(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithSelfParent>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithSelfParent> updateRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -332,6 +354,17 @@ class ObjectWithSelfParentRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithSelfParent>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithSelfParent>(
+      rows,
       transaction: transaction,
     );
   }

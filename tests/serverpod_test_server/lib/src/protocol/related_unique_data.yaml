@@ -1,0 +1,5 @@
+class: RelatedUniqueData
+table: related_unique_data
+fields:
+  uniqueData: UniqueData?, relation(onDelete=Restrict)
+  number: int

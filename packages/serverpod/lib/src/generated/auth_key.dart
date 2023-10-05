@@ -409,6 +409,17 @@ class AuthKeyRepository {
     );
   }
 
+  Future<List<AuthKey>> insert(
+    _i1.Session session,
+    List<AuthKey> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<AuthKey>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<AuthKey> insertRow(
     _i1.Session session,
     AuthKey row, {
@@ -420,6 +431,17 @@ class AuthKeyRepository {
     );
   }
 
+  Future<List<AuthKey>> update(
+    _i1.Session session,
+    List<AuthKey> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<AuthKey>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<AuthKey> updateRow(
     _i1.Session session,
     AuthKey row, {
@@ -427,6 +449,17 @@ class AuthKeyRepository {
   }) async {
     return session.dbNext.updateRow<AuthKey>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<AuthKey> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<AuthKey>(
+      rows,
       transaction: transaction,
     );
   }

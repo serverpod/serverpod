@@ -463,6 +463,17 @@ class PostRepository {
     );
   }
 
+  Future<List<Post>> insert(
+    _i1.Session session,
+    List<Post> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Post>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Post> insertRow(
     _i1.Session session,
     Post row, {
@@ -474,6 +485,17 @@ class PostRepository {
     );
   }
 
+  Future<List<Post>> update(
+    _i1.Session session,
+    List<Post> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Post>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<Post> updateRow(
     _i1.Session session,
     Post row, {
@@ -481,6 +503,17 @@ class PostRepository {
   }) async {
     return session.dbNext.updateRow<Post>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Post> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Post>(
+      rows,
       transaction: transaction,
     );
   }

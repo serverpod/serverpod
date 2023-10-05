@@ -316,6 +316,17 @@ class ObjectWithByteDataRepository {
     );
   }
 
+  Future<List<ObjectWithByteData>> insert(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithByteData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithByteData> insertRow(
     _i1.Session session,
     ObjectWithByteData row, {
@@ -327,6 +338,17 @@ class ObjectWithByteDataRepository {
     );
   }
 
+  Future<List<ObjectWithByteData>> update(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithByteData>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectWithByteData> updateRow(
     _i1.Session session,
     ObjectWithByteData row, {
@@ -334,6 +356,17 @@ class ObjectWithByteDataRepository {
   }) async {
     return session.dbNext.updateRow<ObjectWithByteData>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithByteData> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithByteData>(
+      rows,
       transaction: transaction,
     );
   }

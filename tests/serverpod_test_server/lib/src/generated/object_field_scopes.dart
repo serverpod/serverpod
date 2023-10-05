@@ -350,6 +350,17 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  Future<List<ObjectFieldScopes>> insert(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectFieldScopes>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectFieldScopes> insertRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -361,6 +372,17 @@ class ObjectFieldScopesRepository {
     );
   }
 
+  Future<List<ObjectFieldScopes>> update(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectFieldScopes>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
   Future<ObjectFieldScopes> updateRow(
     _i1.Session session,
     ObjectFieldScopes row, {
@@ -368,6 +390,17 @@ class ObjectFieldScopesRepository {
   }) async {
     return session.dbNext.updateRow<ObjectFieldScopes>(
       row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectFieldScopes> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectFieldScopes>(
+      rows,
       transaction: transaction,
     );
   }
