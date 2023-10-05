@@ -3569,6 +3569,12 @@ class EndpointSimple extends _i1.EndpointRef {
         'getGlobalInt',
         {},
       );
+
+  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
+        'simple',
+        'hello',
+        {'name': name},
+      );
 }
 
 /// {@category Endpoint}
