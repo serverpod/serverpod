@@ -264,24 +264,24 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    String? methodName;
     if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
       var pathComponents = path.split('/');
       endpointName = pathComponents[0];
       methodName = pathComponents[1];
     } else {
+      // Using the standard format with query parameters
       endpointName = path;
-    }
-
-    methodName ??= queryParameters['method'];
-    if (methodName == null && path == 'webserver') {
-      this.methodName = '';
-    } else if (methodName != null) {
-      this.methodName = methodName;
-    } else {
-      throw FormatException(
-        'No method name specified in call to $endpointName',
-      );
+      var methodName = queryParameters['method'];
+      if (methodName == null && path == 'webserver') {
+        this.methodName = '';
+      } else if (methodName != null) {
+        this.methodName = methodName;
+      } else {
+        throw FormatException(
+          'No method name specified in call to $endpointName',
+        );
+      }
     }
 
     // Get the the authentication key, if any
