@@ -30,10 +30,11 @@ class UserImages {
 
         var imageSize = AuthConfig.current.userImageSize;
         if (image.width != imageSize || image.height != imageSize) {
-          image = copyResizeCropSquare(image, size: imageSize);
+          image = copyResizeCropSquare(image,
+              size: imageSize, interpolation: Interpolation.cubic);
         }
 
-        var imageData = _encodeImage(image);
+        var imageData = await _encodeImage(image);
 
         return await _setUserImage(session, userId, imageData);
       });
@@ -44,24 +45,25 @@ class UserImages {
     if (userInfo == null) return false;
 
     var image = await AuthConfig.current.userImageGenerator(userInfo);
-    var imageData = _encodeImage(image);
+    var imageData = await _encodeImage(image);
 
     return await _setUserImage(session, userId, imageData);
   }
 
-  static ByteData _encodeImage(Image image) {
-    var format = AuthConfig.current.userImageFormat;
-    List<int> encoded;
-    if (format == UserImageType.jpg) {
-      encoded = encodeJpg(image, quality: AuthConfig.current.userImageQuality);
-    } else {
-      encoded = encodePng(image);
-    }
+  static Future<ByteData> _encodeImage(Image image) => Isolate.run(() {
+        var format = AuthConfig.current.userImageFormat;
+        List<int> encoded;
+        if (format == UserImageType.jpg) {
+          encoded =
+              encodeJpg(image, quality: AuthConfig.current.userImageQuality);
+        } else {
+          encoded = encodePng(image);
+        }
 
-    // Reference as ByteData.
-    var encodedBytes = Uint8List.fromList(encoded);
-    return ByteData.view(encodedBytes.buffer);
-  }
+        // Reference as ByteData.
+        var encodedBytes = Uint8List.fromList(encoded);
+        return ByteData.view(encodedBytes.buffer);
+      });
 
   static Future<bool> _setUserImage(
       Session session, int userId, ByteData imageData) async {
