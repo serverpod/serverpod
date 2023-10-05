@@ -126,18 +126,19 @@ class Table {
   List<Column> get columns => _columns!;
 
   /// Query prefix for [Column]s of the table.
-  final String queryPrefix;
+  String get queryPrefix {
+    return tableRelation?.relationQueryAlias ?? tableName;
+  }
 
-  /// Table relations for [Column]s of the table.
-  final List<TableRelation>? tableRelations;
+  /// Table relation for [Column]s of the table.
+  final TableRelation? tableRelation;
 
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({
     required this.tableName,
     List<Column>? columns,
-    queryPrefix = '',
-    this.tableRelations,
-  }) : queryPrefix = '$queryPrefix$tableName' {
+    this.tableRelation,
+  }) {
     _columns = columns;
     id = ColumnInt(
       'id',
@@ -161,38 +162,35 @@ class Table {
   }
 }
 
-String _buildRelationQueryPrefix(String queryPrefix, String field) {
-  return '${queryPrefix}_${field}_';
-}
-
-/// Creates a new [Table] based on a relation between two tables.
-/// Information is contained in the table required to query the fields of the
+/// Creates a new [Table] containing [TableRelation] with information
+/// about how the tables are joined.
+///
+/// [relationFieldName] is the reference name of the table join.
+/// [field] is the [Column] of the table that is used to join the tables.
+/// [foreignField] is the [Column] of the foreign table that is used to join
 /// table.
+/// [tableRelation] is the [TableRelation] of the table that is used to join
+/// the tables.
 T createRelationTable<T>({
-  required String queryPrefix,
-  required String fieldName,
-  required String foreignTableName,
-  required Column column,
-  required String foreignColumnName,
+  required String relationFieldName,
+  required Column field,
+  required Column foreignField,
+  TableRelation? tableRelation,
   required T Function(
-    String relationQueryPrefix,
     TableRelation foreignTableRelation,
   ) createTable,
 }) {
-  var relationQueryPrefix = _buildRelationQueryPrefix(
-    queryPrefix,
-    fieldName,
+  var relationDefinition = TableRelationEntry(
+    relationFieldName: relationFieldName,
+    field: field,
+    foreignField: foreignField,
   );
 
-  var foreignTableRelation = TableRelation.foreign(
-    foreignTableName: foreignTableName,
-    column: column,
-    foreignColumnName: foreignColumnName,
-    relationQueryPrefix: relationQueryPrefix,
-  );
+  if (tableRelation == null) {
+    return createTable(TableRelation([relationDefinition]));
+  }
 
   return createTable(
-    relationQueryPrefix,
-    foreignTableRelation,
+    tableRelation.copyAndAppend(relationDefinition),
   );
 }
