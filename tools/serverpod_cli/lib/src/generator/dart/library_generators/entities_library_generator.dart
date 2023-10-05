@@ -1309,9 +1309,11 @@ class SerializableEntityLibraryGenerator {
                 .assign(refer('createRelationTable',
                         'package:serverpod/serverpod.dart')
                     .call([], {
-                  'queryPrefix': refer('queryPrefix'),
-                  'fieldName': literalString(field.name),
-                  'foreignTableName': field.type
+                  'relationFieldName': literalString(field.name),
+                  'field': refer(classDefinition.className)
+                      .property('t')
+                      .property(objectRelation.fieldName),
+                  'foreignField': field.type
                       .reference(
                         serverCode,
                         subDirParts: classDefinition.subDirParts,
@@ -1319,21 +1321,10 @@ class SerializableEntityLibraryGenerator {
                         nullable: false,
                       )
                       .property('t')
-                      .property('tableName'),
-                  'column': refer(objectRelation.fieldName),
-                  'foreignColumnName': field.type
-                      .reference(
-                        serverCode,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                        nullable: false,
-                      )
-                      .property('t')
-                      .property(objectRelation.foreignFieldName)
-                      .property('columnName'),
+                      .property(objectRelation.foreignFieldName),
+                  'tableRelation': refer('tableRelation'),
                   'createTable': Method((m) => m
                     ..requiredParameters.addAll([
-                      Parameter((p) => p..name = 'relationQueryPrefix'),
                       Parameter((p) => p..name = 'foreignTableRelation'),
                     ])
                     ..lambda = true
@@ -1346,11 +1337,7 @@ class SerializableEntityLibraryGenerator {
                       typeSuffix: 'Table',
                     )
                         .call([], {
-                      'queryPrefix': refer('relationQueryPrefix'),
-                      'tableRelations': literalList([
-                        refer('tableRelations').nullSafeSpread,
-                        refer('foreignTableRelation'),
-                      ]),
+                      'tableRelation': refer('foreignTableRelation'),
                     }).code).closure
                 }))
                 .statement,
@@ -1368,15 +1355,7 @@ class SerializableEntityLibraryGenerator {
       constructorBuilder.optionalParameters.add(
         Parameter(
           (p) => p
-            ..name = 'queryPrefix'
-            ..toSuper = true
-            ..named = true,
-        ),
-      );
-      constructorBuilder.optionalParameters.add(
-        Parameter(
-          (p) => p
-            ..name = 'tableRelations'
+            ..name = 'tableRelation'
             ..toSuper = true
             ..named = true,
         ),

@@ -59,13 +59,13 @@ void main() {
       });
 
       test(
-          'has constructor taking query prefix and table relations and passes table name to super.',
+          'has constructor taking table relation and passes table name to super.',
           () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExampleTable!,
               name: null,
-              parameters: ['super.queryPrefix', 'super.tableRelations'],
+              parameters: ['super.tableRelation'],
               superArguments: ['tableName: \'$tableName\''],
             ),
             isTrue,
