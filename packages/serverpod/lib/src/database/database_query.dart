@@ -20,7 +20,7 @@ class SelectQueryBuilder {
   Include? _include;
 
   /// Creates a new [SelectQueryBuilder].
-  SelectQueryBuilder({required table}) : _table = table;
+  SelectQueryBuilder({required String table}) : _table = table;
 
   /// Builds the SQL query.
   String build() {
@@ -101,7 +101,7 @@ class CountQueryBuilder {
   Expression? _where;
 
   /// Creates a new [CountQueryBuilder].
-  CountQueryBuilder({required table})
+  CountQueryBuilder({required String table})
       : _table = table,
         _field = '*';
 
@@ -176,7 +176,7 @@ class DeleteQueryBuilder {
   Expression? _where;
 
   /// Creates a new [DeleteQueryBuilder].
-  DeleteQueryBuilder({required table})
+  DeleteQueryBuilder({required String table})
       : _table = table,
         _returningStatement = null;
 
@@ -317,9 +317,9 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
   var columnsWithTableRelations =
-      columns.where((column) => column.tableRelations != null);
+      columns.where((column) => column.table.tableRelations != null);
   for (var column in columnsWithTableRelations) {
-    for (var tableRelation in column.tableRelations!) {
+    for (var tableRelation in column.table.tableRelations!) {
       joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
     }
   }

@@ -381,33 +381,27 @@ class ChatMessageTable extends _i1.Table {
   }) : super(tableName: 'serverpod_chat_message') {
     channel = _i1.ColumnString(
       'channel',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     message = _i1.ColumnString(
       'message',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     time = _i1.ColumnDateTime(
       'time',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     sender = _i1.ColumnInt(
       'sender',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     removed = _i1.ColumnBool(
       'removed',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     attachments = _i1.ColumnSerializable(
       'attachments',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

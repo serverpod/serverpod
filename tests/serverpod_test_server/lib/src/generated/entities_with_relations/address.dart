@@ -279,13 +279,11 @@ class AddressTable extends _i1.Table {
   }) : super(tableName: 'address') {
     street = _i1.ColumnString(
       'street',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     inhabitantId = _i1.ColumnInt(
       'inhabitantId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

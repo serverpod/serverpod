@@ -463,68 +463,55 @@ class SessionLogEntryTable extends _i1.Table {
   }) : super(tableName: 'serverpod_session_log') {
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     time = _i1.ColumnDateTime(
       'time',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     module = _i1.ColumnString(
       'module',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     endpoint = _i1.ColumnString(
       'endpoint',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     method = _i1.ColumnString(
       'method',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     duration = _i1.ColumnDouble(
       'duration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     numQueries = _i1.ColumnInt(
       'numQueries',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     slow = _i1.ColumnBool(
       'slow',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     error = _i1.ColumnString(
       'error',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     stackTrace = _i1.ColumnString(
       'stackTrace',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     authenticatedUserId = _i1.ColumnInt(
       'authenticatedUserId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     isOpen = _i1.ColumnBool(
       'isOpen',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     touched = _i1.ColumnDateTime(
       'touched',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

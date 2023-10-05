@@ -258,13 +258,11 @@ class ChannelTable extends _i1.Table {
   }) : super(tableName: 'channel') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     channel = _i1.ColumnString(
       'channel',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

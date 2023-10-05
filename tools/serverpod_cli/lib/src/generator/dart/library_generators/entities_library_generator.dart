@@ -1402,11 +1402,9 @@ class SerializableEntityLibraryGenerator {
                           )
                         ]
                       : [])).call([
-                  literalString(field.name)
-                ], {
-                  'queryPrefix': refer('super').property('queryPrefix'),
-                  'tableRelations': refer('super').property('tableRelations')
-                }))
+                  literalString(field.name),
+                  refer('this'),
+                ]))
                 .statement,
       ]);
     });

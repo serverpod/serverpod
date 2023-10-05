@@ -13,13 +13,15 @@ void main() {
 
     test('when query with specific fields is built then output selects fields.',
         () {
+      var table = Table(tableName: 'citizen');
       var fields = [
-        ColumnString('id', queryPrefix: 'citizen'),
-        ColumnString('name', queryPrefix: 'citizen'),
-        ColumnString('age', queryPrefix: 'citizen'),
+        ColumnString('id', table),
+        ColumnString('name', table),
+        ColumnString('age', table),
       ];
-      var query =
-          SelectQueryBuilder(table: 'citizen').withSelectFields(fields).build();
+      var query = SelectQueryBuilder(table: table.tableName)
+          .withSelectFields(fields)
+          .build();
 
       expect(query,
           'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen"');
@@ -53,13 +55,14 @@ void main() {
     test(
         'when query with single order by is built then output is single order by query.',
         () {
-      var table = 'citizen';
+      var table = Table(tableName: 'citizen');
       Order order = Order(
-        column: ColumnString('id', queryPrefix: table),
+        column: ColumnString('id', table),
         orderDescending: false,
       );
 
-      var query = SelectQueryBuilder(table: table).withOrderBy([order]).build();
+      var query = SelectQueryBuilder(table: table.tableName)
+          .withOrderBy([order]).build();
 
       expect(query, 'SELECT * FROM "citizen" ORDER BY citizen."id"');
     });
@@ -67,24 +70,25 @@ void main() {
     test(
         'when query with multiple order by is built then output is query with multiple order by requirements.',
         () {
-      var table = 'citizen';
+      var table = Table(tableName: 'citizen');
       var orders = [
         Order(
-          column: ColumnString('id', queryPrefix: table),
+          column: ColumnString('id', table),
           orderDescending: false,
         ),
         Order(
-          column: ColumnString('name', queryPrefix: table),
+          column: ColumnString('name', table),
           orderDescending: true,
         ),
         Order(
-          column: ColumnString('age', queryPrefix: table),
+          column: ColumnString('age', table),
           orderDescending: false,
         )
       ];
 
-      var query =
-          SelectQueryBuilder(table: 'citizen').withOrderBy(orders).build();
+      var query = SelectQueryBuilder(table: table.tableName)
+          .withOrderBy(orders)
+          .build();
 
       expect(query,
           'SELECT * FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
@@ -106,20 +110,22 @@ void main() {
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = SelectQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+      var table = Table(tableName: 'citizen');
+      var relationQueryPrefix = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: relationQueryPrefix,
+          )
+        ],
+        queryPrefix: relationQueryPrefix,
+      );
+      var query = SelectQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
       expect(query,
@@ -129,28 +135,38 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForTable = 'citizen_company_company';
-      var queryPrefixForNested = 'citizen_company_company_ceo_';
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_citizen';
-      var query = SelectQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForNestedTable,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                ),
-                TableRelation.foreign(
-                  foreignTableName: 'citizen',
-                  column: ColumnInt('ceoId', queryPrefix: queryPrefixForTable),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefixForNested,
-                ),
-              ]).equals('Alex'))
+      var table = Table(tableName: 'citizen');
+
+      var queryPrefixForFirstRelationTable = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: queryPrefixForFirstRelationTable,
+      );
+
+      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
+      var nestedRelationTable = Table(
+        tableName: 'citizen',
+        queryPrefix: queryPrefixForNestedTable,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForFirstRelationTable,
+          ),
+          TableRelation.foreign(
+            foreignTableName: 'citizen',
+            column: ColumnInt('ceoId', relationTable),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForNestedTable,
+          ),
+        ],
+      );
+      var query = SelectQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString(
+            'name',
+            nestedRelationTable,
+          ).equals('Alex'))
           .build();
 
       expect(query,
@@ -159,30 +175,34 @@ void main() {
 
     test('when all properties configured is built then output is valid SQL.',
         () {
-      var table = 'citizen';
+      var table = Table(tableName: 'citizen');
+
       var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = SelectQueryBuilder(table: table)
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: queryPrefix,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefix,
+          )
+        ],
+      );
+
+      var query = SelectQueryBuilder(table: table.tableName)
           .withSelectFields([
-            ColumnString('id', queryPrefix: table),
-            ColumnString('name', queryPrefix: table),
-            ColumnString('age', queryPrefix: table),
+            ColumnString('id', table),
+            ColumnString('name', table),
+            ColumnString('age', table),
           ])
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
-          .withOrderBy([
-            Order(
-                column: ColumnString('id', queryPrefix: table),
-                orderDescending: true)
-          ])
+          .withWhere(ColumnString(
+            'name',
+            relationTable,
+          ).equals('Serverpod'))
+          .withOrderBy(
+              [Order(column: ColumnString('id', table), orderDescending: true)])
           .withLimit(10)
           .withOffset(5)
           .build();
@@ -194,11 +214,11 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var table = 'citizen';
-      var differentTable = 'company';
-      var queryBuilder = SelectQueryBuilder(table: table).withWhere(
-          ColumnString('name', queryPrefix: differentTable)
-              .equals('Serverpod'));
+      var differentTableQueryPrefix = 'company_ceo_';
+      var table =
+          Table(tableName: 'citizen', queryPrefix: differentTableQueryPrefix);
+      var queryBuilder = SelectQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', table).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -206,16 +226,19 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
           )));
     });
 
     test('when order by has different table as base then exception is thrown.',
         () {
-      var table = 'citizen';
-      var differentTable = 'company';
-      var queryBuilder = SelectQueryBuilder(table: table).withOrderBy(
-          [Order(column: ColumnString('name', queryPrefix: differentTable))]);
+      var differentTableQueryPrefix = 'company_ceo_';
+      var table = Table(
+        tableName: 'citizen',
+        queryPrefix: differentTableQueryPrefix,
+      );
+      var queryBuilder = SelectQueryBuilder(table: table.tableName)
+          .withOrderBy([Order(column: ColumnString('name', table))]);
 
       expect(
           () => queryBuilder.build(),
@@ -223,7 +246,7 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company_ceo_citizen."name".'),
           )));
     });
   });
@@ -269,20 +292,27 @@ void main() {
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = CountQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+      var table = Table(tableName: 'citizen');
+
+      var relationQueryPrefix = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: relationQueryPrefix,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', Table(tableName: 'citizen')),
+            foreignColumnName: 'id',
+            relationQueryPrefix: relationQueryPrefix,
+          )
+        ],
+      );
+
+      var query = CountQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString(
+            'name',
+            relationTable,
+          ).equals('Serverpod'))
           .build();
 
       expect(query,
@@ -292,28 +322,39 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForTable = 'citizen_company_company';
-      var queryPrefixForNested = 'citizen_company_company_ceo_';
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_citizen';
-      var query = CountQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForNestedTable,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                ),
-                TableRelation.foreign(
-                  foreignTableName: 'citizen',
-                  column: ColumnInt('ceoId', queryPrefix: queryPrefixForTable),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefixForNested,
-                ),
-              ]).equals('Alex'))
+      var table = Table(tableName: 'citizen');
+
+      var queryPrefixForFirstRelationTable = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: queryPrefixForFirstRelationTable,
+      );
+
+      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
+      var nestedRelationTable = Table(
+        tableName: 'citizen',
+        queryPrefix: queryPrefixForNestedTable,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForFirstRelationTable,
+          ),
+          TableRelation.foreign(
+            foreignTableName: 'citizen',
+            column: ColumnInt('ceoId', relationTable),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForNestedTable,
+          ),
+        ],
+      );
+
+      var query = CountQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString(
+            'name',
+            nestedRelationTable,
+          ).equals('Alex'))
           .build();
 
       expect(query,
@@ -323,22 +364,28 @@ void main() {
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = CountQueryBuilder(table: table)
+      var table = Table(tableName: 'citizen');
+
+      var relationQueryPrefix = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: relationQueryPrefix,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', Table(tableName: 'citizen')),
+            foreignColumnName: 'id',
+            relationQueryPrefix: relationQueryPrefix,
+          )
+        ],
+      );
+
+      var query = CountQueryBuilder(table: table.tableName)
           .withCountAlias('c')
           .withField('age')
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+          .withWhere(
+            ColumnString('name', relationTable).equals('Serverpod'),
+          )
           .withLimit(10)
           .build();
 
@@ -349,11 +396,13 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var table = 'citizen';
-      var differentTable = 'company';
-      var queryBuilder = CountQueryBuilder(table: table).withWhere(
-          ColumnString('name', queryPrefix: differentTable)
-              .equals('Serverpod'));
+      var differentTableQueryPrefix = 'company_ceo_';
+      var table = Table(
+        tableName: 'citizen',
+        queryPrefix: differentTableQueryPrefix,
+      );
+      var queryBuilder = CountQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', table).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -361,7 +410,7 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
           )));
     });
   });
@@ -403,20 +452,23 @@ void main() {
     test(
         'when where expression depends on relations then output includes using according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = DeleteQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+      var table = Table(tableName: 'citizen');
+      var relationQueryPrefix = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: relationQueryPrefix,
+          )
+        ],
+        queryPrefix: relationQueryPrefix,
+      );
+
+      var query = DeleteQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
       expect(query,
@@ -426,28 +478,36 @@ void main() {
     test(
         'when where expression depends on nested relations then output includes using according to table relations.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForTable = 'citizen_company_company';
-      var queryPrefixForNested = 'citizen_company_company_ceo_';
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_citizen';
-      var query = DeleteQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForNestedTable,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                ),
-                TableRelation.foreign(
-                  foreignTableName: 'citizen',
-                  column: ColumnInt('ceoId', queryPrefix: queryPrefixForTable),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefixForNested,
-                ),
-              ]).equals('Alex'))
+      var table = Table(tableName: 'citizen');
+
+      var queryPrefixForFirstRelationTable = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        queryPrefix: queryPrefixForFirstRelationTable,
+      );
+
+      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
+      var nestedRelationTable = Table(
+        tableName: 'citizen',
+        queryPrefix: queryPrefixForNestedTable,
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForFirstRelationTable,
+          ),
+          TableRelation.foreign(
+            foreignTableName: 'citizen',
+            column: ColumnInt('ceoId', relationTable),
+            foreignColumnName: 'id',
+            relationQueryPrefix: queryPrefixForNestedTable,
+          ),
+        ],
+      );
+
+      var query = DeleteQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', nestedRelationTable).equals('Alex'))
           .build();
 
       expect(query,
@@ -457,20 +517,23 @@ void main() {
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var table = 'citizen';
-      var queryPrefix = 'citizen_company_';
-      var queryPrefixForColumn = 'citizen_company_company';
-      var query = DeleteQueryBuilder(table: table)
-          .withWhere(ColumnString('name',
-              queryPrefix: queryPrefixForColumn,
-              tableRelations: [
-                TableRelation.foreign(
-                  foreignTableName: 'company',
-                  column: ColumnInt('companyId', queryPrefix: table),
-                  foreignColumnName: 'id',
-                  relationQueryPrefix: queryPrefix,
-                )
-              ]).equals('Serverpod'))
+      var table = Table(tableName: 'citizen');
+      var relationQueryPrefix = 'citizen_company_';
+      var relationTable = Table(
+        tableName: 'company',
+        tableRelations: [
+          TableRelation.foreign(
+            foreignTableName: 'company',
+            column: ColumnInt('companyId', table),
+            foreignColumnName: 'id',
+            relationQueryPrefix: relationQueryPrefix,
+          )
+        ],
+        queryPrefix: relationQueryPrefix,
+      );
+
+      var query = DeleteQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .withReturn(Returning.all)
           .build();
 
@@ -481,11 +544,14 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var table = 'citizen';
-      var differentTable = 'company';
-      var queryBuilder = DeleteQueryBuilder(table: table).withWhere(
-          ColumnString('name', queryPrefix: differentTable)
-              .equals('Serverpod'));
+      var differentTableQueryPrefix = 'company_ceo_';
+      var table = Table(
+        tableName: 'citizen',
+        queryPrefix: differentTableQueryPrefix,
+      );
+
+      var queryBuilder = DeleteQueryBuilder(table: table.tableName)
+          .withWhere(ColumnString('name', table).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -493,7 +559,7 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
           )));
     });
   });

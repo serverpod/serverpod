@@ -256,13 +256,11 @@ class UniqueDataTable extends _i1.Table {
   }) : super(tableName: 'unique_data') {
     number = _i1.ColumnInt(
       'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     email = _i1.ColumnString(
       'email',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

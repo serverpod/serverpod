@@ -242,8 +242,7 @@ class SimpleDateTimeTable extends _i1.Table {
   }) : super(tableName: 'simple_date_time') {
     dateTime = _i1.ColumnDateTime(
       'dateTime',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

@@ -268,13 +268,11 @@ class ObjectFieldScopesTable extends _i1.Table {
   }) : super(tableName: 'object_field_scopes') {
     normal = _i1.ColumnString(
       'normal',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     database = _i1.ColumnString(
       'database',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

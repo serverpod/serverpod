@@ -295,23 +295,19 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
   }) : super(tableName: 'serverpod_cloud_storage_direct_upload') {
     storageId = _i1.ColumnString(
       'storageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     path = _i1.ColumnString(
       'path',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     expiration = _i1.ColumnDateTime(
       'expiration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     authKey = _i1.ColumnString(
       'authKey',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

@@ -296,23 +296,19 @@ class EmailCreateAccountRequestTable extends _i1.Table {
   }) : super(tableName: 'serverpod_email_create_request') {
     userName = _i1.ColumnString(
       'userName',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     email = _i1.ColumnString(
       'email',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     hash = _i1.ColumnString(
       'hash',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     verificationCode = _i1.ColumnString(
       'verificationCode',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

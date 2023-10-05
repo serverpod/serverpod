@@ -403,53 +403,43 @@ class LogEntryTable extends _i1.Table {
   }) : super(tableName: 'serverpod_log') {
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     messageId = _i1.ColumnInt(
       'messageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     reference = _i1.ColumnString(
       'reference',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     time = _i1.ColumnDateTime(
       'time',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     logLevel = _i1.ColumnEnum<_i2.LogLevel>(
       'logLevel',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     message = _i1.ColumnString(
       'message',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     error = _i1.ColumnString(
       'error',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     stackTrace = _i1.ColumnString(
       'stackTrace',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     order = _i1.ColumnInt(
       'order',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

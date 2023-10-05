@@ -278,18 +278,15 @@ class ChatReadMessageTable extends _i1.Table {
   }) : super(tableName: 'serverpod_chat_read_message') {
     channel = _i1.ColumnString(
       'channel',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     userId = _i1.ColumnInt(
       'userId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     lastReadMessageId = _i1.ColumnInt(
       'lastReadMessageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

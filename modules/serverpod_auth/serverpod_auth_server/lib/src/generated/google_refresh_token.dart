@@ -260,13 +260,11 @@ class GoogleRefreshTokenTable extends _i1.Table {
   }) : super(tableName: 'serverpod_google_refresh_token') {
     userId = _i1.ColumnInt(
       'userId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     refreshToken = _i1.ColumnString(
       'refreshToken',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

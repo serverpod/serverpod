@@ -12,7 +12,7 @@ class TableRelation {
   final Column foreignTableColumn;
 
   /// Relation column.
-  final Column column;
+  final String column;
 
   /// Query prefix for the relation.
   final String queryPrefix;
@@ -30,10 +30,7 @@ class TableRelation {
     return TableRelation(
       tableName: foreignTableName,
       foreignTableColumn: column,
-      column: ColumnString(
-        foreignColumnName,
-        queryPrefix: '$relationQueryPrefix$foreignTableName',
-      ),
+      column: '$relationQueryPrefix$foreignTableName."$foreignColumnName"',
       queryPrefix: relationQueryPrefix,
     );
   }

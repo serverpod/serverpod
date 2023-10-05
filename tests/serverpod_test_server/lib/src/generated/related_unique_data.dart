@@ -281,13 +281,11 @@ class RelatedUniqueDataTable extends _i1.Table {
   }) : super(tableName: 'related_unique_data') {
     uniqueDataId = _i1.ColumnInt(
       'uniqueDataId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     number = _i1.ColumnInt(
       'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

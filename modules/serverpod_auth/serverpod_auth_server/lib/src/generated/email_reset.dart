@@ -277,18 +277,15 @@ class EmailResetTable extends _i1.Table {
   }) : super(tableName: 'serverpod_email_reset') {
     userId = _i1.ColumnInt(
       'userId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     verificationCode = _i1.ColumnString(
       'verificationCode',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     expiration = _i1.ColumnDateTime(
       'expiration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

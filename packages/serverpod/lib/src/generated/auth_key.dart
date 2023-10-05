@@ -308,23 +308,19 @@ class AuthKeyTable extends _i1.Table {
   }) : super(tableName: 'serverpod_auth_key') {
     userId = _i1.ColumnInt(
       'userId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     hash = _i1.ColumnString(
       'hash',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     scopeNames = _i1.ColumnSerializable(
       'scopeNames',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     method = _i1.ColumnString(
       'method',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

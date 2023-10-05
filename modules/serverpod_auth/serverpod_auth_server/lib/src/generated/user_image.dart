@@ -276,18 +276,15 @@ class UserImageTable extends _i1.Table {
   }) : super(tableName: 'serverpod_user_image') {
     userId = _i1.ColumnInt(
       'userId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     version = _i1.ColumnInt(
       'version',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     url = _i1.ColumnString(
       'url',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

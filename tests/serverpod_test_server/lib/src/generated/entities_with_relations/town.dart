@@ -277,13 +277,11 @@ class TownTable extends _i1.Table {
   }) : super(tableName: 'town') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     mayorId = _i1.ColumnInt(
       'mayorId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

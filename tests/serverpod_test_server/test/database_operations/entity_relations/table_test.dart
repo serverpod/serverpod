@@ -21,7 +21,7 @@ void main() {
       test('then each column expression has table relation.', () {
         var columns = expression.columns;
         var columnWithTableRelations =
-            columns.where((element) => element.tableRelations != null);
+            columns.where((element) => element.table.tableRelations != null);
 
         expect(columnWithTableRelations.length, 2,
             reason:
@@ -38,12 +38,12 @@ void main() {
       });
 
       test('then table relations exists.', () {
-        expect(nestedRelationAccess.tableRelations, isNotNull);
+        expect(nestedRelationAccess.table.tableRelations, isNotNull);
       });
 
       test('then an table relation is build for each table relation reference.',
           () {
-        expect(nestedRelationAccess.tableRelations?.length, 3,
+        expect(nestedRelationAccess.table.tableRelations?.length, 3,
             reason:
                 'A table relation for each relation field traversal should be built, Citizen -> Company -> Town.');
       });
@@ -51,7 +51,7 @@ void main() {
       test(
           'then first table relation describes relation for citizen oldCompany field.',
           () {
-        var firstTableRelation = nestedRelationAccess.tableRelations![0];
+        var firstTableRelation = nestedRelationAccess.table.tableRelations![0];
 
         expectTableRelationWith(
           actualTable: firstTableRelation,
@@ -60,12 +60,12 @@ void main() {
           expectedForeignTableColumn: 'citizen."oldCompanyId"',
           expectedColumn: 'citizen_oldCompany_company."id"',
         );
-      }, skip: nestedRelationAccess.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelations == null);
 
       test(
           'then second table relation describes relation for company town field.',
           () {
-        var secondTableRelation = nestedRelationAccess.tableRelations![1];
+        var secondTableRelation = nestedRelationAccess.table.tableRelations![1];
 
         expectTableRelationWith(
           actualTable: secondTableRelation,
@@ -74,11 +74,11 @@ void main() {
           expectedForeignTableColumn: 'citizen_oldCompany_company."townId"',
           expectedColumn: 'citizen_oldCompany_company_town_town."id"',
         );
-      }, skip: nestedRelationAccess.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelations == null);
 
       test('then third table relation describes relation for town mayor field.',
           () {
-        var thirdTableRelation = nestedRelationAccess.tableRelations![2];
+        var thirdTableRelation = nestedRelationAccess.table.tableRelations![2];
 
         expectTableRelationWith(
           actualTable: thirdTableRelation,
@@ -89,7 +89,7 @@ void main() {
           expectedColumn:
               'citizen_oldCompany_company_town_town_mayor_citizen."id"',
         );
-      }, skip: nestedRelationAccess.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelations == null);
     });
   });
 }

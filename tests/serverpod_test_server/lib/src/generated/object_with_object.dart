@@ -336,33 +336,27 @@ class ObjectWithObjectTable extends _i1.Table {
   }) : super(tableName: 'object_with_object') {
     data = _i1.ColumnSerializable(
       'data',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nullableData = _i1.ColumnSerializable(
       'nullableData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     dataList = _i1.ColumnSerializable(
       'dataList',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nullableDataList = _i1.ColumnSerializable(
       'nullableDataList',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     listWithNullableData = _i1.ColumnSerializable(
       'listWithNullableData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nullableListWithNullableData = _i1.ColumnSerializable(
       'nullableListWithNullableData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

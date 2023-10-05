@@ -279,18 +279,15 @@ class EmailFailedSignInTable extends _i1.Table {
   }) : super(tableName: 'serverpod_email_failed_sign_in') {
     email = _i1.ColumnString(
       'email',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     time = _i1.ColumnDateTime(
       'time',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     ipAddress = _i1.ColumnString(
       'ipAddress',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
