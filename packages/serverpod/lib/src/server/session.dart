@@ -274,8 +274,15 @@ class MethodCallSession extends Session {
     }
 
     methodName ??= queryParameters['method'];
-    if (methodName == null && path == 'webserver') methodName = '';
-    this.methodName = methodName!;
+    if (methodName == null && path == 'webserver') {
+      this.methodName = '';
+    } else if (methodName != null) {
+      this.methodName = methodName;
+    } else {
+      throw FormatException(
+        'No method name specified in call to $endpointName',
+      );
+    }
 
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
