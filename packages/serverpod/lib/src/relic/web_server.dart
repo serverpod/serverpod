@@ -117,7 +117,7 @@ class WebServer {
     var session = MethodCallSession(
       server: serverpod.server,
       uri: uri,
-      endpointName: 'webserver',
+      path: 'webserver',
       body: '',
       authenticationKey: authenticationKey,
       httpRequest: request,
