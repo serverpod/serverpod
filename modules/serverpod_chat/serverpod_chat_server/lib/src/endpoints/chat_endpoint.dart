@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -10,6 +11,18 @@ import 'package:serverpod_auth_server/module.dart';
 
 import '../business/config.dart';
 import '../generated/protocol.dart';
+
+// TODO: make these configurable
+const maxImageWidth = 256;
+const maxImageHeight = 256;
+
+class _Thumbnail {
+  final int width;
+  final int height;
+  final ByteData byteData;
+
+  _Thumbnail(this.width, this.height, this.byteData);
+}
 
 /// Connect to the chat endpoint to send and receive chat messages.
 class ChatEndpoint extends Endpoint {
@@ -270,6 +283,31 @@ class ChatEndpoint extends Endpoint {
         filePath: filePath, uploadDescription: uploadDescription);
   }
 
+  /// Makes a thumbnail from an image.
+  Future<_Thumbnail> _makeThumbnail(Image image) async {
+    Image imageToUse = image;
+    if (image.width > maxImageWidth || image.height > maxImageHeight) {
+      // Shrink image to fit thumbnail max size
+      int? width;
+      int? height;
+      if (image.width / maxImageWidth > image.height / maxImageHeight) {
+        width = maxImageWidth;
+      } else {
+        height = maxImageHeight;
+      }
+      imageToUse = copyResize(
+        image,
+        width: width,
+        height: height,
+        interpolation: Interpolation.cubic,
+      );
+    }
+    // Convert thumbnail to jpeg
+    var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
+    var byteData = ByteData.view(encodedBytes.buffer);
+    return _Thumbnail(imageToUse.width, imageToUse.height, byteData);
+  }
+
   /// Verifies that an attachment has been uploaded.
   Future<ChatMessageAttachment?> verifyAttachmentUpload(
       Session session, String fileName, String filePath) async {
@@ -287,27 +325,24 @@ class ChatEndpoint extends Endpoint {
     int? thumbHeight;
 
     try {
-      const maxImageWidth = 256;
-
       var ext = path.extension(filePath.toLowerCase());
       if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
         var response = await http.get(url!);
         var bytes = response.bodyBytes;
         var image = decodeImage(bytes);
         if (image != null) {
-          if (image.width > maxImageWidth) {
-            image = copyResize(image, width: maxImageWidth);
-          }
+          // Run thumbnail generation in an isolate, because it is CPU-intensive
+          var thumbnail = await Isolate.run(() => _makeThumbnail(image));
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
-          var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
-          var byteData = ByteData.view(encodedBytes.buffer);
           await session.storage.storeFile(
-              storageId: 'public', path: thumbPath, byteData: byteData);
+              storageId: 'public',
+              path: thumbPath,
+              byteData: thumbnail.byteData);
           thumbUrl = await session.storage
               .getPublicUrl(storageId: 'public', path: thumbPath);
           if (thumbUrl != null) {
-            thumbWidth = image.width;
-            thumbHeight = image.height;
+            thumbWidth = thumbnail.width;
+            thumbHeight = thumbnail.height;
           }
         }
       }
