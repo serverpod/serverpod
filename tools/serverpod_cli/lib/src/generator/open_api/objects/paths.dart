@@ -97,62 +97,32 @@ class PathItemObject {
 
     /// Method name is operationId + Tag
     String operationId = method.name + tag.pascalCase;
-    ResponseObject responseObject = ResponseObject(
-      responseType: ContentObject(
-        contentTypes: [ContentType.applicationJson],
-        responseSchemaObject: ContentSchemaObject(
-          returnType: method.returnType,
-        ),
-      ),
-    );
-    // log.info('''
-    // ${method.name}
-    // ${method.returnType}
-    // ${method.returnType.className}
-    // ${method.returnType.generics.first.className}
-    // ${method.returnType.generics.map(
-    //           (e) => e.generics.map(
-    //             (e) => e.className,
-    //           ),
-    //         ).toList()}
 
-    // ''');
-    // log.info(method.parameters
-    //     .map((ParameterDefinition param) =>
-    //         'param required ${param.name} | type ${param.type.className}')
-    //     .toList()
-    //     .toString());
-
-    // log.info(method.parametersNamed
-    //     .map((ParameterDefinition param) =>
-    //         'param named ${param.name} | type ${param.type.className}')
-    //     .toList()
-    //     .toString());
-    // log.info(method.parametersPositional
-    //     .map((ParameterDefinition param) =>
-    //         'param p name ${param.name} | type ${param.type.className}')
-    //     .toList()
-    //     .toString());
     List<ParameterDefinition> params = [
       ...method.parameters,
       ...method.parametersNamed,
       ...method.parametersPositional
     ];
+    ResponseObject responseObject =
+        ResponseObject(responseType: method.returnType);
+    OperationObject operationObject = OperationObject(
+      description: description,
+      operationId: operationId,
+      responses: responseObject,
+      tags: [tag],
 
-    // TODO : Change to OperationObject.fromParameterDefinitionList
+      /// No need in OpeApi 2.0
+      parameters: [],
+
+      requestBody: RequestBodyObject(
+        parameterList: params,
+        requiredField: true,
+      ),
+      security: SecurityRequirementObject(),
+    );
     return PathItemObject(
       description: description,
-      postOperation: OperationObject(
-        description: description,
-        operationId: operationId,
-        responses: responseObject,
-        tags: [tag],
-
-        /// No need in OpeApi 2.0
-        parameters: [],
-        requestBody: RequestBodyObject.fromParameterDefinitionList(params),
-        security: SecurityRequirementObject(),
-      ),
+      postOperation: operationObject,
     );
   }
 }

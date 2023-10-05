@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 ///example
@@ -17,25 +18,28 @@ part of '../open_api_objects.dart';
 ///           },
 /// ```
 class ContentObject {
-  final List<String> contentTypes;
-  final ContentSchemaObject? responseSchemaObject;
   final RequestContentSchemaObject? requestContentSchemaObject;
+  final TypeDefinition? responseType;
   ContentObject({
-    required this.contentTypes,
-    this.responseSchemaObject,
     this.requestContentSchemaObject,
+    this.responseType,
   });
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> contentMap = {};
-    for (var type in contentTypes) {
-      contentMap[type] = {};
-      if (responseSchemaObject != null) {
-        contentMap[type]['schema'] = responseSchemaObject!.toJson();
-      }
-      if (requestContentSchemaObject != null) {
-        contentMap[type]['schema'] = requestContentSchemaObject!.toJson();
-      }
+
+    contentMap[ContentType.applicationJson] = {};
+
+    if (requestContentSchemaObject != null) {
+      contentMap[ContentType.applicationJson]['schema'] =
+          requestContentSchemaObject!.toJson();
+      return contentMap;
+    }
+
+    if (responseType != null) {
+      contentMap[ContentType.applicationJson]['schema'] =
+          typeToJson(responseType!, true);
+      return contentMap;
     }
 
     return contentMap;

@@ -1,7 +1,16 @@
 part of '../open_api_objects.dart';
 
 extension CheckDartCoreType on TypeDefinition {
-  bool get isDartCoreType => (url == 'dart:typed_data') || (url == 'dart:core');
+  bool get isDartCoreType =>
+      (className == 'String') ||
+      (className == 'int') ||
+      (className == 'double') ||
+      (className == 'bool') ||
+      (className == 'List') ||
+      (className == 'Map') ||
+      (className == 'Set') ||
+      (className == 'ByteData') ||
+      (className == 'BigInt');
 }
 
 /// example

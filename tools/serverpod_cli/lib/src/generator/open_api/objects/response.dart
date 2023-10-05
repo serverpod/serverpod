@@ -5,7 +5,7 @@ part of '../open_api_objects.dart';
 /// successful response. A response is defined by its HTTP status code and the
 /// data returned in the response body and/or headers.
 class ResponseObject {
-  final ContentObject responseType;
+  final TypeDefinition responseType;
   ResponseObject({
     required this.responseType,
   });
@@ -13,8 +13,9 @@ class ResponseObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     //200 response
+    var content = ContentObject(responseType: responseType);
     map['200'] = <String, dynamic>{'description': 'Success'};
-    map['200']['content'] = responseType.toJson();
+    map['200']['content'] = content.toJson();
     //400 bad request
     map['400'] = {
       'description':
