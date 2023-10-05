@@ -191,7 +191,7 @@ ALTER TABLE ONLY "organization"
 CREATE TABLE "person" (
   "id" serial,
   "name" text NOT NULL,
-  "organizationId" integer NOT NULL,
+  "organizationId" integer,
   "_cityCitizensCityId" integer
 );
 

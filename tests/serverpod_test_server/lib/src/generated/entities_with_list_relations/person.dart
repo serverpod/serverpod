@@ -13,14 +13,14 @@ abstract class Person extends _i1.TableRow {
   Person._({
     int? id,
     required this.name,
-    required this.organizationId,
+    this.organizationId,
     this.organization,
   }) : super(id);
 
   factory Person({
     int? id,
     required String name,
-    required int organizationId,
+    int? organizationId,
     _i2.Organization? organization,
   }) = _PersonImpl;
 
@@ -32,7 +32,7 @@ abstract class Person extends _i1.TableRow {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       organizationId: serializationManager
-          .deserialize<int>(jsonSerialization['organizationId']),
+          .deserialize<int?>(jsonSerialization['organizationId']),
       organization: serializationManager
           .deserialize<_i2.Organization?>(jsonSerialization['organization']),
     );
@@ -44,7 +44,7 @@ abstract class Person extends _i1.TableRow {
 
   String name;
 
-  int organizationId;
+  int? organizationId;
 
   _i2.Organization? organization;
 
@@ -250,7 +250,7 @@ class _PersonImpl extends Person {
   _PersonImpl({
     int? id,
     required String name,
-    required int organizationId,
+    int? organizationId,
     _i2.Organization? organization,
   }) : super._(
           id: id,
@@ -263,13 +263,14 @@ class _PersonImpl extends Person {
   Person copyWith({
     Object? id = _Undefined,
     String? name,
-    int? organizationId,
+    Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
     return Person(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId: organizationId ?? this.organizationId,
+      organizationId:
+          organizationId is int? ? organizationId : this.organizationId,
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
@@ -281,7 +282,7 @@ class PersonImplicit extends _PersonImpl {
   PersonImplicit._({
     int? id,
     required String name,
-    required int organizationId,
+    int? organizationId,
     _i2.Organization? organization,
     this.$_cityCitizensCityId,
   }) : super(
@@ -407,6 +408,8 @@ class PersonRepository {
   const PersonRepository._();
 
   final attachRow = const PersonAttachRowRepository._();
+
+  final detachRow = const PersonDetachRowRepository._();
 
   Future<List<Person>> find(
     _i1.Session session, {
@@ -567,6 +570,25 @@ class PersonAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
+    await session.dbNext.updateRow<Person>(
+      $person,
+      columns: [Person.t.organizationId],
+    );
+  }
+}
+
+class PersonDetachRowRepository {
+  const PersonDetachRowRepository._();
+
+  Future<void> organization(
+    _i1.Session session,
+    Person person,
+  ) async {
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
+    }
+
+    var $person = person.copyWith(organizationId: null);
     await session.dbNext.updateRow<Person>(
       $person,
       columns: [Person.t.organizationId],

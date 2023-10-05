@@ -2,4 +2,4 @@ class: Person
 table: person
 fields:
   name: String
-  organization: Organization?, relation(name=org_person)
+  organization: Organization?, relation(name=org_person, optional)

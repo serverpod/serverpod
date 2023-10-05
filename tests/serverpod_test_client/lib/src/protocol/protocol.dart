@@ -49,17 +49,19 @@ import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i39;
 import 'package:uuid/uuid.dart' as _i40;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i41;
 import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i42;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/citizen.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_list_relations/person.dart'
     as _i43;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/citizen.dart'
     as _i44;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
     as _i45;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
     as _i46;
-import 'package:serverpod_test_client/src/custom_classes.dart' as _i47;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i48;
-import 'package:serverpod_auth_client/module.dart' as _i49;
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
+    as _i47;
+import 'package:serverpod_test_client/src/custom_classes.dart' as _i48;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i49;
+import 'package:serverpod_auth_client/module.dart' as _i50;
 export 'entities_with_list_relations/city.dart';
 export 'entities_with_list_relations/organization.dart';
 export 'entities_with_list_relations/person.dart';
@@ -616,20 +618,24 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i42.UniqueData>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i43.Citizen>) {
-      return (data as List).map((e) => deserialize<_i43.Citizen>(e)).toList()
+    if (t == List<_i43.Person>) {
+      return (data as List).map((e) => deserialize<_i43.Person>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i44.Address>) {
-      return (data as List).map((e) => deserialize<_i44.Address>(e)).toList()
+    if (t == List<_i44.Citizen>) {
+      return (data as List).map((e) => deserialize<_i44.Citizen>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i45.Post>) {
-      return (data as List).map((e) => deserialize<_i45.Post>(e)).toList()
+    if (t == List<_i45.Address>) {
+      return (data as List).map((e) => deserialize<_i45.Address>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i46.Company>) {
-      return (data as List).map((e) => deserialize<_i46.Company>(e)).toList()
+    if (t == List<_i46.Post>) {
+      return (data as List).map((e) => deserialize<_i46.Post>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i47.Company>) {
+      return (data as List).map((e) => deserialize<_i47.Company>(e)).toList()
           as dynamic;
     }
     if (t == List<List<int>>) {
@@ -879,33 +885,33 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i47.CustomClass) {
-      return _i47.CustomClass.fromJson(data, this) as T;
+    if (t == _i48.CustomClass) {
+      return _i48.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i48.ExternalCustomClass) {
-      return _i48.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i49.ExternalCustomClass) {
+      return _i49.ExternalCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i48.FreezedCustomClass) {
-      return _i48.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i49.FreezedCustomClass) {
+      return _i49.FreezedCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i47.CustomClass?>()) {
-      return (data != null ? _i47.CustomClass.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i48.CustomClass?>()) {
+      return (data != null ? _i48.CustomClass.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i48.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i49.ExternalCustomClass?>()) {
       return (data != null
-          ? _i48.ExternalCustomClass.fromJson(data, this)
+          ? _i49.ExternalCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i48.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i49.FreezedCustomClass?>()) {
       return (data != null
-          ? _i48.FreezedCustomClass.fromJson(data, this)
+          ? _i49.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
       return _i36.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
-      return _i49.Protocol().deserialize<T>(data, t);
+      return _i50.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -917,17 +923,17 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
-    className = _i49.Protocol().getClassNameForObject(data);
+    className = _i50.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i47.CustomClass) {
+    if (data is _i48.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i48.ExternalCustomClass) {
+    if (data is _i49.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i48.FreezedCustomClass) {
+    if (data is _i49.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i2.City) {
@@ -1040,16 +1046,16 @@ class Protocol extends _i1.SerializationManager {
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
-      return _i49.Protocol().deserializeByClassName(data);
+      return _i50.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i47.CustomClass>(data['data']);
+      return deserialize<_i48.CustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i48.ExternalCustomClass>(data['data']);
+      return deserialize<_i49.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i48.FreezedCustomClass>(data['data']);
+      return deserialize<_i49.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'City') {
       return deserialize<_i2.City>(data['data']);

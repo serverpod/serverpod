@@ -53,16 +53,18 @@ import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i43;
 import 'package:uuid/uuid.dart' as _i44;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i45;
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i46;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_list_relations/person.dart'
     as _i47;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
     as _i48;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
     as _i49;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
     as _i50;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i51;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i52;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
+    as _i51;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i52;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i53;
 export 'entities_with_list_relations/city.dart';
 export 'entities_with_list_relations/organization.dart';
 export 'entities_with_list_relations/person.dart';
@@ -842,8 +844,8 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ColumnDefinition(
           name: 'organizationId',
           columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
+          isNullable: true,
+          dartType: 'int?',
         ),
         _i2.ColumnDefinition(
           name: '_cityCitizensCityId',
@@ -1805,20 +1807,24 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i46.UniqueData>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i47.Citizen>) {
-      return (data as List).map((e) => deserialize<_i47.Citizen>(e)).toList()
+    if (t == List<_i47.Person>) {
+      return (data as List).map((e) => deserialize<_i47.Person>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i48.Address>) {
-      return (data as List).map((e) => deserialize<_i48.Address>(e)).toList()
+    if (t == List<_i48.Citizen>) {
+      return (data as List).map((e) => deserialize<_i48.Citizen>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i49.Post>) {
-      return (data as List).map((e) => deserialize<_i49.Post>(e)).toList()
+    if (t == List<_i49.Address>) {
+      return (data as List).map((e) => deserialize<_i49.Address>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i50.Company>) {
-      return (data as List).map((e) => deserialize<_i50.Company>(e)).toList()
+    if (t == List<_i50.Post>) {
+      return (data as List).map((e) => deserialize<_i50.Post>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i51.Company>) {
+      return (data as List).map((e) => deserialize<_i51.Company>(e)).toList()
           as dynamic;
     }
     if (t == List<List<int>>) {
@@ -2068,26 +2074,26 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i51.CustomClass) {
-      return _i51.CustomClass.fromJson(data, this) as T;
+    if (t == _i52.CustomClass) {
+      return _i52.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i52.ExternalCustomClass) {
-      return _i52.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i53.ExternalCustomClass) {
+      return _i53.ExternalCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i52.FreezedCustomClass) {
-      return _i52.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i53.FreezedCustomClass) {
+      return _i53.FreezedCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i51.CustomClass?>()) {
-      return (data != null ? _i51.CustomClass.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i52.CustomClass?>()) {
+      return (data != null ? _i52.CustomClass.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i52.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i53.ExternalCustomClass?>()) {
       return (data != null
-          ? _i52.ExternalCustomClass.fromJson(data, this)
+          ? _i53.ExternalCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i52.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i53.FreezedCustomClass?>()) {
       return (data != null
-          ? _i52.FreezedCustomClass.fromJson(data, this)
+          ? _i53.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
@@ -2113,13 +2119,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i51.CustomClass) {
+    if (data is _i52.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i52.ExternalCustomClass) {
+    if (data is _i53.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i52.FreezedCustomClass) {
+    if (data is _i53.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i5.City) {
@@ -2241,13 +2247,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i4.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i51.CustomClass>(data['data']);
+      return deserialize<_i52.CustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i52.ExternalCustomClass>(data['data']);
+      return deserialize<_i53.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i52.FreezedCustomClass>(data['data']);
+      return deserialize<_i53.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'City') {
       return deserialize<_i5.City>(data['data']);

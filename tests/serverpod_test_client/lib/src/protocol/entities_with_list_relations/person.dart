@@ -13,14 +13,14 @@ abstract class Person extends _i1.SerializableEntity {
   Person._({
     this.id,
     required this.name,
-    required this.organizationId,
+    this.organizationId,
     this.organization,
   });
 
   factory Person({
     int? id,
     required String name,
-    required int organizationId,
+    int? organizationId,
     _i2.Organization? organization,
   }) = _PersonImpl;
 
@@ -32,7 +32,7 @@ abstract class Person extends _i1.SerializableEntity {
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       organizationId: serializationManager
-          .deserialize<int>(jsonSerialization['organizationId']),
+          .deserialize<int?>(jsonSerialization['organizationId']),
       organization: serializationManager
           .deserialize<_i2.Organization?>(jsonSerialization['organization']),
     );
@@ -45,7 +45,7 @@ abstract class Person extends _i1.SerializableEntity {
 
   String name;
 
-  int organizationId;
+  int? organizationId;
 
   _i2.Organization? organization;
 
@@ -72,7 +72,7 @@ class _PersonImpl extends Person {
   _PersonImpl({
     int? id,
     required String name,
-    required int organizationId,
+    int? organizationId,
     _i2.Organization? organization,
   }) : super._(
           id: id,
@@ -85,13 +85,14 @@ class _PersonImpl extends Person {
   Person copyWith({
     Object? id = _Undefined,
     String? name,
-    int? organizationId,
+    Object? organizationId = _Undefined,
     Object? organization = _Undefined,
   }) {
     return Person(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      organizationId: organizationId ?? this.organizationId,
+      organizationId:
+          organizationId is int? ? organizationId : this.organizationId,
       organization: organization is _i2.Organization?
           ? organization
           : this.organization?.copyWith(),
