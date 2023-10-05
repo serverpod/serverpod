@@ -284,8 +284,11 @@ class ChatEndpoint extends Endpoint {
   }
 
   /// Makes a thumbnail from an image.
-  Future<_Thumbnail> _makeThumbnail(Image image) async {
-    Image imageToUse = image;
+  Future<_Thumbnail?> _makeThumbnail(Uint8List bytes) async {
+    var image = decodeImage(bytes);
+    if (image == null) {
+      return null;
+    }
     if (image.width > maxImageWidth || image.height > maxImageHeight) {
       // Shrink image to fit thumbnail max size
       int? width;
@@ -295,7 +298,7 @@ class ChatEndpoint extends Endpoint {
       } else {
         height = maxImageHeight;
       }
-      imageToUse = copyResize(
+      image = copyResize(
         image,
         width: width,
         height: height,
@@ -305,7 +308,7 @@ class ChatEndpoint extends Endpoint {
     // Convert thumbnail to jpeg
     var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
     var byteData = ByteData.view(encodedBytes.buffer);
-    return _Thumbnail(imageToUse.width, imageToUse.height, byteData);
+    return _Thumbnail(image.width, image.height, byteData);
   }
 
   /// Verifies that an attachment has been uploaded.
@@ -329,10 +332,9 @@ class ChatEndpoint extends Endpoint {
       if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
         var response = await http.get(url!);
         var bytes = response.bodyBytes;
-        var image = decodeImage(bytes);
-        if (image != null) {
-          // Run thumbnail generation in an isolate, because it is CPU-intensive
-          var thumbnail = await Isolate.run(() => _makeThumbnail(image));
+        // Run thumbnail generation in an isolate, because it is CPU-intensive
+        var thumbnail = await Isolate.run(() => _makeThumbnail(bytes));
+        if (thumbnail != null) {
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
           await session.storage.storeFile(
               storageId: 'public',
