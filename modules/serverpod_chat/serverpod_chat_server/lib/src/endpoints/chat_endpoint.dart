@@ -283,34 +283,6 @@ class ChatEndpoint extends Endpoint {
         filePath: filePath, uploadDescription: uploadDescription);
   }
 
-  /// Makes a thumbnail from an image.
-  Future<_Thumbnail?> _makeThumbnail(Uint8List bytes) async {
-    var image = decodeImage(bytes);
-    if (image == null) {
-      return null;
-    }
-    if (image.width > maxImageWidth || image.height > maxImageHeight) {
-      // Shrink image to fit thumbnail max size
-      int? width;
-      int? height;
-      if (image.width / maxImageWidth > image.height / maxImageHeight) {
-        width = maxImageWidth;
-      } else {
-        height = maxImageHeight;
-      }
-      image = copyResize(
-        image,
-        width: width,
-        height: height,
-        interpolation: Interpolation.cubic,
-      );
-    }
-    // Convert thumbnail to jpeg
-    var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
-    var byteData = ByteData.view(encodedBytes.buffer);
-    return _Thumbnail(image.width, image.height, byteData);
-  }
-
   /// Verifies that an attachment has been uploaded.
   Future<ChatMessageAttachment?> verifyAttachmentUpload(
       Session session, String fileName, String filePath) async {
@@ -333,7 +305,32 @@ class ChatEndpoint extends Endpoint {
         var response = await http.get(url!);
         var bytes = response.bodyBytes;
         // Run thumbnail generation in an isolate, because it is CPU-intensive
-        var thumbnail = await Isolate.run(() => _makeThumbnail(bytes));
+        var thumbnail = await Isolate.run(() {
+          var image = decodeImage(bytes);
+          if (image == null) {
+            return null;
+          }
+          if (image.width > maxImageWidth || image.height > maxImageHeight) {
+            // Shrink image to fit thumbnail max size
+            int? width;
+            int? height;
+            if (image.width / maxImageWidth > image.height / maxImageHeight) {
+              width = maxImageWidth;
+            } else {
+              height = maxImageHeight;
+            }
+            image = copyResize(
+              image,
+              width: width,
+              height: height,
+              interpolation: Interpolation.cubic,
+            );
+          }
+          // Convert thumbnail to jpeg
+          var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
+          var byteData = ByteData.view(encodedBytes.buffer);
+          return _Thumbnail(image.width, image.height, byteData);
+        });
         if (thumbnail != null) {
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
           await session.storage.storeFile(
