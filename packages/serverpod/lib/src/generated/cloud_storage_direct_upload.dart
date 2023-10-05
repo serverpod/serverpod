@@ -289,10 +289,8 @@ typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
     Function(CloudStorageDirectUploadEntryTable);
 
 class CloudStorageDirectUploadEntryTable extends _i1.Table {
-  CloudStorageDirectUploadEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_cloud_storage_direct_upload') {
+  CloudStorageDirectUploadEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_cloud_storage_direct_upload') {
     storageId = _i1.ColumnString(
       'storageId',
       this,

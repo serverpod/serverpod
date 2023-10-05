@@ -457,10 +457,8 @@ typedef SessionLogEntryExpressionBuilder = _i1.Expression Function(
     SessionLogEntryTable);
 
 class SessionLogEntryTable extends _i1.Table {
-  SessionLogEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_session_log') {
+  SessionLogEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_session_log') {
     serverId = _i1.ColumnString(
       'serverId',
       this,

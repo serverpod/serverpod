@@ -285,10 +285,7 @@ class _CompanyImpl extends Company {
 typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
 
 class CompanyTable extends _i1.Table {
-  CompanyTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'company') {
+  CompanyTable({super.tableRelation}) : super(tableName: 'company') {
     name = _i1.ColumnString(
       'name',
       this,
@@ -308,22 +305,12 @@ class CompanyTable extends _i1.Table {
   _i2.TownTable get town {
     if (_town != null) return _town!;
     _town = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'town',
-      foreignTableName: _i2.Town.t.tableName,
-      column: townId,
-      foreignColumnName: _i2.Town.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.TownTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'town',
+      field: Company.t.townId,
+      foreignField: _i2.Town.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.TownTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }

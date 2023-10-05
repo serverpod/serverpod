@@ -270,10 +270,8 @@ class _EmailAuthImpl extends EmailAuth {
 typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 
 class EmailAuthTable extends _i1.Table {
-  EmailAuthTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_email_auth') {
+  EmailAuthTable({super.tableRelation})
+      : super(tableName: 'serverpod_email_auth') {
     userId = _i1.ColumnInt(
       'userId',
       this,

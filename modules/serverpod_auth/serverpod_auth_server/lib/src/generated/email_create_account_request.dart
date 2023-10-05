@@ -290,10 +290,8 @@ typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
     EmailCreateAccountRequestTable);
 
 class EmailCreateAccountRequestTable extends _i1.Table {
-  EmailCreateAccountRequestTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_email_create_request') {
+  EmailCreateAccountRequestTable({super.tableRelation})
+      : super(tableName: 'serverpod_email_create_request') {
     userName = _i1.ColumnString(
       'userName',
       this,

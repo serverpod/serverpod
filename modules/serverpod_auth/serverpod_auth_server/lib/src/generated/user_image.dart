@@ -270,10 +270,8 @@ class _UserImageImpl extends UserImage {
 typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 class UserImageTable extends _i1.Table {
-  UserImageTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_user_image') {
+  UserImageTable({super.tableRelation})
+      : super(tableName: 'serverpod_user_image') {
     userId = _i1.ColumnInt(
       'userId',
       this,
