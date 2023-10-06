@@ -9,20 +9,19 @@ void main() {
 
   group('Given SelectQueryBuilder', () {
     test('when default initialized then build outputs a valid SQL query.', () {
-      var query = SelectQueryBuilder(table: 'citizen').build();
+      var query = SelectQueryBuilder(table: citizenTable).build();
 
       expect(query, 'SELECT * FROM "citizen"');
     });
 
     test('when query with specific fields is built then output selects fields.',
         () {
-      var table = Table(tableName: 'citizen');
       var fields = [
-        ColumnString('id', table),
-        ColumnString('name', table),
-        ColumnString('age', table),
+        ColumnString('id', citizenTable),
+        ColumnString('name', citizenTable),
+        ColumnString('age', citizenTable),
       ];
-      var query = SelectQueryBuilder(table: table.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withSelectFields(fields)
           .build();
 
@@ -33,7 +32,7 @@ void main() {
     test(
         'when query with simple where expression is built then output is a WHERE query.',
         () {
-      var query = SelectQueryBuilder(table: 'citizen')
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
@@ -47,7 +46,7 @@ void main() {
       var expression2 = const Expression('FALSE = FALSE');
       var combinedExpression = expression1 & expression2;
 
-      var query = SelectQueryBuilder(table: 'citizen')
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(combinedExpression)
           .build();
 
@@ -58,14 +57,13 @@ void main() {
     test(
         'when query with single order by is built then output is single order by query.',
         () {
-      var table = Table(tableName: 'citizen');
       Order order = Order(
-        column: ColumnString('id', table),
+        column: ColumnString('id', citizenTable),
         orderDescending: false,
       );
 
-      var query = SelectQueryBuilder(table: table.tableName)
-          .withOrderBy([order]).build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
       expect(query, 'SELECT * FROM "citizen" ORDER BY citizen."id"');
     });
@@ -73,39 +71,38 @@ void main() {
     test(
         'when query with multiple order by is built then output is query with multiple order by requirements.',
         () {
-      var table = Table(tableName: 'citizen');
       var orders = [
         Order(
-          column: ColumnString('id', table),
+          column: ColumnString('id', citizenTable),
           orderDescending: false,
         ),
         Order(
-          column: ColumnString('name', table),
+          column: ColumnString('name', citizenTable),
           orderDescending: true,
         ),
         Order(
-          column: ColumnString('age', table),
+          column: ColumnString('age', citizenTable),
           orderDescending: false,
         )
       ];
 
-      var query = SelectQueryBuilder(table: table.tableName)
-          .withOrderBy(orders)
-          .build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy(orders).build();
 
       expect(query,
           'SELECT * FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
     });
 
     test('when query with limit is built then output is query with limit.', () {
-      var query = SelectQueryBuilder(table: 'citizen').withLimit(10).build();
+      var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
       expect(query, 'SELECT * FROM "citizen" LIMIT 10');
     });
 
     test('when query with offset is built then output is query with offset.',
         () {
-      var query = SelectQueryBuilder(table: 'citizen').withOffset(10).build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOffset(10).build();
 
       expect(query, 'SELECT * FROM "citizen" OFFSET 10');
     });
@@ -124,7 +121,7 @@ void main() {
         ]),
       );
 
-      var query = SelectQueryBuilder(table: citizenTable.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
@@ -151,7 +148,7 @@ void main() {
         ]),
       );
 
-      var query = SelectQueryBuilder(table: citizenTable.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             nestedRelationTable,
@@ -175,7 +172,7 @@ void main() {
         ]),
       );
 
-      var query = SelectQueryBuilder(table: citizenTable.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withSelectFields([
             ColumnString('id', citizenTable),
             ColumnString('name', citizenTable),
@@ -200,7 +197,7 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var queryBuilder = SelectQueryBuilder(table: citizenTable.tableName)
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(
@@ -215,7 +212,7 @@ void main() {
 
     test('when order by has different table as base then exception is thrown.',
         () {
-      var queryBuilder = SelectQueryBuilder(table: citizenTable.tableName)
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
           .withOrderBy([Order(column: ColumnString('name', companyTable))]);
 
       expect(
@@ -231,21 +228,22 @@ void main() {
 
   group('Given CountQueryBuilder', () {
     test('when default initialized then build outputs a valid SQL query.', () {
-      var query = CountQueryBuilder(table: 'citizen').build();
+      var query = CountQueryBuilder(table: citizenTable).build();
 
       expect(query, 'SELECT COUNT(*) FROM "citizen"');
     });
     test('when query with alias is built then count result has defined alias.',
         () {
       var query =
-          CountQueryBuilder(table: 'citizen').withCountAlias('c').build();
+          CountQueryBuilder(table: citizenTable).withCountAlias('c').build();
 
       expect(query, 'SELECT COUNT(*) AS c FROM "citizen"');
     });
 
     test('when query with field is built then count is based on that field.',
         () {
-      var query = CountQueryBuilder(table: 'citizen').withField('age').build();
+      var query =
+          CountQueryBuilder(table: citizenTable).withField('age').build();
 
       expect(query, 'SELECT COUNT(age) FROM "citizen"');
     });
@@ -253,7 +251,7 @@ void main() {
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var query = CountQueryBuilder(table: 'citizen')
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
@@ -262,7 +260,7 @@ void main() {
 
     test('when query with limit is built then output is a query with limit.',
         () {
-      var query = CountQueryBuilder(table: 'citizen').withLimit(10).build();
+      var query = CountQueryBuilder(table: citizenTable).withLimit(10).build();
 
       expect(query, 'SELECT COUNT(*) FROM "citizen" LIMIT 10');
     });
@@ -281,7 +279,7 @@ void main() {
         ]),
       );
 
-      var query = CountQueryBuilder(table: citizenTable.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             relationTable,
@@ -311,7 +309,7 @@ void main() {
         ]),
       );
 
-      var query = CountQueryBuilder(table: citizenTable.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             nestedRelationTable,
@@ -336,7 +334,7 @@ void main() {
         ]),
       );
 
-      var query = CountQueryBuilder(table: citizenTable.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withCountAlias('c')
           .withField('age')
           .withWhere(
@@ -352,7 +350,7 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var queryBuilder = CountQueryBuilder(table: citizenTable.tableName)
+      var queryBuilder = CountQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(
@@ -368,7 +366,7 @@ void main() {
 
   group('Given DeleteQueryBuilder', () {
     test('when default initialized then build outputs a valid SQL query.', () {
-      var query = DeleteQueryBuilder(table: 'citizen').build();
+      var query = DeleteQueryBuilder(table: citizenTable).build();
 
       expect(query, 'DELETE FROM "citizen"');
     });
@@ -376,7 +374,7 @@ void main() {
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen')
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
@@ -385,7 +383,7 @@ void main() {
 
     test('when query returning all is built then output is a return all query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen')
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withReturn(Returning.all)
           .build();
 
@@ -394,8 +392,9 @@ void main() {
 
     test('when query return id is build then the output is a return id query.',
         () {
-      var query =
-          DeleteQueryBuilder(table: 'citizen').withReturn(Returning.id).build();
+      var query = DeleteQueryBuilder(table: citizenTable)
+          .withReturn(Returning.id)
+          .build();
 
       expect(query, 'DELETE FROM "citizen" RETURNING "citizen".id');
     });
@@ -414,7 +413,7 @@ void main() {
         ]),
       );
 
-      var query = DeleteQueryBuilder(table: citizenTable.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
@@ -441,7 +440,7 @@ void main() {
         ]),
       );
 
-      var query = DeleteQueryBuilder(table: citizenTable.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', nestedRelationTable).equals('Alex'))
           .build();
 
@@ -463,7 +462,7 @@ void main() {
         ]),
       );
 
-      var query = DeleteQueryBuilder(table: citizenTable.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .withReturn(Returning.all)
           .build();
@@ -475,7 +474,7 @@ void main() {
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var queryBuilder = DeleteQueryBuilder(table: citizenTable.tableName)
+      var queryBuilder = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(

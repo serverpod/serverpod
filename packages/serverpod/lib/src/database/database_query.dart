@@ -11,7 +11,7 @@ import 'package:serverpod/src/database/table_relation.dart';
 /// where expressions and includes for table relations.
 @internal
 class SelectQueryBuilder {
-  final String _table;
+  final Table _table;
   List<Column>? _fields;
   List<Order>? _orderBy;
   int? _limit;
@@ -20,17 +20,21 @@ class SelectQueryBuilder {
   Include? _include;
 
   /// Creates a new [SelectQueryBuilder].
-  SelectQueryBuilder({required String table}) : _table = table;
+  SelectQueryBuilder({required Table table}) : _table = table;
 
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(_table, orderBy: _orderBy, where: _where);
+    _validateTableReferences(
+      _table.tableName,
+      orderBy: _orderBy,
+      where: _where,
+    );
 
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
 
     var query = _buildSelectQuery(_fields, _include);
-    query += ' FROM "$_table"';
+    query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
     if (_orderBy != null) {
@@ -94,14 +98,14 @@ class SelectQueryBuilder {
 /// for table relations.
 @internal
 class CountQueryBuilder {
-  final String _table;
+  final Table _table;
   String? _alias;
   String _field;
   int? _limit;
   Expression? _where;
 
   /// Creates a new [CountQueryBuilder].
-  CountQueryBuilder({required String table})
+  CountQueryBuilder({required Table table})
       : _table = table,
         _field = '*';
 
@@ -134,13 +138,13 @@ class CountQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(_table, where: _where);
+    _validateTableReferences(_table.tableName, where: _where);
 
     var join = _buildJoinQuery(where: _where);
 
     var query = 'SELECT COUNT($_field)';
     if (_alias != null) query += ' AS $_alias';
-    query += ' FROM "$_table"';
+    query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
     if (_limit != null) query += ' LIMIT $_limit';
@@ -171,12 +175,12 @@ enum Returning {
 /// Builds a SQL query for a delete statement.
 @internal
 class DeleteQueryBuilder {
-  final String _table;
+  final Table _table;
   String? _returningStatement;
   Expression? _where;
 
   /// Creates a new [DeleteQueryBuilder].
-  DeleteQueryBuilder({required String table})
+  DeleteQueryBuilder({required Table table})
       : _table = table,
         _returningStatement = null;
 
@@ -187,7 +191,7 @@ class DeleteQueryBuilder {
         _returningStatement = ' RETURNING *';
         break;
       case Returning.id:
-        _returningStatement = ' RETURNING "$_table".id';
+        _returningStatement = ' RETURNING "${_table.tableName}".id';
         break;
       case Returning.none:
         _returningStatement = null;
@@ -207,11 +211,11 @@ class DeleteQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(_table, where: _where);
+    _validateTableReferences(_table.tableName, where: _where);
 
     var using = _buildUsingQuery(where: _where);
 
-    var query = 'DELETE FROM "$_table"';
+    var query = 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
     if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
