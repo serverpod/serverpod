@@ -111,6 +111,16 @@ class BuildRepositoryClass {
     return fields.any(_shouldCreateDetachMethodFromField);
   }
 
+  bool hasImplicitClassOperations(
+      List<SerializableEntityFieldDefinition> fields) {
+    return fields.any((e) => e.hiddenSerializableField(serverCode));
+  }
+
+  bool _hasImplicitListRelation(SerializableEntityFieldDefinition field) {
+    var relation = field.relation;
+    return relation is ListRelationDefinition && relation.implicitForeignField;
+  }
+
   bool _shouldCreateAttachMethodFromField(
     SerializableEntityFieldDefinition field,
   ) {

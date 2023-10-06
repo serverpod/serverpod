@@ -1,3 +1,4 @@
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
@@ -166,6 +167,50 @@ class ClassDefinitionBuilder {
               .build())
           .build(),
     ]);
+    return this;
+  }
+
+  ClassDefinitionBuilder withImplicitListRelationField(
+    String fieldName,
+    String className,
+  ) {
+    _fields.add(() {
+      return FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withShouldPersist(false)
+          .withTypeDefinition(className, true)
+          .withRelation(ListRelationDefinition(
+            fieldName: 'id',
+            foreignFieldName:
+                '\$_${_className.camelCase}${fieldName.pascalCase}${_className.pascalCase}Id',
+            nullableRelation: true,
+            implicitForeignField: true,
+          ))
+          .build();
+    });
+    return this;
+  }
+
+  ClassDefinitionBuilder withListRelationField(
+    String fieldName,
+    String className,
+    String foreignKeyFieldName, {
+    bool nullableRelation = false,
+  }) {
+    _fields.add(() {
+      return FieldDefinitionBuilder()
+          .withName(fieldName)
+          .withShouldPersist(false)
+          .withTypeDefinition(className, true)
+          .withRelation(ListRelationDefinition(
+            fieldName: 'id',
+            foreignFieldName: foreignKeyFieldName,
+            nullableRelation: nullableRelation,
+            implicitForeignField: false,
+          ))
+          .build();
+    });
+
     return this;
   }
 

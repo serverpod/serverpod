@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
@@ -58,6 +59,8 @@ class SerializableEntityLibraryGenerator {
             tableName,
             fields,
           ),
+          if (buildRepository.hasImplicitClassOperations(fields))
+            _buildEntityImplicitClass(className, classDefinition),
         ]);
 
         if (serverCode && tableName != null) {
@@ -222,6 +225,124 @@ class SerializableEntityLibraryGenerator {
           _buildEntityImplClassConstructor(classDefinition, fields, tableName),
         )
         ..methods.add(_buildCopyWithMethod(classDefinition, fields));
+    });
+  }
+
+  Class _buildEntityImplicitClass(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    var hiddenFields = classDefinition.fields
+        .where((field) => field.hiddenSerializableField(serverCode));
+    var visibleFields = classDefinition.fields
+        .where((field) => field.shouldIncludeField(serverCode));
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}Implicit'
+        ..extend = refer(className)
+        ..fields.addAll(hiddenFields.map((field) {
+          return Field((fieldBuilder) {
+            fieldBuilder
+              ..name = _createHiddenFieldName(serverCode, field)
+              ..type = field.type.reference(
+                serverCode,
+                config: config,
+              );
+          });
+        }))
+        ..constructors.add(Constructor((constructorBuilder) {
+          Map<String, Expression> namedParams =
+              visibleFields.fold({}, (map, field) {
+            return {
+              ...map,
+              field.name: refer(field.name),
+            };
+          });
+
+          constructorBuilder
+            ..name = '_'
+            ..optionalParameters.addAll(
+              _buildEntityClassConstructorParameters(
+                classDefinition,
+                classDefinition.fields,
+                classDefinition.tableName,
+                setAsToThis: false,
+              ),
+            )
+            ..optionalParameters.addAll(hiddenFields.map((field) {
+              return Parameter(
+                (p) => p
+                  ..name = _createHiddenFieldName(serverCode, field)
+                  ..named = true
+                  ..toThis = true,
+              );
+            }))
+            ..initializers.add(refer('super').call([], namedParams).code);
+        }))
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..factory = true
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = className.camelCase
+              ..type = refer(className)))
+            ..optionalParameters.addAll(hiddenFields.map((field) {
+              return Parameter((p) => p
+                ..name = _createHiddenFieldName(serverCode, field)
+                ..named = true
+                ..type = field.type.reference(serverCode, config: config));
+            }))
+            ..body = Block((blockBuilder) {
+              blockBuilder.statements.add(refer('${className}Implicit')
+                  .property('_')
+                  .call([], {
+                    ...visibleFields.fold({}, (map, field) {
+                      return {
+                        ...map,
+                        field.name:
+                            refer(className.camelCase).property(field.name),
+                      };
+                    }),
+                    ...hiddenFields.fold({}, (map, field) {
+                      return {
+                        ...map,
+                        _createHiddenFieldName(serverCode, field):
+                            refer(_createHiddenFieldName(serverCode, field)),
+                      };
+                    })
+                  })
+                  .returned
+                  .statement);
+            });
+
+          ;
+        }))
+        ..methods.add(Method((methodBuilder) {
+          methodBuilder
+            ..name = 'allToJson'
+            ..annotations.add(refer('override'))
+            ..returns = refer('Map<String, dynamic>')
+            ..body = Block((blockBuilder) {
+              blockBuilder.statements.add(
+                refer('var jsonMap')
+                    .assign(refer('super').property('allToJson').call([]))
+                    .statement,
+              );
+
+              var values = hiddenFields.fold({}, (map, field) {
+                return {
+                  ...map,
+                  "'${field.name}'": _createHiddenFieldName(serverCode, field),
+                };
+              });
+
+              blockBuilder.statements.add(
+                refer('jsonMap').property('addAll').call(
+                  [refer('$values')],
+                ).statement,
+              );
+              blockBuilder.statements.add(refer('jsonMap').returned.statement);
+            });
+        }));
     });
   }
 
@@ -1249,7 +1370,7 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(_createTableFieldName(serverCode, field))
+              refer(_createHiddenFieldName(serverCode, field))
         ]).code,
     );
   }
@@ -1267,7 +1388,7 @@ class SerializableEntityLibraryGenerator {
         tableFields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = _createTableFieldName(serverCode, field)
+          ..name = _createHiddenFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1389,7 +1510,7 @@ class SerializableEntityLibraryGenerator {
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
-            refer(_createTableFieldName(serverCode, field))
+            refer(_createHiddenFieldName(serverCode, field))
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
@@ -1612,7 +1733,7 @@ class SerializableEntityLibraryGenerator {
     return refer(field.name);
   }
 
-  String _createTableFieldName(
+  String _createHiddenFieldName(
     bool serverCode,
     SerializableEntityFieldDefinition field,
   ) {
