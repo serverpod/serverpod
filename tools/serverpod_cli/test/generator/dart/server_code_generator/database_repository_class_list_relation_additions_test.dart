@@ -17,7 +17,7 @@ void main() {
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
 
   group(
-      'Given a class with table name and object relation field when generating code',
+      'Given a class with table name and explicit list relation field when generating code',
       () {
     var entities = [
       ClassDefinitionBuilder()
@@ -154,5 +154,54 @@ void main() {
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);*/
+  });
+
+  group(
+      'Given a class with table name and implicit list relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName('example_table')
+          .withImplicitListRelationField('citizens', 'Person')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    print(codeMap);
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    var repositoryAttachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}AttachRowRepository',
+    );
+
+    group('then the ${testClassName}AttachRowRepository', () {
+      var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryAttachClass!,
+        name: 'citizens',
+      );
+
+      test('has a citizens method defined.', () {
+        expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
+      });
+
+      test(
+          'citizens method has the input params of session, example and person',
+          () {
+        expect(
+          citizenMethod?.parameters?.toSource(),
+          matches(
+            r'(_i\d.Session session, Example example, Person person)',
+          ),
+        );
+      }, skip: citizenMethod == null);
+    });
   });
 }

@@ -2,6 +2,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -178,7 +179,14 @@ class ClassDefinitionBuilder {
       return FieldDefinitionBuilder()
           .withName(fieldName)
           .withShouldPersist(false)
-          .withTypeDefinition(className, true)
+          .withType(
+            TypeDefinitionBuilder()
+                .withNullable(true)
+                .withClassName('List')
+                .withGenerics([
+              TypeDefinitionBuilder().withClassName(className).build()
+            ]).build(),
+          )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
             foreignFieldName:
@@ -201,7 +209,14 @@ class ClassDefinitionBuilder {
       return FieldDefinitionBuilder()
           .withName(fieldName)
           .withShouldPersist(false)
-          .withTypeDefinition(className, true)
+          .withType(
+            TypeDefinitionBuilder()
+                .withNullable(true)
+                .withClassName('List')
+                .withGenerics([
+              TypeDefinitionBuilder().withClassName(className).build()
+            ]).build(),
+          )
           .withRelation(ListRelationDefinition(
             fieldName: 'id',
             foreignFieldName: foreignKeyFieldName,
