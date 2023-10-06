@@ -29,7 +29,7 @@ class BuildRepositoryClass {
             ..constant = true;
         }))
         ..fields.addAll([
-          if (hasAttachOperations(fields))
+          if (hasAttachRowOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
                 ..name = 'attachRow'
@@ -37,7 +37,7 @@ class BuildRepositoryClass {
                 ..assignment =
                     Code('const ${className}AttachRowRepository._()');
             }),
-          if (hasDetachOperations(fields))
+          if (hasDetachRowOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
                 ..name = 'detachRow'
@@ -69,7 +69,7 @@ class BuildRepositoryClass {
   ) {
     return Class((classBuilder) {
       classBuilder
-        ..name = '${className}AttachRowRepository'
+        ..name = '${className}AttachRepository'
         ..constructors.add(Constructor((constructorBuilder) {
           constructorBuilder
             ..name = '_'
@@ -83,7 +83,28 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRepositoryClass(
+  Class buildEntityAttachRowRepositoryClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}AttachRowRepository'
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..name = '_'
+            ..constant = true;
+        }))
+        ..methods.addAll(_buildAttachRowMethods(
+          fields,
+          className,
+          classDefinition,
+        ));
+    });
+  }
+
+  Class buildEntityDetachRowRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -105,10 +126,14 @@ class BuildRepositoryClass {
   }
 
   bool hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
+    return fields.any((f) => _isListRelation(f));
+  }
+
+  bool hasAttachRowOperations(List<SerializableEntityFieldDefinition> fields) {
     return fields.any((f) => _isObjectRelation(f) || _isListRelation(f));
   }
 
-  bool hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
+  bool hasDetachRowOperations(List<SerializableEntityFieldDefinition> fields) {
     return fields
         .any((f) => _isNullableObjectRelation(f) || _isNullableListRelation(f));
   }
@@ -722,6 +747,20 @@ class BuildRepositoryClass {
     String className,
     ClassDefinition classDefinition,
   ) {
+    return fields.where(_isListRelation).map(
+          (field) => _buildAttachFromListRelationField(
+            className,
+            field,
+            classDefinition,
+          ),
+        );
+  }
+
+  Iterable<Method> _buildAttachRowMethods(
+    List<SerializableEntityFieldDefinition> fields,
+    String className,
+    ClassDefinition classDefinition,
+  ) {
     return [
       ...fields.where(_isObjectRelation).map(
             (field) => _buildAttachRowFromObjectRelationField(
@@ -738,6 +777,70 @@ class BuildRepositoryClass {
             ),
           )
     ];
+  }
+
+  Method _buildAttachFromListRelationField(
+    String className,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((methodBuilder) {
+      var classFieldName = className.camelCase;
+      var fieldName = field.type.generics.first.className.camelCase;
+      var otherClassFieldName =
+          fieldName == classFieldName ? 'nested$className' : fieldName;
+
+      var foreignType = field.type.generics.first.reference(
+        serverCode,
+        nullable: false,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
+      var relation = field.relation as ListRelationDefinition;
+
+      methodBuilder
+        ..returns = refer('Future<void>')
+        ..name = field.name
+        ..requiredParameters.addAll([
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = 'session'
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+          }),
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = classFieldName
+              ..type = refer(className);
+          }),
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = otherClassFieldName
+              ..type = field.type.reference(
+                serverCode,
+                nullable: false,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+              );
+          })
+        ])
+        ..modifier = MethodModifier.async
+        ..body = relation.implicitForeignField
+            ? _buildImplicitAttachImplementationBlock(
+                className,
+                otherClassFieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              )
+            : _buildAttachImplementationBlock(
+                otherClassFieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              );
+      const Code('');
+    });
   }
 
   Method _buildAttachRowFromListRelationField(
@@ -811,6 +914,13 @@ class BuildRepositoryClass {
 
       var relation = field.relation as ObjectRelationDefinition;
 
+      var foreignType = field.type.reference(
+        serverCode,
+        nullable: false,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
       methodBuilder
         ..returns = refer('Future<void>')
         ..name = field.name
@@ -828,12 +938,7 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = otherClassFieldName
-              ..type = field.type.reference(
-                serverCode,
-                nullable: false,
-                subDirParts: classDefinition.subDirParts,
-                config: config,
-              );
+              ..type = foreignType;
           })
         ])
         ..modifier = MethodModifier.async
@@ -848,14 +953,64 @@ class BuildRepositoryClass {
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
-                field.type.reference(
-                  serverCode,
-                  nullable: false,
-                  subDirParts: classDefinition.subDirParts,
-                  config: config,
-                ));
+                foreignType,
+              );
       const Code('');
     });
+  }
+
+  Block _buildImplicitAttachImplementationBlock(
+    String className,
+    String classFieldName,
+    String otherClassFieldName,
+    String foreignKeyField,
+    Reference classReference,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            _buildCodeBlockThrowIfAnyIdIsNull(otherClassFieldName),
+            const Code(''),
+            _buildImplicitCopyClassListField(
+              className,
+              classFieldName,
+              foreignKeyField,
+              refer(otherClassFieldName).property('id'),
+            ),
+            _buildUpdateListField(
+              classFieldName,
+              foreignKeyField,
+              classReference,
+              refer(otherClassFieldName).property('id'),
+            ),
+          ]))
+        .build();
+  }
+
+  Block _buildAttachImplementationBlock(
+    String classFieldName,
+    String otherClassFieldName,
+    String foreignKeyField,
+    Reference classReference,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll([
+            _buildCodeBlockThrowIfIdIsNull(classFieldName),
+            _buildCodeBlockThrowIfAnyIdIsNull(otherClassFieldName),
+            const Code(''),
+            _buildCopyWithListField(
+              classFieldName,
+              foreignKeyField,
+              refer(otherClassFieldName).property('id'),
+            ),
+            _buildUpdateListField(
+              classFieldName,
+              foreignKeyField,
+              classReference,
+              refer(otherClassFieldName).property('id'),
+            ),
+          ]))
+        .build();
   }
 
   Block _buildAttachRowImplementationBlock(
@@ -1164,6 +1319,11 @@ class BuildRepositoryClass {
     return _buildCodeBlockThrowIfFieldIsNull('$className.id', errorRef);
   }
 
+  Block _buildCodeBlockThrowIfAnyIdIsNull(String className,
+      [String? errorRef]) {
+    return _buildCodeBlockThrowIfAnyFieldIsNull(className, 'id', errorRef);
+  }
+
   Block _buildCodeBlockThrowIfFieldIsNull(
     String nullCheckRef, [
     String? errorRef,
@@ -1171,6 +1331,23 @@ class BuildRepositoryClass {
     var error = errorRef ?? nullCheckRef;
     return Block.of([
       Code('if ($nullCheckRef == null) {'),
+      refer('ArgumentError', 'dart:core')
+          .property('notNull')
+          .call([refer('\'$error\'')])
+          .thrown
+          .statement,
+      const Code('}'),
+    ]);
+  }
+
+  Block _buildCodeBlockThrowIfAnyFieldIsNull(
+    String className,
+    String nullCheckField, [
+    String? errorRef,
+  ]) {
+    var error = errorRef ?? '$className.$nullCheckField';
+    return Block.of([
+      Code('if ($className.any((e) => e.$nullCheckField == null)) {'),
       refer('ArgumentError', 'dart:core')
           .property('notNull')
           .call([refer('\'$error\'')])
@@ -1192,6 +1369,32 @@ class BuildRepositoryClass {
                 .assign(refer(rowName).property('copyWith').call([], {
                   fieldName: assignment,
                 }))
+                .statement,
+          ))
+        .build();
+  }
+
+  Code _buildCopyWithListField(
+    String rowName,
+    String fieldName,
+    Expression assignment,
+  ) {
+    var localCopyVariable = '\$$rowName';
+
+    return (BlockBuilder()
+          ..statements.add(
+            declareVar(localCopyVariable)
+                .assign(refer(rowName)
+                    .property('map')
+                    .call([
+                      Method((b) => b
+                        ..requiredParameters.add(Parameter((p) => p.name = 'e'))
+                        ..body = refer('e').property('copyWith').call([], {
+                          fieldName: assignment,
+                        }).code).closure
+                    ])
+                    .property('toList')
+                    .call([]))
                 .statement,
           ))
         .build();
@@ -1220,6 +1423,38 @@ class BuildRepositoryClass {
         .build();
   }
 
+  Code _buildImplicitCopyClassListField(
+    String className,
+    String rowName,
+    String fieldName,
+    Expression assignment,
+  ) {
+    var localCopyVariable = '\$$rowName';
+
+    return (BlockBuilder()
+          ..statements.add(
+            declareVar(localCopyVariable)
+                .assign(refer(rowName)
+                    .property('map')
+                    .call([
+                      Method((b) => b
+                        ..requiredParameters.add(Parameter((p) => p.name = 'e'))
+                        ..body = refer(
+                          '${className}Implicit',
+                          'package:serverpod/serverpod.dart',
+                        ).call([
+                          refer('e')
+                        ], {
+                          fieldName: assignment,
+                        }).code).closure
+                    ])
+                    .property('toList')
+                    .call([]))
+                .statement,
+          ))
+        .build();
+  }
+
   Code _buildUpdateSingleField(
     String rowName,
     String fieldName,
@@ -1232,6 +1467,33 @@ class BuildRepositoryClass {
             refer('session')
                 .property('dbNext')
                 .property('updateRow')
+                .call([
+                  refer(localCopyVariable)
+                ], {
+                  'columns': literalList(
+                    [classReference.property('t').property(fieldName)],
+                  )
+                }, [
+                  classReference,
+                ])
+                .awaited
+                .statement,
+          ]))
+        .build();
+  }
+
+  Code _buildUpdateListField(
+    String rowName,
+    String fieldName,
+    Reference classReference,
+    Expression assignment,
+  ) {
+    var localCopyVariable = '\$$rowName';
+    return (BlockBuilder()
+          ..statements.addAll([
+            refer('session')
+                .property('dbNext')
+                .property('update')
                 .call([
                   refer(localCopyVariable)
                 ], {

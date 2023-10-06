@@ -16,6 +16,36 @@ void main() {
   var expectedFilePath =
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
 
+  group('Given a class with table name when generating code', () {
+    var tableName = 'example_table';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+
+    test('then a class named ${testClassName}AttachRepository is NOT generated',
+        () {
+      expect(
+        CompilationUnitHelpers.hasClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}AttachRepository',
+        ),
+        isFalse,
+        reason:
+            'The class ${testClassName}AttachRepository was found but was expected to not exist.',
+      );
+    });
+  });
+
   group(
       'Given a class with table name and explicit list relation field when generating code',
       () {
@@ -86,14 +116,15 @@ void main() {
       );
     });
 
-    var repositoryAttachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    var repositoryAttachRowClass =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}AttachRowRepository',
     );
 
     group('then the ${testClassName}AttachRowRepository', () {
       var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryAttachClass!,
+        repositoryAttachRowClass!,
         name: 'people',
       );
 
@@ -112,6 +143,57 @@ void main() {
       }, skip: peopleMethod == null);
     });
 
+    test('then a class named ${testClassName}AttachRepository is generated',
+        () {
+      expect(
+        CompilationUnitHelpers.hasClassDeclaration(
+          compilationUnit,
+          name: '${testClassName}AttachRepository',
+        ),
+        isTrue,
+        reason:
+            'Expected the class ${testClassName}AttachRepository to be generated.',
+      );
+    });
+
+    var repositoryAttachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}AttachRepository',
+    );
+
+    group('then the ${testClassName}AttachRepository', () {
+      test('has a private constructor', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          repositoryAttachClass!,
+          name: '_',
+        );
+        expect(
+          constructor?.toSource(),
+          'const ${testClassName}AttachRepository._();',
+          reason: 'Missing private constructor.',
+        );
+      });
+
+      var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryAttachClass!,
+        name: 'people',
+      );
+
+      test('has a people method defined.', () {
+        expect(peopleMethod, isNotNull, reason: 'Missing people method.');
+      });
+
+      test('people method has the input params of session, example and person',
+          () {
+        expect(
+          peopleMethod?.parameters?.toSource(),
+          matches(
+            r'(_i\d.Session session, Example example, List<Person> person)',
+          ),
+        );
+      }, skip: peopleMethod == null);
+    }, skip: repositoryAttachClass == null);
+
     test('then a class named ${testClassName}DetachRowRepository is generated',
         () {
       expect(
@@ -125,13 +207,14 @@ void main() {
       );
     });
 
-    var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    var repositoryDetachRowClass =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}DetachRowRepository',
     );
     group('then the ${testClassName}DetachRowRepository', () {
       var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryDetachClass!,
+        repositoryDetachRowClass!,
         name: 'people',
       );
 
@@ -169,14 +252,15 @@ void main() {
 
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
 
-    var repositoryAttachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    var repositoryAttachRowClass =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}AttachRowRepository',
     );
 
     group('then the ${testClassName}AttachRowRepository', () {
       var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryAttachClass!,
+        repositoryAttachRowClass!,
         name: 'citizens',
       );
 
@@ -196,14 +280,15 @@ void main() {
       }, skip: citizenMethod == null);
     });
 
-    var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+    var repositoryDetachRowClass =
+        CompilationUnitHelpers.tryFindClassDeclaration(
       compilationUnit,
       name: '${testClassName}DetachRowRepository',
     );
 
     group('then the ${testClassName}DetachRowRepository', () {
       var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
-        repositoryDetachClass!,
+        repositoryDetachRowClass!,
         name: 'citizens',
       );
 
