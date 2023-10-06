@@ -120,10 +120,8 @@ class Table {
   /// The database id.
   late final ColumnInt id;
 
-  late List<Column>? _columns;
-
   /// List of [Column] used by the table.
-  List<Column> get columns => _columns!;
+  List<Column> get columns => [id];
 
   /// Query prefix for [Column]s of the table.
   String get queryPrefix {
@@ -136,10 +134,8 @@ class Table {
   /// Creates a new [Table]. Typically, this is done only by generated code.
   Table({
     required this.tableName,
-    List<Column>? columns,
     this.tableRelation,
   }) {
-    _columns = columns;
     id = ColumnInt(
       'id',
       this,
