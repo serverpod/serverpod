@@ -24,7 +24,12 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName('example_table')
-          .withListRelationField('people', 'Person', 'organizationId')
+          .withListRelationField(
+            'people',
+            'Person',
+            'organizationId',
+            nullableRelation: true,
+          )
           .build()
     ];
 
@@ -54,7 +59,7 @@ void main() {
         );
       });
 
-      /* test('has a final detach field', () {
+      test('has a final detach field', () {
         var field = CompilationUnitHelpers.tryFindFieldDeclaration(
           repositoryClass!,
           name: 'detachRow',
@@ -65,7 +70,7 @@ void main() {
           'final detachRow = const ${testClassName}DetachRowRepository._();',
           reason: 'Missing static instance field.',
         );
-      });*/
+      });
     }, skip: repositoryClass == null);
 
     test('then a class named ${testClassName}AttachRowRepository is generated',
@@ -107,7 +112,6 @@ void main() {
       }, skip: peopleMethod == null);
     });
 
-    /*
     test('then a class named ${testClassName}DetachRowRepository is generated',
         () {
       expect(
@@ -126,18 +130,6 @@ void main() {
       name: '${testClassName}DetachRowRepository',
     );
     group('then the ${testClassName}DetachRowRepository', () {
-      test('has a private constructor', () {
-        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
-          repositoryDetachClass!,
-          name: '_',
-        );
-        expect(
-          constructor?.toSource(),
-          'const ${testClassName}DetachRowRepository._();',
-          reason: 'Missing private constructor.',
-        );
-      });
-
       var peopleMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
         repositoryDetachClass!,
         name: 'people',
@@ -150,10 +142,10 @@ void main() {
       test('people method has the input params of session, person', () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          '(_i1.Session session, Person person)',
+          '(_i1.Session session, _i1.Person person)',
         );
       }, skip: peopleMethod == null);
-    }, skip: repositoryClass == null);*/
+    }, skip: repositoryClass == null);
   });
 
   group(
@@ -200,6 +192,29 @@ void main() {
           matches(
             r'(_i\d.Session session, Example example, Person person)',
           ),
+        );
+      }, skip: citizenMethod == null);
+    });
+
+    var repositoryDetachClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}DetachRowRepository',
+    );
+
+    group('then the ${testClassName}DetachRowRepository', () {
+      var citizenMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+        repositoryDetachClass!,
+        name: 'citizens',
+      );
+
+      test('has a citizens method defined.', () {
+        expect(citizenMethod, isNotNull, reason: 'Missing citizens method.');
+      });
+
+      test('citizens method has the input params of session, person', () {
+        expect(
+          citizenMethod?.parameters?.toSource(),
+          '(_i1.Session session, _i1.Person person)',
         );
       }, skip: citizenMethod == null);
     });

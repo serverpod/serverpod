@@ -109,7 +109,8 @@ class BuildRepositoryClass {
   }
 
   bool hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any(_shouldCreateDetachMethodFromField);
+    return fields
+        .any((f) => _isNullableObjectRelation(f) || _isNullableListRelation(f));
   }
 
   bool hasImplicitClassOperations(
@@ -121,13 +122,18 @@ class BuildRepositoryClass {
     return field.relation is ListRelationDefinition;
   }
 
+  bool _isNullableListRelation(SerializableEntityFieldDefinition field) {
+    var relation = field.relation;
+    return relation is ListRelationDefinition && relation.nullableRelation;
+  }
+
   bool _isObjectRelation(
     SerializableEntityFieldDefinition field,
   ) {
     return field.relation is ObjectRelationDefinition;
   }
 
-  bool _shouldCreateDetachMethodFromField(
+  bool _isNullableObjectRelation(
     SerializableEntityFieldDefinition field,
   ) {
     var relation = field.relation;
@@ -911,54 +917,126 @@ class BuildRepositoryClass {
     String className,
     ClassDefinition classDefinition,
   ) {
-    return fields.where(_shouldCreateDetachMethodFromField).map(
-          (field) => Method((methodBuilder) {
-            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-            var fieldName = field.name;
-
-            var relation = field.relation;
-            (relation as ObjectRelationDefinition);
-
-            methodBuilder
-              ..name = field.name
-              ..requiredParameters.addAll([
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = 'session'
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart');
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = classFieldName
-                    ..type = refer(className);
-                })
-              ])
-              ..returns = refer('Future<void>')
-              ..modifier = MethodModifier.async
-              ..body = relation.isForeignKeyOrigin
-                  ? _buildDetachImplementationBlockOriginSide(
-                      fieldName,
-                      classFieldName,
-                      relation.fieldName,
-                      className,
-                    )
-                  : _buildDetachImplementationBlockForeignSide(
-                      fieldName,
-                      classFieldName,
-                      relation.foreignFieldName,
-                      field.type.reference(
-                        serverCode,
-                        nullable: false,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      ));
-            const Code('');
-          }),
-        );
+    return [
+      ...fields.where(_isNullableObjectRelation).map(
+            (field) => _buildDetachRowFromObjectRelationField(
+              className,
+              field,
+              classDefinition,
+            ),
+          ),
+      ...fields
+          .where(_isNullableListRelation)
+          .map((field) => _buildDetachRowFromListRelationField(
+                className,
+                field,
+                classDefinition,
+              )),
+    ];
   }
 
-  Block _buildDetachImplementationBlockOriginSide(
+  Method _buildDetachRowFromListRelationField(
+    String className,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((methodBuilder) {
+      var classFieldName = field.type.generics.first.className;
+      var fieldName = field.type.generics.first.className.camelCase;
+
+      var relation = field.relation as ListRelationDefinition;
+      var foreignType = field.type.generics.first.reference(
+        serverCode,
+        nullable: false,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
+      methodBuilder
+        ..name = field.name
+        ..requiredParameters.addAll([
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = 'session'
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+          }),
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = fieldName
+              ..type =
+                  refer(classFieldName, 'package:serverpod/serverpod.dart');
+          })
+        ])
+        ..returns = refer('Future<void>')
+        ..modifier = MethodModifier.async
+        ..body = relation.implicitForeignField
+            ? _buildDetachRowImplementationBlockImplicitListRelation(
+                className,
+                fieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              )
+            : _buildDetachRowImplementationBlockExplicitListRelation(
+                className,
+                fieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              );
+      const Code('');
+    });
+  }
+
+  Method _buildDetachRowFromObjectRelationField(
+      String className,
+      SerializableEntityFieldDefinition field,
+      ClassDefinition classDefinition) {
+    return Method((methodBuilder) {
+      var classFieldName = className.toCamelCase(isLowerCamelCase: true);
+      var fieldName = field.name;
+
+      var relation = field.relation;
+      (relation as ObjectRelationDefinition);
+
+      methodBuilder
+        ..name = field.name
+        ..requiredParameters.addAll([
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = 'session'
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+          }),
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = classFieldName
+              ..type = refer(className);
+          })
+        ])
+        ..returns = refer('Future<void>')
+        ..modifier = MethodModifier.async
+        ..body = relation.isForeignKeyOrigin
+            ? _buildDetachRowImplementationBlockOriginSide(
+                fieldName,
+                classFieldName,
+                relation.fieldName,
+                className,
+              )
+            : _buildDetachRowImplementationBlockForeignSide(
+                fieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                field.type.reference(
+                  serverCode,
+                  nullable: false,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                ));
+      const Code('');
+    });
+  }
+
+  Block _buildDetachRowImplementationBlockOriginSide(
     String fieldName,
     String classFieldName,
     String foreignKeyField,
@@ -985,7 +1063,7 @@ class BuildRepositoryClass {
         .build();
   }
 
-  Block _buildDetachImplementationBlockForeignSide(
+  Block _buildDetachRowImplementationBlockForeignSide(
     String fieldName,
     String classFieldName,
     String foreignKeyField,
@@ -1016,6 +1094,63 @@ class BuildRepositoryClass {
               ),
               _buildUpdateSingleField(
                 localCopyVariable,
+                foreignKeyField,
+                foreignClass,
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
+  }
+
+  Block _buildDetachRowImplementationBlockExplicitListRelation(
+    String className,
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    Reference foreignClass,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              _buildCodeBlockThrowIfIdIsNull(fieldName),
+              const Code(''),
+              _buildCopyWithSingleField(
+                fieldName,
+                foreignKeyField,
+                refer('null'),
+              ),
+              _buildUpdateSingleField(
+                fieldName,
+                foreignKeyField,
+                foreignClass,
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
+  }
+
+  Block _buildDetachRowImplementationBlockImplicitListRelation(
+    String className,
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    Reference foreignClass,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              _buildCodeBlockThrowIfIdIsNull(fieldName),
+              const Code(''),
+              _buildImplicitCopyClassSingleField(
+                className,
+                fieldName,
+                foreignKeyField,
+                refer('null'),
+              ),
+              _buildUpdateSingleField(
+                fieldName,
                 foreignKeyField,
                 foreignClass,
                 refer('null'),
@@ -1075,7 +1210,9 @@ class BuildRepositoryClass {
                 .assign(refer(
                   '${className}Implicit',
                   'package:serverpod/serverpod.dart',
-                ).call([], {
+                ).call([
+                  refer(rowName)
+                ], {
                   fieldName: assignment,
                 }))
                 .statement,
