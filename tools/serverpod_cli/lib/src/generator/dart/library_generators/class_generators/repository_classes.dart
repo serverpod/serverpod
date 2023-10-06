@@ -1,4 +1,5 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:super_string/super_string.dart';
@@ -104,7 +105,7 @@ class BuildRepositoryClass {
   }
 
   bool hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
-    return fields.any(_shouldCreateAttachMethodFromField);
+    return fields.any((f) => _isObjectRelation(f) || _isListRelation(f));
   }
 
   bool hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
@@ -116,12 +117,11 @@ class BuildRepositoryClass {
     return fields.any((e) => e.hiddenSerializableField(serverCode));
   }
 
-  bool _hasImplicitListRelation(SerializableEntityFieldDefinition field) {
-    var relation = field.relation;
-    return relation is ListRelationDefinition && relation.implicitForeignField;
+  bool _isListRelation(SerializableEntityFieldDefinition field) {
+    return field.relation is ListRelationDefinition;
   }
 
-  bool _shouldCreateAttachMethodFromField(
+  bool _isObjectRelation(
     SerializableEntityFieldDefinition field,
   ) {
     return field.relation is ObjectRelationDefinition;
@@ -716,62 +716,136 @@ class BuildRepositoryClass {
     String className,
     ClassDefinition classDefinition,
   ) {
-    return fields.where(_shouldCreateAttachMethodFromField).map(
-          (field) => Method((methodBuilder) {
-            var classFieldName = className.toCamelCase(isLowerCamelCase: true);
-            var otherClassFieldName =
-                field.name == classFieldName ? 'nested$className' : field.name;
+    return [
+      ...fields.where(_isObjectRelation).map(
+            (field) => _buildAttachRowFromObjectRelationField(
+              className,
+              field,
+              classDefinition,
+            ),
+          ),
+      ...fields.where(_isListRelation).map(
+            (field) => _buildAttachRowFromListRelationField(
+              className,
+              field,
+              classDefinition,
+            ),
+          )
+    ];
+  }
 
-            var relation = field.relation;
-            (relation as ObjectRelationDefinition);
+  Method _buildAttachRowFromListRelationField(
+    String className,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((methodBuilder) {
+      var classFieldName = className.camelCase;
+      var fieldName = field.type.className.camelCase;
+      var otherClassFieldName =
+          fieldName == classFieldName ? 'nested$className' : fieldName;
 
-            methodBuilder
-              ..returns = refer('Future<void>')
-              ..name = field.name
-              ..requiredParameters.addAll([
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = 'session'
-                    ..type =
-                        refer('Session', 'package:serverpod/serverpod.dart');
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = classFieldName
-                    ..type = refer(className);
-                }),
-                Parameter((parameterBuilder) {
-                  parameterBuilder
-                    ..name = otherClassFieldName
-                    ..type = field.type.reference(
-                      serverCode,
-                      nullable: false,
-                      subDirParts: classDefinition.subDirParts,
-                      config: config,
-                    );
-                })
-              ])
-              ..modifier = MethodModifier.async
-              ..body = relation.isForeignKeyOrigin
-                  ? _buildAttachImplementationBlock(
-                      classFieldName,
-                      otherClassFieldName,
-                      relation.fieldName,
-                      refer(className),
-                    )
-                  : _buildAttachImplementationBlock(
-                      otherClassFieldName,
-                      classFieldName,
-                      relation.foreignFieldName,
-                      field.type.reference(
-                        serverCode,
-                        nullable: false,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                      ));
-            const Code('');
-          }),
+      var relation = field.relation as ListRelationDefinition;
+
+      methodBuilder
+        ..returns = refer('Future<void>')
+        ..name = field.name
+        ..requiredParameters.addAll(_buildAttachParams(
+          classFieldName,
+          className,
+          otherClassFieldName,
+          field,
+          classDefinition,
+        ))
+        ..modifier = MethodModifier.async
+        ..body = _buildAttachImplementationBlock(
+          otherClassFieldName,
+          classFieldName,
+          relation.foreignFieldName,
+          field.type.reference(
+            serverCode,
+            nullable: false,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          ),
         );
+      const Code('');
+    });
+  }
+
+  Method _buildAttachRowFromObjectRelationField(
+    String className,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((methodBuilder) {
+      var classFieldName = className.camelCase;
+      var otherClassFieldName =
+          field.name == classFieldName ? 'nested$className' : field.name;
+
+      var relation = field.relation as ObjectRelationDefinition;
+
+      methodBuilder
+        ..returns = refer('Future<void>')
+        ..name = field.name
+        ..requiredParameters.addAll(_buildAttachParams(
+          classFieldName,
+          className,
+          otherClassFieldName,
+          field,
+          classDefinition,
+        ))
+        ..modifier = MethodModifier.async
+        ..body = relation.isForeignKeyOrigin
+            ? _buildAttachImplementationBlock(
+                classFieldName,
+                otherClassFieldName,
+                relation.fieldName,
+                refer(className),
+              )
+            : _buildAttachImplementationBlock(
+                otherClassFieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                field.type.reference(
+                  serverCode,
+                  nullable: false,
+                  subDirParts: classDefinition.subDirParts,
+                  config: config,
+                ));
+      const Code('');
+    });
+  }
+
+  List<Parameter> _buildAttachParams(
+    String classFieldName,
+    String className,
+    String otherClassFieldName,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return [
+      Parameter((parameterBuilder) {
+        parameterBuilder
+          ..name = 'session'
+          ..type = refer('Session', 'package:serverpod/serverpod.dart');
+      }),
+      Parameter((parameterBuilder) {
+        parameterBuilder
+          ..name = classFieldName
+          ..type = refer(className);
+      }),
+      Parameter((parameterBuilder) {
+        parameterBuilder
+          ..name = otherClassFieldName
+          ..type = field.type.reference(
+            serverCode,
+            nullable: false,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          );
+      })
+    ];
   }
 
   Block _buildAttachImplementationBlock(
