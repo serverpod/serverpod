@@ -181,7 +181,7 @@ T createRelationTable<T>({
   ) createTable,
 }) {
   var relationDefinition = TableRelationEntry(
-    relationFieldName: relationFieldName,
+    relationAlias: relationFieldName,
     field: field,
     foreignField: foreignField,
   );

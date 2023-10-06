@@ -117,7 +117,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )
@@ -139,12 +139,12 @@ void main() {
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           ),
           TableRelationEntry(
-            relationFieldName: 'ceo',
+            relationAlias: 'ceo',
             field: ColumnInt('ceoId', companyTable),
             foreignField: ColumnInt('id', citizenTable),
           ),
@@ -168,7 +168,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )
@@ -274,7 +274,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )
@@ -299,12 +299,12 @@ void main() {
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           ),
           TableRelationEntry(
-            relationFieldName: 'ceo',
+            relationAlias: 'ceo',
             field: ColumnInt('ceoId', companyTable),
             foreignField: ColumnInt('id', citizenTable),
           ),
@@ -329,7 +329,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )
@@ -407,7 +407,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )
@@ -429,12 +429,12 @@ void main() {
         tableName: citizenTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           ),
           TableRelationEntry(
-            relationFieldName: 'ceo',
+            relationAlias: 'ceo',
             field: ColumnInt('ceoId', companyTable),
             foreignField: ColumnInt('id', citizenTable),
           ),
@@ -456,7 +456,7 @@ void main() {
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
           TableRelationEntry(
-            relationFieldName: 'company',
+            relationAlias: 'company',
             field: ColumnInt('companyId', citizenTable),
             foreignField: ColumnInt('id', companyTable),
           )

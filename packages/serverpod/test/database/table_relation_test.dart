@@ -21,7 +21,7 @@ void main() {
     var foreignTable = Table(tableName: 'citizen');
     var tableRelationEntries = [
       TableRelationEntry(
-        relationFieldName: 'ceo',
+        relationAlias: 'ceo',
         field: ColumnInt('ceoId', table),
         foreignField: ColumnInt('id', foreignTable),
       ),
@@ -71,7 +71,7 @@ void main() {
       var foreignTable = Table(tableName: 'restaurant');
       var newTableRelation = tableRelation.copyAndAppend(
         TableRelationEntry(
-          relationFieldName: 'favoriteRestaurant',
+          relationAlias: 'favoriteRestaurant',
           field: ColumnInt('favoriteRestaurantId', table),
           foreignField: ColumnInt('id', foreignTable),
         ),
@@ -98,12 +98,12 @@ void main() {
     var restaurantTable = Table(tableName: 'restaurant');
     var tableRelationEntries = [
       TableRelationEntry(
-        relationFieldName: 'ceo',
+        relationAlias: 'ceo',
         field: ColumnInt('ceoId', companyTable),
         foreignField: ColumnInt('id', citizenTable),
       ),
       TableRelationEntry(
-        relationFieldName: 'favoriteRestaurant',
+        relationAlias: 'favoriteRestaurant',
         field: ColumnInt('favoriteRestaurantId', citizenTable),
         foreignField: ColumnInt('id', restaurantTable),
       ),

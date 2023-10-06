@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/columns.dart';
 
@@ -19,12 +20,12 @@ class TableRelation {
 
   /// Builds all table relations required to join the tables.
   List<TableRelation> get getRelations {
-    List<TableRelation> relations = [];
-    for (var i = 0; i < _tableRelationEntries.length; i++) {
-      relations.add(TableRelation(_tableRelationEntries.sublist(0, i + 1)));
-    }
-
-    return relations;
+    return _tableRelationEntries
+        .mapIndexed(
+          (index, _) =>
+              TableRelation(_tableRelationEntries.sublist(0, index + 1)),
+        )
+        .toList();
   }
 
   /// Name of the table to be joined.
@@ -68,7 +69,7 @@ class TableRelation {
 
     for (var relation in _tableRelationEntries.sublist(0, end)) {
       prefix +=
-          '_${relation.relationFieldName}_${relation.foreignField.table.tableName}';
+          '_${relation.relationAlias}_${relation.foreignField.table.tableName}';
     }
 
     return prefix;
@@ -83,8 +84,8 @@ class TableRelation {
 /// This is typically only used internally by the serverpod framework.
 @internal
 class TableRelationEntry {
-  /// Name of relation field.
-  final String relationFieldName;
+  /// Alias for the relation.
+  final String relationAlias;
 
   /// Column field to join on.
   final Column field;
@@ -94,7 +95,7 @@ class TableRelationEntry {
 
   /// Creates a new [TableRelationEntry].
   TableRelationEntry({
-    required this.relationFieldName,
+    required this.relationAlias,
     required this.field,
     required this.foreignField,
   });
