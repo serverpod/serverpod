@@ -41,10 +41,13 @@ class SelectQueryBuilder {
       where: _where,
     );
 
+    var selectColumns = [..._fields, ..._gatherIncludeColumns(_include)];
+
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
+    var select = _buildSelectStatement(selectColumns);
 
-    var query = _buildSelectQuery(_fields, _include);
+    var query = 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (_where != null) query += ' WHERE $_where';
@@ -243,10 +246,10 @@ class DeleteQueryBuilder {
   }
 }
 
-String _buildSelectQuery(List<Column> fields, Include? include) {
-  var selectColumns = [...fields, ..._gatherIncludeColumns(include)];
-
-  return _selectStatementFromColumns(selectColumns);
+String _buildSelectStatement(List<Column> selectColumns) {
+  return selectColumns
+      .map((column) => '$column AS "${column.queryAlias}"')
+      .join(', ');
 }
 
 List<Column> _gatherIncludeColumns(Include? include) {
@@ -382,14 +385,6 @@ String _joinStatementFromTableRelations(
         '= ${tableRelation.lastJoiningForeignField}');
   }
   return joinStatements.join(' ');
-}
-
-String _selectStatementFromColumns(List<Column> columns) {
-  List<String> selectStatements = [];
-  for (var column in columns) {
-    selectStatements.add('$column AS "${column.queryAlias}"');
-  }
-  return 'SELECT ${selectStatements.join(', ')}';
 }
 
 _UsingQuery _usingQueryFromTableRelations(
