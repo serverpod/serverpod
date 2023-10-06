@@ -68,15 +68,15 @@ import 'package:serverpod_test_server/src/generated/object_with_object.dart'
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i58;
 import 'package:serverpod_test_server/src/generated/related_unique_data.dart'
     as _i59;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/citizen.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
     as _i60;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/company.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
     as _i61;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
     as _i62;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/town.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/town.dart'
     as _i63;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
     as _i64;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i65;

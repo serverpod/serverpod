@@ -7,71 +7,64 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../../protocol.dart' as _i2;
 
-abstract class Company extends _i1.TableRow {
-  Company._({
+abstract class Address extends _i1.TableRow {
+  Address._({
     int? id,
-    required this.name,
-    required this.townId,
-    this.town,
-    this.employees,
+    required this.street,
+    this.inhabitantId,
+    this.inhabitant,
   }) : super(id);
 
-  factory Company({
+  factory Address({
     int? id,
-    required String name,
-    required int townId,
-    _i2.Town? town,
-    List<_i2.Citizen>? employees,
-  }) = _CompanyImpl;
+    required String street,
+    int? inhabitantId,
+    _i2.Citizen? inhabitant,
+  }) = _AddressImpl;
 
-  factory Company.fromJson(
+  factory Address.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Company(
+    return Address(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      townId:
-          serializationManager.deserialize<int>(jsonSerialization['townId']),
-      town: serializationManager
-          .deserialize<_i2.Town?>(jsonSerialization['town']),
-      employees: serializationManager
-          .deserialize<List<_i2.Citizen>?>(jsonSerialization['employees']),
+      street:
+          serializationManager.deserialize<String>(jsonSerialization['street']),
+      inhabitantId: serializationManager
+          .deserialize<int?>(jsonSerialization['inhabitantId']),
+      inhabitant: serializationManager
+          .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
     );
   }
 
-  static final t = CompanyTable();
+  static final t = AddressTable();
 
-  static const db = CompanyRepository._();
+  static const db = AddressRepository._();
 
-  String name;
+  String street;
 
-  int townId;
+  int? inhabitantId;
 
-  _i2.Town? town;
-
-  List<_i2.Citizen>? employees;
+  _i2.Citizen? inhabitant;
 
   @override
   _i1.Table get table => t;
 
-  Company copyWith({
+  Address copyWith({
     int? id,
-    String? name,
-    int? townId,
-    _i2.Town? town,
-    List<_i2.Citizen>? employees,
+    String? street,
+    int? inhabitantId,
+    _i2.Citizen? inhabitant,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'townId': townId,
-      'town': town,
-      'employees': employees,
+      'street': street,
+      'inhabitantId': inhabitantId,
+      'inhabitant': inhabitant,
     };
   }
 
@@ -80,8 +73,8 @@ abstract class Company extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'name': name,
-      'townId': townId,
+      'street': street,
+      'inhabitantId': inhabitantId,
     };
   }
 
@@ -89,10 +82,9 @@ abstract class Company extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'name': name,
-      'townId': townId,
-      'town': town,
-      'employees': employees,
+      'street': street,
+      'inhabitantId': inhabitantId,
+      'inhabitant': inhabitant,
     };
   }
 
@@ -105,11 +97,11 @@ abstract class Company extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'name':
-        name = value;
+      case 'street':
+        street = value;
         return;
-      case 'townId':
-        townId = value;
+      case 'inhabitantId':
+        inhabitantId = value;
         return;
       default:
         throw UnimplementedError();
@@ -117,9 +109,9 @@ abstract class Company extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Company>> find(
+  static Future<List<Address>> find(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -127,10 +119,10 @@ abstract class Company extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.db.find<Company>(
-      where: where != null ? where(Company.t) : null,
+    return session.db.find<Address>(
+      where: where != null ? where(Address.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -143,18 +135,18 @@ abstract class Company extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Company?> findSingleRow(
+  static Future<Address?> findSingleRow(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.db.findSingleRow<Company>(
-      where: where != null ? where(Company.t) : null,
+    return session.db.findSingleRow<Address>(
+      where: where != null ? where(Address.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -165,12 +157,12 @@ abstract class Company extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Company?> findById(
+  static Future<Address?> findById(
     _i1.Session session,
     int id, {
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.db.findById<Company>(
+    return session.db.findById<Address>(
       id,
       include: include,
     );
@@ -179,11 +171,11 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CompanyExpressionBuilder where,
+    required AddressExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Company>(
-      where: where(Company.t),
+    return session.db.delete<Address>(
+      where: where(Address.t),
       transaction: transaction,
     );
   }
@@ -191,7 +183,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -203,7 +195,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -216,7 +208,7 @@ abstract class Company extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -228,144 +220,142 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Company>(
-      where: where != null ? where(Company.t) : null,
+    return session.db.count<Address>(
+      where: where != null ? where(Address.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static CompanyInclude include({_i2.TownInclude? town}) {
-    return CompanyInclude._(town: town);
+  static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
+    return AddressInclude._(inhabitant: inhabitant);
   }
 }
 
 class _Undefined {}
 
-class _CompanyImpl extends Company {
-  _CompanyImpl({
+class _AddressImpl extends Address {
+  _AddressImpl({
     int? id,
-    required String name,
-    required int townId,
-    _i2.Town? town,
-    List<_i2.Citizen>? employees,
+    required String street,
+    int? inhabitantId,
+    _i2.Citizen? inhabitant,
   }) : super._(
           id: id,
-          name: name,
-          townId: townId,
-          town: town,
-          employees: employees,
+          street: street,
+          inhabitantId: inhabitantId,
+          inhabitant: inhabitant,
         );
 
   @override
-  Company copyWith({
+  Address copyWith({
     Object? id = _Undefined,
-    String? name,
-    int? townId,
-    Object? town = _Undefined,
-    Object? employees = _Undefined,
+    String? street,
+    Object? inhabitantId = _Undefined,
+    Object? inhabitant = _Undefined,
   }) {
-    return Company(
+    return Address(
       id: id is int? ? id : this.id,
-      name: name ?? this.name,
-      townId: townId ?? this.townId,
-      town: town is _i2.Town? ? town : this.town?.copyWith(),
-      employees:
-          employees is List<_i2.Citizen>? ? employees : this.employees?.clone(),
+      street: street ?? this.street,
+      inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
+      inhabitant:
+          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
     );
   }
 }
 
-typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
+typedef AddressExpressionBuilder = _i1.Expression Function(AddressTable);
 
-class CompanyTable extends _i1.Table {
-  CompanyTable({super.tableRelation}) : super(tableName: 'company') {
-    name = _i1.ColumnString(
-      'name',
+class AddressTable extends _i1.Table {
+  AddressTable({super.tableRelation}) : super(tableName: 'address') {
+    street = _i1.ColumnString(
+      'street',
       this,
     );
-    townId = _i1.ColumnInt(
-      'townId',
+    inhabitantId = _i1.ColumnInt(
+      'inhabitantId',
       this,
     );
   }
 
-  late final _i1.ColumnString name;
+  late final _i1.ColumnString street;
 
-  late final _i1.ColumnInt townId;
+  late final _i1.ColumnInt inhabitantId;
 
-  _i2.TownTable? _town;
+  _i2.CitizenTable? _inhabitant;
 
-  _i2.TownTable get town {
-    if (_town != null) return _town!;
-    _town = _i1.createRelationTable(
-      relationFieldName: 'town',
-      field: Company.t.townId,
-      foreignField: _i2.Town.t.id,
+  _i2.CitizenTable get inhabitant {
+    if (_inhabitant != null) return _inhabitant!;
+    _inhabitant = _i1.createRelationTable(
+      relationFieldName: 'inhabitant',
+      field: Address.t.inhabitantId,
+      foreignField: _i2.Citizen.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TownTable(tableRelation: foreignTableRelation),
+          _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
-    return _town!;
+    return _inhabitant!;
   }
 
   @override
   List<_i1.Column> get columns => [
         id,
-        name,
-        townId,
+        street,
+        inhabitantId,
       ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'town') {
-      return town;
+    if (relationField == 'inhabitant') {
+      return inhabitant;
     }
     return null;
   }
 }
 
-@Deprecated('Use CompanyTable.t instead.')
-CompanyTable tCompany = CompanyTable();
+@Deprecated('Use AddressTable.t instead.')
+AddressTable tAddress = AddressTable();
 
-class CompanyInclude extends _i1.Include {
-  CompanyInclude._({_i2.TownInclude? town}) {
-    _town = town;
+class AddressInclude extends _i1.Include {
+  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
+    _inhabitant = inhabitant;
   }
 
-  _i2.TownInclude? _town;
+  _i2.CitizenInclude? _inhabitant;
 
   @override
-  Map<String, _i1.Include?> get includes => {'town': _town};
+  Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
 
   @override
-  _i1.Table get table => Company.t;
+  _i1.Table get table => Address.t;
 }
 
-class CompanyRepository {
-  const CompanyRepository._();
+class AddressRepository {
+  const AddressRepository._();
 
-  final attachRow = const CompanyAttachRowRepository._();
+  final attachRow = const AddressAttachRowRepository._();
 
-  Future<List<Company>> find(
+  final detachRow = const AddressDetachRowRepository._();
+
+  Future<List<Address>> find(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.dbNext.find<Company>(
-      where: where?.call(Company.t),
+    return session.dbNext.find<Address>(
+      where: where?.call(Address.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -376,74 +366,74 @@ class CompanyRepository {
     );
   }
 
-  Future<Company?> findRow(
+  Future<Address?> findRow(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.dbNext.findRow<Company>(
-      where: where?.call(Company.t),
+    return session.dbNext.findRow<Address>(
+      where: where?.call(Address.t),
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<Company?> findById(
+  Future<Address?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
-    CompanyInclude? include,
+    AddressInclude? include,
   }) async {
-    return session.dbNext.findById<Company>(
+    return session.dbNext.findById<Address>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<List<Company>> insert(
+  Future<List<Address>> insert(
     _i1.Session session,
-    List<Company> rows, {
+    List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Company>(
+    return session.dbNext.insert<Address>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Company> insertRow(
+  Future<Address> insertRow(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Company>(
+    return session.dbNext.insertRow<Address>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<Company>> update(
+  Future<List<Address>> update(
     _i1.Session session,
-    List<Company> rows, {
+    List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Company>(
+    return session.dbNext.update<Address>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Company> updateRow(
+  Future<Address> updateRow(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Company>(
+    return session.dbNext.updateRow<Address>(
       row,
       transaction: transaction,
     );
@@ -451,10 +441,10 @@ class CompanyRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<Company> rows, {
+    List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Company>(
+    return session.dbNext.delete<Address>(
       rows,
       transaction: transaction,
     );
@@ -462,10 +452,10 @@ class CompanyRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    Company row, {
+    Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Company>(
+    return session.dbNext.deleteRow<Address>(
       row,
       transaction: transaction,
     );
@@ -473,48 +463,67 @@ class CompanyRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CompanyExpressionBuilder where,
+    required AddressExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Company>(
-      where: where(Company.t),
+    return session.dbNext.deleteWhere<Address>(
+      where: where(Address.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    AddressExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Company>(
-      where: where?.call(Company.t),
+    return session.dbNext.count<Address>(
+      where: where?.call(Address.t),
       limit: limit,
       transaction: transaction,
     );
   }
 }
 
-class CompanyAttachRowRepository {
-  const CompanyAttachRowRepository._();
+class AddressAttachRowRepository {
+  const AddressAttachRowRepository._();
 
-  Future<void> town(
+  Future<void> inhabitant(
     _i1.Session session,
-    Company company,
-    _i2.Town town,
+    Address address,
+    _i2.Citizen inhabitant,
   ) async {
-    if (company.id == null) {
-      throw ArgumentError.notNull('company.id');
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
     }
-    if (town.id == null) {
-      throw ArgumentError.notNull('town.id');
+    if (inhabitant.id == null) {
+      throw ArgumentError.notNull('inhabitant.id');
     }
 
-    var $company = company.copyWith(townId: town.id);
-    await session.dbNext.updateRow<Company>(
-      $company,
-      columns: [Company.t.townId],
+    var $address = address.copyWith(inhabitantId: inhabitant.id);
+    await session.dbNext.updateRow<Address>(
+      $address,
+      columns: [Address.t.inhabitantId],
+    );
+  }
+}
+
+class AddressDetachRowRepository {
+  const AddressDetachRowRepository._();
+
+  Future<void> inhabitant(
+    _i1.Session session,
+    Address address,
+  ) async {
+    if (address.id == null) {
+      throw ArgumentError.notNull('address.id');
+    }
+
+    var $address = address.copyWith(inhabitantId: null);
+    await session.dbNext.updateRow<Address>(
+      $address,
+      columns: [Address.t.inhabitantId],
     );
   }
 }

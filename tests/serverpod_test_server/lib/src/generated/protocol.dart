@@ -11,11 +11,11 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
 import 'package:serverpod_test_module_server/module.dart' as _i3;
 import 'package:serverpod_auth_server/module.dart' as _i4;
-import 'entities_with_relations/address.dart' as _i5;
-import 'entities_with_relations/citizen.dart' as _i6;
-import 'entities_with_relations/company.dart' as _i7;
-import 'entities_with_relations/post.dart' as _i8;
-import 'entities_with_relations/town.dart' as _i9;
+import 'entities_with_relations/one_to_one/address.dart' as _i5;
+import 'entities_with_relations/one_to_one/citizen.dart' as _i6;
+import 'entities_with_relations/one_to_one/company.dart' as _i7;
+import 'entities_with_relations/one_to_one/town.dart' as _i8;
+import 'entities_with_relations/self_relation/post.dart' as _i9;
 import 'exception_with_data.dart' as _i10;
 import 'module_datatype.dart' as _i11;
 import 'nullability.dart' as _i12;
@@ -50,21 +50,21 @@ import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i40;
 import 'package:uuid/uuid.dart' as _i41;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i42;
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i43;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/citizen.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
     as _i44;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/address.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
     as _i45;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
     as _i46;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/company.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
     as _i47;
 import 'package:serverpod_test_server/src/custom_classes.dart' as _i48;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i49;
-export 'entities_with_relations/address.dart';
-export 'entities_with_relations/citizen.dart';
-export 'entities_with_relations/company.dart';
-export 'entities_with_relations/post.dart';
-export 'entities_with_relations/town.dart';
+export 'entities_with_relations/one_to_one/address.dart';
+export 'entities_with_relations/one_to_one/citizen.dart';
+export 'entities_with_relations/one_to_one/company.dart';
+export 'entities_with_relations/one_to_one/town.dart';
+export 'entities_with_relations/self_relation/post.dart';
 export 'exception_with_data.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
@@ -189,12 +189,6 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: true,
           dartType: 'int?',
         ),
-        _i2.ColumnDefinition(
-          name: '_companyEmployeesCompanyId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(
@@ -210,16 +204,6 @@ class Protocol extends _i1.SerializationManagerServer {
         _i2.ForeignKeyDefinition(
           constraintName: 'citizen_fk_1',
           columns: ['oldCompanyId'],
-          referenceTable: 'company',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'citizen_fk_2',
-          columns: ['_companyEmployeesCompanyId'],
           referenceTable: 'company',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
@@ -1161,11 +1145,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i7.Company) {
       return _i7.Company.fromJson(data, this) as T;
     }
-    if (t == _i8.Post) {
-      return _i8.Post.fromJson(data, this) as T;
+    if (t == _i8.Town) {
+      return _i8.Town.fromJson(data, this) as T;
     }
-    if (t == _i9.Town) {
-      return _i9.Town.fromJson(data, this) as T;
+    if (t == _i9.Post) {
+      return _i9.Post.fromJson(data, this) as T;
     }
     if (t == _i10.ExceptionWithData) {
       return _i10.ExceptionWithData.fromJson(data, this) as T;
@@ -1257,11 +1241,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i7.Company?>()) {
       return (data != null ? _i7.Company.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i8.Post?>()) {
-      return (data != null ? _i8.Post.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i8.Town?>()) {
+      return (data != null ? _i8.Town.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i9.Town?>()) {
-      return (data != null ? _i9.Town.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i9.Post?>()) {
+      return (data != null ? _i9.Post.fromJson(data, this) : null) as T;
     }
     if (t == _i1.getType<_i10.ExceptionWithData?>()) {
       return (data != null ? _i10.ExceptionWithData.fromJson(data, this) : null)
@@ -1368,11 +1352,6 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == _i1.getType<_i36.UniqueData?>()) {
       return (data != null ? _i36.UniqueData.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<List<_i37.Citizen>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i37.Citizen>(e)).toList()
-          : null) as dynamic;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
@@ -1971,11 +1950,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data is _i7.Company) {
       return 'Company';
     }
-    if (data is _i8.Post) {
-      return 'Post';
-    }
-    if (data is _i9.Town) {
+    if (data is _i8.Town) {
       return 'Town';
+    }
+    if (data is _i9.Post) {
+      return 'Post';
     }
     if (data is _i10.ExceptionWithData) {
       return 'ExceptionWithData';
@@ -2089,11 +2068,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (data['className'] == 'Company') {
       return deserialize<_i7.Company>(data['data']);
     }
-    if (data['className'] == 'Post') {
-      return deserialize<_i8.Post>(data['data']);
-    }
     if (data['className'] == 'Town') {
-      return deserialize<_i9.Town>(data['data']);
+      return deserialize<_i8.Town>(data['data']);
+    }
+    if (data['className'] == 'Post') {
+      return deserialize<_i9.Post>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i10.ExceptionWithData>(data['data']);
@@ -2206,10 +2185,10 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.Citizen.t;
       case _i7.Company:
         return _i7.Company.t;
-      case _i8.Post:
-        return _i8.Post.t;
-      case _i9.Town:
-        return _i9.Town.t;
+      case _i8.Town:
+        return _i8.Town.t;
+      case _i9.Post:
+        return _i9.Post.t;
       case _i13.ObjectFieldScopes:
         return _i13.ObjectFieldScopes.t;
       case _i14.ObjectWithByteData:
