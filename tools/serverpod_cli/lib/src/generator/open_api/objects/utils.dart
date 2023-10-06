@@ -1,6 +1,6 @@
 part of '../open_api_objects.dart';
 
-String getRef(String ref) {
+String _getRef(String ref) {
   return '#/components/schemas/$ref';
 }
 

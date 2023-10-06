@@ -33,6 +33,7 @@ extension TypeConvert on TypeDefinition {
   SchemaObjectType get toSchemaObjectType {
     if (className == 'int') return SchemaObjectType.integer;
     if (className == 'double') return SchemaObjectType.number;
+    if (className == 'BigInt') return SchemaObjectType.number;
     if (className == 'bool') return SchemaObjectType.boolean;
     if (className == 'String') return SchemaObjectType.string;
     if (className == 'DateTime') return SchemaObjectType.string;

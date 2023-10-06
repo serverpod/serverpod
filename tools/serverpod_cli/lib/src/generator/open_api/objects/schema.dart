@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
-///[TypeDefinition] toJson
+/// Serializes [TypeDefinition] All Type To toJson
 Map<String, dynamic> typeToJson(TypeDefinition type, [bool child = false]) {
   Map<String, dynamic> map = {};
   if (type.className == 'Future') return typeToJson(type.generics.first, child);
@@ -19,11 +19,11 @@ Map<String, dynamic> typeToJson(TypeDefinition type, [bool child = false]) {
     map = refToJson(type, child);
     return map;
   }
-  map = dartCoreTypeToJson(type, child);
+  map = dartPrimitiveDataTypeToJson(type, child);
   return map;
 }
 
-/// [TypeDefinition] map Type to Json
+/// Serializes a [TypeDefinition]  map Type to Json
 Map<String, dynamic> mapToJson(TypeDefinition type, [bool child = false]) {
   assert(type.isMapType,
       'Use mapToJson only when the typeDefinition is of the MapType.');
@@ -33,6 +33,7 @@ Map<String, dynamic> mapToJson(TypeDefinition type, [bool child = false]) {
   if (type.nullable) map['nullable'] = true;
 
   /// If data is Map<String,int>  use last int as additionalProperties
+  if (type.generics.isEmpty) return map;
   var lastType = type.generics.last;
   if (lastType.isDartCoreType) {
     if (lastType.isListType) {
@@ -40,7 +41,7 @@ Map<String, dynamic> mapToJson(TypeDefinition type, [bool child = false]) {
     } else if (lastType.isMapType) {
       map['additionalProperties'] = mapToJson(lastType, true);
     } else {
-      map['additionalProperties'] = dartCoreTypeToJson(
+      map['additionalProperties'] = dartPrimitiveDataTypeToJson(
         lastType,
         true,
       );
@@ -52,8 +53,9 @@ Map<String, dynamic> mapToJson(TypeDefinition type, [bool child = false]) {
   return map;
 }
 
-/// [TypeDefinition] dartCoreType to Json (string,bool,double,int,BigInt,)
-Map<String, dynamic> dartCoreTypeToJson(TypeDefinition type,
+/// Serializes a [TypeDefinition]  dart primitive type (string,bool,double,int,
+/// BigInt,) to Json
+Map<String, dynamic> dartPrimitiveDataTypeToJson(TypeDefinition type,
     [bool child = false]) {
   assert(
       type.className == 'String' ||
@@ -63,30 +65,30 @@ Map<String, dynamic> dartCoreTypeToJson(TypeDefinition type,
           type.className == 'BigInt',
       'Use dartCoreTypeToJson only when class Name are String,int,double,BigInt,bool, ');
   Map<String, dynamic> map = {};
-  map['type'] = SchemaObjectType.string.name;
+  map['type'] = type.toSchemaObjectType.name;
   if (type.nullable) map['nullable'] = true;
   return map;
 }
 
-///[TypeDefinition] custom class (!dartCoreType) to json
+/// Serializes [TypeDefinition] custom class (!dartCoreType) to json
 Map<String, dynamic> refToJson(TypeDefinition type, [bool child = false]) {
   Map<String, dynamic> map = {};
   if (!child) map['type'] = SchemaObjectType.object.name;
-  map['\$ref'] = getRef(type.className);
+  map['\$ref'] = _getRef(type.className);
   if (type.nullable && !child) map['nullable'] = true;
   return map;
 }
 
-/// [TypeDefinition] list Type to Json
+/// Serializes a [TypeDefinition] list Type to Json
 Map<String, dynamic> listToJson(TypeDefinition type, [bool child = false]) {
   assert(type.isListType,
       'Use listToJson only when the typeDefinition is of the ListType.');
   Map<String, dynamic> map = {};
-  map['type'] = SchemaObjectType.object.name;
+  map['type'] = SchemaObjectType.array.name;
 
   map['items'] = {};
   if (type.generics.isEmpty) {
-    map['items']['\$ref'] = getRef('AnyValue');
+    map['items']['\$ref'] = _getRef('AnyValue');
     return map;
   }
   if (type.generics.first.isListType) {
@@ -94,7 +96,7 @@ Map<String, dynamic> listToJson(TypeDefinition type, [bool child = false]) {
     return map;
   }
   if (type.generics.first.isMapType) {
-    map['items'] = mapToJson(type, true);
+    map['items'] = mapToJson(type.generics.first, true);
     return map;
   }
 
@@ -102,7 +104,7 @@ Map<String, dynamic> listToJson(TypeDefinition type, [bool child = false]) {
     map['items'] = refToJson(type.generics.first, true);
     return map;
   }
-  map['items'] = dartCoreTypeToJson(type.generics.first, true);
+  map['items'] = dartPrimitiveDataTypeToJson(type.generics.first, true);
   return map;
 }
 
@@ -127,7 +129,8 @@ class ComponentSchemaObject {
       } else if (field.type.isMapType) {
         objectMap['properties'][field.name] = mapToJson(field.type);
       } else {
-        objectMap['properties'][field.name] = dartCoreTypeToJson(field.type);
+        objectMap['properties'][field.name] =
+            dartPrimitiveDataTypeToJson(field.type);
       }
     }
     map[classDefinition.className] = objectMap;
