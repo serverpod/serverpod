@@ -3,15 +3,48 @@ import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 import 'package:test/test.dart';
 
+class _TableWithoutFields extends Table {
+  _TableWithoutFields() : super(tableName: 'table');
+
+  @override
+  List<Column> get columns => [];
+}
+
 void main() {
   var citizenTable = Table(tableName: 'citizen');
   var companyTable = Table(tableName: 'company');
 
   group('Given SelectQueryBuilder', () {
+    test(
+        'when initialized with table without fields then argument error is thrown',
+        () {
+      expect(
+          () => SelectQueryBuilder(table: _TableWithoutFields()),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument (table): Must have at least one column: Instance of \'_TableWithoutFields\''),
+          )));
+    });
+
+    test(
+        'when trying to set select fields to empty list then argument error is thrown',
+        () {
+      expect(
+          () => SelectQueryBuilder(table: citizenTable).withSelectFields([]),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument (fields): Cannot be empty: Instance(length:0) of \'_GrowableList\''),
+          )));
+    });
+
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = SelectQueryBuilder(table: citizenTable).build();
 
-      expect(query, 'SELECT * FROM "citizen"');
+      expect(query, 'SELECT citizen."id" AS "citizen.id" FROM "citizen"');
     });
 
     test('when query with specific fields is built then output selects fields.',
@@ -36,7 +69,8 @@ void main() {
           .withWhere(const Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT * FROM "citizen" WHERE "test"=@test');
+      expect(query,
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" WHERE "test"=@test');
     });
 
     test(
@@ -51,7 +85,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" WHERE (TRUE = TRUE AND FALSE = FALSE)');
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" WHERE (TRUE = TRUE AND FALSE = FALSE)');
     });
 
     test(
@@ -65,7 +99,8 @@ void main() {
       var query =
           SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
-      expect(query, 'SELECT * FROM "citizen" ORDER BY citizen."id"');
+      expect(query,
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" ORDER BY citizen."id"');
     });
 
     test(
@@ -90,13 +125,14 @@ void main() {
           SelectQueryBuilder(table: citizenTable).withOrderBy(orders).build();
 
       expect(query,
-          'SELECT * FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
     });
 
     test('when query with limit is built then output is query with limit.', () {
       var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
-      expect(query, 'SELECT * FROM "citizen" LIMIT 10');
+      expect(
+          query, 'SELECT citizen."id" AS "citizen.id" FROM "citizen" LIMIT 10');
     });
 
     test('when query with offset is built then output is query with offset.',
@@ -104,7 +140,8 @@ void main() {
       var query =
           SelectQueryBuilder(table: citizenTable).withOffset(10).build();
 
-      expect(query, 'SELECT * FROM "citizen" OFFSET 10');
+      expect(query,
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" OFFSET 10');
     });
 
     test(
@@ -126,7 +163,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
     });
 
     test(
@@ -156,7 +193,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT citizen."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
     });
 
     test('when all properties configured is built then output is valid SQL.',
@@ -230,22 +267,23 @@ void main() {
     test('when default initialized then build outputs a valid SQL query.', () {
       var query = CountQueryBuilder(table: citizenTable).build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."id") FROM "citizen"');
     });
     test('when query with alias is built then count result has defined alias.',
         () {
       var query =
           CountQueryBuilder(table: citizenTable).withCountAlias('c').build();
 
-      expect(query, 'SELECT COUNT(*) AS c FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."id") AS c FROM "citizen"');
     });
 
     test('when query with field is built then count is based on that field.',
         () {
-      var query =
-          CountQueryBuilder(table: citizenTable).withField('age').build();
+      var query = CountQueryBuilder(table: citizenTable)
+          .withField(ColumnInt('age', citizenTable))
+          .build();
 
-      expect(query, 'SELECT COUNT(age) FROM "citizen"');
+      expect(query, 'SELECT COUNT(citizen."age") FROM "citizen"');
     });
 
     test(
@@ -255,14 +293,15 @@ void main() {
           .withWhere(const Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" WHERE "test"=@test');
+      expect(query,
+          'SELECT COUNT(citizen."id") FROM "citizen" WHERE "test"=@test');
     });
 
     test('when query with limit is built then output is a query with limit.',
         () {
       var query = CountQueryBuilder(table: citizenTable).withLimit(10).build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" LIMIT 10');
+      expect(query, 'SELECT COUNT(citizen."id") FROM "citizen" LIMIT 10');
     });
 
     test(
@@ -287,7 +326,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT COUNT(citizen."id") FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
     });
 
     test(
@@ -317,7 +356,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT COUNT(citizen."id") FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
     });
 
     test(
@@ -336,7 +375,7 @@ void main() {
 
       var query = CountQueryBuilder(table: citizenTable)
           .withCountAlias('c')
-          .withField('age')
+          .withField(ColumnInt('age', citizenTable))
           .withWhere(
             ColumnString('name', relationTable).equals('Serverpod'),
           )
@@ -344,7 +383,7 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(age) AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
+          'SELECT COUNT(citizen."age") AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
     });
 
     test(

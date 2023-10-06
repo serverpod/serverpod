@@ -12,7 +12,7 @@ import 'package:serverpod/src/database/table_relation.dart';
 @internal
 class SelectQueryBuilder {
   final Table _table;
-  List<Column>? _fields;
+  late List<Column> _fields;
   List<Order>? _orderBy;
   int? _limit;
   int? _offset;
@@ -20,7 +20,20 @@ class SelectQueryBuilder {
   Include? _include;
 
   /// Creates a new [SelectQueryBuilder].
-  SelectQueryBuilder({required Table table}) : _table = table;
+  /// Throws an [ArgumentError] if the table has no columns.
+  SelectQueryBuilder({required Table table}) : _table = table {
+    var columns = table.columns;
+
+    if (columns.isEmpty) {
+      throw ArgumentError.value(
+        table,
+        'table',
+        'Must have at least one column',
+      );
+    }
+
+    _fields = table.columns;
+  }
 
   /// Builds the SQL query.
   String build() {
@@ -48,8 +61,16 @@ class SelectQueryBuilder {
   }
 
   /// Sets the fields that should be selected by the query.
-  /// If no fields are set, all fields will be selected.
-  SelectQueryBuilder withSelectFields(List<Column>? fields) {
+  /// Throws an [ArgumentError] if the list is empty.
+  SelectQueryBuilder withSelectFields(List<Column> fields) {
+    if (fields.isEmpty) {
+      throw ArgumentError.value(
+        fields,
+        'fields',
+        'Cannot be empty',
+      );
+    }
+
     _fields = fields;
     return this;
   }
@@ -100,14 +121,14 @@ class SelectQueryBuilder {
 class CountQueryBuilder {
   final Table _table;
   String? _alias;
-  String _field;
+  Column _field;
   int? _limit;
   Expression? _where;
 
   /// Creates a new [CountQueryBuilder].
   CountQueryBuilder({required Table table})
       : _table = table,
-        _field = '*';
+        _field = table.id;
 
   /// Sets the alias for the count query.
   CountQueryBuilder withCountAlias(String alias) {
@@ -116,7 +137,7 @@ class CountQueryBuilder {
   }
 
   /// Sets the field to count.
-  CountQueryBuilder withField(String field) {
+  CountQueryBuilder withField(Column field) {
     _field = field;
     return this;
   }
@@ -224,12 +245,8 @@ class DeleteQueryBuilder {
   }
 }
 
-String _buildSelectQuery(List<Column>? fields, Include? include) {
-  var selectColumns = [...?fields, ..._gatherIncludeColumns(include)];
-
-  if (selectColumns.isEmpty) {
-    return 'SELECT *';
-  }
+String _buildSelectQuery(List<Column> fields, Include? include) {
+  var selectColumns = [...fields, ..._gatherIncludeColumns(include)];
 
   return _selectStatementFromColumns(selectColumns);
 }
