@@ -7,64 +7,63 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../protocol.dart' as _i2;
+import '../../protocol.dart' as _i2;
 
-abstract class Address extends _i1.TableRow {
-  Address._({
+abstract class Town extends _i1.TableRow {
+  Town._({
     int? id,
-    required this.street,
-    this.inhabitantId,
-    this.inhabitant,
+    required this.name,
+    this.mayorId,
+    this.mayor,
   }) : super(id);
 
-  factory Address({
+  factory Town({
     int? id,
-    required String street,
-    int? inhabitantId,
-    _i2.Citizen? inhabitant,
-  }) = _AddressImpl;
+    required String name,
+    int? mayorId,
+    _i2.Citizen? mayor,
+  }) = _TownImpl;
 
-  factory Address.fromJson(
+  factory Town.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Address(
+    return Town(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      street:
-          serializationManager.deserialize<String>(jsonSerialization['street']),
-      inhabitantId: serializationManager
-          .deserialize<int?>(jsonSerialization['inhabitantId']),
-      inhabitant: serializationManager
-          .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      mayorId:
+          serializationManager.deserialize<int?>(jsonSerialization['mayorId']),
+      mayor: serializationManager
+          .deserialize<_i2.Citizen?>(jsonSerialization['mayor']),
     );
   }
 
-  static final t = AddressTable();
+  static final t = TownTable();
 
-  static const db = AddressRepository._();
+  static const db = TownRepository._();
 
-  String street;
+  String name;
 
-  int? inhabitantId;
+  int? mayorId;
 
-  _i2.Citizen? inhabitant;
+  _i2.Citizen? mayor;
 
   @override
   _i1.Table get table => t;
 
-  Address copyWith({
+  Town copyWith({
     int? id,
-    String? street,
-    int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    String? name,
+    int? mayorId,
+    _i2.Citizen? mayor,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'street': street,
-      'inhabitantId': inhabitantId,
-      'inhabitant': inhabitant,
+      'name': name,
+      'mayorId': mayorId,
+      'mayor': mayor,
     };
   }
 
@@ -73,8 +72,8 @@ abstract class Address extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'street': street,
-      'inhabitantId': inhabitantId,
+      'name': name,
+      'mayorId': mayorId,
     };
   }
 
@@ -82,9 +81,9 @@ abstract class Address extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'street': street,
-      'inhabitantId': inhabitantId,
-      'inhabitant': inhabitant,
+      'name': name,
+      'mayorId': mayorId,
+      'mayor': mayor,
     };
   }
 
@@ -97,11 +96,11 @@ abstract class Address extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'street':
-        street = value;
+      case 'name':
+        name = value;
         return;
-      case 'inhabitantId':
-        inhabitantId = value;
+      case 'mayorId':
+        mayorId = value;
         return;
       default:
         throw UnimplementedError();
@@ -109,9 +108,9 @@ abstract class Address extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Address>> find(
+  static Future<List<Town>> find(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -119,10 +118,10 @@ abstract class Address extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.db.find<Address>(
-      where: where != null ? where(Address.t) : null,
+    return session.db.find<Town>(
+      where: where != null ? where(Town.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -135,18 +134,18 @@ abstract class Address extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Address?> findSingleRow(
+  static Future<Town?> findSingleRow(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.db.findSingleRow<Address>(
-      where: where != null ? where(Address.t) : null,
+    return session.db.findSingleRow<Town>(
+      where: where != null ? where(Town.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -157,12 +156,12 @@ abstract class Address extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Address?> findById(
+  static Future<Town?> findById(
     _i1.Session session,
     int id, {
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.db.findById<Address>(
+    return session.db.findById<Town>(
       id,
       include: include,
     );
@@ -171,11 +170,11 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required AddressExpressionBuilder where,
+    required TownExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Address>(
-      where: where(Address.t),
+    return session.db.delete<Town>(
+      where: where(Town.t),
       transaction: transaction,
     );
   }
@@ -183,7 +182,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -195,7 +194,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -208,7 +207,7 @@ abstract class Address extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -220,142 +219,141 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Address>(
-      where: where != null ? where(Address.t) : null,
+    return session.db.count<Town>(
+      where: where != null ? where(Town.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
-    return AddressInclude._(inhabitant: inhabitant);
+  static TownInclude include({_i2.CitizenInclude? mayor}) {
+    return TownInclude._(mayor: mayor);
   }
 }
 
 class _Undefined {}
 
-class _AddressImpl extends Address {
-  _AddressImpl({
+class _TownImpl extends Town {
+  _TownImpl({
     int? id,
-    required String street,
-    int? inhabitantId,
-    _i2.Citizen? inhabitant,
+    required String name,
+    int? mayorId,
+    _i2.Citizen? mayor,
   }) : super._(
           id: id,
-          street: street,
-          inhabitantId: inhabitantId,
-          inhabitant: inhabitant,
+          name: name,
+          mayorId: mayorId,
+          mayor: mayor,
         );
 
   @override
-  Address copyWith({
+  Town copyWith({
     Object? id = _Undefined,
-    String? street,
-    Object? inhabitantId = _Undefined,
-    Object? inhabitant = _Undefined,
+    String? name,
+    Object? mayorId = _Undefined,
+    Object? mayor = _Undefined,
   }) {
-    return Address(
+    return Town(
       id: id is int? ? id : this.id,
-      street: street ?? this.street,
-      inhabitantId: inhabitantId is int? ? inhabitantId : this.inhabitantId,
-      inhabitant:
-          inhabitant is _i2.Citizen? ? inhabitant : this.inhabitant?.copyWith(),
+      name: name ?? this.name,
+      mayorId: mayorId is int? ? mayorId : this.mayorId,
+      mayor: mayor is _i2.Citizen? ? mayor : this.mayor?.copyWith(),
     );
   }
 }
 
-typedef AddressExpressionBuilder = _i1.Expression Function(AddressTable);
+typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
 
-class AddressTable extends _i1.Table {
-  AddressTable({super.tableRelation}) : super(tableName: 'address') {
-    street = _i1.ColumnString(
-      'street',
+class TownTable extends _i1.Table {
+  TownTable({super.tableRelation}) : super(tableName: 'town') {
+    name = _i1.ColumnString(
+      'name',
       this,
     );
-    inhabitantId = _i1.ColumnInt(
-      'inhabitantId',
+    mayorId = _i1.ColumnInt(
+      'mayorId',
       this,
     );
   }
 
-  late final _i1.ColumnString street;
+  late final _i1.ColumnString name;
 
-  late final _i1.ColumnInt inhabitantId;
+  late final _i1.ColumnInt mayorId;
 
-  _i2.CitizenTable? _inhabitant;
+  _i2.CitizenTable? _mayor;
 
-  _i2.CitizenTable get inhabitant {
-    if (_inhabitant != null) return _inhabitant!;
-    _inhabitant = _i1.createRelationTable(
-      relationFieldName: 'inhabitant',
-      field: Address.t.inhabitantId,
+  _i2.CitizenTable get mayor {
+    if (_mayor != null) return _mayor!;
+    _mayor = _i1.createRelationTable(
+      relationFieldName: 'mayor',
+      field: Town.t.mayorId,
       foreignField: _i2.Citizen.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
-    return _inhabitant!;
+    return _mayor!;
   }
 
   @override
   List<_i1.Column> get columns => [
         id,
-        street,
-        inhabitantId,
+        name,
+        mayorId,
       ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'inhabitant') {
-      return inhabitant;
+    if (relationField == 'mayor') {
+      return mayor;
     }
     return null;
   }
 }
 
-@Deprecated('Use AddressTable.t instead.')
-AddressTable tAddress = AddressTable();
+@Deprecated('Use TownTable.t instead.')
+TownTable tTown = TownTable();
 
-class AddressInclude extends _i1.Include {
-  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
-    _inhabitant = inhabitant;
+class TownInclude extends _i1.Include {
+  TownInclude._({_i2.CitizenInclude? mayor}) {
+    _mayor = mayor;
   }
 
-  _i2.CitizenInclude? _inhabitant;
+  _i2.CitizenInclude? _mayor;
 
   @override
-  Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
+  Map<String, _i1.Include?> get includes => {'mayor': _mayor};
 
   @override
-  _i1.Table get table => Address.t;
+  _i1.Table get table => Town.t;
 }
 
-class AddressRepository {
-  const AddressRepository._();
+class TownRepository {
+  const TownRepository._();
 
-  final attachRow = const AddressAttachRowRepository._();
+  final attachRow = const TownAttachRowRepository._();
 
-  final detachRow = const AddressDetachRowRepository._();
+  final detachRow = const TownDetachRowRepository._();
 
-  Future<List<Address>> find(
+  Future<List<Town>> find(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.dbNext.find<Address>(
-      where: where?.call(Address.t),
+    return session.dbNext.find<Town>(
+      where: where?.call(Town.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -366,74 +364,74 @@ class AddressRepository {
     );
   }
 
-  Future<Address?> findRow(
+  Future<Town?> findRow(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.dbNext.findRow<Address>(
-      where: where?.call(Address.t),
+    return session.dbNext.findRow<Town>(
+      where: where?.call(Town.t),
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<Address?> findById(
+  Future<Town?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
-    AddressInclude? include,
+    TownInclude? include,
   }) async {
-    return session.dbNext.findById<Address>(
+    return session.dbNext.findById<Town>(
       id,
       transaction: transaction,
       include: include,
     );
   }
 
-  Future<List<Address>> insert(
+  Future<List<Town>> insert(
     _i1.Session session,
-    List<Address> rows, {
+    List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Address>(
+    return session.dbNext.insert<Town>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Address> insertRow(
+  Future<Town> insertRow(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Address>(
+    return session.dbNext.insertRow<Town>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<Address>> update(
+  Future<List<Town>> update(
     _i1.Session session,
-    List<Address> rows, {
+    List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Address>(
+    return session.dbNext.update<Town>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Address> updateRow(
+  Future<Town> updateRow(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Address>(
+    return session.dbNext.updateRow<Town>(
       row,
       transaction: transaction,
     );
@@ -441,10 +439,10 @@ class AddressRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<Address> rows, {
+    List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Address>(
+    return session.dbNext.delete<Town>(
       rows,
       transaction: transaction,
     );
@@ -452,10 +450,10 @@ class AddressRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    Address row, {
+    Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Address>(
+    return session.dbNext.deleteRow<Town>(
       row,
       transaction: transaction,
     );
@@ -463,67 +461,67 @@ class AddressRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required AddressExpressionBuilder where,
+    required TownExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Address>(
-      where: where(Address.t),
+    return session.dbNext.deleteWhere<Town>(
+      where: where(Town.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    TownExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Address>(
-      where: where?.call(Address.t),
+    return session.dbNext.count<Town>(
+      where: where?.call(Town.t),
       limit: limit,
       transaction: transaction,
     );
   }
 }
 
-class AddressAttachRowRepository {
-  const AddressAttachRowRepository._();
+class TownAttachRowRepository {
+  const TownAttachRowRepository._();
 
-  Future<void> inhabitant(
+  Future<void> mayor(
     _i1.Session session,
-    Address address,
-    _i2.Citizen inhabitant,
+    Town town,
+    _i2.Citizen mayor,
   ) async {
-    if (address.id == null) {
-      throw ArgumentError.notNull('address.id');
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
     }
-    if (inhabitant.id == null) {
-      throw ArgumentError.notNull('inhabitant.id');
+    if (mayor.id == null) {
+      throw ArgumentError.notNull('mayor.id');
     }
 
-    var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await session.dbNext.updateRow<Address>(
-      $address,
-      columns: [Address.t.inhabitantId],
+    var $town = town.copyWith(mayorId: mayor.id);
+    await session.dbNext.updateRow<Town>(
+      $town,
+      columns: [Town.t.mayorId],
     );
   }
 }
 
-class AddressDetachRowRepository {
-  const AddressDetachRowRepository._();
+class TownDetachRowRepository {
+  const TownDetachRowRepository._();
 
-  Future<void> inhabitant(
+  Future<void> mayor(
     _i1.Session session,
-    Address address,
+    Town town,
   ) async {
-    if (address.id == null) {
-      throw ArgumentError.notNull('address.id');
+    if (town.id == null) {
+      throw ArgumentError.notNull('town.id');
     }
 
-    var $address = address.copyWith(inhabitantId: null);
-    await session.dbNext.updateRow<Address>(
-      $address,
-      columns: [Address.t.inhabitantId],
+    var $town = town.copyWith(mayorId: null);
+    await session.dbNext.updateRow<Town>(
+      $town,
+      columns: [Town.t.mayorId],
     );
   }
 }

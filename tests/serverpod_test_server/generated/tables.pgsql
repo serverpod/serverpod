@@ -19,8 +19,7 @@ CREATE TABLE "citizen" (
   "id" serial,
   "name" text NOT NULL,
   "companyId" integer NOT NULL,
-  "oldCompanyId" integer,
-  "_companyEmployeesCompanyId" integer
+  "oldCompanyId" integer
 );
 
 ALTER TABLE ONLY "citizen"
@@ -281,11 +280,6 @@ ALTER TABLE ONLY "citizen"
 ALTER TABLE ONLY "citizen"
   ADD CONSTRAINT citizen_fk_1
     FOREIGN KEY("oldCompanyId")
-      REFERENCES company(id)
-        ON DELETE CASCADE;
-ALTER TABLE ONLY "citizen"
-  ADD CONSTRAINT citizen_fk_2
-    FOREIGN KEY("_companyEmployeesCompanyId")
       REFERENCES company(id)
         ON DELETE CASCADE;
 

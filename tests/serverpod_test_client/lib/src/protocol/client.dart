@@ -26,15 +26,15 @@ import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
 import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i15;
 import 'package:serverpod_test_client/src/protocol/related_unique_data.dart'
     as _i16;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/citizen.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/citizen.dart'
     as _i17;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/address.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
     as _i18;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
     as _i19;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/company.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
     as _i20;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/town.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/town.dart'
     as _i21;
 import 'package:serverpod_test_client/src/protocol/object_field_scopes.dart'
     as _i22;

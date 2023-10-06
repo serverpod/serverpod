@@ -8,11 +8,11 @@
 library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'entities_with_relations/address.dart' as _i2;
-import 'entities_with_relations/citizen.dart' as _i3;
-import 'entities_with_relations/company.dart' as _i4;
-import 'entities_with_relations/post.dart' as _i5;
-import 'entities_with_relations/town.dart' as _i6;
+import 'entities_with_relations/one_to_one/address.dart' as _i2;
+import 'entities_with_relations/one_to_one/citizen.dart' as _i3;
+import 'entities_with_relations/one_to_one/company.dart' as _i4;
+import 'entities_with_relations/one_to_one/town.dart' as _i5;
+import 'entities_with_relations/self_relation/post.dart' as _i6;
 import 'exception_with_data.dart' as _i7;
 import 'module_datatype.dart' as _i8;
 import 'nullability.dart' as _i9;
@@ -38,30 +38,30 @@ import 'simple_date_time.dart' as _i28;
 import 'test_enum.dart' as _i29;
 import 'types.dart' as _i30;
 import 'unique_data.dart' as _i31;
-import 'protocol.dart' as _i32;
-import 'package:serverpod_test_module_client/module.dart' as _i33;
+import 'package:serverpod_test_module_client/module.dart' as _i32;
+import 'protocol.dart' as _i33;
 import 'dart:typed_data' as _i34;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i35;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i36;
 import 'package:uuid/uuid.dart' as _i37;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i38;
 import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i39;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/citizen.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/citizen.dart'
     as _i40;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/address.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
     as _i41;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
     as _i42;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/company.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
     as _i43;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i44;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i45;
 import 'package:serverpod_auth_client/module.dart' as _i46;
-export 'entities_with_relations/address.dart';
-export 'entities_with_relations/citizen.dart';
-export 'entities_with_relations/company.dart';
-export 'entities_with_relations/post.dart';
-export 'entities_with_relations/town.dart';
+export 'entities_with_relations/one_to_one/address.dart';
+export 'entities_with_relations/one_to_one/citizen.dart';
+export 'entities_with_relations/one_to_one/company.dart';
+export 'entities_with_relations/one_to_one/town.dart';
+export 'entities_with_relations/self_relation/post.dart';
 export 'exception_with_data.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
@@ -116,11 +116,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i4.Company) {
       return _i4.Company.fromJson(data, this) as T;
     }
-    if (t == _i5.Post) {
-      return _i5.Post.fromJson(data, this) as T;
+    if (t == _i5.Town) {
+      return _i5.Town.fromJson(data, this) as T;
     }
-    if (t == _i6.Town) {
-      return _i6.Town.fromJson(data, this) as T;
+    if (t == _i6.Post) {
+      return _i6.Post.fromJson(data, this) as T;
     }
     if (t == _i7.ExceptionWithData) {
       return _i7.ExceptionWithData.fromJson(data, this) as T;
@@ -206,11 +206,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i4.Company?>()) {
       return (data != null ? _i4.Company.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i5.Post?>()) {
-      return (data != null ? _i5.Post.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i5.Town?>()) {
+      return (data != null ? _i5.Town.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i6.Town?>()) {
-      return (data != null ? _i6.Town.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i6.Post?>()) {
+      return (data != null ? _i6.Post.fromJson(data, this) : null) as T;
     }
     if (t == _i1.getType<_i7.ExceptionWithData?>()) {
       return (data != null ? _i7.ExceptionWithData.fromJson(data, this) : null)
@@ -311,23 +311,18 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i31.UniqueData?>()) {
       return (data != null ? _i31.UniqueData.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<List<_i32.Citizen>?>()) {
-      return (data != null
-          ? (data as List).map((e) => deserialize<_i32.Citizen>(e)).toList()
-          : null) as dynamic;
-    }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i33.ModuleClass>) {
+    if (t == List<_i32.ModuleClass>) {
       return (data as List)
-          .map((e) => deserialize<_i33.ModuleClass>(e))
+          .map((e) => deserialize<_i32.ModuleClass>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i33.ModuleClass>) {
+    if (t == Map<String, _i32.ModuleClass>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i33.ModuleClass>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i32.ModuleClass>(v))) as dynamic;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
@@ -346,23 +341,23 @@ class Protocol extends _i1.SerializationManager {
           ? (data as List).map((e) => deserialize<int?>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i32.SimpleData>) {
-      return (data as List).map((e) => deserialize<_i32.SimpleData>(e)).toList()
+    if (t == List<_i33.SimpleData>) {
+      return (data as List).map((e) => deserialize<_i33.SimpleData>(e)).toList()
           as dynamic;
     }
-    if (t == _i1.getType<List<_i32.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i33.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i32.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i33.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == List<_i32.SimpleData?>) {
+    if (t == List<_i33.SimpleData?>) {
       return (data as List)
-          .map((e) => deserialize<_i32.SimpleData?>(e))
+          .map((e) => deserialize<_i33.SimpleData?>(e))
           .toList() as dynamic;
     }
-    if (t == _i1.getType<List<_i32.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i33.SimpleData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i32.SimpleData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i33.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<DateTime>) {
@@ -459,22 +454,22 @@ class Protocol extends _i1.SerializationManager {
               (k, v) => MapEntry(deserialize<String>(k), deserialize<int?>(v)))
           : null) as dynamic;
     }
-    if (t == List<_i32.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i32.TestEnum>(e)).toList()
+    if (t == List<_i33.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i33.TestEnum>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i32.TestEnum?>) {
-      return (data as List).map((e) => deserialize<_i32.TestEnum?>(e)).toList()
+    if (t == List<_i33.TestEnum?>) {
+      return (data as List).map((e) => deserialize<_i33.TestEnum?>(e)).toList()
           as dynamic;
     }
-    if (t == List<List<_i32.TestEnum>>) {
+    if (t == List<List<_i33.TestEnum>>) {
       return (data as List)
-          .map((e) => deserialize<List<_i32.TestEnum>>(e))
+          .map((e) => deserialize<List<_i33.TestEnum>>(e))
           .toList() as dynamic;
     }
-    if (t == Map<String, _i32.SimpleData>) {
+    if (t == Map<String, _i33.SimpleData>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i32.SimpleData>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i33.SimpleData>(v)))
           as dynamic;
     }
     if (t == Map<String, String>) {
@@ -501,9 +496,9 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<_i1.UuidValue>(v)))
           as dynamic;
     }
-    if (t == Map<String, _i32.SimpleData?>) {
+    if (t == Map<String, _i33.SimpleData?>) {
       return (data as Map).map((k, v) => MapEntry(
-          deserialize<String>(k), deserialize<_i32.SimpleData?>(v))) as dynamic;
+          deserialize<String>(k), deserialize<_i33.SimpleData?>(v))) as dynamic;
     }
     if (t == Map<String, String?>) {
       return (data as Map).map((k, v) =>
@@ -534,14 +529,14 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == _i1.getType<List<_i32.SimpleData>?>()) {
+    if (t == _i1.getType<List<_i33.SimpleData>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i32.SimpleData>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i33.SimpleData>(e)).toList()
           : null) as dynamic;
     }
-    if (t == _i1.getType<List<_i32.SimpleData?>?>()) {
+    if (t == _i1.getType<List<_i33.SimpleData?>?>()) {
       return (data != null
-          ? (data as List).map((e) => deserialize<_i32.SimpleData?>(e)).toList()
+          ? (data as List).map((e) => deserialize<_i33.SimpleData?>(e)).toList()
           : null) as dynamic;
     }
     if (t == List<_i35.Types>) {
@@ -873,7 +868,7 @@ class Protocol extends _i1.SerializationManager {
           : null) as T;
     }
     try {
-      return _i33.Protocol().deserialize<T>(data, t);
+      return _i32.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
       return _i46.Protocol().deserialize<T>(data, t);
@@ -884,7 +879,7 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i33.Protocol().getClassNameForObject(data);
+    className = _i32.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_test_module.$className';
     }
@@ -910,11 +905,11 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i4.Company) {
       return 'Company';
     }
-    if (data is _i5.Post) {
-      return 'Post';
-    }
-    if (data is _i6.Town) {
+    if (data is _i5.Town) {
       return 'Town';
+    }
+    if (data is _i6.Post) {
+      return 'Post';
     }
     if (data is _i7.ExceptionWithData) {
       return 'ExceptionWithData';
@@ -998,7 +993,7 @@ class Protocol extends _i1.SerializationManager {
   dynamic deserializeByClassName(Map<String, dynamic> data) {
     if (data['className'].startsWith('serverpod_test_module.')) {
       data['className'] = data['className'].substring(22);
-      return _i33.Protocol().deserializeByClassName(data);
+      return _i32.Protocol().deserializeByClassName(data);
     }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
@@ -1022,11 +1017,11 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'Company') {
       return deserialize<_i4.Company>(data['data']);
     }
-    if (data['className'] == 'Post') {
-      return deserialize<_i5.Post>(data['data']);
-    }
     if (data['className'] == 'Town') {
-      return deserialize<_i6.Town>(data['data']);
+      return deserialize<_i5.Town>(data['data']);
+    }
+    if (data['className'] == 'Post') {
+      return deserialize<_i6.Post>(data['data']);
     }
     if (data['className'] == 'ExceptionWithData') {
       return deserialize<_i7.ExceptionWithData>(data['data']);
