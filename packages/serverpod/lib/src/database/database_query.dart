@@ -444,6 +444,6 @@ extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
     // Regex matches 'tableName_' and 'tableName.'
-    return toString().startsWith(RegExp(table + r'[_\.]'));
+    return queryAlias.startsWith(RegExp(table + r'[_\.]'));
   }
 }
