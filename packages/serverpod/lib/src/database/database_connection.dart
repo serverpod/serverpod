@@ -55,8 +55,7 @@ class DatabaseConnection {
       orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
     }
 
-    var tableName = table.tableName;
-    var query = SelectQueryBuilder(table: tableName)
+    var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
         .withWhere(where)
         .withOrderBy(orderByList)
@@ -284,7 +283,7 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
-    var query = DeleteQueryBuilder(table: table.tableName)
+    var query = DeleteQueryBuilder(table: table)
         .withReturn(Returning.id)
         .withWhere(where)
         .build();
@@ -303,7 +302,7 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'count');
 
-    var query = CountQueryBuilder(table: table.tableName)
+    var query = CountQueryBuilder(table: table)
         .withCountAlias('c')
         .withWhere(where)
         .withLimit(limit)
