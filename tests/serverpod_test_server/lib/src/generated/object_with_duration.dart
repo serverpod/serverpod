@@ -234,10 +234,8 @@ typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
     ObjectWithDurationTable);
 
 class ObjectWithDurationTable extends _i1.Table {
-  ObjectWithDurationTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_with_duration') {
+  ObjectWithDurationTable({super.tableRelation})
+      : super(tableName: 'object_with_duration') {
     duration = _i1.ColumnDuration(
       'duration',
       this,

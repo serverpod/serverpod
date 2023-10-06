@@ -317,10 +317,15 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
   // Linked hash map to preserve order
   LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
   var columnsWithTableRelations =
-      columns.where((column) => column.table.tableRelations != null);
+      columns.where((column) => column.table.tableRelation != null);
   for (var column in columnsWithTableRelations) {
-    for (var tableRelation in column.table.tableRelations!) {
-      joins[tableRelation.tableNameWithQueryPrefix] = tableRelation;
+    var tableRelation = column.table.tableRelation;
+    if (tableRelation == null) {
+      continue;
+    }
+
+    for (var subTableRelation in tableRelation.getRelations) {
+      joins[subTableRelation.relationQueryAlias] = subTableRelation;
     }
   }
 
@@ -333,10 +338,15 @@ LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
   LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
   var includeTables = _gatherIncludeTables(include, include.table);
   var tablesWithTableRelations =
-      includeTables.where((table) => table.tableRelations != null);
+      includeTables.where((table) => table.tableRelation != null);
   for (var table in tablesWithTableRelations) {
-    for (var tableRelation in table.tableRelations!) {
-      tableRelations[tableRelation.tableNameWithQueryPrefix] = tableRelation;
+    var tableRelation = table.tableRelation;
+    if (tableRelation == null) {
+      continue;
+    }
+
+    for (var subTableRelation in tableRelation.getRelations) {
+      tableRelations[subTableRelation.relationQueryAlias] = subTableRelation;
     }
   }
 
@@ -347,10 +357,10 @@ String _joinStatementFromTableRelations(
     LinkedHashMap<String, TableRelation> tableRelations) {
   List<String> joinStatements = [];
   for (var tableRelation in tableRelations.values) {
-    joinStatements.add('LEFT JOIN "${tableRelation.tableName}" '
-        'AS ${tableRelation.tableNameWithQueryPrefix} '
-        'ON ${tableRelation.foreignTableColumn} '
-        '= ${tableRelation.column}');
+    joinStatements.add('LEFT JOIN "${tableRelation.lastForeignTableName}" '
+        'AS ${tableRelation.relationQueryAlias} '
+        'ON ${tableRelation.lastJoiningField} '
+        '= ${tableRelation.lastJoiningForeignField}');
   }
   return joinStatements.join(' ');
 }
@@ -369,9 +379,9 @@ _UsingQuery _usingQueryFromTableRelations(
   List<String> whereStatements = [];
   for (var tableRelation in tableRelations.values) {
     usingStatements.add(
-        '"${tableRelation.tableName}" AS ${tableRelation.tableNameWithQueryPrefix}');
-    whereStatements
-        .add('${tableRelation.foreignTableColumn} = ${tableRelation.column}');
+        '"${tableRelation.lastForeignTableName}" AS ${tableRelation.relationQueryAlias}');
+    whereStatements.add(
+        '${tableRelation.lastJoiningField} = ${tableRelation.lastJoiningForeignField}');
   }
   return _UsingQuery(
     using: usingStatements.join(', '),

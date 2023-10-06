@@ -309,10 +309,8 @@ typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
     FutureCallEntryTable);
 
 class FutureCallEntryTable extends _i1.Table {
-  FutureCallEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_future_call') {
+  FutureCallEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_future_call') {
     name = _i1.ColumnString(
       'name',
       this,

@@ -237,10 +237,8 @@ typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
     ReadWriteTestEntryTable);
 
 class ReadWriteTestEntryTable extends _i1.Table {
-  ReadWriteTestEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_readwrite_test') {
+  ReadWriteTestEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_readwrite_test') {
     number = _i1.ColumnInt(
       'number',
       this,

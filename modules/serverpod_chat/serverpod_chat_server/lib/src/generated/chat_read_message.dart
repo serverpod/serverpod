@@ -272,10 +272,8 @@ typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
     ChatReadMessageTable);
 
 class ChatReadMessageTable extends _i1.Table {
-  ChatReadMessageTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_chat_read_message') {
+  ChatReadMessageTable({super.tableRelation})
+      : super(tableName: 'serverpod_chat_read_message') {
     channel = _i1.ColumnString(
       'channel',
       this,

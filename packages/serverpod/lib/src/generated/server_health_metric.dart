@@ -328,10 +328,8 @@ typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
     ServerHealthMetricTable);
 
 class ServerHealthMetricTable extends _i1.Table {
-  ServerHealthMetricTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_health_metric') {
+  ServerHealthMetricTable({super.tableRelation})
+      : super(tableName: 'serverpod_health_metric') {
     name = _i1.ColumnString(
       'name',
       this,

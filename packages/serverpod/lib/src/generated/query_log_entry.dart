@@ -398,10 +398,8 @@ typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
     QueryLogEntryTable);
 
 class QueryLogEntryTable extends _i1.Table {
-  QueryLogEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_query_log') {
+  QueryLogEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_query_log') {
     serverId = _i1.ColumnString(
       'serverId',
       this,

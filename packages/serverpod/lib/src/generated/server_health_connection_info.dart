@@ -328,10 +328,8 @@ typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
     ServerHealthConnectionInfoTable);
 
 class ServerHealthConnectionInfoTable extends _i1.Table {
-  ServerHealthConnectionInfoTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_health_connection_info') {
+  ServerHealthConnectionInfoTable({super.tableRelation})
+      : super(tableName: 'serverpod_health_connection_info') {
     serverId = _i1.ColumnString(
       'serverId',
       this,
