@@ -38,7 +38,7 @@ class ContentObject {
 
     if (responseType != null) {
       contentMap[ContentType.applicationJson]['schema'] =
-          typeToJson(responseType!, true);
+          typeDefinitionToJson(responseType!, true);
       return contentMap;
     }
 

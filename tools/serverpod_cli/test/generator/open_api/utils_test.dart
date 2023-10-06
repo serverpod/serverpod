@@ -45,6 +45,11 @@ void main() {
           TypeDefinition(className: 'Example', nullable: false)
               .toSchemaObjectType
               .name);
+      expect(
+          'object',
+          TypeDefinition(className: 'dynamic', nullable: false)
+              .toSchemaObjectType
+              .name);
     });
   });
 }

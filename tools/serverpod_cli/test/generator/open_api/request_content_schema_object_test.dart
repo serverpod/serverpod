@@ -196,6 +196,7 @@ void main() {
             },
             'map': {
               'type': 'object',
+              'additionalProperties': {'\$ref': '#/components/schemas/AnyValue'}
             }
           }
         },
