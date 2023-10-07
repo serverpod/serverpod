@@ -1,6 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
+import '../../analyzer/dart/definitions.dart';
 import 'open_api_objects.dart';
 
 /// OpenAPI Object
@@ -29,16 +30,6 @@ class OpenApiDefinition {
   /// An element to hold various schemas for the document.
   final ComponentsObject? components;
 
-  /// A declaration of which security mechanisms can be used across the API.
-  /// The list of values includes alternative security requirement objects
-  /// that can be used.
-  /// Only one of the security requirement objects need to be satisfied
-  /// to authorize a request.
-  /// Individual operations can override this definition.
-  /// To make security optional, an empty security requirement ({})
-  /// can be included in the array.
-  final Set<SecurityRequirementObject>? security;
-
   /// A list of tags used by the document with additional metadata.
   /// The order of the tags can be used to reflect on their order by
   /// the parsing tools.
@@ -58,7 +49,6 @@ class OpenApiDefinition {
     this.servers,
     this.paths,
     this.components,
-    this.security,
     this.tags,
     this.externalDocs,
   });
@@ -83,12 +73,9 @@ class OpenApiDefinition {
     if (components != null) {
       map['components'] = components!.toJson();
     }
-    if (security != null) {
-      //map['security']=security
-    }
 
     if (externalDocs != null) {
-      //map['externalDocs'] = externalDocs
+      map['externalDocs'] = externalDocs!.toJson();
     }
 
     return map;
@@ -109,7 +96,15 @@ class OpenApiDefinition {
     Set<ComponentSchemaObject> schemas =
         _getSchemaObjectFromClassDefinitions(classDefinitionList);
 
-    ComponentsObject componentsObject = ComponentsObject(schemas: schemas);
+    ComponentsObject componentsObject =
+        ComponentsObject(schemas: schemas, securitySchemes: {
+      SecurityRequirementObject(
+        name: 'serverpodAuth',
+        securitySchemes: HttpSecurityScheme(
+          scheme: 'bearer',
+        ),
+      ),
+    });
 
     var servers = {
       ServerObject(
@@ -151,13 +146,53 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
   for (var endpoint in protocolDefinition.endpoints) {
     /// example ```['api','v1',] => api/v1/```
     var extraPath = endpoint.subDirParts.isEmpty
-        ? ''
-        : "${endpoint.subDirParts.join('/')}/";
+        ? '/'
+        : "/${endpoint.subDirParts.join('/')}/";
 
     for (var method in endpoint.methods) {
+      String? description = method.documentationComment;
+
+      /// Method name is operationId + Tag
+      String operationId = method.name + endpoint.name.pascalCase;
+
+      List<ParameterDefinition> params = [
+        ...method.parameters,
+        ...method.parametersNamed,
+        ...method.parametersPositional
+      ];
+      ResponseObject responseObject =
+          ResponseObject(responseType: method.returnType);
+      OperationObject operationObject = OperationObject(
+        description: description,
+        operationId: operationId,
+        responses: responseObject,
+        tags: [endpoint.name],
+
+        // TODO(b14ckc0d3) : add more security base on installed auths
+        security: {
+          SecurityRequirementObject(
+            name: 'serverpodAuth',
+            securitySchemes: HttpSecurityScheme(
+              scheme: 'bearer',
+            ),
+          ),
+        },
+
+        /// No need in OpeApi 2.0
+        parameters: [],
+
+        requestBody: RequestBodyObject(
+          parameterList: params,
+          requiredField: params.isNotEmpty,
+        ),
+      );
+      var pathItemObject = PathItemObject(
+        postOperation: operationObject,
+      );
+
       var pathsObject = PathsObject(
-        pathName: '/$extraPath${endpoint.name}/${method.name}',
-        path: PathItemObject.fromMethod(method, endpoint.name),
+        pathName: '$extraPath${endpoint.name}/${method.name}',
+        path: pathItemObject,
       );
       paths.add(pathsObject);
     }

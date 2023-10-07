@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 /// Defines a security scheme that can be used by the operations.
@@ -117,4 +118,16 @@ class OauthFlowObject {
   }
 }
 
-class SecurityRequirementObject {}
+class SecurityRequirementObject {
+  final String name;
+  final SecuritySchemeObject securitySchemes;
+  SecurityRequirementObject({
+    required this.name,
+    required this.securitySchemes,
+  });
+  Map<String, dynamic> toJson([bool ref = false]) {
+    Map<String, dynamic> map = {};
+    map[name] = ref ? [] : securitySchemes.toJson();
+    return map;
+  }
+}

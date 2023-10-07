@@ -97,7 +97,7 @@ class ComponentsObject {
   final Map<String, RequestBodyObject>? requestBodies;
 
   /// An object to hold reusable Security Scheme Objects.
-  final Map<String, SecuritySchemeObject>? securitySchemes;
+  final Set<SecurityRequirementObject> securitySchemes;
 
   /// An object to hold reusable Path Item Object.
   final Map<String, PathItemObject>? pathItems;
@@ -106,7 +106,7 @@ class ComponentsObject {
     this.responses,
     this.parameters,
     this.requestBodies,
-    this.securitySchemes,
+    required this.securitySchemes,
     this.pathItems,
   });
 
@@ -114,16 +114,18 @@ class ComponentsObject {
     Map<String, dynamic> map = {};
 
     if (schemas != null) {
-      map['schemas'] = _getSchemaMapFromSetSchema(schemas!);
+      Map<String, dynamic> schemasMap = {};
+      for (var schema in schemas!) {
+        schemasMap.addAll(schema.toJson());
+      }
+      map['schemas'] = schemasMap;
     }
-    return map;
-  }
-
-  Map<String, dynamic> _getSchemaMapFromSetSchema(
-      Set<ComponentSchemaObject>? schemas) {
-    Map<String, dynamic> map = {};
-    for (var schema in schemas!) {
-      map.addAll(schema.toJson());
+    if (securitySchemes.isNotEmpty) {
+      var securityMap = <String, dynamic>{};
+      for (var security in securitySchemes) {
+        securityMap.addAll(security.toJson());
+      }
+      map['securitySchemes'] = securityMap;
     }
     return map;
   }

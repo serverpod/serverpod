@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 /// Describes a single API operation on a path.
@@ -46,7 +47,7 @@ class OperationObject {
   /// Default value is false.
   final bool deprecated;
 
-  final SecurityRequirementObject security;
+  final Set<SecurityRequirementObject> security;
 
   final List<ServerObject>? servers;
   OperationObject({
@@ -57,8 +58,8 @@ class OperationObject {
     this.operationId,
     required this.parameters,
     this.requestBody,
-    this.deprecated = false,
     required this.responses,
+    this.deprecated = false,
     required this.security,
     this.servers,
   });
@@ -89,6 +90,9 @@ class OperationObject {
 
     if (parameters.isNotEmpty) {
       map['parameters'] = parameters.map((e) => e.toJson()).toList();
+    }
+    if (security.isNotEmpty) {
+      map['security'] = security.map((e) => e.toJson(true)).toList();
     }
     map['responses'] = responses.toJson();
 

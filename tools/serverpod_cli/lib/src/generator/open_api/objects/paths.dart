@@ -42,7 +42,7 @@ class PathItemObject {
   final OperationObject? putOperation;
 
   /// A definition of a POST operation on this path.
-  final OperationObject? postOperation;
+  final OperationObject postOperation;
 
   /// A definition of a DELETE operation on this path.
   final OperationObject? deleteOperation;
@@ -67,7 +67,7 @@ class PathItemObject {
     this.description,
     this.getOperation,
     this.putOperation,
-    this.postOperation,
+    required this.postOperation,
     this.deleteOperation,
     this.optionsOperation,
     this.headOperation,
@@ -85,44 +85,8 @@ class PathItemObject {
       map['description'] = description;
     }
 
-    if (postOperation != null) {
-      map['post'] = postOperation!.toJson();
-    }
+    map['post'] = postOperation.toJson();
 
     return map;
-  }
-
-  factory PathItemObject.fromMethod(MethodDefinition method, String tag) {
-    String? description = method.documentationComment;
-
-    /// Method name is operationId + Tag
-    String operationId = method.name + tag.pascalCase;
-
-    List<ParameterDefinition> params = [
-      ...method.parameters,
-      ...method.parametersNamed,
-      ...method.parametersPositional
-    ];
-    ResponseObject responseObject =
-        ResponseObject(responseType: method.returnType);
-    OperationObject operationObject = OperationObject(
-      description: description,
-      operationId: operationId,
-      responses: responseObject,
-      tags: [tag],
-
-      /// No need in OpeApi 2.0
-      parameters: [],
-
-      requestBody: RequestBodyObject(
-        parameterList: params,
-        requiredField: true,
-      ),
-      security: SecurityRequirementObject(),
-    );
-    return PathItemObject(
-      description: description,
-      postOperation: operationObject,
-    );
   }
 }
