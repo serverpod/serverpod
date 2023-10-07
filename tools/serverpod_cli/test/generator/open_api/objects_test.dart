@@ -1,3 +1,5 @@
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 
 import 'package:test/test.dart';
@@ -92,34 +94,51 @@ void main() {
           object.toJson());
     });
 
-    /// Just to check. we will validate more in [ContentSchemaObject]
     test(
-      'Validate Content Object',
+      'Validate Content Object With Response',
       () {
-        // ContentObject contentObject = ContentObject(
-        //   contentTypes: [
-        //     ContentType.applicationJson,
-        //   ],
-        //   responseSchemaObject: ContentSchemaObject(
-        //     returnType: TypeDefinition(
-        //       className: 'Future',
-        //       nullable: false,
-        //       generics: [
-        //         TypeDefinition(
-        //           className: 'String',
-        //           nullable: false,
-        //           url: 'dart:core',
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // );
-
-        // expect({
-        //   'application/json': {
-        //     'schema': {'type': 'string'}
-        //   },
-        // }, contentObject.toJson());
+        ContentObject contentObject = ContentObject(
+          responseType: TypeDefinition(
+            className: 'Future',
+            nullable: false,
+            generics: [
+              TypeDefinition(
+                className: 'String',
+                nullable: false,
+              ),
+            ],
+          ),
+        );
+        expect({
+          'application/json': {
+            'schema': {'type': 'string'}
+          },
+        }, contentObject.toJson());
+      },
+    );
+    test(
+      'Validate Content Object with Request',
+      () {
+        ContentObject contentObject = ContentObject(
+          requestContentSchemaObject: RequestContentSchemaObject(
+            params: [
+              ParameterDefinition(
+                  name: 'age',
+                  type: TypeDefinition(className: 'int', nullable: false),
+                  required: true),
+            ],
+          ),
+        );
+        expect({
+          'application/json': {
+            'schema': {
+              'type': 'object',
+              'properties': {
+                'age': {'type': 'integer'}
+              },
+            },
+          },
+        }, contentObject.toJson());
       },
     );
 
@@ -220,86 +239,85 @@ void main() {
     });
 
     test('Validate PathItemObject', () {
-      // var authParam = ParameterObject(
-      //   name: 'api_key',
-      //   inField: ParameterLocation.header,
-      //   requiredField: true,
-      //   allowEmptyValue: false,
-      //   schema: ParameterSchemaObject(
-      //     TypeDefinition(
-      //       className: 'String',
-      //       nullable: false,
-      //       url: 'dart:core',
-      //     ),
-      //   ),
-      // );
-      // var petIdParam = ParameterObject(
-      //   name: 'petId',
-      //   inField: ParameterLocation.path,
-      //   requiredField: true,
-      //   allowEmptyValue: false,
-      //   schema: ParameterSchemaObject(
-      //     TypeDefinition(
-      //       className: 'int',
-      //       nullable: false,
-      //       url: 'dart:core',
-      //     ),
-      //   ),
-      // );
-      // OperationObject object = OperationObject(
-      //   security: SecurityRequirementObject(),
-      //   parameters: [authParam, petIdParam],
-      //   tags: ['pet'],
-      //   operationId: 'getPetById',
-      // );
-      // PathItemObject pathItemObject = PathItemObject(
-      //   summary: 'Summary',
-      //   description: 'Description',
-      //   postOperation: object,
-      // );
-      // expect({
-      //   'summary': 'Summary',
-      //   'description': 'Description',
-      //   'post': {
-      //     'tags': ['pet'],
-      //     'operationId': 'getPetById',
-      //     'parameters': [
-      //       {
-      //         'name': 'api_key',
-      //         'in': 'header',
-      //         'required': true,
-      //         'schema': {'type': 'string'}
-      //       },
-      //       {
-      //         'name': 'petId',
-      //         'in': 'path',
-      //         'required': true,
-      //         'schema': {'type': 'integer'}
-      //       }
-      //     ],
-      //     'responses': {
-      //       '200': {
-      //         'description': 'Success',
-      //         'content': {
-      //           'application/json': {
-      //             'schema': {
-      //               'type': 'integer',
-      //             }
-      //           }
-      //         }
-      //       },
-      //       '400': {
-      //         'description':
-      //             'Bad request (the query passed to the server was incorrect).'
-      //       },
-      //       '403': {
-      //         'description':
-      //             "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
-      //       },
-      //       '500': {'description': 'Internal server error '}
-      //     }
-      //   },
-      // }, pathItemObject.toJson());
+      var security = {
+        SecurityRequirementObject(
+          name: 'serverpodAuth',
+          securitySchemes: HttpSecurityScheme(
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          ),
+        ),
+      };
+      OperationObject post = OperationObject(
+        security: security,
+        parameters: [],
+        tags: ['pet'],
+        operationId: 'getPetById',
+        requestBody: RequestBodyObject(
+          parameterList: [
+            ParameterDefinition(
+                name: 'id',
+                type: TypeDefinition(className: 'int', nullable: false),
+                required: true),
+          ],
+        ),
+        responses: ResponseObject(
+          responseType: TypeDefinition(
+            className: 'Pet',
+            nullable: true,
+          ),
+        ),
+      );
+      PathItemObject pathItemObject = PathItemObject(
+        summary: 'Summary',
+        description: 'Description',
+        postOperation: post,
+      );
+      expect({
+        'summary': 'Summary',
+        'description': 'Description',
+        'post': {
+          'tags': ['pet'],
+          'operationId': 'getPetById',
+          'requestBody': {
+            'content': {
+              'application/json': {
+                'schema': {
+                  'type': 'object',
+                  'properties': {
+                    'id': {'type': 'integer'}
+                  }
+                }
+              }
+            },
+            'required': true
+          },
+          'responses': {
+            '200': {
+              'description': 'Success',
+              'content': {
+                'application/json': {
+                  'schema': {
+                    '\$ref': '#/components/schemas/Pet',
+                  }
+                }
+              }
+            },
+            '400': {
+              'description':
+                  'Bad request (the query passed to the server was incorrect).'
+            },
+            '403': {
+              'description':
+                  "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
+            },
+            '500': {'description': 'Internal server error '}
+          },
+          'security': [
+            {'serverpodAuth': []}
+          ],
+        },
+      }, pathItemObject.toJson());
     });
 
     test('Validate ServerObject', () {

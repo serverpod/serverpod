@@ -43,8 +43,7 @@ Map<String, dynamic> mapToJson(TypeDefinition type, [bool child = false]) {
       map['additionalProperties'] = listToJson(lastType, true);
     } else if (lastType.isMapType) {
       map['additionalProperties'] = mapToJson(lastType, true);
-    }
-    {
+    } else {
       map['additionalProperties'] = dartPrimitiveDataTypeToJson(
         lastType,
         true,
