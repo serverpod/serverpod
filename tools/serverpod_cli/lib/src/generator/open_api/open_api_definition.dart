@@ -98,12 +98,7 @@ class OpenApiDefinition {
 
     ComponentsObject componentsObject =
         ComponentsObject(schemas: schemas, securitySchemes: {
-      SecurityRequirementObject(
-        name: 'serverpodAuth',
-        securitySchemes: HttpSecurityScheme(
-          scheme: 'bearer',
-        ),
-      ),
+      serverpodAuth,
     });
 
     var servers = {
@@ -170,12 +165,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
 
         // TODO(b14ckc0d3) : add more security base on installed auths
         security: {
-          SecurityRequirementObject(
-            name: 'serverpodAuth',
-            securitySchemes: HttpSecurityScheme(
-              scheme: 'bearer',
-            ),
-          ),
+          serverpodAuth,
         },
 
         /// No need in OpeApi 2.0

@@ -96,7 +96,7 @@ void main() {
       'Validate OauthSecurityScheme ',
       () {
         OauthSecurityScheme securityScheme = OauthSecurityScheme(
-          flows: OauthFlowObject(),
+          flows: {},
         );
         expect(
           {
