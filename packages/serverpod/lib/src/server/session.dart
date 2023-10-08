@@ -233,7 +233,7 @@ class MethodCallSession extends Session {
   late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
-  late final String endpointName;
+  final String endpointName;
 
   /// The name of the method that is being called.
   late final String methodName;
@@ -246,7 +246,7 @@ class MethodCallSession extends Session {
     required Server server,
     required this.uri,
     required this.body,
-    required String path,
+    required this.endpointName,
     required this.httpRequest,
     String? authenticationKey,
     bool enableLogging = true,
@@ -264,25 +264,9 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    if (path.contains('/')) {
-      // Using the new path format (for OpenAPI)
-      var pathComponents = path.split('/');
-      endpointName = pathComponents[0];
-      methodName = pathComponents[1];
-    } else {
-      // Using the standard format with query parameters
-      endpointName = path;
-      var methodName = queryParameters['method'];
-      if (methodName == null && path == 'webserver') {
-        this.methodName = '';
-      } else if (methodName != null) {
-        this.methodName = methodName;
-      } else {
-        throw FormatException(
-          'No method name specified in call to $endpointName',
-        );
-      }
-    }
+    var methodName = queryParameters['method'];
+    if (methodName == null && endpointName == 'webserver') methodName = '';
+    this.methodName = methodName!;
 
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
