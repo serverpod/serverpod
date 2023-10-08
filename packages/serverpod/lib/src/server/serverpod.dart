@@ -212,6 +212,9 @@ class Serverpod {
   /// started.
   late final ClusterManager cluster;
 
+  /// Define CORS headers to allow cross-origin requests.
+  final Map<String, dynamic> headers;
+
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
@@ -219,6 +222,16 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
+    this.headers = const {
+      'Access-Control-Allow-Origin':
+          '*', // Allow all origins or specify a specific origin.
+      'Access-Control-Allow-Methods':
+          'GET, POST, PUT, DELETE', // Add allowed methods.
+      'Access-Control-Allow-Headers':
+          'Content-Type', // Add allowed headers if needed.
+      'Access-Control-Max-Age':
+          '86400', // Cache preflight response for one day.
+    },
   }) {
     _internalSerializationManager = internal.Protocol();
 
@@ -273,6 +286,7 @@ class Serverpod {
           authenticationHandler ?? defaultAuthenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
+      headers: headers,
     );
     endpoints.initializeEndpoints(server);
 
@@ -485,6 +499,7 @@ class Serverpod {
       authenticationHandler: serviceAuthenticationHandler,
       // securityContext: context,
       endpoints: endpoints,
+      headers: headers,
     );
     endpoints.initializeEndpoints(_serviceServer!);
 
