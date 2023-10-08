@@ -111,10 +111,8 @@ class EndpointsAnalyzer {
         for (var element in topElements) {
           if (element is ClassElement) {
             var className = element.name;
-            var superclassName = element.supertype!.element.name;
             var endpointName = _formatEndpointName(className);
-
-            if (superclassName == 'Endpoint') {
+            if (_isSuperClassEndpoint(element)) {
               var classDocumentationComment = element.documentationComment;
 
               var methodDefs = <MethodDefinition>[];
@@ -254,6 +252,17 @@ class EndpointsAnalyzer {
     }
 
     return true;
+  }
+
+  bool _isSuperClassEndpoint(InterfaceElement element) {
+    if (element.supertype != null) {
+      if (element.supertype!.element.name == 'Endpoint') {
+        return true;
+      } else {
+        return _isSuperClassEndpoint(element.supertype!.element);
+      }
+    }
+    return false;
   }
 }
 
