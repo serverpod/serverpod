@@ -142,7 +142,7 @@ class DatabaseConnection {
     }).join(', ');
 
     var query =
-        'INSERT INTO ${table.tableName} ($columnNames) VALUES $values RETURNING *';
+        'INSERT INTO "${table.tableName}" ($columnNames) VALUES $values RETURNING *';
 
     var result =
         await mappedResultsQuery(session, query, transaction: transaction);
@@ -205,7 +205,7 @@ class DatabaseConnection {
     selectedColumns.first.type.toString();
 
     var query =
-        'UPDATE ${table.tableName} AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+        'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     var result =
         await mappedResultsQuery(session, query, transaction: transaction);

@@ -76,7 +76,7 @@ class DatabaseConnectionLegacy {
       return '"${column.columnName}" = $value';
     }).join(', ');
 
-    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
+    var query = 'UPDATE "${row.table.tableName}" SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
