@@ -352,7 +352,13 @@ class CompanyInclude extends _i1.Include {
 class CompanyRepository {
   const CompanyRepository._();
 
+  final attach = const CompanyAttachRepository._();
+
   final attachRow = const CompanyAttachRowRepository._();
+
+  final detach = const CompanyDetachRepository._();
+
+  final detachRow = const CompanyDetachRowRepository._();
 
   Future<List<Company>> find(
     _i1.Session session, {
@@ -497,6 +503,34 @@ class CompanyRepository {
   }
 }
 
+class CompanyAttachRepository {
+  const CompanyAttachRepository._();
+
+  Future<void> employees(
+    _i1.Session session,
+    Company company,
+    List<_i2.Citizen> citizen,
+  ) async {
+    if (citizen.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+    if (company.id == null) {
+      throw ArgumentError.notNull('company.id');
+    }
+
+    var $citizen = citizen
+        .map((e) => _i2.CitizenImplicit(
+              e,
+              $_companyEmployeesCompanyId: company.id,
+            ))
+        .toList();
+    await session.dbNext.update<_i2.Citizen>(
+      $citizen,
+      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
+    );
+  }
+}
+
 class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
@@ -516,6 +550,74 @@ class CompanyAttachRowRepository {
     await session.dbNext.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
+    );
+  }
+
+  Future<void> employees(
+    _i1.Session session,
+    Company company,
+    _i2.Citizen citizen,
+  ) async {
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+    if (company.id == null) {
+      throw ArgumentError.notNull('company.id');
+    }
+
+    var $citizen = _i2.CitizenImplicit(
+      citizen,
+      $_companyEmployeesCompanyId: company.id,
+    );
+    await session.dbNext.updateRow<_i2.Citizen>(
+      $citizen,
+      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
+    );
+  }
+}
+
+class CompanyDetachRepository {
+  const CompanyDetachRepository._();
+
+  Future<void> employees(
+    _i1.Session session,
+    List<_i2.Citizen> citizen,
+  ) async {
+    if (citizen.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+
+    var $citizen = citizen
+        .map((e) => _i2.CitizenImplicit(
+              e,
+              $_companyEmployeesCompanyId: null,
+            ))
+        .toList();
+    await session.dbNext.update<_i2.Citizen>(
+      $citizen,
+      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
+    );
+  }
+}
+
+class CompanyDetachRowRepository {
+  const CompanyDetachRowRepository._();
+
+  Future<void> employees(
+    _i1.Session session,
+    _i2.Citizen citizen,
+  ) async {
+    if (citizen.id == null) {
+      throw ArgumentError.notNull('citizen.id');
+    }
+
+    var $citizen = _i2.CitizenImplicit(
+      citizen,
+      $_companyEmployeesCompanyId: null,
+    );
+    await session.dbNext.updateRow<_i2.Citizen>(
+      $citizen,
+      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
     );
   }
 }

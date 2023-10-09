@@ -320,6 +320,52 @@ class _CitizenImpl extends Citizen {
   }
 }
 
+class CitizenImplicit extends _CitizenImpl {
+  CitizenImplicit._({
+    int? id,
+    required String name,
+    _i2.Address? address,
+    required int companyId,
+    _i2.Company? company,
+    int? oldCompanyId,
+    _i2.Company? oldCompany,
+    this.$_companyEmployeesCompanyId,
+  }) : super(
+          id: id,
+          name: name,
+          address: address,
+          companyId: companyId,
+          company: company,
+          oldCompanyId: oldCompanyId,
+          oldCompany: oldCompany,
+        );
+
+  factory CitizenImplicit(
+    Citizen citizen, {
+    int? $_companyEmployeesCompanyId,
+  }) {
+    return CitizenImplicit._(
+      id: citizen.id,
+      name: citizen.name,
+      address: citizen.address,
+      companyId: citizen.companyId,
+      company: citizen.company,
+      oldCompanyId: citizen.oldCompanyId,
+      oldCompany: citizen.oldCompany,
+      $_companyEmployeesCompanyId: $_companyEmployeesCompanyId,
+    );
+  }
+
+  int? $_companyEmployeesCompanyId;
+
+  @override
+  Map<String, dynamic> allToJson() {
+    var jsonMap = super.allToJson();
+    jsonMap.addAll({'_companyEmployeesCompanyId': $_companyEmployeesCompanyId});
+    return jsonMap;
+  }
+}
+
 typedef CitizenExpressionBuilder = _i1.Expression Function(CitizenTable);
 
 class CitizenTable extends _i1.Table {
