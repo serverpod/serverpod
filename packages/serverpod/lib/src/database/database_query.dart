@@ -12,7 +12,7 @@ import 'package:serverpod/src/database/table_relation.dart';
 @internal
 class SelectQueryBuilder {
   final Table _table;
-  late List<Column> _fields;
+  List<Column> _fields;
   List<Order>? _orderBy;
   int? _limit;
   int? _offset;
@@ -21,18 +21,16 @@ class SelectQueryBuilder {
 
   /// Creates a new [SelectQueryBuilder].
   /// Throws an [ArgumentError] if the table has no columns.
-  SelectQueryBuilder({required Table table}) : _table = table {
-    var columns = table.columns;
-
-    if (columns.isEmpty) {
+  SelectQueryBuilder({required Table table})
+      : _table = table,
+        _fields = table.columns {
+    if (_fields.isEmpty) {
       throw ArgumentError.value(
         table,
         'table',
         'Must have at least one column',
       );
     }
-
-    _fields = table.columns;
   }
 
   /// Builds the SQL query.
