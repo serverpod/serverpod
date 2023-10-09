@@ -10,6 +10,43 @@ class _TableWithoutFields extends Table {
   List<Column> get columns => [];
 }
 
+class _TableWithManyRelation extends Table {
+  final String _relationAlias;
+  _TableWithManyRelation(
+      {required String relationAlias,
+      required super.tableName,
+      super.tableRelation})
+      : _relationAlias = relationAlias;
+
+  ManyRelation<_TableWithManyRelation>? _manyRelation;
+  ManyRelation<_TableWithManyRelation> get manyRelation {
+    if (_manyRelation != null) return _manyRelation!;
+
+    var relationTable = createRelationTable(
+      relationFieldName: _relationAlias,
+      field: id,
+      foreignField: id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) => _TableWithManyRelation(
+        relationAlias: _relationAlias,
+        tableName: tableName,
+        tableRelation: foreignTableRelation,
+      ),
+    );
+
+    _manyRelation = ManyRelation<_TableWithManyRelation>(
+        tableWithRelations: relationTable,
+        table: _TableWithManyRelation(
+          relationAlias: _relationAlias,
+          tableName: tableName,
+        ));
+    return _manyRelation!;
+  }
+
+  @override
+  List<Column> get columns => [id];
+}
+
 void main() {
   var citizenTable = Table(tableName: 'citizen');
   var companyTable = Table(tableName: 'company');
@@ -128,6 +165,46 @@ void main() {
           'SELECT citizen."id" AS "citizen.id" FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
     });
 
+    test(
+        'when ordering by many relation then output is many relation order by query.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation.count(),
+        orderDescending: false,
+      );
+
+      var query =
+          SelectQueryBuilder(table: relationTable).withOrderBy([order]).build();
+
+      expect(
+        query,
+        'SELECT citizen."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS citizen_friends_citizen ON citizen."id" = citizen_friends_citizen."id" GROUP BY "citizen.id" ORDER BY COUNT(citizen_friends_citizen."id")',
+      );
+    });
+
+    test(
+        'when ordering by is filtered many relation then output contains many relation sub query.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation.count((t) => t.id.equals(5)),
+        orderDescending: false,
+      );
+
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
+
+      expect(query,
+          'WITH citizen_friends_citizen AS (SELECT citizen."id" AS "citizen.id" FROM "citizen" WHERE citizen."id" = 5) SELECT citizen."id" AS "citizen.id" FROM "citizen" LEFT JOIN citizen_friends_citizen ON citizen."id" = "citizen_friends_citizen"."citizen.id" GROUP BY "citizen.id" ORDER BY COUNT("citizen_friends_citizen"."citizen.id")');
+    });
+
     test('when query with limit is built then output is query with limit.', () {
       var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
@@ -198,6 +275,18 @@ void main() {
 
     test('when all properties configured is built then output is valid SQL.',
         () {
+      var manyRelationTable = Table(
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'companiesOwned',
+            field: ColumnInt('id', citizenTable),
+            foreignField: ColumnInt(
+                'id' /* This should be 'companyOwnerId' but by using id this saves us from creating a test class */,
+                companyTable),
+          )
+        ]),
+      );
       var relationTable = Table(
         tableName: companyTable.tableName,
         tableRelation: TableRelation([
@@ -221,14 +310,22 @@ void main() {
           ).equals('Serverpod'))
           .withOrderBy([
             Order(
-                column: ColumnString('id', citizenTable), orderDescending: true)
+              column: ColumnString('id', citizenTable),
+              orderDescending: true,
+            ),
+            Order(
+                column: ColumnCount(
+              companyTable.id.equals(5),
+              companyTable,
+              manyRelationTable.id,
+            ))
           ])
           .withLimit(10)
           .withOffset(5)
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
+          'WITH citizen_companiesOwned_company AS (SELECT company."id" AS "company.id" FROM "company" WHERE company."id" = 5) SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN citizen_companiesOwned_company ON citizen."id" = "citizen_companiesOwned_company"."company.id" WHERE citizen_company_company."name" = \'Serverpod\' GROUP BY "citizen.id", "citizen.name", "citizen.age" ORDER BY citizen."id" DESC, COUNT("citizen_companiesOwned_company"."company.id") LIMIT 10 OFFSET 5');
     });
 
     test(
@@ -259,6 +356,56 @@ void main() {
             'message',
             equals(
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company."name".'),
+          )));
+    });
+
+    test(
+        'when count column with inner where that does NOT have table relations then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = SelectQueryBuilder(table: citizenTable).withOrderBy([
+        Order(
+          column: countColumn,
+        )
+      ]);
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument(s) (countColumn.table.tableRelation): Must not be null'),
+          )));
+    });
+
+    test(
+        'when same count column with inner where appears multiple times then exception is thrown.',
+        () {
+      var relationTable = Table(
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
+          )
+        ]),
+      );
+
+      var countColumn = ColumnCount(
+          companyTable.id.equals(5), companyTable, relationTable.id);
+      expect(
+          () => SelectQueryBuilder(table: citizenTable).withOrderBy([
+                Order(column: countColumn),
+                Order(column: countColumn, orderDescending: true)
+              ]),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument(s): Ordering by same column multiple times: citizen_company_company.id'),
           )));
     });
   });
