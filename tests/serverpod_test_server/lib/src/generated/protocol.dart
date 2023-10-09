@@ -53,16 +53,22 @@ import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i43;
 import 'package:uuid/uuid.dart' as _i44;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i45;
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i46;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_many/customer.dart'
     as _i47;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_many/comment.dart'
     as _i48;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_many/order.dart'
     as _i49;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/citizen.dart'
     as _i50;
-import 'package:serverpod_test_server/src/custom_classes.dart' as _i51;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i52;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/address.dart'
+    as _i51;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
+    as _i52;
+import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/company.dart'
+    as _i53;
+import 'package:serverpod_test_server/src/custom_classes.dart' as _i54;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i55;
 export 'entities_with_relations/one_to_many/comment.dart';
 export 'entities_with_relations/one_to_many/customer.dart';
 export 'entities_with_relations/one_to_many/order.dart';
@@ -1806,20 +1812,32 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i46.UniqueData>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i47.Citizen>) {
-      return (data as List).map((e) => deserialize<_i47.Citizen>(e)).toList()
+    if (t == List<_i47.Customer>) {
+      return (data as List).map((e) => deserialize<_i47.Customer>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i48.Address>) {
-      return (data as List).map((e) => deserialize<_i48.Address>(e)).toList()
+    if (t == List<_i48.Comment>) {
+      return (data as List).map((e) => deserialize<_i48.Comment>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i49.Post>) {
-      return (data as List).map((e) => deserialize<_i49.Post>(e)).toList()
+    if (t == List<_i49.Order>) {
+      return (data as List).map((e) => deserialize<_i49.Order>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i50.Company>) {
-      return (data as List).map((e) => deserialize<_i50.Company>(e)).toList()
+    if (t == List<_i50.Citizen>) {
+      return (data as List).map((e) => deserialize<_i50.Citizen>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i51.Address>) {
+      return (data as List).map((e) => deserialize<_i51.Address>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i52.Post>) {
+      return (data as List).map((e) => deserialize<_i52.Post>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i53.Company>) {
+      return (data as List).map((e) => deserialize<_i53.Company>(e)).toList()
           as dynamic;
     }
     if (t == List<List<int>>) {
@@ -2069,26 +2087,26 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
-    if (t == _i51.CustomClass) {
-      return _i51.CustomClass.fromJson(data, this) as T;
+    if (t == _i54.CustomClass) {
+      return _i54.CustomClass.fromJson(data, this) as T;
     }
-    if (t == _i52.ExternalCustomClass) {
-      return _i52.ExternalCustomClass.fromJson(data, this) as T;
+    if (t == _i55.ExternalCustomClass) {
+      return _i55.ExternalCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i52.FreezedCustomClass) {
-      return _i52.FreezedCustomClass.fromJson(data, this) as T;
+    if (t == _i55.FreezedCustomClass) {
+      return _i55.FreezedCustomClass.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i51.CustomClass?>()) {
-      return (data != null ? _i51.CustomClass.fromJson(data, this) : null) as T;
+    if (t == _i1.getType<_i54.CustomClass?>()) {
+      return (data != null ? _i54.CustomClass.fromJson(data, this) : null) as T;
     }
-    if (t == _i1.getType<_i52.ExternalCustomClass?>()) {
+    if (t == _i1.getType<_i55.ExternalCustomClass?>()) {
       return (data != null
-          ? _i52.ExternalCustomClass.fromJson(data, this)
+          ? _i55.ExternalCustomClass.fromJson(data, this)
           : null) as T;
     }
-    if (t == _i1.getType<_i52.FreezedCustomClass?>()) {
+    if (t == _i1.getType<_i55.FreezedCustomClass?>()) {
       return (data != null
-          ? _i52.FreezedCustomClass.fromJson(data, this)
+          ? _i55.FreezedCustomClass.fromJson(data, this)
           : null) as T;
     }
     try {
@@ -2114,13 +2132,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    if (data is _i51.CustomClass) {
+    if (data is _i54.CustomClass) {
       return 'CustomClass';
     }
-    if (data is _i52.ExternalCustomClass) {
+    if (data is _i55.ExternalCustomClass) {
       return 'ExternalCustomClass';
     }
-    if (data is _i52.FreezedCustomClass) {
+    if (data is _i55.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
     if (data is _i5.Comment) {
@@ -2242,13 +2260,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i4.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
-      return deserialize<_i51.CustomClass>(data['data']);
+      return deserialize<_i54.CustomClass>(data['data']);
     }
     if (data['className'] == 'ExternalCustomClass') {
-      return deserialize<_i52.ExternalCustomClass>(data['data']);
+      return deserialize<_i55.ExternalCustomClass>(data['data']);
     }
     if (data['className'] == 'FreezedCustomClass') {
-      return deserialize<_i52.FreezedCustomClass>(data['data']);
+      return deserialize<_i55.FreezedCustomClass>(data['data']);
     }
     if (data['className'] == 'Comment') {
       return deserialize<_i5.Comment>(data['data']);
