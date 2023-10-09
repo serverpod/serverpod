@@ -408,6 +408,48 @@ void main() {
                 'Invalid argument(s): Ordering by same column multiple times: citizen_company_company.id'),
           )));
     });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
+          )));
+    });
+
+    test(
+        'when ordering by is filtered by nested many relation then exception is thrown.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation
+            .count((t) => t.manyRelation.count((t) => t.id.equals(5)) > 3),
+        orderDescending: false,
+      );
+
+      expect(
+          () => SelectQueryBuilder(table: citizenTable)
+              .withOrderBy([order]).build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
+          )));
+    });
   });
 
   group('Given CountQueryBuilder', () {
@@ -548,6 +590,24 @@ void main() {
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
           )));
     });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = CountQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
+          )));
+    });
   });
 
   group('Given DeleteQueryBuilder', () {
@@ -670,6 +730,24 @@ void main() {
             'message',
             equals(
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company."name".'),
+          )));
+    });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = DeleteQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
   });

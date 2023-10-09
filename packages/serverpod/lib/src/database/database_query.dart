@@ -48,13 +48,14 @@ class SelectQueryBuilder {
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
     var groupBy = _buildGroupByQuery(selectColumns, orderBy: _orderBy);
+    var where = _buildWhereQuery(where: _where);
 
     var query = '';
     if (subQueries != null) query += '$subQueries ';
     query += 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (groupBy != null) query += ' $groupBy';
     if (_orderBy != null) {
       query +=
@@ -179,12 +180,13 @@ class CountQueryBuilder {
     _validateTableReferences(_table.tableName, where: _where);
 
     var join = _buildJoinQuery(where: _where);
+    var where = _buildWhereQuery(where: _where);
 
     var query = 'SELECT COUNT($_field)';
     if (_alias != null) query += ' AS $_alias';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (_limit != null) query += ' LIMIT $_limit';
     return query;
   }
@@ -252,10 +254,11 @@ class DeleteQueryBuilder {
     _validateTableReferences(_table.tableName, where: _where);
 
     var using = _buildUsingQuery(where: _where);
+    var where = _buildWhereQuery(where: _where);
 
     var query = 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (using != null) query += ' AND ${using.where}';
     if (_returningStatement != null) query += _returningStatement!;
     return query;
@@ -358,28 +361,19 @@ String? _buildGroupByQuery(
   return 'GROUP BY ${selectFields.map((column) => '"${column.queryAlias}"').join(', ')}';
 }
 
-String? _buildWhereQuery({Expression? where, List<Order>? orderBy}) {
-  List<String> whereStatements = [];
-
-  if (where != null) {
-    whereStatements.add(where.toString());
-  }
-
-  if (orderBy != null) {
-    var countColumnsWithInnerWhere = orderBy
-        .map((order) => order.column)
-        .whereType<ColumnCount>()
-        .where((c) => c.innerWhere != null);
-
-    whereStatements
-        .addAll(countColumnsWithInnerWhere.map((c) => c.innerWhere.toString()));
-  }
-
-  if (whereStatements.isEmpty) {
+String? _buildWhereQuery({Expression? where}) {
+  if (where == null) {
     return null;
   }
 
-  return whereStatements.join(' AND ');
+  if (where.columns.whereType<ColumnCount>().isNotEmpty) {
+    // TODO - Add support for count columns in where expressions.
+    throw const FormatException(
+      'Count columns are not supported in where expressions.',
+    );
+  }
+
+  return where.toString();
 }
 
 _UsingQuery? _buildUsingQuery({Expression? where}) {
