@@ -29,6 +29,13 @@ class BuildRepositoryClass {
             ..constant = true;
         }))
         ..fields.addAll([
+          if (hasAttachOperations(fields))
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = 'attach'
+                ..modifier = FieldModifier.final$
+                ..assignment = Code('const ${className}AttachRepository._()');
+            }),
           if (hasAttachRowOperations(fields))
             Field((fieldBuilder) {
               fieldBuilder
@@ -36,6 +43,13 @@ class BuildRepositoryClass {
                 ..modifier = FieldModifier.final$
                 ..assignment =
                     Code('const ${className}AttachRowRepository._()');
+            }),
+          if (hasDetachOperations(fields))
+            Field((fieldBuilder) {
+              fieldBuilder
+                ..name = 'detach'
+                ..modifier = FieldModifier.final$
+                ..assignment = Code('const ${className}DetachRepository._()');
             }),
           if (hasDetachRowOperations(fields))
             Field((fieldBuilder) {
@@ -104,14 +118,14 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRowRepositoryClass(
+  Class buildEntityDetachRepositoryClass(
     String className,
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
       classBuilder
-        ..name = '${className}DetachRowRepository'
+        ..name = '${className}DetachRepository'
         ..constructors.add(Constructor((constructorBuilder) {
           constructorBuilder
             ..name = '_'
@@ -125,12 +139,37 @@ class BuildRepositoryClass {
     });
   }
 
+  Class buildEntityDetachRowRepositoryClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}DetachRowRepository'
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..name = '_'
+            ..constant = true;
+        }))
+        ..methods.addAll(_buildDetachRowMethods(
+          fields,
+          className,
+          classDefinition,
+        ));
+    });
+  }
+
   bool hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
     return fields.any((f) => _isListRelation(f));
   }
 
   bool hasAttachRowOperations(List<SerializableEntityFieldDefinition> fields) {
     return fields.any((f) => _isObjectRelation(f) || _isListRelation(f));
+  }
+
+  bool hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
+    return fields.any((f) => _isNullableListRelation(f));
   }
 
   bool hasDetachRowOperations(List<SerializableEntityFieldDefinition> fields) {
@@ -1072,6 +1111,20 @@ class BuildRepositoryClass {
     String className,
     ClassDefinition classDefinition,
   ) {
+    return fields
+        .where(_isNullableListRelation)
+        .map((field) => _buildDetachFromListRelationField(
+              className,
+              field,
+              classDefinition,
+            ));
+  }
+
+  Iterable<Method> _buildDetachRowMethods(
+    List<SerializableEntityFieldDefinition> fields,
+    String className,
+    ClassDefinition classDefinition,
+  ) {
     return [
       ...fields.where(_isNullableObjectRelation).map(
             (field) => _buildDetachRowFromObjectRelationField(
@@ -1088,6 +1141,65 @@ class BuildRepositoryClass {
                 classDefinition,
               )),
     ];
+  }
+
+  Method _buildDetachFromListRelationField(
+    String className,
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    return Method((methodBuilder) {
+      var classFieldName = field.type.generics.first.className;
+      var fieldName = field.type.generics.first.className.camelCase;
+
+      var relation = field.relation as ListRelationDefinition;
+      var foreignType = field.type.generics.first.reference(
+        serverCode,
+        nullable: false,
+        subDirParts: classDefinition.subDirParts,
+        config: config,
+      );
+
+      methodBuilder
+        ..name = field.name
+        ..requiredParameters.addAll([
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = 'session'
+              ..type = refer('Session', 'package:serverpod/serverpod.dart');
+          }),
+          Parameter((parameterBuilder) {
+            parameterBuilder
+              ..name = fieldName
+              ..type = field.type.reference(
+                serverCode,
+                nullable: false,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+              );
+            refer(classFieldName,
+                'package:serverpod/serverpod.dart'); //TODO: this is WHY we get the _i2. useage!!
+          })
+        ])
+        ..returns = refer('Future<void>')
+        ..modifier = MethodModifier.async
+        ..body = relation.implicitForeignField
+            ? _buildDetachImplementationBlockImplicitListRelation(
+                className,
+                fieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              )
+            : _buildDetachImplementationBlockExplicitListRelation(
+                className,
+                fieldName,
+                classFieldName,
+                relation.foreignFieldName,
+                foreignType,
+              );
+      const Code('');
+    });
   }
 
   Method _buildDetachRowFromListRelationField(
@@ -1189,6 +1301,63 @@ class BuildRepositoryClass {
                 ));
       const Code('');
     });
+  }
+
+  Block _buildDetachImplementationBlockImplicitListRelation(
+    String className,
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    Reference foreignClass,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+              const Code(''),
+              _buildImplicitCopyClassListField(
+                className,
+                fieldName,
+                foreignKeyField,
+                refer('null'),
+              ),
+              _buildUpdateListField(
+                fieldName,
+                foreignKeyField,
+                foreignClass,
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
+  }
+
+  Block _buildDetachImplementationBlockExplicitListRelation(
+    String className,
+    String fieldName,
+    String classFieldName,
+    String foreignKeyField,
+    Reference foreignClass,
+  ) {
+    return (BlockBuilder()
+          ..statements.addAll(
+            [
+              _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
+              const Code(''),
+              _buildCopyWithListField(
+                fieldName,
+                foreignKeyField,
+                refer('null'),
+              ),
+              _buildUpdateListField(
+                fieldName,
+                foreignKeyField,
+                foreignClass,
+                refer('null'),
+              ),
+            ],
+          ))
+        .build();
   }
 
   Block _buildDetachRowImplementationBlockOriginSide(
@@ -1315,13 +1484,18 @@ class BuildRepositoryClass {
         .build();
   }
 
-  Block _buildCodeBlockThrowIfIdIsNull(String className, [String? errorRef]) {
-    return _buildCodeBlockThrowIfFieldIsNull('$className.id', errorRef);
+  Block _buildCodeBlockThrowIfIdIsNull(
+    String variableName, [
+    String? errorRef,
+  ]) {
+    return _buildCodeBlockThrowIfFieldIsNull('$variableName.id', errorRef);
   }
 
-  Block _buildCodeBlockThrowIfAnyIdIsNull(String className,
-      [String? errorRef]) {
-    return _buildCodeBlockThrowIfAnyFieldIsNull(className, 'id', errorRef);
+  Block _buildCodeBlockThrowIfAnyIdIsNull(
+    String variableName, [
+    String? errorRef,
+  ]) {
+    return _buildCodeBlockThrowIfAnyFieldIsNull(variableName, 'id', errorRef);
   }
 
   Block _buildCodeBlockThrowIfFieldIsNull(
@@ -1341,13 +1515,13 @@ class BuildRepositoryClass {
   }
 
   Block _buildCodeBlockThrowIfAnyFieldIsNull(
-    String className,
+    String variableName,
     String nullCheckField, [
     String? errorRef,
   ]) {
-    var error = errorRef ?? '$className.$nullCheckField';
+    var error = errorRef ?? '$variableName.$nullCheckField';
     return Block.of([
-      Code('if ($className.any((e) => e.$nullCheckField == null)) {'),
+      Code('if ($variableName.any((e) => e.$nullCheckField == null)) {'),
       refer('ArgumentError', 'dart:core')
           .property('notNull')
           .call([refer('\'$error\'')])

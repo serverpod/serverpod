@@ -99,6 +99,12 @@ class SerializableEntityLibraryGenerator {
                 fields,
                 classDefinition,
               ),
+            if (buildRepository.hasDetachOperations(fields))
+              buildRepository.buildEntityDetachRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
             if (buildRepository.hasDetachRowOperations(fields))
               buildRepository.buildEntityDetachRowRepositoryClass(
                 className,
