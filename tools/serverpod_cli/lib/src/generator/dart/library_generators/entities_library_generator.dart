@@ -326,8 +326,6 @@ class SerializableEntityLibraryGenerator {
                   .returned
                   .statement);
             });
-
-          ;
         }))
         ..methods.add(Method((methodBuilder) {
           methodBuilder
