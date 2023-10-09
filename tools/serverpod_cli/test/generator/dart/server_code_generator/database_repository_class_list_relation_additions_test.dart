@@ -264,7 +264,7 @@ void main() {
       test('people method has the input params of session, person', () {
         expect(
           peopleMethod?.parameters?.toSource(),
-          '(_i1.Session session, _i1.Person person)',
+          '(_i1.Session session, Person person)',
         );
       }, skip: peopleMethod == null);
     }, skip: repositoryClass == null);
@@ -465,7 +465,7 @@ void main() {
       test('citizens method has the input params of session, person', () {
         expect(
           citizenMethod?.parameters?.toSource(),
-          '(_i1.Session session, _i1.Person person)',
+          '(_i1.Session session, Person person)',
         );
       }, skip: citizenMethod == null);
     });

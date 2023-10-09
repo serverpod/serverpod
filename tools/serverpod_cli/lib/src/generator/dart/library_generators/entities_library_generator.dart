@@ -251,7 +251,7 @@ class SerializableEntityLibraryGenerator {
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Implicit'
-        ..extend = refer(className)
+        ..extend = refer('_${className}Impl')
         ..fields.addAll(hiddenFields.map((field) {
           return Field((fieldBuilder) {
             fieldBuilder

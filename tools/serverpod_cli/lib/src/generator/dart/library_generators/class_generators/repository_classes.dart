@@ -869,10 +869,10 @@ class BuildRepositoryClass {
                 className,
                 otherClassFieldName,
                 classFieldName,
-                relation.foreignFieldName,
+                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
                 foreignType,
               )
-            : _buildAttachImplementationBlock(
+            : _buildExplicitAttachImplementationBlock(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
@@ -928,7 +928,7 @@ class BuildRepositoryClass {
                 className,
                 otherClassFieldName,
                 classFieldName,
-                relation.foreignFieldName,
+                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
                 foreignType,
               )
             : _buildAttachRowImplementationBlock(
@@ -1007,11 +1007,11 @@ class BuildRepositoryClass {
   ) {
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfAnyIdIsNull(otherClassFieldName),
+            _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
+            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
             const Code(''),
             _buildImplicitCopyClassListField(
-              className,
+              classReference,
               classFieldName,
               foreignKeyField,
               refer(otherClassFieldName).property('id'),
@@ -1026,7 +1026,7 @@ class BuildRepositoryClass {
         .build();
   }
 
-  Block _buildAttachImplementationBlock(
+  Block _buildExplicitAttachImplementationBlock(
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
@@ -1034,8 +1034,8 @@ class BuildRepositoryClass {
   ) {
     return (BlockBuilder()
           ..statements.addAll([
-            _buildCodeBlockThrowIfIdIsNull(classFieldName),
-            _buildCodeBlockThrowIfAnyIdIsNull(otherClassFieldName),
+            _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
+            _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
             const Code(''),
             _buildCopyWithListField(
               classFieldName,
@@ -1091,7 +1091,7 @@ class BuildRepositoryClass {
             _buildCodeBlockThrowIfIdIsNull(otherClassFieldName),
             const Code(''),
             _buildImplicitCopyClassSingleField(
-              className,
+              classReference,
               classFieldName,
               foreignKeyField,
               refer(otherClassFieldName).property('id'),
@@ -1177,8 +1177,7 @@ class BuildRepositoryClass {
                 subDirParts: classDefinition.subDirParts,
                 config: config,
               );
-            refer(classFieldName,
-                'package:serverpod/serverpod.dart'); //TODO: this is WHY we get the _i2. useage!!
+            refer(classFieldName, 'package:serverpod/serverpod.dart');
           })
         ])
         ..returns = refer('Future<void>')
@@ -1188,7 +1187,7 @@ class BuildRepositoryClass {
                 className,
                 fieldName,
                 classFieldName,
-                relation.foreignFieldName,
+                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
                 foreignType,
               )
             : _buildDetachImplementationBlockExplicitListRelation(
@@ -1230,8 +1229,12 @@ class BuildRepositoryClass {
           Parameter((parameterBuilder) {
             parameterBuilder
               ..name = fieldName
-              ..type =
-                  refer(classFieldName, 'package:serverpod/serverpod.dart');
+              ..type = field.type.generics.first.reference(
+                serverCode,
+                nullable: false,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+              );
           })
         ])
         ..returns = refer('Future<void>')
@@ -1241,7 +1244,7 @@ class BuildRepositoryClass {
                 className,
                 fieldName,
                 classFieldName,
-                relation.foreignFieldName,
+                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
                 foreignType,
               )
             : _buildDetachRowImplementationBlockExplicitListRelation(
@@ -1316,7 +1319,7 @@ class BuildRepositoryClass {
               _buildCodeBlockThrowIfAnyIdIsNull(fieldName),
               const Code(''),
               _buildImplicitCopyClassListField(
-                className,
+                foreignClass,
                 fieldName,
                 foreignKeyField,
                 refer('null'),
@@ -1412,7 +1415,7 @@ class BuildRepositoryClass {
               _buildCodeBlockThrowIfIdIsNull(classFieldName),
               const Code(''),
               _buildCopyWithSingleField(
-                classFieldName,
+                localCopyVariable,
                 foreignKeyField,
                 refer('null'),
               ),
@@ -1468,7 +1471,7 @@ class BuildRepositoryClass {
               _buildCodeBlockThrowIfIdIsNull(fieldName),
               const Code(''),
               _buildImplicitCopyClassSingleField(
-                className,
+                foreignClass,
                 fieldName,
                 foreignKeyField,
                 refer('null'),
@@ -1575,7 +1578,7 @@ class BuildRepositoryClass {
   }
 
   Code _buildImplicitCopyClassSingleField(
-    String className,
+    Reference foreignClass,
     String rowName,
     String fieldName,
     Expression assignment,
@@ -1584,10 +1587,9 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(refer(
-                  '${className}Implicit',
-                  'package:serverpod/serverpod.dart',
-                ).call([
+                .assign(
+                    refer('${foreignClass.symbol!}Implicit', foreignClass.url)
+                        .call([
                   refer(rowName)
                 ], {
                   fieldName: assignment,
@@ -1598,7 +1600,7 @@ class BuildRepositoryClass {
   }
 
   Code _buildImplicitCopyClassListField(
-    String className,
+    Reference foreignClass,
     String rowName,
     String fieldName,
     Expression assignment,
@@ -1613,10 +1615,9 @@ class BuildRepositoryClass {
                     .call([
                       Method((b) => b
                         ..requiredParameters.add(Parameter((p) => p.name = 'e'))
-                        ..body = refer(
-                          '${className}Implicit',
-                          'package:serverpod/serverpod.dart',
-                        ).call([
+                        ..body = refer('${foreignClass.symbol!}Implicit',
+                                foreignClass.url)
+                            .call([
                           refer('e')
                         ], {
                           fieldName: assignment,
