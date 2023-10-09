@@ -2,6 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:super_string/super_string.dart';
 
 class BuildRepositoryClass {
@@ -865,14 +866,14 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
-            ? _buildImplicitAttachImplementationBlock(
+            ? _buildAttachImplementationBlockImplicitListRelation(
                 className,
                 otherClassFieldName,
                 classFieldName,
-                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
+                relation.foreignFieldName,
                 foreignType,
               )
-            : _buildExplicitAttachImplementationBlock(
+            : _buildAttachImplementationBlockExplicitListRelation(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
@@ -924,14 +925,14 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = relation.implicitForeignField
-            ? _buildImplicitAttachRowImplementationBlock(
+            ? _buildAttachRowImplementationBlockImplicit(
                 className,
                 otherClassFieldName,
                 classFieldName,
-                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
+                relation.foreignFieldName,
                 foreignType,
               )
-            : _buildAttachRowImplementationBlock(
+            : _buildAttachRowImplementationBlockExplicit(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
@@ -982,13 +983,13 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = relation.isForeignKeyOrigin
-            ? _buildAttachRowImplementationBlock(
+            ? _buildAttachRowImplementationBlockExplicit(
                 classFieldName,
                 otherClassFieldName,
                 relation.fieldName,
                 refer(className),
               )
-            : _buildAttachRowImplementationBlock(
+            : _buildAttachRowImplementationBlockExplicit(
                 otherClassFieldName,
                 classFieldName,
                 relation.foreignFieldName,
@@ -998,13 +999,15 @@ class BuildRepositoryClass {
     });
   }
 
-  Block _buildImplicitAttachImplementationBlock(
+  Block _buildAttachImplementationBlockImplicitListRelation(
     String className,
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
     Reference classReference,
   ) {
+    var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
+
     return (BlockBuilder()
           ..statements.addAll([
             _buildCodeBlockThrowIfAnyIdIsNull(classFieldName),
@@ -1013,20 +1016,20 @@ class BuildRepositoryClass {
             _buildImplicitCopyClassListField(
               classReference,
               classFieldName,
-              foreignKeyField,
+              implicitForeignKeyFieldName,
               refer(otherClassFieldName).property('id'),
             ),
-            _buildUpdateListField(
+            _buildUpdateField(
               classFieldName,
-              foreignKeyField,
+              implicitForeignKeyFieldName,
               classReference,
-              refer(otherClassFieldName).property('id'),
+              _UpdateMethod.update,
             ),
           ]))
         .build();
   }
 
-  Block _buildExplicitAttachImplementationBlock(
+  Block _buildAttachImplementationBlockExplicitListRelation(
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
@@ -1042,17 +1045,17 @@ class BuildRepositoryClass {
               foreignKeyField,
               refer(otherClassFieldName).property('id'),
             ),
-            _buildUpdateListField(
+            _buildUpdateField(
               classFieldName,
               foreignKeyField,
               classReference,
-              refer(otherClassFieldName).property('id'),
+              _UpdateMethod.update,
             ),
           ]))
         .build();
   }
 
-  Block _buildAttachRowImplementationBlock(
+  Block _buildAttachRowImplementationBlockExplicit(
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
@@ -1068,23 +1071,24 @@ class BuildRepositoryClass {
               foreignKeyField,
               refer(otherClassFieldName).property('id'),
             ),
-            _buildUpdateSingleField(
+            _buildUpdateField(
               classFieldName,
               foreignKeyField,
               classReference,
-              refer(otherClassFieldName).property('id'),
+              _UpdateMethod.updateRow,
             ),
           ]))
         .build();
   }
 
-  Block _buildImplicitAttachRowImplementationBlock(
+  Block _buildAttachRowImplementationBlockImplicit(
     String className,
     String classFieldName,
     String otherClassFieldName,
     String foreignKeyField,
     Reference classReference,
   ) {
+    var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
     return (BlockBuilder()
           ..statements.addAll([
             _buildCodeBlockThrowIfIdIsNull(classFieldName),
@@ -1093,14 +1097,14 @@ class BuildRepositoryClass {
             _buildImplicitCopyClassSingleField(
               classReference,
               classFieldName,
-              foreignKeyField,
+              implicitForeignKeyFieldName,
               refer(otherClassFieldName).property('id'),
             ),
-            _buildUpdateSingleField(
+            _buildUpdateField(
               classFieldName,
-              foreignKeyField,
+              implicitForeignKeyFieldName,
               classReference,
-              refer(otherClassFieldName).property('id'),
+              _UpdateMethod.updateRow,
             ),
           ]))
         .build();
@@ -1187,7 +1191,7 @@ class BuildRepositoryClass {
                 className,
                 fieldName,
                 classFieldName,
-                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
+                relation.foreignFieldName,
                 foreignType,
               )
             : _buildDetachImplementationBlockExplicitListRelation(
@@ -1244,7 +1248,7 @@ class BuildRepositoryClass {
                 className,
                 fieldName,
                 classFieldName,
-                '\$${relation.foreignFieldName}', // TODO implicit field use util method...
+                relation.foreignFieldName,
                 foreignType,
               )
             : _buildDetachRowImplementationBlockExplicitListRelation(
@@ -1313,6 +1317,7 @@ class BuildRepositoryClass {
     String foreignKeyField,
     Reference foreignClass,
   ) {
+    var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
     return (BlockBuilder()
           ..statements.addAll(
             [
@@ -1321,14 +1326,14 @@ class BuildRepositoryClass {
               _buildImplicitCopyClassListField(
                 foreignClass,
                 fieldName,
-                foreignKeyField,
+                implicitForeignKeyFieldName,
                 refer('null'),
               ),
-              _buildUpdateListField(
+              _buildUpdateField(
                 fieldName,
-                foreignKeyField,
+                implicitForeignKeyFieldName,
                 foreignClass,
-                refer('null'),
+                _UpdateMethod.update,
               ),
             ],
           ))
@@ -1352,11 +1357,11 @@ class BuildRepositoryClass {
                 foreignKeyField,
                 refer('null'),
               ),
-              _buildUpdateListField(
+              _buildUpdateField(
                 fieldName,
                 foreignKeyField,
                 foreignClass,
-                refer('null'),
+                _UpdateMethod.update,
               ),
             ],
           ))
@@ -1379,11 +1384,11 @@ class BuildRepositoryClass {
                 foreignKeyField,
                 refer('null'),
               ),
-              _buildUpdateSingleField(
+              _buildUpdateField(
                 classFieldName,
                 foreignKeyField,
                 refer(className),
-                refer('null'),
+                _UpdateMethod.updateRow,
               ),
             ],
           ))
@@ -1419,11 +1424,11 @@ class BuildRepositoryClass {
                 foreignKeyField,
                 refer('null'),
               ),
-              _buildUpdateSingleField(
+              _buildUpdateField(
                 localCopyVariable,
                 foreignKeyField,
                 foreignClass,
-                refer('null'),
+                _UpdateMethod.updateRow,
               ),
             ],
           ))
@@ -1447,11 +1452,11 @@ class BuildRepositoryClass {
                 foreignKeyField,
                 refer('null'),
               ),
-              _buildUpdateSingleField(
+              _buildUpdateField(
                 fieldName,
                 foreignKeyField,
                 foreignClass,
-                refer('null'),
+                _UpdateMethod.updateRow,
               ),
             ],
           ))
@@ -1465,6 +1470,8 @@ class BuildRepositoryClass {
     String foreignKeyField,
     Reference foreignClass,
   ) {
+    var implicitForeignKeyFieldName = createImplicitFieldName(foreignKeyField);
+
     return (BlockBuilder()
           ..statements.addAll(
             [
@@ -1473,14 +1480,14 @@ class BuildRepositoryClass {
               _buildImplicitCopyClassSingleField(
                 foreignClass,
                 fieldName,
-                foreignKeyField,
+                implicitForeignKeyFieldName,
                 refer('null'),
               ),
-              _buildUpdateSingleField(
+              _buildUpdateField(
                 fieldName,
-                foreignKeyField,
+                implicitForeignKeyFieldName,
                 foreignClass,
-                refer('null'),
+                _UpdateMethod.updateRow,
               ),
             ],
           ))
@@ -1539,7 +1546,7 @@ class BuildRepositoryClass {
     String fieldName,
     Expression assignment,
   ) {
-    var localCopyVariable = '\$$rowName';
+    String localCopyVariable = _createEscapedLocalVar(rowName);
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
@@ -1556,7 +1563,7 @@ class BuildRepositoryClass {
     String fieldName,
     Expression assignment,
   ) {
-    var localCopyVariable = '\$$rowName';
+    String localCopyVariable = _createEscapedLocalVar(rowName);
 
     return (BlockBuilder()
           ..statements.add(
@@ -1583,17 +1590,16 @@ class BuildRepositoryClass {
     String fieldName,
     Expression assignment,
   ) {
-    var localCopyVariable = '\$$rowName';
+    String localCopyVariable = _createEscapedLocalVar(rowName);
     return (BlockBuilder()
           ..statements.add(
             declareVar(localCopyVariable)
-                .assign(
-                    refer('${foreignClass.symbol!}Implicit', foreignClass.url)
-                        .call([
-                  refer(rowName)
-                ], {
-                  fieldName: assignment,
-                }))
+                .assign(_buildCallImplicitClass(
+                  foreignClass,
+                  rowName,
+                  fieldName,
+                  assignment,
+                ))
                 .statement,
           ))
         .build();
@@ -1605,7 +1611,7 @@ class BuildRepositoryClass {
     String fieldName,
     Expression assignment,
   ) {
-    var localCopyVariable = '\$$rowName';
+    String localCopyVariable = _createEscapedLocalVar(rowName);
 
     return (BlockBuilder()
           ..statements.add(
@@ -1615,13 +1621,12 @@ class BuildRepositoryClass {
                     .call([
                       Method((b) => b
                         ..requiredParameters.add(Parameter((p) => p.name = 'e'))
-                        ..body = refer('${foreignClass.symbol!}Implicit',
-                                foreignClass.url)
-                            .call([
-                          refer('e')
-                        ], {
-                          fieldName: assignment,
-                        }).code).closure
+                        ..body = _buildCallImplicitClass(
+                          foreignClass,
+                          'e',
+                          fieldName,
+                          assignment,
+                        ).code).closure
                     ])
                     .property('toList')
                     .call([]))
@@ -1630,18 +1635,45 @@ class BuildRepositoryClass {
         .build();
   }
 
-  Code _buildUpdateSingleField(
+  Expression _buildCallImplicitClass(
+    Reference baseClassReference,
+    String baseClassVariable,
+    String fieldName,
+    Expression assignment,
+  ) {
+    assert(baseClassReference.symbol != null);
+    return refer(
+            '${baseClassReference.symbol!}Implicit', baseClassReference.url)
+        .call([
+      refer(baseClassVariable)
+    ], {
+      fieldName: assignment,
+    });
+  }
+
+  Code _buildUpdateField(
     String rowName,
     String fieldName,
     Reference classReference,
-    Expression assignment,
+    _UpdateMethod updateMethod,
   ) {
-    var localCopyVariable = '\$$rowName';
+    String property;
+
+    switch (updateMethod) {
+      case _UpdateMethod.update:
+        property = 'update';
+        break;
+      case _UpdateMethod.updateRow:
+        property = 'updateRow';
+        break;
+    }
+
+    String localCopyVariable = _createEscapedLocalVar(rowName);
     return (BlockBuilder()
           ..statements.addAll([
             refer('session')
                 .property('dbNext')
-                .property('updateRow')
+                .property(property)
                 .call([
                   refer(localCopyVariable)
                 ], {
@@ -1657,30 +1689,13 @@ class BuildRepositoryClass {
         .build();
   }
 
-  Code _buildUpdateListField(
-    String rowName,
-    String fieldName,
-    Reference classReference,
-    Expression assignment,
-  ) {
+  String _createEscapedLocalVar(String rowName) {
     var localCopyVariable = '\$$rowName';
-    return (BlockBuilder()
-          ..statements.addAll([
-            refer('session')
-                .property('dbNext')
-                .property('update')
-                .call([
-                  refer(localCopyVariable)
-                ], {
-                  'columns': literalList(
-                    [classReference.property('t').property(fieldName)],
-                  )
-                }, [
-                  classReference,
-                ])
-                .awaited
-                .statement,
-          ]))
-        .build();
+    return localCopyVariable;
   }
+}
+
+enum _UpdateMethod {
+  update,
+  updateRow,
 }

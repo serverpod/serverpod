@@ -3,6 +3,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -255,7 +256,7 @@ class SerializableEntityLibraryGenerator {
         ..fields.addAll(hiddenFields.map((field) {
           return Field((fieldBuilder) {
             fieldBuilder
-              ..name = _createHiddenFieldName(serverCode, field)
+              ..name = createHiddenFieldName(serverCode, field)
               ..type = field.type.reference(
                 serverCode,
                 config: config,
@@ -284,7 +285,7 @@ class SerializableEntityLibraryGenerator {
             ..optionalParameters.addAll(hiddenFields.map((field) {
               return Parameter(
                 (p) => p
-                  ..name = _createHiddenFieldName(serverCode, field)
+                  ..name = createHiddenFieldName(serverCode, field)
                   ..named = true
                   ..toThis = true,
               );
@@ -299,7 +300,7 @@ class SerializableEntityLibraryGenerator {
               ..type = refer(className)))
             ..optionalParameters.addAll(hiddenFields.map((field) {
               return Parameter((p) => p
-                ..name = _createHiddenFieldName(serverCode, field)
+                ..name = createHiddenFieldName(serverCode, field)
                 ..named = true
                 ..type = field.type.reference(serverCode, config: config));
             }))
@@ -317,8 +318,8 @@ class SerializableEntityLibraryGenerator {
                     ...hiddenFields.fold({}, (map, field) {
                       return {
                         ...map,
-                        _createHiddenFieldName(serverCode, field):
-                            refer(_createHiddenFieldName(serverCode, field)),
+                        createHiddenFieldName(serverCode, field):
+                            refer(createHiddenFieldName(serverCode, field)),
                       };
                     })
                   })
@@ -343,7 +344,7 @@ class SerializableEntityLibraryGenerator {
               var values = hiddenFields.fold({}, (map, field) {
                 return {
                   ...map,
-                  "'${field.name}'": _createHiddenFieldName(serverCode, field),
+                  "'${field.name}'": createHiddenFieldName(serverCode, field),
                 };
               });
 
@@ -1382,7 +1383,7 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(_createHiddenFieldName(serverCode, field))
+              refer(createHiddenFieldName(serverCode, field))
         ]).code,
     );
   }
@@ -1400,7 +1401,7 @@ class SerializableEntityLibraryGenerator {
         tableFields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = _createHiddenFieldName(serverCode, field)
+          ..name = createHiddenFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1522,7 +1523,7 @@ class SerializableEntityLibraryGenerator {
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
-            refer(_createHiddenFieldName(serverCode, field))
+            refer(createHiddenFieldName(serverCode, field))
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
@@ -1743,16 +1744,5 @@ class SerializableEntityLibraryGenerator {
     }
 
     return refer(field.name);
-  }
-
-  String _createHiddenFieldName(
-    bool serverCode,
-    SerializableEntityFieldDefinition field,
-  ) {
-    if (field.hiddenSerializableField(serverCode)) {
-      return '\$${field.name}';
-    }
-
-    return field.name;
   }
 }
