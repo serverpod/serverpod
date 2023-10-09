@@ -294,50 +294,56 @@ List<Table> _gatherIncludeTables(Include? include, Table table) {
   return tables;
 }
 
+class _JoinContext {
+  final TableRelation tableRelation;
+  final bool subQuery;
+
+  _JoinContext(this.tableRelation, this.subQuery);
+}
+
 String? _buildJoinQuery({
   Expression? where,
   List<Order>? orderBy,
   Include? include,
 }) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> tableRelations = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where.columns));
+    tableRelations.addAll(_gatherJoinContexts(where.columns));
   }
 
   if (orderBy != null) {
     for (var order in orderBy) {
-      tableRelations.addAll(_gatherTableRelations([order.column]));
+      tableRelations.addAll(_gatherJoinContexts([order.column]));
     }
   }
 
   if (include != null) {
-    tableRelations.addAll(_gatherIncludeTableRelations(include));
+    tableRelations.addAll(_gatherIncludeJoinContexts(include));
   }
 
   if (tableRelations.isEmpty) {
     return null;
   }
 
-  return _joinStatementFromTableRelations(tableRelations);
+  return _joinStatementFromJoinContexts(tableRelations);
 }
 
 _UsingQuery? _buildUsingQuery({Expression? where}) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> joinContexts = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where.columns));
+    joinContexts.addAll(_gatherJoinContexts(where.columns));
   }
 
-  if (tableRelations.isEmpty) {
+  if (joinContexts.isEmpty) {
     return null;
   }
 
-  return _usingQueryFromTableRelations(tableRelations);
+  return _usingQueryFromJoinContexts(joinContexts);
 }
 
-LinkedHashMap<String, TableRelation> _gatherTableRelations(
-    List<Column> columns) {
+LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
   // Linked hash map to preserve order
-  LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> joins = LinkedHashMap();
   var columnsWithTableRelations =
       columns.where((column) => column.table.tableRelation != null);
   for (var column in columnsWithTableRelations) {
@@ -346,18 +352,21 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
       continue;
     }
 
+    var subQuery = column is ColumnCount && column.innerWhere != null;
+
     for (var subTableRelation in tableRelation.getRelations) {
-      joins[subTableRelation.relationQueryAlias] = subTableRelation;
+      joins[subTableRelation.relationQueryAlias] =
+          _JoinContext(subTableRelation, subQuery);
     }
   }
 
   return joins;
 }
 
-LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
+LinkedHashMap<String, _JoinContext> _gatherIncludeJoinContexts(
   Include include,
 ) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> tableRelations = LinkedHashMap();
   var includeTables = _gatherIncludeTables(include, include.table);
   var tablesWithTableRelations =
       includeTables.where((table) => table.tableRelation != null);
@@ -368,17 +377,19 @@ LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
     }
 
     for (var subTableRelation in tableRelation.getRelations) {
-      tableRelations[subTableRelation.relationQueryAlias] = subTableRelation;
+      tableRelations[subTableRelation.relationQueryAlias] =
+          _JoinContext(subTableRelation, false);
     }
   }
 
   return tableRelations;
 }
 
-String _joinStatementFromTableRelations(
-    LinkedHashMap<String, TableRelation> tableRelations) {
+String _joinStatementFromJoinContexts(
+    LinkedHashMap<String, _JoinContext> joinContexts) {
   List<String> joinStatements = [];
-  for (var tableRelation in tableRelations.values) {
+  for (var joinContext in joinContexts.values) {
+    var tableRelation = joinContext.tableRelation;
     joinStatements.add('LEFT JOIN "${tableRelation.lastForeignTableName}" '
         'AS ${tableRelation.relationQueryAlias} '
         'ON ${tableRelation.lastJoiningField} '
@@ -387,11 +398,12 @@ String _joinStatementFromTableRelations(
   return joinStatements.join(' ');
 }
 
-_UsingQuery _usingQueryFromTableRelations(
-    LinkedHashMap<String, TableRelation> tableRelations) {
+_UsingQuery _usingQueryFromJoinContexts(
+    LinkedHashMap<String, _JoinContext> joinContexts) {
   List<String> usingStatements = [];
   List<String> whereStatements = [];
-  for (var tableRelation in tableRelations.values) {
+  for (var joinContext in joinContexts.values) {
+    var tableRelation = joinContext.tableRelation;
     usingStatements.add(
         '"${tableRelation.lastForeignTableName}" AS ${tableRelation.relationQueryAlias}');
     whereStatements.add(
