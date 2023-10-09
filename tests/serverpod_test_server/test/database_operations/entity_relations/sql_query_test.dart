@@ -5,7 +5,7 @@ import '../../../../../packages/serverpod/lib/src/database/database_query.dart';
 void main() {
   group('Given nested relations when building shallow include sql query', () {
     test('then query only joins what is included.', () {
-      var query = SelectQueryBuilder(table: Citizen.t.tableName)
+      var query = SelectQueryBuilder(table: Citizen.t)
           .withSelectFields(Citizen.t.columns)
           .withInclude(
             Citizen.include(
