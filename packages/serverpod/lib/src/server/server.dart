@@ -65,8 +65,9 @@ class Server {
   /// Central message dispatch for real time messages.
   MessageCentral messageCentral = MessageCentral();
 
-  /// Define CORS headers to allow cross-origin requests.
-  final Map<String, dynamic> headers;
+  /// Http headers used by all API responses. Defaults to allowing any
+  /// cross origin resource sharing (CORS).
+  final Map<String, dynamic> httpResponseHeaders;
 
   /// Creates a new [Server] object.
   Server({
@@ -83,7 +84,7 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-    required this.headers,
+    required this.httpResponseHeaders,
   }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
@@ -157,7 +158,7 @@ class Server {
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
     // Set Access-Control-Allow-Origin, required for Flutter web.
-    for (var header in headers.entries) {
+    for (var header in httpResponseHeaders.entries) {
       request.response.headers.add(header.key, header.value);
     }
 
@@ -211,10 +212,9 @@ class Server {
       readBody = false;
     }
 
-    /// This [OPTIONS] check is necessary when making requests from
-    /// editor.swagger.io.
-    /// It ensures proper handling of preflight requests with the OPTIONS
-    /// method.
+    // This OPTIONS check is necessary when making requests from
+    // eg `editor.swagger.io`. It ensures proper handling of preflight requests
+    // with the OPTIONS method.
     if (request.method == 'OPTIONS') {
       request.response.statusCode = HttpStatus.ok;
       await request.response.close();
