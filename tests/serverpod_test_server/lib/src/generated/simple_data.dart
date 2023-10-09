@@ -236,14 +236,10 @@ class _SimpleDataImpl extends SimpleData {
 typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
 
 class SimpleDataTable extends _i1.Table {
-  SimpleDataTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'simple_data') {
+  SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     num = _i1.ColumnInt(
       'num',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

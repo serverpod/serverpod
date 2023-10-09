@@ -247,14 +247,10 @@ class _CityImpl extends City {
 typedef CityExpressionBuilder = _i1.Expression Function(CityTable);
 
 class CityTable extends _i1.Table {
-  CityTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'city') {
+  CityTable({super.tableRelation}) : super(tableName: 'city') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

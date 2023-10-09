@@ -291,19 +291,14 @@ class _PostImpl extends Post {
 typedef PostExpressionBuilder = _i1.Expression Function(PostTable);
 
 class PostTable extends _i1.Table {
-  PostTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'post') {
+  PostTable({super.tableRelation}) : super(tableName: 'post') {
     content = _i1.ColumnString(
       'content',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     nextId = _i1.ColumnInt(
       'nextId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -318,22 +313,12 @@ class PostTable extends _i1.Table {
   _i2.PostTable get previous {
     if (_previous != null) return _previous!;
     _previous = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'previous',
-      foreignTableName: _i2.Post.t.tableName,
-      column: id,
-      foreignColumnName: _i2.Post.t.nextId.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.PostTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'previous',
+      field: Post.t.id,
+      foreignField: _i2.Post.t.nextId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.PostTable(tableRelation: foreignTableRelation),
     );
     return _previous!;
   }
@@ -341,22 +326,12 @@ class PostTable extends _i1.Table {
   _i2.PostTable get next {
     if (_next != null) return _next!;
     _next = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'next',
-      foreignTableName: _i2.Post.t.tableName,
-      column: nextId,
-      foreignColumnName: _i2.Post.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.PostTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'next',
+      field: Post.t.nextId,
+      foreignField: _i2.Post.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.PostTable(tableRelation: foreignTableRelation),
     );
     return _next!;
   }

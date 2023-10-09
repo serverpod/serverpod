@@ -250,19 +250,14 @@ class _UniqueDataImpl extends UniqueData {
 typedef UniqueDataExpressionBuilder = _i1.Expression Function(UniqueDataTable);
 
 class UniqueDataTable extends _i1.Table {
-  UniqueDataTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'unique_data') {
+  UniqueDataTable({super.tableRelation}) : super(tableName: 'unique_data') {
     number = _i1.ColumnInt(
       'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     email = _i1.ColumnString(
       'email',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

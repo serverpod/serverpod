@@ -318,24 +318,18 @@ class PersonImplicit extends _PersonImpl {
 typedef PersonExpressionBuilder = _i1.Expression Function(PersonTable);
 
 class PersonTable extends _i1.Table {
-  PersonTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'person') {
+  PersonTable({super.tableRelation}) : super(tableName: 'person') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     organizationId = _i1.ColumnInt(
       'organizationId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     $_cityCitizensCityId = _i1.ColumnInt(
       '_cityCitizensCityId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -350,22 +344,12 @@ class PersonTable extends _i1.Table {
   _i2.OrganizationTable get organization {
     if (_organization != null) return _organization!;
     _organization = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'organization',
-      foreignTableName: _i2.Organization.t.tableName,
-      column: organizationId,
-      foreignColumnName: _i2.Organization.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.OrganizationTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'organization',
+      field: Person.t.organizationId,
+      foreignField: _i2.Organization.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.OrganizationTable(tableRelation: foreignTableRelation),
     );
     return _organization!;
   }

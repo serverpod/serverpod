@@ -252,19 +252,15 @@ typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
     ObjectWithUuidTable);
 
 class ObjectWithUuidTable extends _i1.Table {
-  ObjectWithUuidTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_with_uuid') {
+  ObjectWithUuidTable({super.tableRelation})
+      : super(tableName: 'object_with_uuid') {
     uuid = _i1.ColumnUuid(
       'uuid',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     uuidNullable = _i1.ColumnUuid(
       'uuidNullable',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

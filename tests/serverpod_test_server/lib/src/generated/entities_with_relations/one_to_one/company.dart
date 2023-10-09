@@ -271,19 +271,14 @@ class _CompanyImpl extends Company {
 typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
 
 class CompanyTable extends _i1.Table {
-  CompanyTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'company') {
+  CompanyTable({super.tableRelation}) : super(tableName: 'company') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     townId = _i1.ColumnInt(
       'townId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -296,22 +291,12 @@ class CompanyTable extends _i1.Table {
   _i2.TownTable get town {
     if (_town != null) return _town!;
     _town = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'town',
-      foreignTableName: _i2.Town.t.tableName,
-      column: townId,
-      foreignColumnName: _i2.Town.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.TownTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'town',
+      field: Company.t.townId,
+      foreignField: _i2.Town.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.TownTable(tableRelation: foreignTableRelation),
     );
     return _town!;
   }
@@ -352,13 +337,7 @@ class CompanyInclude extends _i1.Include {
 class CompanyRepository {
   const CompanyRepository._();
 
-  final attach = const CompanyAttachRepository._();
-
   final attachRow = const CompanyAttachRowRepository._();
-
-  final detach = const CompanyDetachRepository._();
-
-  final detachRow = const CompanyDetachRowRepository._();
 
   Future<List<Company>> find(
     _i1.Session session, {
@@ -503,34 +482,6 @@ class CompanyRepository {
   }
 }
 
-class CompanyAttachRepository {
-  const CompanyAttachRepository._();
-
-  Future<void> employees(
-    _i1.Session session,
-    Company company,
-    List<_i2.Citizen> citizen,
-  ) async {
-    if (citizen.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('citizen.id');
-    }
-    if (company.id == null) {
-      throw ArgumentError.notNull('company.id');
-    }
-
-    var $citizen = citizen
-        .map((e) => _i2.CitizenImplicit(
-              e,
-              $_companyEmployeesCompanyId: company.id,
-            ))
-        .toList();
-    await session.dbNext.update<_i2.Citizen>(
-      $citizen,
-      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
-    );
-  }
-}
-
 class CompanyAttachRowRepository {
   const CompanyAttachRowRepository._();
 
@@ -550,74 +501,6 @@ class CompanyAttachRowRepository {
     await session.dbNext.updateRow<Company>(
       $company,
       columns: [Company.t.townId],
-    );
-  }
-
-  Future<void> employees(
-    _i1.Session session,
-    Company company,
-    _i2.Citizen citizen,
-  ) async {
-    if (citizen.id == null) {
-      throw ArgumentError.notNull('citizen.id');
-    }
-    if (company.id == null) {
-      throw ArgumentError.notNull('company.id');
-    }
-
-    var $citizen = _i2.CitizenImplicit(
-      citizen,
-      $_companyEmployeesCompanyId: company.id,
-    );
-    await session.dbNext.updateRow<_i2.Citizen>(
-      $citizen,
-      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
-    );
-  }
-}
-
-class CompanyDetachRepository {
-  const CompanyDetachRepository._();
-
-  Future<void> employees(
-    _i1.Session session,
-    List<_i2.Citizen> citizen,
-  ) async {
-    if (citizen.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('citizen.id');
-    }
-
-    var $citizen = citizen
-        .map((e) => _i2.CitizenImplicit(
-              e,
-              $_companyEmployeesCompanyId: null,
-            ))
-        .toList();
-    await session.dbNext.update<_i2.Citizen>(
-      $citizen,
-      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
-    );
-  }
-}
-
-class CompanyDetachRowRepository {
-  const CompanyDetachRowRepository._();
-
-  Future<void> employees(
-    _i1.Session session,
-    _i2.Citizen citizen,
-  ) async {
-    if (citizen.id == null) {
-      throw ArgumentError.notNull('citizen.id');
-    }
-
-    var $citizen = _i2.CitizenImplicit(
-      citizen,
-      $_companyEmployeesCompanyId: null,
-    );
-    await session.dbNext.updateRow<_i2.Citizen>(
-      $citizen,
-      columns: [_i2.Citizen.t.$_companyEmployeesCompanyId],
     );
   }
 }

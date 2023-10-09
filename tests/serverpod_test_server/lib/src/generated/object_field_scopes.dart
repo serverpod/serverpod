@@ -262,19 +262,15 @@ typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
     ObjectFieldScopesTable);
 
 class ObjectFieldScopesTable extends _i1.Table {
-  ObjectFieldScopesTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_field_scopes') {
+  ObjectFieldScopesTable({super.tableRelation})
+      : super(tableName: 'object_field_scopes') {
     normal = _i1.ColumnString(
       'normal',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     database = _i1.ColumnString(
       'database',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

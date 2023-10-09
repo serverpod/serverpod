@@ -273,19 +273,14 @@ class _AddressImpl extends Address {
 typedef AddressExpressionBuilder = _i1.Expression Function(AddressTable);
 
 class AddressTable extends _i1.Table {
-  AddressTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'address') {
+  AddressTable({super.tableRelation}) : super(tableName: 'address') {
     street = _i1.ColumnString(
       'street',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     inhabitantId = _i1.ColumnInt(
       'inhabitantId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -298,22 +293,12 @@ class AddressTable extends _i1.Table {
   _i2.CitizenTable get inhabitant {
     if (_inhabitant != null) return _inhabitant!;
     _inhabitant = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'inhabitant',
-      foreignTableName: _i2.Citizen.t.tableName,
-      column: inhabitantId,
-      foreignColumnName: _i2.Citizen.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.CitizenTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'inhabitant',
+      field: Address.t.inhabitantId,
+      foreignField: _i2.Citizen.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _inhabitant!;
   }

@@ -236,14 +236,11 @@ typedef SimpleDateTimeExpressionBuilder = _i1.Expression Function(
     SimpleDateTimeTable);
 
 class SimpleDateTimeTable extends _i1.Table {
-  SimpleDateTimeTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'simple_date_time') {
+  SimpleDateTimeTable({super.tableRelation})
+      : super(tableName: 'simple_date_time') {
     dateTime = _i1.ColumnDateTime(
       'dateTime',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 

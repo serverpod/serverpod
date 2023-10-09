@@ -320,73 +320,21 @@ class _CitizenImpl extends Citizen {
   }
 }
 
-class CitizenImplicit extends _CitizenImpl {
-  CitizenImplicit._({
-    int? id,
-    required String name,
-    _i2.Address? address,
-    required int companyId,
-    _i2.Company? company,
-    int? oldCompanyId,
-    _i2.Company? oldCompany,
-    this.$_companyEmployeesCompanyId,
-  }) : super(
-          id: id,
-          name: name,
-          address: address,
-          companyId: companyId,
-          company: company,
-          oldCompanyId: oldCompanyId,
-          oldCompany: oldCompany,
-        );
-
-  factory CitizenImplicit(
-    Citizen citizen, {
-    int? $_companyEmployeesCompanyId,
-  }) {
-    return CitizenImplicit._(
-      id: citizen.id,
-      name: citizen.name,
-      address: citizen.address,
-      companyId: citizen.companyId,
-      company: citizen.company,
-      oldCompanyId: citizen.oldCompanyId,
-      oldCompany: citizen.oldCompany,
-      $_companyEmployeesCompanyId: $_companyEmployeesCompanyId,
-    );
-  }
-
-  int? $_companyEmployeesCompanyId;
-
-  @override
-  Map<String, dynamic> allToJson() {
-    var jsonMap = super.allToJson();
-    jsonMap.addAll({'_companyEmployeesCompanyId': $_companyEmployeesCompanyId});
-    return jsonMap;
-  }
-}
-
 typedef CitizenExpressionBuilder = _i1.Expression Function(CitizenTable);
 
 class CitizenTable extends _i1.Table {
-  CitizenTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'citizen') {
+  CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     companyId = _i1.ColumnInt(
       'companyId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     oldCompanyId = _i1.ColumnInt(
       'oldCompanyId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -405,22 +353,12 @@ class CitizenTable extends _i1.Table {
   _i2.AddressTable get address {
     if (_address != null) return _address!;
     _address = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'address',
-      foreignTableName: _i2.Address.t.tableName,
-      column: id,
-      foreignColumnName: _i2.Address.t.inhabitantId.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.AddressTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'address',
+      field: Citizen.t.id,
+      foreignField: _i2.Address.t.inhabitantId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.AddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
@@ -428,22 +366,12 @@ class CitizenTable extends _i1.Table {
   _i2.CompanyTable get company {
     if (_company != null) return _company!;
     _company = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'company',
-      foreignTableName: _i2.Company.t.tableName,
-      column: companyId,
-      foreignColumnName: _i2.Company.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.CompanyTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'company',
+      field: Citizen.t.companyId,
+      foreignField: _i2.Company.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
@@ -451,22 +379,12 @@ class CitizenTable extends _i1.Table {
   _i2.CompanyTable get oldCompany {
     if (_oldCompany != null) return _oldCompany!;
     _oldCompany = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'oldCompany',
-      foreignTableName: _i2.Company.t.tableName,
-      column: oldCompanyId,
-      foreignColumnName: _i2.Company.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.CompanyTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'oldCompany',
+      field: Citizen.t.oldCompanyId,
+      foreignField: _i2.Company.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }

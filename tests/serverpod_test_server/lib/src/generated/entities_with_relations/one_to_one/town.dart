@@ -271,19 +271,14 @@ class _TownImpl extends Town {
 typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
 
 class TownTable extends _i1.Table {
-  TownTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'town') {
+  TownTable({super.tableRelation}) : super(tableName: 'town') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     mayorId = _i1.ColumnInt(
       'mayorId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -296,22 +291,12 @@ class TownTable extends _i1.Table {
   _i2.CitizenTable get mayor {
     if (_mayor != null) return _mayor!;
     _mayor = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'mayor',
-      foreignTableName: _i2.Citizen.t.tableName,
-      column: mayorId,
-      foreignColumnName: _i2.Citizen.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.CitizenTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'mayor',
+      field: Town.t.mayorId,
+      foreignField: _i2.Citizen.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CitizenTable(tableRelation: foreignTableRelation),
     );
     return _mayor!;
   }

@@ -247,14 +247,10 @@ typedef OrganizationExpressionBuilder = _i1.Expression Function(
     OrganizationTable);
 
 class OrganizationTable extends _i1.Table {
-  OrganizationTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'organization') {
+  OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
