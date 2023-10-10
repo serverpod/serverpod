@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import 'open_api_definition.dart';
 
 class OpenApiGenerator {
-  OpenApiGenerator();
+  const OpenApiGenerator();
 
   String getOpenApiSchema(
     ProtocolDefinition protocolDefinition,
