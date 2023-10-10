@@ -421,7 +421,7 @@ String? _buildSubQueries({List<Order>? orderBy}) {
     return null;
   }
 
-  return 'WITH ${subQueries.entries.map((e) => '${e.key} AS (${e.value})').join(', ')}';
+  return 'WITH ${subQueries.entries.map((e) => '"${e.key}" AS (${e.value})').join(', ')}';
 }
 
 LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
@@ -478,7 +478,7 @@ String _joinStatementFromJoinContexts(
       joinStatement += ' "${tableRelation.lastForeignTableName}" AS';
     }
 
-    joinStatement += ' ${tableRelation.relationQueryAlias} '
+    joinStatement += ' "${tableRelation.relationQueryAlias}" '
         'ON ${tableRelation.lastJoiningField} ';
 
     if (!joinContext.subQuery) {
@@ -499,7 +499,7 @@ _UsingQuery _usingQueryFromJoinContexts(
   for (var joinContext in joinContexts.values) {
     var tableRelation = joinContext.tableRelation;
     usingStatements.add(
-        '"${tableRelation.lastForeignTableName}" AS ${tableRelation.relationQueryAlias}');
+        '"${tableRelation.lastForeignTableName}" AS "${tableRelation.relationQueryAlias}"');
     whereStatements.add(
         '${tableRelation.lastJoiningField} = ${tableRelation.lastJoiningForeignField}');
   }

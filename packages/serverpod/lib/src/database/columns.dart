@@ -27,7 +27,7 @@ abstract class Column<T> {
 
   @override
   String toString() {
-    return '${table.queryPrefix}."$_columnName"';
+    return '"${table.queryPrefix}"."$_columnName"';
   }
 }
 
