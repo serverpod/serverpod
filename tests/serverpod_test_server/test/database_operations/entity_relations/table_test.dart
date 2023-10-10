@@ -11,7 +11,7 @@ void main() {
 
       test('then query prefix is built based on relations.', () {
         expect(expression.toString(),
-            '(citizen_oldCompany_company_town_town_mayor_citizen."name" = \'Alex\' AND citizen_company_company."name" = \'Serverpod\')');
+            '("citizen_oldCompany_company_town_town_mayor_citizen"."name" = \'Alex\' AND "citizen_company_company"."name" = \'Serverpod\')');
       });
 
       test('then each in expression column is retrievable.', () {
@@ -34,7 +34,7 @@ void main() {
 
       test('then query prefix is built based on relations.', () {
         expect(nestedRelationAccess.toString(),
-            'citizen_oldCompany_company_town_town_mayor_citizen."name"');
+            '"citizen_oldCompany_company_town_town_mayor_citizen"."name"');
       });
 
       test('then table relations exists.', () {
@@ -58,8 +58,8 @@ void main() {
           actualTableRelation: firstTableRelation,
           expectedLastForeignTableName: 'company',
           expectedRelationQueryAlias: 'citizen_oldCompany_company',
-          expectedLastJoiningField: 'citizen."oldCompanyId"',
-          expectedLastJoiningForeignField: 'citizen_oldCompany_company."id"',
+          expectedLastJoiningField: '"citizen"."oldCompanyId"',
+          expectedLastJoiningForeignField: '"citizen_oldCompany_company"."id"',
         );
       }, skip: nestedRelationAccess.table.tableRelation == null);
 
@@ -73,9 +73,9 @@ void main() {
           actualTableRelation: secondTableRelation,
           expectedLastForeignTableName: 'town',
           expectedRelationQueryAlias: 'citizen_oldCompany_company_town_town',
-          expectedLastJoiningField: 'citizen_oldCompany_company."townId"',
+          expectedLastJoiningField: '"citizen_oldCompany_company"."townId"',
           expectedLastJoiningForeignField:
-              'citizen_oldCompany_company_town_town."id"',
+              '"citizen_oldCompany_company_town_town"."id"',
         );
       }, skip: nestedRelationAccess.table.tableRelation == null);
 
@@ -90,9 +90,9 @@ void main() {
           expectedRelationQueryAlias:
               'citizen_oldCompany_company_town_town_mayor_citizen',
           expectedLastJoiningField:
-              'citizen_oldCompany_company_town_town."mayorId"',
+              '"citizen_oldCompany_company_town_town"."mayorId"',
           expectedLastJoiningForeignField:
-              'citizen_oldCompany_company_town_town_mayor_citizen."id"',
+              '"citizen_oldCompany_company_town_town_mayor_citizen"."id"',
         );
       }, skip: nestedRelationAccess.table.tableRelation == null);
     });

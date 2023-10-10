@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/analyzer.dart';
 
-String createHiddenFieldName(
+String createFieldName(
   bool serverCode,
   SerializableEntityFieldDefinition field,
 ) {

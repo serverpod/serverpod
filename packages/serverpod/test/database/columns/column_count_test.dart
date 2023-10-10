@@ -2,22 +2,22 @@ import 'package:serverpod/database.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a ColumnDouble', () {
-    var columnName = 'age';
-    var column = ColumnDouble(columnName, Table(tableName: 'test'));
+  group('Given a ColumnCount', () {
+    var table = Table(tableName: 'test');
+    var column = ColumnCount(null, table, table.id);
 
     test(
-        'when toString is called then column name withing double quotes is returned.',
+        'when toString is called then column name withing count expression is returned.',
         () {
-      expect(column.toString(), '"test"."$columnName"');
+      expect(column.toString(), 'COUNT("test"."${table.id.columnName}")');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(column.columnName, columnName);
+      expect(column.columnName, table.id.columnName);
     });
 
-    test('when type is called then double is returned.', () {
-      expect(column.type, double);
+    test('when type is called then int is returned.', () {
+      expect(column.type, int);
     });
 
     group('with _ColumnDefaultOperations mixin', () {
@@ -30,11 +30,11 @@ void main() {
       });
 
       test(
-          'when equals compared to double value then output is equals expression.',
+          'when equals compared to int value then output is equals expression.',
           () {
-        var comparisonExpression = column.equals(10.0);
+        var comparisonExpression = column.equals(10);
 
-        expect(comparisonExpression.toString(), '$column = 10.0');
+        expect(comparisonExpression.toString(), '$column = 10');
       });
 
       test(
@@ -46,87 +46,84 @@ void main() {
       });
 
       test(
-          'when NOT equals compared to double value then output is NOT equals expression.',
+          'when NOT equals compared to int value then output is NOT equals expression.',
           () {
-        var comparisonExpression = column.notEquals(10.0);
+        var comparisonExpression = column.notEquals(10);
 
         expect(comparisonExpression.toString(),
-            '($column != 10.0 OR $column IS NULL)');
+            '($column != 10 OR $column IS NULL)');
       });
 
       test(
-          'when checking if expression is between double values then output is between expression.',
+          'when checking if expression is between int values then output is between expression.',
           () {
-        var comparisonExpression = column.between(10.0, 20.0);
+        var comparisonExpression = column.between(10, 20);
+
+        expect(comparisonExpression.toString(), '$column BETWEEN 10 AND 20');
+      });
+
+      test(
+          'when checking if expression is NOT between int value then output is NOT between expression.',
+          () {
+        var comparisonExpression = column.notBetween(10, 20);
 
         expect(
-            comparisonExpression.toString(), '$column BETWEEN 10.0 AND 20.0');
-      });
-
-      test(
-          'when checking if expression is NOT between double value then output is NOT between expression.',
-          () {
-        var comparisonExpression = column.notBetween(10.0, 20.0);
-
-        expect(comparisonExpression.toString(),
-            '$column NOT BETWEEN 10.0 AND 20.0');
+            comparisonExpression.toString(), '$column NOT BETWEEN 10 AND 20');
       });
 
       test(
           'when checking if expression is in value set then output is IN expression.',
           () {
-        var comparisonExpression = column.inSet(<double>{10.0, 11.0, 12.0});
+        var comparisonExpression = column.inSet(<int>{10, 11, 12});
 
-        expect(
-            comparisonExpression.toString(), '$column IN (10.0, 11.0, 12.0)');
+        expect(comparisonExpression.toString(), '$column IN (10, 11, 12)');
       });
 
       test(
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
-        var comparisonExpression = column.notInSet(<double>{10.0, 11.0, 12.0});
+        var comparisonExpression = column.notInSet(<int>{10, 11, 12});
 
         expect(comparisonExpression.toString(),
-            '($column NOT IN (10.0, 11.0, 12.0) OR $column IS NULL)');
+            '($column NOT IN (10, 11, 12) OR $column IS NULL)');
       });
 
       test(
-          'when is distinct from compared to double value then output is IS DISTINCT FROM expression.',
+          'when is distinct from compared to int value then output is IS DISTINCT FROM expression.',
           () {
-        var comparisonExpression = column.isDistinctFrom(10.0);
+        var comparisonExpression = column.isDistinctFrom(10);
+
+        expect(comparisonExpression.toString(), '$column IS DISTINCT FROM 10');
+      });
+
+      test(
+          'when is NOT distinct from compared to int value then output is IS NOT DISTINCT FROM expression.',
+          () {
+        var comparisonExpression = column.isNotDistinctFrom(10);
 
         expect(
-            comparisonExpression.toString(), '$column IS DISTINCT FROM 10.0');
-      });
-
-      test(
-          'when is NOT distinct from compared to double value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom(10.0);
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM 10.0');
+            comparisonExpression.toString(), '$column IS NOT DISTINCT FROM 10');
       });
     });
 
     group('with _ColumnNumberOperations mixin', () {
       test(
-          'when checking if expression is between double values then output is between expression.',
+          'when checking if expression is between int values then output is between expression.',
           () {
-        var comparisonExpression = column.between(10.0, 20.0);
+        var comparisonExpression = column.between(10, 20);
 
-        expect(
-            comparisonExpression.toString(), '$column BETWEEN 10.0 AND 20.0');
+        expect(comparisonExpression.toString(), '$column BETWEEN 10 AND 20');
       });
 
       test(
           'when checking if expression is NOT between int values then output is NOT between expression.',
           () {
-        var comparisonExpression = column.notBetween(10.0, 20.0);
+        var comparisonExpression = column.notBetween(10, 20);
 
-        expect(comparisonExpression.toString(),
-            '$column NOT BETWEEN 10.0 AND 20.0');
+        expect(
+            comparisonExpression.toString(), '$column NOT BETWEEN 10 AND 20');
       });
+
       test(
           'when greater than compared to expression then output is operator expression.',
           () {
@@ -138,9 +135,9 @@ void main() {
       test(
           'when greater than compared to column type then output is operator expression.',
           () {
-        var comparisonExpression = column > 10.0;
+        var comparisonExpression = column > 10;
 
-        expect(comparisonExpression.toString(), '($column > 10.0)');
+        expect(comparisonExpression.toString(), '($column > 10)');
       });
 
       test(
@@ -171,9 +168,9 @@ void main() {
       test(
           'when greater or equal than compared to column type then output is operator expression.',
           () {
-        var comparisonExpression = column >= 10.0;
+        var comparisonExpression = column >= 10;
 
-        expect(comparisonExpression.toString(), '($column >= 10.0)');
+        expect(comparisonExpression.toString(), '($column >= 10)');
       });
 
       test(
@@ -204,9 +201,9 @@ void main() {
       test(
           'when less than compared to column type then output is operator expression.',
           () {
-        var comparisonExpression = column < 10.0;
+        var comparisonExpression = column < 10;
 
-        expect(comparisonExpression.toString(), '($column < 10.0)');
+        expect(comparisonExpression.toString(), '($column < 10)');
       });
 
       test(
@@ -237,9 +234,9 @@ void main() {
       test(
           'when less or equal than compared to column type then output is operator expression.',
           () {
-        var comparisonExpression = column <= 10.0;
+        var comparisonExpression = column <= 10;
 
-        expect(comparisonExpression.toString(), '($column <= 10.0)');
+        expect(comparisonExpression.toString(), '($column <= 10)');
       });
 
       test(

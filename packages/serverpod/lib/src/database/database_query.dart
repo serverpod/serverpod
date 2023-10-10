@@ -41,13 +41,22 @@ class SelectQueryBuilder {
       where: _where,
     );
 
+    var selectColumns = [..._fields, ..._gatherIncludeColumns(_include)];
+
+    var subQueries = _buildSubQueries(orderBy: _orderBy);
+    var select = _buildSelectStatement(selectColumns);
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
+    var groupBy = _buildGroupByQuery(selectColumns, orderBy: _orderBy);
+    var where = _buildWhereQuery(where: _where);
 
-    var query = _buildSelectQuery(_fields, _include);
+    var query = '';
+    if (subQueries != null) query += '$subQueries ';
+    query += 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
+    if (groupBy != null) query += ' $groupBy';
     if (_orderBy != null) {
       query +=
           ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
@@ -77,7 +86,18 @@ class SelectQueryBuilder {
   ///
   /// If order by includes columns from a relation, the relation will be joined
   /// in the query.
+  /// Throws an [ArgumentError] if the same column is included multiple times.
   SelectQueryBuilder withOrderBy(List<Order>? orderBy) {
+    Set<String> columns = {};
+    for (var order in orderBy ?? []) {
+      if (columns.contains(order.column.queryAlias)) {
+        throw ArgumentError(
+          'Ordering by same column multiple times: ${order.column.queryAlias}',
+        );
+      }
+      columns.add(order.column.queryAlias);
+    }
+
     _orderBy = orderBy;
     return this;
   }
@@ -160,12 +180,13 @@ class CountQueryBuilder {
     _validateTableReferences(_table.tableName, where: _where);
 
     var join = _buildJoinQuery(where: _where);
+    var where = _buildWhereQuery(where: _where);
 
     var query = 'SELECT COUNT($_field)';
     if (_alias != null) query += ' AS $_alias';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (_limit != null) query += ' LIMIT $_limit';
     return query;
   }
@@ -233,20 +254,21 @@ class DeleteQueryBuilder {
     _validateTableReferences(_table.tableName, where: _where);
 
     var using = _buildUsingQuery(where: _where);
+    var where = _buildWhereQuery(where: _where);
 
     var query = 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (using != null) query += ' AND ${using.where}';
     if (_returningStatement != null) query += _returningStatement!;
     return query;
   }
 }
 
-String _buildSelectQuery(List<Column> fields, Include? include) {
-  var selectColumns = [...fields, ..._gatherIncludeColumns(include)];
-
-  return _selectStatementFromColumns(selectColumns);
+String _buildSelectStatement(List<Column> selectColumns) {
+  return selectColumns
+      .map((column) => '$column AS "${column.queryAlias}"')
+      .join(', ');
 }
 
 List<Column> _gatherIncludeColumns(Include? include) {
@@ -291,50 +313,120 @@ List<Table> _gatherIncludeTables(Include? include, Table table) {
   return tables;
 }
 
+class _JoinContext {
+  final TableRelation tableRelation;
+  final bool subQuery;
+
+  _JoinContext(this.tableRelation, this.subQuery);
+}
+
 String? _buildJoinQuery({
   Expression? where,
   List<Order>? orderBy,
   Include? include,
 }) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> tableRelations = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where.columns));
+    tableRelations.addAll(_gatherJoinContexts(where.columns));
   }
 
   if (orderBy != null) {
     for (var order in orderBy) {
-      tableRelations.addAll(_gatherTableRelations([order.column]));
+      tableRelations.addAll(_gatherJoinContexts([order.column]));
     }
   }
 
   if (include != null) {
-    tableRelations.addAll(_gatherIncludeTableRelations(include));
+    tableRelations.addAll(_gatherIncludeJoinContexts(include));
   }
 
   if (tableRelations.isEmpty) {
     return null;
   }
 
-  return _joinStatementFromTableRelations(tableRelations);
+  return _joinStatementFromJoinContexts(tableRelations);
+}
+
+String? _buildGroupByQuery(
+  List<Column> selectFields, {
+  List<Order>? orderBy,
+}) {
+  var anyCountColumn =
+      orderBy?.any((order) => order.column is ColumnCount) ?? false;
+
+  if (!anyCountColumn) {
+    return null;
+  }
+
+  return 'GROUP BY ${selectFields.map((column) => '"${column.queryAlias}"').join(', ')}';
+}
+
+String? _buildWhereQuery({Expression? where}) {
+  if (where == null) {
+    return null;
+  }
+
+  if (where.columns.whereType<ColumnCount>().isNotEmpty) {
+    // TODO - Add support for count columns in where expressions.
+    throw const FormatException(
+      'Count columns are not supported in where expressions.',
+    );
+  }
+
+  return where.toString();
 }
 
 _UsingQuery? _buildUsingQuery({Expression? where}) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> joinContexts = LinkedHashMap();
   if (where != null) {
-    tableRelations.addAll(_gatherTableRelations(where.columns));
+    joinContexts.addAll(_gatherJoinContexts(where.columns));
   }
 
-  if (tableRelations.isEmpty) {
+  if (joinContexts.isEmpty) {
     return null;
   }
 
-  return _usingQueryFromTableRelations(tableRelations);
+  return _usingQueryFromJoinContexts(joinContexts);
 }
 
-LinkedHashMap<String, TableRelation> _gatherTableRelations(
-    List<Column> columns) {
+String? _buildSubQueries({List<Order>? orderBy}) {
+  List<ColumnCount> countColumnsWithInnerWhere = [];
+
+  if (orderBy != null) {
+    countColumnsWithInnerWhere.addAll(
+      orderBy
+          .map((order) => order.column)
+          .whereType<ColumnCount>()
+          .where((c) => c.innerWhere != null),
+    );
+  }
+
+  Map<String, String> subQueries = {};
+  for (var countColumn in countColumnsWithInnerWhere) {
+    var tableRelation = countColumn.table.tableRelation;
+
+    if (tableRelation == null) {
+      throw ArgumentError.notNull('countColumn.table.tableRelation');
+    }
+
+    var relationQueryAlias = tableRelation.relationQueryAlias;
+
+    subQueries[relationQueryAlias] =
+        SelectQueryBuilder(table: countColumn.baseTable)
+            .withWhere(countColumn.innerWhere)
+            .build();
+  }
+
+  if (subQueries.isEmpty) {
+    return null;
+  }
+
+  return 'WITH ${subQueries.entries.map((e) => '"${e.key}" AS (${e.value})').join(', ')}';
+}
+
+LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
   // Linked hash map to preserve order
-  LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> joins = LinkedHashMap();
   var columnsWithTableRelations =
       columns.where((column) => column.table.tableRelation != null);
   for (var column in columnsWithTableRelations) {
@@ -343,18 +435,21 @@ LinkedHashMap<String, TableRelation> _gatherTableRelations(
       continue;
     }
 
+    var subQuery = column is ColumnCount && column.innerWhere != null;
+
     for (var subTableRelation in tableRelation.getRelations) {
-      joins[subTableRelation.relationQueryAlias] = subTableRelation;
+      joins[subTableRelation.relationQueryAlias] =
+          _JoinContext(subTableRelation, subQuery);
     }
   }
 
   return joins;
 }
 
-LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
+LinkedHashMap<String, _JoinContext> _gatherIncludeJoinContexts(
   Include include,
 ) {
-  LinkedHashMap<String, TableRelation> tableRelations = LinkedHashMap();
+  LinkedHashMap<String, _JoinContext> tableRelations = LinkedHashMap();
   var includeTables = _gatherIncludeTables(include, include.table);
   var tablesWithTableRelations =
       includeTables.where((table) => table.tableRelation != null);
@@ -365,40 +460,46 @@ LinkedHashMap<String, TableRelation> _gatherIncludeTableRelations(
     }
 
     for (var subTableRelation in tableRelation.getRelations) {
-      tableRelations[subTableRelation.relationQueryAlias] = subTableRelation;
+      tableRelations[subTableRelation.relationQueryAlias] =
+          _JoinContext(subTableRelation, false);
     }
   }
 
   return tableRelations;
 }
 
-String _joinStatementFromTableRelations(
-    LinkedHashMap<String, TableRelation> tableRelations) {
+String _joinStatementFromJoinContexts(
+    LinkedHashMap<String, _JoinContext> joinContexts) {
   List<String> joinStatements = [];
-  for (var tableRelation in tableRelations.values) {
-    joinStatements.add('LEFT JOIN "${tableRelation.lastForeignTableName}" '
-        'AS ${tableRelation.relationQueryAlias} '
-        'ON ${tableRelation.lastJoiningField} '
-        '= ${tableRelation.lastJoiningForeignField}');
+  for (var joinContext in joinContexts.values) {
+    var tableRelation = joinContext.tableRelation;
+    var joinStatement = 'LEFT JOIN';
+    if (!joinContext.subQuery) {
+      joinStatement += ' "${tableRelation.lastForeignTableName}" AS';
+    }
+
+    joinStatement += ' "${tableRelation.relationQueryAlias}" '
+        'ON ${tableRelation.lastJoiningField} ';
+
+    if (!joinContext.subQuery) {
+      joinStatement += '= ${tableRelation.lastJoiningForeignField}';
+    } else {
+      joinStatement += '= ${tableRelation.lastJoiningForeignFieldQueryAlias}';
+    }
+
+    joinStatements.add(joinStatement);
   }
   return joinStatements.join(' ');
 }
 
-String _selectStatementFromColumns(List<Column> columns) {
-  List<String> selectStatements = [];
-  for (var column in columns) {
-    selectStatements.add('$column AS "${column.queryAlias}"');
-  }
-  return 'SELECT ${selectStatements.join(', ')}';
-}
-
-_UsingQuery _usingQueryFromTableRelations(
-    LinkedHashMap<String, TableRelation> tableRelations) {
+_UsingQuery _usingQueryFromJoinContexts(
+    LinkedHashMap<String, _JoinContext> joinContexts) {
   List<String> usingStatements = [];
   List<String> whereStatements = [];
-  for (var tableRelation in tableRelations.values) {
+  for (var joinContext in joinContexts.values) {
+    var tableRelation = joinContext.tableRelation;
     usingStatements.add(
-        '"${tableRelation.lastForeignTableName}" AS ${tableRelation.relationQueryAlias}');
+        '"${tableRelation.lastForeignTableName}" AS "${tableRelation.relationQueryAlias}"');
     whereStatements.add(
         '${tableRelation.lastJoiningField} = ${tableRelation.lastJoiningForeignField}');
   }
@@ -444,6 +545,6 @@ extension _ColumnHelpers on Column {
   /// Returns true if the column has the specified table as base table.
   bool hasBaseTable(String table) {
     // Regex matches 'tableName_' and 'tableName.'
-    return toString().startsWith(RegExp(table + r'[_\.]'));
+    return queryAlias.startsWith(RegExp(table + r'[_\.]'));
   }
 }

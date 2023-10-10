@@ -58,12 +58,13 @@ void main() {
     test(
         'when lastJoiningField is called then last joining field name is returned.',
         () {
-      expect(tableRelation.lastJoiningField, 'company."ceoId"');
+      expect(tableRelation.lastJoiningField, '"company"."ceoId"');
     });
 
     test('when lastJoiningForeignField is called then last foreign field name.',
         () {
-      expect(tableRelation.lastJoiningForeignField, 'company_ceo_citizen."id"');
+      expect(
+          tableRelation.lastJoiningForeignField, '"company_ceo_citizen"."id"');
     });
 
     group('when using copyAndAppend to create new table relation ', () {
@@ -145,13 +146,13 @@ void main() {
         'when lastJoiningField is called then last joining field name is returned.',
         () {
       expect(tableRelation.lastJoiningField,
-          'company_ceo_citizen."favoriteRestaurantId"');
+          '"company_ceo_citizen"."favoriteRestaurantId"');
     });
 
     test('when lastJoiningForeignField is called then last foreign field name.',
         () {
       expect(tableRelation.lastJoiningForeignField,
-          'company_ceo_citizen_favoriteRestaurant_restaurant."id"');
+          '"company_ceo_citizen_favoriteRestaurant_restaurant"."id"');
     });
   });
 }

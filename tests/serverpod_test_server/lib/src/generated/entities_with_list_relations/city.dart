@@ -256,6 +256,25 @@ class CityTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  _i1.ManyRelation<_i2.PersonTable>? _citizens;
+
+  _i1.ManyRelation<_i2.PersonTable> get citizens {
+    if (_citizens != null) return _citizens!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'citizens',
+      field: City.t.id,
+      foreignField: _i2.Person.t.$_cityCitizensCityId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.PersonTable(tableRelation: foreignTableRelation),
+    );
+    _citizens = _i1.ManyRelation<_i2.PersonTable>(
+      tableWithRelations: relationTable,
+      table: _i2.Person.t,
+    );
+    return _citizens!;
+  }
+
   @override
   List<_i1.Column> get columns => [
         id,
