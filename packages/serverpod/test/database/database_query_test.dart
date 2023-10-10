@@ -25,7 +25,8 @@ class _TableWithManyRelation extends Table {
     var relationTable = createRelationTable(
       relationFieldName: _relationAlias,
       field: id,
-      foreignField: id,
+      foreignField:
+          id /* This should really be something different than the "id" column but by reusing it we are saved from creating a different table. */,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) => _TableWithManyRelation(
         relationAlias: _relationAlias,
