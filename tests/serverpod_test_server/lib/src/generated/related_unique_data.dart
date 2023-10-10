@@ -492,20 +492,20 @@ class RelatedUniqueDataAttachRowRepository {
 
   Future<void> uniqueData(
     _i1.Session session,
-    RelatedUniqueData relateduniquedata,
+    RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData,
   ) async {
-    if (relateduniquedata.id == null) {
-      throw ArgumentError.notNull('relateduniquedata.id');
+    if (relatedUniqueData.id == null) {
+      throw ArgumentError.notNull('relatedUniqueData.id');
     }
     if (uniqueData.id == null) {
       throw ArgumentError.notNull('uniqueData.id');
     }
 
-    var $relateduniquedata =
-        relateduniquedata.copyWith(uniqueDataId: uniqueData.id);
+    var $relatedUniqueData =
+        relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
     await session.dbNext.updateRow<RelatedUniqueData>(
-      $relateduniquedata,
+      $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
     );
   }
