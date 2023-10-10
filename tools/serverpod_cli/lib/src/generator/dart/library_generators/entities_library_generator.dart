@@ -1574,7 +1574,8 @@ class SerializableEntityLibraryGenerator {
                         .property('t')
                         .property(
                           listRelation.implicitForeignField
-                              ? '\$${listRelation.foreignFieldName}'
+                              ? createImplicitFieldName(
+                                  listRelation.foreignFieldName)
                               : listRelation.foreignFieldName,
                         ),
                     'tableRelation': refer('tableRelation'),
