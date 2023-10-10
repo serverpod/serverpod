@@ -7,55 +7,55 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../../protocol.dart' as _i2;
+import '../protocol.dart' as _i2;
 
-abstract class Customer extends _i1.TableRow {
-  Customer._({
+abstract class Organization extends _i1.TableRow {
+  Organization._({
     int? id,
     required this.name,
-    this.orders,
+    this.people,
   }) : super(id);
 
-  factory Customer({
+  factory Organization({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
-  }) = _CustomerImpl;
+    List<_i2.Person>? people,
+  }) = _OrganizationImpl;
 
-  factory Customer.fromJson(
+  factory Organization.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
-    return Customer(
+    return Organization(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      orders: serializationManager
-          .deserialize<List<_i2.Order>?>(jsonSerialization['orders']),
+      people: serializationManager
+          .deserialize<List<_i2.Person>?>(jsonSerialization['people']),
     );
   }
 
-  static final t = CustomerTable();
+  static final t = OrganizationTable();
 
-  static const db = CustomerRepository._();
+  static const db = OrganizationRepository._();
 
   String name;
 
-  List<_i2.Order>? orders;
+  List<_i2.Person>? people;
 
   @override
   _i1.Table get table => t;
 
-  Customer copyWith({
+  Organization copyWith({
     int? id,
     String? name,
-    List<_i2.Order>? orders,
+    List<_i2.Person>? people,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'orders': orders,
+      'people': people,
     };
   }
 
@@ -73,7 +73,7 @@ abstract class Customer extends _i1.TableRow {
     return {
       'id': id,
       'name': name,
-      'orders': orders,
+      'people': people,
     };
   }
 
@@ -95,9 +95,9 @@ abstract class Customer extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Customer>> find(
+  static Future<List<Organization>> find(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -106,8 +106,8 @@ abstract class Customer extends _i1.TableRow {
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.find<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.find<Organization>(
+      where: where != null ? where(Organization.t) : null,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -119,17 +119,17 @@ abstract class Customer extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Customer?> findSingleRow(
+  static Future<Organization?> findSingleRow(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.findSingleRow<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.findSingleRow<Organization>(
+      where: where != null ? where(Organization.t) : null,
       offset: offset,
       orderBy: orderBy,
       orderDescending: orderDescending,
@@ -139,21 +139,21 @@ abstract class Customer extends _i1.TableRow {
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Customer?> findById(
+  static Future<Organization?> findById(
     _i1.Session session,
     int id,
   ) async {
-    return session.db.findById<Customer>(id);
+    return session.db.findById<Organization>(id);
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CustomerExpressionBuilder where,
+    required OrganizationExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.delete<Customer>(
-      where: where(Customer.t),
+    return session.db.delete<Organization>(
+      where: where(Organization.t),
       transaction: transaction,
     );
   }
@@ -161,7 +161,7 @@ abstract class Customer extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.deleteRow(
@@ -173,7 +173,7 @@ abstract class Customer extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.update(
@@ -186,7 +186,7 @@ abstract class Customer extends _i1.TableRow {
       'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
     return session.db.insert(
@@ -198,55 +198,56 @@ abstract class Customer extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
   }) async {
-    return session.db.count<Customer>(
-      where: where != null ? where(Customer.t) : null,
+    return session.db.count<Organization>(
+      where: where != null ? where(Organization.t) : null,
       limit: limit,
       useCache: useCache,
       transaction: transaction,
     );
   }
 
-  static CustomerInclude include() {
-    return CustomerInclude._();
+  static OrganizationInclude include() {
+    return OrganizationInclude._();
   }
 }
 
 class _Undefined {}
 
-class _CustomerImpl extends Customer {
-  _CustomerImpl({
+class _OrganizationImpl extends Organization {
+  _OrganizationImpl({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_i2.Person>? people,
   }) : super._(
           id: id,
           name: name,
-          orders: orders,
+          people: people,
         );
 
   @override
-  Customer copyWith({
+  Organization copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? orders = _Undefined,
+    Object? people = _Undefined,
   }) {
-    return Customer(
+    return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>? ? orders : this.orders?.clone(),
+      people: people is List<_i2.Person>? ? people : this.people?.clone(),
     );
   }
 }
 
-typedef CustomerExpressionBuilder = _i1.Expression Function(CustomerTable);
+typedef OrganizationExpressionBuilder = _i1.Expression Function(
+    OrganizationTable);
 
-class CustomerTable extends _i1.Table {
-  CustomerTable({super.tableRelation}) : super(tableName: 'customer') {
+class OrganizationTable extends _i1.Table {
+  OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     name = _i1.ColumnString(
       'name',
       this,
@@ -255,23 +256,23 @@ class CustomerTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
-  _i1.ManyRelation<_i2.OrderTable>? _orders;
+  _i1.ManyRelation<_i2.PersonTable>? _people;
 
-  _i1.ManyRelation<_i2.OrderTable> get orders {
-    if (_orders != null) return _orders!;
+  _i1.ManyRelation<_i2.PersonTable> get people {
+    if (_people != null) return _people!;
     var relationTable = _i1.createRelationTable(
-      relationFieldName: 'orders',
-      field: Customer.t.id,
-      foreignField: _i2.Order.t.customerId,
+      relationFieldName: 'people',
+      field: Organization.t.id,
+      foreignField: _i2.Person.t.organizationId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrderTable(tableRelation: foreignTableRelation),
+          _i2.PersonTable(tableRelation: foreignTableRelation),
     );
-    _orders = _i1.ManyRelation<_i2.OrderTable>(
+    _people = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
-      table: _i2.Order.t,
+      table: _i2.Person.t,
     );
-    return _orders!;
+    return _people!;
   }
 
   @override
@@ -281,33 +282,33 @@ class CustomerTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use CustomerTable.t instead.')
-CustomerTable tCustomer = CustomerTable();
+@Deprecated('Use OrganizationTable.t instead.')
+OrganizationTable tOrganization = OrganizationTable();
 
-class CustomerInclude extends _i1.Include {
-  CustomerInclude._();
+class OrganizationInclude extends _i1.Include {
+  OrganizationInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
 
   @override
-  _i1.Table get table => Customer.t;
+  _i1.Table get table => Organization.t;
 }
 
-class CustomerRepository {
-  const CustomerRepository._();
+class OrganizationRepository {
+  const OrganizationRepository._();
 
-  final attach = const CustomerAttachRepository._();
+  final attach = const OrganizationAttachRepository._();
 
-  final attachRow = const CustomerAttachRowRepository._();
+  final attachRow = const OrganizationAttachRowRepository._();
 
-  final detach = const CustomerDetachRepository._();
+  final detach = const OrganizationDetachRepository._();
 
-  final detachRow = const CustomerDetachRowRepository._();
+  final detachRow = const OrganizationDetachRowRepository._();
 
-  Future<List<Customer>> find(
+  Future<List<Organization>> find(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -315,8 +316,8 @@ class CustomerRepository {
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<Customer>(
-      where: where?.call(Customer.t),
+    return session.dbNext.find<Organization>(
+      where: where?.call(Organization.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy,
@@ -326,70 +327,70 @@ class CustomerRepository {
     );
   }
 
-  Future<Customer?> findRow(
+  Future<Organization?> findRow(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<Customer>(
-      where: where?.call(Customer.t),
+    return session.dbNext.findRow<Organization>(
+      where: where?.call(Organization.t),
       transaction: transaction,
     );
   }
 
-  Future<Customer?> findById(
+  Future<Organization?> findById(
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<Customer>(
+    return session.dbNext.findById<Organization>(
       id,
       transaction: transaction,
     );
   }
 
-  Future<List<Customer>> insert(
+  Future<List<Organization>> insert(
     _i1.Session session,
-    List<Customer> rows, {
+    List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Customer>(
+    return session.dbNext.insert<Organization>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Customer> insertRow(
+  Future<Organization> insertRow(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Customer>(
+    return session.dbNext.insertRow<Organization>(
       row,
       transaction: transaction,
     );
   }
 
-  Future<List<Customer>> update(
+  Future<List<Organization>> update(
     _i1.Session session,
-    List<Customer> rows, {
+    List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Customer>(
+    return session.dbNext.update<Organization>(
       rows,
       transaction: transaction,
     );
   }
 
-  Future<Customer> updateRow(
+  Future<Organization> updateRow(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Customer>(
+    return session.dbNext.updateRow<Organization>(
       row,
       transaction: transaction,
     );
@@ -397,10 +398,10 @@ class CustomerRepository {
 
   Future<List<int>> delete(
     _i1.Session session,
-    List<Customer> rows, {
+    List<Organization> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Customer>(
+    return session.dbNext.delete<Organization>(
       rows,
       transaction: transaction,
     );
@@ -408,10 +409,10 @@ class CustomerRepository {
 
   Future<int> deleteRow(
     _i1.Session session,
-    Customer row, {
+    Organization row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Customer>(
+    return session.dbNext.deleteRow<Organization>(
       row,
       transaction: transaction,
     );
@@ -419,109 +420,110 @@ class CustomerRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CustomerExpressionBuilder where,
+    required OrganizationExpressionBuilder where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Customer>(
-      where: where(Customer.t),
+    return session.dbNext.deleteWhere<Organization>(
+      where: where(Organization.t),
       transaction: transaction,
     );
   }
 
   Future<int> count(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    OrganizationExpressionBuilder? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Customer>(
-      where: where?.call(Customer.t),
+    return session.dbNext.count<Organization>(
+      where: where?.call(Organization.t),
       limit: limit,
       transaction: transaction,
     );
   }
 }
 
-class CustomerAttachRepository {
-  const CustomerAttachRepository._();
+class OrganizationAttachRepository {
+  const OrganizationAttachRepository._();
 
-  Future<void> orders(
+  Future<void> people(
     _i1.Session session,
-    Customer customer,
-    List<_i2.Order> order,
+    Organization organization,
+    List<_i2.Person> person,
   ) async {
-    if (order.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('order.id');
+    if (person.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('person.id');
     }
-    if (customer.id == null) {
-      throw ArgumentError.notNull('customer.id');
+    if (organization.id == null) {
+      throw ArgumentError.notNull('organization.id');
     }
 
-    var $order = order.map((e) => e.copyWith(customerId: customer.id)).toList();
-    await session.dbNext.update<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
+    var $person =
+        person.map((e) => e.copyWith(organizationId: organization.id)).toList();
+    await session.dbNext.update<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.organizationId],
     );
   }
 }
 
-class CustomerAttachRowRepository {
-  const CustomerAttachRowRepository._();
+class OrganizationAttachRowRepository {
+  const OrganizationAttachRowRepository._();
 
-  Future<void> orders(
+  Future<void> people(
     _i1.Session session,
-    Customer customer,
-    _i2.Order order,
+    Organization organization,
+    _i2.Person person,
   ) async {
-    if (order.id == null) {
-      throw ArgumentError.notNull('order.id');
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
     }
-    if (customer.id == null) {
-      throw ArgumentError.notNull('customer.id');
+    if (organization.id == null) {
+      throw ArgumentError.notNull('organization.id');
     }
 
-    var $order = order.copyWith(customerId: customer.id);
-    await session.dbNext.updateRow<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
+    var $person = person.copyWith(organizationId: organization.id);
+    await session.dbNext.updateRow<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.organizationId],
     );
   }
 }
 
-class CustomerDetachRepository {
-  const CustomerDetachRepository._();
+class OrganizationDetachRepository {
+  const OrganizationDetachRepository._();
 
-  Future<void> orders(
+  Future<void> people(
     _i1.Session session,
-    List<_i2.Order> order,
+    List<_i2.Person> person,
   ) async {
-    if (order.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('order.id');
+    if (person.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('person.id');
     }
 
-    var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.dbNext.update<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
+    var $person = person.map((e) => e.copyWith(organizationId: null)).toList();
+    await session.dbNext.update<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.organizationId],
     );
   }
 }
 
-class CustomerDetachRowRepository {
-  const CustomerDetachRowRepository._();
+class OrganizationDetachRowRepository {
+  const OrganizationDetachRowRepository._();
 
-  Future<void> orders(
+  Future<void> people(
     _i1.Session session,
-    _i2.Order order,
+    _i2.Person person,
   ) async {
-    if (order.id == null) {
-      throw ArgumentError.notNull('order.id');
+    if (person.id == null) {
+      throw ArgumentError.notNull('person.id');
     }
 
-    var $order = order.copyWith(customerId: null);
-    await session.dbNext.updateRow<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
+    var $person = person.copyWith(organizationId: null);
+    await session.dbNext.updateRow<_i2.Person>(
+      $person,
+      columns: [_i2.Person.t.organizationId],
     );
   }
 }

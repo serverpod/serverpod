@@ -371,6 +371,8 @@ class OrderInclude extends _i1.Include {
 class OrderRepository {
   const OrderRepository._();
 
+  final attach = const OrderAttachRepository._();
+
   final attachRow = const OrderAttachRowRepository._();
 
   Future<List<Order>> find(
@@ -516,6 +518,29 @@ class OrderRepository {
   }
 }
 
+class OrderAttachRepository {
+  const OrderAttachRepository._();
+
+  Future<void> items(
+    _i1.Session session,
+    Order order,
+    List<_i2.Comment> comment,
+  ) async {
+    if (comment.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('comment.id');
+    }
+    if (order.id == null) {
+      throw ArgumentError.notNull('order.id');
+    }
+
+    var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
+    await session.dbNext.update<_i2.Comment>(
+      $comment,
+      columns: [_i2.Comment.t.orderId],
+    );
+  }
+}
+
 class OrderAttachRowRepository {
   const OrderAttachRowRepository._();
 
@@ -535,6 +560,25 @@ class OrderAttachRowRepository {
     await session.dbNext.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
+    );
+  }
+
+  Future<void> items(
+    _i1.Session session,
+    Order order,
+    _i2.Comment comment,
+  ) async {
+    if (comment.id == null) {
+      throw ArgumentError.notNull('comment.id');
+    }
+    if (order.id == null) {
+      throw ArgumentError.notNull('order.id');
+    }
+
+    var $comment = comment.copyWith(orderId: order.id);
+    await session.dbNext.updateRow<_i2.Comment>(
+      $comment,
+      columns: [_i2.Comment.t.orderId],
     );
   }
 }

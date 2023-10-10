@@ -20,12 +20,11 @@ CREATE TABLE "citizen" (
 );
 
 --
--- Class Comment as table comment
+-- Class City as table city
 --
-CREATE TABLE "comment" (
+CREATE TABLE "city" (
     "id" serial PRIMARY KEY,
-    "description" text NOT NULL,
-    "orderId" integer NOT NULL
+    "name" text NOT NULL
 );
 
 --
@@ -35,14 +34,6 @@ CREATE TABLE "company" (
     "id" serial PRIMARY KEY,
     "name" text NOT NULL,
     "townId" integer NOT NULL
-);
-
---
--- Class Customer as table customer
---
-CREATE TABLE "customer" (
-    "id" serial PRIMARY KEY,
-    "name" text NOT NULL
 );
 
 --
@@ -133,12 +124,21 @@ CREATE TABLE "object_with_uuid" (
 );
 
 --
--- Class Order as table order
+-- Class Organization as table organization
 --
-CREATE TABLE "order" (
+CREATE TABLE "organization" (
     "id" serial PRIMARY KEY,
-    "description" text NOT NULL,
-    "customerId" integer NOT NULL
+    "name" text NOT NULL
+);
+
+--
+-- Class Person as table person
+--
+CREATE TABLE "person" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL,
+    "organizationId" integer,
+    "_cityCitizensCityId" integer
 );
 
 --
@@ -239,16 +239,6 @@ ALTER TABLE ONLY "citizen"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "comment" table
---
-ALTER TABLE ONLY "comment"
-    ADD CONSTRAINT "comment_fk_0"
-    FOREIGN KEY("orderId")
-    REFERENCES "order"("id")
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION;
-
---
 -- Foreign relations for "company" table
 --
 ALTER TABLE ONLY "company"
@@ -279,12 +269,18 @@ ALTER TABLE ONLY "object_with_self_parent"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "order" table
+-- Foreign relations for "person" table
 --
-ALTER TABLE ONLY "order"
-    ADD CONSTRAINT "order_fk_0"
-    FOREIGN KEY("customerId")
-    REFERENCES "customer"("id")
+ALTER TABLE ONLY "person"
+    ADD CONSTRAINT "person_fk_0"
+    FOREIGN KEY("organizationId")
+    REFERENCES "organization"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "person"
+    ADD CONSTRAINT "person_fk_1"
+    FOREIGN KEY("_cityCitizensCityId")
+    REFERENCES "city"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
@@ -322,9 +318,9 @@ ALTER TABLE ONLY "town"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20231009130339', 2, now())
+    VALUES ('serverpod_test', '20231009124804', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231009130339', "priority" = 2;
+    DO UPDATE SET "version" = '20231009124804', "priority" = 2;
 
 
 COMMIT;

@@ -26,6 +26,18 @@ ALTER TABLE ONLY "citizen"
   ADD CONSTRAINT citizen_pkey PRIMARY KEY (id);
 
 --
+-- Class City as table city
+--
+
+CREATE TABLE "city" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "city"
+  ADD CONSTRAINT city_pkey PRIMARY KEY (id);
+
+--
 -- Class Comment as table comment
 --
 
@@ -199,6 +211,32 @@ ALTER TABLE ONLY "order"
   ADD CONSTRAINT order_pkey PRIMARY KEY (id);
 
 --
+-- Class Organization as table organization
+--
+
+CREATE TABLE "organization" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "organization"
+  ADD CONSTRAINT organization_pkey PRIMARY KEY (id);
+
+--
+-- Class Person as table person
+--
+
+CREATE TABLE "person" (
+  "id" serial,
+  "name" text NOT NULL,
+  "organizationId" integer,
+  "_cityCitizensCityId" integer
+);
+
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_pkey PRIMARY KEY (id);
+
+--
 -- Class Post as table post
 --
 
@@ -369,6 +407,21 @@ ALTER TABLE ONLY "order"
   ADD CONSTRAINT order_fk_0
     FOREIGN KEY("customerId")
       REFERENCES customer(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "person" table
+--
+
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_fk_0
+    FOREIGN KEY("organizationId")
+      REFERENCES organization(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_fk_1
+    FOREIGN KEY("_cityCitizensCityId")
+      REFERENCES city(id)
         ON DELETE CASCADE;
 
 --

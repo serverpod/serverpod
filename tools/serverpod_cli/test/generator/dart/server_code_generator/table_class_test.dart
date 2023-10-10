@@ -395,7 +395,8 @@ void main() {
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
-          .withListObjectRelationField(relationFieldName, objectRelationType)
+          .withListRelationField(
+              relationFieldName, objectRelationType, 'companyId')
           .build()
     ];
 
