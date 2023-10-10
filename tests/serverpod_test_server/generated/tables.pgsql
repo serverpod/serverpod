@@ -26,6 +26,19 @@ ALTER TABLE ONLY "citizen"
   ADD CONSTRAINT citizen_pkey PRIMARY KEY (id);
 
 --
+-- Class Comment as table comment
+--
+
+CREATE TABLE "comment" (
+  "id" serial,
+  "description" text NOT NULL,
+  "orderId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "comment"
+  ADD CONSTRAINT comment_pkey PRIMARY KEY (id);
+
+--
 -- Class Company as table company
 --
 
@@ -37,6 +50,18 @@ CREATE TABLE "company" (
 
 ALTER TABLE ONLY "company"
   ADD CONSTRAINT company_pkey PRIMARY KEY (id);
+
+--
+-- Class Customer as table customer
+--
+
+CREATE TABLE "customer" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "customer"
+  ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
 
 --
 -- Class ObjectFieldScopes as table object_field_scopes
@@ -159,6 +184,19 @@ CREATE TABLE "object_with_uuid" (
 
 ALTER TABLE ONLY "object_with_uuid"
   ADD CONSTRAINT object_with_uuid_pkey PRIMARY KEY (id);
+
+--
+-- Class Order as table order
+--
+
+CREATE TABLE "order" (
+  "id" serial,
+  "description" text NOT NULL,
+  "customerId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "order"
+  ADD CONSTRAINT order_pkey PRIMARY KEY (id);
 
 --
 -- Class Post as table post
@@ -284,6 +322,16 @@ ALTER TABLE ONLY "citizen"
         ON DELETE CASCADE;
 
 --
+-- Foreign relations for "comment" table
+--
+
+ALTER TABLE ONLY "comment"
+  ADD CONSTRAINT comment_fk_0
+    FOREIGN KEY("orderId")
+      REFERENCES order(id)
+        ON DELETE CASCADE;
+
+--
 -- Foreign relations for "company" table
 --
 
@@ -311,6 +359,16 @@ ALTER TABLE ONLY "object_with_self_parent"
   ADD CONSTRAINT object_with_self_parent_fk_0
     FOREIGN KEY("other")
       REFERENCES object_with_self_parent(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "order" table
+--
+
+ALTER TABLE ONLY "order"
+  ADD CONSTRAINT order_fk_0
+    FOREIGN KEY("customerId")
+      REFERENCES customer(id)
         ON DELETE CASCADE;
 
 --
