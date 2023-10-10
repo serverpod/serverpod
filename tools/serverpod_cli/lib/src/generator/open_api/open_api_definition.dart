@@ -139,10 +139,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
     ProtocolDefinition protocolDefinition) {
   Set<PathsObject> paths = {};
   for (var endpoint in protocolDefinition.endpoints) {
-    /// example ```['api','v1',] => api/v1/```
-    var extraPath = endpoint.subDirParts.isEmpty
-        ? '/'
-        : "/${endpoint.subDirParts.join('/')}/";
+    var extraPath = getExtraPath(endpoint.subDirParts);
 
     for (var method in endpoint.methods) {
       String? description = method.documentationComment;
@@ -168,7 +165,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
           serverpodAuth,
         },
 
-        /// No need in OpeApi 2.0
+        // No need in OpeApi 2.0
         parameters: [],
 
         requestBody: RequestBodyObject(
@@ -181,7 +178,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
       );
 
       var pathsObject = PathsObject(
-        pathName: '$extraPath${endpoint.name}/${method.name}',
+        pathName: '/$extraPath/${endpoint.name}/${method.name}',
         path: pathItemObject,
       );
       paths.add(pathsObject);
@@ -190,7 +187,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
   return paths;
 }
 
-/// Get a set of tags from protocol definition.
+/// Get a set of [TagObject] from protocol definition.
 Set<TagObject> _getTagsFromProtocolDefinition(
     ProtocolDefinition protocolDefinition) {
   Set<TagObject> tags = {};
@@ -204,6 +201,7 @@ Set<TagObject> _getTagsFromProtocolDefinition(
   return tags;
 }
 
+/// Get a set of [ComponentSchemaObject] from entities
 /// example```
 ///   Set<SchemaObject> schemas =
 ///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);

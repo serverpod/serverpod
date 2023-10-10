@@ -63,10 +63,6 @@ class ServerObject {
     if (description != null) {
       map['description'] = description!;
     }
-    if (variables != null) {
-      // TODO : implement server variable object
-    }
-
     return map;
   }
 }
@@ -74,7 +70,6 @@ class ServerObject {
 /// An object representing a Server Variable for server URL template
 /// substitution.
 class ServerVariableObject {
-  /// key - [enum]
   final List<String>? enumField;
 
   /// The default value to use for substitution, which SHALL be sent if an

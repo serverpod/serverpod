@@ -4,6 +4,10 @@ String _getRef(String ref) {
   return '#/components/schemas/$ref';
 }
 
+/// Convert dir parts to path. example ```['api','v1',] => api/v1/```
+String getExtraPath(List<String> subDirParts) =>
+    subDirParts.isEmpty ? '' : "/${subDirParts.join('/')}";
+
 /// The location of the parameter. Possible values are "query", "header",
 /// "path" or "cookie".
 enum ParameterLocation {
@@ -39,8 +43,6 @@ enum SchemaObjectType {
   integer,
   number,
   array,
-  // nullType,
-  // enumType,
   boolean,
 
   ///eg [Map] mark as other

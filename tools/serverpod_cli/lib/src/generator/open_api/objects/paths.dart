@@ -18,7 +18,7 @@ class PathsObject {
   });
 
   Map<String, dynamic> toJson() {
-    return {'/$pathName': path ?? {}};
+    return {pathName: path!.toJson()};
   }
 }
 

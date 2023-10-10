@@ -13,6 +13,6 @@ part 'objects/response.dart';
 part 'objects/request.dart';
 part 'objects/content.dart';
 part 'objects/parameter.dart';
-part 'objects/utils.dart';
+part 'helpers/utils.dart';
 part 'objects/operation.dart';
-part 'objects/extensions.dart';
+part 'helpers/extensions.dart';
