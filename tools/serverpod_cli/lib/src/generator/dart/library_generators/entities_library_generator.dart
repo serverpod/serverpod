@@ -256,7 +256,7 @@ class SerializableEntityLibraryGenerator {
         ..fields.addAll(hiddenFields.map((field) {
           return Field((fieldBuilder) {
             fieldBuilder
-              ..name = createHiddenFieldName(serverCode, field)
+              ..name = createFieldName(serverCode, field)
               ..type = field.type.reference(
                 serverCode,
                 config: config,
@@ -285,7 +285,7 @@ class SerializableEntityLibraryGenerator {
             ..optionalParameters.addAll(hiddenFields.map((field) {
               return Parameter(
                 (p) => p
-                  ..name = createHiddenFieldName(serverCode, field)
+                  ..name = createFieldName(serverCode, field)
                   ..named = true
                   ..toThis = true,
               );
@@ -300,7 +300,7 @@ class SerializableEntityLibraryGenerator {
               ..type = refer(className)))
             ..optionalParameters.addAll(hiddenFields.map((field) {
               return Parameter((p) => p
-                ..name = createHiddenFieldName(serverCode, field)
+                ..name = createFieldName(serverCode, field)
                 ..named = true
                 ..type = field.type.reference(serverCode, config: config));
             }))
@@ -318,8 +318,8 @@ class SerializableEntityLibraryGenerator {
                     ...hiddenFields.fold({}, (map, field) {
                       return {
                         ...map,
-                        createHiddenFieldName(serverCode, field):
-                            refer(createHiddenFieldName(serverCode, field)),
+                        createFieldName(serverCode, field):
+                            refer(createFieldName(serverCode, field)),
                       };
                     })
                   })
@@ -342,7 +342,7 @@ class SerializableEntityLibraryGenerator {
               var values = hiddenFields.fold({}, (map, field) {
                 return {
                   ...map,
-                  "'${field.name}'": createHiddenFieldName(serverCode, field),
+                  "'${field.name}'": createFieldName(serverCode, field),
                 };
               });
 
@@ -1382,7 +1382,7 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(createHiddenFieldName(serverCode, field))
+              refer(createFieldName(serverCode, field))
         ]).code,
     );
   }
@@ -1400,7 +1400,7 @@ class SerializableEntityLibraryGenerator {
         tableFields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = createHiddenFieldName(serverCode, field)
+          ..name = createFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1654,7 +1654,7 @@ class SerializableEntityLibraryGenerator {
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
-            refer(createHiddenFieldName(serverCode, field))
+            refer(createFieldName(serverCode, field))
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
