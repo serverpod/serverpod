@@ -14,12 +14,14 @@ abstract class City extends _i1.TableRow {
     int? id,
     required this.name,
     this.citizens,
+    this.organizations,
   }) : super(id);
 
   factory City({
     int? id,
     required String name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   }) = _CityImpl;
 
   factory City.fromJson(
@@ -31,6 +33,8 @@ abstract class City extends _i1.TableRow {
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       citizens: serializationManager
           .deserialize<List<_i2.Person>?>(jsonSerialization['citizens']),
+      organizations: serializationManager.deserialize<List<_i2.Organization>?>(
+          jsonSerialization['organizations']),
     );
   }
 
@@ -42,6 +46,8 @@ abstract class City extends _i1.TableRow {
 
   List<_i2.Person>? citizens;
 
+  List<_i2.Organization>? organizations;
+
   @override
   _i1.Table get table => t;
 
@@ -49,6 +55,7 @@ abstract class City extends _i1.TableRow {
     int? id,
     String? name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -56,6 +63,7 @@ abstract class City extends _i1.TableRow {
       'id': id,
       'name': name,
       'citizens': citizens,
+      'organizations': organizations,
     };
   }
 
@@ -74,6 +82,7 @@ abstract class City extends _i1.TableRow {
       'id': id,
       'name': name,
       'citizens': citizens,
+      'organizations': organizations,
     };
   }
 
@@ -211,8 +220,8 @@ abstract class City extends _i1.TableRow {
     );
   }
 
-  static CityInclude include() {
-    return CityInclude._();
+  static CityInclude include({_i2.PersonIncludeList? citizens}) {
+    return CityInclude._(citizens: citizens);
   }
 }
 
@@ -223,10 +232,12 @@ class _CityImpl extends City {
     int? id,
     required String name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   }) : super._(
           id: id,
           name: name,
           citizens: citizens,
+          organizations: organizations,
         );
 
   @override
@@ -234,12 +245,16 @@ class _CityImpl extends City {
     Object? id = _Undefined,
     String? name,
     Object? citizens = _Undefined,
+    Object? organizations = _Undefined,
   }) {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       citizens:
           citizens is List<_i2.Person>? ? citizens : this.citizens?.clone(),
+      organizations: organizations is List<_i2.Organization>?
+          ? organizations
+          : this.organizations?.clone(),
     );
   }
 }
@@ -280,16 +295,40 @@ class CityTable extends _i1.Table {
         id,
         name,
       ];
+
+  _i2.PersonTable get __citizens {
+    return _i1.createRelationTable<_i2.PersonTable>(
+      relationFieldName: 'citizens',
+      field: City.t.id,
+      tableRelation: tableRelation,
+      foreignField: _i2.Person.t.$_cityCitizensCityId,
+      createTable: (foreignTableRelation) =>
+          _i2.PersonTable(tableRelation: foreignTableRelation),
+    );
+  }
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'citizens') {
+      return __citizens;
+    }
+
+    return null;
+  }
 }
 
 @Deprecated('Use CityTable.t instead.')
 CityTable tCity = CityTable();
 
-class CityInclude extends _i1.Include {
-  CityInclude._();
+class CityInclude extends _i1.IncludeObject {
+  CityInclude._({this.citizens});
+
+  _i2.PersonIncludeList? citizens;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {
+        'citizens': citizens,
+      };
 
   @override
   _i1.Table get table => City.t;
@@ -315,6 +354,7 @@ class CityRepository {
     bool orderDescending = false,
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
+    CityInclude? include,
   }) async {
     return session.dbNext.find<City>(
       where: where?.call(City.t),
@@ -324,6 +364,7 @@ class CityRepository {
       orderByList: orderByList,
       orderDescending: orderDescending,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -334,10 +375,12 @@ class CityRepository {
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    CityInclude? include,
   }) async {
     return session.dbNext.findRow<City>(
       where: where?.call(City.t),
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -345,10 +388,12 @@ class CityRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    CityInclude? include,
   }) async {
     return session.dbNext.findById<City>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -469,6 +514,26 @@ class CityAttachRepository {
       columns: [_i2.Person.t.$_cityCitizensCityId],
     );
   }
+
+  Future<void> organizations(
+    _i1.Session session,
+    City city,
+    List<_i2.Organization> organization,
+  ) async {
+    if (organization.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('organization.id');
+    }
+    if (city.id == null) {
+      throw ArgumentError.notNull('city.id');
+    }
+
+    var $organization =
+        organization.map((e) => e.copyWith(cityId: city.id)).toList();
+    await session.dbNext.update<_i2.Organization>(
+      $organization,
+      columns: [_i2.Organization.t.cityId],
+    );
+  }
 }
 
 class CityAttachRowRepository {
@@ -495,6 +560,25 @@ class CityAttachRowRepository {
       columns: [_i2.Person.t.$_cityCitizensCityId],
     );
   }
+
+  Future<void> organizations(
+    _i1.Session session,
+    City city,
+    _i2.Organization organization,
+  ) async {
+    if (organization.id == null) {
+      throw ArgumentError.notNull('organization.id');
+    }
+    if (city.id == null) {
+      throw ArgumentError.notNull('city.id');
+    }
+
+    var $organization = organization.copyWith(cityId: city.id);
+    await session.dbNext.updateRow<_i2.Organization>(
+      $organization,
+      columns: [_i2.Organization.t.cityId],
+    );
+  }
 }
 
 class CityDetachRepository {
@@ -519,6 +603,22 @@ class CityDetachRepository {
       columns: [_i2.Person.t.$_cityCitizensCityId],
     );
   }
+
+  Future<void> organizations(
+    _i1.Session session,
+    List<_i2.Organization> organization,
+  ) async {
+    if (organization.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('organization.id');
+    }
+
+    var $organization =
+        organization.map((e) => e.copyWith(cityId: null)).toList();
+    await session.dbNext.update<_i2.Organization>(
+      $organization,
+      columns: [_i2.Organization.t.cityId],
+    );
+  }
 }
 
 class CityDetachRowRepository {
@@ -539,6 +639,21 @@ class CityDetachRowRepository {
     await session.dbNext.updateRow<_i2.Person>(
       $person,
       columns: [_i2.Person.t.$_cityCitizensCityId],
+    );
+  }
+
+  Future<void> organizations(
+    _i1.Session session,
+    _i2.Organization organization,
+  ) async {
+    if (organization.id == null) {
+      throw ArgumentError.notNull('organization.id');
+    }
+
+    var $organization = organization.copyWith(cityId: null);
+    await session.dbNext.updateRow<_i2.Organization>(
+      $organization,
+      columns: [_i2.Organization.t.cityId],
     );
   }
 }

@@ -242,6 +242,26 @@ abstract class Person extends _i1.TableRow {
   static PersonInclude include({_i2.OrganizationInclude? organization}) {
     return PersonInclude._(organization: organization);
   }
+
+  static PersonIncludeList includeList({
+    PersonExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    PersonInclude? include,
+  }) {
+    return PersonIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
+  }
 }
 
 class _Undefined {}
@@ -374,7 +394,7 @@ class PersonTable extends _i1.Table {
 @Deprecated('Use PersonTable.t instead.')
 PersonTable tPerson = PersonTable();
 
-class PersonInclude extends _i1.Include {
+class PersonInclude extends _i1.IncludeObject {
   PersonInclude._({_i2.OrganizationInclude? organization}) {
     _organization = organization;
   }
@@ -383,6 +403,38 @@ class PersonInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {'organization': _organization};
+
+  @override
+  _i1.Table get table => Person.t;
+}
+
+class PersonIncludeList extends _i1.IncludeList {
+  PersonIncludeList._({
+    this.where,
+    this.limit,
+    this.offset,
+    this.orderBy,
+    this.orderDescending = false,
+    this.orderByList,
+    this.include,
+  });
+
+  final PersonExpressionBuilder? where;
+
+  final int? limit;
+
+  final int? offset;
+
+  final _i1.Column? orderBy;
+
+  final bool orderDescending;
+
+  final List<_i1.Order>? orderByList;
+
+  final PersonInclude? include;
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => Person.t;
