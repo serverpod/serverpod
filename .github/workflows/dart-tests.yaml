@@ -80,7 +80,7 @@ jobs:
       matrix:
         flutter-version: ['3.7.0', '3.10.0']
         os: [windows-latest, ubuntu-latest]
-        path: ['tools/serverpod_cli', 'packages/serverpod']
+        path: ['tools/serverpod_cli', 'packages/serverpod', 'packages/serverpod_serialization', 'tests/serverpod_test_client', 'tests/serverpod_test_server']
 
     steps:
       - uses: actions/checkout@v3
