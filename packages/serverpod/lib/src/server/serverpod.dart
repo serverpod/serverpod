@@ -562,7 +562,7 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  Future<void> shutdown() async {
+  Future<void> shutdown({bool exitProcess = true}) async {
     if (redisController != null) {
       await redisController!.stop();
     }
@@ -570,7 +570,9 @@ class Serverpod {
     _serviceServer?.shutdown();
     _futureCallManager.stop();
     _healthCheckManager.stop;
-    exit(0);
+    if (exitProcess) {
+      exit(0);
+    }
   }
 
   /// Logs a message to the console if the logging command line argument is set

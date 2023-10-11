@@ -12,7 +12,7 @@ void applyMigrationTestFiles(String version) {
   var packageDirectory = Directory.current;
   var migrationDirectory = Directory(path.join(
     packageDirectory.path,
-    'test',
+    'test_e2e',
     'migration_test_files',
     version,
   ));

@@ -80,7 +80,7 @@ jobs:
       matrix:
         flutter-version: ['3.7.0', '3.10.0']
         os: [windows-latest, ubuntu-latest]
-        path: ['tools/serverpod_cli', 'packages/serverpod']
+        path: ['tools/serverpod_cli', 'packages/serverpod', 'packages/serverpod_serialization', 'tests/serverpod_test_client', 'tests/serverpod_test_server']
 
     steps:
       - uses: actions/checkout@v3
@@ -105,6 +105,21 @@ jobs:
 
       - name: Run single server tests
         run: util/run_tests_single_server
+
+  integration_tests:
+    name: Serverpod integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Run integration tests
+        run: util/run_tests_integration
 
   cli_tests:
     name: CLI tests
