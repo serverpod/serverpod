@@ -107,8 +107,8 @@ class OpenApiDefinition {
     };
 
     return OpenApiDefinition(
-      info: infoObject,
-      servers: servers,
+      info: config.openApiInfo ?? infoObject,
+      servers: config.servers.isNotEmpty ? config.servers : servers,
       tags: tags,
       paths: paths,
       components: componentsObject,
@@ -178,7 +178,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
       );
 
       var pathsObject = PathsObject(
-        pathName: '/$extraPath/${endpoint.name}/${method.name}',
+        pathName: '$extraPath/${endpoint.name}/${method.name}',
         path: pathItemObject,
       );
       paths.add(pathsObject);

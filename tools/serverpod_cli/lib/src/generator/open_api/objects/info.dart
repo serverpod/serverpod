@@ -53,6 +53,14 @@ class InfoObject {
     required this.version,
   });
 
+  factory InfoObject.fromJson(Map<String, dynamic> map) {
+    return InfoObject(
+      title: map['title'],
+      version: map['version'],
+      description: map['description'],
+    );
+  }
+
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
       'title': title,

@@ -77,7 +77,11 @@ Map<String, dynamic> dartPrimitiveDataTypeToJson(TypeDefinition type,
 Map<String, dynamic> customClassToJson(TypeDefinition type,
     [bool child = false]) {
   Map<String, dynamic> map = {};
-  if (!child) map['type'] = SchemaObjectType.object.name;
+
+  if (!child) map['type'] = type.toSchemaObjectType.name;
+
+  /// If type is Duration,DateTime,etc return map.
+  if (type.toSchemaObjectType == SchemaObjectType.string) return map;
   map['\$ref'] =
       _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
   if (type.nullable && !child) map['nullable'] = true;

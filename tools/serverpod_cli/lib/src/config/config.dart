@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:source_span/source_span.dart';
@@ -34,6 +36,8 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required this.modules,
     required this.extraClasses,
+    this.servers = const {},
+    this.openApiInfo,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -114,6 +118,13 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// A list of server for OpenApi retrieved from the
+  /// config.
+  final Set<ServerObject> servers;
+
+  /// H0lds the openapi information retrieved from the config.
+  final InfoObject? openApiInfo;
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
@@ -136,6 +147,51 @@ class GeneratorConfig {
     }
     var serverPackage = pubspec['name'];
     var name = _stripPackage(serverPackage);
+    Map? baseConfig;
+    Set<ServerObject> servers = {};
+    InfoObject? openApiInfo;
+    try {
+      var file = File(
+        p.join(dir, 'config', 'base.yaml'),
+      );
+      var yamlStr = file.readAsStringSync();
+      baseConfig = loadYaml(yamlStr) as YamlMap;
+      if (baseConfig.isNotEmpty) {
+        var configs = jsonDecode(jsonEncode(baseConfig));
+        var serverMap = configs['servers'];
+
+        if (serverMap.isNotEmpty) {
+          try {
+            servers = serverMap.entries
+                .map<ServerObject>(
+                  (entry) => ServerObject(
+                    url: _getUrl(entry.value),
+                    description: entry.key,
+                  ),
+                )
+                .toSet();
+          } catch (e, s) {
+            log.error(
+                '$e. Invalid value in "servers". Please check the "servers" value in the "config/base.yaml"',
+                stackTrace: s);
+            return null;
+          }
+        }
+        Map openApiMap = configs['openapi'];
+        if (openApiMap.isNotEmpty) {
+          try {
+            openApiInfo = InfoObject.fromJson(openApiMap['info']);
+          } catch (e, s) {
+            log.error(
+                '$e. Invalid value in "info". Please check the "info" value in the "config/base.yaml"',
+                stackTrace: s);
+            return null;
+          }
+        }
+      }
+    } catch (_) {
+      log.debug('Failed to load config/base.yaml');
+    }
 
     Map? generatorConfig;
     try {
@@ -247,15 +303,18 @@ class GeneratorConfig {
     }
 
     return GeneratorConfig(
-        name: name,
-        type: type,
-        serverPackage: serverPackage,
-        dartClientPackage: dartClientPackage,
-        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
-        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-        modules: modules,
-        extraClasses: extraClasses);
+      name: name,
+      type: type,
+      serverPackage: serverPackage,
+      dartClientPackage: dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      modules: modules,
+      extraClasses: extraClasses,
+      servers: servers,
+      openApiInfo: openApiInfo,
+    );
   }
 
   @override
@@ -327,4 +386,12 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+/// Get [Uri] from publicHost/port and publicScheme.
+Uri _getUrl(Map<String, dynamic> value) {
+  if (value['publicScheme'] == 'http') {
+    return Uri.http("${value['publicHost']}:${value['publicPort']}");
+  }
+  return Uri.https(value['publicHost']);
 }

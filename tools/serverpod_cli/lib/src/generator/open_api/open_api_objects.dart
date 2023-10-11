@@ -1,6 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 
 part 'objects/components.dart';
 part 'objects/paths.dart';
