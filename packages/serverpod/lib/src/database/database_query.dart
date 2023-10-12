@@ -49,6 +49,7 @@ class SelectQueryBuilder {
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
     var groupBy = _buildGroupByQuery(selectColumns, orderBy: _orderBy);
     var where = _buildWhereQuery(where: _where);
+    var orderBy = _buildOrderByQuery(orderBy: _orderBy);
 
     var query = '';
     if (subQueries != null) query += '$subQueries ';
@@ -56,11 +57,8 @@ class SelectQueryBuilder {
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
-    if (groupBy != null) query += ' $groupBy';
-    if (_orderBy != null) {
-      query +=
-          ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
-    }
+    if (groupBy != null) query += ' GROUP BY $groupBy';
+    if (orderBy != null) query += ' ORDER BY $orderBy';
     if (_limit != null) query += ' LIMIT $_limit';
     if (_offset != null) query += ' OFFSET $_offset';
 
@@ -358,7 +356,7 @@ String? _buildGroupByQuery(
     return null;
   }
 
-  return 'GROUP BY ${selectFields.map((column) => '"${column.queryAlias}"').join(', ')}';
+  return selectFields.map((column) => '"${column.queryAlias}"').join(', ');
 }
 
 String? _buildWhereQuery({Expression? where}) {
@@ -422,6 +420,36 @@ String? _buildSubQueries({List<Order>? orderBy}) {
   }
 
   return 'WITH ${subQueries.entries.map((e) => '"${e.key}" AS (${e.value})').join(', ')}';
+}
+
+String? _buildOrderByQuery({List<Order>? orderBy}) {
+  if (orderBy == null) {
+    return null;
+  }
+
+  return orderBy.map((order) {
+    var str = '';
+
+    var column = order.column;
+    if (column is ColumnCount) {
+      str = _buildCountColumnString(column);
+    } else {
+      str = '$column';
+    }
+
+    if (order.orderDescending) str += ' DESC';
+
+    return str;
+  }).join(', ');
+}
+
+String _buildCountColumnString(ColumnCount column) {
+  if (column.innerWhere != null) {
+    // If column is filtered then we want to use the result from the sub query
+    return 'COUNT(${column.table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
+  }
+
+  return 'COUNT($column)';
 }
 
 LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {

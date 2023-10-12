@@ -9,7 +9,7 @@ void main() {
     test(
         'when toString is called then column name withing count expression is returned.',
         () {
-      expect(column.toString(), 'COUNT("test"."${table.id.columnName}")');
+      expect(column.toString(), '"test"."${table.id.columnName}"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
