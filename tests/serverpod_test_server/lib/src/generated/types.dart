@@ -371,10 +371,7 @@ class _TypesImpl extends Types {
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
-  TypesTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'types') {
+  TypesTable({super.tableRelation}) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
       this,

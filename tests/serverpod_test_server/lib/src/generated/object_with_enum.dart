@@ -304,10 +304,8 @@ typedef ObjectWithEnumExpressionBuilder = _i1.Expression Function(
     ObjectWithEnumTable);
 
 class ObjectWithEnumTable extends _i1.Table {
-  ObjectWithEnumTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_with_enum') {
+  ObjectWithEnumTable({super.tableRelation})
+      : super(tableName: 'object_with_enum') {
     testEnum = _i1.ColumnEnum<_i2.TestEnum>(
       'testEnum',
       this,

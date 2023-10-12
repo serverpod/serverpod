@@ -254,10 +254,8 @@ typedef GoogleRefreshTokenExpressionBuilder = _i1.Expression Function(
     GoogleRefreshTokenTable);
 
 class GoogleRefreshTokenTable extends _i1.Table {
-  GoogleRefreshTokenTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_google_refresh_token') {
+  GoogleRefreshTokenTable({super.tableRelation})
+      : super(tableName: 'serverpod_google_refresh_token') {
     userId = _i1.ColumnInt(
       'userId',
       this,

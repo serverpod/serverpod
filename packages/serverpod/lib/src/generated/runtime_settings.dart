@@ -293,10 +293,8 @@ typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
     RuntimeSettingsTable);
 
 class RuntimeSettingsTable extends _i1.Table {
-  RuntimeSettingsTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_runtime_settings') {
+  RuntimeSettingsTable({super.tableRelation})
+      : super(tableName: 'serverpod_runtime_settings') {
     logSettings = _i1.ColumnSerializable(
       'logSettings',
       this,

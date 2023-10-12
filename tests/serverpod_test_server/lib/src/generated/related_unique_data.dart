@@ -275,10 +275,8 @@ typedef RelatedUniqueDataExpressionBuilder = _i1.Expression Function(
     RelatedUniqueDataTable);
 
 class RelatedUniqueDataTable extends _i1.Table {
-  RelatedUniqueDataTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'related_unique_data') {
+  RelatedUniqueDataTable({super.tableRelation})
+      : super(tableName: 'related_unique_data') {
     uniqueDataId = _i1.ColumnInt(
       'uniqueDataId',
       this,
@@ -298,22 +296,12 @@ class RelatedUniqueDataTable extends _i1.Table {
   _i2.UniqueDataTable get uniqueData {
     if (_uniqueData != null) return _uniqueData!;
     _uniqueData = _i1.createRelationTable(
-      queryPrefix: queryPrefix,
-      fieldName: 'uniqueData',
-      foreignTableName: _i2.UniqueData.t.tableName,
-      column: uniqueDataId,
-      foreignColumnName: _i2.UniqueData.t.id.columnName,
-      createTable: (
-        relationQueryPrefix,
-        foreignTableRelation,
-      ) =>
-          _i2.UniqueDataTable(
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          ...?tableRelations,
-          foreignTableRelation,
-        ],
-      ),
+      relationFieldName: 'uniqueData',
+      field: RelatedUniqueData.t.uniqueDataId,
+      foreignField: _i2.UniqueData.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.UniqueDataTable(tableRelation: foreignTableRelation),
     );
     return _uniqueData!;
   }
@@ -504,20 +492,20 @@ class RelatedUniqueDataAttachRowRepository {
 
   Future<void> uniqueData(
     _i1.Session session,
-    RelatedUniqueData relateduniquedata,
+    RelatedUniqueData relatedUniqueData,
     _i2.UniqueData uniqueData,
   ) async {
-    if (relateduniquedata.id == null) {
-      throw ArgumentError.notNull('relateduniquedata.id');
+    if (relatedUniqueData.id == null) {
+      throw ArgumentError.notNull('relatedUniqueData.id');
     }
     if (uniqueData.id == null) {
       throw ArgumentError.notNull('uniqueData.id');
     }
 
-    var $relateduniquedata =
-        relateduniquedata.copyWith(uniqueDataId: uniqueData.id);
+    var $relatedUniqueData =
+        relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
     await session.dbNext.updateRow<RelatedUniqueData>(
-      $relateduniquedata,
+      $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
     );
   }

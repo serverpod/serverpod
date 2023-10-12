@@ -252,10 +252,7 @@ class _ChannelImpl extends Channel {
 typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
 
 class ChannelTable extends _i1.Table {
-  ChannelTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'channel') {
+  ChannelTable({super.tableRelation}) : super(tableName: 'channel') {
     name = _i1.ColumnString(
       'name',
       this,

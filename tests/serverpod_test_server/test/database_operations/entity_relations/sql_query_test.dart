@@ -5,7 +5,7 @@ import '../../../../../packages/serverpod/lib/src/database/database_query.dart';
 void main() {
   group('Given nested relations when building shallow include sql query', () {
     test('then query only joins what is included.', () {
-      var query = SelectQueryBuilder(table: Citizen.t.tableName)
+      var query = SelectQueryBuilder(table: Citizen.t)
           .withSelectFields(Citizen.t.columns)
           .withInclude(
             Citizen.include(
@@ -18,16 +18,15 @@ void main() {
           query,
           '''
 SELECT
- citizen."id" AS "citizen.id",
- citizen."name" AS "citizen.name",
- citizen."companyId" AS "citizen.companyId",
- citizen."oldCompanyId" AS "citizen.oldCompanyId",
- citizen."_companyEmployeesCompanyId" AS "citizen._companyEmployeesCompanyId",
- citizen_company_company."id" AS "citizen_company_company.id",
- citizen_company_company."name" AS "citizen_company_company.name",
- citizen_company_company."townId" AS "citizen_company_company.townId" 
+ "citizen"."id" AS "citizen.id",
+ "citizen"."name" AS "citizen.name",
+ "citizen"."companyId" AS "citizen.companyId",
+ "citizen"."oldCompanyId" AS "citizen.oldCompanyId",
+ "citizen_company_company"."id" AS "citizen_company_company.id",
+ "citizen_company_company"."name" AS "citizen_company_company.name",
+ "citizen_company_company"."townId" AS "citizen_company_company.townId" 
 FROM "citizen" 
-LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id"
+LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id"
 '''
               .replaceAll("\n", ""));
     });

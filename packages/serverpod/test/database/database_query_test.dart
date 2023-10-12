@@ -3,38 +3,112 @@ import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 import 'package:test/test.dart';
 
-void main() {
-  group('Given SelectQueryBuilder', () {
-    test('when default initialized then build outputs a valid SQL query.', () {
-      var query = SelectQueryBuilder(table: 'citizen').build();
+class _TableWithoutFields extends Table {
+  _TableWithoutFields() : super(tableName: 'table');
 
-      expect(query, 'SELECT * FROM "citizen"');
+  @override
+  List<Column> get columns => [];
+}
+
+class _TableWithManyRelation extends Table {
+  final String _relationAlias;
+  _TableWithManyRelation(
+      {required String relationAlias,
+      required super.tableName,
+      super.tableRelation})
+      : _relationAlias = relationAlias;
+
+  ManyRelation<_TableWithManyRelation>? _manyRelation;
+  ManyRelation<_TableWithManyRelation> get manyRelation {
+    if (_manyRelation != null) return _manyRelation!;
+
+    var relationTable = createRelationTable(
+      relationFieldName: _relationAlias,
+      field: id,
+      foreignField:
+          id /* This should really be something different than the "id" column but by reusing it we are saved from creating a different table. */,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) => _TableWithManyRelation(
+        relationAlias: _relationAlias,
+        tableName: tableName,
+        tableRelation: foreignTableRelation,
+      ),
+    );
+
+    _manyRelation = ManyRelation<_TableWithManyRelation>(
+        tableWithRelations: relationTable,
+        table: _TableWithManyRelation(
+          relationAlias: _relationAlias,
+          tableName: tableName,
+        ));
+    return _manyRelation!;
+  }
+
+  @override
+  List<Column> get columns => [id];
+}
+
+void main() {
+  var citizenTable = Table(tableName: 'citizen');
+  var companyTable = Table(tableName: 'company');
+
+  group('Given SelectQueryBuilder', () {
+    test(
+        'when initialized with table without fields then argument error is thrown',
+        () {
+      expect(
+          () => SelectQueryBuilder(table: _TableWithoutFields()),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument (table): Must have at least one column: Instance of \'_TableWithoutFields\''),
+          )));
+    });
+
+    test(
+        'when trying to set select fields to empty list then argument error is thrown',
+        () {
+      expect(
+          () => SelectQueryBuilder(table: citizenTable).withSelectFields([]),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument (fields): Cannot be empty: Instance(length:0) of \'_GrowableList\''),
+          )));
+    });
+
+    test('when default initialized then build outputs a valid SQL query.', () {
+      var query = SelectQueryBuilder(table: citizenTable).build();
+
+      expect(query, 'SELECT "citizen"."id" AS "citizen.id" FROM "citizen"');
     });
 
     test('when query with specific fields is built then output selects fields.',
         () {
-      var table = Table(tableName: 'citizen');
       var fields = [
-        ColumnString('id', table),
-        ColumnString('name', table),
-        ColumnString('age', table),
+        ColumnString('id', citizenTable),
+        ColumnString('name', citizenTable),
+        ColumnString('age', citizenTable),
       ];
-      var query = SelectQueryBuilder(table: table.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withSelectFields(fields)
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen"');
+          'SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen"');
     });
 
     test(
         'when query with simple where expression is built then output is a WHERE query.',
         () {
-      var query = SelectQueryBuilder(table: 'citizen')
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT * FROM "citizen" WHERE "test"=@test');
+      expect(query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "test"=@test');
     });
 
     test(
@@ -44,125 +118,152 @@ void main() {
       var expression2 = const Expression('FALSE = FALSE');
       var combinedExpression = expression1 & expression2;
 
-      var query = SelectQueryBuilder(table: 'citizen')
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(combinedExpression)
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" WHERE (TRUE = TRUE AND FALSE = FALSE)');
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE (TRUE = TRUE AND FALSE = FALSE)');
     });
 
     test(
         'when query with single order by is built then output is single order by query.',
         () {
-      var table = Table(tableName: 'citizen');
       Order order = Order(
-        column: ColumnString('id', table),
+        column: ColumnString('id', citizenTable),
         orderDescending: false,
       );
 
-      var query = SelectQueryBuilder(table: table.tableName)
-          .withOrderBy([order]).build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
-      expect(query, 'SELECT * FROM "citizen" ORDER BY citizen."id"');
+      expect(query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id"');
     });
 
     test(
         'when query with multiple order by is built then output is query with multiple order by requirements.',
         () {
-      var table = Table(tableName: 'citizen');
       var orders = [
         Order(
-          column: ColumnString('id', table),
+          column: ColumnString('id', citizenTable),
           orderDescending: false,
         ),
         Order(
-          column: ColumnString('name', table),
+          column: ColumnString('name', citizenTable),
           orderDescending: true,
         ),
         Order(
-          column: ColumnString('age', table),
+          column: ColumnString('age', citizenTable),
           orderDescending: false,
         )
       ];
 
-      var query = SelectQueryBuilder(table: table.tableName)
-          .withOrderBy(orders)
-          .build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy(orders).build();
 
       expect(query,
-          'SELECT * FROM "citizen" ORDER BY citizen."id", citizen."name" DESC, citizen."age"');
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" ORDER BY "citizen"."id", "citizen"."name" DESC, "citizen"."age"');
+    });
+
+    test(
+        'when ordering by many relation then output is many relation order by query.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation.count(),
+        orderDescending: false,
+      );
+
+      var query =
+          SelectQueryBuilder(table: relationTable).withOrderBy([order]).build();
+
+      expect(
+        query,
+        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen.id" ORDER BY COUNT("citizen_friends_citizen"."id")',
+      );
+    });
+
+    test(
+        'when ordering by is filtered many relation then output contains many relation sub query.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation.count((t) => t.id.equals(5)),
+        orderDescending: false,
+      );
+
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
+
+      expect(query,
+          'WITH "citizen_friends_citizen" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" = 5) SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."citizen.id" GROUP BY "citizen.id" ORDER BY COUNT("citizen_friends_citizen"."citizen.id")');
     });
 
     test('when query with limit is built then output is query with limit.', () {
-      var query = SelectQueryBuilder(table: 'citizen').withLimit(10).build();
+      var query = SelectQueryBuilder(table: citizenTable).withLimit(10).build();
 
-      expect(query, 'SELECT * FROM "citizen" LIMIT 10');
+      expect(query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LIMIT 10');
     });
 
     test('when query with offset is built then output is query with offset.',
         () {
-      var query = SelectQueryBuilder(table: 'citizen').withOffset(10).build();
+      var query =
+          SelectQueryBuilder(table: citizenTable).withOffset(10).build();
 
-      expect(query, 'SELECT * FROM "citizen" OFFSET 10');
+      expect(query,
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" OFFSET 10');
     });
 
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-      var relationQueryPrefix = 'citizen_company_';
       var relationTable = Table(
-        tableName: 'company',
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: relationQueryPrefix,
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           )
-        ],
-        queryPrefix: relationQueryPrefix,
+        ]),
       );
-      var query = SelectQueryBuilder(table: table.tableName)
+
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."name" = \'Serverpod\'');
     });
 
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var queryPrefixForFirstRelationTable = 'citizen_company_';
-      var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: queryPrefixForFirstRelationTable,
-      );
-
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
       var nestedRelationTable = Table(
-        tableName: 'citizen',
-        queryPrefix: queryPrefixForNestedTable,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForFirstRelationTable,
+        tableName: citizenTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           ),
-          TableRelation.foreign(
-            foreignTableName: 'citizen',
-            column: ColumnInt('ceoId', relationTable),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForNestedTable,
+          TableRelationEntry(
+            relationAlias: 'ceo',
+            field: ColumnInt('ceoId', companyTable),
+            foreignField: ColumnInt('id', citizenTable),
           ),
-        ],
+        ]),
       );
-      var query = SelectQueryBuilder(table: table.tableName)
+
+      var query = SelectQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             nestedRelationTable,
@@ -170,55 +271,69 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT * FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen" AS "citizen_company_company_ceo_citizen" ON "citizen_company_company"."ceoId" = "citizen_company_company_ceo_citizen"."id" WHERE "citizen_company_company_ceo_citizen"."name" = \'Alex\'');
     });
 
     test('when all properties configured is built then output is valid SQL.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var queryPrefix = 'citizen_company_';
-      var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: queryPrefix,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefix,
+      var manyRelationTable = Table(
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'companiesOwned',
+            field: ColumnInt('id', citizenTable),
+            foreignField: ColumnInt(
+                'id' /* This should be 'companyOwnerId' but by using id this saves us from creating a test class */,
+                companyTable),
           )
-        ],
+        ]),
+      );
+      var relationTable = Table(
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
+          )
+        ]),
       );
 
-      var query = SelectQueryBuilder(table: table.tableName)
+      var query = SelectQueryBuilder(table: citizenTable)
           .withSelectFields([
-            ColumnString('id', table),
-            ColumnString('name', table),
-            ColumnString('age', table),
+            ColumnString('id', citizenTable),
+            ColumnString('name', citizenTable),
+            ColumnString('age', citizenTable),
           ])
           .withWhere(ColumnString(
             'name',
             relationTable,
           ).equals('Serverpod'))
-          .withOrderBy(
-              [Order(column: ColumnString('id', table), orderDescending: true)])
+          .withOrderBy([
+            Order(
+              column: ColumnString('id', citizenTable),
+              orderDescending: true,
+            ),
+            Order(
+                column: ColumnCount(
+              companyTable.id.equals(5),
+              companyTable,
+              manyRelationTable.id,
+            ))
+          ])
           .withLimit(10)
           .withOffset(5)
           .build();
 
       expect(query,
-          'SELECT citizen."id" AS "citizen.id", citizen."name" AS "citizen.name", citizen."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' ORDER BY citizen."id" DESC LIMIT 10 OFFSET 5');
+          'WITH "citizen_companiesOwned_company" AS (SELECT "company"."id" AS "company.id" FROM "company" WHERE "company"."id" = 5) SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."company.id" WHERE "citizen_company_company"."name" = \'Serverpod\' GROUP BY "citizen.id", "citizen.name", "citizen.age" ORDER BY "citizen"."id" DESC, COUNT("citizen_companiesOwned_company"."company.id") LIMIT 10 OFFSET 5');
     });
 
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var differentTableQueryPrefix = 'company_ceo_';
-      var table =
-          Table(tableName: 'citizen', queryPrefix: differentTableQueryPrefix);
-      var queryBuilder = SelectQueryBuilder(table: table.tableName)
-          .withWhere(ColumnString('name', table).equals('Serverpod'));
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
+          .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -226,19 +341,14 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column "company"."name".'),
           )));
     });
 
     test('when order by has different table as base then exception is thrown.',
         () {
-      var differentTableQueryPrefix = 'company_ceo_';
-      var table = Table(
-        tableName: 'citizen',
-        queryPrefix: differentTableQueryPrefix,
-      );
-      var queryBuilder = SelectQueryBuilder(table: table.tableName)
-          .withOrderBy([Order(column: ColumnString('name', table))]);
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
+          .withOrderBy([Order(column: ColumnString('name', companyTable))]);
 
       expect(
           () => queryBuilder.build(),
@@ -246,69 +356,159 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column company_ceo_citizen."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"orderBy" expression referencing column "company"."name".'),
+          )));
+    });
+
+    test(
+        'when count column with inner where that does NOT have table relations then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = SelectQueryBuilder(table: citizenTable).withOrderBy([
+        Order(
+          column: countColumn,
+        )
+      ]);
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument(s) (countColumn.table.tableRelation): Must not be null'),
+          )));
+    });
+
+    test(
+        'when same count column with inner where appears multiple times then exception is thrown.',
+        () {
+      var relationTable = Table(
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
+          )
+        ]),
+      );
+
+      var countColumn = ColumnCount(
+          companyTable.id.equals(5), companyTable, relationTable.id);
+      expect(
+          () => SelectQueryBuilder(table: citizenTable).withOrderBy([
+                Order(column: countColumn),
+                Order(column: countColumn, orderDescending: true)
+              ]),
+          throwsA(isA<ArgumentError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'Invalid argument(s): Ordering by same column multiple times: citizen_company_company.id'),
+          )));
+    });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
+          )));
+    });
+
+    test(
+        'when ordering by is filtered by nested many relation then exception is thrown.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      Order order = Order(
+        column: relationTable.manyRelation
+            .count((t) => t.manyRelation.count((t) => t.id.equals(5)) > 3),
+        orderDescending: false,
+      );
+
+      expect(
+          () => SelectQueryBuilder(table: citizenTable)
+              .withOrderBy([order]).build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
   });
 
   group('Given CountQueryBuilder', () {
     test('when default initialized then build outputs a valid SQL query.', () {
-      var query = CountQueryBuilder(table: 'citizen').build();
+      var query = CountQueryBuilder(table: citizenTable).build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen"');
+      expect(query, 'SELECT COUNT("citizen"."id") FROM "citizen"');
     });
     test('when query with alias is built then count result has defined alias.',
         () {
       var query =
-          CountQueryBuilder(table: 'citizen').withCountAlias('c').build();
+          CountQueryBuilder(table: citizenTable).withCountAlias('c').build();
 
-      expect(query, 'SELECT COUNT(*) AS c FROM "citizen"');
+      expect(query, 'SELECT COUNT("citizen"."id") AS c FROM "citizen"');
     });
 
     test('when query with field is built then count is based on that field.',
         () {
-      var query = CountQueryBuilder(table: 'citizen').withField('age').build();
+      var query = CountQueryBuilder(table: citizenTable)
+          .withField(ColumnInt('age', citizenTable))
+          .build();
 
-      expect(query, 'SELECT COUNT(age) FROM "citizen"');
+      expect(query, 'SELECT COUNT("citizen"."age") FROM "citizen"');
     });
 
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var query = CountQueryBuilder(table: 'citizen')
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" WHERE "test"=@test');
+      expect(query,
+          'SELECT COUNT("citizen"."id") FROM "citizen" WHERE "test"=@test');
     });
 
     test('when query with limit is built then output is a query with limit.',
         () {
-      var query = CountQueryBuilder(table: 'citizen').withLimit(10).build();
+      var query = CountQueryBuilder(table: citizenTable).withLimit(10).build();
 
-      expect(query, 'SELECT COUNT(*) FROM "citizen" LIMIT 10');
+      expect(query, 'SELECT COUNT("citizen"."id") FROM "citizen" LIMIT 10');
     });
 
     test(
         'when where expression depends on relations then output includes joins according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var relationQueryPrefix = 'citizen_company_';
       var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', Table(tableName: 'citizen')),
-            foreignColumnName: 'id',
-            relationQueryPrefix: relationQueryPrefix,
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           )
-        ],
+        ]),
       );
 
-      var query = CountQueryBuilder(table: table.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             relationTable,
@@ -316,41 +516,29 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\'');
+          'SELECT COUNT("citizen"."id") FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."name" = \'Serverpod\'');
     });
 
     test(
         'when where expression depends on nested relations then output includes joins according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var queryPrefixForFirstRelationTable = 'citizen_company_';
-      var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: queryPrefixForFirstRelationTable,
-      );
-
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
       var nestedRelationTable = Table(
-        tableName: 'citizen',
-        queryPrefix: queryPrefixForNestedTable,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForFirstRelationTable,
+        tableName: citizenTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           ),
-          TableRelation.foreign(
-            foreignTableName: 'citizen',
-            column: ColumnInt('ceoId', relationTable),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForNestedTable,
+          TableRelationEntry(
+            relationAlias: 'ceo',
+            field: ColumnInt('ceoId', companyTable),
+            foreignField: ColumnInt('id', citizenTable),
           ),
-        ],
+        ]),
       );
 
-      var query = CountQueryBuilder(table: table.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withWhere(ColumnString(
             'name',
             nestedRelationTable,
@@ -358,31 +546,26 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(*) FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" LEFT JOIN "citizen" AS citizen_company_company_ceo_citizen ON citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id" WHERE citizen_company_company_ceo_citizen."name" = \'Alex\'');
+          'SELECT COUNT("citizen"."id") FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen" AS "citizen_company_company_ceo_citizen" ON "citizen_company_company"."ceoId" = "citizen_company_company_ceo_citizen"."id" WHERE "citizen_company_company_ceo_citizen"."name" = \'Alex\'');
     });
 
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var relationQueryPrefix = 'citizen_company_';
       var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: relationQueryPrefix,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', Table(tableName: 'citizen')),
-            foreignColumnName: 'id',
-            relationQueryPrefix: relationQueryPrefix,
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           )
-        ],
+        ]),
       );
 
-      var query = CountQueryBuilder(table: table.tableName)
+      var query = CountQueryBuilder(table: citizenTable)
           .withCountAlias('c')
-          .withField('age')
+          .withField(ColumnInt('age', citizenTable))
           .withWhere(
             ColumnString('name', relationTable).equals('Serverpod'),
           )
@@ -390,19 +573,14 @@ void main() {
           .build();
 
       expect(query,
-          'SELECT COUNT(age) AS c FROM "citizen" LEFT JOIN "company" AS citizen_company_company ON citizen."companyId" = citizen_company_company."id" WHERE citizen_company_company."name" = \'Serverpod\' LIMIT 10');
+          'SELECT COUNT("citizen"."age") AS c FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."name" = \'Serverpod\' LIMIT 10');
     });
 
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var differentTableQueryPrefix = 'company_ceo_';
-      var table = Table(
-        tableName: 'citizen',
-        queryPrefix: differentTableQueryPrefix,
-      );
-      var queryBuilder = CountQueryBuilder(table: table.tableName)
-          .withWhere(ColumnString('name', table).equals('Serverpod'));
+      var queryBuilder = CountQueryBuilder(table: citizenTable)
+          .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -410,14 +588,32 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column "company"."name".'),
+          )));
+    });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = CountQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
   });
 
   group('Given DeleteQueryBuilder', () {
     test('when default initialized then build outputs a valid SQL query.', () {
-      var query = DeleteQueryBuilder(table: 'citizen').build();
+      var query = DeleteQueryBuilder(table: citizenTable).build();
 
       expect(query, 'DELETE FROM "citizen"');
     });
@@ -425,7 +621,7 @@ void main() {
     test(
         'when query with where expression is built then output is a WHERE query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen')
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(const Expression('"test"=@test'))
           .build();
 
@@ -434,7 +630,7 @@ void main() {
 
     test('when query returning all is built then output is a return all query.',
         () {
-      var query = DeleteQueryBuilder(table: 'citizen')
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withReturn(Returning.all)
           .build();
 
@@ -443,8 +639,9 @@ void main() {
 
     test('when query return id is build then the output is a return id query.',
         () {
-      var query =
-          DeleteQueryBuilder(table: 'citizen').withReturn(Returning.id).build();
+      var query = DeleteQueryBuilder(table: citizenTable)
+          .withReturn(Returning.id)
+          .build();
 
       expect(query, 'DELETE FROM "citizen" RETURNING "citizen".id');
     });
@@ -452,106 +649,80 @@ void main() {
     test(
         'when where expression depends on relations then output includes using according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-      var relationQueryPrefix = 'citizen_company_';
       var relationTable = Table(
-        tableName: 'company',
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: relationQueryPrefix,
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           )
-        ],
-        queryPrefix: relationQueryPrefix,
+        ]),
       );
 
-      var query = DeleteQueryBuilder(table: table.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .build();
 
       expect(query,
-          'DELETE FROM "citizen" USING "company" AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id"');
+          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id"');
     });
 
     test(
         'when where expression depends on nested relations then output includes using according to table relations.',
         () {
-      var table = Table(tableName: 'citizen');
-
-      var queryPrefixForFirstRelationTable = 'citizen_company_';
-      var relationTable = Table(
-        tableName: 'company',
-        queryPrefix: queryPrefixForFirstRelationTable,
-      );
-
-      var queryPrefixForNestedTable = 'citizen_company_company_ceo_';
       var nestedRelationTable = Table(
-        tableName: 'citizen',
-        queryPrefix: queryPrefixForNestedTable,
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForFirstRelationTable,
+        tableName: citizenTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           ),
-          TableRelation.foreign(
-            foreignTableName: 'citizen',
-            column: ColumnInt('ceoId', relationTable),
-            foreignColumnName: 'id',
-            relationQueryPrefix: queryPrefixForNestedTable,
+          TableRelationEntry(
+            relationAlias: 'ceo',
+            field: ColumnInt('ceoId', companyTable),
+            foreignField: ColumnInt('id', citizenTable),
           ),
-        ],
+        ]),
       );
 
-      var query = DeleteQueryBuilder(table: table.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', nestedRelationTable).equals('Alex'))
           .build();
 
       expect(query,
-          'DELETE FROM "citizen" USING "company" AS citizen_company_company, "citizen" AS citizen_company_company_ceo_citizen WHERE citizen_company_company_ceo_citizen."name" = \'Alex\' AND citizen."companyId" = citizen_company_company."id" AND citizen_company_company."ceoId" = citizen_company_company_ceo_citizen."id"');
+          'DELETE FROM "citizen" USING "company" AS "citizen_company_company", "citizen" AS "citizen_company_company_ceo_citizen" WHERE "citizen_company_company_ceo_citizen"."name" = \'Alex\' AND "citizen"."companyId" = "citizen_company_company"."id" AND "citizen_company_company"."ceoId" = "citizen_company_company_ceo_citizen"."id"');
     });
 
     test(
         'when query with all properties configured is built then output is valid SQL.',
         () {
-      var table = Table(tableName: 'citizen');
-      var relationQueryPrefix = 'citizen_company_';
       var relationTable = Table(
-        tableName: 'company',
-        tableRelations: [
-          TableRelation.foreign(
-            foreignTableName: 'company',
-            column: ColumnInt('companyId', table),
-            foreignColumnName: 'id',
-            relationQueryPrefix: relationQueryPrefix,
+        tableName: companyTable.tableName,
+        tableRelation: TableRelation([
+          TableRelationEntry(
+            relationAlias: 'company',
+            field: ColumnInt('companyId', citizenTable),
+            foreignField: ColumnInt('id', companyTable),
           )
-        ],
-        queryPrefix: relationQueryPrefix,
+        ]),
       );
 
-      var query = DeleteQueryBuilder(table: table.tableName)
+      var query = DeleteQueryBuilder(table: citizenTable)
           .withWhere(ColumnString('name', relationTable).equals('Serverpod'))
           .withReturn(Returning.all)
           .build();
 
       expect(query,
-          'DELETE FROM "citizen" USING "company" AS citizen_company_company WHERE citizen_company_company."name" = \'Serverpod\' AND citizen."companyId" = citizen_company_company."id" RETURNING *');
+          'DELETE FROM "citizen" USING "company" AS "citizen_company_company" WHERE "citizen_company_company"."name" = \'Serverpod\' AND "citizen"."companyId" = "citizen_company_company"."id" RETURNING *');
     });
 
     test(
         'when column where expression has different table as base then exception is thrown.',
         () {
-      var differentTableQueryPrefix = 'company_ceo_';
-      var table = Table(
-        tableName: 'citizen',
-        queryPrefix: differentTableQueryPrefix,
-      );
-
-      var queryBuilder = DeleteQueryBuilder(table: table.tableName)
-          .withWhere(ColumnString('name', table).equals('Serverpod'));
+      var queryBuilder = DeleteQueryBuilder(table: citizenTable)
+          .withWhere(ColumnString('name', companyTable).equals('Serverpod'));
 
       expect(
           () => queryBuilder.build(),
@@ -559,7 +730,25 @@ void main() {
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column company_ceo_citizen."name".'),
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column "company"."name".'),
+          )));
+    });
+
+    test(
+        'when count column is used in where expression then exception is thrown.',
+        () {
+      var countColumn =
+          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var queryBuilder = DeleteQueryBuilder(table: citizenTable)
+          .withWhere(countColumn.equals(5));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
   });

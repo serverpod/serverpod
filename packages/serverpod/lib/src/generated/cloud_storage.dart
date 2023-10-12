@@ -326,10 +326,8 @@ typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
     CloudStorageEntryTable);
 
 class CloudStorageEntryTable extends _i1.Table {
-  CloudStorageEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_cloud_storage') {
+  CloudStorageEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
       'storageId',
       this,

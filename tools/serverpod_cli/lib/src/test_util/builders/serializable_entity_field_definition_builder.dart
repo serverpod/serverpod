@@ -34,8 +34,13 @@ class FieldDefinitionBuilder {
   FieldDefinitionBuilder withTypeDefinition(
     String className, [
     bool nullable = false,
+    List<TypeDefinition> generics = const [],
   ]) {
-    _type = TypeDefinition(className: className, nullable: nullable);
+    _type = TypeDefinition(
+      className: className,
+      nullable: nullable,
+      generics: generics,
+    );
     return this;
   }
 

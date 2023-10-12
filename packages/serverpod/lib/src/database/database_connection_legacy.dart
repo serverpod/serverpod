@@ -76,7 +76,7 @@ class DatabaseConnectionLegacy {
       return '"${column.columnName}" = $value';
     }).join(', ');
 
-    var query = 'UPDATE ${row.table.tableName} SET $updates WHERE id = $id';
+    var query = 'UPDATE "${row.table.tableName}" SET $updates WHERE id = $id';
 
     try {
       var context = transaction != null
@@ -169,8 +169,7 @@ class DatabaseConnectionLegacy {
 
     var startTime = DateTime.now();
 
-    var tableName = table.tableName;
-    var query = DeleteQueryBuilder(table: tableName)
+    var query = DeleteQueryBuilder(table: table)
         .withWhere(where)
         .withReturn(Returning.all)
         .build();
@@ -187,6 +186,7 @@ class DatabaseConnectionLegacy {
         timeoutInSeconds: 60,
         substitutionValues: {},
       );
+      var tableName = table.tableName;
       for (var rawRow in result) {
         list.add(_poolManager.serializationManager
             .deserialize<T>(rawRow[tableName]));
@@ -208,7 +208,7 @@ class DatabaseConnectionLegacy {
   }) async {
     var startTime = DateTime.now();
 
-    var query = DeleteQueryBuilder(table: row.table.tableName)
+    var query = DeleteQueryBuilder(table: row.table)
         .withWhere(Expression('id = ${row.id}'))
         .build();
 

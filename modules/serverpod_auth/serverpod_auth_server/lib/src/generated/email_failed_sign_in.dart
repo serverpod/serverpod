@@ -273,10 +273,8 @@ typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
     EmailFailedSignInTable);
 
 class EmailFailedSignInTable extends _i1.Table {
-  EmailFailedSignInTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_email_failed_sign_in') {
+  EmailFailedSignInTable({super.tableRelation})
+      : super(tableName: 'serverpod_email_failed_sign_in') {
     email = _i1.ColumnString(
       'email',
       this,
