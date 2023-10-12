@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/table_relation.dart';
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
@@ -14,61 +13,41 @@ abstract class Column<T> {
   /// Name of the [Column].
   String get columnName => _columnName;
 
-  /// Query prefix for the [Column].
-  final String queryPrefix;
+  /// Table that column belongs to.
+  final Table table;
 
   /// Query alias for the [Column].
-  String get queryAlias => '$queryPrefix.$_columnName';
-
-  /// Table relations for the [Column].
-  final List<TableRelation>? tableRelations;
+  String get queryAlias => '${table.queryPrefix}.$_columnName';
 
   /// Creates a new [Column], this is typically done in generated code only.
   Column(
-    this._columnName, {
-    this.queryPrefix = '',
-    this.tableRelations,
-  }) : type = T;
+    this._columnName,
+    this.table,
+  ) : type = T;
 
   @override
   String toString() {
-    if (queryPrefix.isEmpty) {
-      return '"$_columnName"';
-    }
-
-    return '$queryPrefix."$_columnName"';
+    return '"${table.queryPrefix}"."$_columnName"';
   }
 }
 
 /// A [Column] holding [ByteData].
 class ColumnByteData extends Column<ByteData> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnByteData(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnByteData(super.columnName, super.table);
 }
 
 /// A [Column] holding an [SerializableEntity]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable extends Column<String> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnSerializable(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnSerializable(super.columnName, super.table);
 
 // TODO: Add comparisons and possibly other operations
 }
 
 abstract class _ValueOperatorColumn<T> extends Column<T> {
-  _ValueOperatorColumn(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  _ValueOperatorColumn(super.columnName, super.table);
 
   /// Applies encoding to value before it is sent to the database.
   Expression _encodeValueForQuery(T value);
@@ -78,11 +57,7 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
 class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     with _ColumnDefaultOperations<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnEnum(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value.index);
@@ -96,10 +71,9 @@ class ColumnString extends _ValueOperatorColumn<String>
 
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnString(
-    super.columnName, {
+    super.columnName,
+    super.table, {
     this.varcharLength,
-    super.queryPrefix,
-    super.tableRelations,
   });
 
   /// Creates an [Expression] checking if the value in the column is LIKE the
@@ -123,11 +97,7 @@ class ColumnString extends _ValueOperatorColumn<String>
 class ColumnBool extends _ValueOperatorColumn<bool>
     with _ColumnDefaultOperations<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnBool(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnBool(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(bool value) => Expression(value);
@@ -138,11 +108,7 @@ class ColumnBool extends _ValueOperatorColumn<bool>
 class ColumnDateTime extends _ValueOperatorColumn<DateTime>
     with _ColumnDefaultOperations<DateTime>, _ColumnNumberOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDateTime(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnDateTime(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(DateTime value) => EscapedExpression(value);
@@ -152,11 +118,7 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
 class ColumnDuration extends _ValueOperatorColumn<Duration>
     with _ColumnDefaultOperations<Duration>, _ColumnNumberOperations<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDuration(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnDuration(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(Duration value) => EscapedExpression(value);
@@ -166,11 +128,7 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
 class ColumnUuid extends _ValueOperatorColumn<UuidValue>
     with _ColumnDefaultOperations<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnUuid(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnUuid(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(UuidValue value) => EscapedExpression(value);
@@ -180,11 +138,7 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
 class ColumnInt extends _ValueOperatorColumn<int>
     with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnInt(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnInt(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(int value) => Expression(value);
@@ -194,14 +148,36 @@ class ColumnInt extends _ValueOperatorColumn<int>
 class ColumnDouble extends _ValueOperatorColumn<double>
     with _ColumnDefaultOperations<double>, _ColumnNumberOperations<double> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnDouble(
-    super.columnName, {
-    super.queryPrefix,
-    super.tableRelations,
-  });
+  ColumnDouble(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(double value) => Expression(value);
+}
+
+/// A [Column] holding a count of rows.
+class ColumnCount extends _ValueOperatorColumn<int>
+    with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+  /// Where expression applied to filter what is counted.
+  Expression? innerWhere;
+
+  /// Table without relations to count rows from.
+  Table baseTable;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnCount(this.innerWhere, this.baseTable, Column column)
+      : super(column.columnName, column.table);
+
+  @override
+  String toString() {
+    if (innerWhere != null) {
+      return 'COUNT(${table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
+    }
+
+    return 'COUNT(${super.toString()})';
+  }
+
+  @override
+  Expression _encodeValueForQuery(int value) => Expression(value);
 }
 
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {

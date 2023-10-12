@@ -23,7 +23,7 @@ class ClusterManager {
     var session = await _server.serverpod.createSession(enableLogging: false);
 
     /// Select connection infos form the last two minutes
-    var connectionInfos = await ServerHealthConnectionInfo.find(
+    var connectionInfos = await ServerHealthConnectionInfo.db.find(
       session,
       where: (t) => (t.timestamp >
           DateTime.now().subtract(

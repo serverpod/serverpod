@@ -54,6 +54,8 @@ abstract class ServerHealthMetric extends _i1.TableRow {
 
   static final t = ServerHealthMetricTable();
 
+  static const db = ServerHealthMetricRepository._();
+
   /// The name of the metric.
   String name;
 
@@ -75,6 +77,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -156,6 +159,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ServerHealthMetric>> find(
     _i1.Session session, {
     ServerHealthMetricExpressionBuilder? where,
@@ -179,6 +183,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ServerHealthMetric?> findSingleRow(
     _i1.Session session, {
     ServerHealthMetricExpressionBuilder? where,
@@ -198,6 +203,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ServerHealthMetric?> findById(
     _i1.Session session,
     int id,
@@ -205,6 +211,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     return session.db.findById<ServerHealthMetric>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ServerHealthMetricExpressionBuilder where,
@@ -216,6 +223,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -227,6 +235,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -238,6 +247,8 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ServerHealthMetric row, {
@@ -249,6 +260,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ServerHealthMetricExpressionBuilder? where,
@@ -316,39 +328,31 @@ typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
     ServerHealthMetricTable);
 
 class ServerHealthMetricTable extends _i1.Table {
-  ServerHealthMetricTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_health_metric') {
+  ServerHealthMetricTable({super.tableRelation})
+      : super(tableName: 'serverpod_health_metric') {
     name = _i1.ColumnString(
       'name',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     timestamp = _i1.ColumnDateTime(
       'timestamp',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     isHealthy = _i1.ColumnBool(
       'isHealthy',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     value = _i1.ColumnDouble(
       'value',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     granularity = _i1.ColumnInt(
       'granularity',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -391,6 +395,147 @@ class ServerHealthMetricInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ServerHealthMetric.t;
+}
+
+class ServerHealthMetricRepository {
+  const ServerHealthMetricRepository._();
+
+  Future<List<ServerHealthMetric>> find(
+    _i1.Session session, {
+    ServerHealthMetricExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ServerHealthMetric>(
+      where: where?.call(ServerHealthMetric.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ServerHealthMetric?> findRow(
+    _i1.Session session, {
+    ServerHealthMetricExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ServerHealthMetric>(
+      where: where?.call(ServerHealthMetric.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ServerHealthMetric?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ServerHealthMetric>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ServerHealthMetric>> insert(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ServerHealthMetric>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ServerHealthMetric> insertRow(
+    _i1.Session session,
+    ServerHealthMetric row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ServerHealthMetric>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ServerHealthMetric>> update(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ServerHealthMetric>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ServerHealthMetric> updateRow(
+    _i1.Session session,
+    ServerHealthMetric row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ServerHealthMetric>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ServerHealthMetric> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ServerHealthMetric>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ServerHealthMetric row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ServerHealthMetric>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ServerHealthMetricExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ServerHealthMetric>(
+      where: where(ServerHealthMetric.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ServerHealthMetricExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ServerHealthMetric>(
+      where: where?.call(ServerHealthMetric.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

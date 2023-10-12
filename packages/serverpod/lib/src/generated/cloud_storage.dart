@@ -53,6 +53,8 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   static final t = CloudStorageEntryTable();
 
+  static const db = CloudStorageEntryRepository._();
+
   /// The storageId, typically `public` or `private`.
   String storageId;
 
@@ -73,6 +75,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
@@ -154,6 +157,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<CloudStorageEntry>> find(
     _i1.Session session, {
     CloudStorageEntryExpressionBuilder? where,
@@ -177,6 +181,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<CloudStorageEntry?> findSingleRow(
     _i1.Session session, {
     CloudStorageEntryExpressionBuilder? where,
@@ -196,6 +201,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<CloudStorageEntry?> findById(
     _i1.Session session,
     int id,
@@ -203,6 +209,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     return session.db.findById<CloudStorageEntry>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required CloudStorageEntryExpressionBuilder where,
@@ -214,6 +221,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -225,6 +233,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -236,6 +245,8 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     CloudStorageEntry row, {
@@ -247,6 +258,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     CloudStorageEntryExpressionBuilder? where,
@@ -314,39 +326,31 @@ typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
     CloudStorageEntryTable);
 
 class CloudStorageEntryTable extends _i1.Table {
-  CloudStorageEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_cloud_storage') {
+  CloudStorageEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_cloud_storage') {
     storageId = _i1.ColumnString(
       'storageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     path = _i1.ColumnString(
       'path',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     addedTime = _i1.ColumnDateTime(
       'addedTime',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     expiration = _i1.ColumnDateTime(
       'expiration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     byteData = _i1.ColumnByteData(
       'byteData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     verified = _i1.ColumnBool(
       'verified',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -388,6 +392,147 @@ class CloudStorageEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => CloudStorageEntry.t;
+}
+
+class CloudStorageEntryRepository {
+  const CloudStorageEntryRepository._();
+
+  Future<List<CloudStorageEntry>> find(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry?> findRow(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<CloudStorageEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<CloudStorageEntry>> insert(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<CloudStorageEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry> insertRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<CloudStorageEntry>> update(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<CloudStorageEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<CloudStorageEntry> updateRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<CloudStorageEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<CloudStorageEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    CloudStorageEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<CloudStorageEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required CloudStorageEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<CloudStorageEntry>(
+      where: where(CloudStorageEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    CloudStorageEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

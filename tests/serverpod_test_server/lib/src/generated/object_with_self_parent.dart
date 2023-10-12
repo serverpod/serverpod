@@ -31,10 +31,13 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
 
   static final t = ObjectWithSelfParentTable();
 
+  static const db = ObjectWithSelfParentRepository._();
+
   int? other;
 
   @override
   _i1.Table get table => t;
+
   ObjectWithSelfParent copyWith({
     int? id,
     int? other,
@@ -81,6 +84,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithSelfParent>> find(
     _i1.Session session, {
     ObjectWithSelfParentExpressionBuilder? where,
@@ -104,6 +108,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithSelfParent?> findSingleRow(
     _i1.Session session, {
     ObjectWithSelfParentExpressionBuilder? where,
@@ -123,6 +128,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ObjectWithSelfParent?> findById(
     _i1.Session session,
     int id,
@@ -130,6 +136,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     return session.db.findById<ObjectWithSelfParent>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ObjectWithSelfParentExpressionBuilder where,
@@ -141,6 +148,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -152,6 +160,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -163,6 +172,8 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ObjectWithSelfParent row, {
@@ -174,6 +185,7 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ObjectWithSelfParentExpressionBuilder? where,
@@ -221,14 +233,11 @@ typedef ObjectWithSelfParentExpressionBuilder = _i1.Expression Function(
     ObjectWithSelfParentTable);
 
 class ObjectWithSelfParentTable extends _i1.Table {
-  ObjectWithSelfParentTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_with_self_parent') {
+  ObjectWithSelfParentTable({super.tableRelation})
+      : super(tableName: 'object_with_self_parent') {
     other = _i1.ColumnInt(
       'other',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -249,6 +258,147 @@ class ObjectWithSelfParentInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ObjectWithSelfParent.t;
+}
+
+class ObjectWithSelfParentRepository {
+  const ObjectWithSelfParentRepository._();
+
+  Future<List<ObjectWithSelfParent>> find(
+    _i1.Session session, {
+    ObjectWithSelfParentExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ObjectWithSelfParent>(
+      where: where?.call(ObjectWithSelfParent.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithSelfParent?> findRow(
+    _i1.Session session, {
+    ObjectWithSelfParentExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ObjectWithSelfParent>(
+      where: where?.call(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithSelfParent?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ObjectWithSelfParent>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithSelfParent>> insert(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ObjectWithSelfParent>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithSelfParent> insertRow(
+    _i1.Session session,
+    ObjectWithSelfParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ObjectWithSelfParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithSelfParent>> update(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ObjectWithSelfParent>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithSelfParent> updateRow(
+    _i1.Session session,
+    ObjectWithSelfParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ObjectWithSelfParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithSelfParent> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ObjectWithSelfParent>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithSelfParent row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ObjectWithSelfParent>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ObjectWithSelfParentExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ObjectWithSelfParent>(
+      where: where(ObjectWithSelfParent.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ObjectWithSelfParentExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ObjectWithSelfParent>(
+      where: where?.call(ObjectWithSelfParent.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

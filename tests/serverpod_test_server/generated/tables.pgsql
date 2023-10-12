@@ -19,12 +19,36 @@ CREATE TABLE "citizen" (
   "id" serial,
   "name" text NOT NULL,
   "companyId" integer NOT NULL,
-  "oldCompanyId" integer,
-  "_companyEmployeesCompanyId" integer
+  "oldCompanyId" integer
 );
 
 ALTER TABLE ONLY "citizen"
   ADD CONSTRAINT citizen_pkey PRIMARY KEY (id);
+
+--
+-- Class City as table city
+--
+
+CREATE TABLE "city" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "city"
+  ADD CONSTRAINT city_pkey PRIMARY KEY (id);
+
+--
+-- Class Comment as table comment
+--
+
+CREATE TABLE "comment" (
+  "id" serial,
+  "description" text NOT NULL,
+  "orderId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "comment"
+  ADD CONSTRAINT comment_pkey PRIMARY KEY (id);
 
 --
 -- Class Company as table company
@@ -38,6 +62,18 @@ CREATE TABLE "company" (
 
 ALTER TABLE ONLY "company"
   ADD CONSTRAINT company_pkey PRIMARY KEY (id);
+
+--
+-- Class Customer as table customer
+--
+
+CREATE TABLE "customer" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "customer"
+  ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
 
 --
 -- Class ObjectFieldScopes as table object_field_scopes
@@ -162,6 +198,45 @@ ALTER TABLE ONLY "object_with_uuid"
   ADD CONSTRAINT object_with_uuid_pkey PRIMARY KEY (id);
 
 --
+-- Class Order as table order
+--
+
+CREATE TABLE "order" (
+  "id" serial,
+  "description" text NOT NULL,
+  "customerId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "order"
+  ADD CONSTRAINT order_pkey PRIMARY KEY (id);
+
+--
+-- Class Organization as table organization
+--
+
+CREATE TABLE "organization" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "organization"
+  ADD CONSTRAINT organization_pkey PRIMARY KEY (id);
+
+--
+-- Class Person as table person
+--
+
+CREATE TABLE "person" (
+  "id" serial,
+  "name" text NOT NULL,
+  "organizationId" integer,
+  "_cityCitizensCityId" integer
+);
+
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_pkey PRIMARY KEY (id);
+
+--
 -- Class Post as table post
 --
 
@@ -173,6 +248,19 @@ CREATE TABLE "post" (
 
 ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_pkey PRIMARY KEY (id);
+
+--
+-- Class RelatedUniqueData as table related_unique_data
+--
+
+CREATE TABLE "related_unique_data" (
+  "id" serial,
+  "uniqueDataId" integer NOT NULL,
+  "number" integer NOT NULL
+);
+
+ALTER TABLE ONLY "related_unique_data"
+  ADD CONSTRAINT related_unique_data_pkey PRIMARY KEY (id);
 
 --
 -- Class SimpleData as table simple_data
@@ -232,6 +320,21 @@ ALTER TABLE ONLY "types"
   ADD CONSTRAINT types_pkey PRIMARY KEY (id);
 
 --
+-- Class UniqueData as table unique_data
+--
+
+CREATE TABLE "unique_data" (
+  "id" serial,
+  "number" integer NOT NULL,
+  "email" text NOT NULL
+);
+
+ALTER TABLE ONLY "unique_data"
+  ADD CONSTRAINT unique_data_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX email_index_idx ON "unique_data" USING btree ("email");
+
+--
 -- Foreign relations for "address" table
 --
 
@@ -255,10 +358,15 @@ ALTER TABLE ONLY "citizen"
     FOREIGN KEY("oldCompanyId")
       REFERENCES company(id)
         ON DELETE CASCADE;
-ALTER TABLE ONLY "citizen"
-  ADD CONSTRAINT citizen_fk_2
-    FOREIGN KEY("_companyEmployeesCompanyId")
-      REFERENCES company(id)
+
+--
+-- Foreign relations for "comment" table
+--
+
+ALTER TABLE ONLY "comment"
+  ADD CONSTRAINT comment_fk_0
+    FOREIGN KEY("orderId")
+      REFERENCES order(id)
         ON DELETE CASCADE;
 
 --
@@ -292,6 +400,31 @@ ALTER TABLE ONLY "object_with_self_parent"
         ON DELETE CASCADE;
 
 --
+-- Foreign relations for "order" table
+--
+
+ALTER TABLE ONLY "order"
+  ADD CONSTRAINT order_fk_0
+    FOREIGN KEY("customerId")
+      REFERENCES customer(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "person" table
+--
+
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_fk_0
+    FOREIGN KEY("organizationId")
+      REFERENCES organization(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "person"
+  ADD CONSTRAINT person_fk_1
+    FOREIGN KEY("_cityCitizensCityId")
+      REFERENCES city(id)
+        ON DELETE CASCADE;
+
+--
 -- Foreign relations for "post" table
 --
 
@@ -299,6 +432,16 @@ ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_fk_0
     FOREIGN KEY("nextId")
       REFERENCES post(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "related_unique_data" table
+--
+
+ALTER TABLE ONLY "related_unique_data"
+  ADD CONSTRAINT related_unique_data_fk_0
+    FOREIGN KEY("uniqueDataId")
+      REFERENCES unique_data(id)
         ON DELETE CASCADE;
 
 --

@@ -245,15 +245,23 @@ class UnresolvedListRelationDefinition extends RelationDefinition {
 /// Used for relations for fields of type [List] that has a reference pointer
 /// to another Objects field name that holds the id of this object.
 class ListRelationDefinition extends RelationDefinition {
+  /// References the field in the current object that points to the foreign table.
+  String fieldName;
+
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
 
   final bool nullableRelation;
 
+  /// If true, the foreign field is implicit.
+  final bool implicitForeignField;
+
   ListRelationDefinition({
     String? name,
+    required this.fieldName,
     required this.foreignFieldName,
     required this.nullableRelation,
+    this.implicitForeignField = false,
   }) : super(name, false);
 }
 

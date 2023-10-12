@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database_legacy.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
 
@@ -42,7 +43,11 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  late final Database db;
+  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
+  late final DatabaseLegacy db;
+
+  /// Access to the database. Replaces db in the future.
+  late final Database dbNext;
 
   String? _authenticationKey;
 
@@ -87,7 +92,9 @@ abstract class Session {
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    db = Database(session: this);
+    // ignore: deprecated_member_use_from_same_package
+    db = DatabaseLegacy(session: this);
+    dbNext = Database(session: this);
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -226,7 +233,7 @@ class MethodCallSession extends Session {
   late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
-  final String endpointName;
+  late final String endpointName;
 
   /// The name of the method that is being called.
   late final String methodName;
@@ -239,7 +246,7 @@ class MethodCallSession extends Session {
     required Server server,
     required this.uri,
     required this.body,
-    required this.endpointName,
+    required String path,
     required this.httpRequest,
     String? authenticationKey,
     bool enableLogging = true,
@@ -257,9 +264,25 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    var methodName = queryParameters['method'];
-    if (methodName == null && endpointName == 'webserver') methodName = '';
-    this.methodName = methodName!;
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var methodName = queryParameters['method'];
+      if (methodName == null && path == 'webserver') {
+        this.methodName = '';
+      } else if (methodName != null) {
+        this.methodName = methodName;
+      } else {
+        throw FormatException(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
 
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
@@ -370,11 +393,9 @@ class UserAuthetication {
       method: method,
     );
 
-    await _session.db.insert(authKey);
-
     _session._authenticatedUser = userId;
-
-    return authKey;
+    var result = await AuthKey.db.insertRow(_session, authKey);
+    return result.copyWith(key: key);
   }
 
   /// Signs out a user from the server and deletes all authentication keys.
@@ -383,7 +404,8 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.db.delete<AuthKey>(where: AuthKey.t.userId.equals(userId));
+    await _session.dbNext
+        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }
 }

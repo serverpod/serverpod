@@ -58,11 +58,11 @@ class HealthCheckManager {
       numHealthChecks = result.metrics.length;
 
       for (var metric in result.metrics) {
-        await ServerHealthMetric.insert(session, metric);
+        await ServerHealthMetric.db.insertRow(session, metric);
       }
 
       for (var connectionInfo in result.connectionInfos) {
-        await ServerHealthConnectionInfo.insert(session, connectionInfo);
+        await ServerHealthConnectionInfo.db.insertRow(session, connectionInfo);
       }
     } catch (e) {
       // TODO: Sometimes serverpod attempts to write duplicate health checks for
@@ -110,12 +110,12 @@ class HealthCheckManager {
       // Touch all sessions that have been opened by this server.
       var touchQuery =
           'UPDATE serverpod_session_log SET touched = $now WHERE "serverId" = $serverId AND "isOpen" = TRUE AND "time" > $serverStartTime';
-      await session.db.query(touchQuery);
+      await session.dbNext.dangerouslyQuery(touchQuery);
 
       // Close sessions that haven't been touched in 3 minutes.
       var closeQuery =
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
-      await session.db.query(closeQuery);
+      await session.dbNext.dangerouslyQuery(closeQuery);
     } catch (e, stackTrace) {
       stderr.writeln('Failed to cleanup closed sessions: $e');
       stderr.write('$stackTrace');
@@ -178,7 +178,7 @@ class HealthCheckManager {
     ).subtract(preserveDelay);
 
     // Select entries from a past hour or day.
-    var entries = await ServerHealthConnectionInfo.find(
+    var entries = await ServerHealthConnectionInfo.db.find(
       session,
       where: (t) =>
           (t.timestamp < startTime) &
@@ -221,13 +221,13 @@ class HealthCheckManager {
       granularity: srcGranularity == 1 ? 60 : 60 * 24,
     );
     try {
-      await ServerHealthConnectionInfo.insert(session, hourlyInfo);
+      await ServerHealthConnectionInfo.db.insertRow(session, hourlyInfo);
     } catch (e) {
       // Ignore failed inserts.
     }
 
     // Remove old entries.
-    await ServerHealthConnectionInfo.delete(
+    await ServerHealthConnectionInfo.db.deleteWhere(
       session,
       where: (t) =>
           (t.timestamp >= firstEntryTime) &
@@ -264,7 +264,7 @@ class HealthCheckManager {
     ).subtract(preserveDelay);
 
     // Select entries from a past hour or day.
-    var entries = await ServerHealthMetric.find(
+    var entries = await ServerHealthMetric.db.find(
       session,
       where: (t) =>
           (t.timestamp < startTime) &
@@ -321,14 +321,14 @@ class HealthCheckManager {
         granularity: srcGranularity == 1 ? 60 : 60 * 24,
       );
       try {
-        await ServerHealthMetric.insert(session, compressedEntry);
+        await ServerHealthMetric.db.insertRow(session, compressedEntry);
       } catch (e) {
         // Ignore failed inserts.
       }
     }
 
     // Remove old entries.
-    await ServerHealthMetric.delete(
+    await ServerHealthMetric.db.deleteWhere(
       session,
       where: (t) =>
           (t.timestamp >= firstEntryTime) &

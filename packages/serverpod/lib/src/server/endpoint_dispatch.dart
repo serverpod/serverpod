@@ -33,7 +33,7 @@ abstract class EndpointDispatch {
 
     if (endpointComponents.length == 1) {
       // This is a standard server endpoint
-      connector = connectors[endpointName];
+      connector = connectors[_endpointFromName(endpointName)];
       if (connector == null) return null;
     } else {
       // Connector is in a module
@@ -42,28 +42,37 @@ abstract class EndpointDispatch {
       var module = modules[modulePackage];
       if (module == null) return null;
 
-      connector = module.connectors[endpointName];
+      connector = module.connectors[_endpointFromName(endpointName)];
       if (connector == null) return null;
     }
 
     return connector;
   }
 
+  String _endpointFromName(String name) {
+    var components = name.split('/');
+    return components[0];
+  }
+
   /// Dispatches a call to the [Server] to the correct [Endpoint] method. If
   /// successful, it returns the object from the method. If unsuccessful it will
   /// return a [Result] object.
-  Future<Result> handleUriCall(Server server, String endpointName, Uri uri,
-      String body, HttpRequest request) async {
-    var endpointComponents = endpointName.split('.');
+  Future<Result> handleUriCall(
+    Server server,
+    String path,
+    Uri uri,
+    String body,
+    HttpRequest request,
+  ) async {
+    var endpointComponents = path.split('.');
     if (endpointComponents.isEmpty || endpointComponents.length > 2) {
-      return ResultInvalidParams(
-          'Endpoint $endpointName is not a valid endpoint name');
+      return ResultInvalidParams('Endpoint $path is not a valid endpoint name');
     }
 
     // Find correct connector
-    var connector = getConnectorByName(endpointName);
+    var connector = getConnectorByName(path);
     if (connector == null) {
-      return ResultInvalidParams('Endpoint $endpointName does not exist');
+      return ResultInvalidParams('Endpoint $path does not exist');
     }
 
     MethodCallSession session;
@@ -73,7 +82,7 @@ abstract class EndpointDispatch {
         server: server,
         uri: uri,
         body: body,
-        endpointName: endpointName,
+        path: path,
         httpRequest: request,
         enableLogging: connector.endpoint.logSessions,
       );

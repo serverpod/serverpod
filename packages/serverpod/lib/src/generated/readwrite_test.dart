@@ -34,11 +34,14 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
 
   static final t = ReadWriteTestEntryTable();
 
+  static const db = ReadWriteTestEntryRepository._();
+
   /// A random number, to verify that the write/read was performed correctly.
   int number;
 
   @override
   _i1.Table get table => t;
+
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
@@ -85,6 +88,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ReadWriteTestEntry>> find(
     _i1.Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
@@ -108,6 +112,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ReadWriteTestEntry?> findSingleRow(
     _i1.Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
@@ -127,6 +132,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<ReadWriteTestEntry?> findById(
     _i1.Session session,
     int id,
@@ -134,6 +140,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     return session.db.findById<ReadWriteTestEntry>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required ReadWriteTestEntryExpressionBuilder where,
@@ -145,6 +152,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     ReadWriteTestEntry row, {
@@ -156,6 +164,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     ReadWriteTestEntry row, {
@@ -167,6 +176,8 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     ReadWriteTestEntry row, {
@@ -178,6 +189,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     ReadWriteTestEntryExpressionBuilder? where,
@@ -225,14 +237,11 @@ typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
     ReadWriteTestEntryTable);
 
 class ReadWriteTestEntryTable extends _i1.Table {
-  ReadWriteTestEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_readwrite_test') {
+  ReadWriteTestEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_readwrite_test') {
     number = _i1.ColumnInt(
       'number',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -254,6 +263,147 @@ class ReadWriteTestEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => ReadWriteTestEntry.t;
+}
+
+class ReadWriteTestEntryRepository {
+  const ReadWriteTestEntryRepository._();
+
+  Future<List<ReadWriteTestEntry>> find(
+    _i1.Session session, {
+    ReadWriteTestEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<ReadWriteTestEntry>(
+      where: where?.call(ReadWriteTestEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<ReadWriteTestEntry?> findRow(
+    _i1.Session session, {
+    ReadWriteTestEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<ReadWriteTestEntry>(
+      where: where?.call(ReadWriteTestEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ReadWriteTestEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<ReadWriteTestEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ReadWriteTestEntry>> insert(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<ReadWriteTestEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ReadWriteTestEntry> insertRow(
+    _i1.Session session,
+    ReadWriteTestEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<ReadWriteTestEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ReadWriteTestEntry>> update(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<ReadWriteTestEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ReadWriteTestEntry> updateRow(
+    _i1.Session session,
+    ReadWriteTestEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<ReadWriteTestEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ReadWriteTestEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<ReadWriteTestEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ReadWriteTestEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<ReadWriteTestEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required ReadWriteTestEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<ReadWriteTestEntry>(
+      where: where(ReadWriteTestEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    ReadWriteTestEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<ReadWriteTestEntry>(
+      where: where?.call(ReadWriteTestEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
@@ -169,14 +170,15 @@ class Serverpod {
     var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
-          await session.db.findSingleRow<internal.RuntimeSettings>();
+          await internal.RuntimeSettings.db.findRow(session);
       if (oldRuntimeSettings == null) {
         settings.id = null;
-        await session.db.insert(settings);
+        settings =
+            await internal.RuntimeSettings.db.insertRow(session, settings);
+      } else {
+        settings.id = oldRuntimeSettings.id;
+        await internal.RuntimeSettings.db.updateRow(session, settings);
       }
-
-      settings.id = oldRuntimeSettings!.id;
-      await session.db.update(settings);
     } catch (e, stackTrace) {
       await session.close(error: e, stackTrace: stackTrace);
       return;
@@ -188,7 +190,7 @@ class Serverpod {
   Future<void> reloadRuntimeSettings() async {
     var session = await createSession(enableLogging: false);
     try {
-      var settings = await session.db.findSingleRow<internal.RuntimeSettings>();
+      var settings = await internal.RuntimeSettings.db.findRow(session);
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -351,8 +353,7 @@ class Serverpod {
         try {
           logVerbose('Loading runtime settings.');
 
-          _runtimeSettings =
-              await session.db.findSingleRow<internal.RuntimeSettings>();
+          _runtimeSettings = await internal.RuntimeSettings.db.findRow(session);
         } catch (e) {
           stderr.writeln(
             'Failed to load runtime settings. $e',
@@ -364,9 +365,8 @@ class Serverpod {
               'Runtime settings not found, creating default settings.',
             );
 
-            // Store default settings.
-            _runtimeSettings = _defaultRuntimeSettings;
-            await session.db.insert(_runtimeSettings!);
+            _runtimeSettings = await RuntimeSettings.db
+                .insertRow(session, _defaultRuntimeSettings);
           } else {
             logVerbose('Runtime settings loaded.');
           }
@@ -562,7 +562,7 @@ class Serverpod {
   }
 
   /// Shuts down the Serverpod and all associated servers.
-  Future<void> shutdown() async {
+  Future<void> shutdown({bool exitProcess = true}) async {
     if (redisController != null) {
       await redisController!.stop();
     }
@@ -570,7 +570,9 @@ class Serverpod {
     _serviceServer?.shutdown();
     _futureCallManager.stop();
     _healthCheckManager.stop;
-    exit(0);
+    if (exitProcess) {
+      exit(0);
+    }
   }
 
   /// Logs a message to the console if the logging command line argument is set

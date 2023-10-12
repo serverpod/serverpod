@@ -67,6 +67,8 @@ abstract class MessageLogEntry extends _i1.TableRow {
 
   static final t = MessageLogEntryTable();
 
+  static const db = MessageLogEntryRepository._();
+
   /// Id of the session this entry is associated with.
   int sessionLogId;
 
@@ -101,6 +103,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -210,6 +213,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<MessageLogEntry>> find(
     _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
@@ -233,6 +237,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<MessageLogEntry?> findSingleRow(
     _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
@@ -252,6 +257,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<MessageLogEntry?> findById(
     _i1.Session session,
     int id,
@@ -259,6 +265,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     return session.db.findById<MessageLogEntry>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required MessageLogEntryExpressionBuilder where,
@@ -270,6 +277,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     MessageLogEntry row, {
@@ -281,6 +289,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     MessageLogEntry row, {
@@ -292,6 +301,8 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     MessageLogEntry row, {
@@ -303,6 +314,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     MessageLogEntryExpressionBuilder? where,
@@ -386,59 +398,47 @@ typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
     MessageLogEntryTable);
 
 class MessageLogEntryTable extends _i1.Table {
-  MessageLogEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_message_log') {
+  MessageLogEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_message_log') {
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     serverId = _i1.ColumnString(
       'serverId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     messageId = _i1.ColumnInt(
       'messageId',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     endpoint = _i1.ColumnString(
       'endpoint',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     messageName = _i1.ColumnString(
       'messageName',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     duration = _i1.ColumnDouble(
       'duration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     error = _i1.ColumnString(
       'error',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     stackTrace = _i1.ColumnString(
       'stackTrace',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     slow = _i1.ColumnBool(
       'slow',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     order = _i1.ColumnInt(
       'order',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -498,6 +498,147 @@ class MessageLogEntryInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => MessageLogEntry.t;
+}
+
+class MessageLogEntryRepository {
+  const MessageLogEntryRepository._();
+
+  Future<List<MessageLogEntry>> find(
+    _i1.Session session, {
+    MessageLogEntryExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<MessageLogEntry?> findRow(
+    _i1.Session session, {
+    MessageLogEntryExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<MessageLogEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<MessageLogEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<MessageLogEntry>> insert(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<MessageLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<MessageLogEntry> insertRow(
+    _i1.Session session,
+    MessageLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<MessageLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<MessageLogEntry>> update(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<MessageLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<MessageLogEntry> updateRow(
+    _i1.Session session,
+    MessageLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<MessageLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<MessageLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<MessageLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    MessageLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<MessageLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required MessageLogEntryExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<MessageLogEntry>(
+      where: where(MessageLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    MessageLogEntryExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }

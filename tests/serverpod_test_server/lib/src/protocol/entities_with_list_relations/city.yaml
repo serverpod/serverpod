@@ -1,0 +1,5 @@
+class: City
+table: city
+fields:
+  name: String
+  citizens: List<Person>?, relation

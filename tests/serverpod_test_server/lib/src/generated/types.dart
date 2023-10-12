@@ -65,6 +65,8 @@ abstract class Types extends _i1.TableRow {
 
   static final t = TypesTable();
 
+  static const db = TypesRepository._();
+
   int? anInt;
 
   bool? aBool;
@@ -85,6 +87,7 @@ abstract class Types extends _i1.TableRow {
 
   @override
   _i1.Table get table => t;
+
   Types copyWith({
     int? id,
     int? anInt,
@@ -187,6 +190,7 @@ abstract class Types extends _i1.TableRow {
     }
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Types>> find(
     _i1.Session session, {
     TypesExpressionBuilder? where,
@@ -210,6 +214,7 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Types?> findSingleRow(
     _i1.Session session, {
     TypesExpressionBuilder? where,
@@ -229,6 +234,7 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<Types?> findById(
     _i1.Session session,
     int id,
@@ -236,6 +242,7 @@ abstract class Types extends _i1.TableRow {
     return session.db.findById<Types>(id);
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
     required TypesExpressionBuilder where,
@@ -247,6 +254,7 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
   static Future<bool> deleteRow(
     _i1.Session session,
     Types row, {
@@ -258,6 +266,7 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
   static Future<bool> update(
     _i1.Session session,
     Types row, {
@@ -269,6 +278,8 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated(
+      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
   static Future<void> insert(
     _i1.Session session,
     Types row, {
@@ -280,6 +291,7 @@ abstract class Types extends _i1.TableRow {
     );
   }
 
+  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
     TypesExpressionBuilder? where,
@@ -359,54 +371,42 @@ class _TypesImpl extends Types {
 typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
-  TypesTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'types') {
+  TypesTable({super.tableRelation}) : super(tableName: 'types') {
     anInt = _i1.ColumnInt(
       'anInt',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aBool = _i1.ColumnBool(
       'aBool',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aDouble = _i1.ColumnDouble(
       'aDouble',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aDateTime = _i1.ColumnDateTime(
       'aDateTime',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aString = _i1.ColumnString(
       'aString',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aByteData = _i1.ColumnByteData(
       'aByteData',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aDuration = _i1.ColumnDuration(
       'aDuration',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     aUuid = _i1.ColumnUuid(
       'aUuid',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
     anEnum = _i1.ColumnEnum<_i3.TestEnum>(
       'anEnum',
-      queryPrefix: super.queryPrefix,
-      tableRelations: super.tableRelations,
+      this,
     );
   }
 
@@ -451,6 +451,147 @@ class TypesInclude extends _i1.Include {
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
   @override
   _i1.Table get table => Types.t;
+}
+
+class TypesRepository {
+  const TypesRepository._();
+
+  Future<List<Types>> find(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.find<Types>(
+      where: where?.call(Types.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      orderDescending: orderDescending,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types?> findRow(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findRow<Types>(
+      where: where?.call(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<Types?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.findById<Types>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<Types>> insert(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insert<Types>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types> insertRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.insertRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<Types>> update(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.update<Types>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<Types> updateRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.updateRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<Types> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.delete<Types>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    Types row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteRow<Types>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required TypesExpressionBuilder where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.deleteWhere<Types>(
+      where: where(Types.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    TypesExpressionBuilder? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.dbNext.count<Types>(
+      where: where?.call(Types.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
 }
