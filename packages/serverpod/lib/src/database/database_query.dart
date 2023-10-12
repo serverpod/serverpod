@@ -427,7 +427,29 @@ String? _buildOrderByQuery({List<Order>? orderBy}) {
     return null;
   }
 
-  return orderBy.map((order) => order.toString()).join(', ');
+  return orderBy.map((order) {
+    var str = '';
+
+    var column = order.column;
+    if (column is ColumnCount) {
+      str = _buildCountColumnString(column);
+    } else {
+      str = '$column';
+    }
+
+    if (order.orderDescending) str += ' DESC';
+
+    return str;
+  }).join(', ');
+}
+
+String _buildCountColumnString(ColumnCount column) {
+  if (column.innerWhere != null) {
+    // If column is filtered then we want to use the result from the sub query
+    return 'COUNT(${column.table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
+  }
+
+  return 'COUNT($column)';
 }
 
 LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
