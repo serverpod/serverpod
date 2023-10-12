@@ -55,8 +55,7 @@ class DatabaseConnection {
       orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
     }
 
-    var tableName = table.tableName;
-    var query = SelectQueryBuilder(table: tableName)
+    var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
         .withWhere(where)
         .withOrderBy(orderByList)
@@ -143,7 +142,7 @@ class DatabaseConnection {
     }).join(', ');
 
     var query =
-        'INSERT INTO ${table.tableName} ($columnNames) VALUES $values RETURNING *';
+        'INSERT INTO "${table.tableName}" ($columnNames) VALUES $values RETURNING *';
 
     var result =
         await mappedResultsQuery(session, query, transaction: transaction);
@@ -206,7 +205,7 @@ class DatabaseConnection {
     selectedColumns.first.type.toString();
 
     var query =
-        'UPDATE ${table.tableName} AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
+        'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     var result =
         await mappedResultsQuery(session, query, transaction: transaction);
@@ -284,7 +283,7 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
-    var query = DeleteQueryBuilder(table: table.tableName)
+    var query = DeleteQueryBuilder(table: table)
         .withReturn(Returning.id)
         .withWhere(where)
         .build();
@@ -303,7 +302,7 @@ class DatabaseConnection {
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'count');
 
-    var query = CountQueryBuilder(table: table.tableName)
+    var query = CountQueryBuilder(table: table)
         .withCountAlias('c')
         .withWhere(where)
         .withLimit(limit)

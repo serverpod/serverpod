@@ -366,10 +366,8 @@ class _UserInfoImpl extends UserInfo {
 typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
 
 class UserInfoTable extends _i1.Table {
-  UserInfoTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_user_info') {
+  UserInfoTable({super.tableRelation})
+      : super(tableName: 'serverpod_user_info') {
     userIdentifier = _i1.ColumnString(
       'userIdentifier',
       this,

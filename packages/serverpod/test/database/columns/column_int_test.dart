@@ -9,7 +9,7 @@ void main() {
     test(
         'when toString is called then column name withing double quotes is returned.',
         () {
-      expect(column.toString(), 'test."$columnName"');
+      expect(column.toString(), '"test"."$columnName"');
     });
 
     test('when columnName getter is called then column name is returned.', () {

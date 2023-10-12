@@ -11,7 +11,7 @@ void main() {
 
       test('then query prefix is built based on relations.', () {
         expect(expression.toString(),
-            '(citizen_oldCompany_company_town_town_mayor_citizen."name" = \'Alex\' AND citizen_company_company."name" = \'Serverpod\')');
+            '("citizen_oldCompany_company_town_town_mayor_citizen"."name" = \'Alex\' AND "citizen_company_company"."name" = \'Serverpod\')');
       });
 
       test('then each in expression column is retrievable.', () {
@@ -21,7 +21,7 @@ void main() {
       test('then each column expression has table relation.', () {
         var columns = expression.columns;
         var columnWithTableRelations =
-            columns.where((element) => element.table.tableRelations != null);
+            columns.where((element) => element.table.tableRelation != null);
 
         expect(columnWithTableRelations.length, 2,
             reason:
@@ -34,16 +34,16 @@ void main() {
 
       test('then query prefix is built based on relations.', () {
         expect(nestedRelationAccess.toString(),
-            'citizen_oldCompany_company_town_town_mayor_citizen."name"');
+            '"citizen_oldCompany_company_town_town_mayor_citizen"."name"');
       });
 
       test('then table relations exists.', () {
-        expect(nestedRelationAccess.table.tableRelations, isNotNull);
+        expect(nestedRelationAccess.table.tableRelation, isNotNull);
       });
 
       test('then an table relation is build for each table relation reference.',
           () {
-        expect(nestedRelationAccess.table.tableRelations?.length, 3,
+        expect(nestedRelationAccess.table.tableRelation?.getRelations.length, 3,
             reason:
                 'A table relation for each relation field traversal should be built, Citizen -> Company -> Town.');
       });
@@ -51,63 +51,69 @@ void main() {
       test(
           'then first table relation describes relation for citizen oldCompany field.',
           () {
-        var firstTableRelation = nestedRelationAccess.table.tableRelations![0];
+        var firstTableRelation =
+            nestedRelationAccess.table.tableRelation?.getRelations[0];
 
         expectTableRelationWith(
-          actualTable: firstTableRelation,
-          expectedTableName: 'company',
-          expectedQueryPrefix: 'citizen_oldCompany_',
-          expectedForeignTableColumn: 'citizen."oldCompanyId"',
-          expectedColumn: 'citizen_oldCompany_company."id"',
+          actualTableRelation: firstTableRelation,
+          expectedLastForeignTableName: 'company',
+          expectedRelationQueryAlias: 'citizen_oldCompany_company',
+          expectedLastJoiningField: '"citizen"."oldCompanyId"',
+          expectedLastJoiningForeignField: '"citizen_oldCompany_company"."id"',
         );
-      }, skip: nestedRelationAccess.table.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelation == null);
 
       test(
           'then second table relation describes relation for company town field.',
           () {
-        var secondTableRelation = nestedRelationAccess.table.tableRelations![1];
+        var secondTableRelation =
+            nestedRelationAccess.table.tableRelation?.getRelations[1];
 
         expectTableRelationWith(
-          actualTable: secondTableRelation,
-          expectedTableName: 'town',
-          expectedQueryPrefix: 'citizen_oldCompany_company_town_',
-          expectedForeignTableColumn: 'citizen_oldCompany_company."townId"',
-          expectedColumn: 'citizen_oldCompany_company_town_town."id"',
+          actualTableRelation: secondTableRelation,
+          expectedLastForeignTableName: 'town',
+          expectedRelationQueryAlias: 'citizen_oldCompany_company_town_town',
+          expectedLastJoiningField: '"citizen_oldCompany_company"."townId"',
+          expectedLastJoiningForeignField:
+              '"citizen_oldCompany_company_town_town"."id"',
         );
-      }, skip: nestedRelationAccess.table.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelation == null);
 
       test('then third table relation describes relation for town mayor field.',
           () {
-        var thirdTableRelation = nestedRelationAccess.table.tableRelations![2];
+        var thirdTableRelation =
+            nestedRelationAccess.table.tableRelation?.getRelations[2];
 
         expectTableRelationWith(
-          actualTable: thirdTableRelation,
-          expectedTableName: 'citizen',
-          expectedQueryPrefix: 'citizen_oldCompany_company_town_town_mayor_',
-          expectedForeignTableColumn:
-              'citizen_oldCompany_company_town_town."mayorId"',
-          expectedColumn:
-              'citizen_oldCompany_company_town_town_mayor_citizen."id"',
+          actualTableRelation: thirdTableRelation,
+          expectedLastForeignTableName: 'citizen',
+          expectedRelationQueryAlias:
+              'citizen_oldCompany_company_town_town_mayor_citizen',
+          expectedLastJoiningField:
+              '"citizen_oldCompany_company_town_town"."mayorId"',
+          expectedLastJoiningForeignField:
+              '"citizen_oldCompany_company_town_town_mayor_citizen"."id"',
         );
-      }, skip: nestedRelationAccess.table.tableRelations == null);
+      }, skip: nestedRelationAccess.table.tableRelation == null);
     });
   });
 }
 
 void expectTableRelationWith({
   required dynamic
-      actualTable /* Dynamic is used since we don't want to expose the TableRelation class */,
-  required String expectedTableName,
-  required String expectedQueryPrefix,
-  required String expectedForeignTableColumn,
-  required String expectedColumn,
+      actualTableRelation /* Dynamic is used since we don't want to expose the TableRelation class */,
+  required String expectedLastForeignTableName,
+  required String expectedRelationQueryAlias,
+  required String expectedLastJoiningField,
+  required String expectedLastJoiningForeignField,
 }) {
-  expect(actualTable.tableName, expectedTableName,
-      reason: 'Table name is wrong.');
-  expect(actualTable.queryPrefix, expectedQueryPrefix,
-      reason: 'Query prefix is wrong.');
-  expect(actualTable.foreignTableColumn.toString(), expectedForeignTableColumn,
-      reason: 'Foreign table column is wrong.');
-  expect(actualTable.column.toString(), expectedColumn,
-      reason: 'Column is wrong.');
+  expect(actualTableRelation.relationQueryAlias, expectedRelationQueryAlias,
+      reason: 'Relation query alias is wrong.');
+  expect(actualTableRelation.lastForeignTableName, expectedLastForeignTableName,
+      reason: 'Last foreign table name is wrong.');
+  expect(actualTableRelation.lastJoiningField, expectedLastJoiningField,
+      reason: 'Last joining field is wrong.');
+  expect(actualTableRelation.lastJoiningForeignField,
+      expectedLastJoiningForeignField,
+      reason: 'Last joining foreign field is wrong.');
 }

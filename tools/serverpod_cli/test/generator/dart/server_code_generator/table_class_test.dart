@@ -59,13 +59,13 @@ void main() {
       });
 
       test(
-          'has constructor taking query prefix and table relations and passes table name to super.',
+          'has constructor taking table relation and passes table name to super.',
           () {
         expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExampleTable!,
               name: null,
-              parameters: ['super.queryPrefix', 'super.tableRelations'],
+              parameters: ['super.tableRelation'],
               superArguments: ['tableName: \'$tableName\''],
             ),
             isTrue,
@@ -378,6 +378,63 @@ void main() {
             ),
             isTrue,
             reason: 'Missing declaration for relation table getter.');
+      });
+    },
+        skip: maybeClassNamedExampleTable == null
+            ? 'Could not run test because ${testClassName}Table class was not found.'
+            : false);
+  });
+
+  group(
+      'Given a class with many relation object relation field when generating code',
+      () {
+    var relationFieldName = 'employees';
+    var objectRelationType = 'Citizen';
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withListRelationField(
+              relationFieldName, objectRelationType, 'companyId')
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleTable =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Table',
+    );
+
+    group(
+        'then the class named ${testClassName}Table has many relation private field.',
+        () {
+      test('has private field for relation.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              maybeClassNamedExampleTable!,
+              name: '_$relationFieldName',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for _$relationFieldName private field.');
+      });
+
+      test('has getter for many relation.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: relationFieldName,
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for $relationFieldName many relation getter.');
       });
     },
         skip: maybeClassNamedExampleTable == null

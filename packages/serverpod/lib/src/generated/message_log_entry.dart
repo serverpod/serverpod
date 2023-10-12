@@ -398,10 +398,8 @@ typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
     MessageLogEntryTable);
 
 class MessageLogEntryTable extends _i1.Table {
-  MessageLogEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_message_log') {
+  MessageLogEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_message_log') {
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
       this,

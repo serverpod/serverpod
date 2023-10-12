@@ -271,10 +271,8 @@ class _EmailResetImpl extends EmailReset {
 typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
 
 class EmailResetTable extends _i1.Table {
-  EmailResetTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_email_reset') {
+  EmailResetTable({super.tableRelation})
+      : super(tableName: 'serverpod_email_reset') {
     userId = _i1.ColumnInt(
       'userId',
       this,

@@ -397,10 +397,7 @@ class _LogEntryImpl extends LogEntry {
 typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
 
 class LogEntryTable extends _i1.Table {
-  LogEntryTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_log') {
+  LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
     sessionLogId = _i1.ColumnInt(
       'sessionLogId',
       this,

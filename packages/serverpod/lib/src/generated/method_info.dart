@@ -253,10 +253,8 @@ class _MethodInfoImpl extends MethodInfo {
 typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
 class MethodInfoTable extends _i1.Table {
-  MethodInfoTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_method') {
+  MethodInfoTable({super.tableRelation})
+      : super(tableName: 'serverpod_method') {
     endpoint = _i1.ColumnString(
       'endpoint',
       this,

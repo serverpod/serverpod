@@ -13,6 +13,7 @@ declare -a projectPaths=(
     "packages/serverpod" 
     "packages/serverpod_serialization"
     "tests/serverpod_test_client"
+    "tests/serverpod_test_server"
 )
 
 exit_code=0

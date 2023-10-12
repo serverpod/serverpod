@@ -1,7 +1,9 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -58,6 +60,8 @@ class SerializableEntityLibraryGenerator {
             tableName,
             fields,
           ),
+          if (buildRepository.hasImplicitClassOperations(fields))
+            _buildEntityImplicitClass(className, classDefinition),
         ]);
 
         if (serverCode && tableName != null) {
@@ -90,8 +94,20 @@ class SerializableEntityLibraryGenerator {
                 fields,
                 classDefinition,
               ),
+            if (buildRepository.hasAttachRowOperations(fields))
+              buildRepository.buildEntityAttachRowRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
             if (buildRepository.hasDetachOperations(fields))
               buildRepository.buildEntityDetachRepositoryClass(
+                className,
+                fields,
+                classDefinition,
+              ),
+            if (buildRepository.hasDetachRowOperations(fields))
+              buildRepository.buildEntityDetachRowRepositoryClass(
                 className,
                 fields,
                 classDefinition,
@@ -222,6 +238,122 @@ class SerializableEntityLibraryGenerator {
           _buildEntityImplClassConstructor(classDefinition, fields, tableName),
         )
         ..methods.add(_buildCopyWithMethod(classDefinition, fields));
+    });
+  }
+
+  Class _buildEntityImplicitClass(
+    String className,
+    ClassDefinition classDefinition,
+  ) {
+    var hiddenFields = classDefinition.fields
+        .where((field) => field.hiddenSerializableField(serverCode));
+    var visibleFields = classDefinition.fields
+        .where((field) => field.shouldIncludeField(serverCode));
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}Implicit'
+        ..extend = refer('_${className}Impl')
+        ..fields.addAll(hiddenFields.map((field) {
+          return Field((fieldBuilder) {
+            fieldBuilder
+              ..name = createFieldName(serverCode, field)
+              ..type = field.type.reference(
+                serverCode,
+                config: config,
+              );
+          });
+        }))
+        ..constructors.add(Constructor((constructorBuilder) {
+          Map<String, Expression> namedParams =
+              visibleFields.fold({}, (map, field) {
+            return {
+              ...map,
+              field.name: refer(field.name),
+            };
+          });
+
+          constructorBuilder
+            ..name = '_'
+            ..optionalParameters.addAll(
+              _buildEntityClassConstructorParameters(
+                classDefinition,
+                classDefinition.fields,
+                classDefinition.tableName,
+                setAsToThis: false,
+              ),
+            )
+            ..optionalParameters.addAll(hiddenFields.map((field) {
+              return Parameter(
+                (p) => p
+                  ..name = createFieldName(serverCode, field)
+                  ..named = true
+                  ..toThis = true,
+              );
+            }))
+            ..initializers.add(refer('super').call([], namedParams).code);
+        }))
+        ..constructors.add(Constructor((constructorBuilder) {
+          constructorBuilder
+            ..factory = true
+            ..requiredParameters.add(Parameter((p) => p
+              ..name = className.camelCase
+              ..type = refer(className)))
+            ..optionalParameters.addAll(hiddenFields.map((field) {
+              return Parameter((p) => p
+                ..name = createFieldName(serverCode, field)
+                ..named = true
+                ..type = field.type.reference(serverCode, config: config));
+            }))
+            ..body = Block((blockBuilder) {
+              blockBuilder.statements.add(refer('${className}Implicit')
+                  .property('_')
+                  .call([], {
+                    ...visibleFields.fold({}, (map, field) {
+                      return {
+                        ...map,
+                        field.name:
+                            refer(className.camelCase).property(field.name),
+                      };
+                    }),
+                    ...hiddenFields.fold({}, (map, field) {
+                      return {
+                        ...map,
+                        createFieldName(serverCode, field):
+                            refer(createFieldName(serverCode, field)),
+                      };
+                    })
+                  })
+                  .returned
+                  .statement);
+            });
+        }))
+        ..methods.add(Method((methodBuilder) {
+          methodBuilder
+            ..name = 'allToJson'
+            ..annotations.add(refer('override'))
+            ..returns = refer('Map<String, dynamic>')
+            ..body = Block((blockBuilder) {
+              blockBuilder.statements.add(
+                refer('var jsonMap')
+                    .assign(refer('super').property('allToJson').call([]))
+                    .statement,
+              );
+
+              var values = hiddenFields.fold({}, (map, field) {
+                return {
+                  ...map,
+                  "'${field.name}'": createFieldName(serverCode, field),
+                };
+              });
+
+              blockBuilder.statements.add(
+                refer('jsonMap').property('addAll').call(
+                  [refer('$values')],
+                ).statement,
+              );
+              blockBuilder.statements.add(refer('jsonMap').returned.statement);
+            });
+        }));
     });
   }
 
@@ -1183,10 +1315,15 @@ class SerializableEntityLibraryGenerator {
       c.constructors.add(_buildEntityTableClassConstructor(
           tableName, fields, classDefinition));
 
-      // TODO - Fields and getters should be separated
-      _buildEntityTableClassFieldsAndGetters(fields, c, classDefinition);
+      c.fields.addAll(
+        _buildEntityTableClassFields(fields, classDefinition.subDirParts),
+      );
 
-      c.methods.add(_buildEntityTableClassColumnGetter(fields));
+      c.methods.addAll([
+        ..._buildEntityTableClassRelationGetters(fields, classDefinition),
+        ..._buildEntityTableClassManyRelationGetters(fields, classDefinition),
+        _buildEntityTableClassColumnGetter(fields),
+      ]);
 
       var objectRelationFields =
           fields.where((f) => f.relation is ObjectRelationDefinition);
@@ -1245,23 +1382,25 @@ class SerializableEntityLibraryGenerator {
         ..body = literalList([
           for (var field in fields)
             if (field.shouldSerializeFieldForDatabase(serverCode))
-              refer(_createTableFieldName(serverCode, field))
+              refer(createFieldName(serverCode, field))
         ]).code,
     );
   }
 
-  void _buildEntityTableClassFieldsAndGetters(
-      List<SerializableEntityFieldDefinition> fields,
-      ClassBuilder c,
-      ClassDefinition classDefinition) {
+  List<Field> _buildEntityTableClassFields(
+    List<SerializableEntityFieldDefinition> fields,
+    List<String> subDirParts,
+  ) {
+    List<Field> tableFields = [];
+
     for (var field in fields) {
       // Simple column field
       if (field.shouldSerializeFieldForDatabase(serverCode) &&
           !(field.name == 'id' && serverCode)) {
-        c.fields.add(Field((f) => f
+        tableFields.add(Field((f) => f
           ..late = true
           ..modifier = FieldModifier.final$
-          ..name = _createTableFieldName(serverCode, field)
+          ..name = createFieldName(serverCode, field)
           ..docs.addAll(field.documentation ?? [])
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
@@ -1271,93 +1410,229 @@ class SerializableEntityLibraryGenerator {
                     field.type.reference(
                       serverCode,
                       nullable: false,
-                      subDirParts: classDefinition.subDirParts,
+                      subDirParts: subDirParts,
                       config: config,
                     )
                   ]
                 : []))));
       } else if (field.relation is ObjectRelationDefinition) {
-        // Complex relation fields
-        var objectRelation = field.relation as ObjectRelationDefinition;
-
         // Add internal nullable table field
-        c.fields.add(Field((f) => f
+        tableFields.add(Field((f) => f
           ..name = '_${field.name}'
           ..docs.addAll(field.documentation ?? [])
           ..type = field.type.reference(
             serverCode,
-            subDirParts: classDefinition.subDirParts,
+            subDirParts: subDirParts,
             config: config,
             nullable: true,
             typeSuffix: 'Table',
           )));
+      } else if (field.relation is ListRelationDefinition) {
+        // Add internal nullable many relation field
+        tableFields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..docs.addAll(field.documentation ?? [])
+          ..type = TypeReference((t) => t
+            ..symbol = 'ManyRelation'
+            ..url = serverpodUrl(serverCode)
+            ..isNullable = true
+            ..types.add(field.type.generics.first.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+              nullable: false,
+              typeSuffix: 'Table',
+            )))));
+      }
+    }
 
-        // Add getter method for relation table that creates the table
-        c.methods.add(Method((m) => m
-          ..name = field.name
-          ..type = MethodType.getter
-          ..returns = field.type.reference(
+    return tableFields;
+  }
+
+  List<Method> _buildEntityTableClassRelationGetters(
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    List<Method> getters = [];
+
+    var fieldsWithObjectRelation =
+        fields.where((f) => f.relation is ObjectRelationDefinition);
+
+    for (var field in fieldsWithObjectRelation) {
+      var objectRelation = field.relation as ObjectRelationDefinition;
+
+      // Add getter method for relation table that creates the table
+      getters.add(Method((m) => m
+        ..name = field.name
+        ..type = MethodType.getter
+        ..returns = field.type.reference(
+          serverCode,
+          subDirParts: classDefinition.subDirParts,
+          config: config,
+          nullable: false,
+          typeSuffix: 'Table',
+        )
+        ..body = Block.of([
+          Code('if (_${field.name} != null) return _${field.name}!;'),
+          refer('_${field.name}')
+              .assign(
+                refer(
+                  'createRelationTable',
+                  'package:serverpod/serverpod.dart',
+                ).call(
+                  [],
+                  {
+                    'relationFieldName': literalString(field.name),
+                    'field': refer(classDefinition.className)
+                        .property('t')
+                        .property(objectRelation.fieldName),
+                    'foreignField': field.type
+                        .reference(
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          config: config,
+                          nullable: false,
+                        )
+                        .property('t')
+                        .property(objectRelation.foreignFieldName),
+                    'tableRelation': refer('tableRelation'),
+                    'createTable': Method(
+                      (m) => m
+                        ..requiredParameters.addAll([
+                          Parameter((p) => p..name = 'foreignTableRelation'),
+                        ])
+                        ..lambda = true
+                        ..body = field.type
+                            .reference(
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          config: config,
+                          nullable: false,
+                          typeSuffix: 'Table',
+                        )
+                            .call([], {
+                          'tableRelation': refer('foreignTableRelation')
+                        }).code,
+                    ).closure
+                  },
+                ),
+              )
+              .statement,
+          Code('return _${field.name}!;'),
+        ])));
+    }
+
+    return getters;
+  }
+
+  List<Method> _buildEntityTableClassManyRelationGetters(
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    List<Method> getters = [];
+
+    var manyRelationFields =
+        fields.where((f) => f.relation is ListRelationDefinition);
+
+    for (var field in manyRelationFields) {
+      var listRelation = field.relation as ListRelationDefinition;
+
+      getters.add(Method((m) => m
+        ..name = field.name
+        ..type = MethodType.getter
+        ..returns = TypeReference((t) => t
+          ..symbol = 'ManyRelation'
+          ..url = serverpodUrl(serverCode)
+          ..types.add(field.type.generics.first.reference(
             serverCode,
             subDirParts: classDefinition.subDirParts,
             config: config,
             nullable: false,
             typeSuffix: 'Table',
-          )
-          ..body = Block.of([
-            Code('if (_${field.name} != null) return _${field.name}!;'),
-            refer('_${field.name}')
-                .assign(refer('createRelationTable',
-                        'package:serverpod/serverpod.dart')
-                    .call([], {
-                  'queryPrefix': refer('queryPrefix'),
-                  'fieldName': literalString(field.name),
-                  'foreignTableName': field.type
-                      .reference(
-                        serverCode,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                        nullable: false,
-                      )
-                      .property('t')
-                      .property('tableName'),
-                  'column': refer(objectRelation.fieldName),
-                  'foreignColumnName': field.type
-                      .reference(
-                        serverCode,
-                        subDirParts: classDefinition.subDirParts,
-                        config: config,
-                        nullable: false,
-                      )
-                      .property('t')
-                      .property(objectRelation.foreignFieldName)
-                      .property('columnName'),
-                  'createTable': Method((m) => m
-                    ..requiredParameters.addAll([
-                      Parameter((p) => p..name = 'relationQueryPrefix'),
-                      Parameter((p) => p..name = 'foreignTableRelation'),
-                    ])
-                    ..lambda = true
-                    ..body = field.type
+          )))
+        ..body = Block.of([
+          Code('if (_${field.name} != null) return _${field.name}!;'),
+          declareVar('relationTable')
+              .assign(
+                refer(
+                  'createRelationTable',
+                  'package:serverpod/serverpod.dart',
+                ).call(
+                  [],
+                  {
+                    'relationFieldName': literalString(field.name),
+                    'field': refer(classDefinition.className)
+                        .property('t')
+                        .property(listRelation.fieldName),
+                    'foreignField': field.type.generics.first
                         .reference(
-                      serverCode,
-                      subDirParts: classDefinition.subDirParts,
-                      config: config,
-                      nullable: false,
-                      typeSuffix: 'Table',
-                    )
-                        .call([], {
-                      'queryPrefix': refer('relationQueryPrefix'),
-                      'tableRelations': literalList([
-                        refer('tableRelations').nullSafeSpread,
-                        refer('foreignTableRelation'),
-                      ]),
-                    }).code).closure
-                }))
-                .statement,
-            Code('return _${field.name}!;'),
-          ])));
-      }
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          config: config,
+                          nullable: false,
+                        )
+                        .property('t')
+                        .property(
+                          listRelation.implicitForeignField
+                              ? createImplicitFieldName(
+                                  listRelation.foreignFieldName)
+                              : listRelation.foreignFieldName,
+                        ),
+                    'tableRelation': refer('tableRelation'),
+                    'createTable': Method(
+                      (m) => m
+                        ..requiredParameters.addAll([
+                          Parameter((p) => p..name = 'foreignTableRelation'),
+                        ])
+                        ..lambda = true
+                        ..body = field.type.generics.first
+                            .reference(
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          config: config,
+                          nullable: false,
+                          typeSuffix: 'Table',
+                        )
+                            .call([], {
+                          'tableRelation': refer('foreignTableRelation')
+                        }).code,
+                    ).closure
+                  },
+                ),
+              )
+              .statement,
+          refer('_${field.name}')
+              .assign(
+                TypeReference((t) => t
+                  ..symbol = 'ManyRelation'
+                  ..url = serverpodUrl(serverCode)
+                  ..types.add(field.type.generics.first.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                    nullable: false,
+                    typeSuffix: 'Table',
+                  ))).call(
+                  [],
+                  {
+                    'tableWithRelations': refer('relationTable'),
+                    'table': field.type.generics.first
+                        .reference(
+                          serverCode,
+                          subDirParts: classDefinition.subDirParts,
+                          config: config,
+                          nullable: false,
+                        )
+                        .property('t')
+                  },
+                ),
+              )
+              .statement,
+          Code('return _${field.name}!;'),
+        ])));
     }
+
+    return getters;
   }
 
   Constructor _buildEntityTableClassConstructor(
@@ -1368,15 +1643,7 @@ class SerializableEntityLibraryGenerator {
       constructorBuilder.optionalParameters.add(
         Parameter(
           (p) => p
-            ..name = 'queryPrefix'
-            ..toSuper = true
-            ..named = true,
-        ),
-      );
-      constructorBuilder.optionalParameters.add(
-        Parameter(
-          (p) => p
-            ..name = 'tableRelations'
+            ..name = 'tableRelation'
             ..toSuper = true
             ..named = true,
         ),
@@ -1388,7 +1655,7 @@ class SerializableEntityLibraryGenerator {
         for (var field in fields.where(
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
-            refer(_createTableFieldName(serverCode, field))
+            refer(createFieldName(serverCode, field))
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
@@ -1609,16 +1876,5 @@ class SerializableEntityLibraryGenerator {
     }
 
     return refer(field.name);
-  }
-
-  String _createTableFieldName(
-    bool serverCode,
-    SerializableEntityFieldDefinition field,
-  ) {
-    if (field.hiddenSerializableField(serverCode)) {
-      return '\$${field.name}';
-    }
-
-    return field.name;
   }
 }

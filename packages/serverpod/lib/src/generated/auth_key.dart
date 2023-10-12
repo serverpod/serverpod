@@ -302,10 +302,7 @@ class _AuthKeyImpl extends AuthKey {
 typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
 
 class AuthKeyTable extends _i1.Table {
-  AuthKeyTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'serverpod_auth_key') {
+  AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
     userId = _i1.ColumnInt(
       'userId',
       this,

@@ -27,7 +27,7 @@ abstract class Column<T> {
 
   @override
   String toString() {
-    return '${table.queryPrefix}."$_columnName"';
+    return '"${table.queryPrefix}"."$_columnName"';
   }
 }
 
@@ -152,6 +152,32 @@ class ColumnDouble extends _ValueOperatorColumn<double>
 
   @override
   Expression _encodeValueForQuery(double value) => Expression(value);
+}
+
+/// A [Column] holding a count of rows.
+class ColumnCount extends _ValueOperatorColumn<int>
+    with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+  /// Where expression applied to filter what is counted.
+  Expression? innerWhere;
+
+  /// Table without relations to count rows from.
+  Table baseTable;
+
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnCount(this.innerWhere, this.baseTable, Column column)
+      : super(column.columnName, column.table);
+
+  @override
+  String toString() {
+    if (innerWhere != null) {
+      return 'COUNT(${table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
+    }
+
+    return 'COUNT(${super.toString()})';
+  }
+
+  @override
+  Expression _encodeValueForQuery(int value) => Expression(value);
 }
 
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {

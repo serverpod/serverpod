@@ -233,10 +233,8 @@ typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
     ObjectWithParentTable);
 
 class ObjectWithParentTable extends _i1.Table {
-  ObjectWithParentTable({
-    super.queryPrefix,
-    super.tableRelations,
-  }) : super(tableName: 'object_with_parent') {
+  ObjectWithParentTable({super.tableRelation})
+      : super(tableName: 'object_with_parent') {
     other = _i1.ColumnInt(
       'other',
       this,
