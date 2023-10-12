@@ -147,51 +147,9 @@ class GeneratorConfig {
     }
     var serverPackage = pubspec['name'];
     var name = _stripPackage(serverPackage);
-    Map? baseConfig;
-    Set<ServerObject> servers = {};
-    InfoObject? openApiInfo;
-    try {
-      var file = File(
-        p.join(dir, 'config', 'base.yaml'),
-      );
-      var yamlStr = file.readAsStringSync();
-      baseConfig = loadYaml(yamlStr) as YamlMap;
-      if (baseConfig.isNotEmpty) {
-        var configs = jsonDecode(jsonEncode(baseConfig));
-        var serverMap = configs['servers'];
 
-        if (serverMap.isNotEmpty) {
-          try {
-            servers = serverMap.entries
-                .map<ServerObject>(
-                  (entry) => ServerObject(
-                    url: _getUrl(entry.value),
-                    description: entry.key,
-                  ),
-                )
-                .toSet();
-          } catch (e, s) {
-            log.error(
-                '$e. Invalid value in "servers". Please check the "servers" value in the "config/base.yaml"',
-                stackTrace: s);
-            return null;
-          }
-        }
-        Map openApiMap = configs['openapi'];
-        if (openApiMap.isNotEmpty) {
-          try {
-            openApiInfo = InfoObject.fromJson(openApiMap['info']);
-          } catch (e, s) {
-            log.error(
-                '$e. Invalid value in "info". Please check the "info" value in the "config/base.yaml"',
-                stackTrace: s);
-            return null;
-          }
-        }
-      }
-    } catch (_) {
-      log.debug('Failed to load config/base.yaml');
-    }
+    Set<ServerObject> servers = _getServersFromConfigs(dir);
+    InfoObject? openApiInfo;
 
     Map? generatorConfig;
     try {
@@ -203,8 +161,39 @@ class GeneratorConfig {
           'project?');
       return null;
     }
+    bool hasOpenApiMap = generatorConfig!.containsKey('openapi');
+    if (hasOpenApiMap) {
+      try {
+        Map<String, dynamic> openApiMap = jsonDecode(
+          jsonEncode(
+            generatorConfig['openapi'],
+          ),
+        );
+        LicenseObject? licenseObject = openApiMap.containsKey('license')
+            ? LicenseObject.fromJson(openApiMap['license'])
+            : null;
+        ContactObject? contactObject = openApiMap.containsKey('contact')
+            ? ContactObject.fromJson(openApiMap['contact'])
+            : null;
+        Uri? termsOfService = openApiMap.containsKey('termsOfService')
+            ? Uri.parse(openApiMap['termsOfService'])
+            : null;
+        openApiInfo = InfoObject(
+          title: openApiMap['info']['title'],
+          description: openApiMap['info']['description'],
+          version: pubspec['version'],
+          license: licenseObject,
+          contact: contactObject,
+          termsOfService: termsOfService,
+        );
+      } catch (e) {
+        log.error(
+          'There\'s an issue with the \'openapi\' section in config/generator.yaml',
+        );
+      }
+    }
 
-    var typeStr = generatorConfig!['type'];
+    var typeStr = generatorConfig['type'];
     late PackageType type;
     if (typeStr == 'module') {
       type = PackageType.module;
@@ -332,6 +321,42 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
       }
     }
     return str;
+  }
+
+  static Set<ServerObject> _getServersFromConfigs(String dir) {
+    Set<ServerObject> servers = {};
+    for (var path in ['development', 'staging', 'production']) {
+      try {
+        Map? apiConfig;
+        var file = File(
+          p.join(dir, 'config', '$path.yaml'),
+        );
+        var yamlStr = file.readAsStringSync();
+        apiConfig = loadYaml(yamlStr) as YamlMap;
+        if (apiConfig.isNotEmpty) {
+          var configs = jsonDecode(jsonEncode(apiConfig));
+          var serverMap = configs['apiServer'];
+
+          if (serverMap.isNotEmpty) {
+            try {
+              servers.add(
+                ServerObject(
+                  url: _getUrl(serverMap),
+                  description: '$path server',
+                ),
+              );
+            } catch (e) {
+              log.debug(
+                'Invalid value in \'apiServer\'. Please check the value in the \'config/$path.yaml\'',
+              );
+            }
+          }
+        }
+      } catch (_) {
+        log.debug('Failed to load config/$path.yaml');
+      }
+    }
+    return servers;
   }
 }
 

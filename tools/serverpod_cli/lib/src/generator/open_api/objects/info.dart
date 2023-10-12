@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 /// eg.
@@ -81,7 +82,6 @@ class InfoObject {
     if (termsOfService != null) {
       map['termsOfService'] = termsOfService?.toString();
     }
-
     return map;
   }
 }
@@ -123,6 +123,15 @@ class LicenseObject {
     }
     return map;
   }
+
+  factory LicenseObject.fromJson(Map<String, dynamic> map) {
+    return LicenseObject(
+      name: map['name'] as String,
+      identifier:
+          map['identifier'] != null ? map['identifier'] as String : null,
+      url: map['url'] != null ? Uri.parse(map['url']) : null,
+    );
+  }
 }
 
 /// example.
@@ -143,7 +152,6 @@ class ContactObject {
   final Uri url;
 
   /// The email address of the contact person/organization.
-  /// This must be in the form of an email address.
   final String email;
   ContactObject({
     required this.name,
@@ -157,6 +165,14 @@ class ContactObject {
       'url': url.toString(),
       'email': email,
     };
+  }
+
+  factory ContactObject.fromJson(Map<String, dynamic> map) {
+    return ContactObject(
+      name: map['name'] as String,
+      url: Uri.parse(map['url'] as String),
+      email: map['email'] as String,
+    );
   }
 }
 
@@ -181,5 +197,13 @@ class ExternalDocumentationObject {
       map['description'] = description!;
     }
     return map;
+  }
+
+  factory ExternalDocumentationObject.fromJson(Map<String, dynamic> map) {
+    return ExternalDocumentationObject(
+      url: Uri.parse(map['url'] as String),
+      description:
+          map['description'] != null ? map['description'] as String : null,
+    );
   }
 }
