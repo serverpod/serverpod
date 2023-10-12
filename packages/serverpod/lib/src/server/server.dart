@@ -311,8 +311,8 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var path = uri.path.substring(1);
-    return endpoints.handleUriCall(this, path, uri, body, request);
+    var endpointName = uri.path.substring(1);
+    return endpoints.handleUriCall(this, endpointName, uri, body, request);
   }
 
   Future<void> _handleWebsocket(

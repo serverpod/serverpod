@@ -20,8 +20,4 @@ class SimpleEndpoint extends Endpoint {
   Future<int> getGlobalInt(Session session) async {
     return globalInt;
   }
-
-  Future<String> hello(Session session, String name) async {
-    return 'Hello $name';
-  }
 }
