@@ -451,6 +451,40 @@ void main() {
                 'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
+
+    test('when ordering by multiple many relations then exception is thrown.',
+        () {
+      var friendsRelationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      var enemiesRelationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'enemies',
+      );
+
+      List<Order> orderByList = [
+        Order(
+          column: friendsRelationTable.manyRelation.count(),
+          orderDescending: false,
+        ),
+        Order(
+          column: enemiesRelationTable.manyRelation.count(),
+          orderDescending: false,
+        )
+      ];
+
+      expect(
+          () =>
+              SelectQueryBuilder(table: citizenTable).withOrderBy(orderByList),
+          throwsA(isA<UnimplementedError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+              'UnimplementedError: Ordering by multiple many relation columns is not supported. Please file an issue at https://github.com/serverpod/serverpod/issues if you need this.',
+            ),
+          )));
+    });
   });
 
   group('Given CountQueryBuilder', () {

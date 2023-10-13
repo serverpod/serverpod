@@ -85,14 +85,29 @@ class SelectQueryBuilder {
   /// If order by includes columns from a relation, the relation will be joined
   /// in the query.
   /// Throws an [ArgumentError] if the same column is included multiple times.
+  /// Throws an [UnimplementedError] if multiple many relation columns are
+  /// included.
   SelectQueryBuilder withOrderBy(List<Order>? orderBy) {
     Set<String> columns = {};
+    bool hasCountColumn = false;
     for (var order in orderBy ?? []) {
       if (columns.contains(order.column.queryAlias)) {
         throw ArgumentError(
           'Ordering by same column multiple times: ${order.column.queryAlias}',
         );
       }
+
+      if (order.column is ColumnCount) {
+        if (hasCountColumn) {
+          throw UnimplementedError(
+            'Ordering by multiple many relation columns is not supported. '
+            'Please file an issue at '
+            'https://github.com/serverpod/serverpod/issues if you need this.',
+          );
+        }
+        hasCountColumn = true;
+      }
+
       columns.add(order.column.queryAlias);
     }
 
