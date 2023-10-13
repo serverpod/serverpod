@@ -55,18 +55,15 @@ class SelectQueryBuilder {
       where: _where,
       listQueryAdditions: _listQueryAdditions,
     );
+    var orderBy = _buildOrderByQuery(orderBy: _orderBy);
 
     var query = '';
     query += 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
-
-    if (groupBy != null) query += ' $groupBy';
-    if (_orderBy != null) {
-      query +=
-          ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
-    }
+    if (groupBy != null) query += ' GROUP BY $groupBy';
+    if (orderBy != null) query += ' ORDER BY $orderBy';
 
     var limit = _limit;
 
