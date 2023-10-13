@@ -1294,6 +1294,7 @@ class SerializableEntityLibraryGenerator {
     return entityClassFields;
   }
 
+  /// TODO: REMOVE
   Code _buildExpressionBuilderTypeDef(String className) {
     return FunctionType(
       (f) {
@@ -1325,17 +1326,17 @@ class SerializableEntityLibraryGenerator {
         _buildEntityTableClassColumnGetter(fields),
       ]);
 
-      var objectRelationFields =
-          fields.where((f) => f.relation is ObjectRelationDefinition);
-      if (objectRelationFields.isNotEmpty) {
-        c.methods
-            .add(_buildEntityTableClassGetRelationTable(objectRelationFields));
+      var relationFields = fields.where((f) =>
+          f.relation is ObjectRelationDefinition ||
+          f.relation is ListRelationDefinition);
+      if (relationFields.isNotEmpty) {
+        c.methods.add(_buildEntityTableClassGetRelationTable(relationFields));
       }
     });
   }
 
   Method _buildEntityTableClassGetRelationTable(
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+      Iterable<SerializableEntityFieldDefinition> relationFields) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1353,12 +1354,16 @@ class SerializableEntityLibraryGenerator {
         )
         ..body = (BlockBuilder()
               ..statements.addAll([
-                for (var objectRelationField in objectRelationFields)
+                for (var relationField in relationFields)
                   Block.of([
                     Code(
-                        'if (relationField == ${literalString(objectRelationField.name)}) {'),
+                        'if (relationField == ${literalString(relationField.name)}) {'),
                     lazyCode(() {
-                      return refer(objectRelationField.name).returned.statement;
+                      var fieldName = relationField.name;
+                      if (relationField.relation is ListRelationDefinition) {
+                        fieldName = '__$fieldName';
+                      }
+                      return refer(fieldName).returned.statement;
                     }),
                     const Code('}'),
                   ]),
@@ -1428,6 +1433,16 @@ class SerializableEntityLibraryGenerator {
             typeSuffix: 'Table',
           )));
       } else if (field.relation is ListRelationDefinition) {
+        tableFields.add(Field((f) => f
+          ..name = '___${field.name}'
+          ..docs.addAll(field.documentation ?? [])
+          ..type = field.type.generics.first.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'Table',
+          )));
         // Add internal nullable many relation field
         tableFields.add(Field((f) => f
           ..name = '_${field.name}'
@@ -1455,15 +1470,31 @@ class SerializableEntityLibraryGenerator {
   ) {
     List<Method> getters = [];
 
-    var fieldsWithObjectRelation =
-        fields.where((f) => f.relation is ObjectRelationDefinition);
+    var fieldsWithObjectRelation = fields.where(
+      (f) =>
+          f.relation is ObjectRelationDefinition ||
+          f.relation is ListRelationDefinition,
+    );
 
     for (var field in fieldsWithObjectRelation) {
-      var objectRelation = field.relation as ObjectRelationDefinition;
+      String relationFieldName = '';
+      String relationForeignFieldName = '';
+      String fieldName = '';
+
+      var relation = field.relation;
+      if (relation is ObjectRelationDefinition) {
+        relationFieldName = relation.fieldName;
+        relationForeignFieldName = relation.foreignFieldName;
+        fieldName = field.name;
+      } else if (relation is ListRelationDefinition) {
+        relationFieldName = relation.fieldName;
+        relationForeignFieldName = relation.foreignFieldName;
+        fieldName = '__${field.name}';
+      }
 
       // Add getter method for relation table that creates the table
       getters.add(Method((m) => m
-        ..name = field.name
+        ..name = fieldName
         ..type = MethodType.getter
         ..returns = field.type.reference(
           serverCode,
@@ -1473,8 +1504,8 @@ class SerializableEntityLibraryGenerator {
           typeSuffix: 'Table',
         )
         ..body = Block.of([
-          Code('if (_${field.name} != null) return _${field.name}!;'),
-          refer('_${field.name}')
+          Code('if (_$fieldName != null) return _$fieldName!;'),
+          refer('_$fieldName')
               .assign(
                 refer(
                   'createRelationTable',
@@ -1482,10 +1513,10 @@ class SerializableEntityLibraryGenerator {
                 ).call(
                   [],
                   {
-                    'relationFieldName': literalString(field.name),
+                    'relationFieldName': literalString(fieldName),
                     'field': refer(classDefinition.className)
                         .property('t')
-                        .property(objectRelation.fieldName),
+                        .property(relationFieldName),
                     'foreignField': field.type
                         .reference(
                           serverCode,
@@ -1494,7 +1525,7 @@ class SerializableEntityLibraryGenerator {
                           nullable: false,
                         )
                         .property('t')
-                        .property(objectRelation.foreignFieldName),
+                        .property(relationForeignFieldName),
                     'tableRelation': refer('tableRelation'),
                     'createTable': Method(
                       (m) => m
@@ -1518,7 +1549,7 @@ class SerializableEntityLibraryGenerator {
                 ),
               )
               .statement,
-          Code('return _${field.name}!;'),
+          Code('return _$fieldName!;'),
         ])));
     }
 
