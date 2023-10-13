@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
@@ -371,7 +372,7 @@ String? _buildGroupByQuery(
     return null;
   }
 
-  return selectFields.map((column) => '"${column.queryAlias}"').join(', ');
+  return selectFields.map((column) => '$column').join(', ');
 }
 
 String? _buildWhereQuery({Expression? where}) {
@@ -480,10 +481,13 @@ LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
 
     var subQuery = column is ColumnCount && column.innerWhere != null;
 
-    for (var subTableRelation in tableRelation.getRelations) {
+    var subTableRelations = tableRelation.getRelations;
+
+    subTableRelations.forEachIndexed((index, subTableRelation) {
+      bool lastEntry = index == subTableRelations.length - 1;
       joins[subTableRelation.relationQueryAlias] =
-          _JoinContext(subTableRelation, subQuery);
-    }
+          _JoinContext(subTableRelation, lastEntry ? subQuery : false);
+    });
   }
 
   return joins;
