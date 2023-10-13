@@ -1730,21 +1730,24 @@ class SerializableEntityLibraryGenerator {
     return Class(((c) {
       c.extend = refer('Include', 'package:serverpod/serverpod.dart');
       c.name = '${className}Include';
-      var objectRelationFields =
-          fields.where((f) => f.relation is ObjectRelationDefinition).toList();
+      var relationFields = fields
+          .where((f) =>
+              f.relation is ObjectRelationDefinition ||
+              f.relation is ListRelationDefinition)
+          .toList();
 
       c.constructors.add(_buildEntityIncludeClassConstructor(
-        objectRelationFields,
+        relationFields,
         classDefinition,
       ));
 
       c.fields.addAll(_buildEntityIncludeClassFields(
-        objectRelationFields,
+        relationFields,
         classDefinition,
       ));
 
       c.methods.addAll([
-        _buildEntityIncludeClassIncludesGetter(objectRelationFields),
+        _buildEntityIncludeClassIncludesGetter(relationFields),
         _buildEntityIncludeClassTableGetter(className),
       ]);
     }));
@@ -1897,44 +1900,73 @@ class SerializableEntityLibraryGenerator {
       ClassDefinition classDefinition) {
     List<Field> entityIncludeClassFields = [];
     for (var field in objectRelationFields) {
-      entityIncludeClassFields.add(Field((f) => f
-        ..name = '_${field.name}'
-        ..type = field.type.reference(
-          serverCode,
-          subDirParts: classDefinition.subDirParts,
-          config: config,
-          typeSuffix: 'Include',
-        )));
+      if (field.relation is ObjectRelationDefinition) {
+        entityIncludeClassFields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..type = field.type.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'Include',
+          )));
+      } else if (field.relation is ListRelationDefinition) {
+        entityIncludeClassFields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..type = field.type.generics.first.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'IncludeList',
+          )));
+      }
     }
     return entityIncludeClassFields;
   }
 
   Constructor _buildEntityIncludeClassConstructor(
-    List<SerializableEntityFieldDefinition> objectRelationFields,
+    List<SerializableEntityFieldDefinition> relationFields,
     ClassDefinition classDefinition,
   ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
-      if (objectRelationFields.isEmpty) {
+      if (relationFields.isEmpty) {
         return;
       }
 
-      for (var field in objectRelationFields) {
-        constructorBuilder.optionalParameters.add(Parameter(
-          (p) => p
-            ..name = field.name
-            ..type = field.type.reference(
-              serverCode,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-              typeSuffix: 'Include',
-            )
-            ..named = true,
-        ));
+      for (var field in relationFields) {
+        if (field.relation is ObjectRelationDefinition) {
+          constructorBuilder.optionalParameters.add(Parameter(
+            (p) => p
+              ..name = field.name
+              ..type = field.type.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'Include',
+              )
+              ..named = true,
+          ));
+        } else if (field.relation is ListRelationDefinition) {
+          constructorBuilder.optionalParameters.add(Parameter(
+            (p) => p
+              ..name = field.name
+              ..type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'IncludeList',
+              )
+              ..named = true,
+          ));
+        }
       }
 
       constructorBuilder.body = Block.of([
-        for (var field in objectRelationFields)
+        for (var field in relationFields)
           refer('_${field.name}').assign(refer(field.name)).statement,
       ]);
     });

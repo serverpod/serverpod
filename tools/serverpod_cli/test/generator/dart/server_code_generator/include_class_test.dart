@@ -144,8 +144,6 @@ void main() {
     group('then the class named ${testClassName}IncludeList', () {
       var exampleIncludeListClass = includeListClass!;
 
-      print(exampleIncludeListClass.toSource());
-
       test('inherits from IncludeList.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
@@ -199,5 +197,62 @@ void main() {
         skip: includeListClass == null
             ? 'Could not run test because ${testClassName}Include class was not found.'
             : false);
+  });
+
+  group(
+      'Given a class with table name and object relation field when generating code',
+      () {
+    var entities = [
+      ClassDefinitionBuilder()
+          .withClassName(testClassName)
+          .withFileName(testClassFileName)
+          .withTableName(tableName)
+          .withListRelationField(
+            'users',
+            'User',
+            'exampleId',
+          )
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+
+    var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
+    var maybeClassNamedExampleInclude =
+        CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}Include',
+    );
+
+    group('then the class named ${testClassName}Include', () {
+      var exampleIncludeClass = maybeClassNamedExampleInclude!;
+
+      test('has named parameter for field in private constructor.', () {
+        expect(
+            CompilationUnitHelpers.hasConstructorDeclaration(
+              exampleIncludeClass,
+              name: '_',
+              parameters: ['UserIncludeList? users'],
+            ),
+            isTrue,
+            reason:
+                'Missing constructor with named parameter for field in ${testClassName}Include.');
+      });
+
+      test('has private field as nullable class variable.', () {
+        expect(
+            CompilationUnitHelpers.hasFieldDeclaration(
+              exampleIncludeClass,
+              name: '_users',
+              type: 'UserIncludeList?',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for company field in ${testClassName}Include.');
+      });
+    });
   });
 }
