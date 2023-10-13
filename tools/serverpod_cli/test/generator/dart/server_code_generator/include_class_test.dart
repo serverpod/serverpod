@@ -41,6 +41,16 @@ void main() {
           isTrue,
           reason: 'Missing class named ${testClassName}Include.');
     });
+
+    test('then a class named ${testClassName}IncludeList is generated', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(
+            compilationUnit,
+            name: '${testClassName}IncludeList',
+          ),
+          isTrue,
+          reason: 'Missing class named ${testClassName}IncludeList.');
+    });
   });
 
   group(
@@ -123,6 +133,70 @@ void main() {
       });
     },
         skip: maybeClassNamedExampleInclude == null
+            ? 'Could not run test because ${testClassName}Include class was not found.'
+            : false);
+
+    var includeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
+      compilationUnit,
+      name: '${testClassName}IncludeList',
+    );
+
+    group('then the class named ${testClassName}IncludeList', () {
+      var exampleIncludeListClass = includeListClass!;
+
+      print(exampleIncludeListClass.toSource());
+
+      test('inherits from IncludeList.', () {
+        expect(
+            CompilationUnitHelpers.hasExtendsClause(
+              exampleIncludeListClass,
+              name: 'IncludeList',
+            ),
+            isTrue,
+            reason: 'Missing extends clause for IncludeList.');
+      });
+
+      test('has named parameter for field in private constructor.', () {
+        var constructor = CompilationUnitHelpers.tryFindConstructorDeclaration(
+          exampleIncludeListClass,
+          name: '_',
+        );
+        expect(constructor, isNotNull,
+            reason:
+                'Missing constructor with named parameter for field in ${testClassName}IncludeList.');
+
+        var params = constructor?.parameters.toSource();
+        expect(params, contains('WhereExpressionBuilder<ExampleTable>? where'));
+        expect(params, contains('super.limit'));
+        expect(params, contains('super.offset'));
+        expect(params, contains('super.orderBy'));
+        expect(params, contains('super.orderDescending'));
+        expect(params, contains('super.orderByList'));
+        expect(params, contains('super.include'));
+      });
+
+      test('has an includes method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeListClass,
+              name: 'includes',
+            ),
+            isTrue,
+            reason: 'Missing declaration for includes method.');
+      });
+
+      test('has a table method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              exampleIncludeListClass,
+              name: 'table',
+              functionExpression: 'Example.t',
+            ),
+            isTrue,
+            reason: 'Missing declaration for table method.');
+      });
+    },
+        skip: includeListClass == null
             ? 'Could not run test because ${testClassName}Include class was not found.'
             : false);
   });

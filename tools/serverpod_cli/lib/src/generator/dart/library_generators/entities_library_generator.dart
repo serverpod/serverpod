@@ -83,6 +83,11 @@ class SerializableEntityLibraryGenerator {
               fields,
               classDefinition,
             ),
+            _buildEntityIncludeListClass(
+              className,
+              fields,
+              classDefinition,
+            ),
             buildRepository.buildEntityRepositoryClass(
               className,
               fields,
@@ -1743,6 +1748,113 @@ class SerializableEntityLibraryGenerator {
         _buildEntityIncludeClassTableGetter(className),
       ]);
     }));
+  }
+
+  Class _buildEntityIncludeListClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    return Class(((c) {
+      c.extend = refer('IncludeList<${className}Include>',
+          'package:serverpod/serverpod.dart');
+      c.name = '${className}IncludeList';
+
+      c.constructors.add(_buildEntityIncludeListClassConstructor(className));
+
+      c.methods.addAll([
+        _buildEntityIncludeListClassIncludesGetter(),
+        _buildEntityIncludeClassTableGetter(className),
+      ]);
+    }));
+  }
+
+  Constructor _buildEntityIncludeListClassConstructor(
+    String className,
+  ) {
+    return Constructor((constructorBuilder) {
+      constructorBuilder.name = '_';
+
+      constructorBuilder.optionalParameters.addAll([
+        Parameter(
+          (p) => p
+            ..name = 'where'
+            ..type = TypeReference((t) => t
+              ..symbol = 'WhereExpressionBuilder'
+              ..types.addAll([
+                refer('${className}Table'),
+              ])
+              ..url = serverpodUrl(serverCode)
+              ..isNullable = true)
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'limit'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'offset'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderBy'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderDescending'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderByList'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'include'
+            ..toSuper = true
+            ..named = true,
+        )
+      ]);
+
+      constructorBuilder.body = Block.of([
+        refer('super')
+            .property('where')
+            .assign(refer('where').nullSafeProperty('call').call(
+              [refer(className).property('t')],
+            ))
+            .statement
+      ]);
+    });
+  }
+
+  Method _buildEntityIncludeListClassIncludesGetter() {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('String'),
+            refer('Include?', 'package:serverpod/serverpod.dart'),
+          ]))
+        ..name = 'includes'
+        ..lambda = true
+        ..type = MethodType.getter
+        ..body = refer('include')
+            .nullSafeProperty('includes')
+            .ifNullThen(literalMap({}))
+            .code,
+    );
   }
 
   Method _buildEntityIncludeClassTableGetter(String className) {
