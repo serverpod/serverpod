@@ -5,6 +5,8 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
+import 'database_query_helper.dart';
+
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
 ///
@@ -19,6 +21,7 @@ class SelectQueryBuilder {
   int? _offset;
   Expression? _where;
   Include? _include;
+  _ListQueryAdditions? _listQueryAdditions;
 
   /// Creates a new [SelectQueryBuilder].
   /// Throws an [ArgumentError] if the table has no columns.
@@ -41,7 +44,6 @@ class SelectQueryBuilder {
       orderBy: _orderBy,
       where: _where,
     );
-
     var selectColumns = [..._fields, ..._gatherIncludeColumns(_include)];
 
     var subQueries = _buildSubQueries(orderBy: _orderBy);
@@ -49,19 +51,65 @@ class SelectQueryBuilder {
     var join =
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
     var groupBy = _buildGroupByQuery(selectColumns, orderBy: _orderBy);
-    var where = _buildWhereQuery(where: _where);
-    var orderBy = _buildOrderByQuery(orderBy: _orderBy);
+    var where = _buildWhereQuery(
+      where: _where,
+      listQueryAdditions: _listQueryAdditions,
+    );
 
     var query = '';
-    if (subQueries != null) query += '$subQueries ';
     query += 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
-    if (groupBy != null) query += ' GROUP BY $groupBy';
-    if (orderBy != null) query += ' ORDER BY $orderBy';
-    if (_limit != null) query += ' LIMIT $_limit';
-    if (_offset != null) query += ' OFFSET $_offset';
+
+    if (groupBy != null) query += ' $groupBy';
+    if (_orderBy != null) {
+      query +=
+          ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
+    }
+
+    var limit = _limit;
+
+    if (_listQueryAdditions != null && limit != null) {
+      return _wrapListQueryWithLimit(
+        query,
+        subQueries,
+        limit: limit,
+        offset: _offset,
+      );
+    } else {
+      if (limit != null) query += ' LIMIT $limit';
+      if (_offset != null) query += ' OFFSET $_offset';
+
+      if (subQueries != null) query = '$subQueries $query';
+      return query;
+    }
+  }
+
+  String _wrapListQueryWithLimit(
+    String baseQuery,
+    String? subQueries, {
+    required int limit,
+    required int? offset,
+  }) {
+    var wrappedBaseQueryAlias = '_base_query_sorting_and_ordering';
+    var partitionedQueryAlias = '_partitioned_list_by_parent_id';
+
+    var index = offset ?? 0;
+    var start = index + 1;
+    var end = limit + index;
+
+    var relationalFieldName =
+        unescape(_listQueryAdditions!.relationalFieldName);
+
+    String query = subQueries != null ? '$subQueries, ' : 'WITH ';
+    query += '$wrappedBaseQueryAlias AS ($baseQuery)';
+
+    query +=
+        ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
+
+    query +=
+        'SELECT * FROM $partitionedQueryAlias WHERE row_number BETWEEN $start AND $end';
 
     return query;
   }
@@ -137,11 +185,59 @@ class SelectQueryBuilder {
     return this;
   }
 
+  /// Adds an additional filter on the query to find only rows that have a
+  /// relation to the specified ids.
+  SelectQueryBuilder withWhereRelationInResultSet(
+    Set<int> ids,
+    Table relationTable,
+  ) {
+    var tableRelation = relationTable.tableRelation;
+
+    if (tableRelation == null) {
+      throw ArgumentError.value(
+        relationTable,
+        'relationTable',
+        'The table must have a relation to another table.',
+      );
+    }
+
+    if (ids.isEmpty) {
+      throw ArgumentError.value(
+        ids,
+        'ids',
+        'To make a valid filtered query, the set of ids cannot be empty.',
+      );
+    }
+
+    var relationFieldName =
+        '"${relationTable.tableName}"."${tableRelation.foreignFieldName}"';
+
+    var whereAddition = Expression('$relationFieldName IN (${ids.join(', ')})');
+
+    _listQueryAdditions = _ListQueryAdditions(
+      relationalFieldName: relationFieldName,
+      whereAddition: whereAddition,
+    );
+
+    return this;
+  }
+
   /// Sets the include for the query.
   SelectQueryBuilder withInclude(Include? include) {
     _include = include;
     return this;
   }
+}
+
+class _ListQueryAdditions {
+  final String relationalFieldName;
+
+  final Expression whereAddition;
+
+  _ListQueryAdditions({
+    required this.relationalFieldName,
+    required this.whereAddition,
+  });
 }
 
 /// Builds a SQL query for a count statement.
@@ -309,7 +405,7 @@ List<Table> _gatherIncludeTables(Include? include, Table table) {
   }
 
   include.includes.forEach((relationField, relationInclude) {
-    if (relationInclude == null) {
+    if (relationInclude == null || relationInclude is IncludeList) {
       return;
     }
 
@@ -375,9 +471,16 @@ String? _buildGroupByQuery(
   return selectFields.map((column) => '$column').join(', ');
 }
 
-String? _buildWhereQuery({Expression? where}) {
-  if (where == null) {
+String? _buildWhereQuery({
+  Expression? where,
+  _ListQueryAdditions? listQueryAdditions,
+}) {
+  if (where == null && listQueryAdditions == null) {
     return null;
+  }
+
+  if (where == null) {
+    return listQueryAdditions?.whereAddition.toString();
   }
 
   if (where.columns.whereType<ColumnCount>().isNotEmpty) {
@@ -387,7 +490,11 @@ String? _buildWhereQuery({Expression? where}) {
     );
   }
 
-  return where.toString();
+  if (listQueryAdditions == null) {
+    return where.toString();
+  }
+
+  return '$where AND ${listQueryAdditions.whereAddition}';
 }
 
 _UsingQuery? _buildUsingQuery({Expression? where}) {
@@ -502,11 +609,8 @@ LinkedHashMap<String, _JoinContext> _gatherIncludeJoinContexts(
       includeTables.where((table) => table.tableRelation != null);
   for (var table in tablesWithTableRelations) {
     var tableRelation = table.tableRelation;
-    if (tableRelation == null) {
-      continue;
-    }
 
-    for (var subTableRelation in tableRelation.getRelations) {
+    for (var subTableRelation in tableRelation?.getRelations ?? []) {
       tableRelations[subTableRelation.relationQueryAlias] =
           _JoinContext(subTableRelation, false);
     }

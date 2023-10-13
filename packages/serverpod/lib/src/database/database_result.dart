@@ -4,7 +4,8 @@ import 'package:serverpod/database.dart';
 /// This is typically only used internally by the serverpod framework.
 Map<String, dynamic>? resolvePrefixedQueryRow(
   Table table,
-  Map<String, Map<String, dynamic>> rawRow, {
+  Map<String, Map<String, dynamic>> rawRow,
+  Map<String, Map<int, List<dynamic>>> resolvedListRelations, {
   Include? include,
 }) {
   // Resolve this object.
@@ -27,14 +28,36 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
     var relationTable = table.getRelationTable(relationField);
     if (relationTable == null) return;
 
-    resolvedTableRow[relationField] = resolvePrefixedQueryRow(
-      relationTable,
-      rawRow,
-      include: relationInclude,
-    );
+    if (relationInclude is IncludeList) {
+      var primaryKey = resolvedTableRow['id'];
+      if (primaryKey is! int) {
+        throw Exception('Cannot resolve list relation without id.');
+      }
+
+      resolvedTableRow[relationField] = _extractRelationalList(
+        primaryKey,
+        relationTable,
+        resolvedListRelations,
+      );
+    } else {
+      resolvedTableRow[relationField] = resolvePrefixedQueryRow(
+        relationTable,
+        rawRow,
+        resolvedListRelations,
+        include: relationInclude,
+      );
+    }
   });
 
   return resolvedTableRow;
+}
+
+List<dynamic> _extractRelationalList(
+  int primaryKey,
+  Table relationTable,
+  Map<String, Map<int, List<dynamic>>> resolvedListRelations,
+) {
+  return resolvedListRelations[relationTable.queryPrefix]?[primaryKey] ?? [];
 }
 
 Map<String, dynamic> _createColumnMapFromQueryAliasColumns(

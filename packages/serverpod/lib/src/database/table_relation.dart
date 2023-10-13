@@ -48,6 +48,21 @@ class TableRelation {
     return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.queryAlias}"';
   }
 
+  /// The base foreignFieldName without the query alias
+  String get foreignFieldName {
+    return _tableRelationEntries.last.foreignField.columnName;
+  }
+
+  /// The base fieldName without the query alias
+  String get fieldName {
+    return _tableRelationEntries.last.field.columnName;
+  }
+
+  /// The base foreignFieldName without the query alias
+  String get tableName {
+    return _tableRelationEntries.last.field.table.tableName;
+  }
+
   /// Creates a new [TableRelation] from [this] and [relation].
   TableRelation copyAndAppend(TableRelationEntry relation) {
     return TableRelation([..._tableRelationEntries, relation]);
