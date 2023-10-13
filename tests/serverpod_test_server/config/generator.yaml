@@ -10,3 +10,15 @@ extraClasses:
   - project:src/custom_classes.dart:CustomClass
   - package:serverpod_test_shared/serverpod_test_shared.dart:ExternalCustomClass
   - package:serverpod_test_shared/serverpod_test_shared.dart:FreezedCustomClass
+openapi:
+  info:
+    title: 'Serverpod OpenAPI'
+    description: 'My Serverpod server'
+  license:
+    name: 'Apache 2.0'
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+  contact:
+    name: 'Serverpod Support'
+    url: 'https://serverpod.dev'
+    email: 'support@serverpod.dev'
+  termsOfService: 'https://serverpod.dev'

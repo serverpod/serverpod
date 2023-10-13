@@ -50,12 +50,12 @@ void main() {
               .toSchemaObjectType
               .name);
       expect(
-          'object',
+          'other',
           TypeDefinition(className: 'Example', nullable: false)
               .toSchemaObjectType
               .name);
       expect(
-          'object',
+          'other',
           TypeDefinition(className: 'dynamic', nullable: false)
               .toSchemaObjectType
               .name);

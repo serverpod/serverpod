@@ -10,7 +10,16 @@ extension CheckDartCoreType on TypeDefinition {
       (className == 'Map') ||
       (className == 'Set') ||
       (className == 'ByteData') ||
-      (className == 'BigInt');
+      (className == 'BigInt') ||
+      (className == 'DateTime') ||
+      (className == 'UuidValue') ||
+      (className == 'Duration') ||
+      (url == 'dart:core') ||
+      (url == 'dart:async');
+}
+
+extension CheckIsOtherType on TypeDefinition {
+  bool get isOtherType => toSchemaObjectType == SchemaObjectType.other;
 }
 
 /// example
@@ -40,8 +49,9 @@ extension TypeConvert on TypeDefinition {
     if (className == 'ByteData') return SchemaObjectType.string;
     if (className == 'Duration') return SchemaObjectType.string;
     if (className == 'UuidValue') return SchemaObjectType.string;
-    if (className == 'List') return SchemaObjectType.array;
-    return SchemaObjectType.object;
+    if (className == 'List' || isListType) return SchemaObjectType.array;
+    if (className == 'Map' || isMapType) return SchemaObjectType.object;
+    return SchemaObjectType.other;
   }
 }
 

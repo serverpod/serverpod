@@ -83,7 +83,6 @@ class OpenApiDefinition {
 
   factory OpenApiDefinition.fromProtocolDefinition(
       ProtocolDefinition protocolDefinition, GeneratorConfig config) {
-    // TODO: get more info from config
     InfoObject infoObject =
         InfoObject(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
 
@@ -91,10 +90,8 @@ class OpenApiDefinition {
     Set<PathsObject> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
-    var classDefinitionList =
-        protocolDefinition.entities.whereType<ClassDefinition>().toList();
     Set<ComponentSchemaObject> schemas =
-        _getSchemaObjectFromClassDefinitions(classDefinitionList);
+        _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 
     ComponentsObject componentsObject =
         ComponentsObject(schemas: schemas, securitySchemes: {
@@ -209,10 +206,8 @@ Set<TagObject> _getTagsFromProtocolDefinition(
 Set<ComponentSchemaObject> _getSchemaObjectFromClassDefinitions(
     List<SerializableEntityDefinition> classDefs) {
   Set<ComponentSchemaObject> schemas = {};
-  for (var classInfo in classDefs) {
-    assert(classInfo is ClassDefinition, 'classInfo should be ClassDefinition');
-    classInfo as ClassDefinition;
-    schemas.add(ComponentSchemaObject(classInfo));
+  for (var entityInfo in classDefs) {
+    schemas.add(ComponentSchemaObject(entityInfo));
   }
   return schemas;
 }

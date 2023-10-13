@@ -11,7 +11,7 @@ void main() {
           'type': 'array',
           'items': {'\$ref': '#/components/schemas/AnyValue'}
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
     test('When TypeDefinition is List<Example>', () {
@@ -32,7 +32,7 @@ void main() {
             '\$ref': '#/components/schemas/Example',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -54,7 +54,7 @@ void main() {
             'type': 'string',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -76,7 +76,7 @@ void main() {
             'type': 'integer',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -98,7 +98,7 @@ void main() {
             'type': 'number',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -120,7 +120,7 @@ void main() {
             'type': 'number',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -142,7 +142,7 @@ void main() {
             'type': 'boolean',
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
 
@@ -166,7 +166,7 @@ void main() {
             }
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
     test('When TypeDefinition is List<Map<String,String>', () {
@@ -201,7 +201,7 @@ void main() {
             }
           }
         },
-        listToJson(type),
+        listTypeToJson(type),
       );
     });
   });

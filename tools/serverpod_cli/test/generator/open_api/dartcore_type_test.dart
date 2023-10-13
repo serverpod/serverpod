@@ -8,7 +8,7 @@ void main() {
       TypeDefinition type = TypeDefinition(className: 'int', nullable: true);
       expect(
         {'type': 'integer', 'nullable': true},
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
 
@@ -18,7 +18,7 @@ void main() {
         {
           'type': 'integer',
         },
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
 
@@ -26,7 +26,7 @@ void main() {
       TypeDefinition type = TypeDefinition(className: 'String', nullable: true);
       expect(
         {'type': 'string', 'nullable': true},
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
     test('When TypeDefinition is String', () {
@@ -36,7 +36,7 @@ void main() {
         {
           'type': 'string',
         },
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
 
@@ -44,7 +44,7 @@ void main() {
       TypeDefinition type = TypeDefinition(className: 'double', nullable: true);
       expect(
         {'type': 'number', 'nullable': true},
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
     test('When TypeDefinition is double', () {
@@ -54,7 +54,7 @@ void main() {
         {
           'type': 'number',
         },
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
 
@@ -62,7 +62,7 @@ void main() {
       TypeDefinition type = TypeDefinition(className: 'BigInt', nullable: true);
       expect(
         {'type': 'number', 'nullable': true},
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
     test('When TypeDefinition is BigInt', () {
@@ -72,7 +72,7 @@ void main() {
         {
           'type': 'number',
         },
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
 
@@ -80,7 +80,7 @@ void main() {
       TypeDefinition type = TypeDefinition(className: 'bool', nullable: true);
       expect(
         {'type': 'boolean', 'nullable': true},
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
     test('When TypeDefinition is bool?', () {
@@ -89,7 +89,7 @@ void main() {
         {
           'type': 'boolean',
         },
-        dartPrimitiveDataTypeToJson(type),
+        dartCoreTypeToJson(type),
       );
     });
   });

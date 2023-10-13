@@ -97,17 +97,12 @@ class LicenseObject {
   /// The license name used for the API.
   final String name;
 
-  /// An SPDX license expression for the API.
-  /// The identifier field is mutually exclusive of the url field.
-  final String? identifier;
-
   /// A URL to the license used for the API.
   /// This must be in the form of a URL.
   /// The url field is mutually exclusive of the identifier field.
   final Uri? url;
   LicenseObject({
     required this.name,
-    this.identifier,
     this.url,
   });
 
@@ -115,9 +110,6 @@ class LicenseObject {
     var map = {
       'name': name,
     };
-    if (identifier != null) {
-      map['identifier'] = identifier!;
-    }
     if (url != null) {
       map['url'] = url.toString();
     }
@@ -127,8 +119,6 @@ class LicenseObject {
   factory LicenseObject.fromJson(Map<String, dynamic> map) {
     return LicenseObject(
       name: map['name'] as String,
-      identifier:
-          map['identifier'] != null ? map['identifier'] as String : null,
       url: map['url'] != null ? Uri.parse(map['url']) : null,
     );
   }

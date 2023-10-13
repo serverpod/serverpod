@@ -13,7 +13,7 @@ void main() {
         {
           'type': 'object',
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -29,7 +29,7 @@ void main() {
             'type': 'string',
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
     test('When TypeDefinition is Map<String,int>', () {
@@ -44,7 +44,7 @@ void main() {
             'type': 'integer',
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -60,7 +60,7 @@ void main() {
             'type': 'number',
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
     test('When TypeDefinition is Map<String,BigInt>', () {
@@ -75,7 +75,7 @@ void main() {
             'type': 'number',
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -92,7 +92,7 @@ void main() {
             'type': 'boolean',
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -112,7 +112,7 @@ void main() {
             'items': {'type': 'string'}
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
     test('When TypeDefinition is Map<String,List<int>>', () {
@@ -131,7 +131,7 @@ void main() {
             'items': {'type': 'integer'}
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -151,7 +151,7 @@ void main() {
             'items': {'type': 'number'}
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
 
@@ -171,7 +171,7 @@ void main() {
             'items': {'type': 'boolean'}
           }
         },
-        mapToJson(typeDefinition),
+        mapTypeToJson(typeDefinition),
       );
     });
   });
