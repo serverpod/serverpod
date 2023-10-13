@@ -69,17 +69,6 @@ class DatabaseConnection {
     );
   }
 
-  List<Order>? _resolveOrderBy(List<Order>? orderByList,
-      Column<dynamic>? orderBy, bool orderDescending) {
-    assert(orderByList == null || orderBy == null);
-    if (orderBy != null) {
-      // If order by is set then order by list is overriden.
-      // TODO: Only expose order by list in interface.
-      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
-    }
-    return orderByList;
-  }
-
   /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findRow<T extends TableRow>(
     Session session, {
@@ -622,6 +611,17 @@ class DatabaseConnection {
         );
       }
     }
+  }
+
+  List<Order>? _resolveOrderBy(List<Order>? orderByList,
+      Column<dynamic>? orderBy, bool orderDescending) {
+    assert(orderByList == null || orderBy == null);
+    if (orderBy != null) {
+      // If order by is set then order by list is overriden.
+      // TODO: Only expose order by list in interface.
+      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
+    }
+    return orderByList;
   }
 
   String _createQueryValueList(
