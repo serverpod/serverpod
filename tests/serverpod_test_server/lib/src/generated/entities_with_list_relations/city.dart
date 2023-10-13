@@ -220,8 +220,14 @@ abstract class City extends _i1.TableRow {
     );
   }
 
-  static CityInclude include({_i2.PersonIncludeList? citizens}) {
-    return CityInclude._(citizens: citizens);
+  static CityInclude include({
+    _i2.PersonIncludeList? citizens,
+    _i2.OrganizationIncludeList? organizations,
+  }) {
+    return CityInclude._(
+      citizens: citizens,
+      organizations: organizations,
+    );
   }
 }
 
@@ -273,6 +279,8 @@ class CityTable extends _i1.Table {
 
   _i1.ManyRelation<_i2.PersonTable>? _citizens;
 
+  _i1.ManyRelation<_i2.OrganizationTable>? _organizations;
+
   _i1.ManyRelation<_i2.PersonTable> get citizens {
     if (_citizens != null) return _citizens!;
     var relationTable = _i1.createRelationTable(
@@ -288,6 +296,23 @@ class CityTable extends _i1.Table {
       table: _i2.Person.t,
     );
     return _citizens!;
+  }
+
+  _i1.ManyRelation<_i2.OrganizationTable> get organizations {
+    if (_organizations != null) return _organizations!;
+    var relationTable = _i1.createRelationTable(
+      relationFieldName: 'organizations',
+      field: City.t.id,
+      foreignField: _i2.Organization.t.cityId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.OrganizationTable(tableRelation: foreignTableRelation),
+    );
+    _organizations = _i1.ManyRelation<_i2.OrganizationTable>(
+      tableWithRelations: relationTable,
+      table: _i2.Organization.t,
+    );
+    return _organizations!;
   }
 
   @override
@@ -307,10 +332,25 @@ class CityTable extends _i1.Table {
     );
   }
 
+  _i2.OrganizationTable get __organizations {
+    return _i1.createRelationTable<_i2.OrganizationTable>(
+      relationFieldName: 'organizations',
+      field: City.t.id,
+      tableRelation: tableRelation,
+      foreignField: _i2.Organization.t.cityId,
+      createTable: (foreignTableRelation) =>
+          _i2.OrganizationTable(tableRelation: foreignTableRelation),
+    );
+  }
+
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'citizens') {
       return __citizens;
+    }
+
+    if (relationField == 'organizations') {
+      return __organizations;
     }
 
     return null;
@@ -321,13 +361,16 @@ class CityTable extends _i1.Table {
 CityTable tCity = CityTable();
 
 class CityInclude extends _i1.IncludeObject {
-  CityInclude._({this.citizens});
+  CityInclude._({this.citizens, this.organizations});
 
   _i2.PersonIncludeList? citizens;
+
+  _i2.OrganizationIncludeList? organizations;
 
   @override
   Map<String, _i1.Include?> get includes => {
         'citizens': citizens,
+        'organizations': organizations,
       };
 
   @override

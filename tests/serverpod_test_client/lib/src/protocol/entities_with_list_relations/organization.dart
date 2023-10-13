@@ -14,12 +14,16 @@ abstract class Organization extends _i1.SerializableEntity {
     this.id,
     required this.name,
     this.people,
+    this.cityId,
+    this.city,
   });
 
   factory Organization({
     int? id,
     required String name,
     List<_i2.Person>? people,
+    int? cityId,
+    _i2.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(
@@ -31,6 +35,10 @@ abstract class Organization extends _i1.SerializableEntity {
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       people: serializationManager
           .deserialize<List<_i2.Person>?>(jsonSerialization['people']),
+      cityId:
+          serializationManager.deserialize<int?>(jsonSerialization['cityId']),
+      city: serializationManager
+          .deserialize<_i2.City?>(jsonSerialization['city']),
     );
   }
 
@@ -43,10 +51,16 @@ abstract class Organization extends _i1.SerializableEntity {
 
   List<_i2.Person>? people;
 
+  int? cityId;
+
+  _i2.City? city;
+
   Organization copyWith({
     int? id,
     String? name,
     List<_i2.Person>? people,
+    int? cityId,
+    _i2.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -54,6 +68,8 @@ abstract class Organization extends _i1.SerializableEntity {
       'id': id,
       'name': name,
       'people': people,
+      'cityId': cityId,
+      'city': city,
     };
   }
 }
@@ -65,10 +81,14 @@ class _OrganizationImpl extends Organization {
     int? id,
     required String name,
     List<_i2.Person>? people,
+    int? cityId,
+    _i2.City? city,
   }) : super._(
           id: id,
           name: name,
           people: people,
+          cityId: cityId,
+          city: city,
         );
 
   @override
@@ -76,11 +96,15 @@ class _OrganizationImpl extends Organization {
     Object? id = _Undefined,
     String? name,
     Object? people = _Undefined,
+    Object? cityId = _Undefined,
+    Object? city = _Undefined,
   }) {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       people: people is List<_i2.Person>? ? people : this.people?.clone(),
+      cityId: cityId is int? ? cityId : this.cityId,
+      city: city is _i2.City? ? city : this.city?.copyWith(),
     );
   }
 }

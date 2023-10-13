@@ -6,6 +6,7 @@
 // ignore_for_file: implementation_imports
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/database.dart';
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
@@ -247,6 +248,26 @@ abstract class Organization extends _i1.TableRow {
   }) {
     return OrganizationInclude._(city: city, people: people);
   }
+
+  static OrganizationIncludeList includeList({
+    OrganizationExpressionBuilder? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    OrganizationInclude? include,
+  }) {
+    return OrganizationIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
+  }
 }
 
 class _Undefined {}
@@ -386,6 +407,32 @@ class OrganizationInclude extends _i1.IncludeObject {
         'city': _city,
         'people': people,
       };
+
+  @override
+  _i1.Table get table => Organization.t;
+}
+
+class OrganizationIncludeList extends _i1.IncludeList {
+  OrganizationIncludeList._({
+    WhereExpressionBuilder<OrganizationTable>? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    List<Order>? orderByList,
+    OrganizationInclude? include,
+  }) {
+    super.where = where?.call(Organization.t);
+    super.limit = limit;
+    super.offset = offset;
+    super.orderBy = orderBy;
+    super.orderDescending = orderDescending;
+    super.orderByList = orderByList;
+    super.include = include;
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => Organization.t;

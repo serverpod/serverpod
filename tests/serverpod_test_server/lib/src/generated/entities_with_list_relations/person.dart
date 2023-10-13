@@ -6,6 +6,7 @@
 // ignore_for_file: implementation_imports
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/database.dart';
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
@@ -335,7 +336,7 @@ class PersonImplicit extends _PersonImpl {
   }
 }
 
-typedef PersonExpressionBuilder = _i1.Expression Function(PersonTable);
+typedef PersonExpressionBuilder = WhereExpressionBuilder<PersonTable>;
 
 class PersonTable extends _i1.Table {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
@@ -410,28 +411,22 @@ class PersonInclude extends _i1.IncludeObject {
 
 class PersonIncludeList extends _i1.IncludeList {
   PersonIncludeList._({
-    this.where,
-    this.limit,
-    this.offset,
-    this.orderBy,
-    this.orderDescending = false,
-    this.orderByList,
-    this.include,
-  });
-
-  final PersonExpressionBuilder? where;
-
-  final int? limit;
-
-  final int? offset;
-
-  final _i1.Column? orderBy;
-
-  final bool orderDescending;
-
-  final List<_i1.Order>? orderByList;
-
-  final PersonInclude? include;
+    WhereExpressionBuilder<PersonTable>? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    bool orderDescending = false,
+    List<Order>? orderByList,
+    PersonInclude? include,
+  }) {
+    super.where = where?.call(Person.t);
+    super.limit = limit;
+    super.offset = offset;
+    super.orderBy = orderBy;
+    super.orderDescending = orderDescending;
+    super.orderByList = orderByList;
+    super.include = include;
+  }
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
