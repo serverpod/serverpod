@@ -1,6 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
+/// The [InfoObject] is used to provide metadata and information about the API.
 /// eg.
 /// ```
 ///     {
@@ -31,7 +31,6 @@ class InfoObject {
   final String? description;
 
   /// A URL to the Terms of Service for the API.
-  /// This must be in the form of a URL.
   final Uri? termsOfService;
 
   /// Contact information for the exposed API.
@@ -86,6 +85,7 @@ class InfoObject {
   }
 }
 
+/// Information about the license governing the use of the API.
 /// example
 ///```json
 ///  {
@@ -124,6 +124,7 @@ class LicenseObject {
   }
 }
 
+/// Information about the organization or individual responsible for the API.
 /// example.
 ///```json
 /// {

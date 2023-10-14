@@ -96,7 +96,7 @@ abstract class ServerpodCodeGenerator {
     required CodeGenerationCollector collector,
   }) async {
     collector.generatedFiles.clear();
-    OpenApiGenerator generator = OpenApiGenerator();
+    OpenApiGenerator generator = const OpenApiGenerator();
     Map<String, String> file = generator.generateOpenApiSchema(
         protocolDefinition: protocolDefinition, config: config);
 

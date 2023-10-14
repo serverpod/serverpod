@@ -1,8 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
-///example
-///```
+/// The [ContentObject] is used to describe the media types that an operation
+/// can consume and produce. It specifies the format and schema of the request
+/// and response payloads for different media types, such as JSON, XML, or
+/// others. example
+///```dart
 ///"content": {
 ///               "application/json": {
 ///                 "schema": {

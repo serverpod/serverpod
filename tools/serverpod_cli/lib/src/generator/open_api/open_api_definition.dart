@@ -15,7 +15,6 @@ class OpenApiDefinition {
 
   /// The default value for the $schema keyword within Schema Objects contained
   ///  within this OAS document.
-  /// This MUST be in the form of a URI.
   final String? jsonSchemaDialect;
 
   /// An array of Server Objects, which provide connectivity information
@@ -31,13 +30,6 @@ class OpenApiDefinition {
   final ComponentsObject? components;
 
   /// A list of tags used by the document with additional metadata.
-  /// The order of the tags can be used to reflect on their order by
-  /// the parsing tools.
-  /// Not all tags that are used by the Operation Object must be declared.
-  /// The tags that are not declared may be organized randomly or based on
-  /// the tools' logic.
-  /// Each tag name in the list must be unique.
-  /// Serverpod Endpoints name camelCase
   final Set<TagObject>? tags;
 
   /// Additional external documentation.
@@ -113,6 +105,7 @@ class OpenApiDefinition {
   }
 }
 
+/// Generate a map of paths' values based on a set of [PathsObject].
 /// example
 /// ```
 ///     {
@@ -132,6 +125,7 @@ Map<String, dynamic> _allPathsToJson(Set<PathsObject> paths) {
   return map;
 }
 
+/// Get a set of [PathsObject] from ProtocolDefinition.
 Set<PathsObject> _getPathsFromProtocolDefinition(
     ProtocolDefinition protocolDefinition) {
   Set<PathsObject> paths = {};
@@ -198,15 +192,15 @@ Set<TagObject> _getTagsFromProtocolDefinition(
   return tags;
 }
 
-/// Get a set of [ComponentSchemaObject] from entities
+/// Get a set of [ComponentSchemaObject] from entities.
 /// example```
 ///   Set<SchemaObject> schemas =
 ///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 /// ```
 Set<ComponentSchemaObject> _getSchemaObjectFromClassDefinitions(
-    List<SerializableEntityDefinition> classDefs) {
+    List<SerializableEntityDefinition> entitiesDefinition) {
   Set<ComponentSchemaObject> schemas = {};
-  for (var entityInfo in classDefs) {
+  for (var entityInfo in entitiesDefinition) {
     schemas.add(ComponentSchemaObject(entityInfo));
   }
   return schemas;

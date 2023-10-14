@@ -4,7 +4,9 @@ String _getRef(String ref) {
   return '#/components/schemas/$ref';
 }
 
-/// Convert dir parts to path. example ```['api','v1',] => api/v1/```
+/// Convert a list of directory parts to a path string.
+///
+/// Example: ['api', 'v1'] => '/api/v1'
 String getExtraPath(List<String> subDirParts) =>
     subDirParts.isEmpty ? '' : "/${subDirParts.join('/')}";
 
@@ -29,15 +31,17 @@ enum ParameterStyle {
   cookieSimple,
 }
 
+/// An enum representing different openAPI schema types.
 /// example
 /// ```
 ///  schema:
 ///       type: object
 /// ```
 enum SchemaObjectType {
-  /// Represents a JSON object with key-value pairs.
-  /// You can define the properties of the object within the properties
-  /// attribute.
+  /// When type converting a [Map], it becomes an [object].
+  ///
+  /// When generating schemas, both [Map] and [other] can be represented
+  /// as [object].
   object,
   string,
   integer,
@@ -45,10 +49,12 @@ enum SchemaObjectType {
   array,
   boolean,
 
-  ///eg [Map] mark as other
+  /// When converting [TypeDefinition] non-Dart core types, they are
+  /// represented as [other]
   other,
 }
 
+/// An openAPI string format
 enum SchemaObjectFormat {
   /// Full-date notation as defined by RFC 3339, section 5.6, for example,
   /// 2017-07-21

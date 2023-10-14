@@ -4,6 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:path/path.dart' as p;
 import 'open_api_definition.dart';
 
+///  Generates OpenAPI specifications for a Serverpod project.
 class OpenApiGenerator {
   const OpenApiGenerator();
 

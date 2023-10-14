@@ -1,5 +1,6 @@
 part of '../open_api_objects.dart';
 
+/// Specifies details regarding the server hosting an API.
 /// example
 /// ```dart
 ///   {
@@ -7,44 +8,11 @@ part of '../open_api_objects.dart';
 ///   "description": "Development server"
 ///   }
 /// ```
-///
-/// The following shows how variables can be used for a server configuration:
-/// ```
-/// {
-///   "servers": [
-///     {
-///       "url": "https://{username}.gigantic-server.com:{port}/{basePath}",
-///       "description": "The production API server",
-///       "variables": {
-///         "username": {
-///           "default": "demo",
-///           "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
-///         },
-///         "port": {
-///           "enum": [
-///             "8443",
-///             "443"
-///           ],
-///           "default": "8443"
-///         },
-///         "basePath": {
-///           "default": "v2"
-///         }
-///       }
-///     }
-///   ]
-/// }
-/// ```
 class ServerObject {
-  /// A URL to the target host. This URL supports Server Variables and
-  ///  may be relative, to indicate that the host location is relative
-  ///  to the location where the OpenAPI document is being served.
-  /// Variable substitutions will be made when a variable is named in
-  /// {brackets}.
+  /// A URL to the target host.
   final Uri url;
 
   /// An optional string describing the host designated by the URL.
-  /// CommonMark syntax may be used for rich text representation.
   final String? description;
 
   /// A map between a variable name and its value.

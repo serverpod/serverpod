@@ -5,7 +5,6 @@ part of '../open_api_objects.dart';
 /// resource using POST or PUT, the request body usually contains the
 /// representation of the resource to be created. OpenAPI 3.0 provides the
 /// requestBody keyword to describe request bodies.
-
 class RequestBodyObject {
   final String? description;
   final List<ParameterDefinition> parameterList;
