@@ -183,7 +183,7 @@ void main() {
 
       expect(
         query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen.id" ORDER BY COUNT("citizen_friends_citizen"."id")',
+        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id" ORDER BY COUNT("citizen_friends_citizen"."id")',
       );
     });
 
@@ -203,7 +203,7 @@ void main() {
           SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
       expect(query,
-          'WITH "citizen_friends_citizen" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" = 5) SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."citizen.id" GROUP BY "citizen.id" ORDER BY COUNT("citizen_friends_citizen"."citizen.id")');
+          'WITH "citizen_friends_citizen" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" = 5) SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."citizen.id" GROUP BY "citizen"."id" ORDER BY COUNT("citizen_friends_citizen"."citizen.id")');
     });
 
     test('when query with limit is built then output is query with limit.', () {
@@ -326,7 +326,7 @@ void main() {
           .build();
 
       expect(query,
-          'WITH "citizen_companiesOwned_company" AS (SELECT "company"."id" AS "company.id" FROM "company" WHERE "company"."id" = 5) SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."company.id" WHERE "citizen_company_company"."name" = \'Serverpod\' GROUP BY "citizen.id", "citizen.name", "citizen.age" ORDER BY "citizen"."id" DESC, COUNT("citizen_companiesOwned_company"."company.id") LIMIT 10 OFFSET 5');
+          'WITH "citizen_companiesOwned_company" AS (SELECT "company"."id" AS "company.id" FROM "company" WHERE "company"."id" = 5) SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."company.id" WHERE "citizen_company_company"."name" = \'Serverpod\' GROUP BY "citizen"."id", "citizen"."name", "citizen"."age" ORDER BY "citizen"."id" DESC, COUNT("citizen_companiesOwned_company"."company.id") LIMIT 10 OFFSET 5');
     });
 
     test(
@@ -449,6 +449,40 @@ void main() {
             'message',
             equals(
                 'FormatException: Count columns are not supported in where expressions.'),
+          )));
+    });
+
+    test('when ordering by multiple many relations then exception is thrown.',
+        () {
+      var friendsRelationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      var enemiesRelationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'enemies',
+      );
+
+      List<Order> orderByList = [
+        Order(
+          column: friendsRelationTable.manyRelation.count(),
+          orderDescending: false,
+        ),
+        Order(
+          column: enemiesRelationTable.manyRelation.count(),
+          orderDescending: false,
+        )
+      ];
+
+      expect(
+          () =>
+              SelectQueryBuilder(table: citizenTable).withOrderBy(orderByList),
+          throwsA(isA<UnimplementedError>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+              'UnimplementedError: Ordering by multiple many relation columns is not supported. Please file an issue at https://github.com/serverpod/serverpod/issues if you need this.',
+            ),
           )));
     });
   });

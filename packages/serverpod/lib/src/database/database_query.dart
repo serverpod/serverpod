@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
@@ -49,6 +50,7 @@ class SelectQueryBuilder {
         _buildJoinQuery(where: _where, orderBy: _orderBy, include: _include);
     var groupBy = _buildGroupByQuery(selectColumns, orderBy: _orderBy);
     var where = _buildWhereQuery(where: _where);
+    var orderBy = _buildOrderByQuery(orderBy: _orderBy);
 
     var query = '';
     if (subQueries != null) query += '$subQueries ';
@@ -56,11 +58,8 @@ class SelectQueryBuilder {
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
-    if (groupBy != null) query += ' $groupBy';
-    if (_orderBy != null) {
-      query +=
-          ' ORDER BY ${_orderBy?.map((order) => order.toString()).join(', ')}';
-    }
+    if (groupBy != null) query += ' GROUP BY $groupBy';
+    if (orderBy != null) query += ' ORDER BY $orderBy';
     if (_limit != null) query += ' LIMIT $_limit';
     if (_offset != null) query += ' OFFSET $_offset';
 
@@ -87,14 +86,29 @@ class SelectQueryBuilder {
   /// If order by includes columns from a relation, the relation will be joined
   /// in the query.
   /// Throws an [ArgumentError] if the same column is included multiple times.
+  /// Throws an [UnimplementedError] if multiple many relation columns are
+  /// included.
   SelectQueryBuilder withOrderBy(List<Order>? orderBy) {
     Set<String> columns = {};
+    bool hasCountColumn = false;
     for (var order in orderBy ?? []) {
       if (columns.contains(order.column.queryAlias)) {
         throw ArgumentError(
           'Ordering by same column multiple times: ${order.column.queryAlias}',
         );
       }
+
+      if (order.column is ColumnCount) {
+        if (hasCountColumn) {
+          throw UnimplementedError(
+            'Ordering by multiple many relation columns is not supported. '
+            'Please file an issue at '
+            'https://github.com/serverpod/serverpod/issues if you need this.',
+          );
+        }
+        hasCountColumn = true;
+      }
+
       columns.add(order.column.queryAlias);
     }
 
@@ -358,7 +372,7 @@ String? _buildGroupByQuery(
     return null;
   }
 
-  return 'GROUP BY ${selectFields.map((column) => '"${column.queryAlias}"').join(', ')}';
+  return selectFields.map((column) => '$column').join(', ');
 }
 
 String? _buildWhereQuery({Expression? where}) {
@@ -424,6 +438,36 @@ String? _buildSubQueries({List<Order>? orderBy}) {
   return 'WITH ${subQueries.entries.map((e) => '"${e.key}" AS (${e.value})').join(', ')}';
 }
 
+String? _buildOrderByQuery({List<Order>? orderBy}) {
+  if (orderBy == null) {
+    return null;
+  }
+
+  return orderBy.map((order) {
+    var str = '';
+
+    var column = order.column;
+    if (column is ColumnCount) {
+      str = _buildCountColumnString(column);
+    } else {
+      str = '$column';
+    }
+
+    if (order.orderDescending) str += ' DESC';
+
+    return str;
+  }).join(', ');
+}
+
+String _buildCountColumnString(ColumnCount column) {
+  if (column.innerWhere != null) {
+    // If column is filtered then we want to use the result from the sub query
+    return 'COUNT(${column.table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
+  }
+
+  return 'COUNT($column)';
+}
+
 LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
   // Linked hash map to preserve order
   LinkedHashMap<String, _JoinContext> joins = LinkedHashMap();
@@ -437,10 +481,13 @@ LinkedHashMap<String, _JoinContext> _gatherJoinContexts(List<Column> columns) {
 
     var subQuery = column is ColumnCount && column.innerWhere != null;
 
-    for (var subTableRelation in tableRelation.getRelations) {
+    var subTableRelations = tableRelation.getRelations;
+
+    subTableRelations.forEachIndexed((index, subTableRelation) {
+      bool lastEntry = index == subTableRelations.length - 1;
       joins[subTableRelation.relationQueryAlias] =
-          _JoinContext(subTableRelation, subQuery);
-    }
+          _JoinContext(subTableRelation, lastEntry ? subQuery : false);
+    });
   }
 
   return joins;

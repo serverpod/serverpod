@@ -15,7 +15,7 @@ abstract class Order extends _i1.TableRow {
     required this.description,
     required this.customerId,
     this.customer,
-    this.items,
+    this.comments,
   }) : super(id);
 
   factory Order({
@@ -23,7 +23,7 @@ abstract class Order extends _i1.TableRow {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   }) = _OrderImpl;
 
   factory Order.fromJson(
@@ -38,8 +38,8 @@ abstract class Order extends _i1.TableRow {
           .deserialize<int>(jsonSerialization['customerId']),
       customer: serializationManager
           .deserialize<_i2.Customer?>(jsonSerialization['customer']),
-      items: serializationManager
-          .deserialize<List<_i2.Comment>?>(jsonSerialization['items']),
+      comments: serializationManager
+          .deserialize<List<_i2.Comment>?>(jsonSerialization['comments']),
     );
   }
 
@@ -53,7 +53,7 @@ abstract class Order extends _i1.TableRow {
 
   _i2.Customer? customer;
 
-  List<_i2.Comment>? items;
+  List<_i2.Comment>? comments;
 
   @override
   _i1.Table get table => t;
@@ -63,7 +63,7 @@ abstract class Order extends _i1.TableRow {
     String? description,
     int? customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -72,7 +72,7 @@ abstract class Order extends _i1.TableRow {
       'description': description,
       'customerId': customerId,
       'customer': customer,
-      'items': items,
+      'comments': comments,
     };
   }
 
@@ -93,7 +93,7 @@ abstract class Order extends _i1.TableRow {
       'description': description,
       'customerId': customerId,
       'customer': customer,
-      'items': items,
+      'comments': comments,
     };
   }
 
@@ -255,13 +255,13 @@ class _OrderImpl extends Order {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   }) : super._(
           id: id,
           description: description,
           customerId: customerId,
           customer: customer,
-          items: items,
+          comments: comments,
         );
 
   @override
@@ -270,7 +270,7 @@ class _OrderImpl extends Order {
     String? description,
     int? customerId,
     Object? customer = _Undefined,
-    Object? items = _Undefined,
+    Object? comments = _Undefined,
   }) {
     return Order(
       id: id is int? ? id : this.id,
@@ -278,7 +278,8 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      items: items is List<_i2.Comment>? ? items : this.items?.clone(),
+      comments:
+          comments is List<_i2.Comment>? ? comments : this.comments?.clone(),
     );
   }
 }
@@ -303,7 +304,7 @@ class OrderTable extends _i1.Table {
 
   _i2.CustomerTable? _customer;
 
-  _i1.ManyRelation<_i2.CommentTable>? _items;
+  _i1.ManyRelation<_i2.CommentTable>? _comments;
 
   _i2.CustomerTable get customer {
     if (_customer != null) return _customer!;
@@ -318,21 +319,21 @@ class OrderTable extends _i1.Table {
     return _customer!;
   }
 
-  _i1.ManyRelation<_i2.CommentTable> get items {
-    if (_items != null) return _items!;
+  _i1.ManyRelation<_i2.CommentTable> get comments {
+    if (_comments != null) return _comments!;
     var relationTable = _i1.createRelationTable(
-      relationFieldName: 'items',
+      relationFieldName: 'comments',
       field: Order.t.id,
       foreignField: _i2.Comment.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.CommentTable(tableRelation: foreignTableRelation),
     );
-    _items = _i1.ManyRelation<_i2.CommentTable>(
+    _comments = _i1.ManyRelation<_i2.CommentTable>(
       tableWithRelations: relationTable,
       table: _i2.Comment.t,
     );
-    return _items!;
+    return _comments!;
   }
 
   @override
@@ -521,7 +522,7 @@ class OrderRepository {
 class OrderAttachRepository {
   const OrderAttachRepository._();
 
-  Future<void> items(
+  Future<void> comments(
     _i1.Session session,
     Order order,
     List<_i2.Comment> comment,
@@ -563,7 +564,7 @@ class OrderAttachRowRepository {
     );
   }
 
-  Future<void> items(
+  Future<void> comments(
     _i1.Session session,
     Order order,
     _i2.Comment comment,

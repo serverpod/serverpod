@@ -3,4 +3,4 @@ table: order
 fields:
   description: String
   customer: Customer?, relation(name=customer_orders)
-  items: List<Comment>?, relation(name=order_comments)
+  comments: List<Comment>?, relation(name=order_comments)

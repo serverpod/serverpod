@@ -168,15 +168,6 @@ class ColumnCount extends _ValueOperatorColumn<int>
       : super(column.columnName, column.table);
 
   @override
-  String toString() {
-    if (innerWhere != null) {
-      return 'COUNT(${table.tableRelation?.lastJoiningForeignFieldQueryAlias})';
-    }
-
-    return 'COUNT(${super.toString()})';
-  }
-
-  @override
   Expression _encodeValueForQuery(int value) => Expression(value);
 }
 

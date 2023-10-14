@@ -15,7 +15,7 @@ abstract class Order extends _i1.SerializableEntity {
     required this.description,
     required this.customerId,
     this.customer,
-    this.items,
+    this.comments,
   });
 
   factory Order({
@@ -23,7 +23,7 @@ abstract class Order extends _i1.SerializableEntity {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   }) = _OrderImpl;
 
   factory Order.fromJson(
@@ -38,8 +38,8 @@ abstract class Order extends _i1.SerializableEntity {
           .deserialize<int>(jsonSerialization['customerId']),
       customer: serializationManager
           .deserialize<_i2.Customer?>(jsonSerialization['customer']),
-      items: serializationManager
-          .deserialize<List<_i2.Comment>?>(jsonSerialization['items']),
+      comments: serializationManager
+          .deserialize<List<_i2.Comment>?>(jsonSerialization['comments']),
     );
   }
 
@@ -54,14 +54,14 @@ abstract class Order extends _i1.SerializableEntity {
 
   _i2.Customer? customer;
 
-  List<_i2.Comment>? items;
+  List<_i2.Comment>? comments;
 
   Order copyWith({
     int? id,
     String? description,
     int? customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -70,7 +70,7 @@ abstract class Order extends _i1.SerializableEntity {
       'description': description,
       'customerId': customerId,
       'customer': customer,
-      'items': items,
+      'comments': comments,
     };
   }
 }
@@ -83,13 +83,13 @@ class _OrderImpl extends Order {
     required String description,
     required int customerId,
     _i2.Customer? customer,
-    List<_i2.Comment>? items,
+    List<_i2.Comment>? comments,
   }) : super._(
           id: id,
           description: description,
           customerId: customerId,
           customer: customer,
-          items: items,
+          comments: comments,
         );
 
   @override
@@ -98,7 +98,7 @@ class _OrderImpl extends Order {
     String? description,
     int? customerId,
     Object? customer = _Undefined,
-    Object? items = _Undefined,
+    Object? comments = _Undefined,
   }) {
     return Order(
       id: id is int? ? id : this.id,
@@ -106,7 +106,8 @@ class _OrderImpl extends Order {
       customerId: customerId ?? this.customerId,
       customer:
           customer is _i2.Customer? ? customer : this.customer?.copyWith(),
-      items: items is List<_i2.Comment>? ? items : this.items?.clone(),
+      comments:
+          comments is List<_i2.Comment>? ? comments : this.comments?.clone(),
     );
   }
 }
