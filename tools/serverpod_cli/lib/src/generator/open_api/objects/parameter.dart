@@ -19,29 +19,26 @@ class ParameterObject {
   /// parameter name
   final String name;
 
-  /// The location of the parameter. Possible values are "query", "header", "body"
-  /// "path" or "cookie". key - [in]
+  /// The location of the parameter. Possible values are "query", "header",
+  ///  "body" ,"path" or "cookie". key - [in]
   final ParameterLocation inField;
   final String? description;
 
-  /// Determines whether this parameter is mandatory. I
-  /// If the parameter location is "path",
-  /// this property is required and its value must be true.
-  /// Otherwise, the property may be included and
-  /// its default value is false.
+  /// Determines whether this parameter is mandatory. If the parameter location
+  /// is "path", this property is required and its value must be true.
+  /// Otherwise, the property may be included and its default value is false.
   final bool requiredField;
 
   /// Specifies that a parameter is deprecated and should be transitioned
   /// out of usage. Default value is false.
   final bool deprecated;
 
-  /// Sets the ability to pass empty-valued parameters.
-  /// This is valid only for query parameters and allows sending a
-  /// parameter
-  /// with an empty value. Default value is false. If style is used,
-  /// and if behavior is n/a (cannot be serialized), the value of
-  /// allowEmptyValue SHALL be ignored. Use of this property is not
-  /// recommended, as it is likely to be removed in a later revision.
+  /// Sets the ability to pass empty-valued parameters. This is valid only for
+  /// query parameters and allows sending a parameter with an empty value
+  /// Default value is false. If style is used, and if behavior is n/a (cannot
+  /// be serialized), the value of allowEmptyValue SHALL be ignored. Use of
+  /// this property is not recommended, as it is likely to be removed in a
+  /// later revision.
   final bool allowEmptyValue;
 
   /// Describes how the parameter value will be serialized depending

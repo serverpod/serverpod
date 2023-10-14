@@ -1,14 +1,14 @@
 part of '../open_api_objects.dart';
 
-///  example
+/// [TagObject] are used to categorize and group API operations. It must be
+/// unique. example
 /// ```
 /// {
 ///  "name": "pet",
 ///  "description": "Pets operations"
 /// }
 ///```
-/// must be unique
-/// used for grouping endpoints
+///
 class TagObject {
   final String name;
   final String? description;

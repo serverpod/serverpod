@@ -1,10 +1,7 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of '../open_api_objects.dart';
 
 /// Defines a security scheme that can be used by the operations.
 abstract class SecuritySchemeObject {
-  /// The type of the security scheme.
-
   final String? description;
   SecuritySchemeObject({
     this.description,

@@ -1,5 +1,6 @@
 part of '../open_api_objects.dart';
 
+/// Check whether [TypeDefinition] is dartCoreType or not.
 extension CheckDartCoreType on TypeDefinition {
   bool get isDartCoreType =>
       (className == 'String') ||
@@ -18,15 +19,9 @@ extension CheckDartCoreType on TypeDefinition {
       (url == 'dart:async');
 }
 
+/// Check whether [TypeDefinition] is otherType or not.
 extension CheckIsOtherType on TypeDefinition {
   bool get isOtherType => toSchemaObjectType == SchemaObjectType.other;
-}
-
-/// example
-/// convert [nullType] -> [null]
-///
-extension on SchemaObjectType {
-  String get type => name.replaceAll('Type', '');
 }
 
 /// example
@@ -37,7 +32,7 @@ extension ChangeFormat on SchemaObjectFormat {
   String get formattedName => name.paramCase;
 }
 
-/// convert [TypeDefinition] className to [SchemaObjetType]
+/// Convert [TypeDefinition] to [SchemaObjetType].
 extension TypeConvert on TypeDefinition {
   SchemaObjectType get toSchemaObjectType {
     if (className == 'int') return SchemaObjectType.integer;

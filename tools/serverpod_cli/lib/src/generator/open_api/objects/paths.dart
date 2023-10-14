@@ -2,10 +2,10 @@ part of '../open_api_objects.dart';
 
 /// Holds the relative paths to the individual endpoints and their operations.
 /// The path is appended to the URL from the Server Object in order to
-///  construct the full URL.
+/// construct the full URL.
 /// The Paths may be empty, due to Access Control List (ACL) constraints.
 class PathsObject {
-  /// name of the path
+  /// The name of the path.
   /// ```
   /// /pets <- pathName (ServerPod Endpoint Name)
   ///     - post/ <- pathItemObject (Serverpod Endpoint's method name)
