@@ -23,21 +23,21 @@ class UserImages {
   /// Sets a user's image from image data. The image is resized before being
   /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(
-          Session session, int userId, Uint8List bytes) =>
-      Isolate.run(() async {
-        var image = decodeImage(bytes);
-        if (image == null) return false;
-
-        var imageSize = AuthConfig.current.userImageSize;
-        if (image.width != imageSize || image.height != imageSize) {
-          image = copyResizeCropSquare(image,
-              size: imageSize, interpolation: Interpolation.cubic);
-        }
-
-        var imageData = await _encodeImage(image);
-
-        return await _setUserImage(session, userId, imageData);
-      });
+      Session session, int userId, Uint8List imageBytes) async {
+    var reEncodedImageBytes = await Isolate.run(() async {
+      var image = decodeImage(imageBytes);
+      if (image == null) return null;
+      var imageSize = AuthConfig.current.userImageSize;
+      if (image.width != imageSize || image.height != imageSize) {
+        image = copyResizeCropSquare(image,
+            size: imageSize, interpolation: Interpolation.cubic);
+      }
+      return await _encodeImage(image);
+    });
+    return reEncodedImageBytes == null
+        ? false
+        : await _setUserImage(session, userId, reEncodedImageBytes);
+  }
 
   /// Sets a user's image to the default image for that user.
   static Future<bool> setDefaultUserImage(Session session, int userId) async {
@@ -45,28 +45,18 @@ class UserImages {
     if (userInfo == null) return false;
 
     var image = await AuthConfig.current.userImageGenerator(userInfo);
-    var imageData = await _encodeImage(image);
+    var imageBytes = await Isolate.run(() => _encodeImage(image));
 
-    return await _setUserImage(session, userId, imageData);
+    return await _setUserImage(session, userId, imageBytes);
   }
 
-  static Future<ByteData> _encodeImage(Image image) => Isolate.run(() {
-        var format = AuthConfig.current.userImageFormat;
-        List<int> encoded;
-        if (format == UserImageType.jpg) {
-          encoded =
-              encodeJpg(image, quality: AuthConfig.current.userImageQuality);
-        } else {
-          encoded = encodePng(image);
-        }
-
-        // Reference as ByteData.
-        var encodedBytes = Uint8List.fromList(encoded);
-        return ByteData.view(encodedBytes.buffer);
-      });
+  static Uint8List _encodeImage(Image image) =>
+      AuthConfig.current.userImageFormat == UserImageType.jpg
+          ? encodeJpg(image, quality: AuthConfig.current.userImageQuality)
+          : encodePng(image);
 
   static Future<bool> _setUserImage(
-      Session session, int userId, ByteData imageData) async {
+      Session session, int userId, Uint8List imageBytes) async {
     // Find the latest version of the user image if any.
     var oldImageRef = await session.db.findSingleRow<UserImage>(
       where: UserImage.t.userId.equals(userId),
@@ -86,8 +76,10 @@ class UserImages {
 
     // Store the image.
     var path = 'serverpod/user_images/$userId-$version$pathExtension';
-    await session.storage
-        .storeFile(storageId: 'public', path: path, byteData: imageData);
+    await session.storage.storeFile(
+        storageId: 'public',
+        path: path,
+        byteData: ByteData.view(imageBytes.buffer));
     var publicUrl =
         await session.storage.getPublicUrl(storageId: 'public', path: path);
     if (publicUrl == null) return false;
