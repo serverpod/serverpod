@@ -181,8 +181,7 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) => Isolate.run(() {
           font: font, x: xPos - chOffsetX, y: yPos - chOffsetY);
 
       // Resize image if it's not the preferred size.
-      if (imageSize != 256)
-        image = copyResizeCropSquare(image, size: imageSize);
-
-      return image;
+      return imageSize == 256
+          ? image
+          : copyResizeCropSquare(image, size: imageSize);
     });
