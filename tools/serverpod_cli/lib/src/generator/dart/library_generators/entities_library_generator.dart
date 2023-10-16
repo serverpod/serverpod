@@ -126,8 +126,9 @@ class SerializableEntityLibraryGenerator {
     String? tableName,
     List<SerializableEntityFieldDefinition> fields,
   ) {
-    var objectRelationFields =
-        fields.where((field) => field.relation is ObjectRelationDefinition);
+    var relationFields = fields.where((field) =>
+        field.relation is ObjectRelationDefinition ||
+        field.relation is ListRelationDefinition);
     return Class((classBuilder) {
       classBuilder
         ..abstract = true
@@ -193,12 +194,12 @@ class SerializableEntityLibraryGenerator {
         if (tableName != null) {
           classBuilder.methods.addAll([
             _buildEntityClassSetColumnMethod(fields),
-            _buildEntityClassFindMethod(className, objectRelationFields),
+            _buildEntityClassFindMethod(className, relationFields),
             _buildEntityClassFindSingleRowMethod(
               className,
-              objectRelationFields,
+              relationFields,
             ),
-            _buildEntityClassFindByIdMethod(className, objectRelationFields),
+            _buildEntityClassFindByIdMethod(className, relationFields),
             _buildEntityClassDeleteMethod(className),
             _buildEntityClassDeleteRowMethod(className),
             _buildEntityClassUpdateMethod(className),
@@ -206,13 +207,11 @@ class SerializableEntityLibraryGenerator {
             _buildEntityClassCountMethod(className),
             _buildEntityClassIncludeMethod(
               className,
-              objectRelationFields,
+              relationFields,
               classDefinition.subDirParts,
             ),
             _buildEntityClassIncludeListMethod(
               className,
-              objectRelationFields,
-              classDefinition.subDirParts,
             ),
           ]);
         }
@@ -514,42 +513,52 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassIncludeMethod(
       String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+      Iterable<SerializableEntityFieldDefinition> relationFields,
       List<String> subDirParts) {
     return Method(
       (m) => m
         ..static = true
         ..name = 'include'
         ..returns = TypeReference((r) => r..symbol = '${className}Include')
-        ..optionalParameters.addAll([
-          for (var field in objectRelationFields)
-            Parameter(
+        ..optionalParameters.addAll(
+          relationFields.map((field) {
+            var type = field.type.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+              typeSuffix: 'Include',
+              nullable: true,
+            );
+
+            if (field.relation is ListRelationDefinition) {
+              type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                typeSuffix: 'IncludeList',
+                nullable: true,
+              );
+            }
+
+            return Parameter(
               (p) => p
-                ..type = field.type.reference(
-                  serverCode,
-                  subDirParts: subDirParts,
-                  config: config,
-                  typeSuffix: 'Include',
-                )
+                ..type = type
                 ..name = field.name
                 ..named = true,
-            ),
-        ])
+            );
+          }),
+        )
         ..body = refer('${className}Include')
             .property('_')
             .call([], {
-              for (var field in objectRelationFields)
-                field.name: refer(field.name),
+              for (var field in relationFields) field.name: refer(field.name),
             })
             .returned
             .statement,
     );
   }
 
-  Method _buildEntityClassIncludeListMethod(
-      String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields,
-      List<String> subDirParts) {
+  Method _buildEntityClassIncludeListMethod(String className) {
     return Method(
       (m) => m
         ..static = true
