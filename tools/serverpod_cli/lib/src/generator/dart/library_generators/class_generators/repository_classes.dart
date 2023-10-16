@@ -19,8 +19,9 @@ class BuildRepositoryClass {
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
-    var objectRelationFields =
-        fields.where((field) => field.relation is ObjectRelationDefinition);
+    var relationFields = fields.where((field) =>
+        field.relation is ObjectRelationDefinition ||
+        field.relation is ListRelationDefinition);
     return Class((classBuilder) {
       classBuilder
         ..name = '${className}Repository'
@@ -62,9 +63,9 @@ class BuildRepositoryClass {
             }),
         ])
         ..methods.addAll([
-          _buildFindMethod(className, objectRelationFields),
-          _buildFindRow(className, objectRelationFields),
-          _buildFindByIdMethod(className, objectRelationFields),
+          _buildFindMethod(className, relationFields),
+          _buildFindRow(className, relationFields),
+          _buildFindByIdMethod(className, relationFields),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
           _buildUpdateMethod(className),
