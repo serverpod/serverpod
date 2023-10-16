@@ -544,8 +544,6 @@ class DatabaseConnection {
             .withInclude(include.include)
             .build();
 
-        print(query);
-
         var includeListResult = await mappedResultsQuery(session, query);
 
         var resolvedLists = await _queryIncludedLists(
@@ -717,7 +715,18 @@ abstract class Include {
 abstract class IncludeObject extends Include {}
 
 /// Defines what tables to join when querying a table.
-abstract class IncludeList extends Include {
+abstract class IncludeList<T extends Include> extends Include {
+  /// Constructs a new [IncludeList] object.
+  IncludeList({
+    this.where,
+    this.limit,
+    this.offset,
+    this.orderBy,
+    this.orderDescending = false,
+    this.orderByList,
+    this.include,
+  });
+
   /// Where expression to filter the included list.
   Expression? where;
 
@@ -737,5 +746,5 @@ abstract class IncludeList extends Include {
   List<Order>? orderByList;
 
   /// The nested includes
-  Include? include;
+  T? include;
 }
