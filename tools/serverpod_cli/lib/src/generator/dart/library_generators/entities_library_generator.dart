@@ -209,6 +209,11 @@ class SerializableEntityLibraryGenerator {
               objectRelationFields,
               classDefinition.subDirParts,
             ),
+            _buildEntityClassIncludeListMethod(
+              className,
+              objectRelationFields,
+              classDefinition.subDirParts,
+            ),
           ]);
         }
       }
@@ -535,6 +540,88 @@ class SerializableEntityLibraryGenerator {
             .call([], {
               for (var field in objectRelationFields)
                 field.name: refer(field.name),
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildEntityClassIncludeListMethod(
+      String className,
+      Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+      List<String> subDirParts) {
+    return Method(
+      (m) => m
+        ..static = true
+        ..name = 'includeList'
+        ..returns = TypeReference((r) => r..symbol = '${className}IncludeList')
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'where'
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'limit'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'offset'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderBy'
+              ..named = true
+              ..type = refer(
+                'Column?',
+                serverpodUrl(serverCode),
+              ),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderDescending'
+              ..named = true
+              ..defaultTo = const Code('false')
+              ..type = refer('bool'),
+          ),
+          Parameter((p) => p
+            ..name = 'orderByList'
+            ..named = true
+            ..type = TypeReference(
+              (t) => t
+                ..symbol = 'List'
+                ..types.addAll([
+                  refer(
+                    'Order',
+                    serverpodUrl(serverCode),
+                  ),
+                ])
+                ..isNullable = true,
+            )),
+          Parameter((p) => p
+            ..name = 'include'
+            ..named = true
+            ..type = refer('${className}Include?'))
+        ])
+        ..body = refer('${className}IncludeList')
+            .property('_')
+            .call([], {
+              'where': refer('where'),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy'),
+              'orderDescending': refer('orderDescending'),
+              'orderByList': refer('orderByList'),
+              'include': refer('include'),
             })
             .returned
             .statement,

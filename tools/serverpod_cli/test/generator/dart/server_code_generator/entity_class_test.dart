@@ -307,6 +307,17 @@ void main() {
             isTrue,
             reason: 'Missing declaration for static include method.');
       });
+
+      test('has a static includeList method.', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExample!,
+              name: 'includeList',
+              isStatic: true,
+            ),
+            isTrue,
+            reason: 'Missing declaration for static includeList method.');
+      });
     }, skip: maybeClassNamedExample == null);
   });
 
