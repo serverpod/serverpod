@@ -229,9 +229,10 @@ class BuildRepositoryClass {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -324,9 +325,10 @@ class BuildRepositoryClass {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -703,7 +705,11 @@ class BuildRepositoryClass {
         ..optionalParameters.addAll([
           Parameter((p) => p
             ..required = true
-            ..type = refer('${className}ExpressionBuilder')
+            ..type = typeWhereExpressionBuilder(
+              className,
+              serverCode,
+              nullable: false,
+            )
             ..name = 'where'
             ..named = true),
           Parameter((p) => p
@@ -745,9 +751,10 @@ class BuildRepositoryClass {
         ])
         ..optionalParameters.addAll([
           Parameter((p) => p
-            ..type = TypeReference((b) => b
-              ..isNullable = true
-              ..symbol = '${className}ExpressionBuilder')
+            ..type = typeWhereExpressionBuilder(
+              className,
+              serverCode,
+            )
             ..name = 'where'
             ..named = true),
           Parameter((p) => p

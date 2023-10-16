@@ -66,9 +66,6 @@ class SerializableEntityLibraryGenerator {
 
         if (serverCode && tableName != null) {
           libraryBuilder.body.addAll([
-            _buildExpressionBuilderTypeDef(
-              className,
-            ),
             _buildEntityTableClass(
               className,
               tableName,
@@ -563,9 +560,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -754,7 +752,11 @@ class SerializableEntityLibraryGenerator {
       ..optionalParameters.addAll([
         Parameter((p) => p
           ..required = true
-          ..type = refer('${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+            nullable: false,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -854,9 +856,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -948,9 +951,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -1299,16 +1303,6 @@ class SerializableEntityLibraryGenerator {
     return entityClassFields;
   }
 
-  /// TODO: REMOVE
-  Code _buildExpressionBuilderTypeDef(String className) {
-    return FunctionType(
-      (f) {
-        f.returnType = refer('Expression', serverpodUrl(serverCode));
-        f.requiredParameters.add(refer('${className}Table'));
-      },
-    ).toTypeDef('${className}ExpressionBuilder');
-  }
-
   Class _buildEntityTableClass(
       String className,
       String tableName,
@@ -1326,7 +1320,11 @@ class SerializableEntityLibraryGenerator {
       );
 
       c.methods.addAll([
-        ..._buildEntityTableClassRelationGetters(fields, classDefinition),
+        ..._buildEntityTableClassRelationGetters(
+          fields,
+          classDefinition,
+          classDefinition.subDirParts,
+        ),
         ..._buildEntityTableClassManyRelationGetters(fields, classDefinition),
         _buildEntityTableClassColumnGetter(fields),
       ]);
@@ -1472,6 +1470,7 @@ class SerializableEntityLibraryGenerator {
   List<Method> _buildEntityTableClassRelationGetters(
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
+    List<String> subDirParts,
   ) {
     List<Method> getters = [];
 
@@ -1485,6 +1484,17 @@ class SerializableEntityLibraryGenerator {
       String relationFieldName = '';
       String relationForeignFieldName = '';
       String fieldName = '';
+      TypeReference fieldType = field.type.reference(
+        serverCode,
+        subDirParts: subDirParts,
+        config: config,
+        nullable: false,
+      );
+      TypeReference tableType = field.type.reference(serverCode,
+          subDirParts: subDirParts,
+          config: config,
+          nullable: false,
+          typeSuffix: 'Table');
 
       var relation = field.relation;
       if (relation is ObjectRelationDefinition) {
@@ -1493,21 +1503,28 @@ class SerializableEntityLibraryGenerator {
         fieldName = field.name;
       } else if (relation is ListRelationDefinition) {
         relationFieldName = relation.fieldName;
-        relationForeignFieldName = relation.foreignFieldName;
+        relationForeignFieldName = createForeignFieldName(relation);
         fieldName = '__${field.name}';
+        fieldType = field.type.generics.first.reference(
+          serverCode,
+          subDirParts: subDirParts,
+          config: config,
+          nullable: false,
+        );
+        tableType = field.type.generics.first.reference(
+          serverCode,
+          subDirParts: subDirParts,
+          config: config,
+          nullable: false,
+          typeSuffix: 'Table',
+        );
       }
 
       // Add getter method for relation table that creates the table
       getters.add(Method((m) => m
         ..name = fieldName
         ..type = MethodType.getter
-        ..returns = field.type.reference(
-          serverCode,
-          subDirParts: classDefinition.subDirParts,
-          config: config,
-          nullable: false,
-          typeSuffix: 'Table',
-        )
+        ..returns = tableType
         ..body = Block.of([
           Code('if (_$fieldName != null) return _$fieldName!;'),
           refer('_$fieldName')
@@ -1522,13 +1539,7 @@ class SerializableEntityLibraryGenerator {
                     'field': refer(classDefinition.className)
                         .property('t')
                         .property(relationFieldName),
-                    'foreignField': field.type
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
+                    'foreignField': fieldType
                         .property('t')
                         .property(relationForeignFieldName),
                     'tableRelation': refer('tableRelation'),
@@ -1538,15 +1549,7 @@ class SerializableEntityLibraryGenerator {
                           Parameter((p) => p..name = 'foreignTableRelation'),
                         ])
                         ..lambda = true
-                        ..body = field.type
-                            .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                          typeSuffix: 'Table',
-                        )
-                            .call([], {
+                        ..body = tableType.call([], {
                           'tableRelation': refer('foreignTableRelation')
                         }).code,
                     ).closure
@@ -1782,13 +1785,10 @@ class SerializableEntityLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'where'
-            ..type = TypeReference((t) => t
-              ..symbol = 'WhereExpressionBuilder'
-              ..types.addAll([
-                refer('${className}Table'),
-              ])
-              ..url = serverpodUrl(serverCode)
-              ..isNullable = true)
+            ..type = typeWhereExpressionBuilder(
+              className,
+              serverCode,
+            )
             ..named = true,
         ),
         Parameter(
