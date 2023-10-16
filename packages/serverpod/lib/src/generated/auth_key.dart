@@ -141,7 +141,7 @@ abstract class AuthKey extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<AuthKey>> find(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -165,7 +165,7 @@ abstract class AuthKey extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<AuthKey?> findSingleRow(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -193,7 +193,7 @@ abstract class AuthKey extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required AuthKeyExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<AuthKey>(
@@ -242,7 +242,7 @@ abstract class AuthKey extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -257,6 +257,26 @@ abstract class AuthKey extends _i1.TableRow {
 
   static AuthKeyInclude include() {
     return AuthKeyInclude._();
+  }
+
+  static AuthKeyIncludeList includeList({
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    AuthKeyInclude? include,
+  }) {
+    return AuthKeyIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -298,8 +318,6 @@ class _AuthKeyImpl extends AuthKey {
     );
   }
 }
-
-typedef AuthKeyExpressionBuilder = _i1.Expression Function(AuthKeyTable);
 
 class AuthKeyTable extends _i1.Table {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
@@ -357,12 +375,32 @@ class AuthKeyInclude extends _i1.Include {
   _i1.Table get table => AuthKey.t;
 }
 
+class AuthKeyIncludeList extends _i1.IncludeList<AuthKeyInclude> {
+  AuthKeyIncludeList._({
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(AuthKey.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => AuthKey.t;
+}
+
 class AuthKeyRepository {
   const AuthKeyRepository._();
 
   Future<List<AuthKey>> find(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -383,7 +421,7 @@ class AuthKeyRepository {
 
   Future<AuthKey?> findRow(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -474,7 +512,7 @@ class AuthKeyRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required AuthKeyExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<AuthKey>(
@@ -485,7 +523,7 @@ class AuthKeyRepository {
 
   Future<int> count(
     _i1.Session session, {
-    AuthKeyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

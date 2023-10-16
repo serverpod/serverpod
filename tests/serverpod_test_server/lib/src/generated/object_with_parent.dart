@@ -87,7 +87,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithParent>> find(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -111,7 +111,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithParent?> findSingleRow(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -139,7 +139,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithParentExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithParent>(
@@ -188,7 +188,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -203,6 +203,26 @@ abstract class ObjectWithParent extends _i1.TableRow {
 
   static ObjectWithParentInclude include() {
     return ObjectWithParentInclude._();
+  }
+
+  static ObjectWithParentIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectWithParentInclude? include,
+  }) {
+    return ObjectWithParentIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -228,9 +248,6 @@ class _ObjectWithParentImpl extends ObjectWithParent {
     );
   }
 }
-
-typedef ObjectWithParentExpressionBuilder = _i1.Expression Function(
-    ObjectWithParentTable);
 
 class ObjectWithParentTable extends _i1.Table {
   ObjectWithParentTable({super.tableRelation})
@@ -263,12 +280,33 @@ class ObjectWithParentInclude extends _i1.Include {
   _i1.Table get table => ObjectWithParent.t;
 }
 
+class ObjectWithParentIncludeList
+    extends _i1.IncludeList<ObjectWithParentInclude> {
+  ObjectWithParentIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithParent.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => ObjectWithParent.t;
+}
+
 class ObjectWithParentRepository {
   const ObjectWithParentRepository._();
 
   Future<List<ObjectWithParent>> find(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -289,7 +327,7 @@ class ObjectWithParentRepository {
 
   Future<ObjectWithParent?> findRow(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -380,7 +418,7 @@ class ObjectWithParentRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithParentExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithParentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectWithParent>(
@@ -391,7 +429,7 @@ class ObjectWithParentRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithParentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

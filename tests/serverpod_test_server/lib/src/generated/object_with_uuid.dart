@@ -101,7 +101,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithUuid>> find(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -125,7 +125,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithUuid?> findSingleRow(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -153,7 +153,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithUuidExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithUuid>(
@@ -202,7 +202,7 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -217,6 +217,26 @@ abstract class ObjectWithUuid extends _i1.TableRow {
 
   static ObjectWithUuidInclude include() {
     return ObjectWithUuidInclude._();
+  }
+
+  static ObjectWithUuidIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectWithUuidInclude? include,
+  }) {
+    return ObjectWithUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -247,9 +267,6 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
     );
   }
 }
-
-typedef ObjectWithUuidExpressionBuilder = _i1.Expression Function(
-    ObjectWithUuidTable);
 
 class ObjectWithUuidTable extends _i1.Table {
   ObjectWithUuidTable({super.tableRelation})
@@ -289,12 +306,32 @@ class ObjectWithUuidInclude extends _i1.Include {
   _i1.Table get table => ObjectWithUuid.t;
 }
 
+class ObjectWithUuidIncludeList extends _i1.IncludeList<ObjectWithUuidInclude> {
+  ObjectWithUuidIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithUuid.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => ObjectWithUuid.t;
+}
+
 class ObjectWithUuidRepository {
   const ObjectWithUuidRepository._();
 
   Future<List<ObjectWithUuid>> find(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -315,7 +352,7 @@ class ObjectWithUuidRepository {
 
   Future<ObjectWithUuid?> findRow(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -406,7 +443,7 @@ class ObjectWithUuidRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithUuidExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectWithUuid>(
@@ -417,7 +454,7 @@ class ObjectWithUuidRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithUuidExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

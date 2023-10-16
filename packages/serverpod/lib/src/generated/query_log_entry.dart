@@ -216,7 +216,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<QueryLogEntry>> find(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -240,7 +240,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<QueryLogEntry?> findSingleRow(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -268,7 +268,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required QueryLogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<QueryLogEntry>(
@@ -317,7 +317,7 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -332,6 +332,26 @@ abstract class QueryLogEntry extends _i1.TableRow {
 
   static QueryLogEntryInclude include() {
     return QueryLogEntryInclude._();
+  }
+
+  static QueryLogEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    QueryLogEntryInclude? include,
+  }) {
+    return QueryLogEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -393,9 +413,6 @@ class _QueryLogEntryImpl extends QueryLogEntry {
     );
   }
 }
-
-typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
-    QueryLogEntryTable);
 
 class QueryLogEntryTable extends _i1.Table {
   QueryLogEntryTable({super.tableRelation})
@@ -503,12 +520,32 @@ class QueryLogEntryInclude extends _i1.Include {
   _i1.Table get table => QueryLogEntry.t;
 }
 
+class QueryLogEntryIncludeList extends _i1.IncludeList<QueryLogEntryInclude> {
+  QueryLogEntryIncludeList._({
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(QueryLogEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => QueryLogEntry.t;
+}
+
 class QueryLogEntryRepository {
   const QueryLogEntryRepository._();
 
   Future<List<QueryLogEntry>> find(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -529,7 +566,7 @@ class QueryLogEntryRepository {
 
   Future<QueryLogEntry?> findRow(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -620,7 +657,7 @@ class QueryLogEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required QueryLogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<QueryLogEntry>(
@@ -631,7 +668,7 @@ class QueryLogEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

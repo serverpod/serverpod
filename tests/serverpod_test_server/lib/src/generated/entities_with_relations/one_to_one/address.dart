@@ -111,7 +111,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Address>> find(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -137,7 +137,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Address?> findSingleRow(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -171,7 +171,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required AddressExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Address>(
@@ -220,7 +220,7 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -235,6 +235,26 @@ abstract class Address extends _i1.TableRow {
 
   static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
     return AddressInclude._(inhabitant: inhabitant);
+  }
+
+  static AddressIncludeList includeList({
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    AddressInclude? include,
+  }) {
+    return AddressIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -269,8 +289,6 @@ class _AddressImpl extends Address {
     );
   }
 }
-
-typedef AddressExpressionBuilder = _i1.Expression Function(AddressTable);
 
 class AddressTable extends _i1.Table {
   AddressTable({super.tableRelation}) : super(tableName: 'address') {
@@ -336,6 +354,26 @@ class AddressInclude extends _i1.Include {
   _i1.Table get table => Address.t;
 }
 
+class AddressIncludeList extends _i1.IncludeList<AddressInclude> {
+  AddressIncludeList._({
+    _i1.WhereExpressionBuilder<AddressTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Address.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Address.t;
+}
+
 class AddressRepository {
   const AddressRepository._();
 
@@ -345,7 +383,7 @@ class AddressRepository {
 
   Future<List<Address>> find(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -368,7 +406,7 @@ class AddressRepository {
 
   Future<Address?> findRow(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -463,7 +501,7 @@ class AddressRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required AddressExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Address>(
@@ -474,7 +512,7 @@ class AddressRepository {
 
   Future<int> count(
     _i1.Session session, {
-    AddressExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

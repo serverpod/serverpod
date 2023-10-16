@@ -110,7 +110,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Town>> find(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -136,7 +136,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Town?> findSingleRow(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -170,7 +170,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required TownExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Town>(
@@ -219,7 +219,7 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -234,6 +234,26 @@ abstract class Town extends _i1.TableRow {
 
   static TownInclude include({_i2.CitizenInclude? mayor}) {
     return TownInclude._(mayor: mayor);
+  }
+
+  static TownIncludeList includeList({
+    _i1.WhereExpressionBuilder<TownTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    TownInclude? include,
+  }) {
+    return TownIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -267,8 +287,6 @@ class _TownImpl extends Town {
     );
   }
 }
-
-typedef TownExpressionBuilder = _i1.Expression Function(TownTable);
 
 class TownTable extends _i1.Table {
   TownTable({super.tableRelation}) : super(tableName: 'town') {
@@ -334,6 +352,26 @@ class TownInclude extends _i1.Include {
   _i1.Table get table => Town.t;
 }
 
+class TownIncludeList extends _i1.IncludeList<TownInclude> {
+  TownIncludeList._({
+    _i1.WhereExpressionBuilder<TownTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Town.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Town.t;
+}
+
 class TownRepository {
   const TownRepository._();
 
@@ -343,7 +381,7 @@ class TownRepository {
 
   Future<List<Town>> find(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -366,7 +404,7 @@ class TownRepository {
 
   Future<Town?> findRow(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -461,7 +499,7 @@ class TownRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required TownExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Town>(
@@ -472,7 +510,7 @@ class TownRepository {
 
   Future<int> count(
     _i1.Session session, {
-    TownExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TownTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

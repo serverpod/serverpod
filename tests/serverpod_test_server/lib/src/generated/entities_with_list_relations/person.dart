@@ -6,7 +6,6 @@
 // ignore_for_file: implementation_imports
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/database.dart';
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
@@ -118,7 +117,7 @@ abstract class Person extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Person>> find(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -144,7 +143,7 @@ abstract class Person extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Person?> findSingleRow(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -178,7 +177,7 @@ abstract class Person extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required PersonExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Person>(
@@ -227,7 +226,7 @@ abstract class Person extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -245,7 +244,7 @@ abstract class Person extends _i1.TableRow {
   }
 
   static PersonIncludeList includeList({
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -336,8 +335,6 @@ class PersonImplicit extends _PersonImpl {
   }
 }
 
-typedef PersonExpressionBuilder = WhereExpressionBuilder<PersonTable>;
-
 class PersonTable extends _i1.Table {
   PersonTable({super.tableRelation}) : super(tableName: 'person') {
     name = _i1.ColumnString(
@@ -395,7 +392,7 @@ class PersonTable extends _i1.Table {
 @Deprecated('Use PersonTable.t instead.')
 PersonTable tPerson = PersonTable();
 
-class PersonInclude extends _i1.IncludeObject {
+class PersonInclude extends _i1.Include {
   PersonInclude._({_i2.OrganizationInclude? organization}) {
     _organization = organization;
   }
@@ -409,23 +406,17 @@ class PersonInclude extends _i1.IncludeObject {
   _i1.Table get table => Person.t;
 }
 
-class PersonIncludeList extends _i1.IncludeList {
+class PersonIncludeList extends _i1.IncludeList<PersonInclude> {
   PersonIncludeList._({
-    WhereExpressionBuilder<PersonTable>? where,
-    int? limit,
-    int? offset,
-    Column? orderBy,
-    bool orderDescending = false,
-    List<Order>? orderByList,
-    PersonInclude? include,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
   }) {
     super.where = where?.call(Person.t);
-    super.limit = limit;
-    super.offset = offset;
-    super.orderBy = orderBy;
-    super.orderDescending = orderDescending;
-    super.orderByList = orderByList;
-    super.include = include;
   }
 
   @override
@@ -444,7 +435,7 @@ class PersonRepository {
 
   Future<List<Person>> find(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -467,7 +458,7 @@ class PersonRepository {
 
   Future<Person?> findRow(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -562,7 +553,7 @@ class PersonRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required PersonExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<PersonTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Person>(
@@ -573,7 +564,7 @@ class PersonRepository {
 
   Future<int> count(
     _i1.Session session, {
-    PersonExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

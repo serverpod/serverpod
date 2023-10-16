@@ -132,7 +132,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<EmailCreateAccountRequest>> find(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -156,7 +156,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<EmailCreateAccountRequest?> findSingleRow(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -184,7 +184,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required EmailCreateAccountRequestExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailCreateAccountRequest>(
@@ -233,7 +233,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -248,6 +248,26 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
 
   static EmailCreateAccountRequestInclude include() {
     return EmailCreateAccountRequestInclude._();
+  }
+
+  static EmailCreateAccountRequestIncludeList includeList({
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    EmailCreateAccountRequestInclude? include,
+  }) {
+    return EmailCreateAccountRequestIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -285,9 +305,6 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
     );
   }
 }
-
-typedef EmailCreateAccountRequestExpressionBuilder = _i1.Expression Function(
-    EmailCreateAccountRequestTable);
 
 class EmailCreateAccountRequestTable extends _i1.Table {
   EmailCreateAccountRequestTable({super.tableRelation})
@@ -346,12 +363,33 @@ class EmailCreateAccountRequestInclude extends _i1.Include {
   _i1.Table get table => EmailCreateAccountRequest.t;
 }
 
+class EmailCreateAccountRequestIncludeList
+    extends _i1.IncludeList<EmailCreateAccountRequestInclude> {
+  EmailCreateAccountRequestIncludeList._({
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(EmailCreateAccountRequest.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => EmailCreateAccountRequest.t;
+}
+
 class EmailCreateAccountRequestRepository {
   const EmailCreateAccountRequestRepository._();
 
   Future<List<EmailCreateAccountRequest>> find(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -372,7 +410,7 @@ class EmailCreateAccountRequestRepository {
 
   Future<EmailCreateAccountRequest?> findRow(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -463,7 +501,7 @@ class EmailCreateAccountRequestRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required EmailCreateAccountRequestExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<EmailCreateAccountRequest>(
@@ -474,7 +512,7 @@ class EmailCreateAccountRequestRepository {
 
   Future<int> count(
     _i1.Session session, {
-    EmailCreateAccountRequestExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

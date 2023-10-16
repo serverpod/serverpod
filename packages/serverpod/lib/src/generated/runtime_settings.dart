@@ -134,7 +134,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<RuntimeSettings>> find(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -158,7 +158,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<RuntimeSettings?> findSingleRow(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -186,7 +186,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required RuntimeSettingsExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RuntimeSettings>(
@@ -235,7 +235,7 @@ abstract class RuntimeSettings extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -250,6 +250,26 @@ abstract class RuntimeSettings extends _i1.TableRow {
 
   static RuntimeSettingsInclude include() {
     return RuntimeSettingsInclude._();
+  }
+
+  static RuntimeSettingsIncludeList includeList({
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    RuntimeSettingsInclude? include,
+  }) {
+    return RuntimeSettingsIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -288,9 +308,6 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
     );
   }
 }
-
-typedef RuntimeSettingsExpressionBuilder = _i1.Expression Function(
-    RuntimeSettingsTable);
 
 class RuntimeSettingsTable extends _i1.Table {
   RuntimeSettingsTable({super.tableRelation})
@@ -348,12 +365,33 @@ class RuntimeSettingsInclude extends _i1.Include {
   _i1.Table get table => RuntimeSettings.t;
 }
 
+class RuntimeSettingsIncludeList
+    extends _i1.IncludeList<RuntimeSettingsInclude> {
+  RuntimeSettingsIncludeList._({
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(RuntimeSettings.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => RuntimeSettings.t;
+}
+
 class RuntimeSettingsRepository {
   const RuntimeSettingsRepository._();
 
   Future<List<RuntimeSettings>> find(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -374,7 +412,7 @@ class RuntimeSettingsRepository {
 
   Future<RuntimeSettings?> findRow(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -465,7 +503,7 @@ class RuntimeSettingsRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required RuntimeSettingsExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<RuntimeSettings>(
@@ -476,7 +514,7 @@ class RuntimeSettingsRepository {
 
   Future<int> count(
     _i1.Session session, {
-    RuntimeSettingsExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

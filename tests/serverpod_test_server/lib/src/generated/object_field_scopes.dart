@@ -108,7 +108,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectFieldScopes>> find(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -132,7 +132,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectFieldScopes?> findSingleRow(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -160,7 +160,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectFieldScopesExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectFieldScopes>(
@@ -209,7 +209,7 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -224,6 +224,26 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
 
   static ObjectFieldScopesInclude include() {
     return ObjectFieldScopesInclude._();
+  }
+
+  static ObjectFieldScopesIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectFieldScopesInclude? include,
+  }) {
+    return ObjectFieldScopesIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -257,9 +277,6 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
     );
   }
 }
-
-typedef ObjectFieldScopesExpressionBuilder = _i1.Expression Function(
-    ObjectFieldScopesTable);
 
 class ObjectFieldScopesTable extends _i1.Table {
   ObjectFieldScopesTable({super.tableRelation})
@@ -299,12 +316,33 @@ class ObjectFieldScopesInclude extends _i1.Include {
   _i1.Table get table => ObjectFieldScopes.t;
 }
 
+class ObjectFieldScopesIncludeList
+    extends _i1.IncludeList<ObjectFieldScopesInclude> {
+  ObjectFieldScopesIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectFieldScopes.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => ObjectFieldScopes.t;
+}
+
 class ObjectFieldScopesRepository {
   const ObjectFieldScopesRepository._();
 
   Future<List<ObjectFieldScopes>> find(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -325,7 +363,7 @@ class ObjectFieldScopesRepository {
 
   Future<ObjectFieldScopes?> findRow(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -416,7 +454,7 @@ class ObjectFieldScopesRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectFieldScopesExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectFieldScopes>(
@@ -427,7 +465,7 @@ class ObjectFieldScopesRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectFieldScopesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

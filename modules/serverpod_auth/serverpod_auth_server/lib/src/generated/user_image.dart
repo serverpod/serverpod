@@ -117,7 +117,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<UserImage>> find(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -141,7 +141,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<UserImage?> findSingleRow(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -169,7 +169,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required UserImageExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserImage>(
@@ -218,7 +218,7 @@ abstract class UserImage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -233,6 +233,26 @@ abstract class UserImage extends _i1.TableRow {
 
   static UserImageInclude include() {
     return UserImageInclude._();
+  }
+
+  static UserImageIncludeList includeList({
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    UserImageInclude? include,
+  }) {
+    return UserImageIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -266,8 +286,6 @@ class _UserImageImpl extends UserImage {
     );
   }
 }
-
-typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
 
 class UserImageTable extends _i1.Table {
   UserImageTable({super.tableRelation})
@@ -317,12 +335,32 @@ class UserImageInclude extends _i1.Include {
   _i1.Table get table => UserImage.t;
 }
 
+class UserImageIncludeList extends _i1.IncludeList<UserImageInclude> {
+  UserImageIncludeList._({
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(UserImage.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => UserImage.t;
+}
+
 class UserImageRepository {
   const UserImageRepository._();
 
   Future<List<UserImage>> find(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -343,7 +381,7 @@ class UserImageRepository {
 
   Future<UserImage?> findRow(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -434,7 +472,7 @@ class UserImageRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required UserImageExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<UserImageTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<UserImage>(
@@ -445,7 +483,7 @@ class UserImageRepository {
 
   Future<int> count(
     _i1.Session session, {
-    UserImageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

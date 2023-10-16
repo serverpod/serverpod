@@ -6,7 +6,6 @@
 // ignore_for_file: implementation_imports
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/database.dart';
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
@@ -120,7 +119,7 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Organization>> find(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -146,7 +145,7 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Organization?> findSingleRow(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -180,7 +179,7 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required OrganizationExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Organization>(
@@ -229,7 +228,7 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -243,14 +242,17 @@ abstract class Organization extends _i1.TableRow {
   }
 
   static OrganizationInclude include({
-    _i2.CityInclude? city,
     _i2.PersonIncludeList? people,
+    _i2.CityInclude? city,
   }) {
-    return OrganizationInclude._(city: city, people: people);
+    return OrganizationInclude._(
+      people: people,
+      city: city,
+    );
   }
 
   static OrganizationIncludeList includeList({
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -305,9 +307,6 @@ class _OrganizationImpl extends Organization {
   }
 }
 
-typedef OrganizationExpressionBuilder = _i1.Expression Function(
-    OrganizationTable);
-
 class OrganizationTable extends _i1.Table {
   OrganizationTable({super.tableRelation}) : super(tableName: 'organization') {
     name = _i1.ColumnString(
@@ -322,9 +321,26 @@ class OrganizationTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  _i2.PersonTable? ___people;
+
+  _i1.ManyRelation<_i2.PersonTable>? _people;
+
   late final _i1.ColumnInt cityId;
 
   _i2.CityTable? _city;
+
+  _i2.PersonTable get __people {
+    if (___people != null) return ___people!;
+    ___people = _i1.createRelationTable(
+      relationFieldName: '__people',
+      field: Organization.t.id,
+      foreignField: _i2.Person.t.organizationId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.PersonTable(tableRelation: foreignTableRelation),
+    );
+    return ___people!;
+  }
 
   _i2.CityTable get city {
     if (_city != null) return _city!;
@@ -338,8 +354,6 @@ class OrganizationTable extends _i1.Table {
     );
     return _city!;
   }
-
-  _i1.ManyRelation<_i2.PersonTable>? _people;
 
   _i1.ManyRelation<_i2.PersonTable> get people {
     if (_people != null) return _people!;
@@ -365,27 +379,14 @@ class OrganizationTable extends _i1.Table {
         cityId,
       ];
 
-  _i2.PersonTable get __people {
-    return _i1.createRelationTable<_i2.PersonTable>(
-      relationFieldName: 'people',
-      field: Organization.t.id,
-      tableRelation: tableRelation,
-      foreignField: _i2.Person.t.organizationId,
-      createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
-    );
-  }
-
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'city') {
-      return city;
-    }
-
     if (relationField == 'people') {
       return __people;
     }
-
+    if (relationField == 'city') {
+      return city;
+    }
     return null;
   }
 }
@@ -393,42 +394,40 @@ class OrganizationTable extends _i1.Table {
 @Deprecated('Use OrganizationTable.t instead.')
 OrganizationTable tOrganization = OrganizationTable();
 
-class OrganizationInclude extends _i1.IncludeObject {
-  OrganizationInclude._({_i2.CityInclude? city, this.people}) {
+class OrganizationInclude extends _i1.Include {
+  OrganizationInclude._({
+    _i2.PersonIncludeList? people,
+    _i2.CityInclude? city,
+  }) {
+    _people = people;
     _city = city;
   }
 
-  _i2.CityInclude? _city;
+  _i2.PersonIncludeList? _people;
 
-  _i2.PersonIncludeList? people;
+  _i2.CityInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
+        'people': _people,
         'city': _city,
-        'people': people,
       };
 
   @override
   _i1.Table get table => Organization.t;
 }
 
-class OrganizationIncludeList extends _i1.IncludeList {
+class OrganizationIncludeList extends _i1.IncludeList<OrganizationInclude> {
   OrganizationIncludeList._({
-    WhereExpressionBuilder<OrganizationTable>? where,
-    int? limit,
-    int? offset,
-    Column? orderBy,
-    bool orderDescending = false,
-    List<Order>? orderByList,
-    OrganizationInclude? include,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
   }) {
     super.where = where?.call(Organization.t);
-    super.limit = limit;
-    super.offset = offset;
-    super.orderBy = orderBy;
-    super.orderDescending = orderDescending;
-    super.orderByList = orderByList;
-    super.include = include;
   }
 
   @override
@@ -451,7 +450,7 @@ class OrganizationRepository {
 
   Future<List<Organization>> find(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -474,7 +473,7 @@ class OrganizationRepository {
 
   Future<Organization?> findRow(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -569,7 +568,7 @@ class OrganizationRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required OrganizationExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Organization>(
@@ -580,7 +579,7 @@ class OrganizationRepository {
 
   Future<int> count(
     _i1.Session session, {
-    OrganizationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

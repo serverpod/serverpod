@@ -110,7 +110,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Company>> find(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -136,7 +136,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Company?> findSingleRow(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -170,7 +170,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CompanyExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Company>(
@@ -219,7 +219,7 @@ abstract class Company extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -234,6 +234,26 @@ abstract class Company extends _i1.TableRow {
 
   static CompanyInclude include({_i2.TownInclude? town}) {
     return CompanyInclude._(town: town);
+  }
+
+  static CompanyIncludeList includeList({
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CompanyInclude? include,
+  }) {
+    return CompanyIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -267,8 +287,6 @@ class _CompanyImpl extends Company {
     );
   }
 }
-
-typedef CompanyExpressionBuilder = _i1.Expression Function(CompanyTable);
 
 class CompanyTable extends _i1.Table {
   CompanyTable({super.tableRelation}) : super(tableName: 'company') {
@@ -334,6 +352,26 @@ class CompanyInclude extends _i1.Include {
   _i1.Table get table => Company.t;
 }
 
+class CompanyIncludeList extends _i1.IncludeList<CompanyInclude> {
+  CompanyIncludeList._({
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Company.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Company.t;
+}
+
 class CompanyRepository {
   const CompanyRepository._();
 
@@ -341,7 +379,7 @@ class CompanyRepository {
 
   Future<List<Company>> find(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -364,7 +402,7 @@ class CompanyRepository {
 
   Future<Company?> findRow(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -459,7 +497,7 @@ class CompanyRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CompanyExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CompanyTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Company>(
@@ -470,7 +508,7 @@ class CompanyRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CompanyExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

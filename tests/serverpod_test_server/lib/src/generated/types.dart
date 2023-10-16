@@ -193,7 +193,7 @@ abstract class Types extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Types>> find(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -217,7 +217,7 @@ abstract class Types extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Types?> findSingleRow(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -245,7 +245,7 @@ abstract class Types extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required TypesExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Types>(
@@ -294,7 +294,7 @@ abstract class Types extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -309,6 +309,26 @@ abstract class Types extends _i1.TableRow {
 
   static TypesInclude include() {
     return TypesInclude._();
+  }
+
+  static TypesIncludeList includeList({
+    _i1.WhereExpressionBuilder<TypesTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    TypesInclude? include,
+  }) {
+    return TypesIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -367,8 +387,6 @@ class _TypesImpl extends Types {
     );
   }
 }
-
-typedef TypesExpressionBuilder = _i1.Expression Function(TypesTable);
 
 class TypesTable extends _i1.Table {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
@@ -456,12 +474,32 @@ class TypesInclude extends _i1.Include {
   _i1.Table get table => Types.t;
 }
 
+class TypesIncludeList extends _i1.IncludeList<TypesInclude> {
+  TypesIncludeList._({
+    _i1.WhereExpressionBuilder<TypesTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Types.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Types.t;
+}
+
 class TypesRepository {
   const TypesRepository._();
 
   Future<List<Types>> find(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -482,7 +520,7 @@ class TypesRepository {
 
   Future<Types?> findRow(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -573,7 +611,7 @@ class TypesRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required TypesExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<TypesTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Types>(
@@ -584,7 +622,7 @@ class TypesRepository {
 
   Future<int> count(
     _i1.Session session, {
-    TypesExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

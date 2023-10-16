@@ -106,7 +106,7 @@ abstract class City extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<City>> find(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -114,6 +114,7 @@ abstract class City extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CityInclude? include,
   }) async {
     return session.db.find<City>(
       where: where != null ? where(City.t) : null,
@@ -124,18 +125,20 @@ abstract class City extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<City?> findSingleRow(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CityInclude? include,
   }) async {
     return session.db.findSingleRow<City>(
       where: where != null ? where(City.t) : null,
@@ -144,21 +147,26 @@ abstract class City extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<City?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<City>(id);
+    int id, {
+    CityInclude? include,
+  }) async {
+    return session.db.findById<City>(
+      id,
+      include: include,
+    );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CityExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<City>(
@@ -207,7 +215,7 @@ abstract class City extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -227,6 +235,26 @@ abstract class City extends _i1.TableRow {
     return CityInclude._(
       citizens: citizens,
       organizations: organizations,
+    );
+  }
+
+  static CityIncludeList includeList({
+    _i1.WhereExpressionBuilder<CityTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CityInclude? include,
+  }) {
+    return CityIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
     );
   }
 }
@@ -265,8 +293,6 @@ class _CityImpl extends City {
   }
 }
 
-typedef CityExpressionBuilder = _i1.Expression Function(CityTable);
-
 class CityTable extends _i1.Table {
   CityTable({super.tableRelation}) : super(tableName: 'city') {
     name = _i1.ColumnString(
@@ -277,9 +303,39 @@ class CityTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  _i2.PersonTable? ___citizens;
+
   _i1.ManyRelation<_i2.PersonTable>? _citizens;
 
+  _i2.OrganizationTable? ___organizations;
+
   _i1.ManyRelation<_i2.OrganizationTable>? _organizations;
+
+  _i2.PersonTable get __citizens {
+    if (___citizens != null) return ___citizens!;
+    ___citizens = _i1.createRelationTable(
+      relationFieldName: '__citizens',
+      field: City.t.id,
+      foreignField: _i2.Person.t.$_cityCitizensCityId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.PersonTable(tableRelation: foreignTableRelation),
+    );
+    return ___citizens!;
+  }
+
+  _i2.OrganizationTable get __organizations {
+    if (___organizations != null) return ___organizations!;
+    ___organizations = _i1.createRelationTable(
+      relationFieldName: '__organizations',
+      field: City.t.id,
+      foreignField: _i2.Organization.t.cityId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.OrganizationTable(tableRelation: foreignTableRelation),
+    );
+    return ___organizations!;
+  }
 
   _i1.ManyRelation<_i2.PersonTable> get citizens {
     if (_citizens != null) return _citizens!;
@@ -321,38 +377,14 @@ class CityTable extends _i1.Table {
         name,
       ];
 
-  _i2.PersonTable get __citizens {
-    return _i1.createRelationTable<_i2.PersonTable>(
-      relationFieldName: 'citizens',
-      field: City.t.id,
-      tableRelation: tableRelation,
-      foreignField: _i2.Person.t.$_cityCitizensCityId,
-      createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
-    );
-  }
-
-  _i2.OrganizationTable get __organizations {
-    return _i1.createRelationTable<_i2.OrganizationTable>(
-      relationFieldName: 'organizations',
-      field: City.t.id,
-      tableRelation: tableRelation,
-      foreignField: _i2.Organization.t.cityId,
-      createTable: (foreignTableRelation) =>
-          _i2.OrganizationTable(tableRelation: foreignTableRelation),
-    );
-  }
-
   @override
   _i1.Table? getRelationTable(String relationField) {
     if (relationField == 'citizens') {
       return __citizens;
     }
-
     if (relationField == 'organizations') {
       return __organizations;
     }
-
     return null;
   }
 }
@@ -360,18 +392,44 @@ class CityTable extends _i1.Table {
 @Deprecated('Use CityTable.t instead.')
 CityTable tCity = CityTable();
 
-class CityInclude extends _i1.IncludeObject {
-  CityInclude._({this.citizens, this.organizations});
+class CityInclude extends _i1.Include {
+  CityInclude._({
+    _i2.PersonIncludeList? citizens,
+    _i2.OrganizationIncludeList? organizations,
+  }) {
+    _citizens = citizens;
+    _organizations = organizations;
+  }
 
-  _i2.PersonIncludeList? citizens;
+  _i2.PersonIncludeList? _citizens;
 
-  _i2.OrganizationIncludeList? organizations;
+  _i2.OrganizationIncludeList? _organizations;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'citizens': citizens,
-        'organizations': organizations,
+        'citizens': _citizens,
+        'organizations': _organizations,
       };
+
+  @override
+  _i1.Table get table => City.t;
+}
+
+class CityIncludeList extends _i1.IncludeList<CityInclude> {
+  CityIncludeList._({
+    _i1.WhereExpressionBuilder<CityTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(City.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => City.t;
@@ -390,7 +448,7 @@ class CityRepository {
 
   Future<List<City>> find(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -413,7 +471,7 @@ class CityRepository {
 
   Future<City?> findRow(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -508,7 +566,7 @@ class CityRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CityExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CityTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<City>(
@@ -519,7 +577,7 @@ class CityRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CityExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

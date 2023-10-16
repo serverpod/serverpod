@@ -111,7 +111,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -137,7 +137,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<RelatedUniqueData?> findSingleRow(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -171,7 +171,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required RelatedUniqueDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<RelatedUniqueData>(
@@ -220,7 +220,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -235,6 +235,26 @@ abstract class RelatedUniqueData extends _i1.TableRow {
 
   static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
     return RelatedUniqueDataInclude._(uniqueData: uniqueData);
+  }
+
+  static RelatedUniqueDataIncludeList includeList({
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    RelatedUniqueDataInclude? include,
+  }) {
+    return RelatedUniqueDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -270,9 +290,6 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     );
   }
 }
-
-typedef RelatedUniqueDataExpressionBuilder = _i1.Expression Function(
-    RelatedUniqueDataTable);
 
 class RelatedUniqueDataTable extends _i1.Table {
   RelatedUniqueDataTable({super.tableRelation})
@@ -339,6 +356,27 @@ class RelatedUniqueDataInclude extends _i1.Include {
   _i1.Table get table => RelatedUniqueData.t;
 }
 
+class RelatedUniqueDataIncludeList
+    extends _i1.IncludeList<RelatedUniqueDataInclude> {
+  RelatedUniqueDataIncludeList._({
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(RelatedUniqueData.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => RelatedUniqueData.t;
+}
+
 class RelatedUniqueDataRepository {
   const RelatedUniqueDataRepository._();
 
@@ -346,7 +384,7 @@ class RelatedUniqueDataRepository {
 
   Future<List<RelatedUniqueData>> find(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -369,7 +407,7 @@ class RelatedUniqueDataRepository {
 
   Future<RelatedUniqueData?> findRow(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -464,7 +502,7 @@ class RelatedUniqueDataRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required RelatedUniqueDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<RelatedUniqueData>(
@@ -475,7 +513,7 @@ class RelatedUniqueDataRepository {
 
   Future<int> count(
     _i1.Session session, {
-    RelatedUniqueDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

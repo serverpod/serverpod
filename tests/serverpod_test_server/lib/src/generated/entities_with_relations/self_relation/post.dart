@@ -120,7 +120,7 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Post>> find(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -146,7 +146,7 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Post?> findSingleRow(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -180,7 +180,7 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required PostExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Post>(
@@ -229,7 +229,7 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -249,6 +249,26 @@ abstract class Post extends _i1.TableRow {
     return PostInclude._(
       previous: previous,
       next: next,
+    );
+  }
+
+  static PostIncludeList includeList({
+    _i1.WhereExpressionBuilder<PostTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    PostInclude? include,
+  }) {
+    return PostIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
     );
   }
 }
@@ -287,8 +307,6 @@ class _PostImpl extends Post {
     );
   }
 }
-
-typedef PostExpressionBuilder = _i1.Expression Function(PostTable);
 
 class PostTable extends _i1.Table {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
@@ -381,6 +399,26 @@ class PostInclude extends _i1.Include {
   _i1.Table get table => Post.t;
 }
 
+class PostIncludeList extends _i1.IncludeList<PostInclude> {
+  PostIncludeList._({
+    _i1.WhereExpressionBuilder<PostTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Post.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Post.t;
+}
+
 class PostRepository {
   const PostRepository._();
 
@@ -390,7 +428,7 @@ class PostRepository {
 
   Future<List<Post>> find(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -413,7 +451,7 @@ class PostRepository {
 
   Future<Post?> findRow(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -508,7 +546,7 @@ class PostRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required PostExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Post>(
@@ -519,7 +557,7 @@ class PostRepository {
 
   Future<int> count(
     _i1.Session session, {
-    PostExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

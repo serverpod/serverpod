@@ -162,7 +162,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ServerHealthConnectionInfo>> find(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -186,7 +186,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ServerHealthConnectionInfo?> findSingleRow(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -214,7 +214,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ServerHealthConnectionInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthConnectionInfo>(
@@ -263,7 +263,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -278,6 +278,26 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
 
   static ServerHealthConnectionInfoInclude include() {
     return ServerHealthConnectionInfoInclude._();
+  }
+
+  static ServerHealthConnectionInfoIncludeList includeList({
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ServerHealthConnectionInfoInclude? include,
+  }) {
+    return ServerHealthConnectionInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -323,9 +343,6 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
     );
   }
 }
-
-typedef ServerHealthConnectionInfoExpressionBuilder = _i1.Expression Function(
-    ServerHealthConnectionInfoTable);
 
 class ServerHealthConnectionInfoTable extends _i1.Table {
   ServerHealthConnectionInfoTable({super.tableRelation})
@@ -401,12 +418,33 @@ class ServerHealthConnectionInfoInclude extends _i1.Include {
   _i1.Table get table => ServerHealthConnectionInfo.t;
 }
 
+class ServerHealthConnectionInfoIncludeList
+    extends _i1.IncludeList<ServerHealthConnectionInfoInclude> {
+  ServerHealthConnectionInfoIncludeList._({
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ServerHealthConnectionInfo.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => ServerHealthConnectionInfo.t;
+}
+
 class ServerHealthConnectionInfoRepository {
   const ServerHealthConnectionInfoRepository._();
 
   Future<List<ServerHealthConnectionInfo>> find(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -427,7 +465,7 @@ class ServerHealthConnectionInfoRepository {
 
   Future<ServerHealthConnectionInfo?> findRow(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -518,7 +556,7 @@ class ServerHealthConnectionInfoRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ServerHealthConnectionInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ServerHealthConnectionInfo>(
@@ -529,7 +567,7 @@ class ServerHealthConnectionInfoRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ServerHealthConnectionInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
