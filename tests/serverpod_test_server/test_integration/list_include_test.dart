@@ -6,8 +6,7 @@ import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  var testServer = IntegrationTestServer();
-  var session = await testServer.session();
+  var session = await IntegrationTestServer().session();
 
   tearDown(() async {
     await Person.db.deleteWhere(session, where: (t) => pod.Constant.bool(true));
@@ -52,8 +51,10 @@ void main() async {
     );
 
     expect(city?.citizens, hasLength(2));
-    expect(city?.citizens?.map((e) => e.id), contains(citizen1.id));
-    expect(city?.citizens?.map((e) => e.id), contains(citizen2.id));
+
+    var citizenIds = city?.citizens?.map((e) => e.id);
+    expect(citizenIds, contains(citizen1.id));
+    expect(citizenIds, contains(citizen2.id));
   });
 
   test(
@@ -83,8 +84,10 @@ void main() async {
     );
 
     expect(organization?.people, hasLength(2));
-    expect(organization?.people?.map((e) => e.id), contains(person1.id));
-    expect(organization?.people?.map((e) => e.id), contains(person2.id));
+
+    var peopleIds = organization?.people?.map((e) => e.id);
+    expect(peopleIds, contains(person1.id));
+    expect(peopleIds, contains(person2.id));
   });
 
   test(
@@ -115,9 +118,11 @@ void main() async {
     );
 
     expect(organizations, hasLength(2));
+
     expect(organizations.first.people, hasLength(2));
-    expect(organizations.first.people?.map((e) => e.id), contains(person1.id));
-    expect(organizations.first.people?.map((e) => e.id), contains(person2.id));
+    var peopleIdsFirst = organizations.first.people?.map((e) => e.id);
+    expect(peopleIdsFirst, contains(person1.id));
+    expect(peopleIdsFirst, contains(person2.id));
 
     expect(organizations.last.people, hasLength(1));
     expect(organizations.last.people?.map((e) => e.id), contains(person3.id));
@@ -162,12 +167,16 @@ void main() async {
     );
 
     expect(city?.citizens, hasLength(2));
-    expect(city?.citizens?.map((e) => e.id), contains(person1.id));
-    expect(city?.citizens?.map((e) => e.id), contains(person2.id));
+
+    var citizenIds = city?.citizens?.map((e) => e.id);
+    expect(citizenIds, contains(person1.id));
+    expect(citizenIds, contains(person2.id));
 
     expect(city?.organizations, hasLength(2));
-    expect(city?.organizations?.map((e) => e.id), contains(serverpod.id));
-    expect(city?.organizations?.map((e) => e.id), contains(flutter.id));
+
+    var organizationIds = city?.organizations?.map((e) => e.id);
+    expect(organizationIds, contains(serverpod.id));
+    expect(organizationIds, contains(flutter.id));
   });
 
   test(
@@ -210,14 +219,10 @@ void main() async {
     );
 
     expect(organization?.city?.citizens, hasLength(2));
-    expect(
-      organization?.city?.citizens?.map((e) => e.id),
-      contains(person1.id),
-    );
-    expect(
-      organization?.city?.citizens?.map((e) => e.id),
-      contains(person2.id),
-    );
+
+    var citizenIds = organization?.city?.citizens?.map((e) => e.id);
+    expect(citizenIds, contains(person1.id));
+    expect(citizenIds, contains(person2.id));
   });
 
   test(
@@ -338,28 +343,22 @@ void main() async {
       hasLength(2),
       reason: 'Expected two people in the first organization.',
     );
-    expect(
-      city?.citizens?.first.organization?.people?.map((e) => e.id),
-      contains(person1.id),
-    );
-    expect(
-      city?.citizens?.first.organization?.people?.map((e) => e.id),
-      contains(person3.id),
-    );
+
+    var peopleIdsFirst =
+        city?.citizens?.first.organization?.people?.map((e) => e.id);
+    expect(peopleIdsFirst, contains(person1.id));
+    expect(peopleIdsFirst, contains(person3.id));
 
     expect(
       city?.citizens?.last.organization?.people,
       hasLength(2),
       reason: 'Expected two people in the last organization.',
     );
-    expect(
-      city?.citizens?.last.organization?.people?.map((e) => e.id),
-      contains(person2.id),
-    );
-    expect(
-      city?.citizens?.last.organization?.people?.map((e) => e.id),
-      contains(person4.id),
-    );
+
+    var peopleIdsLast =
+        city?.citizens?.last.organization?.people?.map((e) => e.id);
+    expect(peopleIdsLast, contains(person2.id));
+    expect(peopleIdsLast, contains(person4.id));
   });
 
   test(
@@ -397,8 +396,10 @@ void main() async {
     );
 
     expect(city?.citizens, hasLength(2));
-    expect(city?.citizens?.map((e) => e.id), contains(person1.id));
-    expect(city?.citizens?.map((e) => e.id), contains(person3.id));
+
+    var citizenIds = city?.citizens?.map((e) => e.id);
+    expect(citizenIds, contains(person1.id));
+    expect(citizenIds, contains(person3.id));
   });
 
   test(
@@ -573,8 +574,10 @@ void main() async {
     );
 
     expect(city?.citizens, hasLength(2));
-    expect(city?.citizens?.map((e) => e.id), contains(person2.id));
-    expect(city?.citizens?.map((e) => e.id), contains(person3.id));
+
+    var citizenIds = city?.citizens?.map((e) => e.id);
+    expect(citizenIds, contains(person2.id));
+    expect(citizenIds, contains(person3.id));
   });
 
   test(
@@ -632,10 +635,9 @@ void main() async {
       reason: 'Expected two citizens in the last city.',
     );
 
-    // TODO this test fails randomly
-
-    expect(cities.first.citizens?.map((e) => e.id), contains(person2.id));
-    expect(cities.first.citizens?.map((e) => e.id), contains(person3.id));
+    var citizenIdsFirst = cities.first.citizens?.map((e) => e.id);
+    expect(citizenIdsFirst, contains(person2.id));
+    expect(citizenIdsFirst, contains(person3.id));
 
     expect(
       cities.last.citizens,
@@ -643,11 +645,14 @@ void main() async {
       reason: 'Expected two citizens in the first city.',
     );
 
-    expect(cities.last.citizens?.map((e) => e.id), contains(person6.id));
-    expect(cities.last.citizens?.map((e) => e.id), contains(person7.id));
+    var citizenIdsLast = cities.last.citizens?.map((e) => e.id);
+    expect(citizenIdsLast, contains(person6.id));
+    expect(citizenIdsLast, contains(person7.id));
   });
 
-  test('Given ...', () async {
+  test(
+      'Given a list relation in a list relation when filtering the nested list on a count and limiting the result then only the selected rows are included and the size is the same as the limit.',
+      () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
     var serverpod = await Organization.db.insertRow(
@@ -665,8 +670,11 @@ void main() async {
     var person4 = await Person.db.insertRow(session, Person(name: 'Bob'));
     var person5 = await Person.db.insertRow(session, Person(name: 'Aaron'));
 
-    await City.db.attach
-        .citizens(session, stockholm, [person2, person3, person4]);
+    await City.db.attach.citizens(
+      session,
+      stockholm,
+      [person2, person3, person4],
+    );
 
     await Organization.db.attach.people(session, serverpod, [person1, person3]);
     await Organization.db.attach.people(session, flutter, [person2, person5]);
