@@ -35,7 +35,6 @@ void main() {
       final request = http.Request(method, uri);
       request.headers.addAll({
         'content-type': 'application/json',
-        'X-Forwarded-For': '192.168.43.1'
       });
       final streamedResponse = await client.send(request);
       final response = await http.Response.fromStream(streamedResponse);
