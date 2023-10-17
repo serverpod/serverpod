@@ -787,18 +787,134 @@ void main() {
     });
   });
 
-  group('Given', () {
-   var manyTable = _TableWithManyRelation(
+  test(
+      'Given a select query with a filtered result set when building the query then the query includes a where clause for the specified ids',
+      () {
+    var manyTable = _TableWithManyRelation(
       relationAlias: 'citizens',
       tableName: 'country',
-      tableRelation: null,
+      tableRelation: TableRelation([
+        TableRelationEntry(
+          relationAlias: 'citizens',
+          field: ColumnInt('citizenId', citizenTable),
+          foreignField: ColumnInt('id', citizenTable),
+        )
+      ]),
     );
 
     var query = SelectQueryBuilder(table: citizenTable)
-        .withWhereRelationInResultSet({1, 2, 3}, companyTable).build();
-    test('test name', () {});
-    expect(query, '');
+        .withWhereRelationInResultSet({1, 2, 3}, manyTable).build();
+    expect(
+      query,
+      'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)',
+    );
   });
 
-  
+  test(
+      'Given a select query with a filtered result set and a manual where query when building then the query contains the where clause chained with the id filter with an AND.',
+      () {
+    var manyTable = _TableWithManyRelation(
+      relationAlias: 'citizens',
+      tableName: 'country',
+      tableRelation: TableRelation([
+        TableRelationEntry(
+          relationAlias: 'citizens',
+          field: ColumnInt('citizenId', citizenTable),
+          foreignField: ColumnInt('id', citizenTable),
+        )
+      ]),
+    );
+
+    var query = SelectQueryBuilder(table: citizenTable)
+        .withWhere(
+      ColumnString(
+        'name',
+        citizenTable,
+      ).equals('Serverpod'),
+    )
+        .withWhereRelationInResultSet({1, 2, 3}, manyTable).build();
+    expect(
+      query,
+      'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."name" = \'Serverpod\' AND "citizen"."id" IN (1, 2, 3)',
+    );
+  });
+
+  test(
+      'Given a select query with a filtered result set and a limit when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+      () {
+    var manyTable = _TableWithManyRelation(
+      relationAlias: 'citizens',
+      tableName: 'country',
+      tableRelation: TableRelation([
+        TableRelationEntry(
+          relationAlias: 'citizens',
+          field: ColumnInt('citizenId', citizenTable),
+          foreignField: ColumnInt('id', citizenTable),
+        )
+      ]),
+    );
+
+    var query = SelectQueryBuilder(table: citizenTable)
+        .withWhereRelationInResultSet({1, 2, 3}, manyTable)
+        .withLimit(10)
+        .build();
+
+    expect(
+      query,
+      'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering)SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 1 AND 10',
+    );
+  });
+
+  test(
+      'Given a select query with a filtered result set and an offset when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+      () {
+    var manyTable = _TableWithManyRelation(
+      relationAlias: 'citizens',
+      tableName: 'country',
+      tableRelation: TableRelation([
+        TableRelationEntry(
+          relationAlias: 'citizens',
+          field: ColumnInt('citizenId', citizenTable),
+          foreignField: ColumnInt('id', citizenTable),
+        )
+      ]),
+    );
+
+    var query = SelectQueryBuilder(table: citizenTable)
+        .withWhereRelationInResultSet({1, 2, 3}, manyTable)
+        .withOffset(10)
+        .build();
+
+    expect(
+      query,
+      'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering)SELECT * FROM _partitioned_list_by_parent_id WHERE row_number >= 11',
+    );
+  });
+
+  test(
+      'Given a select query with a filtered result set and a limit and an offset when building then the query is wrapped in a subquery with a row_number() that selects the specific rows.',
+      () {
+    var manyTable = _TableWithManyRelation(
+      relationAlias: 'citizens',
+      tableName: 'country',
+      tableRelation: TableRelation([
+        TableRelationEntry(
+          relationAlias: 'citizens',
+          field: ColumnInt('citizenId', citizenTable),
+          foreignField: ColumnInt('id', citizenTable),
+        )
+      ]),
+    );
+
+    var query = SelectQueryBuilder(table: citizenTable)
+        .withWhereRelationInResultSet({1, 2, 3}, manyTable)
+        .withOffset(10)
+        .withLimit(10)
+        .build();
+
+    expect(
+      query,
+      'WITH _base_query_sorting_and_ordering AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" IN (1, 2, 3)), _partitioned_list_by_parent_id AS (SELECT *, row_number() OVER ( PARTITION BY _base_query_sorting_and_ordering."citizen.id") FROM _base_query_sorting_and_ordering)SELECT * FROM _partitioned_list_by_parent_id WHERE row_number BETWEEN 11 AND 20',
+    );
+  });
 }

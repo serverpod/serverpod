@@ -64,15 +64,16 @@ class SelectQueryBuilder {
     if (orderBy != null) query += ' ORDER BY $orderBy';
 
     var limit = _limit;
+    var offset = _offset;
     var listQueryAdditions = _listQueryAdditions;
 
-    if (listQueryAdditions != null && limit != null) {
+    if (listQueryAdditions != null && (limit != null || offset != null)) {
       return _wrapListQueryWithLimit(
         query,
         subQueries,
         listQueryAdditions,
         limit: limit,
-        offset: _offset,
+        offset: offset,
       );
     } else {
       if (limit != null) query += ' LIMIT $limit';
@@ -87,15 +88,11 @@ class SelectQueryBuilder {
     String baseQuery,
     String? subQueries,
     _ListQueryAdditions listQueryAdditions, {
-    required int limit,
+    required int? limit,
     required int? offset,
   }) {
     var wrappedBaseQueryAlias = '_base_query_sorting_and_ordering';
     var partitionedQueryAlias = '_partitioned_list_by_parent_id';
-
-    var index = offset ?? 0;
-    var start = index + 1;
-    var end = limit + index;
 
     var relationalFieldName = listQueryAdditions.relationalFieldName;
 
@@ -105,10 +102,24 @@ class SelectQueryBuilder {
     query +=
         ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
 
+    var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
+
     query +=
-        'SELECT * FROM $partitionedQueryAlias WHERE row_number BETWEEN $start AND $end';
+        'SELECT * FROM $partitionedQueryAlias WHERE row_number $rowLimitClause';
 
     return query;
+  }
+
+  String _buildMultiRowLimitClause(int? limit, int? offset) {
+    var index = offset ?? 0;
+    var start = index + 1;
+
+    if (limit == null) {
+      return '>= $start';
+    }
+
+    var end = limit + index;
+    return 'BETWEEN $start AND $end';
   }
 
   /// Sets the fields that should be selected by the query.
