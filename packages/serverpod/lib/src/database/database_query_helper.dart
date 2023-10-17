@@ -7,16 +7,11 @@ Set<T> extractPrimaryKeyForRelation<T>(
   TableRelation tableRelation,
 ) {
   var foreignTableName = tableRelation.tableName;
-  var idFieldName = unescape(tableRelation.lastJoiningField);
+  var idFieldName = tableRelation.lastJoiningFieldQueryAlias;
 
   var ids = resultSet
       .map((e) => e[foreignTableName]?[idFieldName] as T?)
       .whereType<T>()
       .toSet();
   return ids;
-}
-
-/// Takes an escaped query alias column name and returns the unescaped version.
-String unescape(String escapedName) {
-  return escapedName.replaceAll('"', '');
 }

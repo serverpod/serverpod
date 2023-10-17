@@ -5,8 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
-import 'database_query_helper.dart';
-
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
 ///
@@ -66,11 +64,13 @@ class SelectQueryBuilder {
     if (orderBy != null) query += ' ORDER BY $orderBy';
 
     var limit = _limit;
+    var listQueryAdditions = _listQueryAdditions;
 
-    if (_listQueryAdditions != null && limit != null) {
+    if (listQueryAdditions != null && limit != null) {
       return _wrapListQueryWithLimit(
         query,
         subQueries,
+        listQueryAdditions,
         limit: limit,
         offset: _offset,
       );
@@ -85,7 +85,8 @@ class SelectQueryBuilder {
 
   String _wrapListQueryWithLimit(
     String baseQuery,
-    String? subQueries, {
+    String? subQueries,
+    _ListQueryAdditions listQueryAdditions, {
     required int limit,
     required int? offset,
   }) {
@@ -96,8 +97,7 @@ class SelectQueryBuilder {
     var start = index + 1;
     var end = limit + index;
 
-    var relationalFieldName =
-        unescape(_listQueryAdditions!.relationalFieldName);
+    var relationalFieldName = listQueryAdditions.relationalFieldName;
 
     String query = subQueries != null ? '$subQueries, ' : 'WITH ';
     query += '$wrappedBaseQueryAlias AS ($baseQuery)';
@@ -206,13 +206,13 @@ class SelectQueryBuilder {
       );
     }
 
-    var relationFieldName =
-        '"${relationTable.tableName}"."${tableRelation.foreignFieldName}"';
+    var relationFieldName = tableRelation.foreignFieldQuery;
+    //'"${relationTable.tableName}"."${tableRelation.foreignFieldName}"';
 
     var whereAddition = Expression('$relationFieldName IN (${ids.join(', ')})');
 
     _listQueryAdditions = _ListQueryAdditions(
-      relationalFieldName: relationFieldName,
+      relationalFieldName: tableRelation.foreignFieldQueryAlias,
       whereAddition: whereAddition,
     );
 
