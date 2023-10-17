@@ -216,6 +216,19 @@ class Serverpod {
   /// cross origin resource sharing (CORS).
   final Map<String, dynamic> httpResponseHeaders;
 
+  /// Http headers used by OPTIONS responses.
+  final Map<String, dynamic> httpOptionsResponseHeaders;
+
+  static const _defaultHttpResponseHeaders = {
+    'Access-Control-Allow-Origin': 'http://localhost:8082',
+    'Access-Control-Allow-Methods': 'POST',
+  };
+
+  static const _defaultHttpOptionsResponseHeaders = {
+    'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
+  };
+
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
@@ -223,13 +236,8 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
-    this.httpResponseHeaders = const {
-      'Access-Control-Allow-Origin':
-          'http://localhost:8082', // Allow all origins or specify a specific origin.
-      'Access-Control-Allow-Methods': 'POST', // Add allowed methods.
-      'Access-Control-Allow-Headers':
-          'Content-Type, Authorization, Accept, User-Agent,X-Requested-With', // Add allowed headers if needed.
-    },
+    this.httpResponseHeaders = _defaultHttpResponseHeaders,
+    this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
   }) {
     _internalSerializationManager = internal.Protocol();
 
@@ -285,6 +293,7 @@ class Serverpod {
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
+      httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(server);
 
@@ -498,6 +507,7 @@ class Serverpod {
       // securityContext: context,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
+      httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(_serviceServer!);
 

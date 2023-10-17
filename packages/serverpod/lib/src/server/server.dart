@@ -69,6 +69,9 @@ class Server {
   /// cross origin resource sharing (CORS).
   final Map<String, dynamic> httpResponseHeaders;
 
+  /// Http headers used by OPTIONS responses.
+  final Map<String, dynamic> httpOptionsResponseHeaders;
+
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
@@ -85,6 +88,7 @@ class Server {
     this.whitelistedExternalCalls,
     required this.endpoints,
     required this.httpResponseHeaders,
+    required this.httpOptionsResponseHeaders,
   }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
@@ -158,9 +162,6 @@ class Server {
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
     for (var header in httpResponseHeaders.entries) {
-      // The 'Access-Control-Allow-Headers' header should be included in the
-      // response only for OPTIONS requests.
-      if (header.key == 'Access-Control-Allow-Headers') continue;
       request.response.headers.add(header.key, header.value);
     }
 
@@ -218,11 +219,12 @@ class Server {
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
     if (request.method == 'OPTIONS') {
-      request.response.headers.add('Access-Control-Allow-Headers',
-          httpResponseHeaders['Access-Control-Allow-Headers']);
+      for (var header in httpOptionsResponseHeaders.entries) {
+        request.response.headers.add(header.key, header.value);
+      }
 
       // Safari and other potential browsers required to set content-length=0
-      request.response.headers.add('Content-length', 0);
+      request.response.headers.add('Content-Length', 0);
       request.response.statusCode = HttpStatus.ok;
       await request.response.close();
       return;
