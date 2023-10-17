@@ -216,11 +216,11 @@ class Serverpod {
   /// cross origin resource sharing (CORS).
   final Map<String, dynamic> httpResponseHeaders;
 
-  /// Http headers used by OPTIONS responses.
+  /// Http headers used for OPTIONS responses. By default, include all headers
   final Map<String, dynamic> httpOptionsResponseHeaders;
 
   static const _defaultHttpResponseHeaders = {
-    'Access-Control-Allow-Origin': 'http://localhost:8082',
+    'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST',
   };
 
