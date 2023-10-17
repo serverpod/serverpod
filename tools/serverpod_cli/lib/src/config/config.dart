@@ -92,8 +92,6 @@ class GeneratorConfig {
   /// server package.
   List<String> get generatedServerOpenApiPathParts => [
         ...serverPackageDirectoryPathParts,
-        'lib',
-        'src',
         'generated',
         'openapi',
       ];
