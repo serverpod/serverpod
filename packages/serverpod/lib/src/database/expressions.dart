@@ -23,7 +23,9 @@ class Expression<T> {
 
   /// Database AND operator.
   Expression operator &(dynamic other) {
-    if (other is Expression) {
+    if (other is bool) {
+      return other ? this : Constant(other);
+    } else if (other is Expression) {
       return _AndExpression(this, other);
     }
 
@@ -32,7 +34,9 @@ class Expression<T> {
 
   /// Database OR operator.
   Expression operator |(dynamic other) {
-    if (other is Expression) {
+    if (other is bool) {
+      return other ? Constant(other) : this;
+    } else if (other is Expression) {
       return _OrExpression(this, other);
     }
 
