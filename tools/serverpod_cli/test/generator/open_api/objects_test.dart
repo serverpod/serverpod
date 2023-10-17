@@ -29,7 +29,7 @@ void main() {
       url: Uri.http('localhost:8080'),
       description: 'Development Server',
     );
-    InfoObject infoObject = InfoObject(
+    OpenAPIConfig infoObject = OpenAPIConfig(
       title: 'Swagger Petstore - OpenAPI 3.0',
       version: '1.0.1',
       termsOfService: Uri.parse('http://swagger.io/terms/'),

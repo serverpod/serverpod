@@ -120,7 +120,7 @@ class GeneratorConfig {
   final Set<ServerObject> servers;
 
   /// Configuration for generation of OpenAPI specification.
-  final InfoObject? openAPIInfo;
+  final OpenAPIConfig? openAPIInfo;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -146,7 +146,7 @@ class GeneratorConfig {
     var name = _stripPackage(serverPackage);
 
     Set<ServerObject> servers = _getServersFromConfigs(dir);
-    InfoObject? openAPIInfo;
+    OpenAPIConfig? openAPIInfo;
 
     Map? generatorConfig;
     try {
@@ -175,7 +175,7 @@ class GeneratorConfig {
         Uri? termsOfService = openAPIMap.containsKey('termsOfService')
             ? Uri.parse(openAPIMap['termsOfService'])
             : null;
-        openAPIInfo = InfoObject(
+        openAPIInfo = OpenAPIConfig(
           title: openAPIMap['info']['title'],
           description: openAPIMap['info']['description'],
           version: pubspec['version'],

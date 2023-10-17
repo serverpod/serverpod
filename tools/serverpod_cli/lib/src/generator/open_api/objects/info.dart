@@ -1,6 +1,6 @@
 part of '../open_api_objects.dart';
 
-/// The [InfoObject] is used to provide metadata and information about the API.
+/// The [OpenAPIConfig] is used to provide metadata and information about the API.
 /// eg.
 /// ```
 ///     {
@@ -20,7 +20,7 @@ part of '../open_api_objects.dart';
 ///       "version": "1.0.1"
 ///     }
 /// ```
-class InfoObject {
+class OpenAPIConfig {
   final String title;
 
   /// A short summary of the API.
@@ -43,7 +43,7 @@ class InfoObject {
   /// (which is distinct from the OpenAPI Specification version or
   /// the API implementation version).
   final String version;
-  InfoObject({
+  OpenAPIConfig({
     required this.title,
     this.summary,
     this.description,
@@ -53,8 +53,8 @@ class InfoObject {
     required this.version,
   });
 
-  factory InfoObject.fromJson(Map<String, dynamic> map) {
-    return InfoObject(
+  factory OpenAPIConfig.fromJson(Map<String, dynamic> map) {
+    return OpenAPIConfig(
       title: map['title'],
       version: map['version'],
       description: map['description'],

@@ -11,7 +11,7 @@ class OpenAPIDefinition {
 
   /// Provides metadata about the API.
   /// The metadata may be used by tooling as required.
-  final InfoObject info;
+  final OpenAPIConfig info;
 
   /// The default value for the $schema keyword within Schema Objects contained
   ///  within this OAS document.
@@ -75,8 +75,8 @@ class OpenAPIDefinition {
 
   factory OpenAPIDefinition.fromProtocolDefinition(
       ProtocolDefinition protocolDefinition, GeneratorConfig config) {
-    InfoObject infoObject =
-        InfoObject(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
+    OpenAPIConfig infoObject =
+        OpenAPIConfig(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
 
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
     Set<PathsObject> paths =
