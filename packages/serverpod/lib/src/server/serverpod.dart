@@ -228,7 +228,7 @@ class Serverpod {
           'http://localhost:8082', // Allow all origins or specify a specific origin.
       'Access-Control-Allow-Methods': 'POST', // Add allowed methods.
       'Access-Control-Allow-Headers':
-          'Content-Type, Authorization, Accept, X-Forwarded-For, User-Agent', // Add allowed headers if needed.
+          'Content-Type, Authorization, Accept, User-Agent,X-Requested-With', // Add allowed headers if needed.
     },
   }) {
     _internalSerializationManager = internal.Protocol();
