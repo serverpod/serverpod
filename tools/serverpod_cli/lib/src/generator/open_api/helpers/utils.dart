@@ -1,9 +1,3 @@
-part of '../open_api_objects.dart';
-
-String _getRef(String ref) {
-  return '#/components/schemas/$ref';
-}
-
 /// Convert a list of directory parts to a path string.
 ///
 /// Example: ['api', 'v1'] => '/api/v1'

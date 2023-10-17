@@ -197,3 +197,7 @@ class ParameterSchemaObject {
     return map;
   }
 }
+
+String _getRef(String ref) {
+  return '#/components/schemas/$ref';
+}

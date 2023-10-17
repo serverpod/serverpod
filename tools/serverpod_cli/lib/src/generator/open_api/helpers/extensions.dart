@@ -1,4 +1,6 @@
-part of '../open_api_objects.dart';
+import 'package:recase/recase.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 
 /// Check whether [TypeDefinition] is dartCoreType or not.
 extension CheckDartCoreType on TypeDefinition {
