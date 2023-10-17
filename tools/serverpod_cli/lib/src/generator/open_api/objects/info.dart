@@ -83,6 +83,24 @@ class OpenAPIConfig {
     }
     return map;
   }
+
+  factory OpenAPIConfig.fromConfig(Map map, {required String version}) {
+    return OpenAPIConfig(
+      title: map['title'],
+      summary: map.containsKey('summary') ? map['summary'] : null,
+      description: map['description'],
+      contact: map.containsKey('contact')
+          ? ContactObject.fromJson(map['contact'])
+          : null,
+      license: map.containsKey('license')
+          ? LicenseObject.fromJson(map['license'])
+          : null,
+      termsOfService: map.containsKey('termsOfService')
+          ? Uri.parse(map['termsOfService'])
+          : null,
+      version: version,
+    );
+  }
 }
 
 /// Information about the license governing the use of the API.
@@ -116,7 +134,7 @@ class LicenseObject {
     return map;
   }
 
-  factory LicenseObject.fromJson(Map<String, dynamic> map) {
+  factory LicenseObject.fromJson(Map map) {
     return LicenseObject(
       name: map['name'] as String,
       url: map['url'] != null ? Uri.parse(map['url']) : null,
@@ -158,7 +176,7 @@ class ContactObject {
     };
   }
 
-  factory ContactObject.fromJson(Map<String, dynamic> map) {
+  factory ContactObject.fromJson(Map map) {
     return ContactObject(
       name: map['name'] as String,
       url: Uri.parse(map['url'] as String),
@@ -190,7 +208,7 @@ class ExternalDocumentationObject {
     return map;
   }
 
-  factory ExternalDocumentationObject.fromJson(Map<String, dynamic> map) {
+  factory ExternalDocumentationObject.fromJson(Map map) {
     return ExternalDocumentationObject(
       url: Uri.parse(map['url'] as String),
       description:

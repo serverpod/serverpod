@@ -1,10 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
+import 'package:super_string/super_string.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
@@ -37,7 +38,7 @@ class GeneratorConfig {
     required this.modules,
     required this.extraClasses,
     this.servers = const {},
-    this.openAPIInfo,
+    this.openAPIConfig,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -120,7 +121,7 @@ class GeneratorConfig {
   final Set<ServerObject> servers;
 
   /// Configuration for generation of OpenAPI specification.
-  final OpenAPIConfig? openAPIInfo;
+  final OpenAPIConfig? openAPIConfig;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -145,9 +146,6 @@ class GeneratorConfig {
     var serverPackage = pubspec['name'];
     var name = _stripPackage(serverPackage);
 
-    Set<ServerObject> servers = _getServersFromConfigs(dir);
-    OpenAPIConfig? openAPIInfo;
-
     Map? generatorConfig;
     try {
       var file = File(p.join(dir, 'config', 'generator.yaml'));
@@ -158,39 +156,8 @@ class GeneratorConfig {
           'project?');
       return null;
     }
-    bool hasOpenAPIMap = generatorConfig!.containsKey('openapi');
-    if (hasOpenAPIMap) {
-      try {
-        Map<String, dynamic> openAPIMap = jsonDecode(
-          jsonEncode(
-            generatorConfig['openapi'],
-          ),
-        );
-        LicenseObject? licenseObject = openAPIMap.containsKey('license')
-            ? LicenseObject.fromJson(openAPIMap['license'])
-            : null;
-        ContactObject? contactObject = openAPIMap.containsKey('contact')
-            ? ContactObject.fromJson(openAPIMap['contact'])
-            : null;
-        Uri? termsOfService = openAPIMap.containsKey('termsOfService')
-            ? Uri.parse(openAPIMap['termsOfService'])
-            : null;
-        openAPIInfo = OpenAPIConfig(
-          title: openAPIMap['info']['title'],
-          description: openAPIMap['info']['description'],
-          version: pubspec['version'],
-          license: licenseObject,
-          contact: contactObject,
-          termsOfService: termsOfService,
-        );
-      } catch (e) {
-        log.error(
-          'There\'s an issue with the \'openapi\' section in config/generator.yaml',
-        );
-      }
-    }
 
-    var typeStr = generatorConfig['type'];
+    var typeStr = generatorConfig!['type'];
     late PackageType type;
     if (typeStr == 'module') {
       type = PackageType.module;
@@ -288,6 +255,23 @@ class GeneratorConfig {
       }
     }
 
+    Set<ServerObject> servers = _getServersFromConfigs(dir);
+    OpenAPIConfig? openAPIConfig;
+
+    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openapi');
+    if (hasOpenAPIConfiguration) {
+      try {
+        Map openAPIMap = generatorConfig['openapi'];
+
+        openAPIConfig =
+            OpenAPIConfig.fromConfig(openAPIMap, version: pubspec['version']);
+      } catch (e) {
+        log.error(
+          'There\'s an issue with the \'openapi\' section in config/generator.yaml .',
+        );
+      }
+    }
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -299,7 +283,7 @@ class GeneratorConfig {
       modules: modules,
       extraClasses: extraClasses,
       servers: servers,
-      openAPIInfo: openAPIInfo,
+      openAPIConfig: openAPIConfig,
     );
   }
 
@@ -324,33 +308,15 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
     Set<ServerObject> servers = {};
     for (var path in ['development', 'staging', 'production']) {
       try {
-        Map? apiConfig;
-        var file = File(
-          p.join(dir, 'config', '$path.yaml'),
+        var config = ServerpodConfig(path, 'undefined', {'database': ''});
+        servers.add(
+          ServerObject(
+            url: config.apiServer.toUri(),
+            description: '${path.toCamelCase()} Server',
+          ),
         );
-        var yamlStr = file.readAsStringSync();
-        apiConfig = loadYaml(yamlStr) as YamlMap;
-        if (apiConfig.isNotEmpty) {
-          var configs = jsonDecode(jsonEncode(apiConfig));
-          var serverMap = configs['apiServer'];
-
-          if (serverMap.isNotEmpty) {
-            try {
-              servers.add(
-                ServerObject(
-                  url: _getUrl(serverMap),
-                  description: '$path server',
-                ),
-              );
-            } catch (e) {
-              log.debug(
-                'Invalid value in \'apiServer\'. Please check the value in the \'config/$path.yaml\'',
-              );
-            }
-          }
-        }
-      } catch (_) {
-        log.debug('Failed to load config/$path.yaml');
+      } catch (e, s) {
+        log.debug('Failed to load config/$path.yaml, $e\n$s');
       }
     }
     return servers;
