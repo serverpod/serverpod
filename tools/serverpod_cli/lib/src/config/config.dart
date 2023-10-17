@@ -116,11 +116,10 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
-  /// A list of server for OpenAPI retrieved from the
-  /// config.
+  /// List of server runtime configurations, used by OpenAPI generator.
   final Set<ServerObject> servers;
 
-  /// H0lds the openapi information retrieved from the config.
+  /// Configuration for generation of OpenAPI specification.
   final InfoObject? openAPIInfo;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
