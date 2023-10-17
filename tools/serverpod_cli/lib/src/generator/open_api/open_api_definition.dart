@@ -7,7 +7,7 @@ import 'open_api_objects.dart';
 /// OpenAPI Object
 /// This is the root object of the OpenAPI document.
 class OpenApiDefinition {
-  final String openApi;
+  final String openAPI;
 
   /// Provides metadata about the API.
   /// The metadata may be used by tooling as required.
@@ -35,7 +35,7 @@ class OpenApiDefinition {
   /// Additional external documentation.
   final ExternalDocumentationObject? externalDocs;
   OpenApiDefinition({
-    this.openApi = '3.0.0',
+    this.openAPI = '3.0.0',
     required this.info,
     this.jsonSchemaDialect,
     this.servers,
@@ -47,7 +47,7 @@ class OpenApiDefinition {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
-      'openapi': openApi,
+      'openapi': openAPI,
       'info': info.toJson(),
     };
     if (jsonSchemaDialect != null) {
@@ -96,7 +96,7 @@ class OpenApiDefinition {
     };
 
     return OpenApiDefinition(
-      info: config.openApiInfo ?? infoObject,
+      info: config.openAPIInfo ?? infoObject,
       servers: config.servers.isNotEmpty ? config.servers : servers,
       tags: tags,
       paths: paths,

@@ -37,7 +37,7 @@ class GeneratorConfig {
     required this.modules,
     required this.extraClasses,
     this.servers = const {},
-    this.openApiInfo,
+    this.openAPIInfo,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -123,7 +123,7 @@ class GeneratorConfig {
   final Set<ServerObject> servers;
 
   /// H0lds the openapi information retrieved from the config.
-  final InfoObject? openApiInfo;
+  final InfoObject? openAPIInfo;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -149,7 +149,7 @@ class GeneratorConfig {
     var name = _stripPackage(serverPackage);
 
     Set<ServerObject> servers = _getServersFromConfigs(dir);
-    InfoObject? openApiInfo;
+    InfoObject? openAPIInfo;
 
     Map? generatorConfig;
     try {
@@ -164,23 +164,23 @@ class GeneratorConfig {
     bool hasOpenApiMap = generatorConfig!.containsKey('openapi');
     if (hasOpenApiMap) {
       try {
-        Map<String, dynamic> openApiMap = jsonDecode(
+        Map<String, dynamic> openAPIMap = jsonDecode(
           jsonEncode(
             generatorConfig['openapi'],
           ),
         );
-        LicenseObject? licenseObject = openApiMap.containsKey('license')
-            ? LicenseObject.fromJson(openApiMap['license'])
+        LicenseObject? licenseObject = openAPIMap.containsKey('license')
+            ? LicenseObject.fromJson(openAPIMap['license'])
             : null;
-        ContactObject? contactObject = openApiMap.containsKey('contact')
-            ? ContactObject.fromJson(openApiMap['contact'])
+        ContactObject? contactObject = openAPIMap.containsKey('contact')
+            ? ContactObject.fromJson(openAPIMap['contact'])
             : null;
-        Uri? termsOfService = openApiMap.containsKey('termsOfService')
-            ? Uri.parse(openApiMap['termsOfService'])
+        Uri? termsOfService = openAPIMap.containsKey('termsOfService')
+            ? Uri.parse(openAPIMap['termsOfService'])
             : null;
-        openApiInfo = InfoObject(
-          title: openApiMap['info']['title'],
-          description: openApiMap['info']['description'],
+        openAPIInfo = InfoObject(
+          title: openAPIMap['info']['title'],
+          description: openAPIMap['info']['description'],
           version: pubspec['version'],
           license: licenseObject,
           contact: contactObject,
@@ -302,7 +302,7 @@ class GeneratorConfig {
       modules: modules,
       extraClasses: extraClasses,
       servers: servers,
-      openApiInfo: openApiInfo,
+      openAPIInfo: openAPIInfo,
     );
   }
 
