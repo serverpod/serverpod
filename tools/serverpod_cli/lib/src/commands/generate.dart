@@ -27,11 +27,10 @@ class GenerateCommand extends ServerpodCommand {
       help: 'Watch for changes and continuously generate code.',
     );
     argParser.addFlag(
-      'open-api',
-      abbr: 'o',
+      'experimental-open-api',
       defaultsTo: false,
       negatable: false,
-      help: 'Generate open-api schema.',
+      help: 'Generate OpenAPI schema.',
     );
   }
 
