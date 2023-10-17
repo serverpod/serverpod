@@ -225,10 +225,10 @@ class Serverpod {
     this.healthCheckHandler,
     this.httpResponseHeaders = const {
       'Access-Control-Allow-Origin':
-          '*', // Allow all origins or specify a specific origin.
+          'http://localhost:8082', // Allow all origins or specify a specific origin.
       'Access-Control-Allow-Methods': 'POST', // Add allowed methods.
       'Access-Control-Allow-Headers':
-          'Content-Type', // Add allowed headers if needed.
+          'Content-Type, Authorization, Accept, X-Forwarded-For, User-Agent', // Add allowed headers if needed.
     },
   }) {
     _internalSerializationManager = internal.Protocol();
