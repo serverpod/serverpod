@@ -157,8 +157,10 @@ class Server {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
-    // Set Access-Control-Allow-Origin, required for Flutter web.
     for (var header in httpResponseHeaders.entries) {
+      // The 'Access-Control-Allow-Headers' header should be included in the
+      // response only for OPTIONS requests.
+      if (header.key == 'Access-Control-Allow-Headers') continue;
       request.response.headers.add(header.key, header.value);
     }
 
@@ -216,6 +218,11 @@ class Server {
     // eg `editor.swagger.io`. It ensures proper handling of preflight requests
     // with the OPTIONS method.
     if (request.method == 'OPTIONS') {
+      request.response.headers.add('Access-Control-Allow-Headers',
+          httpResponseHeaders['Access-Control-Allow-Headers']);
+
+      // Safari and other potential browsers required to set content-length=0
+      request.response.headers.add('Content-length', 0);
       request.response.statusCode = HttpStatus.ok;
       await request.response.close();
       return;
