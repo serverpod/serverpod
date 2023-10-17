@@ -449,7 +449,7 @@ class TypeParseResult {
   const TypeParseResult(this.parsedPosition, this.type);
 }
 
-enum CodeGenerationType {
+enum CodeOutputFormats {
   dart,
-  openapi,
+  openAPI,
 }

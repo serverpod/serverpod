@@ -10,8 +10,8 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 Future<bool> performGenerate({
   bool dartFormat = true,
   String? changedFile,
-  Set<CodeGenerationType> codeGenerationType = const {
-    CodeGenerationType.dart,
+  Set<CodeOutputFormats> codeGenerationType = const {
+    CodeOutputFormats.dart,
   },
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
@@ -76,7 +76,7 @@ Future<bool> performGenerate({
   );
 
   String? generatedOpenAPIFile;
-  if (codeGenerationType.contains(CodeGenerationType.openapi)) {
+  if (codeGenerationType.contains(CodeOutputFormats.openAPI)) {
     log.debug('Generating open-api schema');
     generatedOpenAPIFile = await ServerpodCodeGenerator.generateOpenAPISchema(
       protocolDefinition: protocolDefinition,

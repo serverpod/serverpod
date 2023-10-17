@@ -64,18 +64,18 @@ class GenerateCommand extends ServerpodCommand {
     await copyMigrations(config);
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
-    Set<CodeGenerationType> codeGenerationType = {
-      CodeGenerationType.dart,
+    Set<CodeOutputFormats> codeOutputFormats = {
+      CodeOutputFormats.dart,
     };
     if (generateOpenAPI) {
-      codeGenerationType.add(CodeGenerationType.openapi);
+      codeOutputFormats.add(CodeOutputFormats.openAPI);
     }
     bool success = await log.progress(
       'Generating code',
       () => performGenerate(
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
-        codeGenerationType: codeGenerationType,
+        codeGenerationType: codeOutputFormats,
       ),
     );
     if (watch) {
