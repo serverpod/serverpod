@@ -31,7 +31,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
     if (relationInclude is IncludeList) {
       var primaryKey = resolvedTableRow['id'];
       if (primaryKey is! int) {
-        throw Exception('Cannot resolve list relation without id.');
+        throw ArgumentError('Cannot resolve list relation without id.');
       }
 
       resolvedTableRow[relationField] = _extractRelationalList(
@@ -50,6 +50,30 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   });
 
   return resolvedTableRow;
+}
+
+/// Maps a list of query results to each id of the parent table relation by
+/// the query prefix.
+Map<String, Map<int, List<Map<String, dynamic>>>> mapListToQueryById(
+  List<Map<String, dynamic>> resolvedList,
+  Table relativeRelationTable,
+  String foreignFieldName,
+) {
+  var mappedLists = resolvedList.fold<Map<int, List<Map<String, dynamic>>>>(
+    {},
+    (mappedResult, row) {
+      var id = row[foreignFieldName];
+
+      mappedResult.update(
+        id,
+        (value) => [...value, row],
+        ifAbsent: () => [row],
+      );
+      return mappedResult;
+    },
+  );
+
+  return {relativeRelationTable.queryPrefix: mappedLists};
 }
 
 List<dynamic> _extractRelationalList(

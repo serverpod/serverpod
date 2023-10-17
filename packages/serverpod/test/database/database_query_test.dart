@@ -786,4 +786,19 @@ void main() {
           )));
     });
   });
+
+  group('Given', () {
+   var manyTable = _TableWithManyRelation(
+      relationAlias: 'citizens',
+      tableName: 'country',
+      tableRelation: null,
+    );
+
+    var query = SelectQueryBuilder(table: citizenTable)
+        .withWhereRelationInResultSet({1, 2, 3}, companyTable).build();
+    test('test name', () {});
+    expect(query, '');
+  });
+
+  
 }

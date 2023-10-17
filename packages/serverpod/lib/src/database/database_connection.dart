@@ -59,7 +59,7 @@ class DatabaseConnection {
         .withInclude(include)
         .build();
 
-    return _deserializedMappedQuery(
+    return _deserializedMappedQuery<T>(
       session,
       query,
       table: table,
@@ -500,25 +500,25 @@ class DatabaseConnection {
   Future<Map<String, Map<int, List<Map<String, dynamic>>>>> _queryIncludedLists(
     Session session,
     Table table,
-    Include? includes,
+    Include? include,
     List<Map<String, Map<String, dynamic>>> previousResultSet,
   ) async {
-    if (includes == null) return {};
+    if (include == null) return {};
 
     Map<String, Map<int, List<Map<String, dynamic>>>> resolvedListRelations =
         {};
 
-    for (var entry in includes.includes.entries) {
-      var include = entry.value;
+    for (var entry in include.includes.entries) {
+      var nestedInclude = entry.value;
       var relationFieldName = entry.key;
 
       var relativeRelationTable = table.getRelationTable(relationFieldName);
       var tableRelation = relativeRelationTable?.tableRelation;
       if (relativeRelationTable == null || tableRelation == null) {
-        throw StateError('Relation table is null this state is impossible.');
+        throw StateError('Relation table is null.');
       }
 
-      if (include is IncludeList) {
+      if (nestedInclude is IncludeList) {
         var ids = extractPrimaryKeyForRelation<int>(
           previousResultSet,
           tableRelation,
@@ -526,30 +526,30 @@ class DatabaseConnection {
 
         if (ids.isEmpty) continue;
 
-        var relationTable = include.table;
+        var relationTable = nestedInclude.table;
 
         var orderBy = _resolveOrderBy(
-          include.orderByList,
-          include.orderBy,
-          include.orderDescending,
+          nestedInclude.orderByList,
+          nestedInclude.orderBy,
+          nestedInclude.orderDescending,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
             .withSelectFields(relationTable.columns)
-            .withWhere(include.where)
+            .withWhere(nestedInclude.where)
             .withOrderBy(orderBy)
-            .withLimit(include.limit)
-            .withOffset(include.offset)
+            .withLimit(nestedInclude.limit)
+            .withOffset(nestedInclude.offset)
             .withWhereRelationInResultSet(ids, relativeRelationTable)
-            .withInclude(include.include)
+            .withInclude(nestedInclude.include)
             .build();
 
         var includeListResult = await mappedResultsQuery(session, query);
 
         var resolvedLists = await _queryIncludedLists(
           session,
-          include.table,
-          include,
+          nestedInclude.table,
+          nestedInclude,
           includeListResult,
         );
 
@@ -558,24 +558,21 @@ class DatabaseConnection {
                   relationTable,
                   rawRow,
                   resolvedLists,
-                  include: include,
+                  include: nestedInclude,
                 ))
             .whereType<Map<String, dynamic>>()
             .toList();
 
-        var foreignFieldName = tableRelation.foreignFieldName;
-
-        resolvedListRelations.addAll(_mapListToQueryById(
-          relativeRelationTable,
-          ids,
+        resolvedListRelations.addAll(mapListToQueryById(
           resolvedList,
-          foreignFieldName,
+          relativeRelationTable,
+          tableRelation.foreignFieldName,
         ));
       } else {
         var resolvedNestedListRelations = await _queryIncludedLists(
           session,
           relativeRelationTable,
-          include,
+          nestedInclude,
           previousResultSet,
         );
 
@@ -584,19 +581,6 @@ class DatabaseConnection {
     }
 
     return resolvedListRelations;
-  }
-
-  Map<String, Map<int, List<Map<String, dynamic>>>> _mapListToQueryById(
-      Table relativeRelationTable,
-      Set<int> ids,
-      List<Map<String, dynamic>> resolvedList,
-      String foreignFieldName) {
-    return {
-      relativeRelationTable.queryPrefix: {
-        for (var id in ids)
-          id: resolvedList.where((row) => row[foreignFieldName] == id).toList()
-      }
-    };
   }
 
   void _validateColumnsExists(List<Column> columns, Table table) {
@@ -616,8 +600,7 @@ class DatabaseConnection {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
       // If order by is set then order by list is overriden.
-      // TODO: Only expose order by list in interface.
-      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
+      return [Order(column: orderBy, orderDescending: orderDescending)];
     }
     return orderByList;
   }
