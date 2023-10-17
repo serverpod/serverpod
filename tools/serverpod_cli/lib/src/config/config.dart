@@ -90,7 +90,7 @@ class GeneratorConfig {
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServerOpenApiPathParts => [
+  List<String> get generatedServerOpenAPIPathParts => [
         ...serverPackageDirectoryPathParts,
         'generated',
         'openapi',
@@ -116,7 +116,7 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
-  /// A list of server for OpenApi retrieved from the
+  /// A list of server for OpenAPI retrieved from the
   /// config.
   final Set<ServerObject> servers;
 
@@ -159,8 +159,8 @@ class GeneratorConfig {
           'project?');
       return null;
     }
-    bool hasOpenApiMap = generatorConfig!.containsKey('openapi');
-    if (hasOpenApiMap) {
+    bool hasOpenAPIMap = generatorConfig!.containsKey('openapi');
+    if (hasOpenAPIMap) {
       try {
         Map<String, dynamic> openAPIMap = jsonDecode(
           jsonEncode(

@@ -5,14 +5,14 @@ import 'package:path/path.dart' as p;
 import 'open_api_definition.dart';
 
 ///  Generates OpenAPI specifications for a Serverpod project.
-class OpenApiGenerator {
-  const OpenApiGenerator();
+class OpenAPIGenerator {
+  const OpenAPIGenerator();
 
-  String getOpenApiSchema(
+  String getOpenAPISchema(
     ProtocolDefinition protocolDefinition,
     GeneratorConfig config,
   ) {
-    OpenApiDefinition definition = OpenApiDefinition.fromProtocolDefinition(
+    OpenAPIDefinition definition = OpenAPIDefinition.fromProtocolDefinition(
       protocolDefinition,
       config,
     );
@@ -22,15 +22,15 @@ class OpenApiGenerator {
     );
   }
 
-  Map<String, String> generateOpenApiSchema({
+  Map<String, String> generateOpenAPISchema({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
   }) {
     return {
       p.joinAll([
-        ...config.generatedServerOpenApiPathParts,
+        ...config.generatedServerOpenAPIPathParts,
         'openapi.json',
-      ]): getOpenApiSchema(
+      ]): getOpenAPISchema(
         protocolDefinition,
         config,
       ),

@@ -39,7 +39,7 @@ class GenerateCommand extends ServerpodCommand {
     // Always do a full generate.
     bool watch = argResults!['watch'];
     // Whether to generate an OpenAPI schema or not
-    bool generateOpenApi = argResults!['open-api'];
+    bool generateOpenAPI = argResults!['experimental-open-api'];
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load();
@@ -67,7 +67,7 @@ class GenerateCommand extends ServerpodCommand {
     Set<CodeGenerationType> codeGenerationType = {
       CodeGenerationType.dart,
     };
-    if (generateOpenApi) {
+    if (generateOpenAPI) {
       codeGenerationType.add(CodeGenerationType.openapi);
     }
     bool success = await log.progress(

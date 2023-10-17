@@ -6,7 +6,7 @@ import 'open_api_objects.dart';
 
 /// OpenAPI Object
 /// This is the root object of the OpenAPI document.
-class OpenApiDefinition {
+class OpenAPIDefinition {
   final String openAPI;
 
   /// Provides metadata about the API.
@@ -34,7 +34,7 @@ class OpenApiDefinition {
 
   /// Additional external documentation.
   final ExternalDocumentationObject? externalDocs;
-  OpenApiDefinition({
+  OpenAPIDefinition({
     this.openAPI = '3.0.0',
     required this.info,
     this.jsonSchemaDialect,
@@ -73,7 +73,7 @@ class OpenApiDefinition {
     return map;
   }
 
-  factory OpenApiDefinition.fromProtocolDefinition(
+  factory OpenAPIDefinition.fromProtocolDefinition(
       ProtocolDefinition protocolDefinition, GeneratorConfig config) {
     InfoObject infoObject =
         InfoObject(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
@@ -95,7 +95,7 @@ class OpenApiDefinition {
           url: Uri.http('localhost:8080'), description: 'Development Server')
     };
 
-    return OpenApiDefinition(
+    return OpenAPIDefinition(
       info: config.openAPIInfo ?? infoObject,
       servers: config.servers.isNotEmpty ? config.servers : servers,
       tags: tags,

@@ -88,16 +88,16 @@ abstract class ServerpodCodeGenerator {
     return allFiles.keys.toList();
   }
 
-  /// Generate openapi Schema from [OpenApiGenerator]
+  /// Generate openapi Schema from [OpenAPIGenerator]
   /// Return a generated file
-  static Future<String> generateOpenApiSchema({
+  static Future<String> generateOpenAPISchema({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {
     collector.generatedFiles.clear();
-    OpenApiGenerator generator = const OpenApiGenerator();
-    Map<String, String> file = generator.generateOpenApiSchema(
+    OpenAPIGenerator generator = const OpenAPIGenerator();
+    Map<String, String> file = generator.generateOpenAPISchema(
         protocolDefinition: protocolDefinition, config: config);
 
     try {
