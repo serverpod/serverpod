@@ -96,7 +96,7 @@ class OpenAPIDefinition {
     };
 
     return OpenAPIDefinition(
-      info: config.openAPIInfo ?? infoObject,
+      info: config.openAPIConfig ?? infoObject,
       servers: config.servers.isNotEmpty ? config.servers : servers,
       tags: tags,
       paths: paths,
