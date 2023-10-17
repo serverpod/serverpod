@@ -18,7 +18,7 @@ void main() {
 
       expect(
         result.headers['access-control-allow-origin'],
-        equals("http://localhost:8082"),
+        equals("*"),
       );
       expect(
           result.headers.containsKey('access-control-allow-headers'), isFalse);
