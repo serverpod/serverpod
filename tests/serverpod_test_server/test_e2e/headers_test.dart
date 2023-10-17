@@ -42,7 +42,7 @@ void main() {
 
       expect(
         response.headers['access-control-allow-origin'],
-        equals("http://localhost:8082"),
+        equals("*"),
       );
       expect(
         response.headers['content-length'],
