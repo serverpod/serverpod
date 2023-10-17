@@ -55,38 +55,35 @@ class SelectQueryBuilder {
     );
     var orderBy = _buildOrderByQuery(orderBy: _orderBy);
 
+    var listQueryAdditions = _listQueryAdditions;
+    var limit = listQueryAdditions == null && _limit != null ? _limit : null;
+    var offset = listQueryAdditions == null && _offset != null ? _offset : null;
+
     var query = '';
+    if (subQueries != null) query += '$subQueries ';
     query += 'SELECT $select';
     query += ' FROM "${_table.tableName}"';
     if (join != null) query += ' $join';
     if (where != null) query += ' WHERE $where';
     if (groupBy != null) query += ' GROUP BY $groupBy';
     if (orderBy != null) query += ' ORDER BY $orderBy';
+    if (limit != null) query += ' LIMIT $limit';
+    if (offset != null) query += ' OFFSET $_offset';
 
-    var limit = _limit;
-    var offset = _offset;
-    var listQueryAdditions = _listQueryAdditions;
-
-    if (listQueryAdditions != null && (limit != null || offset != null)) {
+    if (listQueryAdditions != null && (_limit != null || _offset != null)) {
       return _wrapListQueryWithLimit(
         query,
-        subQueries,
         listQueryAdditions,
-        limit: limit,
-        offset: offset,
+        limit: _limit,
+        offset: _offset,
       );
-    } else {
-      if (limit != null) query += ' LIMIT $limit';
-      if (_offset != null) query += ' OFFSET $_offset';
-
-      if (subQueries != null) query = '$subQueries $query';
-      return query;
     }
+
+    return query;
   }
 
   String _wrapListQueryWithLimit(
     String baseQuery,
-    String? subQueries,
     _ListQueryAdditions listQueryAdditions, {
     required int? limit,
     required int? offset,
@@ -96,8 +93,7 @@ class SelectQueryBuilder {
 
     var relationalFieldName = listQueryAdditions.relationalFieldName;
 
-    String query = subQueries != null ? '$subQueries, ' : 'WITH ';
-    query += '$wrappedBaseQueryAlias AS ($baseQuery)';
+    String query = 'WITH $wrappedBaseQueryAlias AS ($baseQuery)';
 
     query +=
         ', $partitionedQueryAlias AS (SELECT *, row_number() OVER ( PARTITION BY $wrappedBaseQueryAlias."$relationalFieldName") FROM $wrappedBaseQueryAlias)';
@@ -105,7 +101,7 @@ class SelectQueryBuilder {
     var rowLimitClause = _buildMultiRowLimitClause(limit, offset);
 
     query +=
-        'SELECT * FROM $partitionedQueryAlias WHERE row_number $rowLimitClause';
+        ' SELECT * FROM $partitionedQueryAlias WHERE row_number $rowLimitClause';
 
     return query;
   }
