@@ -223,7 +223,7 @@ class Server {
         request.response.headers.add(header.key, header.value);
       }
 
-      // Safari and other potential browsers required to set content-length=0
+      // Safari and potentially other browsers require Content-Length=0.
       request.response.headers.add('Content-Length', 0);
       request.response.statusCode = HttpStatus.ok;
       await request.response.close();
