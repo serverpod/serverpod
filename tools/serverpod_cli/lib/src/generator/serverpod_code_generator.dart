@@ -90,28 +90,30 @@ abstract class ServerpodCodeGenerator {
 
   /// Generate openapi Schema from [OpenAPIGenerator]
   /// Return a generated file
-  static Future<String> generateOpenAPISchema({
+  static Future<List<String>> generateOpenAPISchema({
     required ProtocolDefinition protocolDefinition,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {
     collector.generatedFiles.clear();
     OpenAPIGenerator generator = const OpenAPIGenerator();
-    Map<String, String> file = generator.generateOpenAPISchema(
+    Map<String, String> allFiles = generator.generateOpenAPISchema(
         protocolDefinition: protocolDefinition, config: config);
 
-    try {
-      log.debug('Generating ${file.keys}');
-      var out = File(file.keys.first);
-      await out.create(recursive: true);
-      await out.writeAsString(file.values.first, flush: true);
+    for (var file in allFiles.entries) {
+      try {
+        log.debug('Generating ${file.key}');
+        var out = File(file.key);
+        await out.create(recursive: true);
+        await out.writeAsString(file.value, flush: true);
 
-      collector.addGeneratedFile(out);
-    } catch (e, stackTrace) {
-      log.error('Fail to generate ${file.keys.first}');
-      printInternalError(e, stackTrace);
+        collector.addGeneratedFile(out);
+      } catch (e, stackTrace) {
+        log.error('Fail to generate ${file.key}');
+        printInternalError(e, stackTrace);
+      }
     }
-    return file.keys.first;
+    return allFiles.keys.toList();
   }
 
   /// Removes files from previous generation runs.

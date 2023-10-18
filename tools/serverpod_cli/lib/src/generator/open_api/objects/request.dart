@@ -1,4 +1,6 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/content.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
 /// [RequestBodyObject] Request bodies are typically used with “create” and
 /// “update” operations (POST, PUT, PATCH). For example, when creating a

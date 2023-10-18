@@ -1,4 +1,9 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/parameter.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/paths.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/request.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/response.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/security.dart';
 
 /// Holds a set of reusable objects for different aspects of the OAS.
 /// All objects defined within the components object will have no effect

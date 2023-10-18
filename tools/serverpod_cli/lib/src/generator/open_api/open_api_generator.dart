@@ -8,7 +8,7 @@ import 'open_api_definition.dart';
 class OpenAPIGenerator {
   const OpenAPIGenerator();
 
-  String getOpenAPISchema(
+  String _generateOpenAPISchema(
     ProtocolDefinition protocolDefinition,
     GeneratorConfig config,
   ) {
@@ -30,7 +30,7 @@ class OpenAPIGenerator {
       p.joinAll([
         ...config.generatedServerOpenAPIPathParts,
         'openapi.json',
-      ]): getOpenAPISchema(
+      ]): _generateOpenAPISchema(
         protocolDefinition,
         config,
       ),

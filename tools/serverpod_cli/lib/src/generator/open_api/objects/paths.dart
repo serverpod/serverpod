@@ -1,4 +1,5 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/operation.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 
 /// Holds the relative paths to the individual endpoints and their operations.
 /// The path is appended to the URL from the Server Object in order to

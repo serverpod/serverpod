@@ -1,5 +1,3 @@
-part of '../open_api_objects.dart';
-
 /// Specifies details regarding the server hosting an API.
 /// example
 /// ```dart

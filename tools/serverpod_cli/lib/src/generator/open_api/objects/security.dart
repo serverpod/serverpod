@@ -1,4 +1,4 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 
 /// Defines a security scheme that can be used by the operations.
 abstract class SecuritySchemeObject {
@@ -10,13 +10,13 @@ abstract class SecuritySchemeObject {
 }
 
 class HttpSecurityScheme extends SecuritySchemeObject {
-  /// The name of the HTTP Authorization scheme to be used in the Authorization
-  /// header as defined in RFC7235. Applies to [http]
-  /// `basic` `bearer`
+  /// Specifies the HTTP Authorization scheme to be used in the Authorization
+  /// header, as defined in RFC7235. This applies to `http` and
+  /// supporting 'basic' and 'bearer' schemes.
   final String scheme;
 
   /// A hint to the client to identify how the bearer token
-  /// is formatted.  Applies to [http] ("bearer")
+  /// is formatted.  Applies to `http`'s `bearer` authentication.
   /// example ```
   /// "bearerFormat": "JWT",
   /// ```
@@ -191,14 +191,14 @@ class SecurityRequirementObject {
 
   dynamic _getScopeFromSecurityScheme(SecuritySchemeObject securitySchemes) {
     if (securitySchemes is OauthSecurityScheme) {
-      /// eg  - googleOAuth: ['openid', 'profile']
+      // eg  - googleOAuth: ['openid', 'profile']
       return securitySchemes.flows.first.scopes.keys.toList();
     }
     return [];
   }
 }
 
-/// WIP
+// TODO : Test all Serverpod auth flows and implement them.
 SecurityRequirementObject googleAuth = SecurityRequirementObject(
   name: 'googleOauth',
   securitySchemes: OauthSecurityScheme(description: 'Google Auth 2.0', flows: {

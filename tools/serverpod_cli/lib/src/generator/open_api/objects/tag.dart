@@ -1,4 +1,4 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
 
 /// [TagObject] are used to categorize and group API operations. It must be
 /// unique. example
@@ -7,7 +7,7 @@ part of '../open_api_objects.dart';
 ///  "name": "pet",
 ///  "description": "Pets operations"
 /// }
-///```
+/// ```
 ///
 class TagObject {
   final String name;

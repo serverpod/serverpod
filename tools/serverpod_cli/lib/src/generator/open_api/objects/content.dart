@@ -1,4 +1,5 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
 /// The [ContentObject] is used to describe the media types that an operation
 /// can consume and produce. It specifies the format and schema of the request

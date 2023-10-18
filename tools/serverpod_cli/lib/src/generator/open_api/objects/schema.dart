@@ -1,5 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of '../open_api_objects.dart';
+
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 
 /// Serializes [TypeDefinition] all type To toJson.
 Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,

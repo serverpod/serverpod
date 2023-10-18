@@ -1,4 +1,5 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/content.dart';
 
 /// An API specification needs to specify the responses for all API operations.
 /// Each operation must have at least one response defined, usually a

@@ -1,4 +1,9 @@
-part of '../open_api_objects.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/parameter.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/request.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/response.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/security.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 
 /// Describes a single API operation on a path.
 class OperationObject {

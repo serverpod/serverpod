@@ -1,5 +1,3 @@
-part of '../open_api_objects.dart';
-
 /// The [OpenAPIConfig] is used to provide metadata and information about the API.
 /// eg.
 /// ```
