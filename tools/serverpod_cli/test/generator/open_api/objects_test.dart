@@ -234,7 +234,7 @@ void main() {
             'description':
                 "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
           },
-          '500': {'description': 'Internal server error '}
+          '500': {'description': 'Internal server error.'}
         },
         'security': [
           {'serverpodAuth': []}
@@ -281,7 +281,7 @@ void main() {
               'description':
                   "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
             },
-            '500': {'description': 'Internal server error '}
+            '500': {'description': 'Internal server error.'}
           },
           'security': [
             {'serverpodAuth': []}
@@ -339,7 +339,7 @@ void main() {
                 'description':
                     "Forbidden (the caller is trying to call a restricted endpoint, but doesn't have the correct credentials/scope)."
               },
-              '500': {'description': 'Internal server error '}
+              '500': {'description': 'Internal server error.'}
             },
             'security': [
               {'serverpodAuth': []}
@@ -436,7 +436,7 @@ void main() {
                     'description':
                         'Forbidden (the caller is trying to call a restricted endpoint, but doesn\'t have the correct credentials/scope).'
                   },
-                  '500': {'description': 'Internal server error '}
+                  '500': {'description': 'Internal server error.'}
                 }
               }
             }
