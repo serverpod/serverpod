@@ -59,12 +59,12 @@ class TableRelation {
   }
 
   /// The base foreignFieldName with the table name escaped
-  String get foreignFieldQuery {
+  String get foreignFieldBaseQuery {
     return _tableRelationEntries.last.foreignField.toString();
   }
 
   /// The base foreignFieldName with the table name unescaped
-  String get foreignFieldQueryAlias {
+  String get foreignFieldBaseQueryAlias {
     return _tableRelationEntries.last.foreignField.queryAlias;
   }
 

@@ -213,13 +213,13 @@ class SelectQueryBuilder {
       );
     }
 
-    var relationFieldName = tableRelation.foreignFieldQuery;
+    var relationFieldName = tableRelation.foreignFieldBaseQuery;
     //'"${relationTable.tableName}"."${tableRelation.foreignFieldName}"';
 
     var whereAddition = Expression('$relationFieldName IN (${ids.join(', ')})');
 
     _listQueryAdditions = _ListQueryAdditions(
-      relationalFieldName: tableRelation.foreignFieldQueryAlias,
+      relationalFieldName: tableRelation.foreignFieldBaseQueryAlias,
       whereAddition: whereAddition,
     );
 
