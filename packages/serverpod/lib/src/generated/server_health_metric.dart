@@ -162,7 +162,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ServerHealthMetric>> find(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -186,7 +186,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ServerHealthMetric?> findSingleRow(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -214,7 +214,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ServerHealthMetricExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ServerHealthMetric>(
@@ -263,7 +263,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -278,6 +278,26 @@ abstract class ServerHealthMetric extends _i1.TableRow {
 
   static ServerHealthMetricInclude include() {
     return ServerHealthMetricInclude._();
+  }
+
+  static ServerHealthMetricIncludeList includeList({
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ServerHealthMetricInclude? include,
+  }) {
+    return ServerHealthMetricIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -323,9 +343,6 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
     );
   }
 }
-
-typedef ServerHealthMetricExpressionBuilder = _i1.Expression Function(
-    ServerHealthMetricTable);
 
 class ServerHealthMetricTable extends _i1.Table {
   ServerHealthMetricTable({super.tableRelation})
@@ -390,11 +407,31 @@ class ServerHealthMetricTable extends _i1.Table {
 @Deprecated('Use ServerHealthMetricTable.t instead.')
 ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
 
-class ServerHealthMetricInclude extends _i1.Include {
+class ServerHealthMetricInclude extends _i1.IncludeObject {
   ServerHealthMetricInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ServerHealthMetric.t;
+}
+
+class ServerHealthMetricIncludeList extends _i1.IncludeList {
+  ServerHealthMetricIncludeList._({
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ServerHealthMetric.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ServerHealthMetric.t;
@@ -405,7 +442,7 @@ class ServerHealthMetricRepository {
 
   Future<List<ServerHealthMetric>> find(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -426,7 +463,7 @@ class ServerHealthMetricRepository {
 
   Future<ServerHealthMetric?> findRow(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -517,7 +554,7 @@ class ServerHealthMetricRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ServerHealthMetricExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ServerHealthMetric>(
@@ -528,7 +565,7 @@ class ServerHealthMetricRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ServerHealthMetricExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

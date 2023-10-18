@@ -88,7 +88,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithDuration>> find(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -112,7 +112,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithDuration?> findSingleRow(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -140,7 +140,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithDurationExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithDuration>(
@@ -189,7 +189,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -204,6 +204,26 @@ abstract class ObjectWithDuration extends _i1.TableRow {
 
   static ObjectWithDurationInclude include() {
     return ObjectWithDurationInclude._();
+  }
+
+  static ObjectWithDurationIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectWithDurationInclude? include,
+  }) {
+    return ObjectWithDurationIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -230,9 +250,6 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
   }
 }
 
-typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
-    ObjectWithDurationTable);
-
 class ObjectWithDurationTable extends _i1.Table {
   ObjectWithDurationTable({super.tableRelation})
       : super(tableName: 'object_with_duration') {
@@ -254,11 +271,31 @@ class ObjectWithDurationTable extends _i1.Table {
 @Deprecated('Use ObjectWithDurationTable.t instead.')
 ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
 
-class ObjectWithDurationInclude extends _i1.Include {
+class ObjectWithDurationInclude extends _i1.IncludeObject {
   ObjectWithDurationInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ObjectWithDuration.t;
+}
+
+class ObjectWithDurationIncludeList extends _i1.IncludeList {
+  ObjectWithDurationIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithDuration.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ObjectWithDuration.t;
@@ -269,7 +306,7 @@ class ObjectWithDurationRepository {
 
   Future<List<ObjectWithDuration>> find(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -290,7 +327,7 @@ class ObjectWithDurationRepository {
 
   Future<ObjectWithDuration?> findRow(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -381,7 +418,7 @@ class ObjectWithDurationRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithDurationExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectWithDuration>(
@@ -392,7 +429,7 @@ class ObjectWithDurationRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

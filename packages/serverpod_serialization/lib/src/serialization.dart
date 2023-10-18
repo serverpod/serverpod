@@ -48,23 +48,25 @@ abstract class SerializationManager {
 
   bool _isType<T1, T2>(Type t) => t == T1 || t == T2;
 
+  bool _isNullableType<T>(Type t) => _isType<T, T?>(t);
+
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
-    if (_isType<int, int?>(t)) {
+    if (_isNullableType<int>(t)) {
       return data;
-    } else if (_isType<double, double?>(t)) {
+    } else if (_isNullableType<double>(t)) {
       return (data as num?)?.toDouble() as T;
-    } else if (_isType<String, String?>(t)) {
+    } else if (_isNullableType<String>(t)) {
       return data;
-    } else if (_isType<bool, bool?>(t)) {
+    } else if (_isNullableType<bool>(t)) {
       return data;
-    } else if (_isType<DateTime, DateTime?>(t)) {
+    } else if (_isNullableType<DateTime>(t)) {
       if (data is DateTime) return data as T;
       return DateTime.tryParse(data ?? '')?.toUtc() as T;
-    } else if (_isType<ByteData, ByteData?>(t)) {
+    } else if (_isNullableType<ByteData>(t)) {
       if (data is Uint8List) {
         var byteData = ByteData.view(
           data.buffer,
@@ -75,9 +77,9 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isType<Duration, Duration?>(t)) {
+    } else if (_isNullableType<Duration>(t)) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
-    } else if (_isType<UuidValue, UuidValue?>(t)) {
+    } else if (_isNullableType<UuidValue>(t)) {
       return (data == null ? null : UuidValue(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');

@@ -4,6 +4,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_connection_legacy.dart';
 import 'package:serverpod/src/database/database_query.dart';
+import 'package:serverpod/src/database/database_query_helper.dart';
 import 'package:serverpod/src/database/database_result.dart';
 
 import '../generated/protocol.dart';
@@ -46,14 +47,8 @@ class DatabaseConnection {
     Include? include,
     Transaction? transaction,
   }) async {
-    assert(orderByList == null || orderBy == null);
     var table = _getTableOrAssert<T>(session, operation: 'find');
-
-    if (orderBy != null) {
-      // If order by is set then order by list is overriden.
-      // TODO: Only expose order by list in interface.
-      orderByList = [Order(column: orderBy, orderDescending: orderDescending)];
-    }
+    orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(table.columns)
@@ -67,10 +62,10 @@ class DatabaseConnection {
     return _deserializedMappedQuery<T>(
       session,
       query,
+      table: table,
       timeoutInSeconds: 60,
       transaction: transaction,
       include: include,
-      table: table,
     );
   }
 
@@ -201,8 +196,6 @@ class DatabaseConnection {
         .where((columnName) => columnName != 'id')
         .map((columnName) => '"$columnName" = data."$columnName"')
         .join(', ');
-
-    selectedColumns.first.type.toString();
 
     var query =
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
@@ -423,10 +416,18 @@ class DatabaseConnection {
       transaction: transaction,
     );
 
+    var resolvedListRelations = await _queryIncludedLists(
+      session,
+      table,
+      include,
+      result,
+    );
+
     return result
         .map((rawRow) => resolvePrefixedQueryRow(
               table,
               rawRow,
+              resolvedListRelations,
               include: include,
             ))
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
@@ -496,6 +497,92 @@ class DatabaseConnection {
     );
   }
 
+  Future<Map<String, Map<int, List<Map<String, dynamic>>>>> _queryIncludedLists(
+    Session session,
+    Table table,
+    Include? include,
+    List<Map<String, Map<String, dynamic>>> previousResultSet,
+  ) async {
+    if (include == null) return {};
+
+    Map<String, Map<int, List<Map<String, dynamic>>>> resolvedListRelations =
+        {};
+
+    for (var entry in include.includes.entries) {
+      var nestedInclude = entry.value;
+      var relationFieldName = entry.key;
+
+      var relativeRelationTable = table.getRelationTable(relationFieldName);
+      var tableRelation = relativeRelationTable?.tableRelation;
+      if (relativeRelationTable == null || tableRelation == null) {
+        throw StateError('Relation table is null.');
+      }
+
+      if (nestedInclude is IncludeList) {
+        var ids = extractPrimaryKeyForRelation<int>(
+          previousResultSet,
+          tableRelation,
+        );
+
+        if (ids.isEmpty) continue;
+
+        var relationTable = nestedInclude.table;
+
+        var orderBy = _resolveOrderBy(
+          nestedInclude.orderByList,
+          nestedInclude.orderBy,
+          nestedInclude.orderDescending,
+        );
+
+        var query = SelectQueryBuilder(table: relationTable)
+            .withSelectFields(relationTable.columns)
+            .withWhere(nestedInclude.where)
+            .withOrderBy(orderBy)
+            .withLimit(nestedInclude.limit)
+            .withOffset(nestedInclude.offset)
+            .withWhereRelationInResultSet(ids, relativeRelationTable)
+            .withInclude(nestedInclude.include)
+            .build();
+
+        var includeListResult = await mappedResultsQuery(session, query);
+
+        var resolvedLists = await _queryIncludedLists(
+          session,
+          nestedInclude.table,
+          nestedInclude,
+          includeListResult,
+        );
+
+        var resolvedList = includeListResult
+            .map((rawRow) => resolvePrefixedQueryRow(
+                  relationTable,
+                  rawRow,
+                  resolvedLists,
+                  include: nestedInclude,
+                ))
+            .whereType<Map<String, dynamic>>()
+            .toList();
+
+        resolvedListRelations.addAll(mapListToQueryById(
+          resolvedList,
+          relativeRelationTable,
+          tableRelation.foreignFieldName,
+        ));
+      } else {
+        var resolvedNestedListRelations = await _queryIncludedLists(
+          session,
+          relativeRelationTable,
+          nestedInclude,
+          previousResultSet,
+        );
+
+        resolvedListRelations.addAll(resolvedNestedListRelations);
+      }
+    }
+
+    return resolvedListRelations;
+  }
+
   void _validateColumnsExists(List<Column> columns, Table table) {
     for (var column in columns) {
       if (!table.columns.any((c) => c.columnName == column.columnName)) {
@@ -506,6 +593,16 @@ class DatabaseConnection {
         );
       }
     }
+  }
+
+  List<Order>? _resolveOrderBy(List<Order>? orderByList,
+      Column<dynamic>? orderBy, bool orderDescending) {
+    assert(orderByList == null || orderBy == null);
+    if (orderBy != null) {
+      // If order by is set then order by list is overriden.
+      return [Order(column: orderBy, orderDescending: orderDescending)];
+    }
+    return orderByList;
   }
 
   String _createQueryValueList(
@@ -583,7 +680,11 @@ class Transaction {
   Transaction._(this.postgresContext);
 }
 
-/// Defines what tables to join when querying a table.
+/// A function that returns an [Expression] for a [Table] to be used with where
+/// clauses.
+typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
+
+/// The base include class, should not be used directly.
 abstract class Include {
   /// Map containing the relation field name as key and the [Include] object
   /// for the foreign table as value.
@@ -591,4 +692,42 @@ abstract class Include {
 
   /// Accessor for the [Table] this include is for.
   Table get table;
+}
+
+/// Defines what tables to join when querying a table.
+abstract class IncludeObject extends Include {}
+
+/// Defines what tables to join when querying a table.
+abstract class IncludeList extends Include {
+  /// Constructs a new [IncludeList] object.
+  IncludeList({
+    this.where,
+    this.limit,
+    this.offset,
+    this.orderBy,
+    this.orderDescending = false,
+    this.orderByList,
+    this.include,
+  });
+
+  /// Where expression to filter the included list.
+  Expression? where;
+
+  /// The maximum number of rows to return.
+  int? limit;
+
+  /// The number of rows to skip.
+  int? offset;
+
+  /// The column to order by.
+  Column? orderBy;
+
+  /// Whether the column should be ordered descending or ascending.
+  bool orderDescending = false;
+
+  /// The columns to order by.
+  List<Order>? orderByList;
+
+  /// The nested includes
+  IncludeObject? include;
 }

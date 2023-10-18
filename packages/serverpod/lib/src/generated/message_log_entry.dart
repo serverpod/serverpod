@@ -216,7 +216,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<MessageLogEntry>> find(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -240,7 +240,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<MessageLogEntry?> findSingleRow(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -268,7 +268,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required MessageLogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MessageLogEntry>(
@@ -317,7 +317,7 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -332,6 +332,26 @@ abstract class MessageLogEntry extends _i1.TableRow {
 
   static MessageLogEntryInclude include() {
     return MessageLogEntryInclude._();
+  }
+
+  static MessageLogEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    MessageLogEntryInclude? include,
+  }) {
+    return MessageLogEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -393,9 +413,6 @@ class _MessageLogEntryImpl extends MessageLogEntry {
     );
   }
 }
-
-typedef MessageLogEntryExpressionBuilder = _i1.Expression Function(
-    MessageLogEntryTable);
 
 class MessageLogEntryTable extends _i1.Table {
   MessageLogEntryTable({super.tableRelation})
@@ -493,11 +510,31 @@ class MessageLogEntryTable extends _i1.Table {
 @Deprecated('Use MessageLogEntryTable.t instead.')
 MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
 
-class MessageLogEntryInclude extends _i1.Include {
+class MessageLogEntryInclude extends _i1.IncludeObject {
   MessageLogEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => MessageLogEntry.t;
+}
+
+class MessageLogEntryIncludeList extends _i1.IncludeList {
+  MessageLogEntryIncludeList._({
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(MessageLogEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => MessageLogEntry.t;
@@ -508,7 +545,7 @@ class MessageLogEntryRepository {
 
   Future<List<MessageLogEntry>> find(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -529,7 +566,7 @@ class MessageLogEntryRepository {
 
   Future<MessageLogEntry?> findRow(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -620,7 +657,7 @@ class MessageLogEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required MessageLogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<MessageLogEntry>(
@@ -631,7 +668,7 @@ class MessageLogEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    MessageLogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

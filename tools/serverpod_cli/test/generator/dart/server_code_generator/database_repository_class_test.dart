@@ -102,7 +102,7 @@ void main() {
           var params = findMethod?.parameters?.toSource();
           expect(
             params,
-            contains('${testClassName}ExpressionBuilder? where'),
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
           );
         });
 
@@ -187,7 +187,7 @@ void main() {
           var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
-            contains('${testClassName}ExpressionBuilder? where'),
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
           );
         });
 
@@ -591,7 +591,7 @@ void main() {
           var params = deleteWhereMethod?.parameters?.toSource();
           expect(
             params,
-            contains('required ${testClassName}ExpressionBuilder where'),
+            contains('WhereExpressionBuilder<${testClassName}Table> where'),
           );
         });
 
@@ -641,7 +641,7 @@ void main() {
           var params = countMethod?.parameters?.toSource();
           expect(
             params,
-            contains('${testClassName}ExpressionBuilder? where'),
+            contains('WhereExpressionBuilder<${testClassName}Table>? where'),
           );
         });
 

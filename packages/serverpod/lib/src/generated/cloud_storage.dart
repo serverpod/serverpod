@@ -160,7 +160,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<CloudStorageEntry>> find(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -184,7 +184,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<CloudStorageEntry?> findSingleRow(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -212,7 +212,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CloudStorageEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CloudStorageEntry>(
@@ -261,7 +261,7 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -276,6 +276,26 @@ abstract class CloudStorageEntry extends _i1.TableRow {
 
   static CloudStorageEntryInclude include() {
     return CloudStorageEntryInclude._();
+  }
+
+  static CloudStorageEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CloudStorageEntryInclude? include,
+  }) {
+    return CloudStorageEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -321,9 +341,6 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     );
   }
 }
-
-typedef CloudStorageEntryExpressionBuilder = _i1.Expression Function(
-    CloudStorageEntryTable);
 
 class CloudStorageEntryTable extends _i1.Table {
   CloudStorageEntryTable({super.tableRelation})
@@ -387,11 +404,31 @@ class CloudStorageEntryTable extends _i1.Table {
 @Deprecated('Use CloudStorageEntryTable.t instead.')
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
 
-class CloudStorageEntryInclude extends _i1.Include {
+class CloudStorageEntryInclude extends _i1.IncludeObject {
   CloudStorageEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => CloudStorageEntry.t;
+}
+
+class CloudStorageEntryIncludeList extends _i1.IncludeList {
+  CloudStorageEntryIncludeList._({
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(CloudStorageEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => CloudStorageEntry.t;
@@ -402,7 +439,7 @@ class CloudStorageEntryRepository {
 
   Future<List<CloudStorageEntry>> find(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -423,7 +460,7 @@ class CloudStorageEntryRepository {
 
   Future<CloudStorageEntry?> findRow(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -514,7 +551,7 @@ class CloudStorageEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CloudStorageEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<CloudStorageEntry>(
@@ -525,7 +562,7 @@ class CloudStorageEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CloudStorageEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

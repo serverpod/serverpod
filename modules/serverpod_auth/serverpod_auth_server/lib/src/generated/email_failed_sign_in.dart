@@ -119,7 +119,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<EmailFailedSignIn>> find(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -143,7 +143,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<EmailFailedSignIn?> findSingleRow(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -171,7 +171,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required EmailFailedSignInExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailFailedSignIn>(
@@ -220,7 +220,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -235,6 +235,26 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
 
   static EmailFailedSignInInclude include() {
     return EmailFailedSignInInclude._();
+  }
+
+  static EmailFailedSignInIncludeList includeList({
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    EmailFailedSignInInclude? include,
+  }) {
+    return EmailFailedSignInIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -268,9 +288,6 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
     );
   }
 }
-
-typedef EmailFailedSignInExpressionBuilder = _i1.Expression Function(
-    EmailFailedSignInTable);
 
 class EmailFailedSignInTable extends _i1.Table {
   EmailFailedSignInTable({super.tableRelation})
@@ -310,11 +327,31 @@ class EmailFailedSignInTable extends _i1.Table {
 @Deprecated('Use EmailFailedSignInTable.t instead.')
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
 
-class EmailFailedSignInInclude extends _i1.Include {
+class EmailFailedSignInInclude extends _i1.IncludeObject {
   EmailFailedSignInInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => EmailFailedSignIn.t;
+}
+
+class EmailFailedSignInIncludeList extends _i1.IncludeList {
+  EmailFailedSignInIncludeList._({
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(EmailFailedSignIn.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => EmailFailedSignIn.t;
@@ -325,7 +362,7 @@ class EmailFailedSignInRepository {
 
   Future<List<EmailFailedSignIn>> find(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -346,7 +383,7 @@ class EmailFailedSignInRepository {
 
   Future<EmailFailedSignIn?> findRow(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -437,7 +474,7 @@ class EmailFailedSignInRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required EmailFailedSignInExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<EmailFailedSignIn>(
@@ -448,7 +485,7 @@ class EmailFailedSignInRepository {
 
   Future<int> count(
     _i1.Session session, {
-    EmailFailedSignInExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

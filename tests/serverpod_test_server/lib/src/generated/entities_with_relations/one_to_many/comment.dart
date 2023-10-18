@@ -111,7 +111,7 @@ abstract class Comment extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Comment>> find(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -137,7 +137,7 @@ abstract class Comment extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Comment?> findSingleRow(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -171,7 +171,7 @@ abstract class Comment extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CommentExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Comment>(
@@ -220,7 +220,7 @@ abstract class Comment extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -235,6 +235,26 @@ abstract class Comment extends _i1.TableRow {
 
   static CommentInclude include({_i2.OrderInclude? order}) {
     return CommentInclude._(order: order);
+  }
+
+  static CommentIncludeList includeList({
+    _i1.WhereExpressionBuilder<CommentTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CommentInclude? include,
+  }) {
+    return CommentIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -268,8 +288,6 @@ class _CommentImpl extends Comment {
     );
   }
 }
-
-typedef CommentExpressionBuilder = _i1.Expression Function(CommentTable);
 
 class CommentTable extends _i1.Table {
   CommentTable({super.tableRelation}) : super(tableName: 'comment') {
@@ -321,7 +339,7 @@ class CommentTable extends _i1.Table {
 @Deprecated('Use CommentTable.t instead.')
 CommentTable tComment = CommentTable();
 
-class CommentInclude extends _i1.Include {
+class CommentInclude extends _i1.IncludeObject {
   CommentInclude._({_i2.OrderInclude? order}) {
     _order = order;
   }
@@ -335,6 +353,26 @@ class CommentInclude extends _i1.Include {
   _i1.Table get table => Comment.t;
 }
 
+class CommentIncludeList extends _i1.IncludeList {
+  CommentIncludeList._({
+    _i1.WhereExpressionBuilder<CommentTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Comment.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => Comment.t;
+}
+
 class CommentRepository {
   const CommentRepository._();
 
@@ -342,7 +380,7 @@ class CommentRepository {
 
   Future<List<Comment>> find(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -365,7 +403,7 @@ class CommentRepository {
 
   Future<Comment?> findRow(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -460,7 +498,7 @@ class CommentRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CommentExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Comment>(
@@ -471,7 +509,7 @@ class CommentRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CommentExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

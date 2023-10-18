@@ -91,7 +91,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ReadWriteTestEntry>> find(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -115,7 +115,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ReadWriteTestEntry?> findSingleRow(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -143,7 +143,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ReadWriteTestEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ReadWriteTestEntry>(
@@ -192,7 +192,7 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -207,6 +207,26 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
 
   static ReadWriteTestEntryInclude include() {
     return ReadWriteTestEntryInclude._();
+  }
+
+  static ReadWriteTestEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ReadWriteTestEntryInclude? include,
+  }) {
+    return ReadWriteTestEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -233,9 +253,6 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
   }
 }
 
-typedef ReadWriteTestEntryExpressionBuilder = _i1.Expression Function(
-    ReadWriteTestEntryTable);
-
 class ReadWriteTestEntryTable extends _i1.Table {
   ReadWriteTestEntryTable({super.tableRelation})
       : super(tableName: 'serverpod_readwrite_test') {
@@ -258,11 +275,31 @@ class ReadWriteTestEntryTable extends _i1.Table {
 @Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
 
-class ReadWriteTestEntryInclude extends _i1.Include {
+class ReadWriteTestEntryInclude extends _i1.IncludeObject {
   ReadWriteTestEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ReadWriteTestEntry.t;
+}
+
+class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
+  ReadWriteTestEntryIncludeList._({
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ReadWriteTestEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ReadWriteTestEntry.t;
@@ -273,7 +310,7 @@ class ReadWriteTestEntryRepository {
 
   Future<List<ReadWriteTestEntry>> find(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -294,7 +331,7 @@ class ReadWriteTestEntryRepository {
 
   Future<ReadWriteTestEntry?> findRow(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -385,7 +422,7 @@ class ReadWriteTestEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ReadWriteTestEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ReadWriteTestEntry>(
@@ -396,7 +433,7 @@ class ReadWriteTestEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ReadWriteTestEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

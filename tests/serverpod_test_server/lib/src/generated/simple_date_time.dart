@@ -90,7 +90,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<SimpleDateTime>> find(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -114,7 +114,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<SimpleDateTime?> findSingleRow(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -142,7 +142,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required SimpleDateTimeExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SimpleDateTime>(
@@ -191,7 +191,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -206,6 +206,26 @@ abstract class SimpleDateTime extends _i1.TableRow {
 
   static SimpleDateTimeInclude include() {
     return SimpleDateTimeInclude._();
+  }
+
+  static SimpleDateTimeIncludeList includeList({
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    SimpleDateTimeInclude? include,
+  }) {
+    return SimpleDateTimeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -232,9 +252,6 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
   }
 }
 
-typedef SimpleDateTimeExpressionBuilder = _i1.Expression Function(
-    SimpleDateTimeTable);
-
 class SimpleDateTimeTable extends _i1.Table {
   SimpleDateTimeTable({super.tableRelation})
       : super(tableName: 'simple_date_time') {
@@ -257,11 +274,31 @@ class SimpleDateTimeTable extends _i1.Table {
 @Deprecated('Use SimpleDateTimeTable.t instead.')
 SimpleDateTimeTable tSimpleDateTime = SimpleDateTimeTable();
 
-class SimpleDateTimeInclude extends _i1.Include {
+class SimpleDateTimeInclude extends _i1.IncludeObject {
   SimpleDateTimeInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => SimpleDateTime.t;
+}
+
+class SimpleDateTimeIncludeList extends _i1.IncludeList {
+  SimpleDateTimeIncludeList._({
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(SimpleDateTime.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => SimpleDateTime.t;
@@ -272,7 +309,7 @@ class SimpleDateTimeRepository {
 
   Future<List<SimpleDateTime>> find(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -293,7 +330,7 @@ class SimpleDateTimeRepository {
 
   Future<SimpleDateTime?> findRow(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -384,7 +421,7 @@ class SimpleDateTimeRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required SimpleDateTimeExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<SimpleDateTime>(
@@ -395,7 +432,7 @@ class SimpleDateTimeRepository {
 
   Future<int> count(
     _i1.Session session, {
-    SimpleDateTimeExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

@@ -216,7 +216,7 @@ abstract class LogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<LogEntry>> find(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -240,7 +240,7 @@ abstract class LogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<LogEntry?> findSingleRow(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -268,7 +268,7 @@ abstract class LogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required LogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<LogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<LogEntry>(
@@ -317,7 +317,7 @@ abstract class LogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -332,6 +332,26 @@ abstract class LogEntry extends _i1.TableRow {
 
   static LogEntryInclude include() {
     return LogEntryInclude._();
+  }
+
+  static LogEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    LogEntryInclude? include,
+  }) {
+    return LogEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -393,8 +413,6 @@ class _LogEntryImpl extends LogEntry {
     );
   }
 }
-
-typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
 
 class LogEntryTable extends _i1.Table {
   LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
@@ -489,11 +507,31 @@ class LogEntryTable extends _i1.Table {
 @Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();
 
-class LogEntryInclude extends _i1.Include {
+class LogEntryInclude extends _i1.IncludeObject {
   LogEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => LogEntry.t;
+}
+
+class LogEntryIncludeList extends _i1.IncludeList {
+  LogEntryIncludeList._({
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(LogEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => LogEntry.t;
@@ -504,7 +542,7 @@ class LogEntryRepository {
 
   Future<List<LogEntry>> find(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -525,7 +563,7 @@ class LogEntryRepository {
 
   Future<LogEntry?> findRow(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -616,7 +654,7 @@ class LogEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required LogEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<LogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<LogEntry>(
@@ -627,7 +665,7 @@ class LogEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
