@@ -24,7 +24,28 @@ class Expression<T> {
   /// Database AND operator.
   Expression operator &(dynamic other) {
     if (other is bool) {
-      return other ? this : Constant(other);
+      other = Constant(other);
+    }
+    bool? thisBoolValue = this is! Constant
+        ? null
+        : this._expression == 'TRUE'
+            ? true
+            : this._expression == 'FALSE'
+                ? false
+                : null;
+    bool? otherBoolValue = other is! Constant
+        ? null
+        : other._expression == 'TRUE'
+            ? true
+            : this._expression == 'FALSE'
+                ? false
+                : null;
+    if (thisBoolValue == false || otherBoolValue == false) {
+      return Constant(false);
+    } else if (thisBoolValue == true) {
+      return other;
+    } else if (otherBoolValue == true) {
+      return this;
     } else if (other is Expression) {
       return _AndExpression(this, other);
     }
@@ -35,7 +56,28 @@ class Expression<T> {
   /// Database OR operator.
   Expression operator |(dynamic other) {
     if (other is bool) {
-      return other ? Constant(other) : this;
+      other = Constant(other);
+    }
+    bool? thisBoolValue = this is! Constant
+        ? null
+        : this._expression == 'TRUE'
+            ? true
+            : this._expression == 'FALSE'
+                ? false
+                : null;
+    bool? otherBoolValue = other is! Constant
+        ? null
+        : other._expression == 'TRUE'
+            ? true
+            : this._expression == 'FALSE'
+                ? false
+                : null;
+    if (thisBoolValue == true || otherBoolValue == true) {
+      return Constant(true);
+    } else if (thisBoolValue == false) {
+      return other;
+    } else if (otherBoolValue == false) {
+      return this;
     } else if (other is Expression) {
       return _OrExpression(this, other);
     }
