@@ -8,6 +8,24 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
+  /**
+   * The structure of the data used in this test is as follows:
+   * 
+   * City: {
+   *   citizens: Person[],
+   *   organizations: Organization[],
+   * }
+   * 
+   * Organization: {
+   *   city: City?,
+   *   people: Person[],
+   * }
+   * 
+   * Person: {
+   *   organization: Organization?,
+   * }
+   */
+
   tearDown(() async {
     await Person.db.deleteWhere(session, where: (t) => pod.Constant.bool(true));
     await Organization.db
@@ -16,7 +34,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation of a city that can hold citizens where the database only contains the city when including the citizens list then an empty list is included in the result.',
+      'Given an entity with a list relation with nothing attached when fetching entity including list relation then returned entity has empty list as list relation.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -31,7 +49,7 @@ void main() async {
   });
 
   test(
-      'Given cities and citizens when finding a single city by id and including the citizens then only the citizens attached to the city is included in the result.',
+      'Given an entity with a implicit list relation with data attached when fetching entity including list relation then returned entity has the attached data in the list relation.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
     var gothenburg = await City.db.insertRow(session, City(name: 'Gothenburg'));
@@ -58,7 +76,7 @@ void main() async {
   });
 
   test(
-      'Given organizations and people when finding a single organization by id and including the people then only the people attached to the organization is included in the result.',
+      'Given an entity with a explicit list relation with data attached when fetching entity including list relation then returned entity has the attached data in the list relation.',
       () async {
     var serverpod = await Organization.db.insertRow(
       session,
@@ -91,7 +109,7 @@ void main() async {
   });
 
   test(
-      'Given organizations and people when finding all organizations with the people list included then each organization has their respective people in their lists.',
+      'Given a list relation when querying for all entities including the list relation then the list relation is populated in the returned entities.',
       () async {
     var serverpod = await Organization.db.insertRow(
       session,
