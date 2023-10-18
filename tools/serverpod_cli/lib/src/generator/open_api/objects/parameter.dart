@@ -3,28 +3,32 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
-/// Holds the relative paths to the individual endpoints and their operations.
-/// The path is appended to the URL from the Server Object in order to
-///  construct the full URL.
-/// The Paths may be empty, due to Access Control List (ACL) constraints.
-/// ***Parameter Locations***
-/// There are four possible parameter locations specified by the in field:
-///  - path - Used together with Path Templating, where the parameter value is
+/// The [PathsObject] contains the relative paths to the individual endpoints
+/// and their operations. The path is appended to the URL from the Server
+/// Object in order to construct the full URL. The Paths may be empty, due to
+/// Access Control List (ACL) constraints.
+///
+/// **Parameter Locations**
+///
+///  There are four possible parameter locations specified by the in field:
+///  - `path` : Used together with Path Templating, where the parameter value is
 ///    actually part of the operation's URL. This does not include the host or
 ///    base path of the API. For example, in /items/{itemId}, the path
 ///    parameter is itemId.
-///  - query - Parameters that are appended to the URL. For example, in /items?
-///    id=###, the query parameter is id.
-///  - header - Custom headers that are expected as part of the request.
+///  - `query` : Parameters that are appended to the URL.
+///    For example, in /items?id=###, the query parameter is id.
+///  - `header` : Custom headers that are expected as part of the request.
 ///    Note that RFC7230 states header names are case insensitive.
-///  - cookie - Used to pass a specific cookie value to the API.
+///  - `cookie` : Used to pass a specific cookie value to the API.
 class ParameterObject {
-  /// parameter name
+  /// The name of the parameter. Parameter names are case sensitive.
   final String name;
 
   /// The location of the parameter. Possible values are "query", "header",
-  ///  "body" ,"path" or "cookie". key - [in]
+  /// "body" ,"path" or "cookie". The JSON key for this is `in`.
   final ParameterLocation inField;
+
+  /// A brief description of the parameter.
   final String? description;
 
   /// Determines whether this parameter is mandatory. If the parameter location

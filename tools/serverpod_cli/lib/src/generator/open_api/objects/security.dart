@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 
-/// Defines a security scheme that can be used by the operations.
+/// Defines a security scheme that can be used by the API operations.
 abstract class SecuritySchemeObject {
   final String? description;
   SecuritySchemeObject({

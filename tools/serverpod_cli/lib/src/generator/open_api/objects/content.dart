@@ -1,24 +1,24 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
-/// The [ContentObject] is used to describe the media types that an operation
-/// can consume and produce. It specifies the format and schema of the request
-/// and response payloads for different media types, such as JSON, XML, or
-/// others. example
+/// The [ContentObject] describes the supported media types for an operation,
+/// specifying the format and schema of request and response payloads. This can
+/// include formats like JSON, XML, and others.
+///
+/// Example:
 /// ```dart
 /// "content": {
-///               "application/json": {
-///                 "schema": {
-///                   "$ref": "#/components/schemas/Pet"
-///                 }
-///               },
-///               "application/xml": {
-///                 "schema": {
-///                   "$ref": "#/components/schemas/Pet"
-///                 }
-///               }
-///             }
-///           },
+///   "application/json": {
+///     "schema": {
+///       "$ref": "#/components/schemas/Pet"
+///     }
+///   },
+///   "application/xml": {
+///     "schema": {
+///       "$ref": "#/components/schemas/Pet"
+///     }
+///   }
+/// }
 /// ```
 class ContentObject {
   final RequestContentSchemaObject? requestContentSchemaObject;

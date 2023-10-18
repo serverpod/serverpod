@@ -1,4 +1,5 @@
-/// The [OpenAPIConfig] is used to provide metadata and information about the API.
+/// The [OpenAPIConfig] is used to provide metadata and information about
+/// the API.
 /// eg.
 /// ```
 ///     {

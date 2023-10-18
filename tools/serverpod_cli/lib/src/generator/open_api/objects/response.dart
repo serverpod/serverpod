@@ -28,7 +28,7 @@ class ResponseObject {
           'Forbidden (the caller is trying to call a restricted endpoint, but doesn\'t have the correct credentials/scope).'
     };
     // 500 internal server error
-    map['500'] = {'description': 'Internal server error '};
+    map['500'] = {'description': 'Internal server error.'};
     return map;
   }
 }

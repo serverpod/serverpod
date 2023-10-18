@@ -14,8 +14,11 @@ class OperationObject {
   /// A short summary of what the operation does.
   final String? summary;
 
+  /// A verbose explanation of the operation behavior. CommonMark syntax may be
+  /// used for rich text representation.
   final String? description;
 
+  /// Additional external documentation for this operation.
   final ExternalDocumentationObject? externalDocs;
 
   /// Unique string used to identify the operation.The id must be unique among
@@ -50,10 +53,18 @@ class OperationObject {
   /// Default value is false.
   final bool deprecated;
 
-  /// The [security] represents a set of serverpod security requirements.
+  /// A declaration of which security mechanisms can be used for this operation.
+  /// The list of values includes alternative security requirement objects that
+  /// can be used. Only one of the security requirement objects need to be
+  /// satisfied to authorize a request. To make security optional, an empty
+  /// security requirement ({}) can be included in the array. This definition
+  /// overrides any declared top-level security. To remove a top-level security
+  /// declaration, an empty array can be used.
   final Set<SecurityRequirementObject> security;
 
-  /// Override the top-level server definition.
+  /// An alternative server array to service this operation. If an alternative
+  /// server object is specified at the Path Item Object or Root level,
+  /// it will be overridden by this value.
   final List<ServerObject>? servers;
   OperationObject({
     this.tags,
