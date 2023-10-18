@@ -1858,8 +1858,7 @@ class SerializableEntityLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList',
-          'package:serverpod/serverpod.dart');
+      c.extend = refer('IncludeList', 'package:serverpod/serverpod.dart');
       c.name = '${className}IncludeList';
 
       c.constructors.add(_buildEntityIncludeListClassConstructor(className));

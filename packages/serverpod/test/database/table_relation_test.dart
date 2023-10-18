@@ -173,8 +173,9 @@ void main() {
           '"company_ceo_citizen_favoriteRestaurant_restaurant"."id"');
     });
 
-     test('when lastJoiningFieldQueryAlias is called then last', () {
-      expect(tableRelation.lastJoiningFieldQueryAlias, 'company_ceo_citizen.favoriteRestaurantId');
+    test('when lastJoiningFieldQueryAlias is called then last', () {
+      expect(tableRelation.lastJoiningFieldQueryAlias,
+          'company_ceo_citizen.favoriteRestaurantId');
     });
 
     test(
