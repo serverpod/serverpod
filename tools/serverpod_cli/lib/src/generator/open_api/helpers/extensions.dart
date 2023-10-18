@@ -45,14 +45,13 @@ extension TypeDefinitionExtension on TypeDefinition {
       case 'Map':
         return SchemaObjectType.object;
       default:
-        if (isListType) return SchemaObjectType.array;
-        if (isMapType) return SchemaObjectType.object;
-        return SchemaObjectType.other;
+        return SchemaObjectType.serializableObjects;
     }
   }
 
   /// Check whether [TypeDefinition] is UnknownSchemaType or not.
-  bool get isUnknownSchemaType => toSchemaObjectType == SchemaObjectType.other;
+  bool get isUnknownSchemaType =>
+      toSchemaObjectType == SchemaObjectType.serializableObjects;
 
   /// convert [TypeDefinition] className to [SchemaObjetFormat]
   SchemaObjectFormat? get toSchemaObjectFormat {

@@ -34,7 +34,7 @@ enum ParameterStyle {
 enum SchemaObjectType {
   /// When type converting a [Map], it becomes an [object].
   ///
-  /// When generating schemas, both [Map] and [other] can be represented
+  /// When generating schemas, both [Map] and [serializableObjects] can be represented
   /// as [object].
   object,
   string,
@@ -43,9 +43,9 @@ enum SchemaObjectType {
   array,
   boolean,
 
-  /// When converting [TypeDefinition] non-Dart core types, they are
-  /// represented as [other]
-  other,
+  /// When converting [TypeDefinition] non dart core types, they are
+  /// represented as [serializableObjects]
+  serializableObjects,
 }
 
 /// An openAPI string format
