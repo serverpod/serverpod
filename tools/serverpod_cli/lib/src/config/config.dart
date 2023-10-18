@@ -375,11 +375,3 @@ String _stripPackage(String package) {
   }
   return package;
 }
-
-/// Get [Uri] from publicHost/port and publicScheme.
-Uri _getUrl(Map<String, dynamic> value) {
-  if (value['publicScheme'] == 'http') {
-    return Uri.http("${value['publicHost']}:${value['publicPort']}");
-  }
-  return Uri.https(value['publicHost']);
-}
