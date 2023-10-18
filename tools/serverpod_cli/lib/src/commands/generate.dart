@@ -75,7 +75,7 @@ class GenerateCommand extends ServerpodCommand {
       () => performGenerate(
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
-        codeGenerationType: codeOutputFormats,
+        codeOutputFormats: codeOutputFormats,
       ),
     );
     if (watch) {
