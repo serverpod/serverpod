@@ -18,13 +18,13 @@ void main() {
 
       expect(
         result.headers['access-control-allow-origin'],
-        equals("*"),
+        equals('*'),
       );
       expect(
           result.headers.containsKey('access-control-allow-headers'), isFalse);
       expect(
         result.headers['access-control-allow-methods'],
-        equals("POST"),
+        equals('POST'),
       );
     });
 
@@ -42,7 +42,7 @@ void main() {
 
       expect(
         response.headers['access-control-allow-origin'],
-        equals("*"),
+        equals('*'),
       );
       expect(
         response.headers['content-length'],
@@ -52,7 +52,7 @@ void main() {
           response.headers.containsKey('access-control-allow-headers'), isTrue);
       expect(
         response.headers['access-control-allow-methods'],
-        equals("POST"),
+        equals('POST'),
       );
     });
   });

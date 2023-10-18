@@ -65,11 +65,12 @@ class Server {
   /// Central message dispatch for real time messages.
   MessageCentral messageCentral = MessageCentral();
 
-  /// Http headers used by all API responses. Defaults to allowing any
+  /// HTTP headers used by all API responses. Defaults to allowing any
   /// cross origin resource sharing (CORS).
   final Map<String, dynamic> httpResponseHeaders;
 
-  /// Http headers used for OPTIONS responses. By default, include all headers
+  /// HTTP headers used for OPTIONS responses. These headers are sent in
+  /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
   final Map<String, dynamic> httpOptionsResponseHeaders;
 
   /// Creates a new [Server] object.
