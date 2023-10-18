@@ -258,16 +258,16 @@ class GeneratorConfig {
     Set<ServerObject> servers = _getServersFromConfigs(dir);
     OpenAPIConfig? openAPIConfig;
 
-    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openapi');
+    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
     if (hasOpenAPIConfiguration) {
       try {
-        Map openAPIMap = generatorConfig['openapi'];
+        Map openAPIMap = generatorConfig['openAPIConfig'];
 
         openAPIConfig =
             OpenAPIConfig.fromConfig(openAPIMap, version: pubspec['version']);
       } catch (e) {
         log.error(
-          'There\'s an issue with the \'openapi\' section in config/generator.yaml .',
+          'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
         );
       }
     }

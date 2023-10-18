@@ -75,10 +75,10 @@ Future<bool> performGenerate({
     collector: collector,
   );
 
-  String? generatedOpenAPIFile;
+  List<String>? generatedOpenAPIFiles;
   if (codeGenerationType.contains(CodeOutputFormats.openAPI)) {
     log.debug('Generating openAPI schema');
-    generatedOpenAPIFile = await ServerpodCodeGenerator.generateOpenAPISchema(
+    generatedOpenAPIFiles = await ServerpodCodeGenerator.generateOpenAPISchema(
       protocolDefinition: protocolDefinition,
       config: config,
       collector: collector,
@@ -93,14 +93,12 @@ Future<bool> performGenerate({
 
   log.debug('Cleaning old files.');
 
-  Set<String> generatedFiles = <String>{
-    ...generatedEntityFiles,
-    ...generatedProtocolFiles,
-    if (generatedOpenAPIFile != null) generatedOpenAPIFile,
-  };
-
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-    generatedFiles: generatedFiles,
+    generatedFiles: {
+      ...generatedEntityFiles,
+      ...generatedProtocolFiles,
+      if (generatedOpenAPIFiles != null) ...generatedOpenAPIFiles,
+    },
     protocolDefinition: protocolDefinition,
     config: config,
   );
