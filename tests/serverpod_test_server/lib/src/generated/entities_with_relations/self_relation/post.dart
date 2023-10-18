@@ -376,7 +376,7 @@ class PostTable extends _i1.Table {
 @Deprecated('Use PostTable.t instead.')
 PostTable tPost = PostTable();
 
-class PostInclude extends _i1.Include {
+class PostInclude extends _i1.IncludeObject {
   PostInclude._({
     _i2.PostInclude? previous,
     _i2.PostInclude? next,
@@ -399,7 +399,7 @@ class PostInclude extends _i1.Include {
   _i1.Table get table => Post.t;
 }
 
-class PostIncludeList extends _i1.IncludeList<PostInclude> {
+class PostIncludeList extends _i1.IncludeList {
   PostIncludeList._({
     _i1.WhereExpressionBuilder<PostTable>? where,
     super.limit,

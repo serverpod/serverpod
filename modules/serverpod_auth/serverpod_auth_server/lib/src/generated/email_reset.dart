@@ -326,7 +326,7 @@ class EmailResetTable extends _i1.Table {
 @Deprecated('Use EmailResetTable.t instead.')
 EmailResetTable tEmailReset = EmailResetTable();
 
-class EmailResetInclude extends _i1.Include {
+class EmailResetInclude extends _i1.IncludeObject {
   EmailResetInclude._();
 
   @override
@@ -336,7 +336,7 @@ class EmailResetInclude extends _i1.Include {
   _i1.Table get table => EmailReset.t;
 }
 
-class EmailResetIncludeList extends _i1.IncludeList<EmailResetInclude> {
+class EmailResetIncludeList extends _i1.IncludeList {
   EmailResetIncludeList._({
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     super.limit,

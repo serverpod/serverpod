@@ -325,7 +325,7 @@ class EmailAuthTable extends _i1.Table {
 @Deprecated('Use EmailAuthTable.t instead.')
 EmailAuthTable tEmailAuth = EmailAuthTable();
 
-class EmailAuthInclude extends _i1.Include {
+class EmailAuthInclude extends _i1.IncludeObject {
   EmailAuthInclude._();
 
   @override
@@ -335,7 +335,7 @@ class EmailAuthInclude extends _i1.Include {
   _i1.Table get table => EmailAuth.t;
 }
 
-class EmailAuthIncludeList extends _i1.IncludeList<EmailAuthInclude> {
+class EmailAuthIncludeList extends _i1.IncludeList {
   EmailAuthIncludeList._({
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     super.limit,

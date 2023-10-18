@@ -369,7 +369,7 @@ class ObjectWithEnumTable extends _i1.Table {
 @Deprecated('Use ObjectWithEnumTable.t instead.')
 ObjectWithEnumTable tObjectWithEnum = ObjectWithEnumTable();
 
-class ObjectWithEnumInclude extends _i1.Include {
+class ObjectWithEnumInclude extends _i1.IncludeObject {
   ObjectWithEnumInclude._();
 
   @override
@@ -379,7 +379,7 @@ class ObjectWithEnumInclude extends _i1.Include {
   _i1.Table get table => ObjectWithEnum.t;
 }
 
-class ObjectWithEnumIncludeList extends _i1.IncludeList<ObjectWithEnumInclude> {
+class ObjectWithEnumIncludeList extends _i1.IncludeList {
   ObjectWithEnumIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     super.limit,

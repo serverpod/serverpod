@@ -365,7 +365,7 @@ class AuthKeyTable extends _i1.Table {
 @Deprecated('Use AuthKeyTable.t instead.')
 AuthKeyTable tAuthKey = AuthKeyTable();
 
-class AuthKeyInclude extends _i1.Include {
+class AuthKeyInclude extends _i1.IncludeObject {
   AuthKeyInclude._();
 
   @override

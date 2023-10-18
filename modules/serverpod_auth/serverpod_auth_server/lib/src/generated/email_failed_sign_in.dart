@@ -327,7 +327,7 @@ class EmailFailedSignInTable extends _i1.Table {
 @Deprecated('Use EmailFailedSignInTable.t instead.')
 EmailFailedSignInTable tEmailFailedSignIn = EmailFailedSignInTable();
 
-class EmailFailedSignInInclude extends _i1.Include {
+class EmailFailedSignInInclude extends _i1.IncludeObject {
   EmailFailedSignInInclude._();
 
   @override
@@ -337,8 +337,7 @@ class EmailFailedSignInInclude extends _i1.Include {
   _i1.Table get table => EmailFailedSignIn.t;
 }
 
-class EmailFailedSignInIncludeList
-    extends _i1.IncludeList<EmailFailedSignInInclude> {
+class EmailFailedSignInIncludeList extends _i1.IncludeList {
   EmailFailedSignInIncludeList._({
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     super.limit,

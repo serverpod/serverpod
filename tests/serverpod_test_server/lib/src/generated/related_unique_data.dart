@@ -342,7 +342,7 @@ class RelatedUniqueDataTable extends _i1.Table {
 @Deprecated('Use RelatedUniqueDataTable.t instead.')
 RelatedUniqueDataTable tRelatedUniqueData = RelatedUniqueDataTable();
 
-class RelatedUniqueDataInclude extends _i1.Include {
+class RelatedUniqueDataInclude extends _i1.IncludeObject {
   RelatedUniqueDataInclude._({_i2.UniqueDataInclude? uniqueData}) {
     _uniqueData = uniqueData;
   }
@@ -356,8 +356,7 @@ class RelatedUniqueDataInclude extends _i1.Include {
   _i1.Table get table => RelatedUniqueData.t;
 }
 
-class RelatedUniqueDataIncludeList
-    extends _i1.IncludeList<RelatedUniqueDataInclude> {
+class RelatedUniqueDataIncludeList extends _i1.IncludeList {
   RelatedUniqueDataIncludeList._({
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,

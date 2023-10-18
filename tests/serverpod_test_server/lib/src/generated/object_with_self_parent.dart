@@ -270,7 +270,7 @@ class ObjectWithSelfParentTable extends _i1.Table {
 @Deprecated('Use ObjectWithSelfParentTable.t instead.')
 ObjectWithSelfParentTable tObjectWithSelfParent = ObjectWithSelfParentTable();
 
-class ObjectWithSelfParentInclude extends _i1.Include {
+class ObjectWithSelfParentInclude extends _i1.IncludeObject {
   ObjectWithSelfParentInclude._();
 
   @override
@@ -280,8 +280,7 @@ class ObjectWithSelfParentInclude extends _i1.Include {
   _i1.Table get table => ObjectWithSelfParent.t;
 }
 
-class ObjectWithSelfParentIncludeList
-    extends _i1.IncludeList<ObjectWithSelfParentInclude> {
+class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
   ObjectWithSelfParentIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     super.limit,

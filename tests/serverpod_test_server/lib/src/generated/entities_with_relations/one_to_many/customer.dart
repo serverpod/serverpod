@@ -333,7 +333,7 @@ class CustomerTable extends _i1.Table {
 @Deprecated('Use CustomerTable.t instead.')
 CustomerTable tCustomer = CustomerTable();
 
-class CustomerInclude extends _i1.Include {
+class CustomerInclude extends _i1.IncludeObject {
   CustomerInclude._({_i2.OrderIncludeList? orders}) {
     _orders = orders;
   }
@@ -347,7 +347,7 @@ class CustomerInclude extends _i1.Include {
   _i1.Table get table => Customer.t;
 }
 
-class CustomerIncludeList extends _i1.IncludeList<CustomerInclude> {
+class CustomerIncludeList extends _i1.IncludeList {
   CustomerIncludeList._({
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,

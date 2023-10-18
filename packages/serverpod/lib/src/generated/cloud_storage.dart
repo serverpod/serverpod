@@ -404,7 +404,7 @@ class CloudStorageEntryTable extends _i1.Table {
 @Deprecated('Use CloudStorageEntryTable.t instead.')
 CloudStorageEntryTable tCloudStorageEntry = CloudStorageEntryTable();
 
-class CloudStorageEntryInclude extends _i1.Include {
+class CloudStorageEntryInclude extends _i1.IncludeObject {
   CloudStorageEntryInclude._();
 
   @override
@@ -414,8 +414,7 @@ class CloudStorageEntryInclude extends _i1.Include {
   _i1.Table get table => CloudStorageEntry.t;
 }
 
-class CloudStorageEntryIncludeList
-    extends _i1.IncludeList<CloudStorageEntryInclude> {
+class CloudStorageEntryIncludeList extends _i1.IncludeList {
   CloudStorageEntryIncludeList._({
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     super.limit,

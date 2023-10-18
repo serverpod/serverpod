@@ -464,7 +464,7 @@ class TypesTable extends _i1.Table {
 @Deprecated('Use TypesTable.t instead.')
 TypesTable tTypes = TypesTable();
 
-class TypesInclude extends _i1.Include {
+class TypesInclude extends _i1.IncludeObject {
   TypesInclude._();
 
   @override
@@ -474,7 +474,7 @@ class TypesInclude extends _i1.Include {
   _i1.Table get table => Types.t;
 }
 
-class TypesIncludeList extends _i1.IncludeList<TypesInclude> {
+class TypesIncludeList extends _i1.IncludeList {
   TypesIncludeList._({
     _i1.WhereExpressionBuilder<TypesTable>? where,
     super.limit,

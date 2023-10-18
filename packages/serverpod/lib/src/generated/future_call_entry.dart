@@ -379,7 +379,7 @@ class FutureCallEntryTable extends _i1.Table {
 @Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();
 
-class FutureCallEntryInclude extends _i1.Include {
+class FutureCallEntryInclude extends _i1.IncludeObject {
   FutureCallEntryInclude._();
 
   @override
@@ -389,8 +389,7 @@ class FutureCallEntryInclude extends _i1.Include {
   _i1.Table get table => FutureCallEntry.t;
 }
 
-class FutureCallEntryIncludeList
-    extends _i1.IncludeList<FutureCallEntryInclude> {
+class FutureCallEntryIncludeList extends _i1.IncludeList {
   FutureCallEntryIncludeList._({
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     super.limit,

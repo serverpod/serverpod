@@ -407,7 +407,7 @@ class ServerHealthMetricTable extends _i1.Table {
 @Deprecated('Use ServerHealthMetricTable.t instead.')
 ServerHealthMetricTable tServerHealthMetric = ServerHealthMetricTable();
 
-class ServerHealthMetricInclude extends _i1.Include {
+class ServerHealthMetricInclude extends _i1.IncludeObject {
   ServerHealthMetricInclude._();
 
   @override
@@ -417,8 +417,7 @@ class ServerHealthMetricInclude extends _i1.Include {
   _i1.Table get table => ServerHealthMetric.t;
 }
 
-class ServerHealthMetricIncludeList
-    extends _i1.IncludeList<ServerHealthMetricInclude> {
+class ServerHealthMetricIncludeList extends _i1.IncludeList {
   ServerHealthMetricIncludeList._({
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     super.limit,

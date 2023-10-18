@@ -294,7 +294,7 @@ class UniqueDataTable extends _i1.Table {
 @Deprecated('Use UniqueDataTable.t instead.')
 UniqueDataTable tUniqueData = UniqueDataTable();
 
-class UniqueDataInclude extends _i1.Include {
+class UniqueDataInclude extends _i1.IncludeObject {
   UniqueDataInclude._();
 
   @override
@@ -304,7 +304,7 @@ class UniqueDataInclude extends _i1.Include {
   _i1.Table get table => UniqueData.t;
 }
 
-class UniqueDataIncludeList extends _i1.IncludeList<UniqueDataInclude> {
+class UniqueDataIncludeList extends _i1.IncludeList {
   UniqueDataIncludeList._({
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     super.limit,

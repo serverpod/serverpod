@@ -353,7 +353,7 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
 CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();
 
-class CloudStorageDirectUploadEntryInclude extends _i1.Include {
+class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
   CloudStorageDirectUploadEntryInclude._();
 
   @override
@@ -363,8 +363,7 @@ class CloudStorageDirectUploadEntryInclude extends _i1.Include {
   _i1.Table get table => CloudStorageDirectUploadEntry.t;
 }
 
-class CloudStorageDirectUploadEntryIncludeList
-    extends _i1.IncludeList<CloudStorageDirectUploadEntryInclude> {
+class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
   CloudStorageDirectUploadEntryIncludeList._({
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     super.limit,

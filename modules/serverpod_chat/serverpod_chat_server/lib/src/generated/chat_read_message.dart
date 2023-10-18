@@ -326,7 +326,7 @@ class ChatReadMessageTable extends _i1.Table {
 @Deprecated('Use ChatReadMessageTable.t instead.')
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
 
-class ChatReadMessageInclude extends _i1.Include {
+class ChatReadMessageInclude extends _i1.IncludeObject {
   ChatReadMessageInclude._();
 
   @override
@@ -336,8 +336,7 @@ class ChatReadMessageInclude extends _i1.Include {
   _i1.Table get table => ChatReadMessage.t;
 }
 
-class ChatReadMessageIncludeList
-    extends _i1.IncludeList<ChatReadMessageInclude> {
+class ChatReadMessageIncludeList extends _i1.IncludeList {
   ChatReadMessageIncludeList._({
     _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     super.limit,

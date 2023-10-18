@@ -325,7 +325,7 @@ class UserImageTable extends _i1.Table {
 @Deprecated('Use UserImageTable.t instead.')
 UserImageTable tUserImage = UserImageTable();
 
-class UserImageInclude extends _i1.Include {
+class UserImageInclude extends _i1.IncludeObject {
   UserImageInclude._();
 
   @override
@@ -335,7 +335,7 @@ class UserImageInclude extends _i1.Include {
   _i1.Table get table => UserImage.t;
 }
 
-class UserImageIncludeList extends _i1.IncludeList<UserImageInclude> {
+class UserImageIncludeList extends _i1.IncludeList {
   UserImageIncludeList._({
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     super.limit,

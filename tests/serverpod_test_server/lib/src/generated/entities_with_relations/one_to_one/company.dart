@@ -338,7 +338,7 @@ class CompanyTable extends _i1.Table {
 @Deprecated('Use CompanyTable.t instead.')
 CompanyTable tCompany = CompanyTable();
 
-class CompanyInclude extends _i1.Include {
+class CompanyInclude extends _i1.IncludeObject {
   CompanyInclude._({_i2.TownInclude? town}) {
     _town = town;
   }
@@ -352,7 +352,7 @@ class CompanyInclude extends _i1.Include {
   _i1.Table get table => Company.t;
 }
 
-class CompanyIncludeList extends _i1.IncludeList<CompanyInclude> {
+class CompanyIncludeList extends _i1.IncludeList {
   CompanyIncludeList._({
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     super.limit,

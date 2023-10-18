@@ -408,7 +408,7 @@ class ServerHealthConnectionInfoTable extends _i1.Table {
 ServerHealthConnectionInfoTable tServerHealthConnectionInfo =
     ServerHealthConnectionInfoTable();
 
-class ServerHealthConnectionInfoInclude extends _i1.Include {
+class ServerHealthConnectionInfoInclude extends _i1.IncludeObject {
   ServerHealthConnectionInfoInclude._();
 
   @override
@@ -418,8 +418,7 @@ class ServerHealthConnectionInfoInclude extends _i1.Include {
   _i1.Table get table => ServerHealthConnectionInfo.t;
 }
 
-class ServerHealthConnectionInfoIncludeList
-    extends _i1.IncludeList<ServerHealthConnectionInfoInclude> {
+class ServerHealthConnectionInfoIncludeList extends _i1.IncludeList {
   ServerHealthConnectionInfoIncludeList._({
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     super.limit,

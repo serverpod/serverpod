@@ -339,7 +339,7 @@ class CommentTable extends _i1.Table {
 @Deprecated('Use CommentTable.t instead.')
 CommentTable tComment = CommentTable();
 
-class CommentInclude extends _i1.Include {
+class CommentInclude extends _i1.IncludeObject {
   CommentInclude._({_i2.OrderInclude? order}) {
     _order = order;
   }
@@ -353,7 +353,7 @@ class CommentInclude extends _i1.Include {
   _i1.Table get table => Comment.t;
 }
 
-class CommentIncludeList extends _i1.IncludeList<CommentInclude> {
+class CommentIncludeList extends _i1.IncludeList {
   CommentIncludeList._({
     _i1.WhereExpressionBuilder<CommentTable>? where,
     super.limit,

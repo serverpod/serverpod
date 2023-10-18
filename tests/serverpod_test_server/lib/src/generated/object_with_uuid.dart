@@ -296,7 +296,7 @@ class ObjectWithUuidTable extends _i1.Table {
 @Deprecated('Use ObjectWithUuidTable.t instead.')
 ObjectWithUuidTable tObjectWithUuid = ObjectWithUuidTable();
 
-class ObjectWithUuidInclude extends _i1.Include {
+class ObjectWithUuidInclude extends _i1.IncludeObject {
   ObjectWithUuidInclude._();
 
   @override
@@ -306,7 +306,7 @@ class ObjectWithUuidInclude extends _i1.Include {
   _i1.Table get table => ObjectWithUuid.t;
 }
 
-class ObjectWithUuidIncludeList extends _i1.IncludeList<ObjectWithUuidInclude> {
+class ObjectWithUuidIncludeList extends _i1.IncludeList {
   ObjectWithUuidIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,

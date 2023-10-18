@@ -462,7 +462,7 @@ class UserInfoTable extends _i1.Table {
 @Deprecated('Use UserInfoTable.t instead.')
 UserInfoTable tUserInfo = UserInfoTable();
 
-class UserInfoInclude extends _i1.Include {
+class UserInfoInclude extends _i1.IncludeObject {
   UserInfoInclude._();
 
   @override
@@ -472,7 +472,7 @@ class UserInfoInclude extends _i1.Include {
   _i1.Table get table => UserInfo.t;
 }
 
-class UserInfoIncludeList extends _i1.IncludeList<UserInfoInclude> {
+class UserInfoIncludeList extends _i1.IncludeList {
   UserInfoIncludeList._({
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     super.limit,

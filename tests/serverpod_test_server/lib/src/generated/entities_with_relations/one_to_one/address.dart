@@ -340,7 +340,7 @@ class AddressTable extends _i1.Table {
 @Deprecated('Use AddressTable.t instead.')
 AddressTable tAddress = AddressTable();
 
-class AddressInclude extends _i1.Include {
+class AddressInclude extends _i1.IncludeObject {
   AddressInclude._({_i2.CitizenInclude? inhabitant}) {
     _inhabitant = inhabitant;
   }
@@ -354,7 +354,7 @@ class AddressInclude extends _i1.Include {
   _i1.Table get table => Address.t;
 }
 
-class AddressIncludeList extends _i1.IncludeList<AddressInclude> {
+class AddressIncludeList extends _i1.IncludeList {
   AddressIncludeList._({
     _i1.WhereExpressionBuilder<AddressTable>? where,
     super.limit,

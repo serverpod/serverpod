@@ -300,7 +300,7 @@ class MethodInfoTable extends _i1.Table {
 @Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();
 
-class MethodInfoInclude extends _i1.Include {
+class MethodInfoInclude extends _i1.IncludeObject {
   MethodInfoInclude._();
 
   @override
@@ -310,7 +310,7 @@ class MethodInfoInclude extends _i1.Include {
   _i1.Table get table => MethodInfo.t;
 }
 
-class MethodInfoIncludeList extends _i1.IncludeList<MethodInfoInclude> {
+class MethodInfoIncludeList extends _i1.IncludeList {
   MethodInfoIncludeList._({
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     super.limit,

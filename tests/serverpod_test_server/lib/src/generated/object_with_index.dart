@@ -295,7 +295,7 @@ class ObjectWithIndexTable extends _i1.Table {
 @Deprecated('Use ObjectWithIndexTable.t instead.')
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
 
-class ObjectWithIndexInclude extends _i1.Include {
+class ObjectWithIndexInclude extends _i1.IncludeObject {
   ObjectWithIndexInclude._();
 
   @override
@@ -305,8 +305,7 @@ class ObjectWithIndexInclude extends _i1.Include {
   _i1.Table get table => ObjectWithIndex.t;
 }
 
-class ObjectWithIndexIncludeList
-    extends _i1.IncludeList<ObjectWithIndexInclude> {
+class ObjectWithIndexIncludeList extends _i1.IncludeList {
   ObjectWithIndexIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     super.limit,

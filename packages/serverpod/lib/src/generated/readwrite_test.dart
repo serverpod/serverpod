@@ -275,7 +275,7 @@ class ReadWriteTestEntryTable extends _i1.Table {
 @Deprecated('Use ReadWriteTestEntryTable.t instead.')
 ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
 
-class ReadWriteTestEntryInclude extends _i1.Include {
+class ReadWriteTestEntryInclude extends _i1.IncludeObject {
   ReadWriteTestEntryInclude._();
 
   @override
@@ -285,8 +285,7 @@ class ReadWriteTestEntryInclude extends _i1.Include {
   _i1.Table get table => ReadWriteTestEntry.t;
 }
 
-class ReadWriteTestEntryIncludeList
-    extends _i1.IncludeList<ReadWriteTestEntryInclude> {
+class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
   ReadWriteTestEntryIncludeList._({
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     super.limit,

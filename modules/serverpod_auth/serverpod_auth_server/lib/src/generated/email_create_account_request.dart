@@ -353,7 +353,7 @@ class EmailCreateAccountRequestTable extends _i1.Table {
 EmailCreateAccountRequestTable tEmailCreateAccountRequest =
     EmailCreateAccountRequestTable();
 
-class EmailCreateAccountRequestInclude extends _i1.Include {
+class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
   EmailCreateAccountRequestInclude._();
 
   @override
@@ -363,8 +363,7 @@ class EmailCreateAccountRequestInclude extends _i1.Include {
   _i1.Table get table => EmailCreateAccountRequest.t;
 }
 
-class EmailCreateAccountRequestIncludeList
-    extends _i1.IncludeList<EmailCreateAccountRequestInclude> {
+class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
   EmailCreateAccountRequestIncludeList._({
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     super.limit,

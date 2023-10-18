@@ -276,7 +276,7 @@ class SimpleDataTable extends _i1.Table {
 @Deprecated('Use SimpleDataTable.t instead.')
 SimpleDataTable tSimpleData = SimpleDataTable();
 
-class SimpleDataInclude extends _i1.Include {
+class SimpleDataInclude extends _i1.IncludeObject {
   SimpleDataInclude._();
 
   @override
@@ -286,7 +286,7 @@ class SimpleDataInclude extends _i1.Include {
   _i1.Table get table => SimpleData.t;
 }
 
-class SimpleDataIncludeList extends _i1.IncludeList<SimpleDataInclude> {
+class SimpleDataIncludeList extends _i1.IncludeList {
   SimpleDataIncludeList._({
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,

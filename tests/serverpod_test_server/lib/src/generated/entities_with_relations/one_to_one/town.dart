@@ -338,7 +338,7 @@ class TownTable extends _i1.Table {
 @Deprecated('Use TownTable.t instead.')
 TownTable tTown = TownTable();
 
-class TownInclude extends _i1.Include {
+class TownInclude extends _i1.IncludeObject {
   TownInclude._({_i2.CitizenInclude? mayor}) {
     _mayor = mayor;
   }
@@ -352,7 +352,7 @@ class TownInclude extends _i1.Include {
   _i1.Table get table => Town.t;
 }
 
-class TownIncludeList extends _i1.IncludeList<TownInclude> {
+class TownIncludeList extends _i1.IncludeList {
   TownIncludeList._({
     _i1.WhereExpressionBuilder<TownTable>? where,
     super.limit,

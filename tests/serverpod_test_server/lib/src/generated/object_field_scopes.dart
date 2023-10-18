@@ -306,7 +306,7 @@ class ObjectFieldScopesTable extends _i1.Table {
 @Deprecated('Use ObjectFieldScopesTable.t instead.')
 ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
 
-class ObjectFieldScopesInclude extends _i1.Include {
+class ObjectFieldScopesInclude extends _i1.IncludeObject {
   ObjectFieldScopesInclude._();
 
   @override
@@ -316,8 +316,7 @@ class ObjectFieldScopesInclude extends _i1.Include {
   _i1.Table get table => ObjectFieldScopes.t;
 }
 
-class ObjectFieldScopesIncludeList
-    extends _i1.IncludeList<ObjectFieldScopesInclude> {
+class ObjectFieldScopesIncludeList extends _i1.IncludeList {
   ObjectFieldScopesIncludeList._({
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     super.limit,

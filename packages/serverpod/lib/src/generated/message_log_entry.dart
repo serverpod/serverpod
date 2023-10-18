@@ -510,7 +510,7 @@ class MessageLogEntryTable extends _i1.Table {
 @Deprecated('Use MessageLogEntryTable.t instead.')
 MessageLogEntryTable tMessageLogEntry = MessageLogEntryTable();
 
-class MessageLogEntryInclude extends _i1.Include {
+class MessageLogEntryInclude extends _i1.IncludeObject {
   MessageLogEntryInclude._();
 
   @override
@@ -520,8 +520,7 @@ class MessageLogEntryInclude extends _i1.Include {
   _i1.Table get table => MessageLogEntry.t;
 }
 
-class MessageLogEntryIncludeList
-    extends _i1.IncludeList<MessageLogEntryInclude> {
+class MessageLogEntryIncludeList extends _i1.IncludeList {
   MessageLogEntryIncludeList._({
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     super.limit,

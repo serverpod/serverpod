@@ -271,7 +271,7 @@ class ObjectWithDurationTable extends _i1.Table {
 @Deprecated('Use ObjectWithDurationTable.t instead.')
 ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
 
-class ObjectWithDurationInclude extends _i1.Include {
+class ObjectWithDurationInclude extends _i1.IncludeObject {
   ObjectWithDurationInclude._();
 
   @override
@@ -281,8 +281,7 @@ class ObjectWithDurationInclude extends _i1.Include {
   _i1.Table get table => ObjectWithDuration.t;
 }
 
-class ObjectWithDurationIncludeList
-    extends _i1.IncludeList<ObjectWithDurationInclude> {
+class ObjectWithDurationIncludeList extends _i1.IncludeList {
   ObjectWithDurationIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     super.limit,

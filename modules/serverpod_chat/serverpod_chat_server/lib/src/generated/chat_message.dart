@@ -453,7 +453,7 @@ class ChatMessageTable extends _i1.Table {
 @Deprecated('Use ChatMessageTable.t instead.')
 ChatMessageTable tChatMessage = ChatMessageTable();
 
-class ChatMessageInclude extends _i1.Include {
+class ChatMessageInclude extends _i1.IncludeObject {
   ChatMessageInclude._();
 
   @override
@@ -463,7 +463,7 @@ class ChatMessageInclude extends _i1.Include {
   _i1.Table get table => ChatMessage.t;
 }
 
-class ChatMessageIncludeList extends _i1.IncludeList<ChatMessageInclude> {
+class ChatMessageIncludeList extends _i1.IncludeList {
   ChatMessageIncludeList._({
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     super.limit,

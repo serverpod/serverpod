@@ -595,7 +595,7 @@ class SessionLogEntryTable extends _i1.Table {
 @Deprecated('Use SessionLogEntryTable.t instead.')
 SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
 
-class SessionLogEntryInclude extends _i1.Include {
+class SessionLogEntryInclude extends _i1.IncludeObject {
   SessionLogEntryInclude._();
 
   @override
@@ -605,8 +605,7 @@ class SessionLogEntryInclude extends _i1.Include {
   _i1.Table get table => SessionLogEntry.t;
 }
 
-class SessionLogEntryIncludeList
-    extends _i1.IncludeList<SessionLogEntryInclude> {
+class SessionLogEntryIncludeList extends _i1.IncludeList {
   SessionLogEntryIncludeList._({
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     super.limit,

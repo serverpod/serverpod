@@ -507,7 +507,7 @@ class LogEntryTable extends _i1.Table {
 @Deprecated('Use LogEntryTable.t instead.')
 LogEntryTable tLogEntry = LogEntryTable();
 
-class LogEntryInclude extends _i1.Include {
+class LogEntryInclude extends _i1.IncludeObject {
   LogEntryInclude._();
 
   @override
@@ -517,7 +517,7 @@ class LogEntryInclude extends _i1.Include {
   _i1.Table get table => LogEntry.t;
 }
 
-class LogEntryIncludeList extends _i1.IncludeList<LogEntryInclude> {
+class LogEntryIncludeList extends _i1.IncludeList {
   LogEntryIncludeList._({
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     super.limit,

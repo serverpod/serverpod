@@ -300,7 +300,7 @@ class GoogleRefreshTokenTable extends _i1.Table {
 @Deprecated('Use GoogleRefreshTokenTable.t instead.')
 GoogleRefreshTokenTable tGoogleRefreshToken = GoogleRefreshTokenTable();
 
-class GoogleRefreshTokenInclude extends _i1.Include {
+class GoogleRefreshTokenInclude extends _i1.IncludeObject {
   GoogleRefreshTokenInclude._();
 
   @override
@@ -310,8 +310,7 @@ class GoogleRefreshTokenInclude extends _i1.Include {
   _i1.Table get table => GoogleRefreshToken.t;
 }
 
-class GoogleRefreshTokenIncludeList
-    extends _i1.IncludeList<GoogleRefreshTokenInclude> {
+class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
   GoogleRefreshTokenIncludeList._({
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     super.limit,

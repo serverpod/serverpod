@@ -272,7 +272,7 @@ class ObjectWithByteDataTable extends _i1.Table {
 @Deprecated('Use ObjectWithByteDataTable.t instead.')
 ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
 
-class ObjectWithByteDataInclude extends _i1.Include {
+class ObjectWithByteDataInclude extends _i1.IncludeObject {
   ObjectWithByteDataInclude._();
 
   @override
@@ -282,8 +282,7 @@ class ObjectWithByteDataInclude extends _i1.Include {
   _i1.Table get table => ObjectWithByteData.t;
 }
 
-class ObjectWithByteDataIncludeList
-    extends _i1.IncludeList<ObjectWithByteDataInclude> {
+class ObjectWithByteDataIncludeList extends _i1.IncludeList {
   ObjectWithByteDataIncludeList._({
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,

@@ -355,7 +355,7 @@ class RuntimeSettingsTable extends _i1.Table {
 @Deprecated('Use RuntimeSettingsTable.t instead.')
 RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
 
-class RuntimeSettingsInclude extends _i1.Include {
+class RuntimeSettingsInclude extends _i1.IncludeObject {
   RuntimeSettingsInclude._();
 
   @override
@@ -365,8 +365,7 @@ class RuntimeSettingsInclude extends _i1.Include {
   _i1.Table get table => RuntimeSettings.t;
 }
 
-class RuntimeSettingsIncludeList
-    extends _i1.IncludeList<RuntimeSettingsInclude> {
+class RuntimeSettingsIncludeList extends _i1.IncludeList {
   RuntimeSettingsIncludeList._({
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     super.limit,

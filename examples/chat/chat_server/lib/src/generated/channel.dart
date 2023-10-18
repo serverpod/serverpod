@@ -298,7 +298,7 @@ class ChannelTable extends _i1.Table {
 @Deprecated('Use ChannelTable.t instead.')
 ChannelTable tChannel = ChannelTable();
 
-class ChannelInclude extends _i1.Include {
+class ChannelInclude extends _i1.IncludeObject {
   ChannelInclude._();
 
   @override
@@ -308,7 +308,7 @@ class ChannelInclude extends _i1.Include {
   _i1.Table get table => Channel.t;
 }
 
-class ChannelIncludeList extends _i1.IncludeList<ChannelInclude> {
+class ChannelIncludeList extends _i1.IncludeList {
   ChannelIncludeList._({
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     super.limit,

@@ -394,7 +394,7 @@ class OrganizationTable extends _i1.Table {
 @Deprecated('Use OrganizationTable.t instead.')
 OrganizationTable tOrganization = OrganizationTable();
 
-class OrganizationInclude extends _i1.Include {
+class OrganizationInclude extends _i1.IncludeObject {
   OrganizationInclude._({
     _i2.PersonIncludeList? people,
     _i2.CityInclude? city,
@@ -417,7 +417,7 @@ class OrganizationInclude extends _i1.Include {
   _i1.Table get table => Organization.t;
 }
 
-class OrganizationIncludeList extends _i1.IncludeList<OrganizationInclude> {
+class OrganizationIncludeList extends _i1.IncludeList {
   OrganizationIncludeList._({
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     super.limit,

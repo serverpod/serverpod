@@ -510,7 +510,7 @@ class QueryLogEntryTable extends _i1.Table {
 @Deprecated('Use QueryLogEntryTable.t instead.')
 QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();
 
-class QueryLogEntryInclude extends _i1.Include {
+class QueryLogEntryInclude extends _i1.IncludeObject {
   QueryLogEntryInclude._();
 
   @override
@@ -520,7 +520,7 @@ class QueryLogEntryInclude extends _i1.Include {
   _i1.Table get table => QueryLogEntry.t;
 }
 
-class QueryLogEntryIncludeList extends _i1.IncludeList<QueryLogEntryInclude> {
+class QueryLogEntryIncludeList extends _i1.IncludeList {
   QueryLogEntryIncludeList._({
     _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     super.limit,

@@ -274,7 +274,7 @@ class SimpleDateTimeTable extends _i1.Table {
 @Deprecated('Use SimpleDateTimeTable.t instead.')
 SimpleDateTimeTable tSimpleDateTime = SimpleDateTimeTable();
 
-class SimpleDateTimeInclude extends _i1.Include {
+class SimpleDateTimeInclude extends _i1.IncludeObject {
   SimpleDateTimeInclude._();
 
   @override
@@ -284,7 +284,7 @@ class SimpleDateTimeInclude extends _i1.Include {
   _i1.Table get table => SimpleDateTime.t;
 }
 
-class SimpleDateTimeIncludeList extends _i1.IncludeList<SimpleDateTimeInclude> {
+class SimpleDateTimeIncludeList extends _i1.IncludeList {
   SimpleDateTimeIncludeList._({
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     super.limit,
