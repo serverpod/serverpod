@@ -49,7 +49,7 @@ void main() {
       expect(
         codeMap,
         contains(
-          path.join('lib', 'src', 'generated', 'openapi', 'openapi.json'),
+          path.join('generated', 'openapi', 'openapi.json'),
         ),
         reason: 'Expected openapi file to be present, found none.',
       );

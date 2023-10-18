@@ -51,12 +51,12 @@ void main() {
               .toSchemaObjectType
               .name);
       expect(
-          'other',
+          'serializableObjects',
           TypeDefinition(className: 'Example', nullable: false)
               .toSchemaObjectType
               .name);
       expect(
-          'other',
+          'serializableObjects',
           TypeDefinition(className: 'dynamic', nullable: false)
               .toSchemaObjectType
               .name);
