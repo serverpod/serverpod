@@ -212,6 +212,23 @@ class Serverpod {
   /// started.
   late final ClusterManager cluster;
 
+  /// Http headers used by all API responses. Defaults to allowing any
+  /// cross origin resource sharing (CORS).
+  final Map<String, dynamic> httpResponseHeaders;
+
+  /// Http headers used for OPTIONS responses. By default, include all headers
+  final Map<String, dynamic> httpOptionsResponseHeaders;
+
+  static const _defaultHttpResponseHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST',
+  };
+
+  static const _defaultHttpOptionsResponseHeaders = {
+    'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, Accept, User-Agent, X-Requested-With',
+  };
+
   /// Creates a new Serverpod.
   Serverpod(
     List<String> args,
@@ -219,6 +236,8 @@ class Serverpod {
     this.endpoints, {
     this.authenticationHandler,
     this.healthCheckHandler,
+    this.httpResponseHeaders = _defaultHttpResponseHeaders,
+    this.httpOptionsResponseHeaders = _defaultHttpOptionsResponseHeaders,
   }) {
     _internalSerializationManager = internal.Protocol();
 
@@ -273,6 +292,8 @@ class Serverpod {
           authenticationHandler ?? defaultAuthenticationHandler,
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
+      httpResponseHeaders: httpResponseHeaders,
+      httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(server);
 
@@ -485,6 +506,8 @@ class Serverpod {
       authenticationHandler: serviceAuthenticationHandler,
       // securityContext: context,
       endpoints: endpoints,
+      httpResponseHeaders: httpResponseHeaders,
+      httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(_serviceServer!);
 
