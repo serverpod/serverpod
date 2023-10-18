@@ -117,7 +117,7 @@ abstract class EmailAuth extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<EmailAuth>> find(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -141,7 +141,7 @@ abstract class EmailAuth extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<EmailAuth?> findSingleRow(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -169,7 +169,7 @@ abstract class EmailAuth extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required EmailAuthExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<EmailAuth>(
@@ -218,7 +218,7 @@ abstract class EmailAuth extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -233,6 +233,26 @@ abstract class EmailAuth extends _i1.TableRow {
 
   static EmailAuthInclude include() {
     return EmailAuthInclude._();
+  }
+
+  static EmailAuthIncludeList includeList({
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    EmailAuthInclude? include,
+  }) {
+    return EmailAuthIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -266,8 +286,6 @@ class _EmailAuthImpl extends EmailAuth {
     );
   }
 }
-
-typedef EmailAuthExpressionBuilder = _i1.Expression Function(EmailAuthTable);
 
 class EmailAuthTable extends _i1.Table {
   EmailAuthTable({super.tableRelation})
@@ -307,11 +325,31 @@ class EmailAuthTable extends _i1.Table {
 @Deprecated('Use EmailAuthTable.t instead.')
 EmailAuthTable tEmailAuth = EmailAuthTable();
 
-class EmailAuthInclude extends _i1.Include {
+class EmailAuthInclude extends _i1.IncludeObject {
   EmailAuthInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => EmailAuth.t;
+}
+
+class EmailAuthIncludeList extends _i1.IncludeList {
+  EmailAuthIncludeList._({
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(EmailAuth.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => EmailAuth.t;
@@ -322,7 +360,7 @@ class EmailAuthRepository {
 
   Future<List<EmailAuth>> find(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -343,7 +381,7 @@ class EmailAuthRepository {
 
   Future<EmailAuth?> findRow(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -434,7 +472,7 @@ class EmailAuthRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required EmailAuthExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<EmailAuth>(
@@ -445,7 +483,7 @@ class EmailAuthRepository {
 
   Future<int> count(
     _i1.Session session, {
-    EmailAuthExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

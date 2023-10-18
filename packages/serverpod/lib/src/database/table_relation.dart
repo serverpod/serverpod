@@ -34,6 +34,11 @@ class TableRelation {
   }
 
   /// Name of the last field to be joined.
+  String get lastJoiningFieldQueryAlias {
+    return '${_fromRelationQueryAlias()}.${_tableRelationEntries.last.field.columnName}';
+  }
+
+  /// Name of the last field to be joined.
   String get lastJoiningField {
     return '"${_fromRelationQueryAlias()}"."${_tableRelationEntries.last.field.columnName}"';
   }
@@ -46,6 +51,31 @@ class TableRelation {
   /// Name of the last foreign field to be joined as query alias.
   String get lastJoiningForeignFieldQueryAlias {
     return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.queryAlias}"';
+  }
+
+  /// The base foreignFieldName without the query alias
+  String get foreignFieldName {
+    return _tableRelationEntries.last.foreignField.columnName;
+  }
+
+  /// The base foreignFieldName with the table name escaped
+  String get foreignFieldBaseQuery {
+    return _tableRelationEntries.last.foreignField.toString();
+  }
+
+  /// The base foreignFieldName with the table name unescaped
+  String get foreignFieldBaseQueryAlias {
+    return _tableRelationEntries.last.foreignField.queryAlias;
+  }
+
+  /// The base fieldName without the query alias
+  String get fieldName {
+    return _tableRelationEntries.last.field.columnName;
+  }
+
+  /// The base foreignFieldName without the query alias
+  String get tableName {
+    return _tableRelationEntries.last.field.table.tableName;
   }
 
   /// Creates a new [TableRelation] from [this] and [relation].

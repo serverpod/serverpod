@@ -963,8 +963,25 @@ class Protocol extends _i1.SerializationManagerServer {
           isNullable: false,
           dartType: 'String',
         ),
+        _i2.ColumnDefinition(
+          name: 'cityId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: true,
+          dartType: 'int?',
+        ),
       ],
-      foreignKeys: [],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'organization_fk_0',
+          columns: ['cityId'],
+          referenceTable: 'city',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.cascade,
+          matchType: null,
+        )
+      ],
       indexes: [
         _i2.IndexDefinition(
           indexName: 'organization_pkey',
@@ -1707,6 +1724,13 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<List<_i43.Person>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i43.Person>(e)).toList()
+          : null) as dynamic;
+    }
+    if (t == _i1.getType<List<_i43.Organization>?>()) {
+      return (data != null
+          ? (data as List)
+              .map((e) => deserialize<_i43.Organization>(e))
+              .toList()
           : null) as dynamic;
     }
     if (t == _i1.getType<List<_i43.Person>?>()) {

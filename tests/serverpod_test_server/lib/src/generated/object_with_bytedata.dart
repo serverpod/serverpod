@@ -89,7 +89,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithByteData>> find(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -113,7 +113,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithByteData?> findSingleRow(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -141,7 +141,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithByteDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithByteData>(
@@ -190,7 +190,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -205,6 +205,26 @@ abstract class ObjectWithByteData extends _i1.TableRow {
 
   static ObjectWithByteDataInclude include() {
     return ObjectWithByteDataInclude._();
+  }
+
+  static ObjectWithByteDataIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectWithByteDataInclude? include,
+  }) {
+    return ObjectWithByteDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -231,9 +251,6 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
   }
 }
 
-typedef ObjectWithByteDataExpressionBuilder = _i1.Expression Function(
-    ObjectWithByteDataTable);
-
 class ObjectWithByteDataTable extends _i1.Table {
   ObjectWithByteDataTable({super.tableRelation})
       : super(tableName: 'object_with_bytedata') {
@@ -255,11 +272,31 @@ class ObjectWithByteDataTable extends _i1.Table {
 @Deprecated('Use ObjectWithByteDataTable.t instead.')
 ObjectWithByteDataTable tObjectWithByteData = ObjectWithByteDataTable();
 
-class ObjectWithByteDataInclude extends _i1.Include {
+class ObjectWithByteDataInclude extends _i1.IncludeObject {
   ObjectWithByteDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ObjectWithByteData.t;
+}
+
+class ObjectWithByteDataIncludeList extends _i1.IncludeList {
+  ObjectWithByteDataIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithByteData.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ObjectWithByteData.t;
@@ -270,7 +307,7 @@ class ObjectWithByteDataRepository {
 
   Future<List<ObjectWithByteData>> find(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -291,7 +328,7 @@ class ObjectWithByteDataRepository {
 
   Future<ObjectWithByteData?> findRow(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -382,7 +419,7 @@ class ObjectWithByteDataRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithByteDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectWithByteData>(
@@ -393,7 +430,7 @@ class ObjectWithByteDataRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithByteDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

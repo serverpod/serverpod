@@ -103,7 +103,7 @@ abstract class Channel extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Channel>> find(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -127,7 +127,7 @@ abstract class Channel extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Channel?> findSingleRow(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -155,7 +155,7 @@ abstract class Channel extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ChannelExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Channel>(
@@ -204,7 +204,7 @@ abstract class Channel extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -219,6 +219,26 @@ abstract class Channel extends _i1.TableRow {
 
   static ChannelInclude include() {
     return ChannelInclude._();
+  }
+
+  static ChannelIncludeList includeList({
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ChannelInclude? include,
+  }) {
+    return ChannelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -249,8 +269,6 @@ class _ChannelImpl extends Channel {
   }
 }
 
-typedef ChannelExpressionBuilder = _i1.Expression Function(ChannelTable);
-
 class ChannelTable extends _i1.Table {
   ChannelTable({super.tableRelation}) : super(tableName: 'channel') {
     name = _i1.ColumnString(
@@ -280,11 +298,31 @@ class ChannelTable extends _i1.Table {
 @Deprecated('Use ChannelTable.t instead.')
 ChannelTable tChannel = ChannelTable();
 
-class ChannelInclude extends _i1.Include {
+class ChannelInclude extends _i1.IncludeObject {
   ChannelInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => Channel.t;
+}
+
+class ChannelIncludeList extends _i1.IncludeList {
+  ChannelIncludeList._({
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Channel.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => Channel.t;
@@ -295,7 +333,7 @@ class ChannelRepository {
 
   Future<List<Channel>> find(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -316,7 +354,7 @@ class ChannelRepository {
 
   Future<Channel?> findRow(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -407,7 +445,7 @@ class ChannelRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ChannelExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ChannelTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Channel>(
@@ -418,7 +456,7 @@ class ChannelRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ChannelExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

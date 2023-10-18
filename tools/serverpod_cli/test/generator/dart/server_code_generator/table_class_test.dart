@@ -436,6 +436,28 @@ void main() {
             reason:
                 'Missing declaration for $relationFieldName many relation getter.');
       });
+
+      test('has private field for the relation returning the relation table',
+          () {
+        var field = CompilationUnitHelpers.tryFindFieldDeclaration(
+          maybeClassNamedExampleTable!,
+          name: '___$relationFieldName',
+        );
+
+        expect(field, isNotNull);
+        expect(field!.toSource(), contains('CitizenTable?'));
+      });
+
+      test('has getter for many relation table', () {
+        expect(
+            CompilationUnitHelpers.hasMethodDeclaration(
+              maybeClassNamedExampleTable!,
+              name: '__$relationFieldName',
+            ),
+            isTrue,
+            reason:
+                'Missing declaration for __$relationFieldName many relation getter.');
+      });
     },
         skip: maybeClassNamedExampleTable == null
             ? 'Could not run test because ${testClassName}Table class was not found.'

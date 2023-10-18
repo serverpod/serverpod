@@ -91,7 +91,7 @@ abstract class SimpleData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<SimpleData>> find(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -115,7 +115,7 @@ abstract class SimpleData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<SimpleData?> findSingleRow(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -143,7 +143,7 @@ abstract class SimpleData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required SimpleDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<SimpleData>(
@@ -192,7 +192,7 @@ abstract class SimpleData extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -207,6 +207,26 @@ abstract class SimpleData extends _i1.TableRow {
 
   static SimpleDataInclude include() {
     return SimpleDataInclude._();
+  }
+
+  static SimpleDataIncludeList includeList({
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    SimpleDataInclude? include,
+  }) {
+    return SimpleDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -233,8 +253,6 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
-typedef SimpleDataExpressionBuilder = _i1.Expression Function(SimpleDataTable);
-
 class SimpleDataTable extends _i1.Table {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     num = _i1.ColumnInt(
@@ -258,11 +276,31 @@ class SimpleDataTable extends _i1.Table {
 @Deprecated('Use SimpleDataTable.t instead.')
 SimpleDataTable tSimpleData = SimpleDataTable();
 
-class SimpleDataInclude extends _i1.Include {
+class SimpleDataInclude extends _i1.IncludeObject {
   SimpleDataInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => SimpleData.t;
+}
+
+class SimpleDataIncludeList extends _i1.IncludeList {
+  SimpleDataIncludeList._({
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(SimpleData.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => SimpleData.t;
@@ -273,7 +311,7 @@ class SimpleDataRepository {
 
   Future<List<SimpleData>> find(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -294,7 +332,7 @@ class SimpleDataRepository {
 
   Future<SimpleData?> findRow(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -385,7 +423,7 @@ class SimpleDataRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required SimpleDataExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<SimpleData>(
@@ -396,7 +434,7 @@ class SimpleDataRepository {
 
   Future<int> count(
     _i1.Session session, {
-    SimpleDataExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

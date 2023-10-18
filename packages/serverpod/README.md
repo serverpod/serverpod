@@ -42,3 +42,6 @@ Serverpod comes with Terraform scripts for GCP and AWS which makes it very quick
 
 ### Built in web server
 Serverpod comes with a built-in web server. This makes it very easy to share data for applications that need both an app and traditional web pages. You can also use the web server to create webhooks or generate custom REST APIs to communicate with 3rd party services. _The web server is still experimental and we are actively working on it_.
+
+## License
+All Serverpod packages are licensed under BSD-3, except for the main `serverpod` package, which uses the SSPL license. In short, this means that you can, without limitation, use any of the client packages in your app. You can also host your Serverpod server without limitation as long as you do not offer Severpod as a cloud service to 3rd parties (this is typically only relevant for cloud service providers).

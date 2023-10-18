@@ -66,9 +66,6 @@ class SerializableEntityLibraryGenerator {
 
         if (serverCode && tableName != null) {
           libraryBuilder.body.addAll([
-            _buildExpressionBuilderTypeDef(
-              className,
-            ),
             _buildEntityTableClass(
               className,
               tableName,
@@ -79,6 +76,11 @@ class SerializableEntityLibraryGenerator {
               className,
             ),
             _buildEntityIncludeClass(
+              className,
+              fields,
+              classDefinition,
+            ),
+            _buildEntityIncludeListClass(
               className,
               fields,
               classDefinition,
@@ -124,8 +126,9 @@ class SerializableEntityLibraryGenerator {
     String? tableName,
     List<SerializableEntityFieldDefinition> fields,
   ) {
-    var objectRelationFields =
-        fields.where((field) => field.relation is ObjectRelationDefinition);
+    var relationFields = fields.where((field) =>
+        field.relation is ObjectRelationDefinition ||
+        field.relation is ListRelationDefinition);
     return Class((classBuilder) {
       classBuilder
         ..abstract = true
@@ -191,12 +194,12 @@ class SerializableEntityLibraryGenerator {
         if (tableName != null) {
           classBuilder.methods.addAll([
             _buildEntityClassSetColumnMethod(fields),
-            _buildEntityClassFindMethod(className, objectRelationFields),
+            _buildEntityClassFindMethod(className, relationFields),
             _buildEntityClassFindSingleRowMethod(
               className,
-              objectRelationFields,
+              relationFields,
             ),
-            _buildEntityClassFindByIdMethod(className, objectRelationFields),
+            _buildEntityClassFindByIdMethod(className, relationFields),
             _buildEntityClassDeleteMethod(className),
             _buildEntityClassDeleteRowMethod(className),
             _buildEntityClassUpdateMethod(className),
@@ -204,8 +207,11 @@ class SerializableEntityLibraryGenerator {
             _buildEntityClassCountMethod(className),
             _buildEntityClassIncludeMethod(
               className,
-              objectRelationFields,
+              relationFields,
               classDefinition.subDirParts,
+            ),
+            _buildEntityClassIncludeListMethod(
+              className,
             ),
           ]);
         }
@@ -507,32 +513,124 @@ class SerializableEntityLibraryGenerator {
 
   Method _buildEntityClassIncludeMethod(
       String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+      Iterable<SerializableEntityFieldDefinition> relationFields,
       List<String> subDirParts) {
     return Method(
       (m) => m
         ..static = true
         ..name = 'include'
         ..returns = TypeReference((r) => r..symbol = '${className}Include')
-        ..optionalParameters.addAll([
-          for (var field in objectRelationFields)
-            Parameter(
+        ..optionalParameters.addAll(
+          relationFields.map((field) {
+            var type = field.type.reference(
+              serverCode,
+              subDirParts: subDirParts,
+              config: config,
+              typeSuffix: 'Include',
+              nullable: true,
+            );
+
+            if (field.relation is ListRelationDefinition) {
+              type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: subDirParts,
+                config: config,
+                typeSuffix: 'IncludeList',
+                nullable: true,
+              );
+            }
+
+            return Parameter(
               (p) => p
-                ..type = field.type.reference(
-                  serverCode,
-                  subDirParts: subDirParts,
-                  config: config,
-                  typeSuffix: 'Include',
-                )
+                ..type = type
                 ..name = field.name
                 ..named = true,
-            ),
-        ])
+            );
+          }),
+        )
         ..body = refer('${className}Include')
             .property('_')
             .call([], {
-              for (var field in objectRelationFields)
-                field.name: refer(field.name),
+              for (var field in relationFields) field.name: refer(field.name),
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildEntityClassIncludeListMethod(String className) {
+    return Method(
+      (m) => m
+        ..static = true
+        ..name = 'includeList'
+        ..returns = TypeReference((r) => r..symbol = '${className}IncludeList')
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'where'
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'limit'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'offset'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderBy'
+              ..named = true
+              ..type = refer(
+                'Column?',
+                serverpodUrl(serverCode),
+              ),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderDescending'
+              ..named = true
+              ..defaultTo = const Code('false')
+              ..type = refer('bool'),
+          ),
+          Parameter((p) => p
+            ..name = 'orderByList'
+            ..named = true
+            ..type = TypeReference(
+              (t) => t
+                ..symbol = 'List'
+                ..types.addAll([
+                  refer(
+                    'Order',
+                    serverpodUrl(serverCode),
+                  ),
+                ])
+                ..isNullable = true,
+            )),
+          Parameter((p) => p
+            ..name = 'include'
+            ..named = true
+            ..type = refer('${className}Include?'))
+        ])
+        ..body = refer('${className}IncludeList')
+            .property('_')
+            .call([], {
+              'where': refer('where'),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy'),
+              'orderDescending': refer('orderDescending'),
+              'orderByList': refer('orderByList'),
+              'include': refer('include'),
             })
             .returned
             .statement,
@@ -558,9 +656,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -749,7 +848,11 @@ class SerializableEntityLibraryGenerator {
       ..optionalParameters.addAll([
         Parameter((p) => p
           ..required = true
-          ..type = refer('${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+            nullable: false,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -849,9 +952,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -943,9 +1047,10 @@ class SerializableEntityLibraryGenerator {
       ])
       ..optionalParameters.addAll([
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = '${className}ExpressionBuilder')
+          ..type = typeWhereExpressionBuilder(
+            className,
+            serverCode,
+          )
           ..name = 'where'
           ..named = true),
         Parameter((p) => p
@@ -1294,15 +1399,6 @@ class SerializableEntityLibraryGenerator {
     return entityClassFields;
   }
 
-  Code _buildExpressionBuilderTypeDef(String className) {
-    return FunctionType(
-      (f) {
-        f.returnType = refer('Expression', serverpodUrl(serverCode));
-        f.requiredParameters.add(refer('${className}Table'));
-      },
-    ).toTypeDef('${className}ExpressionBuilder');
-  }
-
   Class _buildEntityTableClass(
       String className,
       String tableName,
@@ -1320,22 +1416,26 @@ class SerializableEntityLibraryGenerator {
       );
 
       c.methods.addAll([
-        ..._buildEntityTableClassRelationGetters(fields, classDefinition),
+        ..._buildEntityTableClassRelationGetters(
+          fields,
+          classDefinition,
+          classDefinition.subDirParts,
+        ),
         ..._buildEntityTableClassManyRelationGetters(fields, classDefinition),
         _buildEntityTableClassColumnGetter(fields),
       ]);
 
-      var objectRelationFields =
-          fields.where((f) => f.relation is ObjectRelationDefinition);
-      if (objectRelationFields.isNotEmpty) {
-        c.methods
-            .add(_buildEntityTableClassGetRelationTable(objectRelationFields));
+      var relationFields = fields.where((f) =>
+          f.relation is ObjectRelationDefinition ||
+          f.relation is ListRelationDefinition);
+      if (relationFields.isNotEmpty) {
+        c.methods.add(_buildEntityTableClassGetRelationTable(relationFields));
       }
     });
   }
 
   Method _buildEntityTableClassGetRelationTable(
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+      Iterable<SerializableEntityFieldDefinition> relationFields) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1353,12 +1453,16 @@ class SerializableEntityLibraryGenerator {
         )
         ..body = (BlockBuilder()
               ..statements.addAll([
-                for (var objectRelationField in objectRelationFields)
+                for (var relationField in relationFields)
                   Block.of([
                     Code(
-                        'if (relationField == ${literalString(objectRelationField.name)}) {'),
+                        'if (relationField == ${literalString(relationField.name)}) {'),
                     lazyCode(() {
-                      return refer(objectRelationField.name).returned.statement;
+                      var fieldName = relationField.name;
+                      if (relationField.relation is ListRelationDefinition) {
+                        fieldName = '__$fieldName';
+                      }
+                      return refer(fieldName).returned.statement;
                     }),
                     const Code('}'),
                   ]),
@@ -1428,6 +1532,16 @@ class SerializableEntityLibraryGenerator {
             typeSuffix: 'Table',
           )));
       } else if (field.relation is ListRelationDefinition) {
+        tableFields.add(Field((f) => f
+          ..name = '___${field.name}'
+          ..docs.addAll(field.documentation ?? [])
+          ..type = field.type.generics.first.reference(
+            serverCode,
+            subDirParts: subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'Table',
+          )));
         // Add internal nullable many relation field
         tableFields.add(Field((f) => f
           ..name = '_${field.name}'
@@ -1452,29 +1566,64 @@ class SerializableEntityLibraryGenerator {
   List<Method> _buildEntityTableClassRelationGetters(
     List<SerializableEntityFieldDefinition> fields,
     ClassDefinition classDefinition,
+    List<String> subDirParts,
   ) {
     List<Method> getters = [];
 
-    var fieldsWithObjectRelation =
-        fields.where((f) => f.relation is ObjectRelationDefinition);
+    var fieldsWithObjectRelation = fields.where(
+      (f) =>
+          f.relation is ObjectRelationDefinition ||
+          f.relation is ListRelationDefinition,
+    );
 
     for (var field in fieldsWithObjectRelation) {
-      var objectRelation = field.relation as ObjectRelationDefinition;
+      String relationFieldName = '';
+      String relationForeignFieldName = '';
+      String fieldName = '';
+      TypeReference fieldType = field.type.reference(
+        serverCode,
+        subDirParts: subDirParts,
+        config: config,
+        nullable: false,
+      );
+      TypeReference tableType = field.type.reference(serverCode,
+          subDirParts: subDirParts,
+          config: config,
+          nullable: false,
+          typeSuffix: 'Table');
 
-      // Add getter method for relation table that creates the table
-      getters.add(Method((m) => m
-        ..name = field.name
-        ..type = MethodType.getter
-        ..returns = field.type.reference(
+      var relation = field.relation;
+      if (relation is ObjectRelationDefinition) {
+        relationFieldName = relation.fieldName;
+        relationForeignFieldName = relation.foreignFieldName;
+        fieldName = field.name;
+      } else if (relation is ListRelationDefinition) {
+        relationFieldName = relation.fieldName;
+        relationForeignFieldName = createForeignFieldName(relation);
+        fieldName = '__${field.name}';
+        fieldType = field.type.generics.first.reference(
           serverCode,
-          subDirParts: classDefinition.subDirParts,
+          subDirParts: subDirParts,
+          config: config,
+          nullable: false,
+        );
+        tableType = field.type.generics.first.reference(
+          serverCode,
+          subDirParts: subDirParts,
           config: config,
           nullable: false,
           typeSuffix: 'Table',
-        )
+        );
+      }
+
+      // Add getter method for relation table that creates the table
+      getters.add(Method((m) => m
+        ..name = fieldName
+        ..type = MethodType.getter
+        ..returns = tableType
         ..body = Block.of([
-          Code('if (_${field.name} != null) return _${field.name}!;'),
-          refer('_${field.name}')
+          Code('if (_$fieldName != null) return _$fieldName!;'),
+          refer('_$fieldName')
               .assign(
                 refer(
                   'createRelationTable',
@@ -1482,19 +1631,13 @@ class SerializableEntityLibraryGenerator {
                 ).call(
                   [],
                   {
-                    'relationFieldName': literalString(field.name),
+                    'relationFieldName': literalString(fieldName),
                     'field': refer(classDefinition.className)
                         .property('t')
-                        .property(objectRelation.fieldName),
-                    'foreignField': field.type
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
+                        .property(relationFieldName),
+                    'foreignField': fieldType
                         .property('t')
-                        .property(objectRelation.foreignFieldName),
+                        .property(relationForeignFieldName),
                     'tableRelation': refer('tableRelation'),
                     'createTable': Method(
                       (m) => m
@@ -1502,15 +1645,7 @@ class SerializableEntityLibraryGenerator {
                           Parameter((p) => p..name = 'foreignTableRelation'),
                         ])
                         ..lambda = true
-                        ..body = field.type
-                            .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                          typeSuffix: 'Table',
-                        )
-                            .call([], {
+                        ..body = tableType.call([], {
                           'tableRelation': refer('foreignTableRelation')
                         }).code,
                     ).closure
@@ -1518,7 +1653,7 @@ class SerializableEntityLibraryGenerator {
                 ),
               )
               .statement,
-          Code('return _${field.name}!;'),
+          Code('return _$fieldName!;'),
         ])));
     }
 
@@ -1692,26 +1827,132 @@ class SerializableEntityLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('Include', 'package:serverpod/serverpod.dart');
+      c.extend = refer('IncludeObject', 'package:serverpod/serverpod.dart');
       c.name = '${className}Include';
-      var objectRelationFields =
-          fields.where((f) => f.relation is ObjectRelationDefinition).toList();
+      var relationFields = fields
+          .where((f) =>
+              f.relation is ObjectRelationDefinition ||
+              f.relation is ListRelationDefinition)
+          .toList();
 
       c.constructors.add(_buildEntityIncludeClassConstructor(
-        objectRelationFields,
+        relationFields,
         classDefinition,
       ));
 
       c.fields.addAll(_buildEntityIncludeClassFields(
-        objectRelationFields,
+        relationFields,
         classDefinition,
       ));
 
       c.methods.addAll([
-        _buildEntityIncludeClassIncludesGetter(objectRelationFields),
+        _buildEntityIncludeClassIncludesGetter(relationFields),
         _buildEntityIncludeClassTableGetter(className),
       ]);
     }));
+  }
+
+  Class _buildEntityIncludeListClass(
+    String className,
+    List<SerializableEntityFieldDefinition> fields,
+    ClassDefinition classDefinition,
+  ) {
+    return Class(((c) {
+      c.extend = refer('IncludeList', 'package:serverpod/serverpod.dart');
+      c.name = '${className}IncludeList';
+
+      c.constructors.add(_buildEntityIncludeListClassConstructor(className));
+
+      c.methods.addAll([
+        _buildEntityIncludeListClassIncludesGetter(),
+        _buildEntityIncludeClassTableGetter(className),
+      ]);
+    }));
+  }
+
+  Constructor _buildEntityIncludeListClassConstructor(
+    String className,
+  ) {
+    return Constructor((constructorBuilder) {
+      constructorBuilder.name = '_';
+
+      constructorBuilder.optionalParameters.addAll([
+        Parameter(
+          (p) => p
+            ..name = 'where'
+            ..type = typeWhereExpressionBuilder(
+              className,
+              serverCode,
+            )
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'limit'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'offset'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderBy'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderDescending'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'orderByList'
+            ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'include'
+            ..toSuper = true
+            ..named = true,
+        )
+      ]);
+
+      constructorBuilder.body = Block.of([
+        refer('super')
+            .property('where')
+            .assign(refer('where').nullSafeProperty('call').call(
+              [refer(className).property('t')],
+            ))
+            .statement
+      ]);
+    });
+  }
+
+  Method _buildEntityIncludeListClassIncludesGetter() {
+    return Method(
+      (m) => m
+        ..annotations.add(refer('override'))
+        ..returns = TypeReference((t) => t
+          ..symbol = 'Map'
+          ..types.addAll([
+            refer('String'),
+            refer('Include?', 'package:serverpod/serverpod.dart'),
+          ]))
+        ..name = 'includes'
+        ..lambda = true
+        ..type = MethodType.getter
+        ..body = refer('include')
+            .nullSafeProperty('includes')
+            .ifNullThen(literalMap({}))
+            .code,
+    );
   }
 
   Method _buildEntityIncludeClassTableGetter(String className) {
@@ -1754,44 +1995,73 @@ class SerializableEntityLibraryGenerator {
       ClassDefinition classDefinition) {
     List<Field> entityIncludeClassFields = [];
     for (var field in objectRelationFields) {
-      entityIncludeClassFields.add(Field((f) => f
-        ..name = '_${field.name}'
-        ..type = field.type.reference(
-          serverCode,
-          subDirParts: classDefinition.subDirParts,
-          config: config,
-          typeSuffix: 'Include',
-        )));
+      if (field.relation is ObjectRelationDefinition) {
+        entityIncludeClassFields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..type = field.type.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'Include',
+          )));
+      } else if (field.relation is ListRelationDefinition) {
+        entityIncludeClassFields.add(Field((f) => f
+          ..name = '_${field.name}'
+          ..type = field.type.generics.first.reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+            nullable: true,
+            typeSuffix: 'IncludeList',
+          )));
+      }
     }
     return entityIncludeClassFields;
   }
 
   Constructor _buildEntityIncludeClassConstructor(
-    List<SerializableEntityFieldDefinition> objectRelationFields,
+    List<SerializableEntityFieldDefinition> relationFields,
     ClassDefinition classDefinition,
   ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = '_';
-      if (objectRelationFields.isEmpty) {
+      if (relationFields.isEmpty) {
         return;
       }
 
-      for (var field in objectRelationFields) {
-        constructorBuilder.optionalParameters.add(Parameter(
-          (p) => p
-            ..name = field.name
-            ..type = field.type.reference(
-              serverCode,
-              subDirParts: classDefinition.subDirParts,
-              config: config,
-              typeSuffix: 'Include',
-            )
-            ..named = true,
-        ));
+      for (var field in relationFields) {
+        if (field.relation is ObjectRelationDefinition) {
+          constructorBuilder.optionalParameters.add(Parameter(
+            (p) => p
+              ..name = field.name
+              ..type = field.type.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'Include',
+              )
+              ..named = true,
+          ));
+        } else if (field.relation is ListRelationDefinition) {
+          constructorBuilder.optionalParameters.add(Parameter(
+            (p) => p
+              ..name = field.name
+              ..type = field.type.generics.first.reference(
+                serverCode,
+                subDirParts: classDefinition.subDirParts,
+                config: config,
+                nullable: true,
+                typeSuffix: 'IncludeList',
+              )
+              ..named = true,
+          ));
+        }
       }
 
       constructorBuilder.body = Block.of([
-        for (var field in objectRelationFields)
+        for (var field in relationFields)
           refer('_${field.name}').assign(refer(field.name)).statement,
       ]);
     });

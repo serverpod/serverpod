@@ -14,12 +14,14 @@ abstract class City extends _i1.SerializableEntity {
     this.id,
     required this.name,
     this.citizens,
+    this.organizations,
   });
 
   factory City({
     int? id,
     required String name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   }) = _CityImpl;
 
   factory City.fromJson(
@@ -31,6 +33,8 @@ abstract class City extends _i1.SerializableEntity {
       name: serializationManager.deserialize<String>(jsonSerialization['name']),
       citizens: serializationManager
           .deserialize<List<_i2.Person>?>(jsonSerialization['citizens']),
+      organizations: serializationManager.deserialize<List<_i2.Organization>?>(
+          jsonSerialization['organizations']),
     );
   }
 
@@ -43,10 +47,13 @@ abstract class City extends _i1.SerializableEntity {
 
   List<_i2.Person>? citizens;
 
+  List<_i2.Organization>? organizations;
+
   City copyWith({
     int? id,
     String? name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -54,6 +61,7 @@ abstract class City extends _i1.SerializableEntity {
       'id': id,
       'name': name,
       'citizens': citizens,
+      'organizations': organizations,
     };
   }
 }
@@ -65,10 +73,12 @@ class _CityImpl extends City {
     int? id,
     required String name,
     List<_i2.Person>? citizens,
+    List<_i2.Organization>? organizations,
   }) : super._(
           id: id,
           name: name,
           citizens: citizens,
+          organizations: organizations,
         );
 
   @override
@@ -76,12 +86,16 @@ class _CityImpl extends City {
     Object? id = _Undefined,
     String? name,
     Object? citizens = _Undefined,
+    Object? organizations = _Undefined,
   }) {
     return City(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       citizens:
           citizens is List<_i2.Person>? ? citizens : this.citizens?.clone(),
+      organizations: organizations is List<_i2.Organization>?
+          ? organizations
+          : this.organizations?.clone(),
     );
   }
 }
