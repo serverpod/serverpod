@@ -698,7 +698,7 @@ abstract class Include {
 abstract class IncludeObject extends Include {}
 
 /// Defines what tables to join when querying a table.
-abstract class IncludeList<T extends Include> extends Include {
+abstract class IncludeList extends Include {
   /// Constructs a new [IncludeList] object.
   IncludeList({
     this.where,
@@ -729,5 +729,5 @@ abstract class IncludeList<T extends Include> extends Include {
   List<Order>? orderByList;
 
   /// The nested includes
-  T? include;
+  IncludeObject? include;
 }

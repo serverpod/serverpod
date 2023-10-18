@@ -83,7 +83,7 @@ void main() {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               exampleIncludeClass,
-              name: 'Include',
+              name: 'IncludeObject',
             ),
             isTrue,
             reason: 'Missing extends clause for Include.');

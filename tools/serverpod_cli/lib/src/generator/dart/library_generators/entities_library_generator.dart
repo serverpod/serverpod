@@ -1827,7 +1827,7 @@ class SerializableEntityLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('Include', 'package:serverpod/serverpod.dart');
+      c.extend = refer('IncludeObject', 'package:serverpod/serverpod.dart');
       c.name = '${className}Include';
       var relationFields = fields
           .where((f) =>
@@ -1858,7 +1858,7 @@ class SerializableEntityLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Class(((c) {
-      c.extend = refer('IncludeList<${className}Include>',
+      c.extend = refer('IncludeList',
           'package:serverpod/serverpod.dart');
       c.name = '${className}IncludeList';
 

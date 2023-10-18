@@ -375,7 +375,7 @@ class AuthKeyInclude extends _i1.Include {
   _i1.Table get table => AuthKey.t;
 }
 
-class AuthKeyIncludeList extends _i1.IncludeList<AuthKeyInclude> {
+class AuthKeyIncludeList extends _i1.IncludeList {
   AuthKeyIncludeList._({
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     super.limit,
