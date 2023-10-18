@@ -193,7 +193,7 @@ abstract class UserInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<UserInfo>> find(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -217,7 +217,7 @@ abstract class UserInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<UserInfo?> findSingleRow(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -245,7 +245,7 @@ abstract class UserInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required UserInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<UserInfo>(
@@ -294,7 +294,7 @@ abstract class UserInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -309,6 +309,26 @@ abstract class UserInfo extends _i1.TableRow {
 
   static UserInfoInclude include() {
     return UserInfoInclude._();
+  }
+
+  static UserInfoIncludeList includeList({
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    UserInfoInclude? include,
+  }) {
+    return UserInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -362,8 +382,6 @@ class _UserInfoImpl extends UserInfo {
     );
   }
 }
-
-typedef UserInfoExpressionBuilder = _i1.Expression Function(UserInfoTable);
 
 class UserInfoTable extends _i1.Table {
   UserInfoTable({super.tableRelation})
@@ -444,11 +462,31 @@ class UserInfoTable extends _i1.Table {
 @Deprecated('Use UserInfoTable.t instead.')
 UserInfoTable tUserInfo = UserInfoTable();
 
-class UserInfoInclude extends _i1.Include {
+class UserInfoInclude extends _i1.IncludeObject {
   UserInfoInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => UserInfo.t;
+}
+
+class UserInfoIncludeList extends _i1.IncludeList {
+  UserInfoIncludeList._({
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(UserInfo.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => UserInfo.t;
@@ -459,7 +497,7 @@ class UserInfoRepository {
 
   Future<List<UserInfo>> find(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -480,7 +518,7 @@ class UserInfoRepository {
 
   Future<UserInfo?> findRow(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -571,7 +609,7 @@ class UserInfoRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required UserInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<UserInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<UserInfo>(
@@ -582,7 +620,7 @@ class UserInfoRepository {
 
   Future<int> count(
     _i1.Session session, {
-    UserInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

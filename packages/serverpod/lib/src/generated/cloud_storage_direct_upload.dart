@@ -131,7 +131,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<CloudStorageDirectUploadEntry>> find(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -155,7 +155,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<CloudStorageDirectUploadEntry?> findSingleRow(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -183,7 +183,8 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CloudStorageDirectUploadEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
+        where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<CloudStorageDirectUploadEntry>(
@@ -232,7 +233,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -247,6 +248,26 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
 
   static CloudStorageDirectUploadEntryInclude include() {
     return CloudStorageDirectUploadEntryInclude._();
+  }
+
+  static CloudStorageDirectUploadEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CloudStorageDirectUploadEntryInclude? include,
+  }) {
+    return CloudStorageDirectUploadEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -284,9 +305,6 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     );
   }
 }
-
-typedef CloudStorageDirectUploadEntryExpressionBuilder = _i1.Expression
-    Function(CloudStorageDirectUploadEntryTable);
 
 class CloudStorageDirectUploadEntryTable extends _i1.Table {
   CloudStorageDirectUploadEntryTable({super.tableRelation})
@@ -335,11 +353,31 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
 CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
     CloudStorageDirectUploadEntryTable();
 
-class CloudStorageDirectUploadEntryInclude extends _i1.Include {
+class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
   CloudStorageDirectUploadEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => CloudStorageDirectUploadEntry.t;
+}
+
+class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
+  CloudStorageDirectUploadEntryIncludeList._({
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(CloudStorageDirectUploadEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => CloudStorageDirectUploadEntry.t;
@@ -350,7 +388,7 @@ class CloudStorageDirectUploadEntryRepository {
 
   Future<List<CloudStorageDirectUploadEntry>> find(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -371,7 +409,7 @@ class CloudStorageDirectUploadEntryRepository {
 
   Future<CloudStorageDirectUploadEntry?> findRow(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -462,7 +500,8 @@ class CloudStorageDirectUploadEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CloudStorageDirectUploadEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
+        where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<CloudStorageDirectUploadEntry>(
@@ -473,7 +512,7 @@ class CloudStorageDirectUploadEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CloudStorageDirectUploadEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

@@ -101,7 +101,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ObjectWithIndex>> find(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -125,7 +125,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ObjectWithIndex?> findSingleRow(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -153,7 +153,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ObjectWithIndexExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ObjectWithIndex>(
@@ -202,7 +202,7 @@ abstract class ObjectWithIndex extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -217,6 +217,26 @@ abstract class ObjectWithIndex extends _i1.TableRow {
 
   static ObjectWithIndexInclude include() {
     return ObjectWithIndexInclude._();
+  }
+
+  static ObjectWithIndexIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ObjectWithIndexInclude? include,
+  }) {
+    return ObjectWithIndexIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -247,9 +267,6 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-typedef ObjectWithIndexExpressionBuilder = _i1.Expression Function(
-    ObjectWithIndexTable);
-
 class ObjectWithIndexTable extends _i1.Table {
   ObjectWithIndexTable({super.tableRelation})
       : super(tableName: 'object_with_index') {
@@ -278,11 +295,31 @@ class ObjectWithIndexTable extends _i1.Table {
 @Deprecated('Use ObjectWithIndexTable.t instead.')
 ObjectWithIndexTable tObjectWithIndex = ObjectWithIndexTable();
 
-class ObjectWithIndexInclude extends _i1.Include {
+class ObjectWithIndexInclude extends _i1.IncludeObject {
   ObjectWithIndexInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ObjectWithIndex.t;
+}
+
+class ObjectWithIndexIncludeList extends _i1.IncludeList {
+  ObjectWithIndexIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithIndex.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ObjectWithIndex.t;
@@ -293,7 +330,7 @@ class ObjectWithIndexRepository {
 
   Future<List<ObjectWithIndex>> find(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -314,7 +351,7 @@ class ObjectWithIndexRepository {
 
   Future<ObjectWithIndex?> findRow(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -405,7 +442,7 @@ class ObjectWithIndexRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ObjectWithIndexExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ObjectWithIndex>(
@@ -416,7 +453,7 @@ class ObjectWithIndexRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ObjectWithIndexExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

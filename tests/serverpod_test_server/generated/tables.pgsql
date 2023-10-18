@@ -216,7 +216,8 @@ ALTER TABLE ONLY "order"
 
 CREATE TABLE "organization" (
   "id" serial,
-  "name" text NOT NULL
+  "name" text NOT NULL,
+  "cityId" integer
 );
 
 ALTER TABLE ONLY "organization"
@@ -407,6 +408,16 @@ ALTER TABLE ONLY "order"
   ADD CONSTRAINT order_fk_0
     FOREIGN KEY("customerId")
       REFERENCES customer(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "organization" table
+--
+
+ALTER TABLE ONLY "organization"
+  ADD CONSTRAINT organization_fk_0
+    FOREIGN KEY("cityId")
+      REFERENCES city(id)
         ON DELETE CASCADE;
 
 --

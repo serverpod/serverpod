@@ -97,7 +97,7 @@ abstract class Customer extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Customer>> find(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -105,6 +105,7 @@ abstract class Customer extends _i1.TableRow {
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CustomerInclude? include,
   }) async {
     return session.db.find<Customer>(
       where: where != null ? where(Customer.t) : null,
@@ -115,18 +116,20 @@ abstract class Customer extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Customer?> findSingleRow(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     bool useCache = true,
     _i1.Transaction? transaction,
+    CustomerInclude? include,
   }) async {
     return session.db.findSingleRow<Customer>(
       where: where != null ? where(Customer.t) : null,
@@ -135,21 +138,26 @@ abstract class Customer extends _i1.TableRow {
       orderDescending: orderDescending,
       useCache: useCache,
       transaction: transaction,
+      include: include,
     );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
   static Future<Customer?> findById(
     _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Customer>(id);
+    int id, {
+    CustomerInclude? include,
+  }) async {
+    return session.db.findById<Customer>(
+      id,
+      include: include,
+    );
   }
 
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required CustomerExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Customer>(
@@ -198,7 +206,7 @@ abstract class Customer extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -211,8 +219,28 @@ abstract class Customer extends _i1.TableRow {
     );
   }
 
-  static CustomerInclude include() {
-    return CustomerInclude._();
+  static CustomerInclude include({_i2.OrderIncludeList? orders}) {
+    return CustomerInclude._(orders: orders);
+  }
+
+  static CustomerIncludeList includeList({
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    CustomerInclude? include,
+  }) {
+    return CustomerIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -243,8 +271,6 @@ class _CustomerImpl extends Customer {
   }
 }
 
-typedef CustomerExpressionBuilder = _i1.Expression Function(CustomerTable);
-
 class CustomerTable extends _i1.Table {
   CustomerTable({super.tableRelation}) : super(tableName: 'customer') {
     name = _i1.ColumnString(
@@ -255,7 +281,22 @@ class CustomerTable extends _i1.Table {
 
   late final _i1.ColumnString name;
 
+  _i2.OrderTable? ___orders;
+
   _i1.ManyRelation<_i2.OrderTable>? _orders;
+
+  _i2.OrderTable get __orders {
+    if (___orders != null) return ___orders!;
+    ___orders = _i1.createRelationTable(
+      relationFieldName: '__orders',
+      field: Customer.t.id,
+      foreignField: _i2.Order.t.customerId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.OrderTable(tableRelation: foreignTableRelation),
+    );
+    return ___orders!;
+  }
 
   _i1.ManyRelation<_i2.OrderTable> get orders {
     if (_orders != null) return _orders!;
@@ -279,16 +320,48 @@ class CustomerTable extends _i1.Table {
         id,
         name,
       ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'orders') {
+      return __orders;
+    }
+    return null;
+  }
 }
 
 @Deprecated('Use CustomerTable.t instead.')
 CustomerTable tCustomer = CustomerTable();
 
-class CustomerInclude extends _i1.Include {
-  CustomerInclude._();
+class CustomerInclude extends _i1.IncludeObject {
+  CustomerInclude._({_i2.OrderIncludeList? orders}) {
+    _orders = orders;
+  }
+
+  _i2.OrderIncludeList? _orders;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _i1.Include?> get includes => {'orders': _orders};
+
+  @override
+  _i1.Table get table => Customer.t;
+}
+
+class CustomerIncludeList extends _i1.IncludeList {
+  CustomerIncludeList._({
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Customer.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => Customer.t;
@@ -307,13 +380,14 @@ class CustomerRepository {
 
   Future<List<Customer>> find(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     List<_i1.Order>? orderByList,
     _i1.Transaction? transaction,
+    CustomerInclude? include,
   }) async {
     return session.dbNext.find<Customer>(
       where: where?.call(Customer.t),
@@ -323,20 +397,23 @@ class CustomerRepository {
       orderByList: orderByList,
       orderDescending: orderDescending,
       transaction: transaction,
+      include: include,
     );
   }
 
   Future<Customer?> findRow(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
     _i1.Transaction? transaction,
+    CustomerInclude? include,
   }) async {
     return session.dbNext.findRow<Customer>(
       where: where?.call(Customer.t),
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -344,10 +421,12 @@ class CustomerRepository {
     _i1.Session session,
     int id, {
     _i1.Transaction? transaction,
+    CustomerInclude? include,
   }) async {
     return session.dbNext.findById<Customer>(
       id,
       transaction: transaction,
+      include: include,
     );
   }
 
@@ -419,7 +498,7 @@ class CustomerRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required CustomerExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Customer>(
@@ -430,7 +509,7 @@ class CustomerRepository {
 
   Future<int> count(
     _i1.Session session, {
-    CustomerExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

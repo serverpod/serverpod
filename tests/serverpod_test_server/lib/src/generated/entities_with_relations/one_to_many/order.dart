@@ -120,7 +120,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<Order>> find(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -146,7 +146,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<Order?> findSingleRow(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -180,7 +180,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required OrderExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<Order>(
@@ -229,7 +229,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -242,8 +242,34 @@ abstract class Order extends _i1.TableRow {
     );
   }
 
-  static OrderInclude include({_i2.CustomerInclude? customer}) {
-    return OrderInclude._(customer: customer);
+  static OrderInclude include({
+    _i2.CustomerInclude? customer,
+    _i2.CommentIncludeList? comments,
+  }) {
+    return OrderInclude._(
+      customer: customer,
+      comments: comments,
+    );
+  }
+
+  static OrderIncludeList includeList({
+    _i1.WhereExpressionBuilder<OrderTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    OrderInclude? include,
+  }) {
+    return OrderIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -284,8 +310,6 @@ class _OrderImpl extends Order {
   }
 }
 
-typedef OrderExpressionBuilder = _i1.Expression Function(OrderTable);
-
 class OrderTable extends _i1.Table {
   OrderTable({super.tableRelation}) : super(tableName: 'order') {
     description = _i1.ColumnString(
@@ -304,6 +328,8 @@ class OrderTable extends _i1.Table {
 
   _i2.CustomerTable? _customer;
 
+  _i2.CommentTable? ___comments;
+
   _i1.ManyRelation<_i2.CommentTable>? _comments;
 
   _i2.CustomerTable get customer {
@@ -317,6 +343,19 @@ class OrderTable extends _i1.Table {
           _i2.CustomerTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
+  }
+
+  _i2.CommentTable get __comments {
+    if (___comments != null) return ___comments!;
+    ___comments = _i1.createRelationTable(
+      relationFieldName: '__comments',
+      field: Order.t.id,
+      foreignField: _i2.Comment.t.orderId,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.CommentTable(tableRelation: foreignTableRelation),
+    );
+    return ___comments!;
   }
 
   _i1.ManyRelation<_i2.CommentTable> get comments {
@@ -348,6 +387,9 @@ class OrderTable extends _i1.Table {
     if (relationField == 'customer') {
       return customer;
     }
+    if (relationField == 'comments') {
+      return __comments;
+    }
     return null;
   }
 }
@@ -355,15 +397,44 @@ class OrderTable extends _i1.Table {
 @Deprecated('Use OrderTable.t instead.')
 OrderTable tOrder = OrderTable();
 
-class OrderInclude extends _i1.Include {
-  OrderInclude._({_i2.CustomerInclude? customer}) {
+class OrderInclude extends _i1.IncludeObject {
+  OrderInclude._({
+    _i2.CustomerInclude? customer,
+    _i2.CommentIncludeList? comments,
+  }) {
     _customer = customer;
+    _comments = comments;
   }
 
   _i2.CustomerInclude? _customer;
 
+  _i2.CommentIncludeList? _comments;
+
   @override
-  Map<String, _i1.Include?> get includes => {'customer': _customer};
+  Map<String, _i1.Include?> get includes => {
+        'customer': _customer,
+        'comments': _comments,
+      };
+
+  @override
+  _i1.Table get table => Order.t;
+}
+
+class OrderIncludeList extends _i1.IncludeList {
+  OrderIncludeList._({
+    _i1.WhereExpressionBuilder<OrderTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(Order.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => Order.t;
@@ -378,7 +449,7 @@ class OrderRepository {
 
   Future<List<Order>> find(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -401,7 +472,7 @@ class OrderRepository {
 
   Future<Order?> findRow(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -496,7 +567,7 @@ class OrderRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required OrderExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<Order>(
@@ -507,7 +578,7 @@ class OrderRepository {
 
   Future<int> count(
     _i1.Session session, {
-    OrderExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

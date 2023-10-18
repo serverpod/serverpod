@@ -45,8 +45,10 @@ void main() {
       test(
           'then last element builds same buildRelationQueryAlias as outer element.',
           () {
-        expect(tableRelation.getRelations.last.relationQueryAlias,
-            tableRelation.relationQueryAlias);
+        expect(
+          tableRelation.getRelations.last.relationQueryAlias,
+          tableRelation.relationQueryAlias,
+        );
       });
     });
 
@@ -59,6 +61,22 @@ void main() {
         'when lastJoiningField is called then last joining field name is returned.',
         () {
       expect(tableRelation.lastJoiningField, '"company"."ceoId"');
+    });
+
+    test('when lastJoiningFieldQueryAlias is called then last', () {
+      expect(tableRelation.lastJoiningFieldQueryAlias, 'company.ceoId');
+    });
+
+    test(
+        'when foreignFieldQuery is called then the base query for the citizen is created.',
+        () {
+      expect(tableRelation.foreignFieldBaseQuery, '"citizen"."id"');
+    });
+
+    test(
+        'when foreignFieldBaseQueryAlias is called then the unescaped version of the base query is created.',
+        () {
+      expect(tableRelation.foreignFieldBaseQueryAlias, 'citizen.id');
     });
 
     test('when lastJoiningForeignField is called then last foreign field name.',
@@ -153,6 +171,23 @@ void main() {
         () {
       expect(tableRelation.lastJoiningForeignField,
           '"company_ceo_citizen_favoriteRestaurant_restaurant"."id"');
+    });
+
+    test('when lastJoiningFieldQueryAlias is called then last', () {
+      expect(tableRelation.lastJoiningFieldQueryAlias,
+          'company_ceo_citizen.favoriteRestaurantId');
+    });
+
+    test(
+        'when foreignFieldQuery is called then the base query for the citizen is created.',
+        () {
+      expect(tableRelation.foreignFieldBaseQuery, '"restaurant"."id"');
+    });
+
+    test(
+        'when foreignFieldBaseQueryAlias is called then the unescaped version of the base query is created.',
+        () {
+      expect(tableRelation.foreignFieldBaseQueryAlias, 'restaurant.id');
     });
   });
 }

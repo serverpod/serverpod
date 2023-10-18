@@ -118,7 +118,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<ChatReadMessage>> find(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -142,7 +142,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<ChatReadMessage?> findSingleRow(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -170,7 +170,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required ChatReadMessageExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<ChatReadMessage>(
@@ -219,7 +219,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -234,6 +234,26 @@ abstract class ChatReadMessage extends _i1.TableRow {
 
   static ChatReadMessageInclude include() {
     return ChatReadMessageInclude._();
+  }
+
+  static ChatReadMessageIncludeList includeList({
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    ChatReadMessageInclude? include,
+  }) {
+    return ChatReadMessageIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -267,9 +287,6 @@ class _ChatReadMessageImpl extends ChatReadMessage {
     );
   }
 }
-
-typedef ChatReadMessageExpressionBuilder = _i1.Expression Function(
-    ChatReadMessageTable);
 
 class ChatReadMessageTable extends _i1.Table {
   ChatReadMessageTable({super.tableRelation})
@@ -309,11 +326,31 @@ class ChatReadMessageTable extends _i1.Table {
 @Deprecated('Use ChatReadMessageTable.t instead.')
 ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
 
-class ChatReadMessageInclude extends _i1.Include {
+class ChatReadMessageInclude extends _i1.IncludeObject {
   ChatReadMessageInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ChatReadMessage.t;
+}
+
+class ChatReadMessageIncludeList extends _i1.IncludeList {
+  ChatReadMessageIncludeList._({
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ChatReadMessage.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => ChatReadMessage.t;
@@ -324,7 +361,7 @@ class ChatReadMessageRepository {
 
   Future<List<ChatReadMessage>> find(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -345,7 +382,7 @@ class ChatReadMessageRepository {
 
   Future<ChatReadMessage?> findRow(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -436,7 +473,7 @@ class ChatReadMessageRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required ChatReadMessageExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<ChatReadMessage>(
@@ -447,7 +484,7 @@ class ChatReadMessageRepository {
 
   Future<int> count(
     _i1.Session session, {
-    ChatReadMessageExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

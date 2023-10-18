@@ -104,7 +104,7 @@ abstract class MethodInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<MethodInfo>> find(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -128,7 +128,7 @@ abstract class MethodInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<MethodInfo?> findSingleRow(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -156,7 +156,7 @@ abstract class MethodInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required MethodInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<MethodInfo>(
@@ -205,7 +205,7 @@ abstract class MethodInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -220,6 +220,26 @@ abstract class MethodInfo extends _i1.TableRow {
 
   static MethodInfoInclude include() {
     return MethodInfoInclude._();
+  }
+
+  static MethodInfoIncludeList includeList({
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    MethodInfoInclude? include,
+  }) {
+    return MethodInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -249,8 +269,6 @@ class _MethodInfoImpl extends MethodInfo {
     );
   }
 }
-
-typedef MethodInfoExpressionBuilder = _i1.Expression Function(MethodInfoTable);
 
 class MethodInfoTable extends _i1.Table {
   MethodInfoTable({super.tableRelation})
@@ -282,11 +300,31 @@ class MethodInfoTable extends _i1.Table {
 @Deprecated('Use MethodInfoTable.t instead.')
 MethodInfoTable tMethodInfo = MethodInfoTable();
 
-class MethodInfoInclude extends _i1.Include {
+class MethodInfoInclude extends _i1.IncludeObject {
   MethodInfoInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => MethodInfo.t;
+}
+
+class MethodInfoIncludeList extends _i1.IncludeList {
+  MethodInfoIncludeList._({
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(MethodInfo.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => MethodInfo.t;
@@ -297,7 +335,7 @@ class MethodInfoRepository {
 
   Future<List<MethodInfo>> find(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -318,7 +356,7 @@ class MethodInfoRepository {
 
   Future<MethodInfo?> findRow(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -409,7 +447,7 @@ class MethodInfoRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required MethodInfoExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<MethodInfo>(
@@ -420,7 +458,7 @@ class MethodInfoRepository {
 
   Future<int> count(
     _i1.Session session, {
-    MethodInfoExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {

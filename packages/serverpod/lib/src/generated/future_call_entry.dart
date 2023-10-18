@@ -145,7 +145,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
   static Future<List<FutureCallEntry>> find(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -169,7 +169,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
   static Future<FutureCallEntry?> findSingleRow(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -197,7 +197,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
   static Future<int> delete(
     _i1.Session session, {
-    required FutureCallEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.db.delete<FutureCallEntry>(
@@ -246,7 +246,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
   static Future<int> count(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     bool useCache = true,
     _i1.Transaction? transaction,
@@ -261,6 +261,26 @@ abstract class FutureCallEntry extends _i1.TableRow {
 
   static FutureCallEntryInclude include() {
     return FutureCallEntryInclude._();
+  }
+
+  static FutureCallEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.Column? orderBy,
+    bool orderDescending = false,
+    List<_i1.Order>? orderByList,
+    FutureCallEntryInclude? include,
+  }) {
+    return FutureCallEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderDescending: orderDescending,
+      orderByList: orderByList,
+      include: include,
+    );
   }
 }
 
@@ -304,9 +324,6 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     );
   }
 }
-
-typedef FutureCallEntryExpressionBuilder = _i1.Expression Function(
-    FutureCallEntryTable);
 
 class FutureCallEntryTable extends _i1.Table {
   FutureCallEntryTable({super.tableRelation})
@@ -362,11 +379,31 @@ class FutureCallEntryTable extends _i1.Table {
 @Deprecated('Use FutureCallEntryTable.t instead.')
 FutureCallEntryTable tFutureCallEntry = FutureCallEntryTable();
 
-class FutureCallEntryInclude extends _i1.Include {
+class FutureCallEntryInclude extends _i1.IncludeObject {
   FutureCallEntryInclude._();
 
   @override
   Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => FutureCallEntry.t;
+}
+
+class FutureCallEntryIncludeList extends _i1.IncludeList {
+  FutureCallEntryIncludeList._({
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(FutureCallEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
 
   @override
   _i1.Table get table => FutureCallEntry.t;
@@ -377,7 +414,7 @@ class FutureCallEntryRepository {
 
   Future<List<FutureCallEntry>> find(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
     _i1.Column? orderBy,
@@ -398,7 +435,7 @@ class FutureCallEntryRepository {
 
   Future<FutureCallEntry?> findRow(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
     _i1.Column? orderBy,
     bool orderDescending = false,
@@ -489,7 +526,7 @@ class FutureCallEntryRepository {
 
   Future<List<int>> deleteWhere(
     _i1.Session session, {
-    required FutureCallEntryExpressionBuilder where,
+    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.deleteWhere<FutureCallEntry>(
@@ -500,7 +537,7 @@ class FutureCallEntryRepository {
 
   Future<int> count(
     _i1.Session session, {
-    FutureCallEntryExpressionBuilder? where,
+    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     _i1.Transaction? transaction,
   }) async {
