@@ -18,18 +18,18 @@ Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
     return map;
   }
 
-  if (type.isOtherType) {
-    map = otherTypeToJson(type, child);
+  if (type.isUnknownSchemaType) {
+    map = unknownSchemaTypeToJson(type, child);
     return map;
   }
-  map = dartCoreTypeToJson(type, child);
+  map = coreDartTypeToJson(type, child);
   return map;
 }
 
 /// Serializes a [TypeDefinition]  [Map] type to Json
 Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
   assert(type.isMapType,
-      'Use mapToJson only when the typeDefinition is of the MapType.');
+      'Use mapTypeToJson only when the typeDefinition is of the MapType.');
 
   Map<String, dynamic> map = {};
   map['type'] = SchemaObjectType.object.name;
@@ -43,10 +43,10 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
     map['additionalProperties'] = listTypeToJson(lastType, true);
   } else if (lastType.isMapType) {
     map['additionalProperties'] = mapTypeToJson(lastType, true);
-  } else if (lastType.isOtherType) {
-    map['additionalProperties'] = otherTypeToJson(lastType, true);
+  } else if (lastType.isUnknownSchemaType) {
+    map['additionalProperties'] = unknownSchemaTypeToJson(lastType, true);
   } else {
-    map['additionalProperties'] = dartCoreTypeToJson(
+    map['additionalProperties'] = coreDartTypeToJson(
       lastType,
       true,
     );
@@ -57,7 +57,7 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
 
 /// Serializes a [TypeDefinition]  dart core type (string,bool,double,int,
 /// BigInt,...) to Json
-Map<String, dynamic> dartCoreTypeToJson(TypeDefinition type,
+Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
     [bool child = false]) {
   assert(type.toSchemaObjectType != SchemaObjectType.other,
       'SchemaObjectType should not be other type');
@@ -74,10 +74,10 @@ Map<String, dynamic> dartCoreTypeToJson(TypeDefinition type,
 }
 
 /// Serializes an [SchemaObjectType.other] to json
-Map<String, dynamic> otherTypeToJson(TypeDefinition type,
+Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
     [bool child = false]) {
   assert(type.toSchemaObjectType == SchemaObjectType.other,
-      'Use otherTypeToJson only when the SchemaObjectType is other.');
+      'Use unknownSchemaTypeToJson only when the SchemaObjectType is other.');
   Map<String, dynamic> map = {};
   // Other types are always object.
   if (!child) map['type'] = SchemaObjectType.object.name;
@@ -110,11 +110,11 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
     return map;
   }
 
-  if (generic.first.isOtherType) {
-    map['items'] = otherTypeToJson(generic.first, true);
+  if (generic.first.isUnknownSchemaType) {
+    map['items'] = unknownSchemaTypeToJson(generic.first, true);
     return map;
   }
-  map['items'] = dartCoreTypeToJson(generic.first, true);
+  map['items'] = coreDartTypeToJson(generic.first, true);
   return map;
 }
 
@@ -147,11 +147,12 @@ class ComponentSchemaObject {
         objectMap['properties'][field.name] = listTypeToJson(field.type, true);
       } else if (field.type.isMapType) {
         objectMap['properties'][field.name] = mapTypeToJson(field.type, true);
-      } else if (field.type.isOtherType) {
-        objectMap['properties'][field.name] = otherTypeToJson(field.type, true);
+      } else if (field.type.isUnknownSchemaType) {
+        objectMap['properties'][field.name] =
+            unknownSchemaTypeToJson(field.type, true);
       } else {
         objectMap['properties'][field.name] =
-            dartCoreTypeToJson(field.type, true);
+            coreDartTypeToJson(field.type, true);
       }
     }
     map[entityDefinition.className] = objectMap;

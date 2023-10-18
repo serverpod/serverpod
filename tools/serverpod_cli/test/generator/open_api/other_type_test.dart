@@ -13,7 +13,7 @@ void main() {
           'type': 'object',
           '\$ref': '#/components/schemas/Example',
         },
-        otherTypeToJson(type),
+        unknownSchemaTypeToJson(type),
       );
     });
     test('When TypeDefinition is Example?', () {
@@ -26,7 +26,7 @@ void main() {
           '\$ref': '#/components/schemas/Example',
           'nullable': true
         },
-        otherTypeToJson(type),
+        unknownSchemaTypeToJson(type),
       );
     });
     test('When TypeDefinition is Example and return without type', () {
@@ -37,7 +37,7 @@ void main() {
         {
           '\$ref': '#/components/schemas/Example',
         },
-        otherTypeToJson(type, true),
+        unknownSchemaTypeToJson(type, true),
       );
     });
 
@@ -50,7 +50,7 @@ void main() {
           'type': 'object',
           '\$ref': '#/components/schemas/AnyValue',
         },
-        otherTypeToJson(type),
+        unknownSchemaTypeToJson(type),
       );
     });
   });

@@ -12,13 +12,8 @@ extraClasses:
   - package:serverpod_test_shared/serverpod_test_shared.dart:FreezedCustomClass
 openapi:
   info:
-    title: 'Serverpod OpenAPI'
-    description: 'My Serverpod server'
+    title: 'Serverpod test server'
+    description: "The server used by Serverpod's internal tests."
   license:
-    name: 'Apache 2.0'
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-  contact:
-    name: 'Serverpod Support'
-    url: 'https://serverpod.dev'
-    email: 'support@serverpod.dev'
-  termsOfService: 'https://serverpod.dev'
+    name: 'BSD 3-Clause'
+    url: 'https://opensource.org/licenses/BSD-3-Clause'

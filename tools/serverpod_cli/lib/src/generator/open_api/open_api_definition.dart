@@ -2,6 +2,7 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 
 import '../../analyzer/dart/definitions.dart';
+import 'helpers/utils.dart';
 import 'open_api_objects.dart';
 
 /// OpenAPI Object

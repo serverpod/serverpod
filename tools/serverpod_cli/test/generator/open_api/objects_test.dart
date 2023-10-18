@@ -371,7 +371,7 @@ void main() {
       );
     });
     test('Validate OpenApi', () {
-      var openApi = OpenApiDefinition(
+      var openApi = OpenAPIDefinition(
           info: infoObject,
           servers: {serverObject},
           tags: {tagObject},

@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 
 const projectName = 'example_project';
 var config = GeneratorConfigBuilder().withName(projectName).build();
-const generator = OpenApiGenerator();
+const generator = OpenAPIGenerator();
 void main() {
   group('Given a single Endpoint and Entity when generating openapi schema',
       () {
@@ -43,7 +43,7 @@ void main() {
     ProtocolDefinition protocolDefinition =
         ProtocolDefinition(endpoints: [endpoint], entities: [exampleClass]);
 
-    var codeMap = generator.generateOpenApiSchema(
+    var codeMap = generator.generateOpenAPISchema(
         protocolDefinition: protocolDefinition, config: config);
     test('then openapi file is created', () {
       expect(

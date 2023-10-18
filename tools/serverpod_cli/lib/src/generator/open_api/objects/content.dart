@@ -4,8 +4,8 @@ part of '../open_api_objects.dart';
 /// can consume and produce. It specifies the format and schema of the request
 /// and response payloads for different media types, such as JSON, XML, or
 /// others. example
-///```dart
-///"content": {
+/// ```dart
+/// "content": {
 ///               "application/json": {
 ///                 "schema": {
 ///                   "$ref": "#/components/schemas/Pet"

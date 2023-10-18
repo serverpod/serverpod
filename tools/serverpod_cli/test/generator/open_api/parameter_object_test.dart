@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:test/test.dart';
 
