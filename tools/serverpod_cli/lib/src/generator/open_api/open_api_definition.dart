@@ -1,5 +1,6 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 
 import '../../analyzer/dart/definitions.dart';
 import 'helpers/utils.dart';
@@ -79,12 +80,16 @@ class OpenAPIDefinition {
     OpenAPIConfig infoObject =
         OpenAPIConfig(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
 
+    var returnTypeList = _getEntitiesFromEndpointsReturnType(
+      protocolDefinition,
+    );
+
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
     Set<PathsObject> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
-    Set<ComponentSchemaObject> schemas =
-        _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
+    Set<ComponentSchemaObject> schemas = _getSchemaObjectFromClassDefinitions(
+        protocolDefinition.entities, returnTypeList);
 
     ComponentsObject componentsObject =
         ComponentsObject(schemas: schemas, securitySchemes: {
@@ -136,7 +141,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
     for (var method in endpoint.methods) {
       String? description = method.documentationComment?.replaceAll('/// ', '');
 
-      /// Method name is operationId + Tag
+      /// Method name is operationId + Tag .
       String operationId = method.name + endpoint.name.pascalCase;
 
       List<ParameterDefinition> params = [
@@ -199,10 +204,61 @@ Set<TagObject> _getTagsFromProtocolDefinition(
 ///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 /// ```
 Set<ComponentSchemaObject> _getSchemaObjectFromClassDefinitions(
-    List<SerializableEntityDefinition> entitiesDefinition) {
+    List<SerializableEntityDefinition> entitiesDefinition,
+    List<SerializableEntityDefinition> returnTypeList) {
   Set<ComponentSchemaObject> schemas = {};
+  var entitiesFromMethodReturn = returnTypeList;
   for (var entityInfo in entitiesDefinition) {
+    // Removes entity that are already present in entitiesDefinition.
+    entitiesFromMethodReturn
+        .removeWhere((e) => e.className == entityInfo.className);
     schemas.add(ComponentSchemaObject(entityInfo));
   }
+
+  for (var entityInfo in entitiesFromMethodReturn) {
+    schemas.add(ComponentSchemaObject(entityInfo));
+  }
+
   return schemas;
+}
+
+/// Collects entities from [List<EndpointDefinition>] when the type is
+/// 'serializableObjects' to enable validation, ensuring all
+/// serializableObjects are correctly referenced in 'components.schemas'.
+List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
+  ProtocolDefinition protocolDefinition,
+) {
+  List<SerializableEntityDefinition> returnTypeList = [];
+  for (var endpoint in protocolDefinition.endpoints) {
+    for (var method in endpoint.methods) {
+      var returnType = method.returnType.className == 'Future'
+          ? method.returnType.generics.first
+          : method.returnType;
+      if (returnType.toSchemaObjectType !=
+              SchemaObjectType.serializableObjects &&
+          returnType.className == 'void') {
+        continue;
+      }
+      SerializableEntityDefinition entity;
+      if (returnType.isEnum) {
+        entity = EnumDefinition(
+            fileName: 'undefined',
+            sourceFileName: 'undefined',
+            className: returnType.className,
+            values: [],
+            serverOnly: true);
+      } else {
+        entity = ClassDefinition(
+            fileName: 'undefined',
+            sourceFileName: 'undefined',
+            className: returnType.className,
+            fields: [],
+            serverOnly: true,
+            isException: false);
+      }
+
+      returnTypeList.add(entity);
+    }
+  }
+  return returnTypeList;
 }
