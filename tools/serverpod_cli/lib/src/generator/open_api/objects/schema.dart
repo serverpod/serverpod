@@ -28,7 +28,7 @@ Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
   return map;
 }
 
-/// Serializes a [TypeDefinition] [Map] type to JSON
+/// Serializes a [TypeDefinition] [Map] type to JSON.
 Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
   assert(
     type.isMapType,
@@ -60,7 +60,7 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
 }
 
 /// Serializes a [TypeDefinition] core dart type (String, bool, double, int,
-/// BigInt, ...) to JSON
+/// BigInt, ...) to JSON.
 Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
     [bool child = false]) {
   assert(
@@ -81,7 +81,7 @@ Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
   return map;
 }
 
-/// Serializes a [SchemaObjectType.serializableObjects] to JSON
+/// Serializes a [SchemaObjectType.serializableObjects] to JSON.
 Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
     [bool child = false]) {
   assert(
@@ -98,7 +98,7 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
   return map;
 }
 
-/// Serializes a [TypeDefinition] [List] type to JSON
+/// Serializes a [TypeDefinition] [List] type to JSON.
 Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
   assert(
     type.isListType,
@@ -185,7 +185,7 @@ class RequestContentSchemaObject {
   }
 }
 
-/// A schema object that will be used in [ParameterObject].
+/// A schema object used within [ParameterObject].
 class ParameterSchemaObject {
   final TypeDefinition typeDefinition;
 

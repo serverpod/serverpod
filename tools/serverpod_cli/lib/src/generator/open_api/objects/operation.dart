@@ -63,7 +63,7 @@ class OperationObject {
   final Set<SecurityRequirementObject> security;
 
   /// An alternative server array to service this operation. If an alternative
-  /// server object is specified at the Path Item Object or Root level,
+  /// server object is specified at the [PathItemObject] or Root level,
   /// it will be overridden by this value.
   final List<ServerObject>? servers;
   OperationObject({

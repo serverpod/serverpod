@@ -10,22 +10,32 @@ import 'package:serverpod_cli/src/generator/open_api/objects/security.dart';
 /// on the API unless they are explicitly referenced from properties outside the
 /// components object.
 class ComponentsObject {
-  /// An object to hold reusable Schema Objects.
+  /// A set of reusable [ComponentSchemaObject].that can be
+  /// referenced.
   final Set<ComponentSchemaObject>? schemas;
 
-  /// An object to hold reusable Response Objects.
+  /// A mapping that associates response names with reusable [ResponseObject]
+  /// eg
+  /// ```json
+  ///  "NotFound": {
+  ///    "description": "Entity not found."
+  ///  },
+  /// ```
   final Map<String, ResponseObject>? responses;
 
-  /// An object to hold reusable Parameter Objects.
+  /// A collection of reusable [ParameterObject].that can be
+  /// referenced.
   final Map<String, ParameterObject>? parameters;
 
-  /// An object to hold reusable Request Body Objects.
+  /// A collection of reusable [RequestBodyObject].that can be
+  /// referenced.
   final Map<String, RequestBodyObject>? requestBodies;
 
-  /// An object to hold reusable Security Scheme Objects.
+  /// A collection of reusable [SecurityRequirementObject] that can be
+  /// referenced.
   final Set<SecurityRequirementObject> securitySchemes;
 
-  /// An object to hold reusable Path Item Object.
+  /// A mapping that associates path name with reusable [PathItemObject].
   final Map<String, PathItemObject>? pathItems;
   ComponentsObject({
     this.schemas,

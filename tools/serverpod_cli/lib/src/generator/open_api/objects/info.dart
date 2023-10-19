@@ -192,7 +192,10 @@ class ContactObject {
 /// }
 /// ```
 class ExternalDocumentationObject {
+  /// A description of the target documentation.
   final String? description;
+
+  /// The URL for the target documentation..
   final Uri url;
   ExternalDocumentationObject({
     this.description,

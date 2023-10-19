@@ -36,6 +36,8 @@ class ServerObject {
 /// An object representing a Server Variable for server URL template
 /// substitution.
 class ServerVariableObject {
+  /// An enumeration of string values to be used if the substitution options
+  /// are from a limited set.
   final List<String>? enumField;
 
   /// The default value to use for substitution, which SHALL be sent if an

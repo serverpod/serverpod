@@ -10,8 +10,14 @@ import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
 /// ```
 ///
 class TagObject {
+  /// The name of the tag.
   final String name;
+
+  /// A description for the tag.
+  /// CommonMark syntax MAY be used for rich text representation.
   final String? description;
+
+  /// Additional external documentation for this tag.
   final ExternalDocumentationObject? externalDocumentationObject;
   TagObject({
     required this.name,
