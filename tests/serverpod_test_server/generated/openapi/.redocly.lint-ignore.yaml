@@ -1,0 +1,574 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redoc.ly/docs/cli/ for more information.
+openapi.json:
+  no-server-example.com:
+    - '#/servers/0/url'
+  tag-description:
+    - '#/tags/0/description'
+    - '#/tags/1/description'
+    - '#/tags/2/description'
+    - '#/tags/3/description'
+    - '#/tags/4/description'
+    - '#/tags/5/description'
+    - '#/tags/6/description'
+    - '#/tags/7/description'
+    - '#/tags/8/description'
+    - '#/tags/9/description'
+    - '#/tags/10/description'
+    - '#/tags/11/description'
+    - '#/tags/12/description'
+    - '#/tags/13/description'
+    - '#/tags/14/description'
+    - '#/tags/15/description'
+    - '#/tags/16/description'
+    - '#/tags/17/description'
+    - '#/tags/18/description'
+    - '#/tags/19/description'
+    - '#/tags/20/description'
+    - '#/tags/21/description'
+    - '#/tags/22/description'
+    - '#/tags/23/description'
+    - '#/tags/24/description'
+    - '#/tags/25/description'
+    - '#/tags/26/description'
+    - '#/tags/27/description'
+    - '#/tags/28/description'
+    - '#/tags/29/description'
+    - '#/tags/30/description'
+    - '#/tags/31/description'
+    - '#/tags/32/description'
+    - '#/tags/33/description'
+    - '#/tags/34/description'
+    - '#/tags/35/description'
+    - '#/tags/36/description'
+    - '#/tags/37/description'
+    - '#/tags/38/description'
+    - '#/tags/39/description'
+    - '#/tags/40/description'
+    - '#/tags/41/description'
+    - '#/tags/42/description'
+    - '#/tags/44/description'
+    - '#/tags/45/description'
+    - '#/tags/46/description'
+    - '#/tags/47/description'
+  operation-summary:
+    - '#/paths/~1asyncTasks~1insertRowToSimpleDataAfterDelay/post/summary'
+    - '#/paths/~1asyncTasks~1throwExceptionAfterDelay/post/summary'
+    - '#/paths/~1authentication~1removeAllUsers/post/summary'
+    - '#/paths/~1authentication~1countUsers/post/summary'
+    - '#/paths/~1authentication~1createUser/post/summary'
+    - '#/paths/~1authentication~1authenticate/post/summary'
+    - '#/paths/~1authentication~1signOut/post/summary'
+    - '#/paths/~1basicTypes~1testInt/post/summary'
+    - '#/paths/~1basicTypes~1testDouble/post/summary'
+    - '#/paths/~1basicTypes~1testBool/post/summary'
+    - '#/paths/~1basicTypes~1testDateTime/post/summary'
+    - '#/paths/~1basicTypes~1testString/post/summary'
+    - '#/paths/~1basicTypes~1testByteData/post/summary'
+    - '#/paths/~1basicTypes~1testDuration/post/summary'
+    - '#/paths/~1basicTypes~1testUuid/post/summary'
+    - '#/paths/~1cloudStorage~1reset/post/summary'
+    - '#/paths/~1cloudStorage~1storePublicFile/post/summary'
+    - '#/paths/~1cloudStorage~1retrievePublicFile/post/summary'
+    - '#/paths/~1cloudStorage~1existsPublicFile/post/summary'
+    - '#/paths/~1cloudStorage~1deletePublicFile/post/summary'
+    - '#/paths/~1cloudStorage~1getPublicUrlForFile/post/summary'
+    - '#/paths/~1cloudStorage~1getDirectFilePostUrl/post/summary'
+    - '#/paths/~1cloudStorage~1verifyDirectFileUpload/post/summary'
+    - '#/paths/~1s3CloudStorage~1storePublicFile/post/summary'
+    - '#/paths/~1s3CloudStorage~1retrievePublicFile/post/summary'
+    - '#/paths/~1s3CloudStorage~1existsPublicFile/post/summary'
+    - '#/paths/~1s3CloudStorage~1deletePublicFile/post/summary'
+    - '#/paths/~1s3CloudStorage~1getPublicUrlForFile/post/summary'
+    - '#/paths/~1s3CloudStorage~1getDirectFilePostUrl/post/summary'
+    - '#/paths/~1s3CloudStorage~1verifyDirectFileUpload/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnBool~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1isDistinctFrom/post/summary'
+    - >-
+      #/paths/~1column_operations~1columnDateTime~1isNotDistinctFrom/post/summary
+    - '#/paths/~1column_operations~1columnDateTime~1greaterThan/post/summary'
+    - >-
+      #/paths/~1column_operations~1columnDateTime~1greaterOrEqualThan/post/summary
+    - '#/paths/~1column_operations~1columnDateTime~1lessThan/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1lessOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1between/post/summary'
+    - '#/paths/~1column_operations~1columnDateTime~1notBetween/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1greaterThan/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1greaterOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1lessThan/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1lessOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1between/post/summary'
+    - '#/paths/~1column_operations~1columnDouble~1notBetween/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1isDistinctFrom/post/summary'
+    - >-
+      #/paths/~1column_operations~1columnDuration~1isNotDistinctFrom/post/summary
+    - '#/paths/~1column_operations~1columnDuration~1greaterThan/post/summary'
+    - >-
+      #/paths/~1column_operations~1columnDuration~1greaterOrEqualThan/post/summary
+    - '#/paths/~1column_operations~1columnDuration~1lessThan/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1lessOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1between/post/summary'
+    - '#/paths/~1column_operations~1columnDuration~1notBetween/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnEnum~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1greaterThan/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1greaterOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1lessThan/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1lessOrEqualThan/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1between/post/summary'
+    - '#/paths/~1column_operations~1columnInt~1notBetween/post/summary'
+    - '#/paths/~1column_operations~1columnString~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnString~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnString~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnString~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnString~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnString~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnString~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnString~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnString~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnString~1like/post/summary'
+    - '#/paths/~1column_operations~1columnString~1ilike/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1insert/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1deleteAll/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1findAll/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1equals/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1notEquals/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1inSet/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1notInSet/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1isDistinctFrom/post/summary'
+    - '#/paths/~1column_operations~1columnUuid~1isNotDistinctFrom/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnBoolLegacy~1insert/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnBoolLegacy~1deleteAll/post/summary
+    - '#/paths/~1column_operations_legacy~1columnBoolLegacy~1findAll/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnBoolLegacy~1equals/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnBoolLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnBoolLegacy~1inSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnBoolLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnBoolLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnBoolLegacy~1isNotDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1insert/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1deleteAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1findAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1equals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1notEquals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1inSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1isNotDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1greaterThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1greaterOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1lessThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1lessOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1between/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDateTimeLegacy~1notBetween/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1insert/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1deleteAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1findAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1equals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnDoubleLegacy~1inSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1isNotDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1greaterThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1greaterOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1lessThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1lessOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1between/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDoubleLegacy~1notBetween/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1insert/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1deleteAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1findAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1equals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1notEquals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1inSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1isNotDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1greaterThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1greaterOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1lessThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1lessOrEqualThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1between/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnDurationLegacy~1notBetween/post/summary
+    - '#/paths/~1column_operations_legacy~1columnEnumLegacy~1insert/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnEnumLegacy~1deleteAll/post/summary
+    - '#/paths/~1column_operations_legacy~1columnEnumLegacy~1findAll/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnEnumLegacy~1equals/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnEnumLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnEnumLegacy~1inSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnEnumLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnEnumLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnEnumLegacy~1isNotDistinctFrom/post/summary
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1insert/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1deleteAll/post/summary
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1findAll/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1equals/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1inSet/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1notInSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1isNotDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1greaterThan/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1greaterOrEqualThan/post/summary
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1lessThan/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1lessOrEqualThan/post/summary
+    - '#/paths/~1column_operations_legacy~1columnIntLegacy~1between/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnIntLegacy~1notBetween/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1insert/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1deleteAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1findAll/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1equals/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnStringLegacy~1inSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnStringLegacy~1isNotDistinctFrom/post/summary
+    - '#/paths/~1column_operations_legacy~1columnStringLegacy~1like/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnStringLegacy~1ilike/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnUuidLegacy~1insert/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnUuidLegacy~1deleteAll/post/summary
+    - '#/paths/~1column_operations_legacy~1columnUuidLegacy~1findAll/post/summary'
+    - '#/paths/~1column_operations_legacy~1columnUuidLegacy~1equals/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnUuidLegacy~1notEquals/post/summary
+    - '#/paths/~1column_operations_legacy~1columnUuidLegacy~1inSet/post/summary'
+    - >-
+      #/paths/~1column_operations_legacy~1columnUuidLegacy~1notInSet/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnUuidLegacy~1isDistinctFrom/post/summary
+    - >-
+      #/paths/~1column_operations_legacy~1columnUuidLegacy~1isNotDistinctFrom/post/summary
+    - '#/paths/~1customTypes~1returnCustomClass/post/summary'
+    - '#/paths/~1customTypes~1returnCustomClassNullable/post/summary'
+    - '#/paths/~1customTypes~1returnCustomClass2/post/summary'
+    - '#/paths/~1customTypes~1returnCustomClass2Nullable/post/summary'
+    - '#/paths/~1customTypes~1returnExternalCustomClass/post/summary'
+    - '#/paths/~1customTypes~1returnExternalCustomClassNullable/post/summary'
+    - '#/paths/~1customTypes~1returnFreezedCustomClass/post/summary'
+    - '#/paths/~1customTypes~1returnFreezedCustomClassNullable/post/summary'
+    - '#/paths/~1basicDatabase~1findSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1findRowSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1findByIdSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1insertRowSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1updateRowSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1deleteRowSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1deleteWhereSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1countSimpleData/post/summary'
+    - '#/paths/~1basicDatabase~1insertTypes/post/summary'
+    - '#/paths/~1basicDatabase~1updateTypes/post/summary'
+    - '#/paths/~1basicDatabase~1deleteAll/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1storeTypes/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1getTypes/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1storeObjectWithEnum/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1getObjectWithEnum/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1getTypesRawQuery/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1countTypesRows/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1deleteAllInTypes/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1createSimpleTestData/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1countSimpleData/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1deleteAllSimpleTestData/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1deleteSimpleTestDataLessThan/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1findAndDeleteSimpleTestData/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1findSimpleDataRowsLessThan/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1updateSimpleDataRow/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1storeObjectWithObject/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1getObjectWithObject/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1testByteDataStore/post/summary'
+    - '#/paths/~1basicDatabaseLegacy~1testDurationStore/post/summary'
+    - '#/paths/~1databaseBatch~1batchInsert/post/summary'
+    - '#/paths/~1databaseBatch~1batchInsertTypes/post/summary'
+    - '#/paths/~1databaseBatch~1batchUpdate/post/summary'
+    - '#/paths/~1databaseBatch~1batchUpdateTypes/post/summary'
+    - '#/paths/~1databaseBatch~1batchUpdateWithInvalidColumn/post/summary'
+    - '#/paths/~1databaseBatch~1batchUpdateNumberOnly/post/summary'
+    - '#/paths/~1databaseBatch~1batchDelete/post/summary'
+    - '#/paths/~1databaseBatch~1insertRelatedUniqueData/post/summary'
+    - '#/paths/~1databaseBatch~1findByEmail/post/summary'
+    - '#/paths/~1databaseBatch~1findById/post/summary'
+    - '#/paths/~1databaseBatch~1findAll/post/summary'
+    - '#/paths/~1databaseBatch~1deleteAll/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1batchInsert/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1batchInsertTypes/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1batchUpdate/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1batchUpdateTypes/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1batchDelete/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1insertRelatedUniqueData/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1findByEmail/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1findById/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1findAll/post/summary'
+    - '#/paths/~1databaseBatchGenerated~1deleteAll/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1insertCity/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1insertOrganization/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1insertPerson/post/summary'
+    - >-
+      #/paths/~1databaseListRelationMethods~1implicitAttachRowCitizen/post/summary
+    - '#/paths/~1databaseListRelationMethods~1implicitAttachCitizens/post/summary'
+    - >-
+      #/paths/~1databaseListRelationMethods~1implicitDetachRowCitizens/post/summary
+    - '#/paths/~1databaseListRelationMethods~1implicitDetachCitizens/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1cityFindById/post/summary'
+    - >-
+      #/paths/~1databaseListRelationMethods~1explicitAttachRowPeople/post/summary
+    - '#/paths/~1databaseListRelationMethods~1explicitAttachPeople/post/summary'
+    - >-
+      #/paths/~1databaseListRelationMethods~1explicitDetachRowPeople/post/summary
+    - '#/paths/~1databaseListRelationMethods~1explicitDetachPeople/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1organizationFindById/post/summary'
+    - '#/paths/~1databaseListRelationMethods~1deleteAll/post/summary'
+    - '#/paths/~1transactionsDatabase~1removeRow/post/summary'
+    - '#/paths/~1transactionsDatabase~1updateInsertDelete/post/summary'
+    - >-
+      #/paths/~1entities_with_relations~1oneToMany~1customerOrderByOrderCountAscending/post/summary
+    - >-
+      #/paths/~1entities_with_relations~1oneToMany~1customerOrderByOrderCountAscendingWhereDescriptionIs/post/summary
+    - '#/paths/~1entities_with_relations~1oneToMany~1commentInsert/post/summary'
+    - '#/paths/~1entities_with_relations~1oneToMany~1orderInsert/post/summary'
+    - '#/paths/~1entities_with_relations~1oneToMany~1customerInsert/post/summary'
+    - '#/paths/~1entities_with_relations~1oneToMany~1deleteAll/post/summary'
+    - '#/paths/~1relation~1citizenFindWhereCompanyNameIs/post/summary'
+    - '#/paths/~1relation~1citizenFindWhereCompanyTownNameIs/post/summary'
+    - '#/paths/~1relation~1citizenFindOrderedByCompanyName/post/summary'
+    - '#/paths/~1relation~1citizenFindOrderedByCompanyTownName/post/summary'
+    - '#/paths/~1relation~1citizenDeleteWhereCompanyNameIs/post/summary'
+    - '#/paths/~1relation~1citizenDeleteWhereCompanyTownNameIs/post/summary'
+    - '#/paths/~1relation~1citizenCountWhereCompanyNameIs/post/summary'
+    - '#/paths/~1relation~1citizenCountWhereCompanyTownNameIs/post/summary'
+    - '#/paths/~1relation~1citizenFindAll/post/summary'
+    - '#/paths/~1relation~1citizenFindByIdWithIncludes/post/summary'
+    - '#/paths/~1relation~1addressFindAll/post/summary'
+    - '#/paths/~1relation~1addressFindById/post/summary'
+    - '#/paths/~1relation~1findAllPostsIncludingNextAndPrevious/post/summary'
+    - '#/paths/~1relation~1citizenAttachCompany/post/summary'
+    - '#/paths/~1relation~1citizenAttachAddress/post/summary'
+    - '#/paths/~1relation~1citizenDetachAddress/post/summary'
+    - '#/paths/~1relation~1addressAttachCitizen/post/summary'
+    - '#/paths/~1relation~1addressDetachCitizen/post/summary'
+    - '#/paths/~1relation~1companyFindAll/post/summary'
+    - '#/paths/~1relation~1citizenInsert/post/summary'
+    - '#/paths/~1relation~1companyInsert/post/summary'
+    - '#/paths/~1relation~1townInsert/post/summary'
+    - '#/paths/~1relation~1addressInsert/post/summary'
+    - '#/paths/~1relation~1postInsert/post/summary'
+    - '#/paths/~1relation~1deleteAll/post/summary'
+    - '#/paths/~1exceptionTest~1throwNormalException/post/summary'
+    - '#/paths/~1exceptionTest~1throwExceptionWithData/post/summary'
+    - '#/paths/~1exceptionTest~1workingWithoutException/post/summary'
+    - '#/paths/~1failedCalls~1failedCall/post/summary'
+    - '#/paths/~1failedCalls~1failedDatabaseQuery/post/summary'
+    - '#/paths/~1failedCalls~1failedDatabaseQueryCaughtException/post/summary'
+    - '#/paths/~1failedCalls~1slowCall/post/summary'
+    - '#/paths/~1failedCalls~1caughtException/post/summary'
+    - '#/paths/~1fieldScopes~1storeObject/post/summary'
+    - '#/paths/~1fieldScopes~1retrieveObject/post/summary'
+    - '#/paths/~1futureCalls~1makeFutureCall/post/summary'
+    - '#/paths/~1listParameters~1returnIntList/post/summary'
+    - '#/paths/~1listParameters~1returnIntListList/post/summary'
+    - '#/paths/~1listParameters~1returnIntListNullable/post/summary'
+    - '#/paths/~1listParameters~1returnIntListNullableList/post/summary'
+    - '#/paths/~1listParameters~1returnIntListListNullable/post/summary'
+    - '#/paths/~1listParameters~1returnIntListNullableInts/post/summary'
+    - '#/paths/~1listParameters~1returnNullableIntListNullableInts/post/summary'
+    - '#/paths/~1listParameters~1returnDoubleList/post/summary'
+    - '#/paths/~1listParameters~1returnDoubleListNullableDoubles/post/summary'
+    - '#/paths/~1listParameters~1returnBoolList/post/summary'
+    - '#/paths/~1listParameters~1returnBoolListNullableBools/post/summary'
+    - '#/paths/~1listParameters~1returnStringList/post/summary'
+    - '#/paths/~1listParameters~1returnStringListNullableStrings/post/summary'
+    - '#/paths/~1listParameters~1returnDateTimeList/post/summary'
+    - '#/paths/~1listParameters~1returnDateTimeListNullableDateTimes/post/summary'
+    - '#/paths/~1listParameters~1returnByteDataList/post/summary'
+    - '#/paths/~1listParameters~1returnByteDataListNullableByteDatas/post/summary'
+    - '#/paths/~1listParameters~1returnSimpleDataList/post/summary'
+    - >-
+      #/paths/~1listParameters~1returnSimpleDataListNullableSimpleData/post/summary
+    - '#/paths/~1listParameters~1returnSimpleDataListNullable/post/summary'
+    - >-
+      #/paths/~1listParameters~1returnNullableSimpleDataListNullableSimpleData/post/summary
+    - '#/paths/~1listParameters~1returnDurationList/post/summary'
+    - '#/paths/~1listParameters~1returnDurationListNullableDurations/post/summary'
+    - '#/paths/~1logging~1logInfo/post/summary'
+    - '#/paths/~1logging~1logDebugAndInfoAndError/post/summary'
+    - '#/paths/~1logging~1twoQueries/post/summary'
+    - '#/paths/~1loggingDisabled~1logInfo/post/summary'
+    - '#/paths/~1mapParameters~1returnIntMap/post/summary'
+    - '#/paths/~1mapParameters~1returnIntMapNullable/post/summary'
+    - '#/paths/~1mapParameters~1returnNestedIntMap/post/summary'
+    - '#/paths/~1mapParameters~1returnIntMapNullableInts/post/summary'
+    - '#/paths/~1mapParameters~1returnNullableIntMapNullableInts/post/summary'
+    - '#/paths/~1mapParameters~1returnIntIntMap/post/summary'
+    - '#/paths/~1mapParameters~1returnEnumIntMap/post/summary'
+    - '#/paths/~1mapParameters~1returnEnumMap/post/summary'
+    - '#/paths/~1mapParameters~1returnDoubleMap/post/summary'
+    - '#/paths/~1mapParameters~1returnDoubleMapNullableDoubles/post/summary'
+    - '#/paths/~1mapParameters~1returnBoolMap/post/summary'
+    - '#/paths/~1mapParameters~1returnBoolMapNullableBools/post/summary'
+    - '#/paths/~1mapParameters~1returnStringMap/post/summary'
+    - '#/paths/~1mapParameters~1returnStringMapNullableStrings/post/summary'
+    - '#/paths/~1mapParameters~1returnDateTimeMap/post/summary'
+    - '#/paths/~1mapParameters~1returnDateTimeMapNullableDateTimes/post/summary'
+    - '#/paths/~1mapParameters~1returnByteDataMap/post/summary'
+    - '#/paths/~1mapParameters~1returnByteDataMapNullableByteDatas/post/summary'
+    - '#/paths/~1mapParameters~1returnSimpleDataMap/post/summary'
+    - >-
+      #/paths/~1mapParameters~1returnSimpleDataMapNullableSimpleData/post/summary
+    - '#/paths/~1mapParameters~1returnSimpleDataMapNullable/post/summary'
+    - >-
+      #/paths/~1mapParameters~1returnNullableSimpleDataMapNullableSimpleData/post/summary
+    - '#/paths/~1mapParameters~1returnDurationMap/post/summary'
+    - '#/paths/~1mapParameters~1returnDurationMapNullableDurations/post/summary'
+    - '#/paths/~1moduleSerialization~1serializeModuleObject/post/summary'
+    - '#/paths/~1moduleSerialization~1modifyModuleObject/post/summary'
+    - '#/paths/~1moduleSerialization~1serializeNestedModuleObject/post/summary'
+    - '#/paths/~1namedParameters~1namedParametersMethod/post/summary'
+    - '#/paths/~1namedParameters~1namedParametersMethodEqualInts/post/summary'
+    - '#/paths/~1optionalParameters~1returnOptionalInt/post/summary'
+    - '#/paths/~1redis~1setSimpleData/post/summary'
+    - '#/paths/~1redis~1setSimpleDataWithLifetime/post/summary'
+    - '#/paths/~1redis~1getSimpleData/post/summary'
+    - '#/paths/~1redis~1deleteSimpleData/post/summary'
+    - '#/paths/~1redis~1resetMessageCentralTest/post/summary'
+    - '#/paths/~1redis~1listenToChannel/post/summary'
+    - '#/paths/~1redis~1postToChannel/post/summary'
+    - '#/paths/~1redis~1countSubscribedChannels/post/summary'
+    - '#/paths/~1signInRequired~1testMethod/post/summary'
+    - '#/paths/~1simple~1hello/post/summary'
+    - '#/paths/~1subDir~1subSubDir~1subSubDirTest~1testMethod/post/summary'
+    - '#/paths/~1subDir~1subDirTest~1testMethod/post/summary'
+  no-unused-components:
+    - '#/components/schemas/ExceptionWithData'
+    - '#/components/schemas/Nullability'
+    - '#/components/schemas/ObjectWithByteData'
+    - '#/components/schemas/ObjectWithDuration'
+    - '#/components/schemas/ObjectWithIndex'
+    - '#/components/schemas/ObjectWithMaps'
+    - '#/components/schemas/ObjectWithParent'
+    - '#/components/schemas/ObjectWithSelfParent'
+    - '#/components/schemas/ObjectWithUuid'
+    - '#/components/schemas/DefaultServerOnlyClass'
+    - '#/components/schemas/DefaultServerOnlyEnum'
+    - '#/components/schemas/NotServerOnlyClass'
+    - '#/components/schemas/NotServerOnlyEnum'
+    - '#/components/schemas/ServerOnlyClass'
+    - '#/components/schemas/ServerOnlyEnum'
+    - '#/components/schemas/SimpleDataMap'
+    - '#/components/schemas/SimpleDateTime'
+    - '#/components/schemas/void'

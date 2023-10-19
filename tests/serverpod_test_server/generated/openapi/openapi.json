@@ -22530,6 +22530,74 @@
                         "type": "string"
                     }
                 }
+            },
+            "void": {
+                "type": "object",
+                "properties": {}
+            },
+            "int": {
+                "type": "object",
+                "properties": {}
+            },
+            "AuthenticationResponse": {
+                "type": "object",
+                "properties": {}
+            },
+            "double": {
+                "type": "object",
+                "properties": {}
+            },
+            "bool": {
+                "type": "object",
+                "properties": {}
+            },
+            "DateTime": {
+                "type": "object",
+                "properties": {}
+            },
+            "String": {
+                "type": "object",
+                "properties": {}
+            },
+            "ByteData": {
+                "type": "object",
+                "properties": {}
+            },
+            "Duration": {
+                "type": "object",
+                "properties": {}
+            },
+            "UuidValue": {
+                "type": "object",
+                "properties": {}
+            },
+            "List": {
+                "type": "object",
+                "properties": {}
+            },
+            "CustomClass": {
+                "type": "object",
+                "properties": {}
+            },
+            "CustomClass2": {
+                "type": "object",
+                "properties": {}
+            },
+            "ExternalCustomClass": {
+                "type": "object",
+                "properties": {}
+            },
+            "FreezedCustomClass": {
+                "type": "object",
+                "properties": {}
+            },
+            "Map": {
+                "type": "object",
+                "properties": {}
+            },
+            "ModuleClass": {
+                "type": "object",
+                "properties": {}
             }
         },
         "securitySchemes": {
