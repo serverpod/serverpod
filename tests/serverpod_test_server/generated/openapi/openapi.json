@@ -151,7 +151,7 @@
         },
         {
             "name": "simple",
-            "description": "/// A simple endpoint that modifies a global integer. This class is meant for\n/// testing and the documentation has multiple lines."
+            "description": "A simple endpoint that modifies a global integer. This class is meant for\ntesting and the documentation has multiple lines."
         },
         {
             "name": "streaming"
@@ -16283,7 +16283,7 @@
                 "tags": [
                     "relation"
                 ],
-                "description": "/// Includes company and oldCompany and their respective towns",
+                "description": "Includes company and oldCompany and their respective towns",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -16332,7 +16332,7 @@
                 "tags": [
                     "relation"
                 ],
-                "description": "/// Includes the address",
+                "description": "Includes the address",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -16381,7 +16381,7 @@
                 "tags": [
                     "relation"
                 ],
-                "description": "/// Includes company and oldCompany",
+                "description": "Includes company and oldCompany",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -21272,7 +21272,7 @@
                 "tags": [
                     "simple"
                 ],
-                "description": "/// Sets a global integer.",
+                "description": "Sets a global integer.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -21325,7 +21325,7 @@
                 "tags": [
                     "simple"
                 ],
-                "description": "/// Adds 1 to the global integer.",
+                "description": "Adds 1 to the global integer.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -21369,7 +21369,7 @@
                 "tags": [
                     "simple"
                 ],
-                "description": "/// Retrieves a global integer.",
+                "description": "Retrieves a global integer.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -21566,6 +21566,12 @@
                         "items": {
                             "$ref": "#/components/schemas/Person"
                         }
+                    },
+                    "organizations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Organization"
+                        }
                     }
                 }
             },
@@ -21584,6 +21590,13 @@
                         "items": {
                             "$ref": "#/components/schemas/Person"
                         }
+                    },
+                    "cityId": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "city": {
+                        "$ref": "#/components/schemas/City"
                     }
                 }
             },

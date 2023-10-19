@@ -134,7 +134,7 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
     var extraPath = getExtraPath(endpoint.subDirParts);
 
     for (var method in endpoint.methods) {
-      String? description = method.documentationComment;
+      String? description = method.documentationComment?.replaceAll('/// ', '');
 
       /// Method name is operationId + Tag
       String operationId = method.name + endpoint.name.pascalCase;
@@ -187,7 +187,7 @@ Set<TagObject> _getTagsFromProtocolDefinition(
   for (var endpoint in protocolDefinition.endpoints) {
     var tag = TagObject(
         name: endpoint.name.camelCase,
-        description: endpoint.documentationComment);
+        description: endpoint.documentationComment?.replaceAll('/// ', ''));
     tags.add(tag);
   }
   return tags;
