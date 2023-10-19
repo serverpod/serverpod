@@ -40,6 +40,25 @@ class Expression<T> {
 
     return _OrExpression(this, EscapedExpression(other));
   }
+
+  /// Iterator for all [Expression]s in the expression.
+  /// Iterates elements deterministically depth first.
+  Iterable<Expression> get depthFirst sync* {
+    yield this;
+  }
+
+  /// Takes an action for each element.
+  ///
+  /// Calls [action] for each element along with the index in the
+  /// iteration order.
+  void forEachDepthFirstIndexed(
+      void Function(int index, Expression expression) action) {
+    var index = 0;
+    for (var expression in depthFirst) {
+      action(index, expression);
+      index++;
+    }
+  }
 }
 
 /// A database expression that is escaped. This is used to escape values that
@@ -85,31 +104,47 @@ class Constant extends Expression {
   }
 }
 
-abstract class _TwoPartExpression extends Expression {
-  Expression other;
+/// A database expression with two parts.
+abstract class TwoPartExpression extends Expression {
+  final Expression _other;
 
-  _TwoPartExpression(super.expression, this.other);
+  /// Creates a new [TwoPartExpression].
+  TwoPartExpression(super.expression, this._other);
 
   @override
-  List<Column> get columns => [..._expression.columns, ...other.columns];
+  List<Column> get columns => [..._expression.columns, ..._other.columns];
+
+  /// Returns sub expressions for this expression
+  List<Expression> get subExpressions => [_expression, _other];
+
+  /// Returns the expression operator as a string.
+  String get operator;
+
+  @override
+  Iterable<Expression> get depthFirst sync* {
+    yield* super.depthFirst;
+    yield* _expression.depthFirst;
+    yield* _other.depthFirst;
+  }
+
+  @override
+  String toString() {
+    return '($_expression $operator $_other)';
+  }
 }
 
-class _AndExpression extends _TwoPartExpression {
+class _AndExpression extends TwoPartExpression {
   _AndExpression(Expression super.value, super.other);
 
   @override
-  String toString() {
-    return '($_expression AND $other)';
-  }
+  String get operator => 'AND';
 }
 
-class _OrExpression extends _TwoPartExpression {
+class _OrExpression extends TwoPartExpression {
   _OrExpression(Expression super.value, super.other);
 
   @override
-  String toString() {
-    return '($_expression OR $other)';
-  }
+  String get operator => 'OR';
 }
 
 /// Represents a database table.

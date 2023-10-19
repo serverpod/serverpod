@@ -10,36 +10,179 @@ void main() {
     test('when toString is called then expression is returned', () {
       expect(expression.toString(), expressionString);
     });
+
+    group('when iterating expressions', () {
+      test('then only first expression is returned.', () {
+        expect(expression.depthFirst, hasLength(1));
+        expect(expression.depthFirst.first, expression);
+      });
+
+      test('then forEachDepthFirstIndexed only has one element.', () {
+        expression.forEachDepthFirstIndexed((index, innerExpression) {
+          expect(index, 0);
+          expect(expression, innerExpression);
+        });
+      });
+    });
   });
 
-  group('Given two expressions', () {
+  group('Given two AND operator combined expressions', () {
     var expression1 = const Expression('true = true');
     var expression2 = const Expression('"A" = "A"');
-    test('when combined using the AND operator then output is AND expression.',
-        () {
-      var combinedExpression = expression1 & expression2;
+    var combinedExpression = expression1 & expression2;
 
+    test('when printing expression then output is AND expression.', () {
       expect(combinedExpression.toString(), '($expression1 AND $expression2)');
     });
 
-    test('when combined using the AND operator then output is AND expression.',
-        () {
-      var combinedExpression = expression1 | expression2;
+    test('when checking expression type then type is TwoPartExpression', () {
+      expect(combinedExpression, isA<TwoPartExpression>());
+    });
 
+    group('when retrieving sub expression then two are returned', () {
+      var subExpressions =
+          (combinedExpression as TwoPartExpression).subExpressions;
+
+      test('then two are returned', () {
+        expect(subExpressions, hasLength(2));
+      });
+
+      test('then first expression matches', () {
+        expect(subExpressions.first, expression1);
+      });
+
+      test('then last expression matches', () {
+        expect(subExpressions.last, expression2);
+      });
+    }, skip: combinedExpression is! TwoPartExpression);
+
+    group('when iterating expressions', () {
+      test('then number of expressions as length.', () {
+        expect(combinedExpression.depthFirst, hasLength(3));
+      });
+
+      test('then order matches expressions.', () {
+        var expectedExpressions = [
+          combinedExpression,
+          expression1,
+          expression2,
+        ];
+
+        var i = 0;
+        for (var expression in combinedExpression.depthFirst) {
+          expect(expression, expectedExpressions[i]);
+          i++;
+        }
+      });
+
+      test('then forEachDepthFirstIndexed is indexed as expected.', () {
+        var expectedExpressions = [
+          combinedExpression,
+          expression1,
+          expression2,
+        ];
+
+        combinedExpression.forEachDepthFirstIndexed((index, innerExpression) {
+          expect(innerExpression, expectedExpressions[index]);
+        });
+      });
+    });
+  });
+
+  group('Given two OR operator combined expressions', () {
+    var expression1 = const Expression('true = true');
+    var expression2 = const Expression('"A" = "A"');
+    var combinedExpression = expression1 | expression2;
+    test('when printing expression then output is AND expression.', () {
       expect(combinedExpression.toString(), '($expression1 OR $expression2)');
     });
+
+    test('when checking expression type then type is TwoPartExpression', () {
+      expect(combinedExpression, isA<TwoPartExpression>());
+    });
+
+    group('when retrieving sub expression then two are returned', () {
+      var subExpressions =
+          (combinedExpression as TwoPartExpression).subExpressions;
+
+      test('then two are returned', () {
+        expect(subExpressions, hasLength(2));
+      });
+
+      test('then first expression matches', () {
+        expect(subExpressions.first, expression1);
+      });
+
+      test('then last expression matches', () {
+        expect(subExpressions.last, expression2);
+      });
+    }, skip: combinedExpression is! TwoPartExpression);
   });
 
   group('Given three expressions', () {
     var expression1 = const Expression('true = true');
     var expression2 = const Expression('"A" = "A"');
     var expression3 = const Expression('"B" = "B"');
-    test('when combined using the AND operator then output is AND expression.',
-        () {
-      var combinedExpression = expression1 & (expression2 & expression3);
+    group('combined using the AND operator', () {
+      var partCombined = (expression2 & expression3);
+      var combinedExpression = expression1 & partCombined;
+      test('when printing expression then output is AND expression.', () {
+        expect(combinedExpression.toString(),
+            '($expression1 AND ($expression2 AND $expression3))');
+      });
 
-      expect(combinedExpression.toString(),
-          '($expression1 AND ($expression2 AND $expression3))');
+      test('when checking expression type then type is TwoPartExpression', () {
+        expect(combinedExpression, isA<TwoPartExpression>());
+      });
+
+      group('when retrieving sub expression then two are returned', () {
+        var subExpressions =
+            (combinedExpression as TwoPartExpression).subExpressions;
+
+        test('then two are returned', () {
+          expect(subExpressions, hasLength(2));
+        });
+
+        test('then first expression matches', () {
+          expect(subExpressions.first, expression1);
+        });
+
+        test('then last expression matches', () {
+          expect(subExpressions.last, partCombined);
+        });
+      }, skip: combinedExpression is! TwoPartExpression);
+
+      group('when iterating expressions', () {
+        test('then order matches expressions.', () {
+          var expectedExpressions = [
+            combinedExpression,
+            expression1,
+            partCombined,
+            expression2,
+            expression3,
+          ];
+
+          var i = 0;
+          for (var expression in combinedExpression.depthFirst) {
+            expect(expression, expectedExpressions[i]);
+            i++;
+          }
+        });
+
+        test('then forEachDepthFirstIndexed is indexed as expected.', () {
+          var expectedExpressions = [
+            combinedExpression,
+            expression1,
+            partCombined,
+            expression2,
+            expression3,
+          ];
+
+          combinedExpression.forEachDepthFirstIndexed((index, innerExpression) {
+            expect(innerExpression, expectedExpressions[index]);
+          });
+        });
+      });
     });
 
     test('when combined using the AND operator then output is AND expression.',
@@ -60,31 +203,31 @@ void main() {
     });
   });
 
-  group(
-      'Given two columns right combined using two part expressions when retrieving columns',
-      () {
+  group('Given two columns right combined using two part expressions', () {
     ColumnString firstColumn = ColumnString('test 1', testTable);
     ColumnString secondColumn = ColumnString('test 2', testTable);
     Expression expression = firstColumn.equals('test 1') &
         (secondColumn.like('test 2') | firstColumn.equals('test 1'));
 
-    List<Column> columns = expression.columns;
+    group('when retrieveing columns', () {
+      List<Column> columns = expression.columns;
 
-    test('then all columns are represented.', () {
-      expect(columns.length, 3);
+      test('then all columns are represented.', () {
+        expect(columns.length, 3);
+      });
+
+      test('then first columns is leftmost column.', () {
+        expect(columns.first, firstColumn);
+      }, skip: columns.length != 3);
+
+      test('then second column is middle column.', () {
+        expect(columns[1], secondColumn);
+      }, skip: columns.length != 3);
+
+      test('then last column is rightmost column.', () {
+        expect(columns.last, firstColumn);
+      }, skip: columns.length != 3);
     });
-
-    test('then first columns is leftmost column.', () {
-      expect(columns.first, firstColumn);
-    }, skip: columns.length != 3);
-
-    test('then second column is middle column.', () {
-      expect(columns[1], secondColumn);
-    }, skip: columns.length != 3);
-
-    test('then last column is rightmost column.', () {
-      expect(columns.last, firstColumn);
-    }, skip: columns.length != 3);
   });
 
   group(
@@ -92,9 +235,10 @@ void main() {
       () {
     ColumnString firstColumn = ColumnString('test 1', testTable);
     ColumnString secondColumn = ColumnString('test 2', testTable);
-    Expression expression =
-        (secondColumn.like('test 2') | firstColumn.equals('test 1')) &
-            firstColumn.equals('test 1');
+    var expression1 = secondColumn.like('test 2');
+    var expression2 = firstColumn.equals('test 1');
+    var firstPart = (expression1 | expression2);
+    Expression expression = firstPart & expression2;
 
     List<Column> columns = expression.columns;
 
@@ -113,6 +257,38 @@ void main() {
     test('then last expression is rightmost expression.', () {
       expect(columns.last, firstColumn);
     }, skip: columns.length != 3);
+
+    group('when iterating expressions', () {
+      test('then order matches expressions.', () {
+        var expectedExpressions = [
+          expression,
+          firstPart,
+          expression1,
+          expression2,
+          expression2,
+        ];
+
+        var i = 0;
+        for (var expression in expression.depthFirst) {
+          expect(expression, expectedExpressions[i]);
+          i++;
+        }
+      });
+
+      test('then forEachDepthFirstIndexed is indexed as expected.', () {
+        var expectedExpressions = [
+          expression,
+          firstPart,
+          expression1,
+          expression2,
+          expression2,
+        ];
+
+        expression.forEachDepthFirstIndexed((index, innerExpression) {
+          expect(innerExpression, expectedExpressions[index]);
+        });
+      });
+    });
   });
 
   group('Given column BETWEEN expression when retrieving columns', () {
