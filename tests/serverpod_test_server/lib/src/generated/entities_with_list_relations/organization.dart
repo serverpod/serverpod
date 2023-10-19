@@ -367,7 +367,8 @@ class OrganizationTable extends _i1.Table {
     );
     _people = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
-      table: _i2.Person.t,
+      table: _i2.PersonTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _people!;
   }

@@ -370,7 +370,8 @@ class OrderTable extends _i1.Table {
     );
     _comments = _i1.ManyRelation<_i2.CommentTable>(
       tableWithRelations: relationTable,
-      table: _i2.Comment.t,
+      table: _i2.CommentTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _comments!;
   }

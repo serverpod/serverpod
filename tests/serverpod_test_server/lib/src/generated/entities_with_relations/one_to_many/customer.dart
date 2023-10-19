@@ -310,7 +310,8 @@ class CustomerTable extends _i1.Table {
     );
     _orders = _i1.ManyRelation<_i2.OrderTable>(
       tableWithRelations: relationTable,
-      table: _i2.Order.t,
+      table: _i2.OrderTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _orders!;
   }
