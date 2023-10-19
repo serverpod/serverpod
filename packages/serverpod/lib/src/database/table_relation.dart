@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/expressions.dart';
 
 /// Records the relation between two tables.
 /// This is typically only used internally by the serverpod framework.
@@ -68,6 +69,11 @@ class TableRelation {
     return _tableRelationEntries.last.foreignField.queryAlias;
   }
 
+  /// The base fieldName with the table name unescaped.
+  String get fieldBaseQueryAlias {
+    return _tableRelationEntries.last.field.queryAlias;
+  }
+
   /// The base fieldName without the query alias
   String get fieldName {
     return _tableRelationEntries.last.field.columnName;
@@ -76,6 +82,22 @@ class TableRelation {
   /// The base foreignFieldName without the query alias
   String get tableName {
     return _tableRelationEntries.last.field.table.tableName;
+  }
+
+  /// Last foreign column joined.
+  Column get lastJoiningColumn {
+    return _tableRelationEntries.last.field;
+  }
+
+  /// Last field table.
+  Table get fieldTable {
+    return _tableRelationEntries.last.field.table;
+  }
+
+  /// Create a new [TableRelation] with only one entry for the last table
+  /// relation.
+  TableRelation get lastRelation {
+    return TableRelation([_tableRelationEntries.last]);
   }
 
   /// Creates a new [TableRelation] from [this] and [relation].
