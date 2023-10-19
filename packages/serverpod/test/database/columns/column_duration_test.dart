@@ -125,7 +125,7 @@ void main() {
           () {
         var comparisonExpression = column > const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column > 10)');
+        expect(comparisonExpression.toString(), '$column > 10');
       });
 
       test(
@@ -133,7 +133,7 @@ void main() {
           () {
         var comparisonExpression = column > const Duration(hours: 10);
 
-        expect(comparisonExpression.toString(), '($column > \'36000000\')');
+        expect(comparisonExpression.toString(), '$column > \'36000000\'');
       });
 
       test(
@@ -141,7 +141,7 @@ void main() {
           () {
         var comparisonExpression = column > column;
 
-        expect(comparisonExpression.toString(), '($column > $column)');
+        expect(comparisonExpression.toString(), '$column > $column');
       });
 
       test(
@@ -150,7 +150,7 @@ void main() {
         var comparisonExpression = column > 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column > \'string is unhandled\')');
+            '$column > \'string is unhandled\'');
       });
 
       test(
@@ -158,7 +158,7 @@ void main() {
           () {
         var comparisonExpression = column >= const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column >= 10)');
+        expect(comparisonExpression.toString(), '$column >= 10');
       });
 
       test(
@@ -166,7 +166,7 @@ void main() {
           () {
         var comparisonExpression = column >= const Duration(hours: 10);
 
-        expect(comparisonExpression.toString(), '($column >= \'36000000\')');
+        expect(comparisonExpression.toString(), '$column >= \'36000000\'');
       });
 
       test(
@@ -174,7 +174,7 @@ void main() {
           () {
         var comparisonExpression = column >= column;
 
-        expect(comparisonExpression.toString(), '($column >= $column)');
+        expect(comparisonExpression.toString(), '$column >= $column');
       });
 
       test(
@@ -183,7 +183,7 @@ void main() {
         var comparisonExpression = column >= 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column >= \'string is unhandled\')');
+            '$column >= \'string is unhandled\'');
       });
 
       test(
@@ -191,7 +191,7 @@ void main() {
           () {
         var comparisonExpression = column < const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column < 10)');
+        expect(comparisonExpression.toString(), '$column < 10');
       });
 
       test(
@@ -199,7 +199,7 @@ void main() {
           () {
         var comparisonExpression = column < const Duration(hours: 10);
 
-        expect(comparisonExpression.toString(), '($column < \'36000000\')');
+        expect(comparisonExpression.toString(), '$column < \'36000000\'');
       });
 
       test(
@@ -207,7 +207,7 @@ void main() {
           () {
         var comparisonExpression = column < column;
 
-        expect(comparisonExpression.toString(), '($column < $column)');
+        expect(comparisonExpression.toString(), '$column < $column');
       });
 
       test(
@@ -216,7 +216,7 @@ void main() {
         var comparisonExpression = column < 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column < \'string is unhandled\')');
+            '$column < \'string is unhandled\'');
       });
 
       test(
@@ -224,7 +224,7 @@ void main() {
           () {
         var comparisonExpression = column <= const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column <= 10)');
+        expect(comparisonExpression.toString(), '$column <= 10');
       });
 
       test(
@@ -232,7 +232,7 @@ void main() {
           () {
         var comparisonExpression = column <= const Duration(hours: 10);
 
-        expect(comparisonExpression.toString(), '($column <= \'36000000\')');
+        expect(comparisonExpression.toString(), '$column <= \'36000000\'');
       });
 
       test(
@@ -240,7 +240,7 @@ void main() {
           () {
         var comparisonExpression = column <= column;
 
-        expect(comparisonExpression.toString(), '($column <= $column)');
+        expect(comparisonExpression.toString(), '$column <= $column');
       });
 
       test(
@@ -249,7 +249,7 @@ void main() {
         var comparisonExpression = column <= 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column <= \'string is unhandled\')');
+            '$column <= \'string is unhandled\'');
       });
     });
   });
