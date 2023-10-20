@@ -19,7 +19,7 @@ class OperationObject {
   final String? description;
 
   /// Additional external documentation for this operation.
-  final ExternalDocumentationObject? externalDocs;
+  final OpenAPIExternalDocumentation? externalDocs;
 
   /// Unique string used to identify the operation.The id must be unique among
   /// all operations described in the API.The operationId value is
@@ -36,17 +36,17 @@ class OperationObject {
   /// duplicated parameters. A unique parameter is defined by a combination of
   /// a name and location.The list can use the Reference Object to link to
   /// parameters that are defined at the OpenAPI Object's components/parameters.
-  final List<ParameterObject> parameters;
+  final List<OpenAPIParameter> parameters;
 
   /// The request body applicable for this operation.
   /// Serverpod endpoint method parameters are represented as
-  /// [RequestBodyObject] in the OpenAPI specification.
-  final RequestBodyObject? requestBody;
+  /// [OpenAPIRequestBody] in the OpenAPI specification.
+  final OpenAPIRequestBody? requestBody;
 
   /// The list of possible responses as they are returned from executing
-  /// this operation. The [ResponseObject] corresponds to the return type of a
+  /// this operation. The [OpenAPIResponse] corresponds to the return type of a
   /// serverpod endpoint method.
-  final ResponseObject responses;
+  final OpenAPIResponse responses;
 
   /// Declares this operation to be deprecated. Consumers should refrain
   /// from usage of the declared operation.
@@ -60,12 +60,12 @@ class OperationObject {
   /// security requirement ({}) can be included in the array. This definition
   /// overrides any declared top-level security. To remove a top-level security
   /// declaration, an empty array can be used.
-  final Set<SecurityRequirementObject> security;
+  final Set<OpenAPISecurityRequirement> security;
 
   /// An alternative server array to service this operation. If an alternative
   /// server object is specified at the [PathItemObject] or Root level,
   /// it will be overridden by this value.
-  final List<ServerObject>? servers;
+  final List<OpenAPIServer>? servers;
   OperationObject({
     this.tags,
     this.summary,

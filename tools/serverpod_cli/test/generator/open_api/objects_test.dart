@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   group('Validation of JSON Serialization for All OpenAPI Objects: ', () {
     var security = {
-      SecurityRequirementObject(
+      OpenAPISecurityRequirement(
         name: 'serverpodAuth',
         securitySchemes: HttpSecurityScheme(
           scheme: 'bearer',
@@ -16,16 +16,16 @@ void main() {
         ),
       ),
     };
-    LicenseObject licenseObject = LicenseObject(
+    OpenAPILicense licenseObject = OpenAPILicense(
       name: 'Apache 2.0',
       url: Uri.parse('http://www.apache.org/licenses/LICENSE-2.0.html'),
     );
-    ContactObject contactObject = ContactObject(
+    OpenAPIContact contactObject = OpenAPIContact(
       name: 'Ye Lin Aung',
       url: Uri.https('serverpod.dev'),
       email: 'example@email.com',
     );
-    ServerObject serverObject = ServerObject(
+    OpenAPIServer serverObject = OpenAPIServer(
       url: Uri.http('localhost:8080'),
       description: 'Development Server',
     );
@@ -39,7 +39,7 @@ void main() {
       name: 'pet',
       description: 'Everything about your Pets',
     );
-    ContentObject contentObject = ContentObject(
+    OpenAPIContent contentObject = OpenAPIContent(
       responseType: TypeDefinition(
         className: 'Future',
         nullable: false,
@@ -51,7 +51,7 @@ void main() {
         ],
       ),
     );
-    ContentObject contentObjectRequest = ContentObject(
+    OpenAPIContent contentObjectRequest = OpenAPIContent(
       requestContentSchemaObject: RequestContentSchemaObject(
         params: [
           ParameterDefinition(
@@ -61,7 +61,7 @@ void main() {
         ],
       ),
     );
-    ExternalDocumentationObject object = ExternalDocumentationObject(
+    OpenAPIExternalDocumentation object = OpenAPIExternalDocumentation(
       url: Uri.http('swagger.io'),
       description: 'Find out more',
     );
@@ -70,7 +70,7 @@ void main() {
       parameters: [],
       tags: ['pet'],
       operationId: 'getPetById',
-      requestBody: RequestBodyObject(
+      requestBody: OpenAPIRequestBody(
         parameterList: [
           ParameterDefinition(
               name: 'id',
@@ -78,26 +78,26 @@ void main() {
               required: true),
         ],
       ),
-      responses: ResponseObject(
+      responses: OpenAPIResponse(
         responseType: TypeDefinition(
           className: 'Pet',
           nullable: true,
         ),
       ),
     );
-    PathItemObject pathItemObject = PathItemObject(
+    OpenAPIPathItem pathItemObject = OpenAPIPathItem(
       summary: 'Summary',
       description: 'Description',
       postOperation: post,
     );
-    PathsObject pathsObject = PathsObject(
+    OpenAPIPaths pathsObject = OpenAPIPaths(
       pathName: '/api/v1/',
       path: pathItemObject,
     );
-    ComponentsObject componentsObject = ComponentsObject(securitySchemes: {
+    OpenAPIComponents componentsObject = OpenAPIComponents(securitySchemes: {
       serverpodAuth
     }, schemas: {
-      ComponentSchemaObject(
+      OpenAPIComponentSchema(
         ClassDefinition(
             fileName: 'example.dart',
             sourceFileName: '',

@@ -5,16 +5,16 @@ import 'package:serverpod_cli/src/generator/open_api/objects/content.dart';
 /// Each operation must have at least one response defined, usually a
 /// successful response. A response is defined by its HTTP status code and the
 /// data returned in the response body and/or headers.
-class ResponseObject {
+class OpenAPIResponse {
   final TypeDefinition responseType;
-  ResponseObject({
+  OpenAPIResponse({
     required this.responseType,
   });
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     // 200 response
-    var content = ContentObject(responseType: responseType);
+    var content = OpenAPIContent(responseType: responseType);
     map['200'] = <String, dynamic>{'description': 'Success'};
     map['200']['content'] = content.toJson();
     // 400 bad request

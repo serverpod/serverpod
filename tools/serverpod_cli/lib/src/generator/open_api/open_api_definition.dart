@@ -23,19 +23,19 @@ class OpenAPIDefinition {
   /// to a target server.
   /// If the servers property is not provided, or is an empty array,
   /// the default value would be a Server Object with a url value of /.
-  final Set<ServerObject>? servers;
+  final Set<OpenAPIServer>? servers;
 
   /// The available paths and operations for the API.
-  final Set<PathsObject>? paths;
+  final Set<OpenAPIPaths>? paths;
 
   /// An element to hold various schemas for the document.
-  final ComponentsObject? components;
+  final OpenAPIComponents? components;
 
   /// A list of tags used by the document with additional metadata.
   final Set<TagObject>? tags;
 
   /// Additional external documentation.
-  final ExternalDocumentationObject? externalDocs;
+  final OpenAPIExternalDocumentation? externalDocs;
   OpenAPIDefinition({
     this.openAPI = '3.0.0',
     required this.info,
@@ -85,19 +85,20 @@ class OpenAPIDefinition {
     );
 
     Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
-    Set<PathsObject> paths =
+    Set<OpenAPIPaths> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
-    Set<ComponentSchemaObject> schemas = _getSchemaObjectFromClassDefinitions(
-        protocolDefinition.entities, returnTypeList);
+    Set<OpenAPIComponentSchema> schemas =
+        _getComponentSchemasFromClassDefinitions(
+            protocolDefinition.entities, returnTypeList);
 
-    ComponentsObject componentsObject =
-        ComponentsObject(schemas: schemas, securitySchemes: {
+    OpenAPIComponents componentsObject =
+        OpenAPIComponents(schemas: schemas, securitySchemes: {
       serverpodAuth,
     });
 
     var servers = {
-      ServerObject(
+      OpenAPIServer(
           url: Uri.http('localhost:8080'), description: 'Development Server')
     };
 
@@ -111,7 +112,7 @@ class OpenAPIDefinition {
   }
 }
 
-/// Generate a map of paths' values based on a set of [PathsObject].
+/// Generate a map of paths' values based on a set of [OpenAPIPaths].
 /// example
 /// ```
 ///     {
@@ -123,7 +124,7 @@ class OpenAPIDefinition {
 ///       "/store/":{}
 ///     }
 /// ```
-Map<String, dynamic> _allPathsToJson(Set<PathsObject> paths) {
+Map<String, dynamic> _allPathsToJson(Set<OpenAPIPaths> paths) {
   Map<String, dynamic> map = {};
   for (var path in paths) {
     map[path.pathName] = path.path?.toJson() ?? {};
@@ -131,10 +132,10 @@ Map<String, dynamic> _allPathsToJson(Set<PathsObject> paths) {
   return map;
 }
 
-/// Get a set of [PathsObject] from ProtocolDefinition.
-Set<PathsObject> _getPathsFromProtocolDefinition(
+/// Get a set of [OpenAPIPaths] from ProtocolDefinition.
+Set<OpenAPIPaths> _getPathsFromProtocolDefinition(
     ProtocolDefinition protocolDefinition) {
-  Set<PathsObject> paths = {};
+  Set<OpenAPIPaths> paths = {};
   for (var endpoint in protocolDefinition.endpoints) {
     var extraPath = getExtraPath(endpoint.subDirParts);
 
@@ -149,8 +150,8 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
         ...method.parametersNamed,
         ...method.parametersPositional
       ];
-      ResponseObject responseObject =
-          ResponseObject(responseType: method.returnType);
+      OpenAPIResponse responseObject =
+          OpenAPIResponse(responseType: method.returnType);
       OperationObject operationObject = OperationObject(
         description: description,
         operationId: operationId,
@@ -165,16 +166,16 @@ Set<PathsObject> _getPathsFromProtocolDefinition(
         // No need in OpeApi 2.0
         parameters: [],
 
-        requestBody: RequestBodyObject(
+        requestBody: OpenAPIRequestBody(
           parameterList: params,
           requiredField: params.isNotEmpty,
         ),
       );
-      var pathItemObject = PathItemObject(
+      var pathItemObject = OpenAPIPathItem(
         postOperation: operationObject,
       );
 
-      var pathsObject = PathsObject(
+      var pathsObject = OpenAPIPaths(
         pathName: '$extraPath/${endpoint.name}/${method.name}',
         path: pathItemObject,
       );
@@ -198,25 +199,25 @@ Set<TagObject> _getTagsFromProtocolDefinition(
   return tags;
 }
 
-/// Get a set of [ComponentSchemaObject] from entities.
+/// Get a set of [OpenAPIComponentSchema] from entities.
 /// example```
 ///   Set<SchemaObject> schemas =
 ///  _getSchemaObjectFromClassDefinitions(protocolDefinition.entities);
 /// ```
-Set<ComponentSchemaObject> _getSchemaObjectFromClassDefinitions(
+Set<OpenAPIComponentSchema> _getComponentSchemasFromClassDefinitions(
     List<SerializableEntityDefinition> entitiesDefinition,
     List<SerializableEntityDefinition> returnTypeList) {
-  Set<ComponentSchemaObject> schemas = {};
+  Set<OpenAPIComponentSchema> schemas = {};
   var entitiesFromMethodReturn = returnTypeList;
   for (var entityInfo in entitiesDefinition) {
     // Removes entity that are already present in entitiesDefinition.
     entitiesFromMethodReturn
         .removeWhere((e) => e.className == entityInfo.className);
-    schemas.add(ComponentSchemaObject(entityInfo));
+    schemas.add(OpenAPIComponentSchema(entityInfo));
   }
 
   for (var entityInfo in entitiesFromMethodReturn) {
-    schemas.add(ComponentSchemaObject(entityInfo));
+    schemas.add(OpenAPIComponentSchema(entityInfo));
   }
 
   return schemas;

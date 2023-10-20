@@ -33,10 +33,10 @@ class OpenAPIConfig {
   final Uri? termsOfService;
 
   /// Contact information for the exposed API.
-  final ContactObject? contact;
+  final OpenAPIContact? contact;
 
   /// License information for the exposed API.
-  final LicenseObject? license;
+  final OpenAPILicense? license;
 
   /// The version of the OpenAPI document
   /// (which is distinct from the OpenAPI Specification version or
@@ -89,10 +89,10 @@ class OpenAPIConfig {
       summary: map.containsKey('summary') ? map['summary'] : null,
       description: map['description'],
       contact: map.containsKey('contact')
-          ? ContactObject.fromJson(map['contact'])
+          ? OpenAPIContact.fromJson(map['contact'])
           : null,
       license: map.containsKey('license')
-          ? LicenseObject.fromJson(map['license'])
+          ? OpenAPILicense.fromJson(map['license'])
           : null,
       termsOfService: map.containsKey('termsOfService')
           ? Uri.parse(map['termsOfService'])
@@ -110,15 +110,14 @@ class OpenAPIConfig {
 ///   "identifier": "Apache-2.0"
 ///  }
 ///```
-class LicenseObject {
+class OpenAPILicense {
   /// The license name used for the API.
   final String name;
 
-  /// A URL to the license used for the API.
-  /// This must be in the form of a URL.
+  /// A url to the license used for the API.
   /// The url field is mutually exclusive of the identifier field.
   final Uri? url;
-  LicenseObject({
+  OpenAPILicense({
     required this.name,
     this.url,
   });
@@ -133,8 +132,8 @@ class LicenseObject {
     return map;
   }
 
-  factory LicenseObject.fromJson(Map map) {
-    return LicenseObject(
+  factory OpenAPILicense.fromJson(Map map) {
+    return OpenAPILicense(
       name: map['name'] as String,
       url: map['url'] != null ? Uri.parse(map['url']) : null,
     );
@@ -152,7 +151,7 @@ class LicenseObject {
 ///
 ///```
 ///
-class ContactObject {
+class OpenAPIContact {
   /// The identifying name of the contact person/organization.
   final String name;
 
@@ -161,7 +160,7 @@ class ContactObject {
 
   /// The email address of the contact person/organization.
   final String email;
-  ContactObject({
+  OpenAPIContact({
     required this.name,
     required this.url,
     required this.email,
@@ -175,8 +174,8 @@ class ContactObject {
     };
   }
 
-  factory ContactObject.fromJson(Map map) {
-    return ContactObject(
+  factory OpenAPIContact.fromJson(Map map) {
+    return OpenAPIContact(
       name: map['name'] as String,
       url: Uri.parse(map['url'] as String),
       email: map['email'] as String,
@@ -191,13 +190,13 @@ class ContactObject {
 ///   "url": "https://example.com"
 /// }
 /// ```
-class ExternalDocumentationObject {
+class OpenAPIExternalDocumentation {
   /// A description of the target documentation.
   final String? description;
 
   /// The URL for the target documentation..
   final Uri url;
-  ExternalDocumentationObject({
+  OpenAPIExternalDocumentation({
     this.description,
     required this.url,
   });
@@ -210,8 +209,8 @@ class ExternalDocumentationObject {
     return map;
   }
 
-  factory ExternalDocumentationObject.fromJson(Map map) {
-    return ExternalDocumentationObject(
+  factory OpenAPIExternalDocumentation.fromJson(Map map) {
+    return OpenAPIExternalDocumentation(
       url: Uri.parse(map['url'] as String),
       description:
           map['description'] != null ? map['description'] as String : null,

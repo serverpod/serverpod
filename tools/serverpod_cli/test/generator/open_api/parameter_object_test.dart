@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('Validate ParameterObject: ', () {
     test('when query name is status and type is String', () {
-      ParameterObject object = ParameterObject(
+      OpenAPIParameter object = OpenAPIParameter(
         name: 'status',
         inField: ParameterLocation.query,
         requiredField: true,
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('when path name is status and type is String', () {
-      ParameterObject object = ParameterObject(
+      OpenAPIParameter object = OpenAPIParameter(
         name: 'status',
         inField: ParameterLocation.path,
         requiredField: true,
@@ -55,7 +55,7 @@ void main() {
     });
 
     test('when header name is Authorization and type is String', () {
-      ParameterObject object = ParameterObject(
+      OpenAPIParameter object = OpenAPIParameter(
         name: 'Authorization',
         inField: ParameterLocation.header,
         requiredField: true,

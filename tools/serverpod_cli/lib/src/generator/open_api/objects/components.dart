@@ -9,35 +9,35 @@ import 'package:serverpod_cli/src/generator/open_api/objects/security.dart';
 /// All objects defined within the components object will have no effect
 /// on the API unless they are explicitly referenced from properties outside the
 /// components object.
-class ComponentsObject {
-  /// A set of reusable [ComponentSchemaObject].that can be
+class OpenAPIComponents {
+  /// A set of reusable [OpenAPIComponentSchema].that can be
   /// referenced.
-  final Set<ComponentSchemaObject>? schemas;
+  final Set<OpenAPIComponentSchema>? schemas;
 
-  /// A mapping that associates response names with reusable [ResponseObject]
+  /// A mapping that associates response names with reusable [OpenAPIResponse]
   /// eg
   /// ```json
   ///  "NotFound": {
   ///    "description": "Entity not found."
   ///  },
   /// ```
-  final Map<String, ResponseObject>? responses;
+  final Map<String, OpenAPIResponse>? responses;
 
-  /// A collection of reusable [ParameterObject].that can be
+  /// A collection of reusable [OpenAPIParameter].that can be
   /// referenced.
-  final Map<String, ParameterObject>? parameters;
+  final Map<String, OpenAPIParameter>? parameters;
 
-  /// A collection of reusable [RequestBodyObject].that can be
+  /// A collection of reusable [OpenAPIRequestBody].that can be
   /// referenced.
-  final Map<String, RequestBodyObject>? requestBodies;
+  final Map<String, OpenAPIRequestBody>? requestBodies;
 
-  /// A collection of reusable [SecurityRequirementObject] that can be
+  /// A collection of reusable [OpenAPISecurityRequirement] that can be
   /// referenced.
-  final Set<SecurityRequirementObject> securitySchemes;
+  final Set<OpenAPISecurityRequirement> securitySchemes;
 
-  /// A mapping that associates path name with reusable [PathItemObject].
-  final Map<String, PathItemObject>? pathItems;
-  ComponentsObject({
+  /// A mapping that associates path name with reusable [OpenAPIPathItem].
+  final Map<String, OpenAPIPathItem>? pathItems;
+  OpenAPIComponents({
     this.schemas,
     this.responses,
     this.parameters,

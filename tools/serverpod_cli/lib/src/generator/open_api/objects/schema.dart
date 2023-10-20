@@ -132,10 +132,10 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
 }
 
 /// A schema object used within [ComponentObject].
-class ComponentSchemaObject {
+class OpenAPIComponentSchema {
   final SerializableEntityDefinition entityDefinition;
 
-  ComponentSchemaObject(
+  OpenAPIComponentSchema(
     this.entityDefinition,
   );
 

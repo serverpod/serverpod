@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
-/// The [ContentObject] describes the supported media types for an operation,
+/// The [OpenAPIContent] describes the supported media types for an operation,
 /// specifying the format and schema of request and response payloads. This can
 /// include formats like JSON, XML, and others.
 ///
@@ -20,10 +20,10 @@ import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 ///   }
 /// }
 /// ```
-class ContentObject {
+class OpenAPIContent {
   final RequestContentSchemaObject? requestContentSchemaObject;
   final TypeDefinition? responseType;
-  ContentObject({
+  OpenAPIContent({
     this.requestContentSchemaObject,
     this.responseType,
   });

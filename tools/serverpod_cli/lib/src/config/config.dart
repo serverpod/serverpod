@@ -118,7 +118,7 @@ class GeneratorConfig {
   final List<TypeDefinition> extraClasses;
 
   /// List of server runtime configurations, used by OpenAPI generator.
-  final Set<ServerObject> servers;
+  final Set<OpenAPIServer> servers;
 
   /// Configuration for generation of OpenAPI specification.
   final OpenAPIConfig? openAPIConfig;
@@ -255,7 +255,7 @@ class GeneratorConfig {
       }
     }
 
-    Set<ServerObject> servers = _getServersFromConfigs(dir);
+    Set<OpenAPIServer> servers = _getServersFromConfigs(dir);
     OpenAPIConfig? openAPIConfig;
 
     bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
@@ -304,13 +304,13 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
     return str;
   }
 
-  static Set<ServerObject> _getServersFromConfigs(String dir) {
-    Set<ServerObject> servers = {};
+  static Set<OpenAPIServer> _getServersFromConfigs(String dir) {
+    Set<OpenAPIServer> servers = {};
     for (var path in ['development', 'staging', 'production']) {
       try {
         var config = ServerpodConfig(path, 'undefined', {'database': ''});
         servers.add(
-          ServerObject(
+          OpenAPIServer(
             url: config.apiServer.toUri(),
             description: '${path.toCamelCase()} Server',
           ),

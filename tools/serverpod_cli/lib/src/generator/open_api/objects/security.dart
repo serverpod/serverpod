@@ -174,10 +174,10 @@ enum OauthFlowField {
   authorizationCode,
 }
 
-class SecurityRequirementObject {
+class OpenAPISecurityRequirement {
   final String name;
   final SecuritySchemeObject securitySchemes;
-  SecurityRequirementObject({
+  OpenAPISecurityRequirement({
     required this.name,
     required this.securitySchemes,
   });
@@ -199,7 +199,7 @@ class SecurityRequirementObject {
 }
 
 // TODO : Test all Serverpod auth flows and implement them.
-SecurityRequirementObject googleAuth = SecurityRequirementObject(
+OpenAPISecurityRequirement googleAuth = OpenAPISecurityRequirement(
   name: 'googleOauth',
   securitySchemes: OauthSecurityScheme(description: 'Google Auth 2.0', flows: {
     OauthFlowObject(
@@ -214,7 +214,7 @@ SecurityRequirementObject googleAuth = SecurityRequirementObject(
   }),
 );
 
-SecurityRequirementObject serverpodAuth = SecurityRequirementObject(
+OpenAPISecurityRequirement serverpodAuth = OpenAPISecurityRequirement(
   name: 'serverpodAuth',
   securitySchemes: HttpSecurityScheme(
     scheme: 'bearer',

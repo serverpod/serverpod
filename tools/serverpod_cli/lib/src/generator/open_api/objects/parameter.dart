@@ -20,7 +20,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 ///  - `header` : Custom headers that are expected as part of the request.
 ///    Note that RFC7230 states header names are case insensitive.
 ///  - `cookie` : Used to pass a specific cookie value to the API.
-class ParameterObject {
+class OpenAPIParameter {
   /// The name of the parameter. Parameter names are case sensitive.
   final String name;
 
@@ -70,7 +70,7 @@ class ParameterObject {
   /// The schema defining the type used for the parameter.
   final ParameterSchemaObject? schema;
 
-  ParameterObject({
+  OpenAPIParameter({
     required this.name,
     required this.inField,
     this.description,
@@ -118,9 +118,9 @@ class ParameterObject {
     return map;
   }
 
-  factory ParameterObject.fromParameterDefinition(
+  factory OpenAPIParameter.fromParameterDefinition(
       ParameterDefinition parameterDefinition) {
-    return ParameterObject(
+    return OpenAPIParameter(
       name: parameterDefinition.name,
       inField: ParameterLocation.body,
       requiredField: parameterDefinition.required,

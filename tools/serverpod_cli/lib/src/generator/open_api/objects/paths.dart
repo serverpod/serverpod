@@ -5,15 +5,15 @@ import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 /// The path is appended to the URL from the Server Object in order to
 /// construct the full URL.
 /// The Paths may be empty, due to Access Control List (ACL) constraints.
-class PathsObject {
+class OpenAPIPaths {
   /// The name of the path.
   /// ```
   /// /pets <- pathName (ServerPod Endpoint Name)
   ///     - post/ <- pathItemObject (Serverpod Endpoint's method name)
   /// ```
   final String pathName;
-  final PathItemObject? path;
-  PathsObject({
+  final OpenAPIPathItem? path;
+  OpenAPIPaths({
     required this.pathName,
     this.path,
   });
@@ -27,7 +27,7 @@ class PathsObject {
 /// A Path Item may be empty, due to ACL constraints.
 /// The path itself is still exposed to the documentation viewer
 /// but they will not know which operations and parameters are available.
-class PathItemObject {
+class OpenAPIPathItem {
   /// An optional, string summary, intended to apply to all operations in this
   /// path.
   final String? summary;
@@ -61,9 +61,9 @@ class PathItemObject {
   final OperationObject? traceOperation;
 
   /// An alternative server array to service all operations in this path.
-  final List<ServerObject>? servers;
+  final List<OpenAPIServer>? servers;
 
-  PathItemObject({
+  OpenAPIPathItem({
     this.summary,
     this.description,
     this.getOperation,

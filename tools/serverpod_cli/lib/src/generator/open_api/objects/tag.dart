@@ -18,7 +18,7 @@ class TagObject {
   final String? description;
 
   /// Additional external documentation for this tag.
-  final ExternalDocumentationObject? externalDocumentationObject;
+  final OpenAPIExternalDocumentation? externalDocumentationObject;
   TagObject({
     required this.name,
     this.description,

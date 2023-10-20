@@ -6,7 +6,7 @@
 ///   "description": "Development server"
 ///   }
 /// ```
-class ServerObject {
+class OpenAPIServer {
   /// A URL to the target host.
   final Uri url;
 
@@ -15,8 +15,8 @@ class ServerObject {
 
   /// A map between a variable name and its value.
   /// The value is used for substitution in the server's URL template.
-  final Map<String, ServerVariableObject>? variables;
-  ServerObject({
+  final Map<String, OpenAPIServerVariable>? variables;
+  OpenAPIServer({
     required this.url,
     this.description,
     this.variables,
@@ -35,7 +35,7 @@ class ServerObject {
 
 /// An object representing a Server Variable for server URL template
 /// substitution.
-class ServerVariableObject {
+class OpenAPIServerVariable {
   /// An enumeration of string values to be used if the substitution options
   /// are from a limited set.
   final List<String>? enumField;
@@ -51,7 +51,7 @@ class ServerVariableObject {
   /// An optional description for the server variable. CommonMark syntax
   /// may be used for rich text representation.
   final String? description;
-  ServerVariableObject({
+  OpenAPIServerVariable({
     this.enumField,
     required this.defaultField,
     this.description,

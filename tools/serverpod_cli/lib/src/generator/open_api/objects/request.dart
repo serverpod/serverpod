@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/content.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
 /// Describes a single request body.
-class RequestBodyObject {
+class OpenAPIRequestBody {
   /// A brief description of the request body.
   final String? description;
 
@@ -13,7 +13,7 @@ class RequestBodyObject {
 
   /// Determines if the request body is required in the request.
   final bool requiredField;
-  RequestBodyObject({
+  OpenAPIRequestBody({
     this.description,
     required this.parameterList,
     this.requiredField = true,
@@ -22,7 +22,7 @@ class RequestBodyObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     if (description != null) map['description'] = description;
-    map['content'] = ContentObject(
+    map['content'] = OpenAPIContent(
       requestContentSchemaObject: RequestContentSchemaObject(
         params: parameterList,
       ),
