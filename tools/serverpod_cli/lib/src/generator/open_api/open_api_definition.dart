@@ -236,8 +236,9 @@ List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
           ? method.returnType.generics.first
           : method.returnType;
       if (returnType.toSchemaObjectType !=
-              SchemaObjectType.serializableObjects &&
-          returnType.className == 'void') {
+              SchemaObjectType.serializableObjects ||
+          returnType.className == 'void' ||
+          returnType.className == 'dynamic') {
         continue;
       }
       SerializableEntityDefinition entity;
@@ -247,19 +248,20 @@ List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
             sourceFileName: 'undefined',
             className: returnType.className,
             values: [],
-            serverOnly: true);
+            serverOnly: false);
       } else {
         entity = ClassDefinition(
             fileName: 'undefined',
             sourceFileName: 'undefined',
             className: returnType.className,
             fields: [],
-            serverOnly: true,
+            serverOnly: false,
             isException: false);
       }
 
       returnTypeList.add(entity);
     }
   }
+
   return returnTypeList;
 }

@@ -37,28 +37,14 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
 
   Map<String, dynamic> map = {};
   map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
-  if (type.nullable) map['nullable'] = true;
+  if (type.nullable) map[OpenAPIJsonKey.nullable.name] = true;
 
   // If data is Map<String,int> use last int from generics as
-  // additionalProperties
+  // additionalProperties.
   if (type.generics.isEmpty) return map;
   var lastType = type.generics.last;
-  if (lastType.isListType) {
-    map[OpenAPIJsonKey.additionalProperties.name] =
-        listTypeToJson(lastType, true);
-  } else if (lastType.isMapType) {
-    map[OpenAPIJsonKey.additionalProperties.name] =
-        mapTypeToJson(lastType, true);
-  } else if (lastType.isUnknownSchemaType) {
-    map[OpenAPIJsonKey.additionalProperties.name] =
-        unknownSchemaTypeToJson(lastType, true);
-  } else {
-    map[OpenAPIJsonKey.additionalProperties.name] = coreDartTypeToJson(
-      lastType,
-      true,
-    );
-  }
-
+  map[OpenAPIJsonKey.additionalProperties.name] =
+      typeDefinitionToJson(lastType, true);
   return map;
 }
 
@@ -97,7 +83,7 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
   if (!child) map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
   map[OpenAPIJsonKey.$ref.name] =
       _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
-  if (type.nullable && !child) map['nullable'] = true;
+  if (type.nullable && !child) map[OpenAPIJsonKey.nullable.name] = true;
   return map;
 }
 
@@ -118,21 +104,7 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
         _getRef('AnyValue');
     return map;
   }
-  if (generic.first.isListType) {
-    map[OpenAPIJsonKey.items.name] = listTypeToJson(generic.first, true);
-    return map;
-  }
-  if (generic.first.isMapType) {
-    map[OpenAPIJsonKey.items.name] = mapTypeToJson(generic.first, true);
-    return map;
-  }
-
-  if (generic.first.isUnknownSchemaType) {
-    map[OpenAPIJsonKey.items.name] =
-        unknownSchemaTypeToJson(generic.first, true);
-    return map;
-  }
-  map[OpenAPIJsonKey.items.name] = coreDartTypeToJson(generic.first, true);
+  map[OpenAPIJsonKey.items.name] = typeDefinitionToJson(generic.first);
   return map;
 }
 
@@ -155,16 +127,17 @@ class OpenAPIComponentSchema {
       };
       return map;
     }
-    var classDefinition = entityDefinition as ClassDefinition;
-    Map<String, dynamic> objectMap = {};
-    objectMap[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
-    objectMap[OpenAPIJsonKey.properties.name] = {};
-    for (var field in classDefinition.fields) {
-      objectMap[OpenAPIJsonKey.properties.name][field.name] = {};
-      objectMap[OpenAPIJsonKey.properties.name][field.name] =
-          typeDefinitionToJson(field.type, true);
+
+    if (entityDefinition is ClassDefinition) {
+      var classDefinition = entityDefinition as ClassDefinition;
+      map[entityDefinition.className] = {
+        OpenAPIJsonKey.type.name: SchemaObjectType.object.name,
+        OpenAPIJsonKey.properties.name: {
+          for (var field in classDefinition.fields)
+            field.name: typeDefinitionToJson(field.type, true),
+        }
+      };
     }
-    map[entityDefinition.className] = objectMap;
 
     return map;
   }
@@ -179,15 +152,13 @@ class RequestContentSchemaObject {
   });
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
-    map[OpenAPIJsonKey.properties.name] = {};
-    for (var param in params) {
-      map[OpenAPIJsonKey.properties.name][param.name] =
-          typeDefinitionToJson(param.type, true);
-    }
-
-    return map;
+    return {
+      OpenAPIJsonKey.type.name: SchemaObjectType.object.name,
+      OpenAPIJsonKey.properties.name: {
+        for (var param in params)
+          param.name: typeDefinitionToJson(param.type, true),
+      }
+    };
   }
 }
 

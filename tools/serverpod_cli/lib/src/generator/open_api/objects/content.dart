@@ -32,17 +32,17 @@ class OpenAPIContent {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> contentMap = {};
 
-    contentMap[ContentType.applicationJson] = {};
-
     if (requestContentSchemaObject != null) {
-      contentMap[ContentType.applicationJson][OpenAPIJsonKey.schema.name] =
-          requestContentSchemaObject!.toJson();
+      contentMap[ContentType.applicationJson] = {
+        OpenAPIJsonKey.schema.name: requestContentSchemaObject!.toJson()
+      };
       return contentMap;
     }
 
     if (responseType != null) {
-      contentMap[ContentType.applicationJson][OpenAPIJsonKey.schema.name] =
-          typeDefinitionToJson(responseType!, true);
+      contentMap[ContentType.applicationJson] = {
+        OpenAPIJsonKey.schema.name: typeDefinitionToJson(responseType!, true)
+      };
       return contentMap;
     }
 

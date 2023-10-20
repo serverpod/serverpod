@@ -1655,6 +1655,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -1765,6 +1766,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -1818,6 +1820,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -1871,6 +1874,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -1926,6 +1930,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -1981,6 +1986,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2033,6 +2039,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2085,6 +2092,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2118,6 +2126,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -2228,6 +2237,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2281,6 +2291,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2334,6 +2345,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2389,6 +2401,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2444,6 +2457,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2496,6 +2510,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2548,6 +2563,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2600,6 +2616,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2652,6 +2669,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2704,6 +2722,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2756,6 +2775,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2811,6 +2831,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2866,6 +2887,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -2899,6 +2921,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -3009,6 +3032,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3062,6 +3086,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3115,6 +3140,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3170,6 +3196,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3225,6 +3252,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3277,6 +3305,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3329,6 +3358,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3381,6 +3411,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3433,6 +3464,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3485,6 +3517,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3537,6 +3570,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3592,6 +3626,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3647,6 +3682,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3680,6 +3716,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -3790,6 +3827,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3843,6 +3881,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3896,6 +3935,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -3951,6 +3991,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4006,6 +4047,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4058,6 +4100,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4110,6 +4153,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4162,6 +4206,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4214,6 +4259,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4266,6 +4312,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4318,6 +4365,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4373,6 +4421,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4428,6 +4477,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4461,6 +4511,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -4571,6 +4622,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4623,6 +4675,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4675,6 +4728,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4708,6 +4762,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/TestEnum"
                                         }
                                     }
@@ -4730,6 +4785,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4763,6 +4819,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/TestEnum"
                                         }
                                     }
@@ -4785,6 +4842,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4837,6 +4895,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4889,6 +4948,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -4922,6 +4982,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -5032,6 +5093,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5085,6 +5147,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5138,6 +5201,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5193,6 +5257,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5248,6 +5313,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5300,6 +5366,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5352,6 +5419,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5404,6 +5472,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5456,6 +5525,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5508,6 +5578,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5560,6 +5631,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5615,6 +5687,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5670,6 +5743,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5703,6 +5777,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -5813,6 +5888,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5866,6 +5942,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5919,6 +5996,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -5974,6 +6052,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6029,6 +6108,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6081,6 +6161,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6133,6 +6214,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6185,6 +6267,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6237,6 +6320,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6270,6 +6354,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -6380,6 +6465,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6433,6 +6519,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6486,6 +6573,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6541,6 +6629,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6596,6 +6685,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6648,6 +6738,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6700,6 +6791,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6733,6 +6825,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -6843,6 +6936,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6896,6 +6990,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -6949,6 +7044,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7004,6 +7100,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7059,6 +7156,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7111,6 +7209,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7163,6 +7262,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7196,6 +7296,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -7306,6 +7407,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7359,6 +7461,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7412,6 +7515,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7467,6 +7571,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7522,6 +7627,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7574,6 +7680,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7626,6 +7733,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7678,6 +7786,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7730,6 +7839,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7782,6 +7892,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7834,6 +7945,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7889,6 +8001,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7944,6 +8057,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -7977,6 +8091,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -8087,6 +8202,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8140,6 +8256,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8193,6 +8310,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8248,6 +8366,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8303,6 +8422,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8355,6 +8475,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8407,6 +8528,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8459,6 +8581,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8511,6 +8634,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8563,6 +8687,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8615,6 +8740,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8670,6 +8796,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8725,6 +8852,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8758,6 +8886,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -8868,6 +8997,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8921,6 +9051,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -8974,6 +9105,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9029,6 +9161,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9084,6 +9217,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9136,6 +9270,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9188,6 +9323,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9240,6 +9376,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9292,6 +9429,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9344,6 +9482,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9396,6 +9535,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9451,6 +9591,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9506,6 +9647,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9539,6 +9681,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -9649,6 +9792,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9701,6 +9845,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9753,6 +9898,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9786,6 +9932,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/TestEnum"
                                         }
                                     }
@@ -9808,6 +9955,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9841,6 +9989,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/TestEnum"
                                         }
                                     }
@@ -9863,6 +10012,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9915,6 +10065,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -9967,6 +10118,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10000,6 +10152,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -10110,6 +10263,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10163,6 +10317,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10216,6 +10371,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10271,6 +10427,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10326,6 +10483,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10378,6 +10536,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10430,6 +10589,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10482,6 +10642,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10534,6 +10695,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10586,6 +10748,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10638,6 +10801,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10693,6 +10857,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10748,6 +10913,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10781,6 +10947,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -10891,6 +11058,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10944,6 +11112,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -10997,6 +11166,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11052,6 +11222,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11107,6 +11278,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11159,6 +11331,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11211,6 +11384,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11263,6 +11437,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11315,6 +11490,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11348,6 +11524,7 @@
                                     "types": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -11458,6 +11635,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11511,6 +11689,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11564,6 +11743,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11619,6 +11799,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11674,6 +11855,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11726,6 +11908,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -11778,6 +11961,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -12225,6 +12409,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/SimpleData"
                                     }
                                 }
@@ -13612,6 +13797,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -13634,6 +13820,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -13667,6 +13854,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -13689,6 +13877,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -13722,6 +13911,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -13744,6 +13934,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -13777,6 +13968,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -13799,6 +13991,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -13832,6 +14025,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -13854,6 +14048,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -13887,6 +14082,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -13909,6 +14105,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -13942,6 +14139,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -14159,6 +14357,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -14235,6 +14434,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -14257,6 +14457,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -14290,6 +14491,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -14312,6 +14514,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -14345,6 +14548,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -14367,6 +14571,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -14400,6 +14605,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Types"
                                         }
                                     }
@@ -14422,6 +14628,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Types"
                                     }
                                 }
@@ -14455,6 +14662,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/UniqueData"
                                         }
                                     }
@@ -14672,6 +14880,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/UniqueData"
                                     }
                                 }
@@ -14948,6 +15157,7 @@
                                     "citizens": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Person"
                                         }
                                     }
@@ -15045,6 +15255,7 @@
                                     "citizens": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Person"
                                         }
                                     }
@@ -15197,6 +15408,7 @@
                                     "persons": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Person"
                                         }
                                     }
@@ -15294,6 +15506,7 @@
                                     "persons": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Person"
                                         }
                                     }
@@ -15553,6 +15766,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Customer"
                                     }
                                 }
@@ -15605,6 +15819,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Customer"
                                     }
                                 }
@@ -15638,6 +15853,7 @@
                                     "comments": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Comment"
                                         }
                                     }
@@ -15660,6 +15876,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Comment"
                                     }
                                 }
@@ -15693,6 +15910,7 @@
                                     "orders": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Order"
                                         }
                                     }
@@ -15715,6 +15933,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Order"
                                     }
                                 }
@@ -15748,6 +15967,7 @@
                                     "customers": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/Customer"
                                         }
                                     }
@@ -15770,6 +15990,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Customer"
                                     }
                                 }
@@ -15867,6 +16088,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -15919,6 +16141,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -15967,6 +16190,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16015,6 +16239,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16259,6 +16484,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16308,6 +16534,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16357,6 +16584,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16406,6 +16634,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Citizen"
                                     }
                                 }
@@ -16503,6 +16732,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Address"
                                     }
                                 }
@@ -16600,6 +16830,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Post"
                                     }
                                 }
@@ -16892,6 +17123,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/Company"
                                     }
                                 }
@@ -18678,6 +18910,7 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/SimpleData"
                                         }
                                     }
@@ -18700,6 +18933,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/SimpleData"
                                     }
                                 }
@@ -18733,7 +18967,9 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/SimpleData",
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -18755,7 +18991,9 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "type": "object",
+                                        "$ref": "#/components/schemas/SimpleData",
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -18788,6 +19026,7 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/SimpleData"
                                         }
                                     }
@@ -18810,6 +19049,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
+                                        "type": "object",
                                         "$ref": "#/components/schemas/SimpleData"
                                     }
                                 }
@@ -18843,7 +19083,9 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/SimpleData",
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -18865,7 +19107,9 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "type": "object",
+                                        "$ref": "#/components/schemas/SimpleData",
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -21564,12 +21808,14 @@
                     "citizens": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/Person"
                         }
                     },
                     "organizations": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/Organization"
                         }
                     }
@@ -21588,6 +21834,7 @@
                     "people": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/Person"
                         }
                     },
@@ -21654,6 +21901,7 @@
                     "orders": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/Order"
                         }
                     }
@@ -21678,6 +21926,7 @@
                     "comments": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/Comment"
                         }
                     }
@@ -21819,6 +22068,7 @@
                     "list": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/ModuleClass"
                         }
                     },
@@ -21924,25 +22174,31 @@
                     "anObjectList": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/SimpleData"
                         }
                     },
                     "aNullableObjectList": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/SimpleData"
                         }
                     },
                     "aListWithNullableObjects": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "type": "object",
+                            "$ref": "#/components/schemas/SimpleData",
+                            "nullable": true
                         }
                     },
                     "aNullableListWithNullableObjects": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "type": "object",
+                            "$ref": "#/components/schemas/SimpleData",
+                            "nullable": true
                         }
                     },
                     "aDateTimeList": {
@@ -22139,13 +22395,16 @@
                     "enumList": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/TestEnum"
                         }
                     },
                     "nullableEnumList": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/TestEnum"
+                            "type": "object",
+                            "$ref": "#/components/schemas/TestEnum",
+                            "nullable": true
                         }
                     },
                     "enumListList": {
@@ -22153,6 +22412,7 @@
                         "items": {
                             "type": "array",
                             "items": {
+                                "type": "object",
                                 "$ref": "#/components/schemas/TestEnum"
                             }
                         }
@@ -22291,25 +22551,31 @@
                     "dataList": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/SimpleData"
                         }
                     },
                     "nullableDataList": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/SimpleData"
                         }
                     },
                     "listWithNullableData": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "type": "object",
+                            "$ref": "#/components/schemas/SimpleData",
+                            "nullable": true
                         }
                     },
                     "nullableListWithNullableData": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "type": "object",
+                            "$ref": "#/components/schemas/SimpleData",
+                            "nullable": true
                         }
                     }
                 }
@@ -22436,6 +22702,7 @@
                     "rows": {
                         "type": "array",
                         "items": {
+                            "type": "object",
                             "$ref": "#/components/schemas/SimpleData"
                         }
                     }
@@ -22531,47 +22798,7 @@
                     }
                 }
             },
-            "void": {
-                "type": "object",
-                "properties": {}
-            },
-            "int": {
-                "type": "object",
-                "properties": {}
-            },
             "AuthenticationResponse": {
-                "type": "object",
-                "properties": {}
-            },
-            "double": {
-                "type": "object",
-                "properties": {}
-            },
-            "bool": {
-                "type": "object",
-                "properties": {}
-            },
-            "DateTime": {
-                "type": "object",
-                "properties": {}
-            },
-            "String": {
-                "type": "object",
-                "properties": {}
-            },
-            "ByteData": {
-                "type": "object",
-                "properties": {}
-            },
-            "Duration": {
-                "type": "object",
-                "properties": {}
-            },
-            "UuidValue": {
-                "type": "object",
-                "properties": {}
-            },
-            "List": {
                 "type": "object",
                 "properties": {}
             },
@@ -22588,10 +22815,6 @@
                 "properties": {}
             },
             "FreezedCustomClass": {
-                "type": "object",
-                "properties": {}
-            },
-            "Map": {
                 "type": "object",
                 "properties": {}
             },

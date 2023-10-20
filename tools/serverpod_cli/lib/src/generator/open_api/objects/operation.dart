@@ -98,7 +98,7 @@ class OperationObject {
       map[OpenAPIJsonKey.description.name] = description;
     }
     if (externalDocs != null) {
-      map[OpenAPIJsonKey.externalDocs.name] = externalDocs;
+      map[OpenAPIJsonKey.externalDocs.name] = externalDocs!.toJson();
     }
 
     if (requestBody != null) {
