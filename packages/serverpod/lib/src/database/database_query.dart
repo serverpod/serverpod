@@ -528,6 +528,12 @@ String? _buildGroupByQuery(
   return selectFields.map((column) => '$column').join(', ');
 }
 
+StateError _createStateErrorWithMessage(String message) {
+  const stateErrorMessage = 'This likely means that the code generator did not '
+      'create the table relations correctly.';
+  return StateError('$message - $stateErrorMessage');
+}
+
 String? _buildWhereQuery({
   Expression? where,
   _SubQueries? subQueries,
@@ -555,17 +561,17 @@ String? _buildWhereQuery({
     var column = where.column;
     var tableRelation = column.table.tableRelation;
     if (tableRelation == null) {
-      throw StateError('Table relation is null');
+      throw _createStateErrorWithMessage('Table relation is null');
     }
 
     var expressionIndex = where.index;
     if (expressionIndex == null) {
-      throw StateError('Expression index is null');
+      throw _createStateErrorWithMessage('Expression index is null');
     }
 
     var subQuery = subQueries?._whereCountQueries[expressionIndex];
     if (subQuery == null) {
-      throw StateError(
+      throw _createStateErrorWithMessage(
           'Sub query for expression index \'$expressionIndex\' is null');
     }
 
@@ -662,7 +668,7 @@ class _SubQueries {
 
       var tableRelation = column.table.tableRelation;
       if (tableRelation == null) {
-        throw StateError('Table relation is null');
+        throw _createStateErrorWithMessage('Table relation is null');
       }
 
       var relationQueryAlias = tableRelation.relationQueryAlias;
@@ -697,7 +703,7 @@ class _SubQueries {
       var tableRelation = column.table.tableRelation;
 
       if (tableRelation == null) {
-        throw StateError('Table relation is null');
+        throw _createStateErrorWithMessage('Table relation is null');
       }
 
       var relationQueryAlias = tableRelation.relationQueryAlias;
@@ -769,7 +775,8 @@ String _formatOrderByCount(
   var queryAlias = subQueries?._orderByQueries[index]?.alias;
 
   if (queryAlias == null) {
-    throw StateError('Query alias for order by sub query is null.');
+    throw _createStateErrorWithMessage(
+        'Query alias for order by sub query is null.');
   }
 
   var str = '"$queryAlias"."count"';
@@ -798,13 +805,13 @@ LinkedHashMap<String, _JoinContext> _gatherOrderByJoinContexts(
         /// Last relation Query Alias is stored as unique
 
         if (orderByQueries == null) {
-          throw StateError('Order by sub queries is null.');
+          throw _createStateErrorWithMessage('Order by sub queries is null.');
         }
 
         var queryAlias = orderByQueries[orderIndex]?.alias;
 
         if (queryAlias == null) {
-          throw StateError(
+          throw _createStateErrorWithMessage(
               'Missing query alias for order by sub query with index $index.');
         }
 
@@ -891,7 +898,7 @@ MapEntry<String, _JoinContext> _gatherHavingJoinContext(
   var column = having.column;
   var tableRelation = column.table.tableRelation;
   if (tableRelation == null) {
-    throw StateError('Table relation is null.');
+    throw _createStateErrorWithMessage('Table relation is null.');
   }
   var lastRelation = tableRelation.lastRelation;
 

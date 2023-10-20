@@ -395,7 +395,9 @@ void main() {
           throwsA(isA<StateError>().having(
             (e) => e.toString(),
             'message',
-            equals('Bad state: Table relation is null'),
+            equals(
+                'Bad state: Table relation is null - This likely means that the code generator did not '
+                'create the table relations correctly.'),
           )));
     });
 
