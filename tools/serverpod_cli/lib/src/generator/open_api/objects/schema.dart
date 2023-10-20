@@ -104,7 +104,7 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
         _getRef('AnyValue');
     return map;
   }
-  map[OpenAPIJsonKey.items.name] = typeDefinitionToJson(generic.first);
+  map[OpenAPIJsonKey.items.name] = typeDefinitionToJson(generic.first, true);
   return map;
 }
 
