@@ -377,7 +377,16 @@ class DeleteQueryBuilder {
   ///
   /// If the where expression includes columns from a relation, the relation
   /// will be added to the query with a using statement.
+  ///
+  /// Throws a [UnimplementedError] if the where expression includes a count
+  /// column since these are not supported yet.
   DeleteQueryBuilder withWhere(Expression? where) {
+    if (where != null && where.columns.whereType<ColumnCount>().isNotEmpty) {
+      // TODO - Add support for count columns in where expressions.
+      throw UnimplementedError(
+        'Count columns are not supported in delete where expressions.',
+      );
+    }
     _where = where;
     return this;
   }
@@ -387,11 +396,10 @@ class DeleteQueryBuilder {
     _validateTableReferences(_table.tableName, where: _where);
 
     var using = _buildUsingQuery(where: _where);
-    var where = _buildWhereQueryWithoutSubQueries(where: _where);
 
     var query = 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
-    if (where != null) query += ' WHERE $where';
+    if (_where != null) query += ' WHERE $_where';
     if (using != null) query += ' AND ${using.where}';
     if (_returningStatement != null) query += _returningStatement!;
     return query;
@@ -588,34 +596,19 @@ String? _buildWhereQuery({
   return '$whereQuery AND ${listQueryAdditions.whereAddition}';
 }
 
-String? _buildWhereQueryWithoutSubQueries({
-  Expression? where,
-}) {
-  if (where == null) {
-    return null;
-  }
-
-  if (where.columns.whereType<ColumnCount>().isNotEmpty) {
-    // TODO - Add support for count columns in where expressions.
-    throw const FormatException(
-      'Count columns are not supported in where expressions.',
+_UsingQuery? _buildUsingQuery({Expression? where}) {
+  List<TableRelation> tableRelations = [];
+  if (where != null) {
+    tableRelations.addAll(
+      _gatherTableRelationsFromWhereWithoutSubQueries(where.columns),
     );
   }
 
-  return where.toString();
-}
-
-_UsingQuery? _buildUsingQuery({Expression? where}) {
-  LinkedHashMap<String, _JoinContext> joinContexts = LinkedHashMap();
-  if (where != null) {
-    joinContexts.addAll(_gatherWhereJoinContexts(where.columns));
-  }
-
-  if (joinContexts.isEmpty) {
+  if (tableRelations.isEmpty) {
     return null;
   }
 
-  return _usingQueryFromJoinContexts(joinContexts);
+  return _usingQueryFromTableRelations(tableRelations);
 }
 
 class _SubQuery {
@@ -891,6 +884,28 @@ LinkedHashMap<String, _JoinContext> _gatherWhereJoinContexts(
   return joins;
 }
 
+List<TableRelation> _gatherTableRelationsFromWhereWithoutSubQueries(
+  List<Column> columns,
+) {
+  // Linked hash map to preserve order and remove duplicates.
+  LinkedHashMap<String, TableRelation> joins = LinkedHashMap();
+  var columnsWithTableRelations =
+      columns.where((column) => column.table.tableRelation != null);
+  for (var column in columnsWithTableRelations) {
+    var tableRelation = column.table.tableRelation;
+    if (tableRelation == null) {
+      continue;
+    }
+
+    List<TableRelation> subTableRelations = tableRelation.getRelations;
+    subTableRelations.forEachIndexed((index, subTableRelation) {
+      joins[subTableRelation.relationQueryAlias] = subTableRelation;
+    });
+  }
+
+  return joins.values.toList();
+}
+
 MapEntry<String, _JoinContext> _gatherHavingJoinContext(
   ColumnExpression having,
 ) {
@@ -960,12 +975,10 @@ String _joinStatementFromJoinContexts(
   return joinStatements.join(' ');
 }
 
-_UsingQuery _usingQueryFromJoinContexts(
-    LinkedHashMap<String, _JoinContext> joinContexts) {
+_UsingQuery _usingQueryFromTableRelations(List<TableRelation> tableRelations) {
   List<String> usingStatements = [];
   List<String> whereStatements = [];
-  for (var joinContext in joinContexts.values) {
-    var tableRelation = joinContext.tableRelation;
+  for (var tableRelation in tableRelations) {
     usingStatements.add(
         '"${tableRelation.foreignTableName}" AS "${tableRelation.relationQueryAlias}"');
     whereStatements.add(
