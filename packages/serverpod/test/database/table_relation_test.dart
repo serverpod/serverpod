@@ -46,11 +46,10 @@ void main() {
       );
     });
 
-    test(
-        'when lastJoiningColumn is called then last joining column is returned.',
+    test('when fieldColumn is called then last joining column is returned.',
         () {
       expect(
-        tableRelation.lastJoiningColumn,
+        tableRelation.fieldColumn,
         lastJoiningColumn,
       );
     });
@@ -70,53 +69,55 @@ void main() {
       });
     });
 
-    test('when lastForeignTableName is called then last table is returned.',
+    test('when foreignTableName is called then last foreign table is returned.',
         () {
-      expect(tableRelation.lastForeignTableName, 'citizen');
+      expect(tableRelation.foreignTableName, 'citizen');
     });
 
     test(
-        'when lastJoiningField is called then last joining field name is returned.',
+        'when fieldNameWithJoins is called then last joining field name is returned.',
         () {
-      expect(tableRelation.lastJoiningField, '"company"."ceoId"');
-    });
-
-    test('when lastJoiningFieldQueryAlias is called then last', () {
-      expect(tableRelation.lastJoiningFieldQueryAlias, 'company.ceoId');
+      expect(tableRelation.fieldNameWithJoins, '"company"."ceoId"');
     });
 
     test(
-        'when foreignFieldQuery is called then the base query for the citizen is created.',
+        'when fieldQueryAliasWithJoins is called then last field query alias with joins is returned.',
+        () {
+      expect(tableRelation.fieldQueryAliasWithJoins, 'company.ceoId');
+    });
+
+    test(
+        'when foreignFieldBaseQuery is called then the base query for the citizen is created.',
         () {
       expect(tableRelation.foreignFieldBaseQuery, '"citizen"."id"');
     });
 
     test(
-        'when foreignFieldBaseQueryAlias is called then the unescaped version of the base query for foreign field is created.',
+        'when foreignFieldQueryAlias is called then the unescaped version of the base query for foreign field is created.',
         () {
-      expect(tableRelation.foreignFieldBaseQueryAlias, 'citizen.id');
+      expect(tableRelation.foreignFieldQueryAlias, 'citizen.id');
     });
 
     test(
-        'when fieldBaseQueryAlias is called then the unescaped version of the base query for field is created.',
+        'when fieldQueryAlias is called then the unescaped version of the base query for field is created.',
         () {
       expect(
-        tableRelation.fieldBaseQueryAlias,
+        tableRelation.fieldQueryAlias,
         'company.ceoId',
       );
     });
 
-    test('when lastJoiningForeignField is called then last foreign field name.',
+    test(
+        'when foreignFieldNameWithJoins is called then last foreign field name with joins is returned.',
         () {
-      expect(
-          tableRelation.lastJoiningForeignField, '"company_ceo_citizen"."id"');
+      expect(tableRelation.foreignFieldNameWithJoins,
+          '"company_ceo_citizen"."id"');
     });
 
-    test(
-        'when lastJoiningColumn is called then last joining column is returned.',
+    test('when fieldColumn is called then last joining column is returned.',
         () {
       expect(
-        tableRelation.lastJoiningColumn,
+        tableRelation.fieldColumn,
         lastJoiningColumn,
       );
     });
@@ -124,7 +125,7 @@ void main() {
     test(
         'when getting last joining foreign field query alias then correct alias is returned.',
         () {
-      expect(tableRelation.lastJoiningForeignFieldQueryAlias,
+      expect(tableRelation.foreignFieldQueryAliasWithJoins,
           '"company_ceo_citizen"."citizen.id"');
     });
 
@@ -198,26 +199,30 @@ void main() {
             tableRelation.relationQueryAlias);
       });
     });
-    test('when lastForeignTableName is called then last table is returned.',
+    test(
+        'when foreignTableName is called then last foreign table name is returned.',
         () {
-      expect(tableRelation.lastForeignTableName, 'restaurant');
+      expect(tableRelation.foreignTableName, 'restaurant');
     });
 
     test(
-        'when lastJoiningField is called then last joining field name is returned.',
+        'when fieldNameWithJoins is called then last joining field name is returned.',
         () {
-      expect(tableRelation.lastJoiningField,
+      expect(tableRelation.fieldNameWithJoins,
           '"company_ceo_citizen"."favoriteRestaurantId"');
     });
 
-    test('when lastJoiningForeignField is called then last foreign field name.',
+    test(
+        'when foreignFieldNameWithJoins is called then last foreign field name.',
         () {
-      expect(tableRelation.lastJoiningForeignField,
+      expect(tableRelation.foreignFieldNameWithJoins,
           '"company_ceo_citizen_favoriteRestaurant_restaurant"."id"');
     });
 
-    test('when lastJoiningFieldQueryAlias is called then last', () {
-      expect(tableRelation.lastJoiningFieldQueryAlias,
+    test(
+        'when fieldQueryAliasWithJoins is called then last field query alias with joins is returned.',
+        () {
+      expect(tableRelation.fieldQueryAliasWithJoins,
           'company_ceo_citizen.favoriteRestaurantId');
     });
 
@@ -228,16 +233,16 @@ void main() {
     });
 
     test(
-        'when foreignFieldBaseQueryAlias is called then the unescaped version of the base query for foreign field is created.',
+        'when foreignFieldQueryAlias is called then the unescaped version of the base query for foreign field is created.',
         () {
-      expect(tableRelation.foreignFieldBaseQueryAlias, 'restaurant.id');
+      expect(tableRelation.foreignFieldQueryAlias, 'restaurant.id');
     });
 
     test(
-        'when fieldBaseQueryAlias is called then the unescaped version of the base query for field is created.',
+        'when fieldQueryAlias is called then the unescaped version of the base query for field is created.',
         () {
       expect(
-        tableRelation.fieldBaseQueryAlias,
+        tableRelation.fieldQueryAlias,
         'citizen.favoriteRestaurantId',
       );
     });
@@ -245,7 +250,7 @@ void main() {
     test(
         'when getting last joining foreign field query alias then correct alias is returned.',
         () {
-      expect(tableRelation.lastJoiningForeignFieldQueryAlias,
+      expect(tableRelation.foreignFieldQueryAliasWithJoins,
           '"company_ceo_citizen_favoriteRestaurant_restaurant"."restaurant.id"');
     });
 
@@ -254,7 +259,7 @@ void main() {
         () {
       var lastRelation = tableRelation.lastRelation;
 
-      expect(lastRelation.lastJoiningForeignField,
+      expect(lastRelation.foreignFieldNameWithJoins,
           '"citizen_favoriteRestaurant_restaurant"."id"');
     });
   });

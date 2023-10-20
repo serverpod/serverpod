@@ -210,12 +210,11 @@ class SelectQueryBuilder {
     }
 
     var relationFieldName = tableRelation.foreignFieldBaseQuery;
-    //'"${relationTable.tableName}"."${tableRelation.foreignFieldName}"';
 
     var whereAddition = Expression('$relationFieldName IN (${ids.join(', ')})');
 
     _listQueryAdditions = _ListQueryAdditions(
-      relationalFieldName: tableRelation.foreignFieldBaseQueryAlias,
+      relationalFieldName: tableRelation.foreignFieldQueryAlias,
       whereAddition: whereAddition,
     );
 
@@ -409,7 +408,7 @@ String _buildSelectStatement(
 
   if (countTableRelation != null) {
     selectStatements +=
-        ', COUNT(${countTableRelation.lastJoiningForeignField}) AS "count"';
+        ', COUNT(${countTableRelation.foreignFieldNameWithJoins}) AS "count"';
   }
 
   return selectStatements;
@@ -575,8 +574,8 @@ String? _buildWhereQuery({
           'Sub query for expression index \'$expressionIndex\' is null');
     }
 
-    whereQuery = '${tableRelation.lastJoiningField} IN '
-        '(SELECT "${subQuery.alias}"."${tableRelation.fieldBaseQueryAlias}" '
+    whereQuery = '${tableRelation.fieldNameWithJoins} IN '
+        '(SELECT "${subQuery.alias}"."${tableRelation.fieldQueryAlias}" '
         'FROM "${subQuery.alias}")';
   } else {
     whereQuery = where.toString();
@@ -678,7 +677,7 @@ class _SubQueries {
       var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
           .withWhere(column.innerWhere)
           .enableOneLevelWhereExpressionJoins()
-          .withSelectFields([tableRelation.lastJoiningColumn])
+          .withSelectFields([tableRelation.fieldColumn])
           .withCountTableRelation(tableRelation.lastRelation)
           .build();
 
@@ -712,7 +711,7 @@ class _SubQueries {
 
       var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
           .withWhere(column.innerWhere)
-          .withSelectFields([tableRelation.lastJoiningColumn])
+          .withSelectFields([tableRelation.fieldColumn])
           .enableOneLevelWhereExpressionJoins()
           .withHaving(expression)
           .build();
@@ -840,15 +839,15 @@ String _buildSubQueryJoinStatement({
   required TableRelation tableRelation,
   required String queryAlias,
 }) {
-  return 'LEFT JOIN "$queryAlias" ON ${tableRelation.lastJoiningField} '
-      '= "$queryAlias"."${tableRelation.fieldBaseQueryAlias}"';
+  return 'LEFT JOIN "$queryAlias" ON ${tableRelation.fieldNameWithJoins} '
+      '= "$queryAlias"."${tableRelation.fieldQueryAlias}"';
 }
 
 String _buildJoinStatement({required TableRelation tableRelation}) {
-  return 'LEFT JOIN "${tableRelation.lastForeignTableName}" AS '
+  return 'LEFT JOIN "${tableRelation.foreignTableName}" AS '
       '"${tableRelation.relationQueryAlias}" ON '
-      '${tableRelation.lastJoiningField} = '
-      '${tableRelation.lastJoiningForeignField}';
+      '${tableRelation.fieldNameWithJoins} = '
+      '${tableRelation.foreignFieldNameWithJoins}';
 }
 
 LinkedHashMap<String, _JoinContext> _gatherWhereJoinContexts(
@@ -944,16 +943,16 @@ String _joinStatementFromJoinContexts(
     var tableRelation = joinContext.tableRelation;
     joinStatement = 'LEFT JOIN';
     if (!joinContext.subQuery) {
-      joinStatement += ' "${tableRelation.lastForeignTableName}" AS';
+      joinStatement += ' "${tableRelation.foreignTableName}" AS';
     }
 
     joinStatement += ' "${tableRelation.relationQueryAlias}" '
-        'ON ${tableRelation.lastJoiningField} ';
+        'ON ${tableRelation.fieldNameWithJoins} ';
 
     if (!joinContext.subQuery) {
-      joinStatement += '= ${tableRelation.lastJoiningForeignField}';
+      joinStatement += '= ${tableRelation.foreignFieldNameWithJoins}';
     } else {
-      joinStatement += '= ${tableRelation.lastJoiningForeignFieldQueryAlias}';
+      joinStatement += '= ${tableRelation.foreignFieldQueryAliasWithJoins}';
     }
 
     joinStatements.add(joinStatement);
@@ -968,9 +967,9 @@ _UsingQuery _usingQueryFromJoinContexts(
   for (var joinContext in joinContexts.values) {
     var tableRelation = joinContext.tableRelation;
     usingStatements.add(
-        '"${tableRelation.lastForeignTableName}" AS "${tableRelation.relationQueryAlias}"');
+        '"${tableRelation.foreignTableName}" AS "${tableRelation.relationQueryAlias}"');
     whereStatements.add(
-        '${tableRelation.lastJoiningField} = ${tableRelation.lastJoiningForeignField}');
+        '${tableRelation.fieldNameWithJoins} = ${tableRelation.foreignFieldNameWithJoins}');
   }
   return _UsingQuery(
     using: usingStatements.join(', '),
@@ -1003,9 +1002,9 @@ void _validateTableReferences(
   }
 
   if (countTableRelation != null) {
-    if (!countTableRelation.lastJoiningColumn.hasBaseTable(tableName)) {
+    if (!countTableRelation.fieldColumn.hasBaseTable(tableName)) {
       exceptionMessages.add('"countTableRelation" referencing column '
-          '${countTableRelation.lastJoiningColumn}.');
+          '${countTableRelation.fieldColumn}.');
     }
   }
 

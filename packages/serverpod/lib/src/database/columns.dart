@@ -365,7 +365,7 @@ abstract class ColumnExpression<T> extends Expression {
     // sub query. Therefore, we reference the column from the last table in
     // the relation without any query alias.
     return columnCount.wrapInOperation(
-      tableRelation.lastRelation.lastJoiningForeignField,
+      tableRelation.lastRelation.foreignFieldNameWithJoins,
     );
   }
 
