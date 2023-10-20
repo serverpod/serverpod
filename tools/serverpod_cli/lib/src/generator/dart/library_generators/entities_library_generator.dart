@@ -1752,13 +1752,17 @@ class SerializableEntityLibraryGenerator {
                   {
                     'tableWithRelations': refer('relationTable'),
                     'table': field.type.generics.first
-                        .reference(
-                          serverCode,
-                          subDirParts: classDefinition.subDirParts,
-                          config: config,
-                          nullable: false,
-                        )
-                        .property('t')
+                        .reference(serverCode,
+                            subDirParts: classDefinition.subDirParts,
+                            config: config,
+                            nullable: false,
+                            typeSuffix: 'Table')
+                        .call([], {
+                      'tableRelation': refer('relationTable')
+                          .property('tableRelation')
+                          .nullChecked
+                          .property('lastRelation')
+                    })
                   },
                 ),
               )

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/expressions.dart';
 
 /// Records the relation between two tables.
 /// This is typically only used internally by the serverpod framework.
@@ -28,54 +29,75 @@ class TableRelation {
         .toList();
   }
 
-  /// Name of the table to be joined.
-  String get lastForeignTableName {
+  /// Name of table to be joined.
+  String get fieldTableName {
+    return _tableRelationEntries.last.field.table.tableName;
+  }
+
+  /// Table to be joined.
+  Table get fieldTable {
+    return _tableRelationEntries.last.field.table;
+  }
+
+  /// Name of foreign table to be joined.
+  String get foreignTableName {
     return _tableRelationEntries.last.foreignField.table.tableName;
   }
 
-  /// Name of the last field to be joined.
-  String get lastJoiningFieldQueryAlias {
-    return '${_fromRelationQueryAlias()}.${_tableRelationEntries.last.field.columnName}';
-  }
-
-  /// Name of the last field to be joined.
-  String get lastJoiningField {
-    return '"${_fromRelationQueryAlias()}"."${_tableRelationEntries.last.field.columnName}"';
-  }
-
-  /// Name of the last foreign field to be joined.
-  String get lastJoiningForeignField {
-    return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.columnName}"';
-  }
-
-  /// Name of the last foreign field to be joined as query alias.
-  String get lastJoiningForeignFieldQueryAlias {
-    return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.queryAlias}"';
-  }
-
-  /// The base foreignFieldName without the query alias
-  String get foreignFieldName {
-    return _tableRelationEntries.last.foreignField.columnName;
-  }
-
-  /// The base foreignFieldName with the table name escaped
-  String get foreignFieldBaseQuery {
-    return _tableRelationEntries.last.foreignField.toString();
-  }
-
-  /// The base foreignFieldName with the table name unescaped
-  String get foreignFieldBaseQueryAlias {
-    return _tableRelationEntries.last.foreignField.queryAlias;
-  }
-
-  /// The base fieldName without the query alias
+  /// The field name that is joined on.
   String get fieldName {
     return _tableRelationEntries.last.field.columnName;
   }
 
-  /// The base foreignFieldName without the query alias
-  String get tableName {
-    return _tableRelationEntries.last.field.table.tableName;
+  /// The field name query alias including table.
+  String get fieldQueryAlias {
+    return _tableRelationEntries.last.field.queryAlias;
+  }
+
+  /// Field column that is joined on.
+  Column get fieldColumn {
+    return _tableRelationEntries.last.field;
+  }
+
+  /// The query alias for field name to be joined on including all joins.
+  String get fieldQueryAliasWithJoins {
+    return '${_fromRelationQueryAlias()}.${_tableRelationEntries.last.field.columnName}';
+  }
+
+  /// The field name to be joined on including all joins.
+  String get fieldNameWithJoins {
+    return '"${_fromRelationQueryAlias()}"."${_tableRelationEntries.last.field.columnName}"';
+  }
+
+  /// The foreign field name joined on.
+  String get foreignFieldName {
+    return _tableRelationEntries.last.foreignField.columnName;
+  }
+
+  /// The foreign field name with including the table escaped.
+  String get foreignFieldBaseQuery {
+    return _tableRelationEntries.last.foreignField.toString();
+  }
+
+  /// The foreign field name to be joined on including all joins.
+  String get foreignFieldNameWithJoins {
+    return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.columnName}"';
+  }
+
+  /// The field name query alias including table.
+  String get foreignFieldQueryAlias {
+    return _tableRelationEntries.last.foreignField.queryAlias;
+  }
+
+  /// The foreign field to be joined including all joins as query alias.
+  String get foreignFieldQueryAliasWithJoins {
+    return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.queryAlias}"';
+  }
+
+  /// Create a new [TableRelation] with only one entry for the last table
+  /// relation.
+  TableRelation get lastRelation {
+    return TableRelation([_tableRelationEntries.last]);
   }
 
   /// Creates a new [TableRelation] from [this] and [relation].

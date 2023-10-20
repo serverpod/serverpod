@@ -1,19 +1,35 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/database/table_relation.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var citizenTable = Table(tableName: 'citizen');
+  var companyTable = Table(tableName: 'company');
+  var relationTable = Table(
+    tableName: companyTable.tableName,
+    tableRelation: TableRelation([
+      TableRelationEntry(
+        relationAlias: 'company',
+        field: ColumnInt('id', citizenTable),
+        foreignField: ColumnInt('id', companyTable),
+      )
+    ]),
+  );
+
   group('Given a ColumnCount', () {
-    var table = Table(tableName: 'test');
-    var column = ColumnCount(null, table, table.id);
+    var column = ColumnCount(null, relationTable.id);
+    var countColumnInExpression =
+        column.wrapInOperation(relationTable.id.toString());
 
     test(
         'when toString is called then column name withing count expression is returned.',
         () {
-      expect(column.toString(), '"test"."${table.id.columnName}"');
+      expect(column.toString(),
+          '"citizen_company_company"."${companyTable.id.columnName}"');
     });
 
     test('when columnName getter is called then column name is returned.', () {
-      expect(column.columnName, table.id.columnName);
+      expect(column.columnName, companyTable.id.columnName);
     });
 
     test('when type is called then int is returned.', () {
@@ -22,27 +38,12 @@ void main() {
 
     group('with _ColumnDefaultOperations mixin', () {
       test(
-          'when equals compared to NULL value then output is IS NULL expression.',
-          () {
-        var comparisonExpression = column.equals(null);
-
-        expect(comparisonExpression.toString(), '$column IS NULL');
-      });
-
-      test(
           'when equals compared to int value then output is equals expression.',
           () {
         var comparisonExpression = column.equals(10);
 
-        expect(comparisonExpression.toString(), '$column = 10');
-      });
-
-      test(
-          'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
-          () {
-        var comparisonExpression = column.notEquals(null);
-
-        expect(comparisonExpression.toString(), '$column IS NOT NULL');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression = 10');
       });
 
       test(
@@ -50,8 +51,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(10);
 
-        expect(comparisonExpression.toString(),
-            '($column != 10 OR $column IS NULL)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression != 10');
       });
 
       test(
@@ -59,7 +60,8 @@ void main() {
           () {
         var comparisonExpression = column.between(10, 20);
 
-        expect(comparisonExpression.toString(), '$column BETWEEN 10 AND 20');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression BETWEEN 10 AND 20');
       });
 
       test(
@@ -67,8 +69,8 @@ void main() {
           () {
         var comparisonExpression = column.notBetween(10, 20);
 
-        expect(
-            comparisonExpression.toString(), '$column NOT BETWEEN 10 AND 20');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression NOT BETWEEN 10 AND 20');
       });
 
       test(
@@ -76,7 +78,8 @@ void main() {
           () {
         var comparisonExpression = column.inSet(<int>{10, 11, 12});
 
-        expect(comparisonExpression.toString(), '$column IN (10, 11, 12)');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression IN (10, 11, 12)');
       });
 
       test(
@@ -85,7 +88,7 @@ void main() {
         var comparisonExpression = column.notInSet(<int>{10, 11, 12});
 
         expect(comparisonExpression.toString(),
-            '($column NOT IN (10, 11, 12) OR $column IS NULL)');
+            '$countColumnInExpression NOT IN (10, 11, 12)');
       });
 
       test(
@@ -93,7 +96,8 @@ void main() {
           () {
         var comparisonExpression = column.isDistinctFrom(10);
 
-        expect(comparisonExpression.toString(), '$column IS DISTINCT FROM 10');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression IS DISTINCT FROM 10');
       });
 
       test(
@@ -101,8 +105,8 @@ void main() {
           () {
         var comparisonExpression = column.isNotDistinctFrom(10);
 
-        expect(
-            comparisonExpression.toString(), '$column IS NOT DISTINCT FROM 10');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression IS NOT DISTINCT FROM 10');
       });
     });
 
@@ -112,7 +116,8 @@ void main() {
           () {
         var comparisonExpression = column.between(10, 20);
 
-        expect(comparisonExpression.toString(), '$column BETWEEN 10 AND 20');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression BETWEEN 10 AND 20');
       });
 
       test(
@@ -120,8 +125,8 @@ void main() {
           () {
         var comparisonExpression = column.notBetween(10, 20);
 
-        expect(
-            comparisonExpression.toString(), '$column NOT BETWEEN 10 AND 20');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression NOT BETWEEN 10 AND 20');
       });
 
       test(
@@ -129,7 +134,8 @@ void main() {
           () {
         var comparisonExpression = column > const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column > 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression > 10');
       });
 
       test(
@@ -137,7 +143,8 @@ void main() {
           () {
         var comparisonExpression = column > 10;
 
-        expect(comparisonExpression.toString(), '($column > 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression > 10');
       });
 
       test(
@@ -145,7 +152,8 @@ void main() {
           () {
         var comparisonExpression = column > column;
 
-        expect(comparisonExpression.toString(), '($column > $column)');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression > $column');
       });
 
       test(
@@ -154,7 +162,7 @@ void main() {
         var comparisonExpression = column > 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column > \'string is unhandled\')');
+            '$countColumnInExpression > \'string is unhandled\'');
       });
 
       test(
@@ -162,7 +170,8 @@ void main() {
           () {
         var comparisonExpression = column >= const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column >= 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression >= 10');
       });
 
       test(
@@ -170,7 +179,8 @@ void main() {
           () {
         var comparisonExpression = column >= 10;
 
-        expect(comparisonExpression.toString(), '($column >= 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression >= 10');
       });
 
       test(
@@ -178,7 +188,8 @@ void main() {
           () {
         var comparisonExpression = column >= column;
 
-        expect(comparisonExpression.toString(), '($column >= $column)');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression >= $column');
       });
 
       test(
@@ -187,7 +198,7 @@ void main() {
         var comparisonExpression = column >= 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column >= \'string is unhandled\')');
+            '$countColumnInExpression >= \'string is unhandled\'');
       });
 
       test(
@@ -195,7 +206,8 @@ void main() {
           () {
         var comparisonExpression = column < const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column < 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression < 10');
       });
 
       test(
@@ -203,7 +215,8 @@ void main() {
           () {
         var comparisonExpression = column < 10;
 
-        expect(comparisonExpression.toString(), '($column < 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression < 10');
       });
 
       test(
@@ -211,7 +224,8 @@ void main() {
           () {
         var comparisonExpression = column < column;
 
-        expect(comparisonExpression.toString(), '($column < $column)');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression < $column');
       });
 
       test(
@@ -220,7 +234,7 @@ void main() {
         var comparisonExpression = column < 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column < \'string is unhandled\')');
+            '$countColumnInExpression < \'string is unhandled\'');
       });
 
       test(
@@ -228,7 +242,8 @@ void main() {
           () {
         var comparisonExpression = column <= const Expression('10');
 
-        expect(comparisonExpression.toString(), '($column <= 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression <= 10');
       });
 
       test(
@@ -236,7 +251,8 @@ void main() {
           () {
         var comparisonExpression = column <= 10;
 
-        expect(comparisonExpression.toString(), '($column <= 10)');
+        expect(
+            comparisonExpression.toString(), '$countColumnInExpression <= 10');
       });
 
       test(
@@ -244,7 +260,8 @@ void main() {
           () {
         var comparisonExpression = column <= column;
 
-        expect(comparisonExpression.toString(), '($column <= $column)');
+        expect(comparisonExpression.toString(),
+            '$countColumnInExpression <= $column');
       });
 
       test(
@@ -253,7 +270,7 @@ void main() {
         var comparisonExpression = column <= 'string is unhandled';
 
         expect(comparisonExpression.toString(),
-            '($column <= \'string is unhandled\')');
+            '$countColumnInExpression <= \'string is unhandled\'');
       });
     });
   });

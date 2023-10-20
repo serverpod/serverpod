@@ -13,6 +13,6 @@ class ManyRelation<T extends Table> {
 
   /// Returns an expression that counts the number of rows in the relation.
   ColumnCount count([Expression Function(T)? where]) {
-    return ColumnCount(where?.call(table), table, tableWithRelations.id);
+    return ColumnCount(where?.call(table), tableWithRelations.id);
   }
 }
