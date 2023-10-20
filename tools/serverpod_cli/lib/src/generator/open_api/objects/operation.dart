@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/parameter.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/request.dart';
@@ -82,35 +83,37 @@ class OperationObject {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      'operationId': operationId,
+      OpenAPIJsonKey.operationId.name: operationId,
     };
 
     if (tags?.isNotEmpty ?? false) {
-      map['tags'] = tags!;
+      map[OpenAPIJsonKey.tags.name] = tags!;
     }
 
     if (summary != null) {
-      map['summary'] = summary;
+      map[OpenAPIJsonKey.summary.name] = summary;
     }
 
     if (description != null) {
-      map['description'] = description;
+      map[OpenAPIJsonKey.description.name] = description;
     }
     if (externalDocs != null) {
-      map['externalDocs'] = externalDocs;
+      map[OpenAPIJsonKey.externalDocs.name] = externalDocs;
     }
 
     if (requestBody != null) {
-      map['requestBody'] = requestBody!.toJson();
+      map[OpenAPIJsonKey.requestBody.name] = requestBody!.toJson();
     }
 
     if (parameters.isNotEmpty) {
-      map['parameters'] = parameters.map((e) => e.toJson()).toList();
+      map[OpenAPIJsonKey.parameters.name] =
+          parameters.map((e) => e.toJson()).toList();
     }
     if (security.isNotEmpty) {
-      map['security'] = security.map((e) => e.toJson(true)).toList();
+      map[OpenAPIJsonKey.security.name] =
+          security.map((e) => e.toJson(true)).toList();
     }
-    map['responses'] = responses.toJson();
+    map[OpenAPIJsonKey.responses.name] = responses.toJson();
 
     return map;
   }

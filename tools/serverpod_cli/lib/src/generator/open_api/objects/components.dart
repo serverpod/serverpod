@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/parameter.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/paths.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/request.dart';
@@ -54,14 +55,14 @@ class OpenAPIComponents {
       for (var schema in schemas!) {
         schemasMap.addAll(schema.toJson());
       }
-      map['schemas'] = schemasMap;
+      map[OpenAPIJsonKey.schemas.name] = schemasMap;
     }
     if (securitySchemes.isNotEmpty) {
       var securityMap = <String, dynamic>{};
       for (var security in securitySchemes) {
         securityMap.addAll(security.toJson());
       }
-      map['securitySchemes'] = securityMap;
+      map[OpenAPIJsonKey.securitySchemes.name] = securityMap;
     }
     return map;
   }

@@ -1,3 +1,5 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+
 /// The [OpenAPIConfig] is used to provide metadata and information about
 /// the API.
 /// eg.
@@ -202,18 +204,19 @@ class OpenAPIExternalDocumentation {
   });
 
   Map<String, String> toJson() {
-    var map = {'url': url.toString()};
+    var map = {OpenAPIJsonKey.url.name: url.toString()};
     if (description != null) {
-      map['description'] = description!;
+      map[OpenAPIJsonKey.description.name] = description!;
     }
     return map;
   }
 
   factory OpenAPIExternalDocumentation.fromJson(Map map) {
     return OpenAPIExternalDocumentation(
-      url: Uri.parse(map['url'] as String),
-      description:
-          map['description'] != null ? map['description'] as String : null,
+      url: Uri.parse(map[OpenAPIJsonKey.url.name] as String),
+      description: map[OpenAPIJsonKey.description.name] != null
+          ? map[OpenAPIJsonKey.description.name] as String
+          : null,
     );
   }
 }

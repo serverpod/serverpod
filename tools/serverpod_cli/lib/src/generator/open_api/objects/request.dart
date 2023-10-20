@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/content.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
@@ -21,8 +22,8 @@ class OpenAPIRequestBody {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    if (description != null) map['description'] = description;
-    map['content'] = OpenAPIContent(
+    if (description != null) map[OpenAPIJsonKey.description.name] = description;
+    map[OpenAPIJsonKey.content.name] = OpenAPIContent(
       requestContentSchemaObject: RequestContentSchemaObject(
         params: parameterList,
       ),

@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/operation.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 
@@ -80,13 +81,13 @@ class OpenAPIPathItem {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     if (summary != null) {
-      map['summary'] = summary;
+      map[OpenAPIJsonKey.summary.name] = summary;
     }
     if (description != null) {
-      map['description'] = description;
+      map[OpenAPIJsonKey.description.name] = description;
     }
 
-    map['post'] = postOperation.toJson();
+    map[OpenAPIJsonKey.post.name] = postOperation.toJson();
 
     return map;
   }

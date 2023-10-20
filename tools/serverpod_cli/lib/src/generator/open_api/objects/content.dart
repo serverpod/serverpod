@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 
 /// The [OpenAPIContent] describes the supported media types for an operation,
@@ -34,13 +35,13 @@ class OpenAPIContent {
     contentMap[ContentType.applicationJson] = {};
 
     if (requestContentSchemaObject != null) {
-      contentMap[ContentType.applicationJson]['schema'] =
+      contentMap[ContentType.applicationJson][OpenAPIJsonKey.schema.name] =
           requestContentSchemaObject!.toJson();
       return contentMap;
     }
 
     if (responseType != null) {
-      contentMap[ContentType.applicationJson]['schema'] =
+      contentMap[ContentType.applicationJson][OpenAPIJsonKey.schema.name] =
           typeDefinitionToJson(responseType!, true);
       return contentMap;
     }

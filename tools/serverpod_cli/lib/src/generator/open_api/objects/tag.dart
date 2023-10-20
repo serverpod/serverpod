@@ -1,6 +1,7 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
 
-/// [TagObject] are used to categorize and group API operations. It must be
+/// [OpenAPITag] are used to categorize and group API operations. It must be
 /// unique. example
 /// ```
 /// {
@@ -9,7 +10,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/info.dart';
 /// }
 /// ```
 ///
-class TagObject {
+class OpenAPITag {
   /// The name of the tag.
   final String name;
 
@@ -19,7 +20,7 @@ class TagObject {
 
   /// Additional external documentation for this tag.
   final OpenAPIExternalDocumentation? externalDocumentationObject;
-  TagObject({
+  OpenAPITag({
     required this.name,
     this.description,
     this.externalDocumentationObject,
@@ -27,20 +28,20 @@ class TagObject {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      'name': name,
+      OpenAPIJsonKey.name.name: name,
     };
     if (description != null) {
-      map['description'] = description!;
+      map[OpenAPIJsonKey.description.name] = description!;
     }
     if (externalDocumentationObject != null) {
-      map['externalDocumentationObject'] =
+      map[OpenAPIJsonKey.externalDocs.name] =
           externalDocumentationObject!.toJson();
     }
     return map;
   }
 
   @override
-  bool operator ==(covariant TagObject other) {
+  bool operator ==(covariant OpenAPITag other) {
     if (identical(this, other)) return true;
 
     return other.name == name &&

@@ -36,9 +36,11 @@ class HttpSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map['type'] = SecuritySchemeType.http.name;
-    if (description != null) map['description'] = description!;
-    map['scheme'] = scheme;
+    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.http.name;
+    if (description != null) {
+      map[OpenAPIJsonKey.description.name] = description!;
+    }
+    map[OpenAPIJsonKey.scheme.name] = scheme;
     if (bearerFormat != null) map['bearerFormat'] = bearerFormat;
     return map;
   }
@@ -64,9 +66,11 @@ class ApiKeySecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map['type'] = SecuritySchemeType.apiKey.name;
-    if (description != null) map['description'] = description!;
-    map['name'] = name;
+    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.apiKey.name;
+    if (description != null) {
+      map[OpenAPIJsonKey.description.name] = description!;
+    }
+    map[OpenAPIJsonKey.name.name] = name;
     map['in'] = inField;
     return map;
   }
@@ -82,13 +86,15 @@ class OauthSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map['type'] = SecuritySchemeType.oauth2.name;
-    if (description != null) map['description'] = description!;
+    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.oauth2.name;
+    if (description != null) {
+      map[OpenAPIJsonKey.description.name] = description!;
+    }
     Map<String, dynamic> oauthFlows = {};
     for (var flow in flows) {
       oauthFlows.addAll(flow.toJson());
     }
-    map['flows'] = oauthFlows;
+    map[OpenAPIJsonKey.flows.name] = oauthFlows;
     return map;
   }
 }
@@ -106,8 +112,10 @@ class OpenIdSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map['type'] = SecuritySchemeType.openIdConnect.name;
-    if (description != null) map['description'] = description!;
+    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.openIdConnect.name;
+    if (description != null) {
+      map[OpenAPIJsonKey.description.name] = description!;
+    }
     map['openIdConnectUrl'] = openIdConnectUrl;
     return map;
   }

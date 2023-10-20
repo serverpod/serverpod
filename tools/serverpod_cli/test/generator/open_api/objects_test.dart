@@ -35,7 +35,7 @@ void main() {
       termsOfService: Uri.parse('http://swagger.io/terms/'),
       description: 'This is a sample Pet Store Server based on the OpenAPI 3.0',
     );
-    TagObject tagObject = TagObject(
+    OpenAPITag tagObject = OpenAPITag(
       name: 'pet',
       description: 'Everything about your Pets',
     );

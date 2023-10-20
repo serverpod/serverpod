@@ -1,3 +1,5 @@
+import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+
 /// Specifies details regarding the server hosting an API.
 /// example
 /// ```dart
@@ -24,10 +26,10 @@ class OpenAPIServer {
 
   Map<String, dynamic> toJson() {
     var map = {
-      'url': url.toString(),
+      OpenAPIJsonKey.url.name: url.toString(),
     };
     if (description != null) {
-      map['description'] = description!;
+      map[OpenAPIJsonKey.description.name] = description!;
     }
     return map;
   }
@@ -65,7 +67,7 @@ class OpenAPIServerVariable {
       map['enum'] = enumField!;
     }
     if (description != null) {
-      map['description'] = description;
+      map[OpenAPIJsonKey.description.name] = description;
     }
     return map;
   }

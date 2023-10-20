@@ -36,7 +36,7 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
   );
 
   Map<String, dynamic> map = {};
-  map['type'] = SchemaObjectType.object.name;
+  map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
   if (type.nullable) map['nullable'] = true;
 
   // If data is Map<String,int> use last int from generics as
@@ -44,13 +44,16 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
   if (type.generics.isEmpty) return map;
   var lastType = type.generics.last;
   if (lastType.isListType) {
-    map['additionalProperties'] = listTypeToJson(lastType, true);
+    map[OpenAPIJsonKey.additionalProperties.name] =
+        listTypeToJson(lastType, true);
   } else if (lastType.isMapType) {
-    map['additionalProperties'] = mapTypeToJson(lastType, true);
+    map[OpenAPIJsonKey.additionalProperties.name] =
+        mapTypeToJson(lastType, true);
   } else if (lastType.isUnknownSchemaType) {
-    map['additionalProperties'] = unknownSchemaTypeToJson(lastType, true);
+    map[OpenAPIJsonKey.additionalProperties.name] =
+        unknownSchemaTypeToJson(lastType, true);
   } else {
-    map['additionalProperties'] = coreDartTypeToJson(
+    map[OpenAPIJsonKey.additionalProperties.name] = coreDartTypeToJson(
       lastType,
       true,
     );
@@ -76,8 +79,8 @@ Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
     'SchemaObjectType should not be object type',
   );
   Map<String, dynamic> map = {};
-  map['type'] = type.toSchemaObjectType.name;
-  if (type.nullable) map['nullable'] = true;
+  map[OpenAPIJsonKey.type.name] = type.toSchemaObjectType.name;
+  if (type.nullable) map[OpenAPIJsonKey.nullable.name] = true;
   return map;
 }
 
@@ -91,8 +94,8 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
   Map<String, dynamic> map = {};
 
   // SerializableObjects types are always object.
-  if (!child) map['type'] = SchemaObjectType.object.name;
-  map['\$ref'] =
+  if (!child) map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
+  map[OpenAPIJsonKey.$ref.name] =
       _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
   if (type.nullable && !child) map['nullable'] = true;
   return map;
@@ -105,29 +108,31 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
     'Use listTypeToJson only when the typeDefinition is of the ListType.',
   );
   Map<String, dynamic> map = {};
-  map['type'] = SchemaObjectType.array.name;
+  map[OpenAPIJsonKey.type.name] = SchemaObjectType.array.name;
 
-  map['items'] = {};
+  map[OpenAPIJsonKey.items.name] = {};
 
   var generic = type.generics;
   if (generic.isEmpty) {
-    map['items']['\$ref'] = _getRef('AnyValue');
+    map[OpenAPIJsonKey.items.name][OpenAPIJsonKey.$ref.name] =
+        _getRef('AnyValue');
     return map;
   }
   if (generic.first.isListType) {
-    map['items'] = listTypeToJson(generic.first, true);
+    map[OpenAPIJsonKey.items.name] = listTypeToJson(generic.first, true);
     return map;
   }
   if (generic.first.isMapType) {
-    map['items'] = mapTypeToJson(generic.first, true);
+    map[OpenAPIJsonKey.items.name] = mapTypeToJson(generic.first, true);
     return map;
   }
 
   if (generic.first.isUnknownSchemaType) {
-    map['items'] = unknownSchemaTypeToJson(generic.first, true);
+    map[OpenAPIJsonKey.items.name] =
+        unknownSchemaTypeToJson(generic.first, true);
     return map;
   }
-  map['items'] = coreDartTypeToJson(generic.first, true);
+  map[OpenAPIJsonKey.items.name] = coreDartTypeToJson(generic.first, true);
   return map;
 }
 
@@ -145,18 +150,18 @@ class OpenAPIComponentSchema {
     if (entityDefinition is EnumDefinition) {
       var enumDefinition = entityDefinition as EnumDefinition;
       map[entityDefinition.className] = {
-        'type': SchemaObjectType.string.name,
+        OpenAPIJsonKey.type.name: SchemaObjectType.string.name,
         'enum': enumDefinition.values.map((e) => e.name).toList(),
       };
       return map;
     }
     var classDefinition = entityDefinition as ClassDefinition;
     Map<String, dynamic> objectMap = {};
-    objectMap['type'] = SchemaObjectType.object.name;
-    objectMap['properties'] = {};
+    objectMap[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
+    objectMap[OpenAPIJsonKey.properties.name] = {};
     for (var field in classDefinition.fields) {
-      objectMap['properties'][field.name] = {};
-      objectMap['properties'][field.name] =
+      objectMap[OpenAPIJsonKey.properties.name][field.name] = {};
+      objectMap[OpenAPIJsonKey.properties.name][field.name] =
           typeDefinitionToJson(field.type, true);
     }
     map[entityDefinition.className] = objectMap;
@@ -175,17 +180,18 @@ class RequestContentSchemaObject {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map['type'] = SchemaObjectType.object.name;
-    map['properties'] = {};
+    map[OpenAPIJsonKey.type.name] = SchemaObjectType.object.name;
+    map[OpenAPIJsonKey.properties.name] = {};
     for (var param in params) {
-      map['properties'][param.name] = typeDefinitionToJson(param.type, true);
+      map[OpenAPIJsonKey.properties.name][param.name] =
+          typeDefinitionToJson(param.type, true);
     }
 
     return map;
   }
 }
 
-/// A schema object used within [ParameterObject].
+/// A schema  used within [OpenAPIParameter].
 class ParameterSchemaObject {
   final TypeDefinition typeDefinition;
 
@@ -194,7 +200,7 @@ class ParameterSchemaObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     if (typeDefinition.isEnum) {
-      map['type'] = SchemaObjectType.string.name;
+      map[OpenAPIJsonKey.type.name] = SchemaObjectType.string.name;
       map['enum'] = {};
       return map;
     }

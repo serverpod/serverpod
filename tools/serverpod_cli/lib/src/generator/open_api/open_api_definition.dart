@@ -32,7 +32,7 @@ class OpenAPIDefinition {
   final OpenAPIComponents? components;
 
   /// A list of tags used by the document with additional metadata.
-  final Set<TagObject>? tags;
+  final Set<OpenAPITag>? tags;
 
   /// Additional external documentation.
   final OpenAPIExternalDocumentation? externalDocs;
@@ -84,7 +84,7 @@ class OpenAPIDefinition {
       protocolDefinition,
     );
 
-    Set<TagObject> tags = _getTagsFromProtocolDefinition(protocolDefinition);
+    Set<OpenAPITag> tags = _getTagsFromProtocolDefinition(protocolDefinition);
     Set<OpenAPIPaths> paths =
         _getPathsFromProtocolDefinition(protocolDefinition);
 
@@ -185,13 +185,13 @@ Set<OpenAPIPaths> _getPathsFromProtocolDefinition(
   return paths;
 }
 
-/// Get a set of [TagObject] from protocol definition.
-Set<TagObject> _getTagsFromProtocolDefinition(
+/// Get a set of [OpenAPITag] from protocol definition.
+Set<OpenAPITag> _getTagsFromProtocolDefinition(
     ProtocolDefinition protocolDefinition) {
-  Set<TagObject> tags = {};
+  Set<OpenAPITag> tags = {};
 
   for (var endpoint in protocolDefinition.endpoints) {
-    var tag = TagObject(
+    var tag = OpenAPITag(
         name: endpoint.name.camelCase,
         description: endpoint.documentationComment?.replaceAll('/// ', ''));
     tags.add(tag);
