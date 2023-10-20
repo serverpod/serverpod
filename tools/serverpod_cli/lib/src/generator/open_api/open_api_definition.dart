@@ -162,10 +162,7 @@ Set<OpenAPIPaths> _getPathsFromProtocolDefinition(
         security: {
           serverpodAuth,
         },
-
-        // No need in OpeApi 2.0
         parameters: [],
-
         requestBody: OpenAPIRequestBody(
           parameterList: params,
           requiredField: params.isNotEmpty,
@@ -235,8 +232,8 @@ List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
       var returnType = method.returnType.className == 'Future'
           ? method.returnType.generics.first
           : method.returnType;
-      if (returnType.toSchemaObjectType !=
-              SchemaObjectType.serializableObjects ||
+      if (returnType.toOpenAPISchemaType !=
+              OpenAPISchemaType.serializableObjects ||
           returnType.className == 'void' ||
           returnType.className == 'dynamic') {
         continue;

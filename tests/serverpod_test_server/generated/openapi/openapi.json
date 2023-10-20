@@ -816,7 +816,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -836,7 +836,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "string",
+                                    "type": "integer",
                                     "nullable": true
                                 }
                             }
@@ -3859,7 +3859,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -3913,7 +3913,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -3969,7 +3969,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -4025,7 +4025,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -4079,7 +4079,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4132,7 +4132,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4185,7 +4185,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4238,7 +4238,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4291,7 +4291,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4344,7 +4344,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4397,10 +4397,10 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "integer"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -4453,10 +4453,10 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "integer"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9029,7 +9029,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -9083,7 +9083,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -9139,7 +9139,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -9195,7 +9195,7 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -9249,7 +9249,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9302,7 +9302,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9355,7 +9355,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9408,7 +9408,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9461,7 +9461,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9514,7 +9514,7 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9567,10 +9567,10 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "integer"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -9623,10 +9623,10 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "integer"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -19142,7 +19142,7 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -19164,7 +19164,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -19197,7 +19197,7 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string",
+                                            "type": "integer",
                                             "nullable": true
                                         }
                                     }
@@ -19220,7 +19220,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -20682,7 +20682,7 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -20704,7 +20704,7 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "string"
+                                        "type": "integer"
                                     }
                                 }
                             }
@@ -20737,7 +20737,7 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "string",
+                                            "type": "integer",
                                             "nullable": true
                                         }
                                     }
@@ -20760,7 +20760,7 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "string",
+                                        "type": "integer",
                                         "nullable": true
                                     }
                                 }
@@ -22126,10 +22126,10 @@
                         "nullable": true
                     },
                     "aDuration": {
-                        "type": "string"
+                        "type": "integer"
                     },
                     "aNullableDuration": {
-                        "type": "string",
+                        "type": "integer",
                         "nullable": true
                     },
                     "aUuid": {
@@ -22256,26 +22256,26 @@
                     "aDurationList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     "aNullableDurationList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     "aListWithNullableDurations": {
                         "type": "array",
                         "items": {
-                            "type": "string",
+                            "type": "integer",
                             "nullable": true
                         }
                     },
                     "aNullableListWithNullableDurations": {
                         "type": "array",
                         "items": {
-                            "type": "string",
+                            "type": "integer",
                             "nullable": true
                         }
                     },
@@ -22375,7 +22375,7 @@
                         "nullable": true
                     },
                     "duration": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             },
@@ -22470,7 +22470,7 @@
                     "durationMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     "uuidMap": {
@@ -22516,7 +22516,7 @@
                     "nullableDurationMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "string",
+                            "type": "integer",
                             "nullable": true
                         }
                     },
@@ -22771,7 +22771,7 @@
                         "nullable": true
                     },
                     "aDuration": {
-                        "type": "string",
+                        "type": "integer",
                         "nullable": true
                     },
                     "aUuid": {

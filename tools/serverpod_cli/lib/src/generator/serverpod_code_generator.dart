@@ -98,7 +98,9 @@ abstract class ServerpodCodeGenerator {
     collector.generatedFiles.clear();
     OpenAPIGenerator generator = const OpenAPIGenerator();
     Map<String, String> allFiles = generator.generateOpenAPISchema(
-        protocolDefinition: protocolDefinition, config: config);
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
 
     for (var file in allFiles.entries) {
       try {

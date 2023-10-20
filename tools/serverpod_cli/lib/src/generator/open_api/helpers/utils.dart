@@ -31,7 +31,7 @@ enum ParameterStyle {
 ///  schema:
 ///       type: object
 /// ```
-enum SchemaObjectType {
+enum OpenAPISchemaType {
   /// When type converting a [Map], it becomes an [object].
   ///
   /// When generating schemas, both [Map] and [serializableObjects] can be represented
@@ -43,25 +43,25 @@ enum SchemaObjectType {
   array,
   boolean,
 
-  /// When converting [TypeDefinition] non dart core types, they are
-  /// represented as [serializableObjects]
+  /// When converting [TypeDefinition] non core dart types, they are
+  /// represented as [serializableObjects].
   serializableObjects,
 }
 
 /// An openAPI string format
 enum SchemaObjectFormat {
   /// Full-date notation as defined by RFC 3339, section 5.6, for example,
-  /// 2017-07-21
+  /// 2017-07-21.
   date,
 
   /// The date-time notation as defined by RFC 3339, section 5.6,
-  /// for example, 2017-07-21T17:32:28Z
+  /// for example, 2017-07-21T17:32:28Z.
   dateTime,
 
-  /// A hint to UIs to mask the input
+  /// A hint to UIs to mask the input.
   password,
 
-  /// base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw==
+  /// base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw== .
   byte,
 
   /// binary data, used to describe files
@@ -82,6 +82,9 @@ enum SchemaObjectFormat {
   double,
   time,
   any,
+
+  /// A duration as defined by duration - RFC3339.
+  duration,
 }
 
 enum SecuritySchemeType {

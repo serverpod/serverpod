@@ -20,38 +20,38 @@ extension TypeDefinitionExtension on TypeDefinition {
       url == 'dart:async';
 
   /// Convert [TypeDefinition] to [SchemaObjetType].
-  SchemaObjectType get toSchemaObjectType {
+  OpenAPISchemaType get toOpenAPISchemaType {
     switch (className) {
       case 'int':
-        return SchemaObjectType.integer;
+        return OpenAPISchemaType.integer;
       case 'double':
-        return SchemaObjectType.number;
+        return OpenAPISchemaType.number;
       case 'BigInt':
-        return SchemaObjectType.number;
+        return OpenAPISchemaType.number;
       case 'bool':
-        return SchemaObjectType.boolean;
+        return OpenAPISchemaType.boolean;
       case 'String':
-        return SchemaObjectType.string;
+        return OpenAPISchemaType.string;
       case 'DateTime':
-        return SchemaObjectType.string;
+        return OpenAPISchemaType.string;
       case 'ByteData':
-        return SchemaObjectType.string;
+        return OpenAPISchemaType.string;
       case 'Duration':
-        return SchemaObjectType.string;
+        return OpenAPISchemaType.integer;
       case 'UuidValue':
-        return SchemaObjectType.string;
+        return OpenAPISchemaType.string;
       case 'List':
-        return SchemaObjectType.array;
+        return OpenAPISchemaType.array;
       case 'Map':
-        return SchemaObjectType.object;
+        return OpenAPISchemaType.object;
       default:
-        return SchemaObjectType.serializableObjects;
+        return OpenAPISchemaType.serializableObjects;
     }
   }
 
   /// Check whether [TypeDefinition] is UnknownSchemaType or not.
   bool get isUnknownSchemaType =>
-      toSchemaObjectType == SchemaObjectType.serializableObjects;
+      toOpenAPISchemaType == OpenAPISchemaType.serializableObjects;
 
   /// convert [TypeDefinition] className to [SchemaObjetFormat]
   SchemaObjectFormat? get toSchemaObjectFormat {
@@ -59,7 +59,6 @@ extension TypeDefinitionExtension on TypeDefinition {
     if (className == 'double') return SchemaObjectFormat.float;
     if (className == 'DateTime') return SchemaObjectFormat.dateTime;
     if (className == 'ByteData') return SchemaObjectFormat.byte;
-    if (className == 'Duration') return SchemaObjectFormat.time;
     if (className == 'UuidValue') return SchemaObjectFormat.uuid;
     return null;
   }
