@@ -9,11 +9,16 @@ abstract class SecuritySchemeObject {
   Map<String, dynamic> toJson();
 }
 
+enum HttpSecuritySchemeType {
+  basic,
+  bearer,
+}
+
 class HttpSecurityScheme extends SecuritySchemeObject {
   /// Specifies the HTTP Authorization scheme to be used in the Authorization
   /// header, as defined in RFC7235. This applies to `http` and
   /// supporting 'basic' and 'bearer' schemes.
-  final String scheme;
+  final HttpSecuritySchemeType scheme;
 
   /// A hint to the client to identify how the bearer token
   /// is formatted.  Applies to `http`'s `bearer` authentication.
@@ -25,12 +30,10 @@ class HttpSecurityScheme extends SecuritySchemeObject {
     required this.scheme,
     super.description,
     this.bearerFormat,
-  })  : assert(
-          (scheme == 'basic') || (scheme == 'bearer'),
-          '`scheme` must be one of `basic or bearer`.',
-        ),
-        assert(
-            (scheme == 'basic') || (scheme == 'bearer' && bearerFormat != null),
+  }) : assert(
+            (scheme == HttpSecuritySchemeType.basic) ||
+                (scheme == HttpSecuritySchemeType.bearer &&
+                    bearerFormat != null),
             'When `scheme` is bearer `bearerFormat` should not be null');
 
   @override
@@ -40,10 +43,18 @@ class HttpSecurityScheme extends SecuritySchemeObject {
     if (description != null) {
       map[OpenAPIJsonKey.description.name] = description!;
     }
-    map[OpenAPIJsonKey.scheme.name] = scheme;
-    if (bearerFormat != null) map['bearerFormat'] = bearerFormat;
+    map[OpenAPIJsonKey.scheme.name] = scheme.name;
+    if (bearerFormat != null) {
+      map[OpenAPIJsonKey.bearerFormat.name] = bearerFormat;
+    }
     return map;
   }
+}
+
+enum ApiKeyLocation {
+  query,
+  header,
+  cookie,
 }
 
 class ApiKeySecurityScheme extends SecuritySchemeObject {
@@ -52,16 +63,13 @@ class ApiKeySecurityScheme extends SecuritySchemeObject {
   final String name;
 
   /// The location of the API key. Valid values are "query", "header" or
-  /// "cookie". Applies to [apiKey]
-  final String inField;
+  /// "cookie".
+  final ApiKeyLocation inField;
   ApiKeySecurityScheme({
     super.description,
     required this.name,
     required this.inField,
-  }) : assert(
-          ['query', 'header', 'cookie'].contains(inField),
-          'inField only accept query,header and cookie',
-        );
+  });
 
   @override
   Map<String, dynamic> toJson() {
@@ -71,7 +79,7 @@ class ApiKeySecurityScheme extends SecuritySchemeObject {
       map[OpenAPIJsonKey.description.name] = description!;
     }
     map[OpenAPIJsonKey.name.name] = name;
-    map['in'] = inField;
+    map['in'] = inField.name;
     return map;
   }
 }
@@ -116,7 +124,7 @@ class OpenIdSecurityScheme extends SecuritySchemeObject {
     if (description != null) {
       map[OpenAPIJsonKey.description.name] = description!;
     }
-    map['openIdConnectUrl'] = openIdConnectUrl;
+    map[OpenAPIJsonKey.openIdConnectUrl.name] = openIdConnectUrl;
     return map;
   }
 }
@@ -225,7 +233,7 @@ OpenAPISecurityRequirement googleAuth = OpenAPISecurityRequirement(
 OpenAPISecurityRequirement serverpodAuth = OpenAPISecurityRequirement(
   name: 'serverpodAuth',
   securitySchemes: HttpSecurityScheme(
-    scheme: 'bearer',
+    scheme: HttpSecuritySchemeType.bearer,
     bearerFormat: 'JWT',
   ),
 );

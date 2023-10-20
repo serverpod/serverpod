@@ -122,4 +122,6 @@ enum OpenAPIJsonKey {
   additionalProperties,
   scheme,
   flows,
+  bearerFormat,
+  openIdConnectUrl
 }
