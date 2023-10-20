@@ -183,7 +183,7 @@ void main() {
 
       expect(
         query,
-        'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" NULLS FIRST',
+        'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST',
       );
     });
 
@@ -203,7 +203,7 @@ void main() {
           SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
       expect(query,
-          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" WHERE "citizen"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" NULLS FIRST');
+          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" WHERE "citizen"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST');
     });
 
     test('when query with limit is built then output is query with limit.', () {
@@ -325,7 +325,7 @@ void main() {
           .build();
 
       expect(query,
-          'WITH "order_by_citizen_companiesOwned_company_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_companiesOwned_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."id" WHERE "citizen_companiesOwned_company"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "order_by_citizen_companiesOwned_company_1" ON "citizen"."id" = "order_by_citizen_companiesOwned_company_1"."citizen.id" WHERE "citizen_company_company"."name" = \'Serverpod\' ORDER BY "citizen"."id" DESC, "order_by_citizen_companiesOwned_company_1"."count" NULLS FIRST LIMIT 10 OFFSET 5');
+          'WITH "order_by_citizen_companiesOwned_company_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_companiesOwned_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."id" WHERE "citizen_companiesOwned_company"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "order_by_citizen_companiesOwned_company_1" ON "citizen"."id" = "order_by_citizen_companiesOwned_company_1"."citizen.id" WHERE "citizen_company_company"."name" = \'Serverpod\' ORDER BY "citizen"."id" DESC, "order_by_citizen_companiesOwned_company_1"."count" ASC NULLS FIRST LIMIT 10 OFFSET 5');
     });
 
     test(
@@ -421,7 +421,7 @@ void main() {
       ]).build();
 
       expect(query,
-          'WITH "order_by_citizen_company_company_0" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId"), "order_by_citizen_company_company_1" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_company_company_0" ON "citizen"."companyId" = "order_by_citizen_company_company_0"."citizen.companyId" LEFT JOIN "order_by_citizen_company_company_1" ON "citizen"."companyId" = "order_by_citizen_company_company_1"."citizen.companyId" ORDER BY "order_by_citizen_company_company_0"."count" NULLS FIRST, "order_by_citizen_company_company_1"."count" DESC NULLS LAST');
+          'WITH "order_by_citizen_company_company_0" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId"), "order_by_citizen_company_company_1" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_company_company_0" ON "citizen"."companyId" = "order_by_citizen_company_company_0"."citizen.companyId" LEFT JOIN "order_by_citizen_company_company_1" ON "citizen"."companyId" = "order_by_citizen_company_company_1"."citizen.companyId" ORDER BY "order_by_citizen_company_company_0"."count" ASC NULLS FIRST, "order_by_citizen_company_company_1"."count" DESC NULLS LAST');
     });
 
     test(
@@ -452,7 +452,7 @@ void main() {
           .build();
 
       expect(query,
-          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id"), "order_by_citizen_enemies_citizen_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_enemies_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_enemies_citizen" ON "citizen"."id" = "citizen_enemies_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" LEFT JOIN "order_by_citizen_enemies_citizen_1" ON "citizen"."id" = "order_by_citizen_enemies_citizen_1"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" NULLS FIRST, "order_by_citizen_enemies_citizen_1"."count" NULLS FIRST');
+          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id"), "order_by_citizen_enemies_citizen_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_enemies_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_enemies_citizen" ON "citizen"."id" = "citizen_enemies_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" LEFT JOIN "order_by_citizen_enemies_citizen_1" ON "citizen"."id" = "order_by_citizen_enemies_citizen_1"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST, "order_by_citizen_enemies_citizen_1"."count" ASC NULLS FIRST');
     });
   });
 

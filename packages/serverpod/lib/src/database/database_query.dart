@@ -773,7 +773,7 @@ String _formatOrderByCount(
   }
 
   var str = '"$queryAlias"."count"';
-  str += orderDescending ? ' DESC NULLS LAST' : ' NULLS FIRST';
+  str += orderDescending ? ' DESC NULLS LAST' : ' ASC NULLS FIRST';
   return str;
 }
 
@@ -897,8 +897,11 @@ MapEntry<String, _JoinContext> _gatherHavingJoinContext(
 
   return MapEntry(
     lastRelation.relationQueryAlias,
-    _JoinContext(lastRelation, false,
-        joinStatement: _buildJoinStatement(tableRelation: lastRelation)),
+    _JoinContext(
+      lastRelation,
+      false,
+      joinStatement: _buildJoinStatement(tableRelation: lastRelation),
+    ),
   );
 }
 

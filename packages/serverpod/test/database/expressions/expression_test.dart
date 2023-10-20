@@ -57,7 +57,7 @@ void main() {
     }, skip: combinedExpression is! TwoPartExpression);
 
     group('when iterating expressions', () {
-      test('then number of expressions as length.', () {
+      test('then the expression depth is 3.', () {
         expect(combinedExpression.depthFirst, hasLength(3));
       });
 

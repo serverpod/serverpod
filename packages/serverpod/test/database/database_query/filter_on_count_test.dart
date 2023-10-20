@@ -108,7 +108,7 @@ void main() {
         expect(
             query,
             contains(
-                'ORDER BY "order_by_citizen_company_company_0"."count" NULLS FIRST'));
+                'ORDER BY "order_by_citizen_company_company_0"."count" ASC NULLS FIRST'));
       });
       test('then a sub query is created for the filter.', () {
         expect(
