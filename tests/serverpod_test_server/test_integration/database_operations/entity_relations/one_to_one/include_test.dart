@@ -27,7 +27,6 @@ void main() async {
 
       var companiesFetched = await Company.db.find(
         session,
-        // Include town in the result
         include: Company.include(town: Town.include()),
         orderBy: Company.t.name,
       );
@@ -66,7 +65,6 @@ void main() async {
 
       var citizensFetched = await Citizen.db.find(
         session,
-        // Include town and in the result
         include:
             Citizen.include(company: Company.include(town: Town.include())),
         orderBy: Citizen.t.name,
