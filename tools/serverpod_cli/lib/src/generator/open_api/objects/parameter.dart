@@ -89,8 +89,10 @@ class OpenAPIParameter {
       'in': inField.name,
       'required': requiredField,
     };
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     if (deprecated) {
       map[OpenAPIJsonKey.deprecated.name] = deprecated;
@@ -98,9 +100,9 @@ class OpenAPIParameter {
     if (allowEmptyValue) {
       map[OpenAPIJsonKey.allowEmptyValue.name] = allowEmptyValue;
     }
-
-    if (style != null) {
-      map[OpenAPIJsonKey.style.name] = style!.name.paramCase;
+    var theStyle = style;
+    if (theStyle != null) {
+      map[OpenAPIJsonKey.style.name] = theStyle.name.paramCase;
     }
 
     if (explode) {
@@ -110,9 +112,9 @@ class OpenAPIParameter {
     if (allowReserved) {
       map[OpenAPIJsonKey.allowReserved.name] = allowReserved;
     }
-
-    if (schema != null) {
-      map[OpenAPIJsonKey.schema.name] = schema!.toJson();
+    var theSchema = schema;
+    if (theSchema != null) {
+      map[OpenAPIJsonKey.schema.name] = theSchema.toJson();
     }
 
     return map;

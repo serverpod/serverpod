@@ -205,8 +205,9 @@ class OpenAPIExternalDocumentation {
 
   Map<String, String> toJson() {
     var map = {OpenAPIJsonKey.url.name: url.toString()};
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     return map;
   }

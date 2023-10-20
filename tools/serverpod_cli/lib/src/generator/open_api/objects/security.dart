@@ -40,8 +40,10 @@ class HttpSecurityScheme extends SecuritySchemeObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     map[OpenAPIJsonKey.type.name] = SecuritySchemeType.http.name;
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     map[OpenAPIJsonKey.scheme.name] = scheme.name;
     if (bearerFormat != null) {
@@ -75,8 +77,9 @@ class ApiKeySecurityScheme extends SecuritySchemeObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     map[OpenAPIJsonKey.type.name] = SecuritySchemeType.apiKey.name;
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     map[OpenAPIJsonKey.name.name] = name;
     map['in'] = inField.name;
@@ -95,8 +98,9 @@ class OauthSecurityScheme extends SecuritySchemeObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     map[OpenAPIJsonKey.type.name] = SecuritySchemeType.oauth2.name;
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     Map<String, dynamic> oauthFlows = {};
     for (var flow in flows) {
@@ -121,8 +125,9 @@ class OpenIdSecurityScheme extends SecuritySchemeObject {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     map[OpenAPIJsonKey.type.name] = SecuritySchemeType.openIdConnect.name;
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     map[OpenAPIJsonKey.openIdConnectUrl.name] = openIdConnectUrl;
     return map;

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('Validate RequestContentSchemaObject Serialization: ', () {
     test('When request param is  (int id,String name)', () {
-      RequestContentSchemaObject object = RequestContentSchemaObject(
+      OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'id',
@@ -43,7 +43,7 @@ void main() {
       );
     });
     test('When request param is  (Example example)', () {
-      RequestContentSchemaObject object = RequestContentSchemaObject(
+      OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'example',
@@ -69,7 +69,7 @@ void main() {
       );
     });
     test('When request param is  (int id,Example example)', () {
-      RequestContentSchemaObject object = RequestContentSchemaObject(
+      OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'id',
@@ -107,7 +107,7 @@ void main() {
     });
 
     test('When request param is  (int id,List<Example> examples)', () {
-      RequestContentSchemaObject object = RequestContentSchemaObject(
+      OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'id',
@@ -155,7 +155,7 @@ void main() {
     });
 
     test('When request param is  (int id,Map<String,dynamic> map)', () {
-      RequestContentSchemaObject object = RequestContentSchemaObject(
+      OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'id',

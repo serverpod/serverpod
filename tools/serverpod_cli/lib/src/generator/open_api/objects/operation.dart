@@ -10,7 +10,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 class OperationObject {
   /// A list of tags for API documentation control. Tags can be used for
   /// logical grouping of operations by resources or any other qualifier.
-  final List<String>? tags;
+  final List<String> tags;
 
   /// A short summary of what the operation does.
   final String? summary;
@@ -42,7 +42,7 @@ class OperationObject {
   /// The request body applicable for this operation.
   /// Serverpod endpoint method parameters are represented as
   /// [OpenAPIRequestBody] in the OpenAPI specification.
-  final OpenAPIRequestBody? requestBody;
+  final OpenAPIRequestBody requestBody;
 
   /// The list of possible responses as they are returned from executing
   /// this operation. The [OpenAPIResponse] corresponds to the return type of a
@@ -68,13 +68,13 @@ class OperationObject {
   /// it will be overridden by this value.
   final List<OpenAPIServer>? servers;
   OperationObject({
-    this.tags,
+    required this.tags,
     this.summary,
     this.description,
     this.externalDocs,
-    this.operationId,
+    required this.operationId,
     required this.parameters,
-    this.requestBody,
+    required this.requestBody,
     required this.responses,
     this.deprecated = false,
     required this.security,
@@ -86,8 +86,8 @@ class OperationObject {
       OpenAPIJsonKey.operationId.name: operationId,
     };
 
-    if (tags?.isNotEmpty ?? false) {
-      map[OpenAPIJsonKey.tags.name] = tags!;
+    if (tags.isNotEmpty) {
+      map[OpenAPIJsonKey.tags.name] = tags;
     }
 
     if (summary != null) {
@@ -97,13 +97,12 @@ class OperationObject {
     if (description != null) {
       map[OpenAPIJsonKey.description.name] = description;
     }
-    if (externalDocs != null) {
-      map[OpenAPIJsonKey.externalDocs.name] = externalDocs!.toJson();
+    var extDocs = externalDocs;
+    if (extDocs != null) {
+      map[OpenAPIJsonKey.externalDocs.name] = extDocs.toJson();
     }
 
-    if (requestBody != null) {
-      map[OpenAPIJsonKey.requestBody.name] = requestBody!.toJson();
-    }
+    map[OpenAPIJsonKey.requestBody.name] = requestBody.toJson();
 
     if (parameters.isNotEmpty) {
       map[OpenAPIJsonKey.parameters.name] =

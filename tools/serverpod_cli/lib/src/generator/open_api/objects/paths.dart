@@ -13,14 +13,14 @@ class OpenAPIPaths {
   ///     - post/ <- pathItemObject (Serverpod Endpoint's method name)
   /// ```
   final String pathName;
-  final OpenAPIPathItem? path;
+  final OpenAPIPathItem path;
   OpenAPIPaths({
     required this.pathName,
-    this.path,
+    required this.path,
   });
 
   Map<String, dynamic> toJson() {
-    return {pathName: path!.toJson()};
+    return {pathName: path.toJson()};
   }
 }
 
@@ -83,8 +83,9 @@ class OpenAPIPathItem {
     if (summary != null) {
       map[OpenAPIJsonKey.summary.name] = summary;
     }
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
 
     map[OpenAPIJsonKey.post.name] = postOperation.toJson();

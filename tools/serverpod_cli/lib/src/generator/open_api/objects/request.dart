@@ -22,9 +22,12 @@ class OpenAPIRequestBody {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    if (description != null) map[OpenAPIJsonKey.description.name] = description;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
+    }
     map[OpenAPIJsonKey.content.name] = OpenAPIContent(
-      requestContentSchemaObject: RequestContentSchemaObject(
+      requestContentSchemaObject: OpenAPIRequestContentSchema(
         params: parameterList,
       ),
     ).toJson();

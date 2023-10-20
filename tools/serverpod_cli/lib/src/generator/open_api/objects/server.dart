@@ -28,8 +28,9 @@ class OpenAPIServer {
     var map = {
       OpenAPIJsonKey.url.name: url.toString(),
     };
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     return map;
   }
@@ -40,7 +41,7 @@ class OpenAPIServer {
 class OpenAPIServerVariable {
   /// An enumeration of string values to be used if the substitution options
   /// are from a limited set.
-  final List<String>? enumField;
+  final List<String> enumField;
 
   /// The default value to use for substitution, which SHALL be sent if an
   /// alternate value is not supplied.
@@ -54,7 +55,7 @@ class OpenAPIServerVariable {
   /// may be used for rich text representation.
   final String? description;
   OpenAPIServerVariable({
-    this.enumField,
+    this.enumField = const [],
     required this.defaultField,
     this.description,
   });
@@ -63,11 +64,13 @@ class OpenAPIServerVariable {
     var map = <String, dynamic>{
       'default': defaultField,
     };
-    if (enumField?.isNotEmpty ?? false) {
-      map['enum'] = enumField!;
+
+    if (enumField.isNotEmpty) {
+      map['enum'] = enumField;
     }
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
     return map;
   }

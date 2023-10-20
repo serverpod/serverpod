@@ -26,10 +26,10 @@ class OpenAPIDefinition {
   final Set<OpenAPIServer>? servers;
 
   /// The available paths and operations for the API.
-  final Set<OpenAPIPaths>? paths;
+  final Set<OpenAPIPaths> paths;
 
   /// An element to hold various schemas for the document.
-  final OpenAPIComponents? components;
+  final OpenAPIComponents components;
 
   /// A list of tags used by the document with additional metadata.
   final Set<OpenAPITag>? tags;
@@ -41,8 +41,8 @@ class OpenAPIDefinition {
     required this.info,
     this.jsonSchemaDialect,
     this.servers,
-    this.paths,
-    this.components,
+    required this.paths,
+    required this.components,
     this.tags,
     this.externalDocs,
   });
@@ -52,8 +52,9 @@ class OpenAPIDefinition {
       'openapi': openAPI,
       'info': info.toJson(),
     };
-    if (jsonSchemaDialect != null) {
-      map['jsonSchemaDialect'] = jsonSchemaDialect!;
+    var theJsonSchemaDialect = jsonSchemaDialect;
+    if (theJsonSchemaDialect != null) {
+      map['jsonSchemaDialect'] = theJsonSchemaDialect;
     }
     if (servers != null) {
       map['servers'] = servers!.map((e) => e.toJson()).toList();
@@ -61,15 +62,11 @@ class OpenAPIDefinition {
     if (tags != null) {
       map['tags'] = tags!.map((tag) => tag.toJson()).toList();
     }
-    if (paths != null) {
-      map['paths'] = _allPathsToJson(paths!);
-    }
-    if (components != null) {
-      map['components'] = components!.toJson();
-    }
-
-    if (externalDocs != null) {
-      map['externalDocs'] = externalDocs!.toJson();
+    map['paths'] = _allPathsToJson(paths);
+    map['components'] = components.toJson();
+    var theExternalDocs = externalDocs;
+    if (theExternalDocs != null) {
+      map['externalDocs'] = theExternalDocs.toJson();
     }
 
     return map;
@@ -127,7 +124,7 @@ class OpenAPIDefinition {
 Map<String, dynamic> _allPathsToJson(Set<OpenAPIPaths> paths) {
   Map<String, dynamic> map = {};
   for (var path in paths) {
-    map[path.pathName] = path.path?.toJson() ?? {};
+    map[path.pathName] = path.path.toJson();
   }
   return map;
 }
@@ -140,7 +137,7 @@ Set<OpenAPIPaths> _getPathsFromProtocolDefinition(
     var extraPath = getExtraPath(endpoint.subDirParts);
 
     for (var method in endpoint.methods) {
-      String? description = method.documentationComment?.replaceAll('/// ', '');
+      String? description = method.documentationComment?.cleanedDartComment;
 
       /// Method name is operationId + Tag .
       String operationId = method.name + endpoint.name.pascalCase;
@@ -189,8 +186,9 @@ Set<OpenAPITag> _getTagsFromProtocolDefinition(
 
   for (var endpoint in protocolDefinition.endpoints) {
     var tag = OpenAPITag(
-        name: endpoint.name.camelCase,
-        description: endpoint.documentationComment?.replaceAll('/// ', ''));
+      name: endpoint.name.camelCase,
+      description: endpoint.documentationComment?.cleanedDartComment,
+    );
     tags.add(tag);
   }
   return tags;

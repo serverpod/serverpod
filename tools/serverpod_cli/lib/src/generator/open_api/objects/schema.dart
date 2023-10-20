@@ -145,9 +145,9 @@ class OpenAPIComponentSchema {
 
 /// A schema object used within [ContentObject]. Generate request body content
 /// based on the parameters of a Serverpod endpoint's method.
-class RequestContentSchemaObject {
+class OpenAPIRequestContentSchema {
   final List<ParameterDefinition> params;
-  RequestContentSchemaObject({
+  OpenAPIRequestContentSchema({
     required this.params,
   });
 

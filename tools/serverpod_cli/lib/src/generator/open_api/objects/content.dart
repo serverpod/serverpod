@@ -22,7 +22,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/schema.dart';
 /// }
 /// ```
 class OpenAPIContent {
-  final RequestContentSchemaObject? requestContentSchemaObject;
+  final OpenAPIRequestContentSchema? requestContentSchemaObject;
   final TypeDefinition? responseType;
   OpenAPIContent({
     this.requestContentSchemaObject,
@@ -31,17 +31,17 @@ class OpenAPIContent {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> contentMap = {};
-
-    if (requestContentSchemaObject != null) {
+    var requestContent = requestContentSchemaObject;
+    if (requestContent != null) {
       contentMap[ContentType.applicationJson] = {
-        OpenAPIJsonKey.schema.name: requestContentSchemaObject!.toJson()
+        OpenAPIJsonKey.schema.name: requestContent.toJson()
       };
       return contentMap;
     }
-
-    if (responseType != null) {
+    var response = responseType;
+    if (response != null) {
       contentMap[ContentType.applicationJson] = {
-        OpenAPIJsonKey.schema.name: typeDefinitionToJson(responseType!, true)
+        OpenAPIJsonKey.schema.name: typeDefinitionToJson(response, true)
       };
       return contentMap;
     }

@@ -19,7 +19,7 @@ extension TypeDefinitionExtension on TypeDefinition {
       url == 'dart:core' ||
       url == 'dart:async';
 
-  /// Convert [TypeDefinition] to [SchemaObjetType].
+  /// Converts [TypeDefinition] to [SchemaObjetType].
   OpenAPISchemaType get toOpenAPISchemaType {
     switch (className) {
       case 'int':
@@ -53,7 +53,7 @@ extension TypeDefinitionExtension on TypeDefinition {
   bool get isUnknownSchemaType =>
       toOpenAPISchemaType == OpenAPISchemaType.serializableObjects;
 
-  /// convert [TypeDefinition] className to [SchemaObjetFormat]
+  /// Converts [TypeDefinition] className to [SchemaObjetFormat] .
   SchemaObjectFormat? get toSchemaObjectFormat {
     if (className == 'int') return SchemaObjectFormat.int64;
     if (className == 'double') return SchemaObjectFormat.float;
@@ -62,4 +62,10 @@ extension TypeDefinitionExtension on TypeDefinition {
     if (className == 'UuidValue') return SchemaObjectFormat.uuid;
     return null;
   }
+}
+
+extension StringExtensions on String {
+  /// Removes '///' from dart comments without losing then indent.
+  String get cleanedDartComment => replaceAll(RegExp(r'(\s*)/// '), '\n')
+      .replaceAll(RegExp(r'(\s*)///'), '');
 }

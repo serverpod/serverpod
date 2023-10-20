@@ -1,4 +1,4 @@
-/// Convert a list of directory parts to a path string.
+/// Converts a list of directory parts to a path string.
 ///
 /// Example: ['api', 'v1'] => '/api/v1'
 String getExtraPath(List<String> subDirParts) =>

@@ -30,12 +30,13 @@ class OpenAPITag {
     var map = <String, dynamic>{
       OpenAPIJsonKey.name.name: name,
     };
-    if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description!;
+    var theDescription = description;
+    if (theDescription != null) {
+      map[OpenAPIJsonKey.description.name] = theDescription;
     }
-    if (externalDocumentationObject != null) {
-      map[OpenAPIJsonKey.externalDocs.name] =
-          externalDocumentationObject!.toJson();
+    var externalDocs = externalDocumentationObject;
+    if (externalDocs != null) {
+      map[OpenAPIJsonKey.externalDocs.name] = externalDocs.toJson();
     }
     return map;
   }

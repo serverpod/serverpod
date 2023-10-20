@@ -52,7 +52,7 @@ void main() {
       ),
     );
     OpenAPIContent contentObjectRequest = OpenAPIContent(
-      requestContentSchemaObject: RequestContentSchemaObject(
+      requestContentSchemaObject: OpenAPIRequestContentSchema(
         params: [
           ParameterDefinition(
               name: 'age',
