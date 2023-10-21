@@ -163,10 +163,10 @@ class OpenAPIRequestContentSchema {
 }
 
 /// A schema  used within [OpenAPIParameter].
-class ParameterSchemaObject {
+class OpenAPIParameterSchema {
   final TypeDefinition typeDefinition;
 
-  ParameterSchemaObject(this.typeDefinition);
+  OpenAPIParameterSchema(this.typeDefinition);
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};

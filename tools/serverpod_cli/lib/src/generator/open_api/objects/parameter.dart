@@ -68,7 +68,7 @@ class OpenAPIParameter {
   final bool allowReserved;
 
   /// The schema defining the type used for the parameter.
-  final ParameterSchemaObject? schema;
+  final OpenAPIParameterSchema? schema;
 
   OpenAPIParameter({
     required this.name,
@@ -127,7 +127,7 @@ class OpenAPIParameter {
       inField: ParameterLocation.body,
       requiredField: parameterDefinition.required,
       allowEmptyValue: false,
-      schema: ParameterSchemaObject(
+      schema: OpenAPIParameterSchema(
         parameterDefinition.type,
       ),
     );

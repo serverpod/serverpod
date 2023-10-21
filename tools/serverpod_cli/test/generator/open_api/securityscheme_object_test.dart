@@ -2,110 +2,96 @@ import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Validate SecuritySchemaObject Serialization: ', () {
-    test(
-      'When HttpSecurityScheme\'s scheme is basic ',
-      () {
-        HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
-          scheme: 'basic',
-        );
-        expect(
-          {
-            'type': 'http',
-            'scheme': 'basic',
-          },
-          httpSecurityScheme.toJson(),
-        );
-      },
-    );
+  test(
+    'Given a `HttpSecurityScheme`\'s with `basic` scheme when converting  `HttpSecurityScheme` to json then the `type` is set to `http` and `scheme` is `basic`',
+    () {
+      HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
+        scheme: HttpSecuritySchemeType.basic,
+      );
+      expect(
+        httpSecurityScheme.toJson(),
+        {
+          'type': 'http',
+          'scheme': 'basic',
+        },
+      );
+    },
+  );
 
-    test(
-      'When HttpSecurityScheme\'s scheme is bearer and JWT ',
-      () {
-        HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        );
-        expect(
-          {
-            'type': 'http',
-            'scheme': 'bearer',
-            'bearerFormat': 'JWT',
-          },
-          httpSecurityScheme.toJson(),
-        );
-      },
-    );
+  test(
+    'Given a `HttpSecurityScheme`\'s with `bearer` scheme and JWT  when converting `HttpSecurityScheme` to json then the `type` is set to `http` and the `bearerFormat` is `JWT`.',
+    () {
+      HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
+        scheme: HttpSecuritySchemeType.bearer,
+        bearerFormat: 'JWT',
+      );
+      expect(
+        httpSecurityScheme.toJson(),
+        {
+          'type': 'http',
+          'scheme': HttpSecuritySchemeType.bearer.name,
+          'bearerFormat': 'JWT',
+        },
+      );
+    },
+  );
 
-    test(
-      'When HttpSecurityScheme\'s scheme is bearer and bearerFormat is null throw assertion error ',
-      () {
-        expect(() {
-          HttpSecurityScheme(
-            scheme: 'bearer',
-          );
-        }, throwsA(isA<AssertionError>()));
-      },
-    );
+  test(
+    'Given a HttpSecurityScheme\'s with `bearer` scheme and null `bearerFormat` when converting `HttpSecurityScheme` to json then assertion error is throw. ',
+    () {
+      expect(() {
+        HttpSecurityScheme(
+          scheme: HttpSecuritySchemeType.bearer,
+        );
+      }, throwsA(isA<AssertionError>()));
+    },
+  );
 
-    test(
-      'Validate ApiKeySecurityScheme ',
-      () {
-        ApiKeySecurityScheme securityScheme = ApiKeySecurityScheme(
-          name: 'api_key',
-          inField: 'header',
-        );
-        expect(
-          {
-            'type': 'apiKey',
-            'name': 'api_key',
-            'in': 'header',
-          },
-          securityScheme.toJson(),
-        );
-      },
-    );
-    test(
-      'When ApiKeySecurityScheme\'s inField data is wrong throw assertion error ',
-      () {
-        expect(() {
-          ApiKeySecurityScheme(
-            name: 'api_key',
-            inField: 'somewhere',
-          );
-        }, throwsA(isA<AssertionError>()));
-      },
-    );
+  test(
+    'Given an ApiKeySecurityScheme when converting ApiKeySecurityScheme to json then got excepted output.',
+    () {
+      ApiKeySecurityScheme securityScheme = ApiKeySecurityScheme(
+        name: 'api_key',
+        inField: ApiKeyLocation.header,
+      );
+      expect(
+        {
+          'type': 'apiKey',
+          'name': 'api_key',
+          'in': 'header',
+        },
+        securityScheme.toJson(),
+      );
+    },
+  );
+  test(
+    'Given an OpenIdSecurityScheme when converting OpenIdSecurityScheme to json then got excepted output.',
+    () {
+      OpenIdSecurityScheme securityScheme =
+          OpenIdSecurityScheme(openIdConnectUrl: 'https://www.google.com');
+      expect(
+        {
+          'type': 'openIdConnect',
+          'openIdConnectUrl': 'https://www.google.com',
+        },
+        securityScheme.toJson(),
+      );
+    },
+  );
 
-    test(
-      'Validate OpenIdSecurityScheme ',
-      () {
-        OpenIdSecurityScheme securityScheme =
-            OpenIdSecurityScheme(openIdConnectUrl: 'https://www.google.com');
-        expect(
-          {
-            'type': 'openIdConnect',
-            'openIdConnectUrl': 'https://www.google.com',
-          },
-          securityScheme.toJson(),
-        );
-      },
-    );
-
-    test(
-      'Validate OauthSecurityScheme ',
-      () {
-        OauthSecurityScheme securityScheme = OauthSecurityScheme(
-          flows: {},
-        );
-        expect(
-          {
-            'type': 'oauth2',
-            'flows': {},
-          },
-          securityScheme.toJson(),
-        );
-      },
-    );
-  });
+  test(
+    'Given an OauthSecurityScheme when converting OauthSecurityScheme to json then got excepted output.',
+    () {
+      OauthSecurityScheme securityScheme = OauthSecurityScheme(
+        flows: {},
+      );
+      expect(
+        {
+          'type': 'oauth2',
+          'flows': {},
+        },
+        securityScheme.toJson(),
+      );
+    },
+  );
 }

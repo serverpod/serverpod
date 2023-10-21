@@ -1,16 +1,14 @@
-import 'package:recase/recase.dart';
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:test/test.dart';
 
+import 'test_data_factory.dart';
+
 void main() {
   group('Test Utils: ', () {
-    test('When convert queryForm to query-form and path to path', () {
-      expect('path', 'path'.paramCase);
-      expect('query-form', 'queryForm'.paramCase);
-    });
-    test('When convert subDirs to path', () {
+    test(
+        'Given a subDirs when calling `getExtraPath` Then it returns the expected path.',
+        () {
       List<String> subDirs = [
         'api',
         'v1',
@@ -18,48 +16,42 @@ void main() {
       expect('/api/v1', getExtraPath(subDirs));
     });
   });
-  group('Test SchemaObjectType ', () {
-    test('When convert [TypeDefinition] to [SchemaObjectType]', () {
+  group('Given a set of `TypeDefinition`s', () {
+    test(
+        'When converting `TypeDefinition` to `OpenAPISchemaType` then all are converted as excepted.',
+        () {
       expect(
-          'string',
-          TypeDefinition(className: 'String', nullable: false)
-              .toSchemaObjectType
-              .name);
+        stringType.toOpenAPISchemaType,
+        OpenAPISchemaType.string,
+      );
       expect(
-          'integer',
-          TypeDefinition(className: 'int', nullable: false)
-              .toSchemaObjectType
-              .name);
+        intType.toOpenAPISchemaType,
+        OpenAPISchemaType.integer,
+      );
       expect(
-          'boolean',
-          TypeDefinition(className: 'bool', nullable: false)
-              .toSchemaObjectType
-              .name);
+        boolType.toOpenAPISchemaType,
+        OpenAPISchemaType.boolean,
+      );
       expect(
-          'number',
-          TypeDefinition(className: 'double', nullable: false)
-              .toSchemaObjectType
-              .name);
+        boolType.toOpenAPISchemaType,
+        OpenAPISchemaType.boolean,
+      );
       expect(
-          'array',
-          TypeDefinition(className: 'List', nullable: false)
-              .toSchemaObjectType
-              .name);
+        doubleType.toOpenAPISchemaType,
+        OpenAPISchemaType.number,
+      );
       expect(
-          'object',
-          TypeDefinition(className: 'Map', nullable: false)
-              .toSchemaObjectType
-              .name);
+        listBuilder.build().toOpenAPISchemaType,
+        OpenAPISchemaType.array,
+      );
       expect(
-          'serializableObjects',
-          TypeDefinition(className: 'Example', nullable: false)
-              .toSchemaObjectType
-              .name);
+        mapBuilder.build().toOpenAPISchemaType,
+        OpenAPISchemaType.object,
+      );
       expect(
-          'serializableObjects',
-          TypeDefinition(className: 'dynamic', nullable: false)
-              .toSchemaObjectType
-              .name);
+        exampleType.toOpenAPISchemaType,
+        OpenAPISchemaType.serializableObjects,
+      );
     });
   });
 }
