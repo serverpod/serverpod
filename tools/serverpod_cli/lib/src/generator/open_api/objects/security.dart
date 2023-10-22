@@ -237,8 +237,8 @@ OpenAPISecurityRequirement googleAuth = OpenAPISecurityRequirement(
 
 OpenAPISecurityRequirement serverpodAuth = OpenAPISecurityRequirement(
   name: 'serverpodAuth',
-  securitySchemes: HttpSecurityScheme(
-    scheme: HttpSecuritySchemeType.bearer,
-    bearerFormat: 'JWT',
+  securitySchemes: ApiKeySecurityScheme(
+    name: 'api_key',
+    inField: ApiKeyLocation.header,
   ),
 );
