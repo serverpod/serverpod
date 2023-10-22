@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/copy_migrations.dart';
@@ -32,17 +33,29 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Generate OpenAPI schema.',
     );
+    argParser.addFlag(
+      'version',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Specified the version of the OpenAPI document.',
+    );
   }
 
   @override
   Future<void> run() async {
     // Always do a full generate.
     bool watch = argResults!['watch'];
-    // Whether to generate an OpenAPI schema or not
+    // Whether to generate an OpenAPI schema or not.
     bool generateOpenAPI = argResults!['experimental-open-api'];
+    // whether an OpenAPI document version is specified or not.
+    bool hasOpenAPIdocumentVersion = argResults!['version'];
 
     // TODO: add a -d option to select the directory
-    var config = await GeneratorConfig.load();
+    var config = await GeneratorConfig.load(
+      '',
+      hasOpenAPIdocumentVersion ? _getOpenAPIDocumentVersion(argResults!) : '',
+    );
+
     if (config == null) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
@@ -91,5 +104,19 @@ class GenerateCommand extends ServerpodCommand {
     if (!success) {
       throw ExitException();
     }
+  }
+
+  String _getOpenAPIDocumentVersion(ArgResults argResult) {
+    var versionFlagIndex = argResult.arguments.indexOf('--version');
+    if (versionFlagIndex != -1 &&
+        versionFlagIndex + 1 < argResult.arguments.length) {
+      var versionValue = argResult.arguments[versionFlagIndex + 1];
+      var pattern = RegExp(r'^\d+\.\d+\.\d+$');
+
+      if (pattern.hasMatch(versionValue)) {
+        return versionValue;
+      }
+    }
+    return '';
   }
 }

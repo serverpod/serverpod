@@ -70,8 +70,12 @@ class OpenAPIDefinition {
 
   factory OpenAPIDefinition.fromProtocolDefinition(
       ProtocolDefinition protocolDefinition, GeneratorConfig config) {
-    OpenAPIConfig infoObject =
-        OpenAPIConfig(title: 'ServerPod Endpoint - OpenAPI', version: '0.0.1');
+    OpenAPIConfig infoObject = OpenAPIConfig(
+      title: 'ServerPod Endpoint - OpenAPI',
+      version: config.openAPIdocumentVersion.isNotEmpty
+          ? config.openAPIdocumentVersion
+          : '0.0.1',
+    );
 
     var returnTypeList = _getEntitiesFromEndpointsReturnType(
       protocolDefinition,

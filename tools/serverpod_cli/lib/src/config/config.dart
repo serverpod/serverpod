@@ -39,6 +39,7 @@ class GeneratorConfig {
     required this.extraClasses,
     this.servers = const {},
     this.openAPIConfig,
+    this.openAPIdocumentVersion = '',
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -123,8 +124,14 @@ class GeneratorConfig {
   /// Configuration for generation of OpenAPI specification.
   final OpenAPIConfig? openAPIConfig;
 
+  /// The OpenAPI document version.
+  final String openAPIdocumentVersion;
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig?> load([String dir = '']) async {
+  static Future<GeneratorConfig?> load([
+    String dir = '',
+    String openAPIdocumentVersion = '',
+  ]) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -263,8 +270,12 @@ class GeneratorConfig {
       try {
         Map openAPIMap = generatorConfig['openAPIConfig'];
 
-        openAPIConfig =
-            OpenAPIConfig.fromConfig(openAPIMap, version: pubspec['version']);
+        openAPIConfig = OpenAPIConfig.fromConfig(
+          openAPIMap,
+          version: openAPIdocumentVersion.isNotEmpty
+              ? openAPIdocumentVersion
+              : pubspec['version'],
+        );
       } catch (e) {
         log.error(
           'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
@@ -284,6 +295,7 @@ class GeneratorConfig {
       extraClasses: extraClasses,
       servers: servers,
       openAPIConfig: openAPIConfig,
+      openAPIdocumentVersion: openAPIdocumentVersion,
     );
   }
 
