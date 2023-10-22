@@ -77,14 +77,14 @@ void main() {
           expect(
             openAPISchema['tags'],
             [
-              {'name': 'example', 'description': '\nThe Example endpoint.'}
+              {'name': 'example', 'description': 'The Example endpoint.'}
             ],
           );
         },
       );
 
       test(
-        'then the paths contains `/v1/Example/hello`.',
+        'then the paths contains /v1/Example/hello.',
         () {
           expect(
             openAPISchema['paths'],
@@ -94,7 +94,7 @@ void main() {
       );
       var paths = openAPISchema['paths'];
       test(
-        'then the the paths `/v1/Example/hello` contains `post`.',
+        'then the the paths /v1/Example/hello contains post.',
         () {
           expect(
             paths['/v1/Example/hello'].containsKey('post'),
@@ -117,7 +117,7 @@ void main() {
             },
           );
           test(
-            'with tag Example.',
+            'with tags list that contain Example tag.',
             () {
               expect(
                 post['tags'],
@@ -126,11 +126,11 @@ void main() {
             },
           );
           test(
-            'with the `Hello` description.',
+            'with the Hello description.',
             () {
               expect(
                 post['description'],
-                equals('\nHello'),
+                equals('Hello'),
               );
             },
           );
@@ -196,7 +196,7 @@ void main() {
       );
 
       group(
-        'then the `components` is generated',
+        'then the components is generated',
         () {
           Map<String, dynamic> components = openAPISchema['components'];
           test('with all required keys.', () {

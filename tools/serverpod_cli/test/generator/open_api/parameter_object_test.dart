@@ -1,46 +1,48 @@
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:test/test.dart';
 
+import 'test_data_factory.dart';
+
 void main() {
-  test('when query name is status and type is String', () {
+  test(
+      'Given query name status in query when converting OpenAPIParameter to json then it is correctly generated.',
+      () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'status',
       inField: ParameterLocation.query,
       requiredField: true,
       allowEmptyValue: false,
       schema: OpenAPIParameterSchema(
-        TypeDefinition(className: 'String', nullable: false),
+        stringType,
       ),
     );
 
-    expect({
+    expect(object.toJson(), {
       'name': 'status',
       'in': 'query',
       'required': true,
       'schema': {
         'type': 'string',
       }
-    }, object.toJson());
+    });
   });
 
-  test('when path name is status and type is String', () {
+  test(
+      'Given query name status in path when converting OpenAPIParameter to json then it is correctly generated.',
+      () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'status',
       inField: ParameterLocation.path,
       requiredField: true,
       allowEmptyValue: false,
       schema: OpenAPIParameterSchema(
-        TypeDefinition(
-          className: 'String',
-          nullable: false,
-          url: 'dart:core',
-        ),
+        stringType,
       ),
     );
 
     expect(
+      object.toJson(),
       {
         'name': 'status',
         'in': 'path',
@@ -49,26 +51,24 @@ void main() {
           'type': 'string',
         }
       },
-      object.toJson(),
     );
   });
 
-  test('when header name is Authorization and type is String', () {
+  test(
+      'Given query name Authorization in header when converting OpenAPIParameter to json then it is correctly generated.',
+      () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'Authorization',
       inField: ParameterLocation.header,
       requiredField: true,
       allowEmptyValue: false,
       schema: OpenAPIParameterSchema(
-        TypeDefinition(
-          className: 'String',
-          nullable: false,
-          url: 'dart:core',
-        ),
+        stringType,
       ),
     );
 
     expect(
+      object.toJson(),
       {
         'name': 'Authorization',
         'in': 'header',
@@ -77,7 +77,6 @@ void main() {
           'type': 'string',
         }
       },
-      object.toJson(),
     );
   });
 }
