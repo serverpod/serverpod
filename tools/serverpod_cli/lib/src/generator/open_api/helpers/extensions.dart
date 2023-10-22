@@ -66,6 +66,6 @@ extension TypeDefinitionExtension on TypeDefinition {
 
 extension StringExtensions on String {
   /// Removes '///' from dart comments without losing then indent.
-  String get cleanedDartComment => replaceAll(RegExp(r'(\s*)/// '), '\n')
-      .replaceAll(RegExp(r'(\s*)///'), '');
+  String get cleanedDartComment =>
+      replaceAll(RegExp(r'/// '), '').replaceAll(RegExp(r'///'), '');
 }
