@@ -7,7 +7,7 @@ import 'test_data_factory.dart';
 void main() {
   group('Test Utils: ', () {
     test(
-        'Given a subDirs when calling `getExtraPath` Then it returns the expected path.',
+        'Given a subDirs when calling getExtraPath Then it returns the expected path.',
         () {
       List<String> subDirs = [
         'api',
@@ -16,9 +16,9 @@ void main() {
       expect('/api/v1', getExtraPath(subDirs));
     });
   });
-  group('Given a set of `TypeDefinition`s', () {
+  group('Given a set of TypeDefinitions', () {
     test(
-        'When converting `TypeDefinition` to `OpenAPISchemaType` then all are converted as excepted.',
+        'When converting TypeDefinition to OpenAPISchemaType then all are converted as excepted.',
         () {
       expect(
         stringType.toOpenAPISchemaType,

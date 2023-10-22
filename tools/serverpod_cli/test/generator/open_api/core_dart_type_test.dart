@@ -4,9 +4,9 @@ import 'package:test/test.dart';
 import 'test_data_factory.dart';
 
 void main() {
-  group('Serializes an \'int\'.', () {
+  group('Serializes an int.', () {
     test(
-        'Given an int when converting to json then the type is set to \'integer\'.',
+        'Given an int when converting to json then the type is set to integer.',
         () {
       expect(
         coreDartTypeToJson(intType),
@@ -17,7 +17,7 @@ void main() {
     });
 
     test(
-        'Given a nullable int when converting to json then the type is set to \'integer\' and is nullable.',
+        'Given a nullable int when converting to json then the type is set to integer and is nullable.',
         () {
       expect(
         coreDartTypeToJson(intNullableType),
@@ -29,9 +29,9 @@ void main() {
     });
   });
 
-  group('Serializes a \'String\'.', () {
+  group('Serializes a String.', () {
     test(
-        'Given a String when converting to json then the type is set to \'string\'.',
+        'Given a String when converting to json then the type is set to string.',
         () {
       expect(
         coreDartTypeToJson(stringType),
@@ -42,7 +42,7 @@ void main() {
     });
 
     test(
-        'Given a nullable String when converting to json then the type is set to \'string\' and is nullable.',
+        'Given a nullable String when converting to json then the type is set to string and is nullable.',
         () {
       expect(
         coreDartTypeToJson(stringNullableType),
@@ -53,9 +53,9 @@ void main() {
       );
     });
   });
-  group('Serializes a \'double\'.', () {
+  group('Serializes a double.', () {
     test(
-        'Given a double when converting to json then the type is set to \'number\'.',
+        'Given a double when converting to json then the type is set to number.',
         () {
       expect(
         coreDartTypeToJson(doubleType),
@@ -66,7 +66,7 @@ void main() {
     });
 
     test(
-        'Given a nullable double when converting to json then the type is set to \'number\' and is nullable.',
+        'Given a nullable double when converting to json then the type is set to number and is nullable.',
         () {
       expect(
         coreDartTypeToJson(doubleNullableType),
@@ -78,9 +78,9 @@ void main() {
     });
   });
 
-  group('Serializes a \'BigInt\'.', () {
+  group('Serializes a BigInt.', () {
     test(
-        'Given a BigInt when converting to json then the type is set to \'number\'.',
+        'Given a BigInt when converting to json then the type is set to number.',
         () {
       expect(
         coreDartTypeToJson(bigIntType),
@@ -91,7 +91,7 @@ void main() {
     });
 
     test(
-        'Given a nullable BigInt when converting to json then the type is set to \'number\' and is nullable.',
+        'Given a nullable BigInt when converting to json then the type is set to number and is nullable.',
         () {
       expect(
         coreDartTypeToJson(bigIntNullableType),
@@ -103,9 +103,9 @@ void main() {
     });
   });
 
-  group('Serializes a \'bool\'.', () {
+  group('Serializes a bool.', () {
     test(
-        'Given an bool when converting to json then the type is set to \'boolean\'.',
+        'Given an bool when converting to json then the type is set to boolean.',
         () {
       expect(
         coreDartTypeToJson(boolType),
@@ -116,7 +116,7 @@ void main() {
     });
 
     test(
-        'Given a nullable bool when converting to json then the type is set to \'boolean\' and is nullable.',
+        'Given a nullable bool when converting to json then the type is set to boolean and is nullable.',
         () {
       expect(
         coreDartTypeToJson(boolNullableType),

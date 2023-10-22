@@ -6,7 +6,7 @@ import 'test_data_factory.dart';
 
 void main() {
   test(
-      'Given a `OpenAPIParameterSchema` with `String`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `string`.',
+      'Given a OpenAPIParameterSchema with String when converting OpenAPIParameterSchema to json then the type is set to string.',
       () {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(stringType);
     expect(
@@ -15,7 +15,7 @@ void main() {
     );
   });
   test(
-      'Given a `OpenAPIParameterSchema` with `int`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `integer`.',
+      'Given a OpenAPIParameterSchema with int when converting OpenAPIParameterSchema to json then the type is set to integer.',
       () {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       intType,
@@ -24,7 +24,7 @@ void main() {
   });
 
   test(
-      'Given a `OpenAPIParameterSchema` with `double`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `integer`.',
+      'Given a OpenAPIParameterSchema with double when converting OpenAPIParameterSchema to json then the type is set to integer.',
       () {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       doubleType,
@@ -33,7 +33,7 @@ void main() {
   });
 
   test(
-      'Given a `OpenAPIParameterSchema` with `List<int>`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `array` and `items` type is `integer`.',
+      'Given a OpenAPIParameterSchema with List<int> when converting OpenAPIParameterSchema to json then the type is set to array and items type is integer.',
       () {
     OpenAPIParameterSchema object =
         OpenAPIParameterSchema(listBuilder.withGenerics([intType]).build());
@@ -46,7 +46,7 @@ void main() {
   });
 
   test(
-      'Given a `OpenAPIParameterSchema` with `List<String>`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `array` and `items` type is `string`.',
+      'Given a OpenAPIParameterSchema with List<String> when converting OpenAPIParameterSchema to json then the type is set to array and items type is string.',
       () {
     OpenAPIParameterSchema object =
         OpenAPIParameterSchema(listBuilder.withGenerics([stringType]).build());
@@ -59,7 +59,7 @@ void main() {
   });
 
   test(
-      'Given a `OpenAPIParameterSchema` with `List<double>`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `array` and `items` type is `number`.',
+      'Given a OpenAPIParameterSchema with List<double> when converting OpenAPIParameterSchema to json then the type is set to array and items type is number.',
       () {
     OpenAPIParameterSchema object =
         OpenAPIParameterSchema(listBuilder.withGenerics([doubleType]).build());
@@ -72,7 +72,7 @@ void main() {
   });
 
   test(
-      'Given a `OpenAPIParameterSchema` with `TestEnum`  when converting `OpenAPIParameterSchema` to json then the `type` is set to `string` and contains key enum.',
+      'Given a OpenAPIParameterSchema with TestEnum when converting OpenAPIParameterSchema to json then the type is set to string and contains key enum.',
       () {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       TypeDefinitionBuilder()

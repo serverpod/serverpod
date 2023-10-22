@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a `HttpSecurityScheme`\'s with `basic` scheme when converting  `HttpSecurityScheme` to json then the `type` is set to `http` and `scheme` is `basic`',
+    'Given a HttpSecurityScheme\'s with basic scheme when converting  HttpSecurityScheme to json then the type is set to http and scheme is basic',
     () {
       HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
         scheme: HttpSecuritySchemeType.basic,
@@ -19,7 +19,7 @@ void main() {
   );
 
   test(
-    'Given a `HttpSecurityScheme`\'s with `bearer` scheme and JWT  when converting `HttpSecurityScheme` to json then the `type` is set to `http` and the `bearerFormat` is `JWT`.',
+    'Given a HttpSecurityScheme\'s with bearer scheme and JWT  when converting HttpSecurityScheme to json then the type is set to http and the bearerFormat is JWT.',
     () {
       HttpSecurityScheme httpSecurityScheme = HttpSecurityScheme(
         scheme: HttpSecuritySchemeType.bearer,
@@ -37,7 +37,7 @@ void main() {
   );
 
   test(
-    'Given a HttpSecurityScheme\'s with `bearer` scheme and null `bearerFormat` when converting `HttpSecurityScheme` to json then assertion error is throw. ',
+    'Given a HttpSecurityScheme\'s with bearer scheme and null bearerFormat when converting HttpSecurityScheme to json then assertion error is throw. ',
     () {
       expect(() {
         HttpSecurityScheme(

@@ -5,7 +5,7 @@ import 'test_data_factory.dart';
 
 void main() {
   test(
-      'Given \'List\' when converting to json then the type is set to array and items with AnyValue.',
+      'Given List when converting to json then the type is set to array and items with AnyValue.',
       () {
     expect(
       listTypeToJson(listBuilder.build()),
@@ -16,7 +16,7 @@ void main() {
     );
   });
   test(
-      'Given \'List<Example>\' when converting to json then the type is set to array and items with referencing the \'Example\' type.',
+      'Given List<Example> when converting to json then the type is set to array and items with referencing the Example type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([exampleType]).build()),
@@ -30,7 +30,7 @@ void main() {
   });
 
   test(
-      'Given \'List<String>\' when converting to json then the type is set to array and items with the \'string\' type.',
+      'Given List<String> when converting to json then the type is set to array and items with the string type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([stringType]).build()),
@@ -44,7 +44,7 @@ void main() {
   });
 
   test(
-      'Given \'List<int>\' when converting to json then the type is set to array and items with the \'integer\' type.',
+      'Given List<int> when converting to json then the type is set to array and items with the integer type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([intType]).build()),
@@ -58,7 +58,7 @@ void main() {
   });
 
   test(
-      'Given \'List<double>\' when converting to json then the type is set to array and items with the \'number\' type.',
+      'Given List<double> when converting to json then the type is set to array and items with the number type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([doubleType]).build()),
@@ -72,7 +72,7 @@ void main() {
   });
 
   test(
-      'Given \'List<BigInt>\' when converting to json then the type is set to array and items with the \'number\' type.',
+      'Given List<BigInt> when converting to json then the type is set to array and items with the number type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([bigIntType]).build()),
@@ -86,7 +86,7 @@ void main() {
   });
 
   test(
-      'Given \'List<bool>\' when converting to json then the type is set to array and items with the \'boolean\' type.',
+      'Given List<bool> when converting to json then the type is set to array and items with the boolean type.',
       () {
     expect(
       listTypeToJson(listBuilder.withGenerics([boolType]).build()),
@@ -100,7 +100,7 @@ void main() {
   });
 
   test(
-      'Given \'List<List<String>>\' when converting to json then the type is set to array and items with the \'array\' type of \'string\'.',
+      'Given List<List<String>> when converting to json then the type is set to array and items with the array type of string.',
       () {
     expect(
       listTypeToJson(
@@ -122,7 +122,7 @@ void main() {
     );
   });
   test(
-      'Given \'List<Map<String,String>>>\' when converting to json then the type is set to array and the items are represented as \'object\' with additionalProperties set to \'string\'.',
+      'Given List<Map<String,String>>> when converting to json then the type is set to array and the items are represented as object with additionalProperties set to string.',
       () {
     expect(
       listTypeToJson(

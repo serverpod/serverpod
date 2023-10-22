@@ -6,7 +6,7 @@ import 'test_data_factory.dart';
 
 void main() {
   test(
-      'Given (int id and string name) when converting `OpenAPIRequestContentSchema` to json then the `type` is set to `object` and `properties` contains id(integer) and name(string).',
+      'Given (int id and string name) when converting OpenAPIRequestContentSchema to json then the type is set to object and properties contains id(integer) and name(string).',
       () {
     OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
       params: [
@@ -31,7 +31,7 @@ void main() {
     );
   });
   test(
-      'Given (Example example) when converting `OpenAPIRequestContentSchema` to json then the `type` is set to `object` and `properties` contains `example` which references `Example`.',
+      'Given (Example example) when converting OpenAPIRequestContentSchema to json then the type is set to object and properties contains example which references Example.',
       () {
     OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
       params: [
@@ -52,7 +52,7 @@ void main() {
     );
   });
   test(
-      'Given (int id,Example example) when converting `OpenAPIRequestContentSchema` to json then the `type` is set to `object` and `properties` contains  `id`(integer) and `example` which references `Example`.',
+      'Given (int id,Example example) when converting OpenAPIRequestContentSchema to json then the type is set to object and properties contains  id(integer) and example which references Example.',
       () {
     OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
       params: [
@@ -78,7 +78,7 @@ void main() {
   });
 
   test(
-      'Given (int id,List<Example> examples) when converting `OpenAPIRequestContentSchema` to json then the `type` is set to `object` and `properties` contains  `id` (integer) and `examples` (array) which references `Example`',
+      'Given (int id,List<Example> examples) when converting OpenAPIRequestContentSchema to json then the type is set to object and properties contains  id (integer) and examples (array) which references Example',
       () {
     OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
       params: [
@@ -110,7 +110,7 @@ void main() {
   });
 
   test(
-      'Given  (int id,Map<String,dynamic> map) when converting `OpenAPIRequestContentSchema` to json then the `type` is set to `object` and `properties` contains  `id` (integer) and `map` with `additionalProperties` which references `AnyValue`.',
+      'Given  (int id,Map<String,dynamic> map) when converting OpenAPIRequestContentSchema to json then the type is set to object and properties contains  id (integer) and map with additionalProperties which references AnyValue.',
       () {
     OpenAPIRequestContentSchema object = OpenAPIRequestContentSchema(
       params: [
