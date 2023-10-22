@@ -23,7 +23,7 @@ class OpenAPIDefinition {
   /// to a target server.
   /// If the servers property is not provided, or is an empty array,
   /// the default value would be a Server Object with a url value of /.
-  final Set<OpenAPIServer>? servers;
+  final Set<OpenAPIServer> servers;
 
   /// The available paths and operations for the API.
   final Set<OpenAPIPaths> paths;
@@ -40,7 +40,7 @@ class OpenAPIDefinition {
     this.openAPI = '3.0.0',
     required this.info,
     this.jsonSchemaDialect,
-    this.servers,
+    required this.servers,
     required this.paths,
     required this.components,
     required this.tags,
@@ -56,9 +56,7 @@ class OpenAPIDefinition {
     if (theJsonSchemaDialect != null) {
       map['jsonSchemaDialect'] = theJsonSchemaDialect;
     }
-    if (servers != null) {
-      map['servers'] = servers!.map((e) => e.toJson()).toList();
-    }
+    map['servers'] = servers.map((e) => e.toJson()).toList();
     map['tags'] = tags.map((tag) => tag.toJson()).toList();
     map['paths'] = _allPathsToJson(paths);
     map['components'] = components.toJson();
