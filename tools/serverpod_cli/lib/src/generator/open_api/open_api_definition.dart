@@ -32,7 +32,7 @@ class OpenAPIDefinition {
   final OpenAPIComponents components;
 
   /// A list of tags used by the document with additional metadata.
-  final Set<OpenAPITag>? tags;
+  final Set<OpenAPITag> tags;
 
   /// Additional external documentation.
   final OpenAPIExternalDocumentation? externalDocs;
@@ -43,7 +43,7 @@ class OpenAPIDefinition {
     this.servers,
     required this.paths,
     required this.components,
-    this.tags,
+    required this.tags,
     this.externalDocs,
   });
 
@@ -59,9 +59,7 @@ class OpenAPIDefinition {
     if (servers != null) {
       map['servers'] = servers!.map((e) => e.toJson()).toList();
     }
-    if (tags != null) {
-      map['tags'] = tags!.map((tag) => tag.toJson()).toList();
-    }
+    map['tags'] = tags.map((tag) => tag.toJson()).toList();
     map['paths'] = _allPathsToJson(paths);
     map['components'] = components.toJson();
     var theExternalDocs = externalDocs;
@@ -208,11 +206,19 @@ Set<OpenAPIComponentSchema> _getComponentSchemasFromClassDefinitions(
     // Removes entity that are already present in entitiesDefinition.
     entitiesFromMethodReturn
         .removeWhere((e) => e.className == entityInfo.className);
-    schemas.add(OpenAPIComponentSchema(entityInfo));
+    if (!entityInfo.serverOnly) {
+      schemas.add(
+        OpenAPIComponentSchema(entityInfo),
+      );
+    }
   }
 
   for (var entityInfo in entitiesFromMethodReturn) {
-    schemas.add(OpenAPIComponentSchema(entityInfo));
+    if (!entityInfo.serverOnly) {
+      schemas.add(
+        OpenAPIComponentSchema(entityInfo),
+      );
+    }
   }
 
   return schemas;
@@ -237,6 +243,7 @@ List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
         continue;
       }
       SerializableEntityDefinition entity;
+
       if (returnType.isEnum) {
         entity = EnumDefinition(
             fileName: 'undefined',
