@@ -13,7 +13,7 @@ import 'package:serverpod_cli/src/generator/open_api/objects/security.dart';
 class OpenAPIComponents {
   /// A set of reusable [OpenAPIComponentSchema].that can be
   /// referenced.
-  final Set<OpenAPIComponentSchema>? schemas;
+  final Set<OpenAPIComponentSchema> schemas;
 
   /// A mapping that associates response names with reusable [OpenAPIResponse]
   /// eg
@@ -39,7 +39,7 @@ class OpenAPIComponents {
   /// A mapping that associates path name with reusable [OpenAPIPathItem].
   final Map<String, OpenAPIPathItem>? pathItems;
   OpenAPIComponents({
-    this.schemas,
+    required this.schemas,
     this.responses,
     this.parameters,
     this.requestBodies,
@@ -50,13 +50,12 @@ class OpenAPIComponents {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
 
-    if (schemas != null) {
-      Map<String, dynamic> schemasMap = {};
-      for (var schema in schemas!) {
-        schemasMap.addAll(schema.toJson());
-      }
-      map[OpenAPIJsonKey.schemas.name] = schemasMap;
+    Map<String, dynamic> schemasMap = {};
+    for (var schema in schemas) {
+      schemasMap.addAll(schema.toJson());
     }
+
+    map[OpenAPIJsonKey.schemas.name] = schemasMap;
     if (securitySchemes.isNotEmpty) {
       var securityMap = <String, dynamic>{};
       for (var security in securitySchemes) {
@@ -64,6 +63,7 @@ class OpenAPIComponents {
       }
       map[OpenAPIJsonKey.securitySchemes.name] = securityMap;
     }
+
     return map;
   }
 }
