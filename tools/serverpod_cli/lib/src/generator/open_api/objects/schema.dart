@@ -152,12 +152,31 @@ class OpenAPIRequestContentSchema {
   });
 
   Map<String, dynamic> toJson() {
+    var properties = <String, dynamic>{};
+    for (var param in params) {
+      if (param.type.nullable &&
+          param.type.toOpenAPISchemaType ==
+              OpenAPISchemaType.serializableObjects) {
+        // Note: In OpenAPI (3.0.x) components, sibling properties alongside
+        // $refs are not considered. Directly specifying 'nullable' or other
+        // properties in this context is not supported.
+        properties.addAll({
+          param.name: {
+            'allOf': typeDefinitionToJson(param.type, true),
+          },
+          'nullable': param.type.nullable
+        });
+      } else {
+        properties.addAll(
+          {
+            param.name: typeDefinitionToJson(param.type, true),
+          },
+        );
+      }
+    }
     return {
       OpenAPIJsonKey.type.name: OpenAPISchemaType.object.name,
-      OpenAPIJsonKey.properties.name: {
-        for (var param in params)
-          param.name: typeDefinitionToJson(param.type, true),
-      }
+      OpenAPIJsonKey.properties.name: properties
     };
   }
 }

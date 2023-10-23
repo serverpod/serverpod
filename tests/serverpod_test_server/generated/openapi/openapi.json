@@ -4602,8 +4602,11 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/TestEnum"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -4654,8 +4657,11 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/TestEnum"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -9680,8 +9686,11 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/TestEnum"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -9732,8 +9741,11 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/TestEnum"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -11858,8 +11870,11 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/CustomClass"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/CustomClass"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -11956,8 +11971,11 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/CustomClass2"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/CustomClass2"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -12054,8 +12072,11 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/ExternalCustomClass"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/ExternalCustomClass"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -12152,8 +12173,11 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/FreezedCustomClass"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/FreezedCustomClass"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
@@ -17662,8 +17686,11 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/SimpleData"
-                                    }
+                                        "allOf": {
+                                            "$ref": "#/components/schemas/SimpleData"
+                                        }
+                                    },
+                                    "nullable": true
                                 }
                             }
                         }
