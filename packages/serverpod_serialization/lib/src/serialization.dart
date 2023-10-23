@@ -65,7 +65,8 @@ abstract class SerializationManager {
       return data;
     } else if (_isNullableType<DateTime>(t)) {
       if (data is DateTime) return data as T;
-      return DateTime.tryParse(data ?? '')?.toUtc() as T;
+      if (data == null) return null as T;
+      return DateTime.tryParse(data)?.toUtc() as T;
     } else if (_isNullableType<ByteData>(t)) {
       if (data is Uint8List) {
         var byteData = ByteData.view(
