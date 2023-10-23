@@ -34,6 +34,8 @@ class OpenAPIResponse {
           'Forbidden (the caller is trying to call a restricted endpoint, but doesn\'t have the correct credentials/scope).',
     };
 
+    // TODO: Add 401 Unauthorized.
+
     // 500 internal server error
     map['500'] = {
       OpenAPIJsonKey.description.name: 'Internal server error.',

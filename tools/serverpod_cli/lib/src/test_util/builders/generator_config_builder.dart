@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
