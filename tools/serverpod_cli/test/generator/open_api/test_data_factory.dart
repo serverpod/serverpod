@@ -2,7 +2,9 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/endpoint_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/method_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 
@@ -42,29 +44,23 @@ var exampleClass = ClassDefinitionBuilder()
     .withField(nameField)
     .build();
 
-var helloMethod = MethodDefinition(
-  name: 'hello',
-  documentationComment: '/// Hello',
-  parameters: [
-    ParameterDefinition(
-      name: 'name',
-      type: stringType,
-      required: true,
-    ),
-  ],
-  parametersPositional: [],
-  parametersNamed: [],
-  returnType: futureBuilder.withGenerics([stringType]).build(),
-);
+var helloMethod = MethodDefinitionBuilder()
+    .withMethodName('hello')
+    .withDocumentation('/// Hello')
+    .withParameter(
+      ParameterDefinition(name: 'name', type: stringType, required: true),
+    )
+    .withReturnType(stringType)
+    .build();
 
-var exampleEndpoint = EndpointDefinition(
-  name: 'Example',
-  documentationComment: '/// The Example endpoint.',
-  methods: [helloMethod],
-  className: 'ExampleEndpoint',
-  filePath: '',
-  subDirParts: ['v1'],
-);
+var exampleEndpoint = EndpointDefinitionBuilder()
+    .withClassName('ExampleEndpoint')
+    .withName('Example')
+    .withDocumentation('/// The Example endpoint.')
+    .withMethod(helloMethod)
+    .withSubDirParts(
+  ['v1'],
+).build();
 
 var exampleProtocolDefinition = ProtocolDefinition(
   endpoints: [exampleEndpoint],
