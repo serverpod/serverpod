@@ -8,7 +8,8 @@ import 'package:yaml/yaml.dart';
 import 'test_data_factory.dart';
 
 void main() {
-  var expectedFilePath = path.join('generated', 'openapi', 'openapi.json');
+  var expectedFilePath =
+      path.join('generated', 'openapi', 'openapi-1.0.0.json');
 
   var codeMap = openAPIgenerator.generateOpenAPISchema(
     protocolDefinition: exampleProtocolDefinition,
