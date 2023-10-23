@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
@@ -11,6 +12,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  String _openAPIDocumentVersion;
 
   GeneratorConfigBuilder()
       : _name = 'example',
@@ -21,7 +23,8 @@ class GeneratorConfigBuilder {
         _serverPackageDirectoryPathParts = [],
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
         _modules = [],
-        _extraClasses = [];
+        _extraClasses = [],
+        _openAPIDocumentVersion = '1.0.0';
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -74,6 +77,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withOpenAPIDocumentVersion(String version) {
+    _openAPIDocumentVersion = version;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -85,6 +93,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      openAPIdocumentVersion: _openAPIDocumentVersion,
     );
   }
 }

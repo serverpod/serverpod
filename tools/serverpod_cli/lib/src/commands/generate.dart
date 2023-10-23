@@ -111,11 +111,7 @@ class GenerateCommand extends ServerpodCommand {
     if (versionFlagIndex != -1 &&
         versionFlagIndex + 1 < argResult.arguments.length) {
       var versionValue = argResult.arguments[versionFlagIndex + 1];
-      var pattern = RegExp(r'^\d+\.\d+\.\d+$');
-
-      if (pattern.hasMatch(versionValue)) {
-        return versionValue;
-      }
+      return versionValue;
     }
     return '';
   }

@@ -266,15 +266,16 @@ class GeneratorConfig {
     OpenAPIConfig? openAPIConfig;
 
     bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
+
+    openAPIdocumentVersion =
+        _validateVersionFormat(openAPIdocumentVersion, pubspec['version']);
     if (hasOpenAPIConfiguration) {
       try {
         Map openAPIMap = generatorConfig['openAPIConfig'];
 
         openAPIConfig = OpenAPIConfig.fromConfig(
           openAPIMap,
-          version: openAPIdocumentVersion.isNotEmpty
-              ? openAPIdocumentVersion
-              : pubspec['version'],
+          version: openAPIdocumentVersion,
         );
       } catch (e) {
         log.error(
@@ -386,4 +387,15 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
+}
+
+/// Validates a version string.
+/// If the version matches the pattern, it returns the version string.
+/// Otherwise,it returns version from pubspec.yaml.
+String _validateVersionFormat(String version, String pubspecVersion) {
+  var pattern = RegExp(r'^\d+\.\d+\.\d+$');
+  if (pattern.hasMatch(version)) {
+    return version;
+  }
+  return pubspecVersion;
 }
