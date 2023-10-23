@@ -665,6 +665,7 @@ class _SubQueries {
   static const String orderByPrefix = 'order_by';
   static const String whereCountPrefix = 'where_count';
   static const String whereNonePrefix = 'where_none';
+  static const String whereAnyPrefix = 'where_any';
   final Map<int, _SubQuery> _orderByQueries = {};
   final Map<int, _SubQuery> _whereCountQueries = {};
 
@@ -755,6 +756,14 @@ class _SubQueries {
           column,
           expression,
         );
+      } else if (expression is AnyExpression) {
+        subQueries[index] = _buildWhereAnySubQuery(
+          relationQueryAlias,
+          index,
+          tableRelation,
+          column,
+          expression,
+        );
       } else {
         subQueries[index] = _buildWhereCountSubQuery(
           relationQueryAlias,
@@ -796,6 +805,26 @@ class _SubQueries {
       ColumnExpression<dynamic> expression) {
     var uniqueRelationQueryAlias =
         buildUniqueQueryAlias(whereNonePrefix, relationQueryAlias, index);
+
+    var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
+        .withWhere(column.innerWhere)
+        .withManyRelationWhereAddition(expression)
+        .withSelectFields([tableRelation.fieldColumn])
+        .enableOneLevelWhereExpressionJoins()
+        .forceGroupBy()
+        .build();
+
+    return _SubQuery(subQuery, uniqueRelationQueryAlias);
+  }
+
+  static _SubQuery _buildWhereAnySubQuery(
+      String relationQueryAlias,
+      int index,
+      TableRelation tableRelation,
+      ColumnCount column,
+      ColumnExpression<dynamic> expression) {
+    var uniqueRelationQueryAlias =
+        buildUniqueQueryAlias(whereAnyPrefix, relationQueryAlias, index);
 
     var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
         .withWhere(column.innerWhere)
