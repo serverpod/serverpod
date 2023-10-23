@@ -741,16 +741,15 @@ void main() {
         'when count column is used in where expression then exception is thrown.',
         () {
       var countColumn = ColumnCount(citizenTable.id.equals(5), citizenTable.id);
-      var queryBuilder = DeleteQueryBuilder(table: citizenTable)
-          .withWhere(countColumn.equals(5));
 
       expect(
-          () => queryBuilder.build(),
-          throwsA(isA<FormatException>().having(
+          () => DeleteQueryBuilder(table: citizenTable)
+              .withWhere(countColumn.equals(5)),
+          throwsA(isA<UnimplementedError>().having(
             (e) => e.toString(),
             'message',
             equals(
-                'FormatException: Count columns are not supported in where expressions.'),
+                'UnimplementedError: Count columns are not supported in delete where expressions.'),
           )));
     });
   });
