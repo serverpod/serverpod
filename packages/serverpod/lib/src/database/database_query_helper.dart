@@ -6,8 +6,8 @@ Set<T> extractPrimaryKeyForRelation<T>(
   List<Map<String, Map<String, dynamic>>> resultSet,
   TableRelation tableRelation,
 ) {
-  var foreignTableName = tableRelation.tableName;
-  var idFieldName = tableRelation.lastJoiningFieldQueryAlias;
+  var foreignTableName = tableRelation.fieldTableName;
+  var idFieldName = tableRelation.fieldQueryAliasWithJoins;
 
   var ids = resultSet
       .map((e) => e[foreignTableName]?[idFieldName] as T?)

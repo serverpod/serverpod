@@ -183,7 +183,7 @@ void main() {
 
       expect(
         query,
-        'SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id" ORDER BY COUNT("citizen_friends_citizen"."id")',
+        'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST',
       );
     });
 
@@ -203,7 +203,7 @@ void main() {
           SelectQueryBuilder(table: citizenTable).withOrderBy([order]).build();
 
       expect(query,
-          'WITH "citizen_friends_citizen" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" WHERE "citizen"."id" = 5) SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."citizen.id" GROUP BY "citizen"."id" ORDER BY COUNT("citizen_friends_citizen"."citizen.id")');
+          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" WHERE "citizen"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST');
     });
 
     test('when query with limit is built then output is query with limit.', () {
@@ -316,8 +316,7 @@ void main() {
             ),
             Order(
                 column: ColumnCount(
-              companyTable.id.equals(5),
-              companyTable,
+              manyRelationTable.id.equals(5),
               manyRelationTable.id,
             ))
           ])
@@ -326,7 +325,7 @@ void main() {
           .build();
 
       expect(query,
-          'WITH "citizen_companiesOwned_company" AS (SELECT "company"."id" AS "company.id" FROM "company" WHERE "company"."id" = 5) SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."company.id" WHERE "citizen_company_company"."name" = \'Serverpod\' GROUP BY "citizen"."id", "citizen"."name", "citizen"."age" ORDER BY "citizen"."id" DESC, COUNT("citizen_companiesOwned_company"."company.id") LIMIT 10 OFFSET 5');
+          'WITH "order_by_citizen_companiesOwned_company_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_companiesOwned_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_companiesOwned_company" ON "citizen"."id" = "citizen_companiesOwned_company"."id" WHERE "citizen_companiesOwned_company"."id" = 5 GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id", "citizen"."name" AS "citizen.name", "citizen"."age" AS "citizen.age" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" LEFT JOIN "order_by_citizen_companiesOwned_company_1" ON "citizen"."id" = "order_by_citizen_companiesOwned_company_1"."citizen.id" WHERE "citizen_company_company"."name" = \'Serverpod\' ORDER BY "citizen"."id" DESC, "order_by_citizen_companiesOwned_company_1"."count" ASC NULLS FIRST LIMIT 10 OFFSET 5');
     });
 
     test(
@@ -361,10 +360,30 @@ void main() {
     });
 
     test(
+        'when count field has different table as base then exception is thrown.',
+        () {
+      var queryBuilder = SelectQueryBuilder(table: citizenTable)
+          .withCountTableRelation(TableRelation([
+        TableRelationEntry(
+            relationAlias: 'employees',
+            field: companyTable.id,
+            foreignField: citizenTable.id)
+      ]));
+
+      expect(
+          () => queryBuilder.build(),
+          throwsA(isA<FormatException>().having(
+            (e) => e.toString(),
+            'message',
+            equals(
+                'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"countTableRelation" referencing column "company"."id".'),
+          )));
+    });
+
+    test(
         'when count column with inner where that does NOT have table relations then exception is thrown.',
         () {
-      var countColumn =
-          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var countColumn = ColumnCount(citizenTable.id.equals(5), citizenTable.id);
       var queryBuilder = SelectQueryBuilder(table: citizenTable).withOrderBy([
         Order(
           column: countColumn,
@@ -373,16 +392,17 @@ void main() {
 
       expect(
           () => queryBuilder.build(),
-          throwsA(isA<ArgumentError>().having(
+          throwsA(isA<StateError>().having(
             (e) => e.toString(),
             'message',
             equals(
-                'Invalid argument(s) (countColumn.table.tableRelation): Must not be null'),
+                'Bad state: Table relation is null - This likely means that the code generator did not '
+                'create the table relations correctly.'),
           )));
     });
 
     test(
-        'when same count column with inner where appears multiple times then exception is thrown.',
+        'when same count column with inner where appears multiple times then query includes multiple ordering by same column.',
         () {
       var relationTable = Table(
         tableName: companyTable.tableName,
@@ -395,64 +415,19 @@ void main() {
         ]),
       );
 
-      var countColumn = ColumnCount(
-          companyTable.id.equals(5), companyTable, relationTable.id);
-      expect(
-          () => SelectQueryBuilder(table: citizenTable).withOrderBy([
-                Order(column: countColumn),
-                Order(column: countColumn, orderDescending: true)
-              ]),
-          throwsA(isA<ArgumentError>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-                'Invalid argument(s): Ordering by same column multiple times: citizen_company_company.id'),
-          )));
-    });
-
-    test(
-        'when count column is used in where expression then exception is thrown.',
-        () {
       var countColumn =
-          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
-      var queryBuilder = SelectQueryBuilder(table: citizenTable)
-          .withWhere(countColumn.equals(5));
+          ColumnCount(relationTable.id.equals(5), relationTable.id);
+      var query = SelectQueryBuilder(table: citizenTable).withOrderBy([
+        Order(column: countColumn),
+        Order(column: countColumn, orderDescending: true)
+      ]).build();
 
-      expect(
-          () => queryBuilder.build(),
-          throwsA(isA<FormatException>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-                'FormatException: Count columns are not supported in where expressions.'),
-          )));
+      expect(query,
+          'WITH "order_by_citizen_company_company_0" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId"), "order_by_citizen_company_company_1" AS (SELECT "citizen"."companyId" AS "citizen.companyId", COUNT("citizen_company_company"."id") AS "count" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."companyId" = "citizen_company_company"."id" WHERE "citizen_company_company"."id" = 5 GROUP BY "citizen"."companyId") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_company_company_0" ON "citizen"."companyId" = "order_by_citizen_company_company_0"."citizen.companyId" LEFT JOIN "order_by_citizen_company_company_1" ON "citizen"."companyId" = "order_by_citizen_company_company_1"."citizen.companyId" ORDER BY "order_by_citizen_company_company_0"."count" ASC NULLS FIRST, "order_by_citizen_company_company_1"."count" DESC NULLS LAST');
     });
 
     test(
-        'when ordering by is filtered by nested many relation then exception is thrown.',
-        () {
-      var relationTable = _TableWithManyRelation(
-        tableName: citizenTable.tableName,
-        relationAlias: 'friends',
-      );
-      Order order = Order(
-        column: relationTable.manyRelation
-            .count((t) => t.manyRelation.count((t) => t.id.equals(5)) > 3),
-        orderDescending: false,
-      );
-
-      expect(
-          () => SelectQueryBuilder(table: citizenTable)
-              .withOrderBy([order]).build(),
-          throwsA(isA<FormatException>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-                'FormatException: Count columns are not supported in where expressions.'),
-          )));
-    });
-
-    test('when ordering by multiple many relations then exception is thrown.',
+        'when ordering by multiple many relations then query includes multiple ordering by same column.',
         () {
       var friendsRelationTable = _TableWithManyRelation(
         tableName: citizenTable.tableName,
@@ -474,16 +449,12 @@ void main() {
         )
       ];
 
-      expect(
-          () =>
-              SelectQueryBuilder(table: citizenTable).withOrderBy(orderByList),
-          throwsA(isA<UnimplementedError>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-              'UnimplementedError: Ordering by multiple many relation columns is not supported. Please file an issue at https://github.com/serverpod/serverpod/issues if you need this.',
-            ),
-          )));
+      var query = SelectQueryBuilder(table: citizenTable)
+          .withOrderBy(orderByList)
+          .build();
+
+      expect(query,
+          'WITH "order_by_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_friends_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" GROUP BY "citizen"."id"), "order_by_citizen_enemies_citizen_1" AS (SELECT "citizen"."id" AS "citizen.id", COUNT("citizen_enemies_citizen"."id") AS "count" FROM "citizen" LEFT JOIN "citizen" AS "citizen_enemies_citizen" ON "citizen"."id" = "citizen_enemies_citizen"."id" GROUP BY "citizen"."id") SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "order_by_citizen_friends_citizen_0" ON "citizen"."id" = "order_by_citizen_friends_citizen_0"."citizen.id" LEFT JOIN "order_by_citizen_enemies_citizen_1" ON "citizen"."id" = "order_by_citizen_enemies_citizen_1"."citizen.id" ORDER BY "order_by_citizen_friends_citizen_0"."count" ASC NULLS FIRST, "order_by_citizen_enemies_citizen_1"."count" ASC NULLS FIRST');
     });
   });
 
@@ -526,6 +497,22 @@ void main() {
       var query = CountQueryBuilder(table: citizenTable).withLimit(10).build();
 
       expect(query, 'SELECT COUNT("citizen"."id") FROM "citizen" LIMIT 10');
+    });
+
+    test(
+        'when filtered count column is used in where expression then query is a sub queried count query.',
+        () {
+      var relationTable = _TableWithManyRelation(
+        tableName: citizenTable.tableName,
+        relationAlias: 'friends',
+      );
+      var query = CountQueryBuilder(table: citizenTable)
+          .withWhere(
+              relationTable.manyRelation.count((t) => t.id.equals(5)) > 3)
+          .build();
+
+      expect(query,
+          'WITH "where_count_citizen_friends_citizen_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "citizen" AS "citizen_friends_citizen" ON "citizen"."id" = "citizen_friends_citizen"."id" WHERE "citizen"."id" = 5 GROUP BY "citizen"."id" HAVING COUNT("citizen_friends_citizen"."id") > 3) SELECT COUNT("citizen"."id") FROM "citizen" WHERE "citizen"."id" IN (SELECT "where_count_citizen_friends_citizen_0"."citizen.id" FROM "where_count_citizen_friends_citizen_0")');
     });
 
     test(
@@ -623,24 +610,6 @@ void main() {
             'message',
             equals(
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column "company"."name".'),
-          )));
-    });
-
-    test(
-        'when count column is used in where expression then exception is thrown.',
-        () {
-      var countColumn =
-          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
-      var queryBuilder = CountQueryBuilder(table: citizenTable)
-          .withWhere(countColumn.equals(5));
-
-      expect(
-          () => queryBuilder.build(),
-          throwsA(isA<FormatException>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-                'FormatException: Count columns are not supported in where expressions.'),
           )));
     });
   });
@@ -771,8 +740,7 @@ void main() {
     test(
         'when count column is used in where expression then exception is thrown.',
         () {
-      var countColumn =
-          ColumnCount(citizenTable.id.equals(5), citizenTable, citizenTable.id);
+      var countColumn = ColumnCount(citizenTable.id.equals(5), citizenTable.id);
       var queryBuilder = DeleteQueryBuilder(table: citizenTable)
           .withWhere(countColumn.equals(5));
 

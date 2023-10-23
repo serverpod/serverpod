@@ -109,11 +109,11 @@ void expectTableRelationWith({
 }) {
   expect(actualTableRelation.relationQueryAlias, expectedRelationQueryAlias,
       reason: 'Relation query alias is wrong.');
-  expect(actualTableRelation.lastForeignTableName, expectedLastForeignTableName,
+  expect(actualTableRelation.foreignTableName, expectedLastForeignTableName,
       reason: 'Last foreign table name is wrong.');
-  expect(actualTableRelation.lastJoiningField, expectedLastJoiningField,
+  expect(actualTableRelation.fieldNameWithJoins, expectedLastJoiningField,
       reason: 'Last joining field is wrong.');
-  expect(actualTableRelation.lastJoiningForeignField,
+  expect(actualTableRelation.foreignFieldNameWithJoins,
       expectedLastJoiningForeignField,
       reason: 'Last joining foreign field is wrong.');
 }

@@ -349,7 +349,8 @@ class CityTable extends _i1.Table {
     );
     _citizens = _i1.ManyRelation<_i2.PersonTable>(
       tableWithRelations: relationTable,
-      table: _i2.Person.t,
+      table: _i2.PersonTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _citizens!;
   }
@@ -366,7 +367,8 @@ class CityTable extends _i1.Table {
     );
     _organizations = _i1.ManyRelation<_i2.OrganizationTable>(
       tableWithRelations: relationTable,
-      table: _i2.Organization.t,
+      table: _i2.OrganizationTable(
+          tableRelation: relationTable.tableRelation!.lastRelation),
     );
     return _organizations!;
   }

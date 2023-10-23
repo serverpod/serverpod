@@ -55,7 +55,7 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
 
 /// A [Column] holding an enum.
 class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
-    with _ColumnDefaultOperations<E> {
+    with _NullableColumnDefaultOperations<E> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnEnum(super.columnName, super.table);
 
@@ -65,7 +65,7 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
 
 /// A [Column] holding an [String].
 class ColumnString extends _ValueOperatorColumn<String>
-    with _ColumnDefaultOperations<String> {
+    with _NullableColumnDefaultOperations<String> {
   /// Maximum length for a varchar
   final int? varcharLength;
 
@@ -95,7 +95,7 @@ class ColumnString extends _ValueOperatorColumn<String>
 
 /// A [Column] holding an [bool].
 class ColumnBool extends _ValueOperatorColumn<bool>
-    with _ColumnDefaultOperations<bool> {
+    with _NullableColumnDefaultOperations<bool> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnBool(super.columnName, super.table);
 
@@ -106,7 +106,9 @@ class ColumnBool extends _ValueOperatorColumn<bool>
 /// A [Column] holding an [DateTime]. In the database it is stored as a
 /// timestamp without time zone.
 class ColumnDateTime extends _ValueOperatorColumn<DateTime>
-    with _ColumnDefaultOperations<DateTime>, _ColumnNumberOperations<DateTime> {
+    with
+        _NullableColumnDefaultOperations<DateTime>,
+        _ColumnNumberOperations<DateTime> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDateTime(super.columnName, super.table);
 
@@ -116,7 +118,9 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
 
 /// A [Column] holding [Duration].
 class ColumnDuration extends _ValueOperatorColumn<Duration>
-    with _ColumnDefaultOperations<Duration>, _ColumnNumberOperations<Duration> {
+    with
+        _NullableColumnDefaultOperations<Duration>,
+        _ColumnNumberOperations<Duration> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDuration(super.columnName, super.table);
 
@@ -126,7 +130,7 @@ class ColumnDuration extends _ValueOperatorColumn<Duration>
 
 /// A [Column] holding [UuidValue].
 class ColumnUuid extends _ValueOperatorColumn<UuidValue>
-    with _ColumnDefaultOperations<UuidValue> {
+    with _NullableColumnDefaultOperations<UuidValue> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnUuid(super.columnName, super.table);
 
@@ -136,7 +140,7 @@ class ColumnUuid extends _ValueOperatorColumn<UuidValue>
 
 /// A [Column] holding an [int].
 class ColumnInt extends _ValueOperatorColumn<int>
-    with _ColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
+    with _NullableColumnDefaultOperations<int>, _ColumnNumberOperations<int> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnInt(super.columnName, super.table);
 
@@ -146,7 +150,9 @@ class ColumnInt extends _ValueOperatorColumn<int>
 
 /// A [Column] holding an [double].
 class ColumnDouble extends _ValueOperatorColumn<double>
-    with _ColumnDefaultOperations<double>, _ColumnNumberOperations<double> {
+    with
+        _NullableColumnDefaultOperations<double>,
+        _ColumnNumberOperations<double> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnDouble(super.columnName, super.table);
 
@@ -160,11 +166,13 @@ class ColumnCount extends _ValueOperatorColumn<int>
   /// Where expression applied to filter what is counted.
   Expression? innerWhere;
 
-  /// Table without relations to count rows from.
-  Table baseTable;
+  /// Wraps string in Column operation
+  String wrapInOperation(String value) {
+    return 'COUNT($value)';
+  }
 
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnCount(this.innerWhere, this.baseTable, Column column)
+  ColumnCount(this.innerWhere, Column column)
       : super(column.columnName, column.table);
 
   @override
@@ -174,21 +182,13 @@ class ColumnCount extends _ValueOperatorColumn<int>
 mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   /// Creates an [Expression] checking if the value in the column equals the
   /// specified value.
-  Expression equals(T? value) {
-    if (value == null) {
-      return _IsNullExpression(this);
-    }
-
+  Expression equals(T value) {
     return _EqualsExpression(this, _encodeValueForQuery(value));
   }
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
-  Expression notEquals(T? value) {
-    if (value == null) {
-      return _IsNotNullExpression(this);
-    }
-
+  Expression notEquals(T value) {
     return _NotEqualsExpression(this, _encodeValueForQuery(value));
   }
 
@@ -223,16 +223,70 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
   }
 }
 
+mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
+  /// Creates an [Expression] checking if the value in the column equals the
+  /// specified value.
+  Expression equals(T? value) {
+    if (value == null) {
+      return _IsNullExpression(this);
+    }
+
+    return _EqualsExpression(this, _encodeValueForQuery(value));
+  }
+
+  /// Creates an [Expression] checking if the value in the column does not equal
+  /// the specified value.
+  Expression notEquals(T? value) {
+    if (value == null) {
+      return _IsNotNullExpression(this);
+    }
+
+    return _NotEqualsExpression(this, _encodeValueForQuery(value)) |
+        _IsNullExpression(this);
+  }
+
+  /// Creates and [Expression] checking if the value in the column is included
+  /// in the specified set of values.
+  Expression inSet(Set<T> values) {
+    var valuesAsExpressions =
+        values.map((e) => _encodeValueForQuery(e)).toList();
+
+    return _InSetExpression(this, valuesAsExpressions);
+  }
+
+  /// Creates and [Expression] checking if the value in the column is NOT
+  /// included in the specified set of values.
+  Expression notInSet(Set<T> values) {
+    var valuesAsExpressions =
+        values.map((e) => _encodeValueForQuery(e)).toList();
+
+    return _NotInSetExpression(this, valuesAsExpressions) |
+        _IsNullExpression(this);
+  }
+
+  /// Creates an [Expression] checking if the value in the column is distinct
+  /// from the specified value.
+  Expression isDistinctFrom(T value) {
+    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
+  }
+
+  /// Creates an [Expression] checking if the value in the column is distinct
+  /// from the specified value.
+  Expression isNotDistinctFrom(T value) {
+    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
+  }
+}
+
 mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
-  /// Creates an [Expression] checking if the value in the column is between
-  /// the [min], [max] values.
+  /// Creates an [Expression] checking if the value in the column inclusively
+  /// is between the [min], [max] values.
   Expression between(T min, T max) {
     return _BetweenExpression(
         this, _encodeValueForQuery(min), _encodeValueForQuery(max));
   }
 
-  /// Creates an [Expression] checking if the value in the column is NOT between
-  /// the [min], [max] values.
+  /// Creates an [Expression] checking if the value in the column inclusively
+  /// is NOT between the [min], [max] values.
   Expression notBetween(T min, T max) {
     return _NotBetweenExpression(
         this, _encodeValueForQuery(min), _encodeValueForQuery(max));
@@ -275,136 +329,163 @@ mixin _ColumnNumberOperations<T> on _ValueOperatorColumn<T> {
   }
 }
 
-abstract class _ColumnExpression<T> extends Expression {
-  final Column<T> _column;
-  _ColumnExpression(this._column) : super(_column);
+/// Database expression for a column.
+abstract class ColumnExpression<T> extends Expression {
+  /// Column that the expression is for.
+  final Column<T> column;
+
+  /// Index of the expression in the query.
+  /// This is used to create unique query aliases for sub queries.
+  int? index;
+
+  /// Creates a new [ColumnExpression], this is typically done in generated code only.
+  ColumnExpression(this.column) : super(column);
+
+  /// Returns true if the expression operates on a many relation column.
+  bool get isManyRelationExpression => column is ColumnCount;
+
+  /// Returns the expression operator as a string.
+  String get operator;
+
+  String get _getColumnName {
+    if (column is! ColumnCount) {
+      return column.toString();
+    }
+
+    return _formatColumnCountName(column as ColumnCount);
+  }
+
+  String _formatColumnCountName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in an expression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return columnCount.wrapInOperation(
+      tableRelation.lastRelation.foreignFieldNameWithJoins,
+    );
+  }
 
   @override
-  List<Column> get columns => [_column];
+  List<Column> get columns => [column];
+
+  @override
+  String toString() {
+    return '$_getColumnName $operator';
+  }
 }
 
-class _IsNullExpression<T> extends _ColumnExpression<T> {
+class _IsNullExpression<T> extends ColumnExpression<T> {
   _IsNullExpression(super.column);
 
   @override
-  String toString() {
-    return '$_column IS NULL';
-  }
+  String get operator => 'IS NULL';
 }
 
-class _IsNotNullExpression<T> extends _ColumnExpression<T> {
+class _IsNotNullExpression<T> extends ColumnExpression<T> {
   _IsNotNullExpression(super.column);
 
   @override
-  String toString() {
-    return '$_column IS NOT NULL';
-  }
+  String get operator => 'IS NOT NULL';
 }
 
-abstract class _TwoPartColumnExpression<T> extends _ColumnExpression<T> {
+abstract class _TwoPartColumnExpression<T> extends ColumnExpression<T> {
   Expression other;
 
   _TwoPartColumnExpression(super.column, this.other);
 
   @override
   List<Column> get columns => [...super.columns, ...other.columns];
+
+  @override
+  String toString() {
+    return '$_getColumnName $operator $other';
+  }
 }
 
 class _EqualsExpression<T> extends _TwoPartColumnExpression<T> {
   _EqualsExpression(super.value, super.other);
 
   @override
-  String toString() {
-    return '$_column = $other';
-  }
+  String get operator => '=';
 }
 
 class _NotEqualsExpression<T> extends _TwoPartColumnExpression<T> {
   _NotEqualsExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '($_column != $other OR $_column IS NULL)';
-  }
+  String get operator => '!=';
 }
 
 class _GreaterThanExpression<T> extends _TwoPartColumnExpression<T> {
   _GreaterThanExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '($_column > $other)';
-  }
+  String get operator => '>';
 }
 
 class _GreaterOrEqualExpression<T> extends _TwoPartColumnExpression<T> {
   _GreaterOrEqualExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '($_column >= $other)';
-  }
+  String get operator => '>=';
 }
 
 class _LessThanExpression<T> extends _TwoPartColumnExpression<T> {
   _LessThanExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '($_column < $other)';
-  }
+  String get operator => '<';
 }
 
 class _LessThanOrEqualExpression<T> extends _TwoPartColumnExpression<T> {
   _LessThanOrEqualExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '($_column <= $other)';
-  }
+  String get operator => '<=';
 }
 
 class _LikeExpression<T> extends _TwoPartColumnExpression<T> {
   _LikeExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '$_column LIKE $other';
-  }
+  String get operator => 'LIKE';
 }
 
 class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _ILikeExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '$_column ILIKE $other';
-  }
+  String get operator => 'ILIKE';
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
   _IsDistinctFromExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '$_column IS DISTINCT FROM $other';
-  }
+  String get operator => 'IS DISTINCT FROM';
 }
 
 class _IsNotDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
   _IsNotDistinctFromExpression(super.column, super.other);
 
   @override
-  String toString() {
-    return '$_column IS NOT DISTINCT FROM $other';
-  }
+  String get operator => 'IS NOT DISTINCT FROM';
 }
 
-abstract class _MinMaxColumnExpression<T> extends _ColumnExpression<T> {
+abstract class _MinMaxColumnExpression<T> extends ColumnExpression<T> {
   Expression min;
   Expression max;
 
   _MinMaxColumnExpression(super.column, this.min, this.max);
+
+  @override
+  String toString() {
+    return '$_getColumnName $operator $min AND $max';
+  }
 
   @override
   List<Column> get columns =>
@@ -415,21 +496,17 @@ class _BetweenExpression<T> extends _MinMaxColumnExpression<T> {
   _BetweenExpression(super.column, super.min, super.max);
 
   @override
-  String toString() {
-    return '$_column BETWEEN $min AND $max';
-  }
+  String get operator => 'BETWEEN';
 }
 
 class _NotBetweenExpression<T> extends _MinMaxColumnExpression<T> {
   _NotBetweenExpression(super.column, super.min, super.max);
 
   @override
-  String toString() {
-    return '$_column NOT BETWEEN $min AND $max';
-  }
+  String get operator => 'NOT BETWEEN';
 }
 
-abstract class _SetColumnExpression<T> extends _ColumnExpression<T> {
+abstract class _SetColumnExpression<T> extends ColumnExpression<T> {
   List<Expression> values;
 
   _SetColumnExpression(super.column, this.values);
@@ -437,6 +514,11 @@ abstract class _SetColumnExpression<T> extends _ColumnExpression<T> {
   @override
   List<Column> get columns =>
       [...super.columns, ...values.expand((value) => value.columns)];
+
+  @override
+  String toString() {
+    return '$_getColumnName $operator ${_expressionSetToQueryString()}';
+  }
 
   String _expressionSetToQueryString() {
     var valueList = values.join(', ');
@@ -448,16 +530,12 @@ class _InSetExpression<T> extends _SetColumnExpression<T> {
   _InSetExpression(super.column, super.values);
 
   @override
-  String toString() {
-    return '$_column IN ${_expressionSetToQueryString()}';
-  }
+  String get operator => 'IN';
 }
 
 class _NotInSetExpression extends _SetColumnExpression {
   _NotInSetExpression(super.column, super.values);
 
   @override
-  String toString() {
-    return '($_column NOT IN ${_expressionSetToQueryString()} OR $_column IS NULL)';
-  }
+  String get operator => 'NOT IN';
 }

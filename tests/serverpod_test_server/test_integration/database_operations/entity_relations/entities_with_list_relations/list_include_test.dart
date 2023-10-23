@@ -109,6 +109,40 @@ void main() async {
   });
 
   test(
+      'Given an entity with a list relation with data attached when fetching filtered entities including list relation then returned entity has the attached data in the list relation.',
+      () async {
+    var serverpod = await Organization.db.insertRow(
+      session,
+      Organization(name: 'Serverpod'),
+    );
+    var flutter = await Organization.db.insertRow(
+      session,
+      Organization(name: 'Flutter'),
+    );
+
+    var person1 = await Person.db.insertRow(session, Person(name: 'John Doe'));
+    var person2 = await Person.db.insertRow(session, Person(name: 'Jane Doe'));
+    var person3 = await Person.db.insertRow(session, Person(name: 'Alice'));
+
+    await Organization.db.attach.people(session, serverpod, [person1, person2]);
+    await Organization.db.attach.people(session, flutter, [person3]);
+
+    var organizations = await session.dbNext.find<Organization>(
+      where: Organization.t.name.equals('Serverpod'),
+      include: Organization.include(
+        people: Person.includeList(),
+      ),
+    );
+
+    expect(organizations, hasLength(1));
+
+    expect(organizations.first.people, hasLength(2));
+    var peopleIds = organizations.first.people?.map((e) => e.id);
+    expect(peopleIds, contains(person1.id));
+    expect(peopleIds, contains(person2.id));
+  });
+
+  test(
       'Given a list relation when querying for all entities including the list relation then the list relation is populated in the returned entities.',
       () async {
     var serverpod = await Organization.db.insertRow(
