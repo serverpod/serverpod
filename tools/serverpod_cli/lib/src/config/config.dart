@@ -39,7 +39,7 @@ class GeneratorConfig {
     required this.extraClasses,
     this.servers = const {},
     this.openAPIConfig,
-    this.openAPIdocumentVersion = '',
+    this.openAPIdocumentVersion = '1.0.0',
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -267,8 +267,9 @@ class GeneratorConfig {
 
     bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
 
-    openAPIdocumentVersion =
-        _validateVersionFormat(openAPIdocumentVersion, pubspec['version']);
+    openAPIdocumentVersion = _validateVersionFormat(
+        openAPIdocumentVersion, pubspec['version'] ?? '1.0.0');
+
     if (hasOpenAPIConfiguration) {
       try {
         Map openAPIMap = generatorConfig['openAPIConfig'];
