@@ -18,6 +18,8 @@ class SelectQueryBuilder {
   int? _limit;
   int? _offset;
   Expression? _where;
+  Expression? _manyRelationWhereAddition;
+  bool _forceGroupBy = false;
   ColumnExpression? _having;
   Include? _include;
   _ListQueryAdditions? _listQueryAdditions;
@@ -52,12 +54,15 @@ class SelectQueryBuilder {
       orderBy: _orderBy,
       where: _where,
     );
+
     var select = _buildSelectStatement(
       selectColumns,
       countTableRelation: _countTableRelation,
     );
+
     var join = _buildJoinQuery(
       where: _where,
+      manyRelationWhereAddition: _manyRelationWhereAddition,
       having: _having,
       orderBy: _orderBy,
       include: _include,
@@ -65,15 +70,20 @@ class SelectQueryBuilder {
       countTableRelation: _countTableRelation,
       joinOneLevelManyRelations: _joinOneLevelManyRelationWhereExpressions,
     );
+
     var groupBy = _buildGroupByQuery(
       selectColumns,
       having: _having,
       countTableRelation: _countTableRelation,
+      forceGroupBy: _forceGroupBy,
     );
+
     var where = _buildWhereQuery(
         where: _where,
+        manyRelationWhereAddition: _manyRelationWhereAddition,
         listQueryAdditions: _listQueryAdditions,
         subQueries: subQueries);
+
     var orderBy = _buildOrderByQuery(orderBy: _orderBy, subQueries: subQueries);
 
     var listQueryAdditions = _listQueryAdditions;
@@ -185,6 +195,18 @@ class SelectQueryBuilder {
     return this;
   }
 
+  /// Sets an expression addition to the where expression without adding more
+  /// sub queries for the query. This is used to support filtering on many
+  /// relations in sub queries without adding more sub queries.
+  ///
+  /// The where addition will be added to the where expression with an AND
+  /// operator.
+  SelectQueryBuilder withManyRelationWhereAddition(
+      Expression? manyRelationWhereAddition) {
+    _manyRelationWhereAddition = manyRelationWhereAddition;
+    return this;
+  }
+
   /// Adds an additional filter on the query to find only rows that have a
   /// relation to the specified ids.
   SelectQueryBuilder withWhereRelationInResultSet(
@@ -245,6 +267,12 @@ class SelectQueryBuilder {
   /// where expression.
   SelectQueryBuilder enableOneLevelWhereExpressionJoins() {
     _joinOneLevelManyRelationWhereExpressions = true;
+    return this;
+  }
+
+  /// Forces the query to include a group by statement.
+  SelectQueryBuilder forceGroupBy() {
+    _forceGroupBy = true;
     return this;
   }
 }
@@ -466,6 +494,7 @@ List<Table> _gatherIncludeTables(Include? include, Table table) {
 
 String? _buildJoinQuery({
   Expression? where,
+  Expression? manyRelationWhereAddition,
   ColumnExpression? having,
   List<Order>? orderBy,
   Include? include,
@@ -481,6 +510,10 @@ String? _buildJoinQuery({
       where.columns,
       joinOneLevelManyRelations: joinOneLevelManyRelations,
     ));
+  }
+
+  if (manyRelationWhereAddition != null) {
+    joins.addAll(_gatherWhereAdditionJoins(manyRelationWhereAddition.columns));
   }
 
   if (orderBy != null) {
@@ -510,9 +543,14 @@ String? _buildJoinQuery({
 String? _buildGroupByQuery(
   List<Column> selectFields, {
   Expression? having,
+  Expression? whereAddition,
   TableRelation? countTableRelation,
+  bool forceGroupBy = false,
 }) {
-  if (countTableRelation == null && having == null) {
+  if (countTableRelation == null &&
+      having == null &&
+      whereAddition == null &&
+      forceGroupBy == false) {
     return null;
   }
 
@@ -527,25 +565,45 @@ StateError _createStateErrorWithMessage(String message) {
 
 String? _buildWhereQuery({
   Expression? where,
+  Expression? manyRelationWhereAddition,
   _SubQueries? subQueries,
   _ListQueryAdditions? listQueryAdditions,
 }) {
-  if (where == null && listQueryAdditions == null) {
+  List<String> whereQuery = [];
+
+  if (where != null) {
+    whereQuery.add(_resolveWhereQuery(where: where, subQueries: subQueries));
+  }
+
+  if (listQueryAdditions != null) {
+    whereQuery.add('${listQueryAdditions.whereAddition}');
+  }
+
+  if (manyRelationWhereAddition != null) {
+    whereQuery.add('$manyRelationWhereAddition');
+  }
+
+  if (whereQuery.isEmpty) {
     return null;
   }
 
-  if (where == null) {
-    return listQueryAdditions?.whereAddition.toString();
-  }
+  return whereQuery.join(' AND ');
+}
 
+String _resolveWhereQuery(
+    {Expression<dynamic>? where, _SubQueries? subQueries}) {
   var whereQuery = '';
+
+  if (where == null) {
+    return whereQuery;
+  }
 
   if (where is TwoPartExpression) {
     var subExpressions = where.subExpressions;
 
     whereQuery += '(';
     whereQuery += subExpressions
-        .map((e) => _buildWhereQuery(where: e, subQueries: subQueries))
+        .map((e) => _resolveWhereQuery(where: e, subQueries: subQueries))
         .join(' ${where.operator} ');
     whereQuery += ')';
   } else if (where is ColumnExpression && where.isManyRelationExpression) {
@@ -566,18 +624,19 @@ String? _buildWhereQuery({
           'Sub query for expression index \'$expressionIndex\' is null');
     }
 
-    whereQuery = '${tableRelation.fieldNameWithJoins} IN '
-        '(SELECT "${subQuery.alias}"."${tableRelation.fieldQueryAlias}" '
-        'FROM "${subQuery.alias}")';
+    if (where is NoneExpression) {
+      whereQuery = '${tableRelation.fieldNameWithJoins} NOT IN '
+          '(SELECT "${subQuery.alias}"."${tableRelation.fieldQueryAlias}" '
+          'FROM "${subQuery.alias}")';
+    } else {
+      whereQuery = '${tableRelation.fieldNameWithJoins} IN '
+          '(SELECT "${subQuery.alias}"."${tableRelation.fieldQueryAlias}" '
+          'FROM "${subQuery.alias}")';
+    }
   } else {
     whereQuery = where.toString();
   }
-
-  if (listQueryAdditions == null) {
-    return whereQuery;
-  }
-
-  return '$whereQuery AND ${listQueryAdditions.whereAddition}';
+  return whereQuery;
 }
 
 _UsingQuery? _buildUsingQuery({Expression? where}) {
@@ -605,6 +664,7 @@ class _SubQuery {
 class _SubQueries {
   static const String orderByPrefix = 'order_by';
   static const String whereCountPrefix = 'where_count';
+  static const String whereNonePrefix = 'where_none';
   final Map<int, _SubQuery> _orderByQueries = {};
   final Map<int, _SubQuery> _whereCountQueries = {};
 
@@ -620,7 +680,7 @@ class _SubQueries {
     }
 
     if (where != null) {
-      subQueries._whereCountQueries.addAll(_gatherWhereCountSubQueries(where));
+      subQueries._whereCountQueries.addAll(_gatherWhereSubQueries(where));
     }
 
     if (subQueries.isEmpty) {
@@ -664,7 +724,7 @@ class _SubQueries {
     return subQueries;
   }
 
-  static Map<int, _SubQuery> _gatherWhereCountSubQueries(Expression where) {
+  static Map<int, _SubQuery> _gatherWhereSubQueries(Expression where) {
     Map<int, _SubQuery> subQueries = {};
 
     where.forEachDepthFirstIndexed((index, expression) {
@@ -683,24 +743,59 @@ class _SubQueries {
       }
 
       var relationQueryAlias = tableRelation.relationQueryAlias;
-      var uniqueRelationQueryAlias =
-          buildUniqueQueryAlias(whereCountPrefix, relationQueryAlias, index);
-
-      var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
-          .withWhere(column.innerWhere)
-          .withSelectFields([tableRelation.fieldColumn])
-          .enableOneLevelWhereExpressionJoins()
-          .withHaving(expression)
-          .build();
-
-      subQueries[index] = _SubQuery(subQuery, uniqueRelationQueryAlias);
 
       /// Store index of the expressions so that we later can retrieve the
       /// matching sub query alias.
       expression.index = index;
+      if (expression is NoneExpression) {
+        subQueries[index] = _buildWhereNoneSubQuery(
+            relationQueryAlias, index, tableRelation, column, expression);
+      } else {
+        subQueries[index] = _buildWhereCountSubQuery(
+            relationQueryAlias, index, tableRelation, column, expression);
+      }
     });
 
     return subQueries;
+  }
+
+  static _SubQuery _buildWhereCountSubQuery(
+      String relationQueryAlias,
+      int index,
+      TableRelation tableRelation,
+      ColumnCount column,
+      ColumnExpression<dynamic> expression) {
+    var uniqueRelationQueryAlias =
+        buildUniqueQueryAlias(whereCountPrefix, relationQueryAlias, index);
+
+    var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
+        .withWhere(column.innerWhere)
+        .withSelectFields([tableRelation.fieldColumn])
+        .enableOneLevelWhereExpressionJoins()
+        .withHaving(expression)
+        .build();
+
+    return _SubQuery(subQuery, uniqueRelationQueryAlias);
+  }
+
+  static _SubQuery _buildWhereNoneSubQuery(
+      String relationQueryAlias,
+      int index,
+      TableRelation tableRelation,
+      ColumnCount column,
+      ColumnExpression<dynamic> expression) {
+    var uniqueRelationQueryAlias =
+        buildUniqueQueryAlias(whereNonePrefix, relationQueryAlias, index);
+
+    var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
+        .withWhere(column.innerWhere)
+        .withManyRelationWhereAddition(expression)
+        .withSelectFields([tableRelation.fieldColumn])
+        .enableOneLevelWhereExpressionJoins()
+        .forceGroupBy()
+        .build();
+
+    return _SubQuery(subQuery, uniqueRelationQueryAlias);
   }
 
   String buildQueries() {
@@ -842,17 +937,41 @@ LinkedHashMap<String, String> _gatherWhereJoins(
     bool oneLevelManyRelation =
         manyRelationColumn && subTableRelations.length == 1;
 
+    var skipLast = manyRelationColumn &&
+        !(oneLevelManyRelation && joinOneLevelManyRelations);
+
+    var lastEntryIndex = subTableRelations.length - 1;
     subTableRelations.forEachIndexed((index, subTableRelation) {
-      bool lastEntry = index == subTableRelations.length - 1;
-      if (lastEntry &&
-          manyRelationColumn &&
-          !(oneLevelManyRelation && joinOneLevelManyRelations)) {
+      bool lastEntry = index == lastEntryIndex;
+      if (lastEntry && skipLast) {
         return;
       }
 
       joins[subTableRelation.relationQueryAlias] =
           _buildJoinStatement(tableRelation: subTableRelation);
     });
+  }
+
+  return joins;
+}
+
+LinkedHashMap<String, String> _gatherWhereAdditionJoins(List<Column> columns) {
+  // Linked hash map to preserve order and remove duplicates.
+  LinkedHashMap<String, String> joins = LinkedHashMap();
+  var columnsWithTableRelations =
+      columns.where((column) => column.table.tableRelation != null);
+  for (var column in columnsWithTableRelations) {
+    var tableRelation = column.table.tableRelation;
+    if (tableRelation == null) {
+      continue;
+    }
+
+    // We only join the last relation since the where addition is only added
+    // to support filtering on filter on a many relations. And the last relation
+    // represents the connection to the many relation.
+    var lastRelation = tableRelation.lastRelation;
+    joins[lastRelation.relationQueryAlias] =
+        _buildJoinStatement(tableRelation: lastRelation);
   }
 
   return joins;
