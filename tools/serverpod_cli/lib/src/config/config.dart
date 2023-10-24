@@ -27,20 +27,24 @@ enum PackageType {
 
 /// The configuration of the generation and analyzing process.
 class GeneratorConfig {
-  const GeneratorConfig({
-    required this.name,
-    required this.type,
-    required this.serverPackage,
-    required this.dartClientPackage,
-    required this.dartClientDependsOnServiceClient,
-    required this.serverPackageDirectoryPathParts,
-    required List<String> relativeDartClientPackagePathParts,
-    required this.modules,
-    required this.extraClasses,
-    this.servers = const {},
-    this.openAPIConfig,
-    this.openAPIdocumentVersion = '1.0.0',
-  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+  const GeneratorConfig(
+      {required this.name,
+      required this.type,
+      required this.serverPackage,
+      required this.dartClientPackage,
+      required this.dartClientDependsOnServiceClient,
+      required this.serverPackageDirectoryPathParts,
+      required List<String> relativeDartClientPackagePathParts,
+      required this.modules,
+      required this.extraClasses,
+      this.servers = const {},
+      this.openAPIConfig,
+      this.openAPIdocumentVersion = '1.0.0',
+      this.codeOutputFormats = const {
+        CodeOutputFormat.dart,
+      }})
+      : _relativeDartClientPackagePathParts =
+            relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
   ///
@@ -124,14 +128,20 @@ class GeneratorConfig {
   /// Configuration for generation of OpenAPI specification.
   final OpenAPIConfig? openAPIConfig;
 
-  /// The OpenAPI document version.
+  /// The version of OpenAPI document.
   final String openAPIdocumentVersion;
 
+  /// The desired code output formats. The default is [CodeOutputFormat.dart].
+  final Set<CodeOutputFormat> codeOutputFormats;
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig?> load([
+  static Future<GeneratorConfig?> load({
     String dir = '',
     String openAPIdocumentVersion = '',
-  ]) async {
+    Set<CodeOutputFormat> codeOutputFormats = const {
+      CodeOutputFormat.dart,
+    },
+  }) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -262,29 +272,31 @@ class GeneratorConfig {
       }
     }
 
-    Set<OpenAPIServer> servers = _getServersFromConfigs(dir);
+    Set<OpenAPIServer> servers = {};
     OpenAPIConfig? openAPIConfig;
+    if (codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
+      servers = _getServersFromConfigs(dir);
+      bool hasOpenAPIConfiguration =
+          generatorConfig.containsKey('openAPIConfig');
 
-    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
+      openAPIdocumentVersion = _validateVersionFormat(
+          openAPIdocumentVersion, pubspec['version'] ?? '1.0.0');
 
-    openAPIdocumentVersion = _validateVersionFormat(
-        openAPIdocumentVersion, pubspec['version'] ?? '1.0.0');
+      if (hasOpenAPIConfiguration) {
+        try {
+          Map openAPIMap = generatorConfig['openAPIConfig'];
 
-    if (hasOpenAPIConfiguration) {
-      try {
-        Map openAPIMap = generatorConfig['openAPIConfig'];
-
-        openAPIConfig = OpenAPIConfig.fromConfig(
-          openAPIMap,
-          version: openAPIdocumentVersion,
-        );
-      } catch (e) {
-        log.error(
-          'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
-        );
+          openAPIConfig = OpenAPIConfig.fromConfig(
+            openAPIMap,
+            version: openAPIdocumentVersion,
+          );
+        } catch (e) {
+          log.error(
+            'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
+          );
+        }
       }
     }
-
     return GeneratorConfig(
       name: name,
       type: type,
@@ -298,6 +310,7 @@ class GeneratorConfig {
       servers: servers,
       openAPIConfig: openAPIConfig,
       openAPIdocumentVersion: openAPIdocumentVersion,
+      codeOutputFormats: codeOutputFormats,
     );
   }
 

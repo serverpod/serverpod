@@ -10,9 +10,6 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 Future<bool> performGenerate({
   bool dartFormat = true,
   String? changedFile,
-  Set<CodeOutputFormats> codeOutputFormats = const {
-    CodeOutputFormats.dart,
-  },
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
@@ -76,7 +73,7 @@ Future<bool> performGenerate({
   );
 
   List<String>? generatedOpenAPIFiles;
-  if (codeOutputFormats.contains(CodeOutputFormats.openAPI)) {
+  if (config.codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
     log.debug('Generating openAPI schema.');
     generatedOpenAPIFiles = await ServerpodCodeGenerator.generateOpenAPISchema(
       protocolDefinition: protocolDefinition,

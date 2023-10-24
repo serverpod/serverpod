@@ -30,7 +30,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
 
   var paths = await locateAllModulePaths(directory: directory);
   for (var path in paths) {
-    var config = await GeneratorConfig.load(path.toFilePath());
+    var config = await GeneratorConfig.load(dir: path.toFilePath());
 
     if (config == null) {
       continue;
@@ -58,7 +58,7 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinition({
   required Directory directory,
   required int priority,
 }) async {
-  var config = await GeneratorConfig.load(directory.path);
+  var config = await GeneratorConfig.load(dir: directory.path);
   if (config == null) {
     throw Exception('Failed to load generator config');
   }

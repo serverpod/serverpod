@@ -133,7 +133,7 @@ Future<ServerProject?> _loadServerProject(
   var serverRootDir = _findServerDirectory(rootDir);
   if (serverRootDir == null) return null;
 
-  var config = await GeneratorConfig.load(serverRootDir.path);
+  var config = await GeneratorConfig.load(dir: serverRootDir.path);
   if (config == null) return null;
 
   var yamlSources = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
