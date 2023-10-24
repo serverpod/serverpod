@@ -5,13 +5,11 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
 Future<void> _createTestDatabase(Session session) async {
-  var types = [
+  await Types.db.insert(session, [
     Types(aString: 'one'),
     Types(aString: 'two'),
     Types(aString: null),
-  ];
-
-  await Types.db.insert(session, types);
+  ]);
 }
 
 Future<void> _deleteAll(Session session) async {
