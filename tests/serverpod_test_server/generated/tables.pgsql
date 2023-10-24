@@ -12,6 +12,18 @@ ALTER TABLE ONLY "address"
   ADD CONSTRAINT address_pkey PRIMARY KEY (id);
 
 --
+-- Class Arena as table arena
+--
+
+CREATE TABLE "arena" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "arena"
+  ADD CONSTRAINT arena_pkey PRIMARY KEY (id);
+
+--
 -- Class Citizen as table citizen
 --
 
@@ -238,6 +250,19 @@ ALTER TABLE ONLY "person"
   ADD CONSTRAINT person_pkey PRIMARY KEY (id);
 
 --
+-- Class Player as table player
+--
+
+CREATE TABLE "player" (
+  "id" serial,
+  "name" text NOT NULL,
+  "teamId" integer
+);
+
+ALTER TABLE ONLY "player"
+  ADD CONSTRAINT player_pkey PRIMARY KEY (id);
+
+--
 -- Class Post as table post
 --
 
@@ -286,6 +311,19 @@ CREATE TABLE "simple_date_time" (
 
 ALTER TABLE ONLY "simple_date_time"
   ADD CONSTRAINT simple_date_time_pkey PRIMARY KEY (id);
+
+--
+-- Class Team as table team
+--
+
+CREATE TABLE "team" (
+  "id" serial,
+  "name" text NOT NULL,
+  "arenaId" integer
+);
+
+ALTER TABLE ONLY "team"
+  ADD CONSTRAINT team_pkey PRIMARY KEY (id);
 
 --
 -- Class Town as table town
@@ -436,6 +474,16 @@ ALTER TABLE ONLY "person"
         ON DELETE CASCADE;
 
 --
+-- Foreign relations for "player" table
+--
+
+ALTER TABLE ONLY "player"
+  ADD CONSTRAINT player_fk_0
+    FOREIGN KEY("teamId")
+      REFERENCES team(id)
+        ON DELETE CASCADE;
+
+--
 -- Foreign relations for "post" table
 --
 
@@ -453,6 +501,16 @@ ALTER TABLE ONLY "related_unique_data"
   ADD CONSTRAINT related_unique_data_fk_0
     FOREIGN KEY("uniqueDataId")
       REFERENCES unique_data(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "team" table
+--
+
+ALTER TABLE ONLY "team"
+  ADD CONSTRAINT team_fk_0
+    FOREIGN KEY("arenaId")
+      REFERENCES arena(id)
         ON DELETE CASCADE;
 
 --

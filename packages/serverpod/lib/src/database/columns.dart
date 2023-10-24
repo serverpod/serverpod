@@ -82,11 +82,26 @@ class ColumnString extends _ValueOperatorColumn<String>
     return _LikeExpression(this, _encodeValueForQuery(value));
   }
 
+  /// Creates an [Expression] checking if the value in the column is NOT LIKE the
+  /// specified value. See Postgresql docs for more info on the LIKE operator.
+  Expression notLike(String value) {
+    return _NotLikeExpression(this, _encodeValueForQuery(value)) |
+        _IsNullExpression(this);
+  }
+
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value but ignoring case. See Postgresql docs for more info on
   /// the ILIKE operator.
   Expression ilike(String value) {
     return _ILikeExpression(this, _encodeValueForQuery(value));
+  }
+
+  /// Creates an [Expression] checking if the value in the column is NOT LIKE the
+  /// specified value but ignoring case. See Postgresql docs for more info on
+  /// the NOT ILIKE operator.
+  Expression notIlike(String value) {
+    return _NotILikeExpression(this, _encodeValueForQuery(value)) |
+        _IsNullExpression(this);
   }
 
   @override
@@ -352,10 +367,10 @@ abstract class ColumnExpression<T> extends Expression {
       return column.toString();
     }
 
-    return _formatColumnCountName(column as ColumnCount);
+    return _formatColumnName(column as ColumnCount);
   }
 
-  String _formatColumnCountName(ColumnCount columnCount) {
+  String _formatColumnName(ColumnCount columnCount) {
     var tableRelation = columnCount.table.tableRelation;
     if (tableRelation == null) {
       throw StateError('Table relation is null for ColumnCount.');
@@ -383,6 +398,46 @@ class _IsNullExpression<T> extends ColumnExpression<T> {
 
   @override
   String get operator => 'IS NULL';
+}
+
+/// A database expression that returns all rows where none of the related rows
+/// match the filtering criteria.
+class NoneExpression<T> extends _IsNotNullExpression<T> {
+  /// Creates a new [NoneExpression].
+  NoneExpression(super.column);
+
+  @override
+  String _formatColumnName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in a NoneExpression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return tableRelation.lastRelation.foreignFieldNameWithJoins;
+  }
+}
+
+/// A database expression that returns all rows where any of the related rows
+/// match the filtering criteria.
+class AnyExpression<T> extends _IsNotNullExpression<T> {
+  /// Creates a new [AnyExpression].
+  AnyExpression(super.column);
+
+  @override
+  String _formatColumnName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in a NoneExpression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return tableRelation.lastRelation.foreignFieldNameWithJoins;
+  }
 }
 
 class _IsNotNullExpression<T> extends ColumnExpression<T> {
@@ -455,11 +510,25 @@ class _LikeExpression<T> extends _TwoPartColumnExpression<T> {
   String get operator => 'LIKE';
 }
 
+class _NotLikeExpression<T> extends _TwoPartColumnExpression<T> {
+  _NotLikeExpression(super.column, super.other);
+
+  @override
+  String get operator => 'NOT LIKE';
+}
+
 class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _ILikeExpression(super.column, super.other);
 
   @override
   String get operator => 'ILIKE';
+}
+
+class _NotILikeExpression<T> extends _TwoPartColumnExpression<T> {
+  _NotILikeExpression(super.column, super.other);
+
+  @override
+  String get operator => 'NOT ILIKE';
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {

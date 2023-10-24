@@ -1,0 +1,7 @@
+class: Team
+table: team
+fields:
+  name: String
+  arenaId: int?
+  arena: Arena?, relation(name=arena_team, field=arenaId)
+  players: List<Player>?, relation(name=team_player)

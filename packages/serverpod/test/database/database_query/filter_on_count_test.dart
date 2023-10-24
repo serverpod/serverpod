@@ -17,10 +17,17 @@ void main() {
     ]),
   );
 
+  var manyRelation = ManyRelation(
+    tableWithRelations: relationTable,
+    table: Table(
+        tableName: companyTable.tableName,
+        tableRelation: relationTable.tableRelation!.lastRelation),
+  );
+
   group('Given SelectQueryBuilder', () {
     group('when filtering on many relation count', () {
       var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(ColumnCount(null, relationTable.id) > 3)
+          .withWhere(manyRelation.count() > 3)
           .build();
       test('then a sub query is created for the filter.', () {
         expect(
@@ -37,13 +44,8 @@ void main() {
     });
 
     group('when filtering on filtered many relation count', () {
-      var innerWhere = relationTable.id.equals(1);
       var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(ColumnCount(
-                innerWhere,
-                relationTable.id,
-              ) >
-              3)
+          .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
           .build();
 
       test('then having section is added.', () {
@@ -53,8 +55,7 @@ void main() {
     });
 
     group('when filtering on multiple many relation count', () {
-      var where = (ColumnCount(null, relationTable.id) > 3) &
-          (ColumnCount(null, relationTable.id) < 5);
+      var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
       var query =
           SelectQueryBuilder(table: citizenTable).withWhere(where).build();
 
@@ -91,11 +92,11 @@ void main() {
 
     group('when ordering by and filtering on same filtered many relation count',
         () {
-      var innerWhere = relationTable.id.equals(1);
-      var columnCount = ColumnCount(innerWhere, relationTable.id);
       var query = SelectQueryBuilder(table: citizenTable)
-          .withWhere(columnCount > 3)
-          .withOrderBy([Order(column: columnCount)]).build();
+          .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
+          .withOrderBy([
+        Order(column: manyRelation.count((t) => t.id.equals(1)))
+      ]).build();
 
       test('then a sub query is created for the order by.', () {
         expect(
