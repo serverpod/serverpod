@@ -82,6 +82,8 @@ class ColumnString extends _ValueOperatorColumn<String>
     return _LikeExpression(this, _encodeValueForQuery(value));
   }
 
+  /// Creates an [Expression] checking if the value in the column is NOT LIKE the
+  /// specified value. See Postgresql docs for more info on the LIKE operator.
   Expression notLike(String value) {
     return _NotLikeExpression(this, _encodeValueForQuery(value)) |
         _IsNullExpression(this);
@@ -94,6 +96,9 @@ class ColumnString extends _ValueOperatorColumn<String>
     return _ILikeExpression(this, _encodeValueForQuery(value));
   }
 
+  /// Creates an [Expression] checking if the value in the column is NOT LIKE the
+  /// specified value but ignoring case. See Postgresql docs for more info on
+  /// the NOT ILIKE operator.
   Expression notIlike(String value) {
     return _NotILikeExpression(this, _encodeValueForQuery(value)) |
         _IsNullExpression(this);
