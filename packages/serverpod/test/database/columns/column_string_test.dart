@@ -67,7 +67,7 @@ void main() {
           () {
         var comparisonExpression = column.notLike('test');
 
-        expect(comparisonExpression.toString(), '$column NOT LIKE \'test\'');
+        expect(comparisonExpression.toString(), '($column NOT LIKE \'test\' OR $column IS NULL)');
       });
 
       test(
@@ -83,7 +83,7 @@ void main() {
           () {
         var comparisonExpression = column.notIlike('test');
 
-        expect(comparisonExpression.toString(), '$column NOT ILIKE \'test\'');
+        expect(comparisonExpression.toString(), '($column NOT ILIKE \'test\' OR $column IS NULL)');
       });
 
       test(
