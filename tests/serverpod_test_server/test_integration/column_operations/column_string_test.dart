@@ -116,9 +116,7 @@ void main() async {
       expect(result.first.aString, 'one');
     });
 
-    test(
-        'when filtering using like then matching row is returned.',
-        () async {
+    test('when filtering using like then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.like('on%'),
@@ -128,9 +126,7 @@ void main() async {
       expect(result.first.aString, 'one');
     });
 
-    test(
-        'when filtering using like then matching row is returned.',
-        () async {
+    test('when filtering using like then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.notLike('on%'),
@@ -139,10 +135,7 @@ void main() async {
       expect(result, hasLength(2));
     });
 
-
-    test(
-        'when filtering using ilike then matching row is returned.',
-        () async {
+    test('when filtering using ilike then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.ilike('On%'),
@@ -152,9 +145,7 @@ void main() async {
       expect(result.first.aString, 'one');
     });
 
-    test(
-        'when filtering using ilike then matching row is returned.',
-        () async {
+    test('when filtering using ilike then matching row is returned.', () async {
       var result = await Types.db.find(
         session,
         where: (t) => t.aString.notIlike('On%'),
