@@ -331,76 +331,6 @@ class EndpointS3CloudStorage extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointColumnUuid extends _i1.EndpointRef {
-  EndpointColumnUuid(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'columnUuid';
-
-  _i2.Future<void> insert(List<_i6.Types> types) =>
-      caller.callServerEndpoint<void>(
-        'columnUuid',
-        'insert',
-        {'types': types},
-      );
-
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'columnUuid',
-        'deleteAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'findAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> equals(_i5.UuidValue? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'equals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notEquals(_i5.UuidValue? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'notEquals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> inSet(List<_i5.UuidValue> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'inSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notInSet(List<_i5.UuidValue> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuid',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-}
-
-/// {@category Endpoint}
 class EndpointColumnBoolLegacy extends _i1.EndpointRef {
   EndpointColumnBoolLegacy(_i1.EndpointCaller caller) : super(caller);
 
@@ -2928,7 +2858,6 @@ class Client extends _i1.ServerpodClient {
     basicTypes = EndpointBasicTypes(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
-    columnUuid = EndpointColumnUuid(this);
     columnBoolLegacy = EndpointColumnBoolLegacy(this);
     columnDateTimeLegacy = EndpointColumnDateTimeLegacy(this);
     columnDoubleLegacy = EndpointColumnDoubleLegacy(this);
@@ -2976,8 +2905,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointCloudStorage cloudStorage;
 
   late final EndpointS3CloudStorage s3CloudStorage;
-
-  late final EndpointColumnUuid columnUuid;
 
   late final EndpointColumnBoolLegacy columnBoolLegacy;
 
@@ -3058,7 +2985,6 @@ class Client extends _i1.ServerpodClient {
         'basicTypes': basicTypes,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
-        'columnUuid': columnUuid,
         'columnBoolLegacy': columnBoolLegacy,
         'columnDateTimeLegacy': columnDateTimeLegacy,
         'columnDoubleLegacy': columnDoubleLegacy,

@@ -51,8 +51,8 @@ import 'protocol.dart' as _i41;
 import 'package:serverpod_test_module_client/module.dart' as _i42;
 import 'dart:typed_data' as _i43;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i44;
-import 'package:uuid/uuid.dart' as _i45;
-import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i46;
+import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i45;
+import 'package:uuid/uuid.dart' as _i46;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i47;
 import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i48;
 import 'package:serverpod_test_client/src/protocol/entities_with_list_relations/person.dart'
@@ -655,10 +655,6 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i44.Types>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i45.UuidValue>) {
-      return (data as List).map((e) => deserialize<_i45.UuidValue>(e)).toList()
-          as dynamic;
-    }
     if (t == List<bool>) {
       return (data as List).map((e) => deserialize<bool>(e)).toList()
           as dynamic;
@@ -675,8 +671,8 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<Duration>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i46.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i46.TestEnum>(e)).toList()
+    if (t == List<_i45.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i45.TestEnum>(e)).toList()
           as dynamic;
     }
     if (t == List<int>) {
@@ -684,6 +680,10 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i46.UuidValue>) {
+      return (data as List).map((e) => deserialize<_i46.UuidValue>(e)).toList()
           as dynamic;
     }
     if (t == List<_i47.SimpleData>) {
@@ -874,14 +874,14 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<_i46.TestEnum, int>) {
+    if (t == Map<_i45.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i46.TestEnum>(e['k']), deserialize<int>(e['v']))))
+              deserialize<_i45.TestEnum>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<String, _i46.TestEnum>) {
+    if (t == Map<String, _i45.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i46.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i45.TestEnum>(v)))
           as dynamic;
     }
     if (t == Map<String, double>) {
