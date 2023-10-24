@@ -331,130 +331,6 @@ class EndpointS3CloudStorage extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointColumnInt extends _i1.EndpointRef {
-  EndpointColumnInt(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'columnInt';
-
-  _i2.Future<void> insert(List<_i6.Types> types) =>
-      caller.callServerEndpoint<void>(
-        'columnInt',
-        'insert',
-        {'types': types},
-      );
-
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'columnInt',
-        'deleteAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'findAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> equals(int? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'equals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notEquals(int? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'notEquals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> inSet(List<int> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'inSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notInSet(List<int> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> greaterThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'greaterThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'greaterOrEqualThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> lessThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'lessThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'lessOrEqualThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> between(
-    int min,
-    int max,
-  ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'between',
-        {
-          'min': min,
-          'max': max,
-        },
-      );
-
-  _i2.Future<List<_i6.Types>> notBetween(
-    int min,
-    int max,
-  ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnInt',
-        'notBetween',
-        {
-          'min': min,
-          'max': max,
-        },
-      );
-}
-
-/// {@category Endpoint}
 class EndpointColumnUuid extends _i1.EndpointRef {
   EndpointColumnUuid(_i1.EndpointCaller caller) : super(caller);
 
@@ -3052,7 +2928,6 @@ class Client extends _i1.ServerpodClient {
     basicTypes = EndpointBasicTypes(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
-    columnInt = EndpointColumnInt(this);
     columnUuid = EndpointColumnUuid(this);
     columnBoolLegacy = EndpointColumnBoolLegacy(this);
     columnDateTimeLegacy = EndpointColumnDateTimeLegacy(this);
@@ -3101,8 +2976,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointCloudStorage cloudStorage;
 
   late final EndpointS3CloudStorage s3CloudStorage;
-
-  late final EndpointColumnInt columnInt;
 
   late final EndpointColumnUuid columnUuid;
 
@@ -3185,7 +3058,6 @@ class Client extends _i1.ServerpodClient {
         'basicTypes': basicTypes,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
-        'columnInt': columnInt,
         'columnUuid': columnUuid,
         'columnBoolLegacy': columnBoolLegacy,
         'columnDateTimeLegacy': columnDateTimeLegacy,

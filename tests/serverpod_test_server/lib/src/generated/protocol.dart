@@ -2157,9 +2157,6 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i48.Types>(e)).toList()
           as dynamic;
     }
-    if (t == List<int>) {
-      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
-    }
     if (t == List<_i49.UuidValue>) {
       return (data as List).map((e) => deserialize<_i49.UuidValue>(e)).toList()
           as dynamic;
@@ -2183,6 +2180,9 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<_i50.TestEnum>) {
       return (data as List).map((e) => deserialize<_i50.TestEnum>(e)).toList()
           as dynamic;
+    }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
