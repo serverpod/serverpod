@@ -90,7 +90,7 @@ void main() async {
 
       var fetchedCustomers = await Customer.db.find(
         session,
-        // All customers with more than two orders or name 'Viktor'
+        // All customers with more than two orders or name 'Isak'
         where: (c) => (c.orders.count() > 2) | c.name.equals('Isak'),
       );
 
@@ -204,6 +204,7 @@ void main() async {
       await Customer.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
+
     test(
         'when filtering on nested many relation count then result is as expected',
         () async {

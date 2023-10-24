@@ -352,10 +352,10 @@ abstract class ColumnExpression<T> extends Expression {
       return column.toString();
     }
 
-    return _formatColumnCountName(column as ColumnCount);
+    return _formatColumnName(column as ColumnCount);
   }
 
-  String _formatColumnCountName(ColumnCount columnCount) {
+  String _formatColumnName(ColumnCount columnCount) {
     var tableRelation = columnCount.table.tableRelation;
     if (tableRelation == null) {
       throw StateError('Table relation is null for ColumnCount.');
@@ -383,6 +383,26 @@ class _IsNullExpression<T> extends ColumnExpression<T> {
 
   @override
   String get operator => 'IS NULL';
+}
+
+/// A database expression that returns all rows where none of the related rows
+/// match the filtering criteria.
+class NoneExpression<T> extends _IsNotNullExpression<T> {
+  /// Creates a new [NoneExpression].
+  NoneExpression(super.column);
+
+  @override
+  String _formatColumnName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in a NoneExpression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return tableRelation.lastRelation.foreignFieldNameWithJoins;
+  }
 }
 
 class _IsNotNullExpression<T> extends ColumnExpression<T> {
