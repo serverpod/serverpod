@@ -967,90 +967,6 @@ class EndpointColumnInt extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointColumnString extends _i1.EndpointRef {
-  EndpointColumnString(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'columnString';
-
-  _i2.Future<void> insert(List<_i6.Types> types) =>
-      caller.callServerEndpoint<void>(
-        'columnString',
-        'insert',
-        {'types': types},
-      );
-
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'columnString',
-        'deleteAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'findAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> equals(String? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'equals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notEquals(String? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'notEquals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> inSet(List<String> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'inSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notInSet(List<String> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> like(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'like',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> ilike(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnString',
-        'ilike',
-        {'value': value},
-      );
-}
-
-/// {@category Endpoint}
 class EndpointColumnUuid extends _i1.EndpointRef {
   EndpointColumnUuid(_i1.EndpointCaller caller) : super(caller);
 
@@ -3654,7 +3570,6 @@ class Client extends _i1.ServerpodClient {
     columnDuration = EndpointColumnDuration(this);
     columnEnum = EndpointColumnEnum(this);
     columnInt = EndpointColumnInt(this);
-    columnString = EndpointColumnString(this);
     columnUuid = EndpointColumnUuid(this);
     columnBoolLegacy = EndpointColumnBoolLegacy(this);
     columnDateTimeLegacy = EndpointColumnDateTimeLegacy(this);
@@ -3715,8 +3630,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointColumnEnum columnEnum;
 
   late final EndpointColumnInt columnInt;
-
-  late final EndpointColumnString columnString;
 
   late final EndpointColumnUuid columnUuid;
 
@@ -3805,7 +3718,6 @@ class Client extends _i1.ServerpodClient {
         'columnDuration': columnDuration,
         'columnEnum': columnEnum,
         'columnInt': columnInt,
-        'columnString': columnString,
         'columnUuid': columnUuid,
         'columnBoolLegacy': columnBoolLegacy,
         'columnDateTimeLegacy': columnDateTimeLegacy,

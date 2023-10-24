@@ -82,11 +82,21 @@ class ColumnString extends _ValueOperatorColumn<String>
     return _LikeExpression(this, _encodeValueForQuery(value));
   }
 
+  Expression notLike(String value) {
+    return _NotLikeExpression(this, _encodeValueForQuery(value)) |
+        _IsNullExpression(this);
+  }
+
   /// Creates an [Expression] checking if the value in the column is LIKE the
   /// specified value but ignoring case. See Postgresql docs for more info on
   /// the ILIKE operator.
   Expression ilike(String value) {
     return _ILikeExpression(this, _encodeValueForQuery(value));
+  }
+
+  Expression notIlike(String value) {
+    return _NotILikeExpression(this, _encodeValueForQuery(value)) |
+        _IsNullExpression(this);
   }
 
   @override
@@ -495,11 +505,25 @@ class _LikeExpression<T> extends _TwoPartColumnExpression<T> {
   String get operator => 'LIKE';
 }
 
+class _NotLikeExpression<T> extends _TwoPartColumnExpression<T> {
+  _NotLikeExpression(super.column, super.other);
+
+  @override
+  String get operator => 'NOT LIKE';
+}
+
 class _ILikeExpression<T> extends _TwoPartColumnExpression<T> {
   _ILikeExpression(super.column, super.other);
 
   @override
   String get operator => 'ILIKE';
+}
+
+class _NotILikeExpression<T> extends _TwoPartColumnExpression<T> {
+  _NotILikeExpression(super.column, super.other);
+
+  @override
+  String get operator => 'NOT ILIKE';
 }
 
 class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {

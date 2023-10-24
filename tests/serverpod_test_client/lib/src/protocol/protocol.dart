@@ -678,12 +678,12 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
-          as dynamic;
-    }
     if (t == List<_i46.UuidValue>) {
       return (data as List).map((e) => deserialize<_i46.UuidValue>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
     if (t == List<_i47.SimpleData>) {
