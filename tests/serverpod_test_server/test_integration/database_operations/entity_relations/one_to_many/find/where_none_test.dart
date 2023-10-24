@@ -109,7 +109,7 @@ void main() async {
       ]);
       await Order.db.insert(session, [
         // Alex orders
-        Order(description: 'Prem: Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 1', customerId: customers[0].id!),
         Order(description: 'Basic: Order 2', customerId: customers[0].id!),
         Order(description: 'Order 3', customerId: customers[0].id!),
         // Viktor orders

@@ -749,10 +749,20 @@ class _SubQueries {
       expression.index = index;
       if (expression is NoneExpression) {
         subQueries[index] = _buildWhereNoneSubQuery(
-            relationQueryAlias, index, tableRelation, column, expression);
+          relationQueryAlias,
+          index,
+          tableRelation,
+          column,
+          expression,
+        );
       } else {
         subQueries[index] = _buildWhereCountSubQuery(
-            relationQueryAlias, index, tableRelation, column, expression);
+          relationQueryAlias,
+          index,
+          tableRelation,
+          column,
+          expression,
+        );
       }
     });
 
