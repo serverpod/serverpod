@@ -331,130 +331,6 @@ class EndpointS3CloudStorage extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointColumnDateTime extends _i1.EndpointRef {
-  EndpointColumnDateTime(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'columnDateTime';
-
-  _i2.Future<void> insert(List<_i6.Types> types) =>
-      caller.callServerEndpoint<void>(
-        'columnDateTime',
-        'insert',
-        {'types': types},
-      );
-
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'columnDateTime',
-        'deleteAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'findAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> equals(DateTime? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'equals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notEquals(DateTime? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'notEquals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> inSet(List<DateTime> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'inSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notInSet(List<DateTime> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> greaterThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'greaterThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> greaterOrEqualThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'greaterOrEqualThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> lessThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'lessThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> lessOrEqualThan(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'lessOrEqualThan',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> between(
-    DateTime min,
-    DateTime max,
-  ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'between',
-        {
-          'min': min,
-          'max': max,
-        },
-      );
-
-  _i2.Future<List<_i6.Types>> notBetween(
-    DateTime min,
-    DateTime max,
-  ) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTime',
-        'notBetween',
-        {
-          'min': min,
-          'max': max,
-        },
-      );
-}
-
-/// {@category Endpoint}
 class EndpointColumnDouble extends _i1.EndpointRef {
   EndpointColumnDouble(_i1.EndpointCaller caller) : super(caller);
 
@@ -3494,7 +3370,6 @@ class Client extends _i1.ServerpodClient {
     basicTypes = EndpointBasicTypes(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
-    columnDateTime = EndpointColumnDateTime(this);
     columnDouble = EndpointColumnDouble(this);
     columnDuration = EndpointColumnDuration(this);
     columnEnum = EndpointColumnEnum(this);
@@ -3547,8 +3422,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointCloudStorage cloudStorage;
 
   late final EndpointS3CloudStorage s3CloudStorage;
-
-  late final EndpointColumnDateTime columnDateTime;
 
   late final EndpointColumnDouble columnDouble;
 
@@ -3639,7 +3512,6 @@ class Client extends _i1.ServerpodClient {
         'basicTypes': basicTypes,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
-        'columnDateTime': columnDateTime,
         'columnDouble': columnDouble,
         'columnDuration': columnDuration,
         'columnEnum': columnEnum,
