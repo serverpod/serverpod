@@ -63,11 +63,33 @@ void main() {
       });
 
       test(
-          'when ilike compared to String value then output is escaped like expression.',
+          'when notLike compared to String value then output is escaped notLike expression.',
+          () {
+        var comparisonExpression = column.notLike('test');
+
+        expect(
+          comparisonExpression.toString(),
+          '($column NOT LIKE \'test\' OR $column IS NULL)',
+        );
+      });
+
+      test(
+          'when ilike compared to String value then output is escaped ilike expression.',
           () {
         var comparisonExpression = column.ilike('test');
 
         expect(comparisonExpression.toString(), '$column ILIKE \'test\'');
+      });
+
+      test(
+          'when notIlike compared to String value then output is escaped notIlike expression.',
+          () {
+        var comparisonExpression = column.notIlike('test');
+
+        expect(
+          comparisonExpression.toString(),
+          '($column NOT ILIKE \'test\' OR $column IS NULL)',
+        );
       });
 
       test(
