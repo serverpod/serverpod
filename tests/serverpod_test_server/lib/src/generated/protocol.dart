@@ -55,8 +55,8 @@ import 'unique_data.dart' as _i45;
 import 'protocol.dart' as _i46;
 import 'dart:typed_data' as _i47;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i48;
-import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i49;
-import 'package:uuid/uuid.dart' as _i50;
+import 'package:uuid/uuid.dart' as _i49;
+import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i50;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i51;
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i52;
 import 'package:serverpod_test_server/src/generated/entities_with_list_relations/person.dart'
@@ -2157,15 +2157,11 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i48.Types>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i49.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i49.TestEnum>(e)).toList()
-          as dynamic;
-    }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
-    if (t == List<_i50.UuidValue>) {
-      return (data as List).map((e) => deserialize<_i50.UuidValue>(e)).toList()
+    if (t == List<_i49.UuidValue>) {
+      return (data as List).map((e) => deserialize<_i49.UuidValue>(e)).toList()
           as dynamic;
     }
     if (t == List<bool>) {
@@ -2182,6 +2178,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<Duration>) {
       return (data as List).map((e) => deserialize<Duration>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i50.TestEnum>) {
+      return (data as List).map((e) => deserialize<_i50.TestEnum>(e)).toList()
           as dynamic;
     }
     if (t == List<String>) {
@@ -2376,14 +2376,14 @@ class Protocol extends _i1.SerializationManagerServer {
               MapEntry(deserialize<int>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<_i49.TestEnum, int>) {
+    if (t == Map<_i50.TestEnum, int>) {
       return Map.fromEntries((data as List).map((e) => MapEntry(
-              deserialize<_i49.TestEnum>(e['k']), deserialize<int>(e['v']))))
+              deserialize<_i50.TestEnum>(e['k']), deserialize<int>(e['v']))))
           as dynamic;
     }
-    if (t == Map<String, _i49.TestEnum>) {
+    if (t == Map<String, _i50.TestEnum>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i49.TestEnum>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i50.TestEnum>(v)))
           as dynamic;
     }
     if (t == Map<String, double>) {
