@@ -331,76 +331,6 @@ class EndpointS3CloudStorage extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointColumnBool extends _i1.EndpointRef {
-  EndpointColumnBool(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'columnBool';
-
-  _i2.Future<void> insert(List<_i6.Types> types) =>
-      caller.callServerEndpoint<void>(
-        'columnBool',
-        'insert',
-        {'types': types},
-      );
-
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'columnBool',
-        'deleteAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> findAll() =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'findAll',
-        {},
-      );
-
-  _i2.Future<List<_i6.Types>> equals(bool? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'equals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notEquals(bool? value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'notEquals',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> inSet(List<bool> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'inSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> notInSet(List<bool> value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBool',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-}
-
-/// {@category Endpoint}
 class EndpointColumnDateTime extends _i1.EndpointRef {
   EndpointColumnDateTime(_i1.EndpointCaller caller) : super(caller);
 
@@ -3564,7 +3494,6 @@ class Client extends _i1.ServerpodClient {
     basicTypes = EndpointBasicTypes(this);
     cloudStorage = EndpointCloudStorage(this);
     s3CloudStorage = EndpointS3CloudStorage(this);
-    columnBool = EndpointColumnBool(this);
     columnDateTime = EndpointColumnDateTime(this);
     columnDouble = EndpointColumnDouble(this);
     columnDuration = EndpointColumnDuration(this);
@@ -3618,8 +3547,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointCloudStorage cloudStorage;
 
   late final EndpointS3CloudStorage s3CloudStorage;
-
-  late final EndpointColumnBool columnBool;
 
   late final EndpointColumnDateTime columnDateTime;
 
@@ -3712,7 +3639,6 @@ class Client extends _i1.ServerpodClient {
         'basicTypes': basicTypes,
         'cloudStorage': cloudStorage,
         's3CloudStorage': s3CloudStorage,
-        'columnBool': columnBool,
         'columnDateTime': columnDateTime,
         'columnDouble': columnDouble,
         'columnDuration': columnDuration,

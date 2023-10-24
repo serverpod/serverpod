@@ -655,10 +655,6 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i44.Types>(e)).toList()
           as dynamic;
     }
-    if (t == List<bool>) {
-      return (data as List).map((e) => deserialize<bool>(e)).toList()
-          as dynamic;
-    }
     if (t == List<DateTime>) {
       return (data as List).map((e) => deserialize<DateTime>(e)).toList()
           as dynamic;
@@ -680,6 +676,10 @@ class Protocol extends _i1.SerializationManager {
     }
     if (t == List<_i46.UuidValue>) {
       return (data as List).map((e) => deserialize<_i46.UuidValue>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<bool>) {
+      return (data as List).map((e) => deserialize<bool>(e)).toList()
           as dynamic;
     }
     if (t == List<String>) {
