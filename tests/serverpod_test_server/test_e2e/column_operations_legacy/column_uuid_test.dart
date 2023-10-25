@@ -76,20 +76,5 @@ void main() async {
 
       expect(result.length, 2);
     });
-
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await client.columnUuidLegacy.isDistinctFrom(firstUuid);
-
-      expect(result.length, 2);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result = await client.columnUuidLegacy.isNotDistinctFrom(firstUuid);
-
-      expect(result.first.aUuid, firstUuid);
-    });
   });
 }

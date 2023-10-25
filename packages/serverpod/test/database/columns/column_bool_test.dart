@@ -55,24 +55,6 @@ void main() {
       });
 
       test(
-          'when is distinct from compared to bool value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isDistinctFrom(true);
-
-        expect(
-            comparisonExpression.toString(), '$column IS DISTINCT FROM true');
-      });
-
-      test(
-          'when is NOT distinct from compared to bool value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom(true);
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM true');
-      });
-
-      test(
           'when checking if expression is in value set then output is IN expression.',
           () {
         var comparisonExpression = column.inSet(<bool>{true, false});

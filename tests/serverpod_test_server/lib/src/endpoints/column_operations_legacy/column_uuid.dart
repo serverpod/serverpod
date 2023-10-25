@@ -48,19 +48,4 @@ class ColumnUuidLegacyEndpoint extends Endpoint {
       where: (t) => t.aUuid.notInSet(value.toSet()),
     );
   }
-
-  Future<List<Types>> isDistinctFrom(Session session, UuidValue value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aUuid.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(
-      Session session, UuidValue value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aUuid.isNotDistinctFrom(value),
-    );
-  }
 }

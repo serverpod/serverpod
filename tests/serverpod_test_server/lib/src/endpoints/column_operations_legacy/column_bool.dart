@@ -48,18 +48,4 @@ class ColumnBoolLegacyEndpoint extends Endpoint {
       where: (t) => t.aBool.notInSet(value.toSet()),
     );
   }
-
-  Future<List<Types>> isDistinctFrom(Session session, bool value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aBool.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, bool value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aBool.isNotDistinctFrom(value),
-    );
-  }
 }

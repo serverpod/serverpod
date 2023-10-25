@@ -49,20 +49,6 @@ class ColumnDoubleLegacyEndpoint extends Endpoint {
     );
   }
 
-  Future<List<Types>> isDistinctFrom(Session session, double value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDouble.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, double value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDouble.isNotDistinctFrom(value),
-    );
-  }
-
   Future<List<Types>> greaterThan(Session session, double value) async {
     return await Types.find(
       session,

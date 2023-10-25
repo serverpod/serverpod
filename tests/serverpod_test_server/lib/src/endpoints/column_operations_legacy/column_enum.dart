@@ -48,18 +48,4 @@ class ColumnEnumLegacyEndpoint extends Endpoint {
       where: (t) => t.anEnum.notInSet(value.toSet()),
     );
   }
-
-  Future<List<Types>> isDistinctFrom(Session session, TestEnum value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.anEnum.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, TestEnum value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.anEnum.isNotDistinctFrom(value),
-    );
-  }
 }

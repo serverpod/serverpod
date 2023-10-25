@@ -49,20 +49,6 @@ class ColumnStringLegacyEndpoint extends Endpoint {
     );
   }
 
-  Future<List<Types>> isDistinctFrom(Session session, String value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aString.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, String value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aString.isNotDistinctFrom(value),
-    );
-  }
-
   Future<List<Types>> like(Session session, String value) async {
     return await Types.find(
       session,

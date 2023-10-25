@@ -69,21 +69,5 @@ void main() async {
 
       expect(result.length, 2);
     });
-
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await client.columnEnumLegacy.isDistinctFrom(TestEnum.one);
-
-      expect(result.length, 2);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result =
-          await client.columnEnumLegacy.isNotDistinctFrom(TestEnum.one);
-
-      expect(result.first.anEnum, TestEnum.one);
-    });
   });
 }

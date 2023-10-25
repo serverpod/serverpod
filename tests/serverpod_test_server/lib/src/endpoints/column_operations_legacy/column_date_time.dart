@@ -49,20 +49,6 @@ class ColumnDateTimeLegacyEndpoint extends Endpoint {
     );
   }
 
-  Future<List<Types>> isDistinctFrom(Session session, DateTime value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDateTime.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, DateTime value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDateTime.isNotDistinctFrom(value),
-    );
-  }
-
   Future<List<Types>> greaterThan(Session session, DateTime value) async {
     return await Types.find(
       session,
