@@ -67,21 +67,6 @@ void main() async {
       expect(result.length, 2);
     });
 
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await client.columnStringLegacy.isDistinctFrom('one');
-
-      expect(result.length, 2);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result = await client.columnStringLegacy.isNotDistinctFrom('one');
-
-      expect(result.first.aString, 'one');
-    });
-
     test(
         'when filtering using isNotDistinctFrom then matching row is returned.',
         () async {

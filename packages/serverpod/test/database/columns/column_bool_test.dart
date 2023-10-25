@@ -50,26 +50,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(true);
 
-        expect(comparisonExpression.toString(),
-            '($column != true OR $column IS NULL)');
-      });
-
-      test(
-          'when is distinct from compared to bool value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isDistinctFrom(true);
-
         expect(
             comparisonExpression.toString(), '$column IS DISTINCT FROM true');
-      });
-
-      test(
-          'when is NOT distinct from compared to bool value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom(true);
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM true');
       });
 
       test(

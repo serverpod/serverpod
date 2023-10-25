@@ -384,20 +384,6 @@ class EndpointColumnBoolLegacy extends _i1.EndpointRef {
         'notInSet',
         {'value': value},
       );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBoolLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(bool value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnBoolLegacy',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
 }
 
 /// {@category Endpoint}
@@ -452,20 +438,6 @@ class EndpointColumnDateTimeLegacy extends _i1.EndpointRef {
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnDateTimeLegacy',
         'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTimeLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(DateTime value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDateTimeLegacy',
-        'isNotDistinctFrom',
         {'value': value},
       );
 
@@ -579,20 +551,6 @@ class EndpointColumnDoubleLegacy extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDoubleLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(double value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDoubleLegacy',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-
   _i2.Future<List<_i6.Types>> greaterThan(double value) =>
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnDoubleLegacy',
@@ -700,20 +658,6 @@ class EndpointColumnDurationLegacy extends _i1.EndpointRef {
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnDurationLegacy',
         'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDurationLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(Duration value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnDurationLegacy',
-        'isNotDistinctFrom',
         {'value': value},
       );
 
@@ -826,20 +770,6 @@ class EndpointColumnEnumLegacy extends _i1.EndpointRef {
         'notInSet',
         {'value': value},
       );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(_i7.TestEnum value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnEnumLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i7.TestEnum value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnEnumLegacy',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
 }
 
 /// {@category Endpoint}
@@ -894,20 +824,6 @@ class EndpointColumnIntLegacy extends _i1.EndpointRef {
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnIntLegacy',
         'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnIntLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(int value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnIntLegacy',
-        'isNotDistinctFrom',
         {'value': value},
       );
 
@@ -1021,20 +937,6 @@ class EndpointColumnStringLegacy extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<List<_i6.Types>> isDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnStringLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(String value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnStringLegacy',
-        'isNotDistinctFrom',
-        {'value': value},
-      );
-
   _i2.Future<List<_i6.Types>> like(String value) =>
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnStringLegacy',
@@ -1102,20 +1004,6 @@ class EndpointColumnUuidLegacy extends _i1.EndpointRef {
       caller.callServerEndpoint<List<_i6.Types>>(
         'columnUuidLegacy',
         'notInSet',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuidLegacy',
-        'isDistinctFrom',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i6.Types>> isNotDistinctFrom(_i5.UuidValue value) =>
-      caller.callServerEndpoint<List<_i6.Types>>(
-        'columnUuidLegacy',
-        'isNotDistinctFrom',
         {'value': value},
       );
 }

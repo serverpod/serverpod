@@ -49,20 +49,6 @@ class ColumnDurationLegacyEndpoint extends Endpoint {
     );
   }
 
-  Future<List<Types>> isDistinctFrom(Session session, Duration value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDuration.isDistinctFrom(value),
-    );
-  }
-
-  Future<List<Types>> isNotDistinctFrom(Session session, Duration value) async {
-    return await Types.find(
-      session,
-      where: (t) => t.aDuration.isNotDistinctFrom(value),
-    );
-  }
-
   Future<List<Types>> greaterThan(Session session, Duration value) async {
     return await Types.find(
       session,

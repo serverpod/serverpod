@@ -51,7 +51,7 @@ void main() {
         var comparisonExpression = column.notEquals(const Duration(hours: 10));
 
         expect(comparisonExpression.toString(),
-            '($column != \'36000000\' OR $column IS NULL)');
+            '$column IS DISTINCT FROM \'36000000\'');
       });
 
       test(
@@ -78,25 +78,6 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'36000000\', \'39600000\', \'43200000\') OR $column IS NULL)');
-      });
-      test(
-          'when is distinct from compared to duration value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isDistinctFrom(const Duration(hours: 10));
-
-        expect(comparisonExpression.toString(),
-            '$column IS DISTINCT FROM \'36000000\'');
-      });
-
-      test(
-          'when is NOT distinct from compared to duration value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isNotDistinctFrom(const Duration(hours: 10));
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM \'36000000\'');
       });
     });
 

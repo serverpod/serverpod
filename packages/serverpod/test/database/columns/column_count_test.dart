@@ -90,24 +90,6 @@ void main() {
         expect(comparisonExpression.toString(),
             '$countColumnInExpression NOT IN (10, 11, 12)');
       });
-
-      test(
-          'when is distinct from compared to int value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isDistinctFrom(10);
-
-        expect(comparisonExpression.toString(),
-            '$countColumnInExpression IS DISTINCT FROM 10');
-      });
-
-      test(
-          'when is NOT distinct from compared to int value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom(10);
-
-        expect(comparisonExpression.toString(),
-            '$countColumnInExpression IS NOT DISTINCT FROM 10');
-      });
     });
 
     group('with _ColumnNumberOperations mixin', () {

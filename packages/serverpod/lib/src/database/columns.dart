@@ -224,18 +224,6 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
     return _NotInSetExpression(this, valuesAsExpressions);
   }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isDistinctFrom(T value) {
-    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isNotDistinctFrom(T value) {
-    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
 }
 
 mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
@@ -251,13 +239,14 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
+  ///
+  /// A non null [value] will include rows where the column is null.
   Expression notEquals(T? value) {
     if (value == null) {
       return _IsNotNullExpression(this);
     }
 
-    return _NotEqualsExpression(this, _encodeValueForQuery(value)) |
-        _IsNullExpression(this);
+    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
   }
 
   /// Creates and [Expression] checking if the value in the column is included
@@ -277,18 +266,6 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
     return _NotInSetExpression(this, valuesAsExpressions) |
         _IsNullExpression(this);
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isDistinctFrom(T value) {
-    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isNotDistinctFrom(T value) {
-    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
   }
 }
 
@@ -556,13 +533,6 @@ class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
 
   @override
   String get operator => 'IS DISTINCT FROM';
-}
-
-class _IsNotDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
-  _IsNotDistinctFromExpression(super.column, super.other);
-
-  @override
-  String get operator => 'IS NOT DISTINCT FROM';
 }
 
 abstract class _MinMaxColumnExpression<T> extends ColumnExpression<T> {

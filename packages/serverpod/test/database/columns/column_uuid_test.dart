@@ -53,7 +53,7 @@ void main() {
             column.notEquals(UuidValue(Uuid.NAMESPACE_NIL));
 
         expect(comparisonExpression.toString(),
-            '($column != \'00000000-0000-0000-0000-000000000000\' OR $column IS NULL)');
+            '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
       });
 
       test(
@@ -80,26 +80,6 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\') OR $column IS NULL)');
-      });
-
-      test(
-          'when is distinct from compared to uuid value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isDistinctFrom(UuidValue(Uuid.NAMESPACE_NIL));
-
-        expect(comparisonExpression.toString(),
-            '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
-      });
-
-      test(
-          'when is NOT distinct from compared to uuid value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isNotDistinctFrom(UuidValue(Uuid.NAMESPACE_NIL));
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
       });
     });
   });

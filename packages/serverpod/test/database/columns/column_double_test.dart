@@ -50,8 +50,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(10.0);
 
-        expect(comparisonExpression.toString(),
-            '($column != 10.0 OR $column IS NULL)');
+        expect(
+            comparisonExpression.toString(), '$column IS DISTINCT FROM 10.0');
       });
 
       test(
@@ -88,24 +88,6 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (10.0, 11.0, 12.0) OR $column IS NULL)');
-      });
-
-      test(
-          'when is distinct from compared to double value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isDistinctFrom(10.0);
-
-        expect(
-            comparisonExpression.toString(), '$column IS DISTINCT FROM 10.0');
-      });
-
-      test(
-          'when is NOT distinct from compared to double value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom(10.0);
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM 10.0');
       });
     });
 

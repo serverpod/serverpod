@@ -162,58 +162,6 @@ void main() async {
       expect(resultNames, contains(customers[2].name));
     });
 
-    test('when filtering on isDistinctFrom then matching rows are returned.',
-        () async {
-      var customers = await Customer.db.insert(session, [
-        Customer(name: 'Customer 1'),
-        Customer(name: 'Customer 2'),
-        Customer(name: 'Customer 3'),
-      ]);
-
-      await Order.db.insert(session, [
-        // Customer 1 orders
-        Order(description: 'Order 1', customerId: customers[0].id!),
-        // Customer 2 orders
-        Order(description: 'Order 2', customerId: customers[1].id!),
-        Order(description: 'Order 3', customerId: customers[1].id!),
-      ]);
-
-      var result = await Customer.db.find(
-        session,
-        where: (c) => c.orders.count().isDistinctFrom(1),
-      );
-
-      expect(result, hasLength(2));
-      var resultNames = result.map((e) => e.name);
-      expect(resultNames, contains(customers[1].name));
-      expect(resultNames, contains(customers[2].name));
-    });
-
-    test('when filtering on isNotDistinctFrom then matching row is returned.',
-        () async {
-      var customers = await Customer.db.insert(session, [
-        Customer(name: 'Customer 1'),
-        Customer(name: 'Customer 2'),
-        Customer(name: 'Customer 3'),
-      ]);
-
-      await Order.db.insert(session, [
-        // Customer 1 orders
-        Order(description: 'Order 1', customerId: customers[0].id!),
-        // Customer 2 orders
-        Order(description: 'Order 2', customerId: customers[1].id!),
-        Order(description: 'Order 3', customerId: customers[1].id!),
-      ]);
-
-      var result = await Customer.db.find(
-        session,
-        where: (c) => c.orders.count().isNotDistinctFrom(1),
-      );
-
-      expect(result, hasLength(1));
-      expect(result.first.name, customers[0].name);
-    });
-
     test('when filtering on greater than then matching rows are returned.',
         () async {
       var customers = await Customer.db.insert(session, [

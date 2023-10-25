@@ -51,7 +51,7 @@ void main() {
         var comparisonExpression = column.notEquals('test');
 
         expect(comparisonExpression.toString(),
-            '($column != \'test\' OR $column IS NULL)');
+            '$column IS DISTINCT FROM \'test\'');
       });
 
       test(
@@ -108,24 +108,6 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'a\', \'b\', \'c\') OR $column IS NULL)');
-      });
-
-      test(
-          'when checking if expression is distinct from value then output is DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isDistinctFrom('test');
-
-        expect(comparisonExpression.toString(),
-            '$column IS DISTINCT FROM \'test\'');
-      });
-
-      test(
-          'when checking if expression is NOT distinct from value then output is NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression = column.isNotDistinctFrom('test');
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM \'test\'');
       });
     });
   });
