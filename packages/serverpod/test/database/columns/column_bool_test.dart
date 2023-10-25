@@ -50,8 +50,8 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(true);
 
-        expect(comparisonExpression.toString(),
-            '($column != true OR $column IS NULL)');
+        expect(
+            comparisonExpression.toString(), '$column IS DISTINCT FROM true');
       });
 
       test(

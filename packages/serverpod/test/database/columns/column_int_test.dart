@@ -50,8 +50,7 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(10);
 
-        expect(comparisonExpression.toString(),
-            '($column != 10 OR $column IS NULL)');
+        expect(comparisonExpression.toString(), '$column IS DISTINCT FROM 10');
       });
 
       test(

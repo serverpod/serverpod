@@ -56,8 +56,7 @@ void main() {
           () {
         var comparisonExpression = column.notEquals(TestEnum.blue);
 
-        expect(comparisonExpression.toString(),
-            '($column != 1 OR $column IS NULL)');
+        expect(comparisonExpression.toString(), '$column IS DISTINCT FROM 1');
       });
 
       test(

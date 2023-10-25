@@ -51,7 +51,7 @@ void main() {
         var comparisonExpression = column.notEquals('test');
 
         expect(comparisonExpression.toString(),
-            '($column != \'test\' OR $column IS NULL)');
+            '$column IS DISTINCT FROM \'test\'');
       });
 
       test(
