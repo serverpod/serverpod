@@ -440,6 +440,26 @@ class AnyExpression<T> extends _IsNotNullExpression<T> {
   }
 }
 
+/// A database expression that returns all rows where all of the related rows
+/// match the filtering criteria.
+class EveryExpression<T> extends _IsNullExpression<T> {
+  /// Creates a new [EveryExpression].
+  EveryExpression(super.column);
+
+  @override
+  String _formatColumnName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in a EveryExpression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return tableRelation.lastRelation.foreignFieldNameWithJoins;
+  }
+}
+
 class _IsNotNullExpression<T> extends ColumnExpression<T> {
   _IsNotNullExpression(super.column);
 

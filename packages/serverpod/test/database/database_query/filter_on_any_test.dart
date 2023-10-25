@@ -1,28 +1,16 @@
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/test_util/many_relation_builder.dart';
+import 'package:serverpod/test_util/table_relation_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   var citizenTable = Table(tableName: 'citizen');
   var companyTable = Table(tableName: 'company');
-  var relationTable = Table(
-    tableName: companyTable.tableName,
-    tableRelation: TableRelation([
-      TableRelationEntry(
-        relationAlias: 'company',
-        field: ColumnInt('id', citizenTable),
-        foreignField: ColumnInt('id', companyTable),
-      )
-    ]),
-  );
-
-  var manyRelation = ManyRelation(
-    tableWithRelations: relationTable,
-    table: Table(
-        tableName: companyTable.tableName,
-        tableRelation: relationTable.tableRelation!.lastRelation),
-  );
+  var relationTable = TableRelationBuilder(companyTable).withRelationsFrom([
+    BuilderRelation(citizenTable, 'company'),
+  ]).build();
+  var manyRelation = ManyRelationBuilder(relationTable).build();
 
   group('Given SelectQueryBuilder', () {
     group('when filtering on any many relation', () {

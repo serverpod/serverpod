@@ -27,4 +27,10 @@ class ManyRelation<T extends Table> {
     return AnyExpression(
         ColumnCount(where?.call(table), tableWithRelations.id));
   }
+
+  /// Returns all entities where all of the related entities match filtering criteria.
+  EveryExpression every(Expression Function(T) where) {
+    return EveryExpression(
+        ColumnCount(where.call(table), tableWithRelations.id));
+  }
 }
