@@ -403,11 +403,17 @@ String _stripPackage(String package) {
   return package;
 }
 
-/// Validates a version string.
+/// Validates a semantic versioning string.
 /// If the version matches the pattern, it returns the version string.
 /// Otherwise,it returns version from pubspec.yaml.
 String _validateVersionFormat(String version, String pubspecVersion) {
-  var pattern = RegExp(r'^\d+\.\d+\.\d+$');
+  // '1.2.3'           = A valid SemVer version.
+  // '2.3'             = Not a valid SemVer version
+  // '1.1.1-rc1'       = A valid SemVer version with pre-release
+  // '1.2.3+build4567' = A valid SemVer version with build metadata
+  var pattern = RegExp(
+      r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$');
+
   if (pattern.hasMatch(version)) {
     return version;
   }
