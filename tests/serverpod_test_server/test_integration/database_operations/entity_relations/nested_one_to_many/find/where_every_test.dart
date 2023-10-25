@@ -49,7 +49,7 @@ void main() async {
 
       var arenasFetched = await Arena.db.find(
         session,
-        // Fetch arenas where all players in the team have a name starting with 'a'.
+        // Fetch arenas where all players in the team have a name starting with 'a' or 'A'.
         where: (a) => a.team.players.every((p) => p.name.ilike('a%')),
       );
 

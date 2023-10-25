@@ -453,7 +453,7 @@ class EveryExpression<T> extends _IsNullExpression<T> {
       throw StateError('Table relation is null for ColumnCount.');
     }
 
-    // When ColumnCount appears in a NoneExpression it is always expressed as a
+    // When ColumnCount appears in a EveryExpression it is always expressed as a
     // sub query. Therefore, we reference the column from the last table in
     // the relation without any query alias.
     return tableRelation.lastRelation.foreignFieldNameWithJoins;

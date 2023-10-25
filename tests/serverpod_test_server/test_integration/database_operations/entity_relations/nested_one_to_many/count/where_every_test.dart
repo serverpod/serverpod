@@ -49,7 +49,7 @@ void main() async {
 
       var numberOfArenas = await Arena.db.count(
         session,
-        // Count all arenas where all players in the team have a name starting with 'a'.
+        // Count all arenas where all players in the team have a name starting with 'a' or 'A'.
         where: (a) => a.team.players.every((p) => p.name.ilike('a%')),
       );
 

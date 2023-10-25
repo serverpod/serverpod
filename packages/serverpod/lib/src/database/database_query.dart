@@ -582,28 +582,22 @@ String? _buildWhereQuery({
   var whereQuery = '';
 
   if (where != null) {
+    whereQuery += wrapWhereInNot ? 'NOT ' : '';
     whereQuery += _resolveWhereQuery(where: where, subQueries: subQueries);
-
-    if (wrapWhereInNot) {
-      whereQuery = 'NOT $whereQuery';
-    }
   }
 
   if (listQueryAdditions != null) {
-    if (whereQuery.isNotEmpty) {
-      whereQuery += ' AND ';
-    }
-
+    whereQuery += whereQuery.isNotEmpty ? ' AND ' : '';
     whereQuery += '${listQueryAdditions.whereAddition}';
   }
 
   if (manyRelationWhereAddition != null) {
-    if (whereQuery.isNotEmpty) {
-      if (manyRelationWhereAddition is EveryExpression) {
-        whereQuery += ' OR ';
-      } else {
-        whereQuery += ' AND ';
-      }
+    if (whereQuery.isEmpty) {
+      whereQuery += '';
+    } else if (manyRelationWhereAddition is EveryExpression) {
+      whereQuery += ' OR ';
+    } else {
+      whereQuery += ' AND ';
     }
 
     whereQuery += '$manyRelationWhereAddition';
