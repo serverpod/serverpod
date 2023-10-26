@@ -2,7 +2,6 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
-import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// Serializes [TypeDefinition] all type to JSON.
 Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
@@ -11,7 +10,7 @@ Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
   if (type.className == 'Future') {
     return typeDefinitionToJson(type.generics.first, child);
   }
-  if (type.className == 'void') return map;
+  if (type.className == 'void') return {};
   if (type.isMapType) {
     map = mapTypeToJson(type, child);
     return map;
