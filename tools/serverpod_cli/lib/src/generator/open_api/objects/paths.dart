@@ -81,14 +81,14 @@ class OpenAPIPathItem {
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{};
     if (summary != null) {
-      map[OpenAPIJsonKey.summary.name] = summary;
+      map[OpenAPIJsonKey.summary] = summary;
     }
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
 
-    map[OpenAPIJsonKey.post.name] = postOperation.toJson();
+    map[OpenAPIJsonKey.post] = postOperation.toJson();
 
     return map;
   }

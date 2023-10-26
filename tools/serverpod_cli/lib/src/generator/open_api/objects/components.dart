@@ -55,13 +55,13 @@ class OpenAPIComponents {
       schemasMap.addAll(schema.toJson());
     }
 
-    map[OpenAPIJsonKey.schemas.name] = schemasMap;
+    map[OpenAPIJsonKey.schemas] = schemasMap;
     if (securitySchemes.isNotEmpty) {
       var securityMap = <String, dynamic>{};
       for (var security in securitySchemes) {
         securityMap.addAll(security.toJson());
       }
-      map[OpenAPIJsonKey.securitySchemes.name] = securityMap;
+      map[OpenAPIJsonKey.securitySchemes] = securityMap;
     }
 
     return map;

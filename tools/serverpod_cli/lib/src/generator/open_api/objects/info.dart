@@ -56,48 +56,50 @@ class OpenAPIConfig {
 
   factory OpenAPIConfig.fromJson(Map<String, dynamic> map) {
     return OpenAPIConfig(
-      title: map['title'],
-      version: map['version'],
-      description: map['description'],
+      title: map[OpenAPIJsonKey.title],
+      version: map[OpenAPIJsonKey.version],
+      description: map[OpenAPIJsonKey.description],
     );
   }
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      'title': title,
-      'version': version,
+      OpenAPIJsonKey.title: title,
+      OpenAPIJsonKey.version: version,
     };
     if (summary != null) {
-      map['summary'] = summary;
+      map[OpenAPIJsonKey.summary] = summary;
     }
     if (description != null) {
-      map['description'] = description;
+      map[OpenAPIJsonKey.description] = description;
     }
     if (contact != null) {
-      map['contact'] = contact?.toJson();
+      map[OpenAPIJsonKey.contact] = contact?.toJson();
     }
     if (license != null) {
-      map['license'] = license?.toJson();
+      map[OpenAPIJsonKey.license] = license?.toJson();
     }
     if (termsOfService != null) {
-      map['termsOfService'] = termsOfService?.toString();
+      map[OpenAPIJsonKey.termOfService] = termsOfService?.toString();
     }
     return map;
   }
 
   factory OpenAPIConfig.fromConfig(Map map, {required String version}) {
     return OpenAPIConfig(
-      title: map['title'],
-      summary: map.containsKey('summary') ? map['summary'] : null,
-      description: map['description'],
-      contact: map.containsKey('contact')
-          ? OpenAPIContact.fromJson(map['contact'])
+      title: map[OpenAPIJsonKey.title],
+      summary: map.containsKey(OpenAPIJsonKey.summary)
+          ? map[OpenAPIJsonKey.summary]
           : null,
-      license: map.containsKey('license')
-          ? OpenAPILicense.fromJson(map['license'])
+      description: map[OpenAPIJsonKey.description],
+      contact: map.containsKey(OpenAPIJsonKey.contact)
+          ? OpenAPIContact.fromJson(map[OpenAPIJsonKey.contact])
           : null,
-      termsOfService: map.containsKey('termsOfService')
-          ? Uri.parse(map['termsOfService'])
+      license: map.containsKey(OpenAPIJsonKey.license)
+          ? OpenAPILicense.fromJson(map[OpenAPIJsonKey.license])
+          : null,
+      termsOfService: map.containsKey(OpenAPIJsonKey.termOfService)
+          ? Uri.parse(map[OpenAPIJsonKey.termOfService])
           : null,
       version: version,
     );
@@ -126,18 +128,20 @@ class OpenAPILicense {
 
   Map<String, String> toJson() {
     var map = {
-      'name': name,
+      OpenAPIJsonKey.name: name,
     };
     if (url != null) {
-      map['url'] = url.toString();
+      map[OpenAPIJsonKey.url] = url.toString();
     }
     return map;
   }
 
   factory OpenAPILicense.fromJson(Map map) {
     return OpenAPILicense(
-      name: map['name'] as String,
-      url: map['url'] != null ? Uri.parse(map['url']) : null,
+      name: map[OpenAPIJsonKey.name] as String,
+      url: map[OpenAPIJsonKey.url] != null
+          ? Uri.parse(map[OpenAPIJsonKey.url])
+          : null,
     );
   }
 }
@@ -170,17 +174,17 @@ class OpenAPIContact {
 
   Map<String, String> toJson() {
     return {
-      'name': name,
-      'url': url.toString(),
-      'email': email,
+      OpenAPIJsonKey.name: name,
+      OpenAPIJsonKey.url: url.toString(),
+      OpenAPIJsonKey.email: email,
     };
   }
 
   factory OpenAPIContact.fromJson(Map map) {
     return OpenAPIContact(
-      name: map['name'] as String,
-      url: Uri.parse(map['url'] as String),
-      email: map['email'] as String,
+      name: map[OpenAPIJsonKey.name] as String,
+      url: Uri.parse(map[OpenAPIJsonKey.url] as String),
+      email: map[OpenAPIJsonKey.email] as String,
     );
   }
 }
@@ -204,19 +208,19 @@ class OpenAPIExternalDocumentation {
   });
 
   Map<String, String> toJson() {
-    var map = {OpenAPIJsonKey.url.name: url.toString()};
+    var map = {OpenAPIJsonKey.url: url.toString()};
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
     return map;
   }
 
   factory OpenAPIExternalDocumentation.fromJson(Map map) {
     return OpenAPIExternalDocumentation(
-      url: Uri.parse(map[OpenAPIJsonKey.url.name] as String),
-      description: map[OpenAPIJsonKey.description.name] != null
-          ? map[OpenAPIJsonKey.description.name] as String
+      url: Uri.parse(map[OpenAPIJsonKey.url] as String),
+      description: map[OpenAPIJsonKey.description] != null
+          ? map[OpenAPIJsonKey.description] as String
           : null,
     );
   }

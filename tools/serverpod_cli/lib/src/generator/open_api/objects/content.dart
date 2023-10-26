@@ -34,14 +34,14 @@ class OpenAPIContent {
     var requestContent = requestContentSchemaObject;
     if (requestContent != null) {
       contentMap[ContentType.applicationJson] = {
-        OpenAPIJsonKey.schema.name: requestContent.toJson()
+        OpenAPIJsonKey.schema: requestContent.toJson()
       };
       return contentMap;
     }
     var response = responseType;
     if (response != null) {
       contentMap[ContentType.applicationJson] = {
-        OpenAPIJsonKey.schema.name: typeDefinitionToJson(response, true)
+        OpenAPIJsonKey.schema: typeDefinitionToJson(response, true)
       };
       return contentMap;
     }

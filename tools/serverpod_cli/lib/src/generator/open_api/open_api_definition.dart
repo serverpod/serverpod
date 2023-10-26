@@ -49,20 +49,20 @@ class OpenAPIDefinition {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
-      'openapi': openAPI,
-      'info': info.toJson(),
+      OpenAPIJsonKey.openapi: openAPI,
+      OpenAPIJsonKey.info: info.toJson(),
     };
     var theJsonSchemaDialect = jsonSchemaDialect;
     if (theJsonSchemaDialect != null) {
-      map['jsonSchemaDialect'] = theJsonSchemaDialect;
+      map[OpenAPIJsonKey.jsonSchemaDialect] = theJsonSchemaDialect;
     }
-    map['servers'] = servers.map((e) => e.toJson()).toList();
-    map['tags'] = tags.map((tag) => tag.toJson()).toList();
-    map['paths'] = _allPathsToJson(paths);
-    map['components'] = components.toJson();
+    map[OpenAPIJsonKey.servers] = servers.map((e) => e.toJson()).toList();
+    map[OpenAPIJsonKey.tags] = tags.map((tag) => tag.toJson()).toList();
+    map[OpenAPIJsonKey.paths] = _allPathsToJson(paths);
+    map[OpenAPIJsonKey.components] = components.toJson();
     var theExternalDocs = externalDocs;
     if (theExternalDocs != null) {
-      map['externalDocs'] = theExternalDocs.toJson();
+      map[OpenAPIJsonKey.externalDocs] = theExternalDocs.toJson();
     }
 
     return map;

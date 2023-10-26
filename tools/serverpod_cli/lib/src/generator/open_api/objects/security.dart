@@ -39,15 +39,15 @@ class HttpSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.http.name;
+    map[OpenAPIJsonKey.type] = SecuritySchemeType.http;
 
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
-    map[OpenAPIJsonKey.scheme.name] = scheme.name;
+    map[OpenAPIJsonKey.scheme] = scheme.name;
     if (bearerFormat != null) {
-      map[OpenAPIJsonKey.bearerFormat.name] = bearerFormat;
+      map[OpenAPIJsonKey.bearerFormat] = bearerFormat;
     }
     return map;
   }
@@ -76,13 +76,13 @@ class ApiKeySecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.apiKey.name;
+    map[OpenAPIJsonKey.type] = SecuritySchemeType.apiKey.name;
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
-    map[OpenAPIJsonKey.name.name] = name;
-    map['in'] = inField.name;
+    map[OpenAPIJsonKey.name] = name;
+    map[OpenAPIJsonKey.inKey] = inField.name;
     return map;
   }
 }
@@ -97,16 +97,16 @@ class OauthSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.oauth2.name;
+    map[OpenAPIJsonKey.type] = SecuritySchemeType.oauth2.name;
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
     Map<String, dynamic> oauthFlows = {};
     for (var flow in flows) {
       oauthFlows.addAll(flow.toJson());
     }
-    map[OpenAPIJsonKey.flows.name] = oauthFlows;
+    map[OpenAPIJsonKey.flows] = oauthFlows;
     return map;
   }
 }
@@ -124,12 +124,12 @@ class OpenIdSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type.name] = SecuritySchemeType.openIdConnect.name;
+    map[OpenAPIJsonKey.type] = SecuritySchemeType.openIdConnect.name;
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
-    map[OpenAPIJsonKey.openIdConnectUrl.name] = openIdConnectUrl;
+    map[OpenAPIJsonKey.openIdConnectUrl] = openIdConnectUrl;
     return map;
   }
 }

@@ -95,36 +95,53 @@ enum SecuritySchemeType {
   openIdConnect,
 }
 
-enum OpenAPIJsonKey {
-  items,
-  properties,
-  $ref,
-  schemas,
-  schema,
-  securitySchemes,
-  description,
-  url,
-  operationId,
-  tags,
-  summary,
-  externalDocs,
-  requestBody,
-  parameters,
-  security,
-  responses,
-  name,
-  deprecated,
-  style,
-  explode,
-  allowReserved,
-  allowEmptyValue,
-  post,
-  content,
-  type,
-  nullable,
-  additionalProperties,
-  scheme,
-  flows,
-  bearerFormat,
-  openIdConnectUrl
+class OpenAPIJsonKey {
+  static const inKey = 'in';
+  static const requiredKey = 'required';
+  static const enumKey = 'enum';
+  static const items = 'items';
+  static const properties = 'properties';
+  static const $ref = '\$ref';
+  static const schemas = 'schemas';
+  static const schema = 'schema';
+  static const securitySchemes = 'securitySchemes';
+  static const description = 'description';
+  static const url = 'url';
+  static const operationId = 'operationId';
+  static const tags = 'tags';
+  static const summary = 'summary';
+  static const externalDocs = 'externalDocs';
+  static const requestBody = 'requestBody';
+  static const parameters = 'parameters';
+  static const security = 'security';
+  static const responses = 'responses';
+  static const name = 'name';
+  static const deprecated = 'deprecated';
+  static const style = 'style';
+  static const explode = 'explode';
+  static const allowReserved = 'allowReserved';
+  static const allowEmptyValue = 'allowEmptyValue';
+  static const post = 'post';
+  static const content = 'content';
+  static const type = 'type';
+  static const nullable = 'nullable';
+  static const additionalProperties = 'additionalProperties';
+  static const scheme = 'scheme';
+  static const flows = 'flows';
+  static const bearerFormat = 'bearerFormat';
+  static const openIdConnectUrl = 'openIdConnectUrl';
+  static const openapi = 'openapi';
+  static const info = 'info';
+  static const jsonSchemaDialect = 'jsonSchemaDialect';
+  static const servers = 'servers';
+  static const paths = 'paths';
+  static const title = 'title';
+  static const version = 'version';
+  static const contact = 'contact';
+  static const license = 'license';
+  static const termOfService = 'termOfService';
+  static const email = 'email';
+  static const components = 'components';
+  static const allOf = 'allOf';
+  static const defaultKey = 'default';
 }

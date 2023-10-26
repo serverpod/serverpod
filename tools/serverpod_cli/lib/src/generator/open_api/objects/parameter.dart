@@ -85,36 +85,36 @@ class OpenAPIParameter {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
-      OpenAPIJsonKey.name.name: name,
-      'in': inField.name,
-      'required': requiredField,
+      OpenAPIJsonKey.name: name,
+      OpenAPIJsonKey.inKey: inField.name,
+      OpenAPIJsonKey.requiredKey: requiredField,
     };
 
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
     if (deprecated) {
-      map[OpenAPIJsonKey.deprecated.name] = deprecated;
+      map[OpenAPIJsonKey.deprecated] = deprecated;
     }
     if (allowEmptyValue) {
-      map[OpenAPIJsonKey.allowEmptyValue.name] = allowEmptyValue;
+      map[OpenAPIJsonKey.allowEmptyValue] = allowEmptyValue;
     }
     var theStyle = style;
     if (theStyle != null) {
-      map[OpenAPIJsonKey.style.name] = theStyle.name.paramCase;
+      map[OpenAPIJsonKey.style] = theStyle.name.paramCase;
     }
 
     if (explode) {
-      map[OpenAPIJsonKey.explode.name] = explode;
+      map[OpenAPIJsonKey.explode] = explode;
     }
 
     if (allowReserved) {
-      map[OpenAPIJsonKey.allowReserved.name] = allowReserved;
+      map[OpenAPIJsonKey.allowReserved] = allowReserved;
     }
     var theSchema = schema;
     if (theSchema != null) {
-      map[OpenAPIJsonKey.schema.name] = theSchema.toJson();
+      map[OpenAPIJsonKey.schema] = theSchema.toJson();
     }
 
     return map;

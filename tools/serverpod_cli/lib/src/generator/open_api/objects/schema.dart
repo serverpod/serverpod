@@ -36,14 +36,14 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
   );
 
   Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type.name] = OpenAPISchemaType.object.name;
-  if (type.nullable) map[OpenAPIJsonKey.nullable.name] = true;
+  map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
+  if (type.nullable) map[OpenAPIJsonKey.nullable] = true;
 
   // If data is Map<String,int> use last int from generics as
   // additionalProperties.
   if (type.generics.isEmpty) return map;
   var lastType = type.generics.last;
-  map[OpenAPIJsonKey.additionalProperties.name] =
+  map[OpenAPIJsonKey.additionalProperties] =
       typeDefinitionToJson(lastType, true);
   return map;
 }
@@ -65,8 +65,8 @@ Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
     'OpenAPISchemaType should not be object type.',
   );
   Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type.name] = type.toOpenAPISchemaType.name;
-  if (type.nullable) map[OpenAPIJsonKey.nullable.name] = true;
+  map[OpenAPIJsonKey.type] = type.toOpenAPISchemaType.name;
+  if (type.nullable) map[OpenAPIJsonKey.nullable] = true;
   return map;
 }
 
@@ -80,10 +80,10 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
   Map<String, dynamic> map = {};
 
   // SerializableObjects types are always object.
-  if (!child) map[OpenAPIJsonKey.type.name] = OpenAPISchemaType.object.name;
-  map[OpenAPIJsonKey.$ref.name] =
+  if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
+  map[OpenAPIJsonKey.$ref] =
       _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
-  if (type.nullable && !child) map[OpenAPIJsonKey.nullable.name] = true;
+  if (type.nullable && !child) map[OpenAPIJsonKey.nullable] = true;
   return map;
 }
 
@@ -94,17 +94,16 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
     'Use listTypeToJson only when the typeDefinition is of the ListType.',
   );
   Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type.name] = OpenAPISchemaType.array.name;
+  map[OpenAPIJsonKey.type] = OpenAPISchemaType.array.name;
 
-  map[OpenAPIJsonKey.items.name] = {};
+  map[OpenAPIJsonKey.items] = {};
 
   var generic = type.generics;
   if (generic.isEmpty) {
-    map[OpenAPIJsonKey.items.name][OpenAPIJsonKey.$ref.name] =
-        _getRef('AnyValue');
+    map[OpenAPIJsonKey.items][OpenAPIJsonKey.$ref] = _getRef('AnyValue');
     return map;
   }
-  map[OpenAPIJsonKey.items.name] = typeDefinitionToJson(generic.first, true);
+  map[OpenAPIJsonKey.items] = typeDefinitionToJson(generic.first, true);
   return map;
 }
 
@@ -122,8 +121,9 @@ class OpenAPIComponentSchema {
     if (entityDefinition is EnumDefinition) {
       var enumDefinition = entityDefinition as EnumDefinition;
       map[entityDefinition.className] = {
-        OpenAPIJsonKey.type.name: OpenAPISchemaType.string.name,
-        'enum': enumDefinition.values.map((e) => e.name).toList(),
+        OpenAPIJsonKey.type: OpenAPISchemaType.string.name,
+        OpenAPIJsonKey.enumKey:
+            enumDefinition.values.map((e) => e.name).toList(),
       };
       return map;
     }
@@ -131,8 +131,8 @@ class OpenAPIComponentSchema {
     if (entityDefinition is ClassDefinition) {
       var classDefinition = entityDefinition as ClassDefinition;
       map[entityDefinition.className] = {
-        OpenAPIJsonKey.type.name: OpenAPISchemaType.object.name,
-        OpenAPIJsonKey.properties.name: {
+        OpenAPIJsonKey.type: OpenAPISchemaType.object.name,
+        OpenAPIJsonKey.properties: {
           for (var field in classDefinition.fields)
             field.name: typeDefinitionToJson(field.type, true),
         }
@@ -162,9 +162,9 @@ class OpenAPIRequestContentSchema {
         // properties in this context is not supported.
         properties.addAll({
           param.name: {
-            'allOf': typeDefinitionToJson(param.type, true),
+            OpenAPIJsonKey.allOf: typeDefinitionToJson(param.type, true),
           },
-          'nullable': param.type.nullable
+          OpenAPIJsonKey.nullable: param.type.nullable
         });
       } else {
         properties.addAll(
@@ -175,8 +175,8 @@ class OpenAPIRequestContentSchema {
       }
     }
     return {
-      OpenAPIJsonKey.type.name: OpenAPISchemaType.object.name,
-      OpenAPIJsonKey.properties.name: properties
+      OpenAPIJsonKey.type: OpenAPISchemaType.object.name,
+      OpenAPIJsonKey.properties: properties
     };
   }
 }
@@ -190,8 +190,8 @@ class OpenAPIParameterSchema {
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
     if (typeDefinition.isEnum) {
-      map[OpenAPIJsonKey.type.name] = OpenAPISchemaType.string.name;
-      map['enum'] = {};
+      map[OpenAPIJsonKey.type] = OpenAPISchemaType.string.name;
+      map[OpenAPIJsonKey.enumKey] = {};
       return map;
     }
     map = typeDefinitionToJson(typeDefinition);

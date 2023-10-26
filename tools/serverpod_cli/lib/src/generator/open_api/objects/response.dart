@@ -18,19 +18,19 @@ class OpenAPIResponse {
     // 200 response
     var content = OpenAPIContent(responseType: responseType);
     map['200'] = <String, dynamic>{
-      OpenAPIJsonKey.description.name: 'Success',
+      OpenAPIJsonKey.description: 'Success',
     };
-    map['200'][OpenAPIJsonKey.content.name] = content.toJson();
+    map['200'][OpenAPIJsonKey.content] = content.toJson();
 
     // 400 bad request
     map['400'] = {
-      OpenAPIJsonKey.description.name:
+      OpenAPIJsonKey.description:
           'Bad request (the query passed to the server was incorrect).',
     };
 
     // 403 forbidden
     map['403'] = {
-      OpenAPIJsonKey.description.name:
+      OpenAPIJsonKey.description:
           'Forbidden (the caller is trying to call a restricted endpoint, but doesn\'t have the correct credentials/scope).',
     };
 
@@ -38,7 +38,7 @@ class OpenAPIResponse {
 
     // 500 internal server error
     map['500'] = {
-      OpenAPIJsonKey.description.name: 'Internal server error.',
+      OpenAPIJsonKey.description: 'Internal server error.',
     };
     return map;
   }

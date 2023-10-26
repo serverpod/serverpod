@@ -83,36 +83,36 @@ class OperationObject {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      OpenAPIJsonKey.operationId.name: operationId,
+      OpenAPIJsonKey.operationId: operationId,
     };
 
     if (tags.isNotEmpty) {
-      map[OpenAPIJsonKey.tags.name] = tags;
+      map[OpenAPIJsonKey.tags] = tags;
     }
 
     if (summary != null) {
-      map[OpenAPIJsonKey.summary.name] = summary;
+      map[OpenAPIJsonKey.summary] = summary;
     }
 
     if (description != null) {
-      map[OpenAPIJsonKey.description.name] = description;
+      map[OpenAPIJsonKey.description] = description;
     }
     var extDocs = externalDocs;
     if (extDocs != null) {
-      map[OpenAPIJsonKey.externalDocs.name] = extDocs.toJson();
+      map[OpenAPIJsonKey.externalDocs] = extDocs.toJson();
     }
 
-    map[OpenAPIJsonKey.requestBody.name] = requestBody.toJson();
+    map[OpenAPIJsonKey.requestBody] = requestBody.toJson();
 
     if (parameters.isNotEmpty) {
-      map[OpenAPIJsonKey.parameters.name] =
+      map[OpenAPIJsonKey.parameters] =
           parameters.map((e) => e.toJson()).toList();
     }
     if (security.isNotEmpty) {
-      map[OpenAPIJsonKey.security.name] =
+      map[OpenAPIJsonKey.security] =
           security.map((e) => e.toJson(true)).toList();
     }
-    map[OpenAPIJsonKey.responses.name] = responses.toJson();
+    map[OpenAPIJsonKey.responses] = responses.toJson();
 
     return map;
   }

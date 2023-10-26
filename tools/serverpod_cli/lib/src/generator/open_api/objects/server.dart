@@ -4,8 +4,8 @@ import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 /// example
 /// ```dart
 ///   {
-///   "url": "https://development.gigantic-server.com/v1",
-///   "description": "Development server"
+///     "url": "https://development.gigantic-server.com/v1",
+///     "description": "Development server"
 ///   }
 /// ```
 class OpenAPIServer {
@@ -26,11 +26,11 @@ class OpenAPIServer {
 
   Map<String, dynamic> toJson() {
     var map = {
-      OpenAPIJsonKey.url.name: url.toString(),
+      OpenAPIJsonKey.url: url.toString(),
     };
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
     return map;
   }
@@ -62,15 +62,15 @@ class OpenAPIServerVariable {
 
   Map<String, dynamic> toJson() {
     var map = <String, dynamic>{
-      'default': defaultField,
+      OpenAPIJsonKey.defaultKey: defaultField,
     };
 
     if (enumField.isNotEmpty) {
-      map['enum'] = enumField;
+      map[OpenAPIJsonKey.enumKey] = enumField;
     }
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
     return map;
   }

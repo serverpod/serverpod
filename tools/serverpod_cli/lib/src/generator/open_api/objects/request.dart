@@ -24,14 +24,14 @@ class OpenAPIRequestBody {
     Map<String, dynamic> map = {};
     var theDescription = description;
     if (theDescription != null) {
-      map[OpenAPIJsonKey.description.name] = theDescription;
+      map[OpenAPIJsonKey.description] = theDescription;
     }
-    map[OpenAPIJsonKey.content.name] = OpenAPIContent(
+    map[OpenAPIJsonKey.content] = OpenAPIContent(
       requestContentSchemaObject: OpenAPIRequestContentSchema(
         params: parameterList,
       ),
     ).toJson();
-    map['required'] = requiredField;
+    map[OpenAPIJsonKey.requiredKey] = requiredField;
     return map;
   }
 }
