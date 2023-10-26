@@ -56,7 +56,7 @@ class GenerateCommand extends ServerpodCommand {
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load(
-      openAPIdocumentVersion: openAPIdocumentVersion,
+      openAPIDocVersion: openAPIdocumentVersion,
       codeOutputFormats: codeOutputFormats,
     );
 

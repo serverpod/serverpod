@@ -92,7 +92,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
-      openAPIdocumentVersion: _openAPIDocumentVersion,
+      openAPIDocumentVersion: _openAPIDocumentVersion,
     );
   }
 }

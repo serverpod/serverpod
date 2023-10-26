@@ -39,7 +39,7 @@ class GeneratorConfig {
       required this.extraClasses,
       this.servers = const {},
       this.openAPIConfig,
-      this.openAPIdocumentVersion = '1.0.0',
+      this.openAPIDocumentVersion = '1.0.0',
       this.codeOutputFormats = const {
         CodeOutputFormat.dart,
       }})
@@ -129,7 +129,7 @@ class GeneratorConfig {
   final OpenAPIConfig? openAPIConfig;
 
   /// The version of OpenAPI document.
-  final String openAPIdocumentVersion;
+  final String openAPIDocumentVersion;
 
   /// The desired code output formats. The default is [CodeOutputFormat.dart].
   final Set<CodeOutputFormat> codeOutputFormats;
@@ -137,7 +137,7 @@ class GeneratorConfig {
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load({
     String dir = '',
-    String openAPIdocumentVersion = '',
+    String? openAPIDocVersion,
     Set<CodeOutputFormat> codeOutputFormats = const {
       CodeOutputFormat.dart,
     },
@@ -274,20 +274,20 @@ class GeneratorConfig {
 
     Set<OpenAPIServer> servers = {};
     OpenAPIConfig? openAPIConfig;
+    String docVersion = '1.0.0';
     if (codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
       servers = _getServersFromConfigs(dir);
       bool hasOpenAPIConfiguration =
           generatorConfig.containsKey('openAPIConfig');
-
-      openAPIdocumentVersion = _validateVersionFormat(
-          openAPIdocumentVersion, pubspec['version'] ?? '1.0.0');
+      docVersion = _validateVersionFormat(
+          openAPIDocVersion, pubspec['version'] ?? '1.0.0');
 
       if (hasOpenAPIConfiguration) {
         try {
           Map openAPIMap = generatorConfig['openAPIConfig'];
           openAPIConfig = OpenAPIConfig.fromConfig(
             openAPIMap,
-            version: openAPIdocumentVersion,
+            version: docVersion,
           );
         } catch (e) {
           log.error(
@@ -308,7 +308,7 @@ class GeneratorConfig {
       extraClasses: extraClasses,
       servers: servers,
       openAPIConfig: openAPIConfig,
-      openAPIdocumentVersion: openAPIdocumentVersion,
+      openAPIDocumentVersion: docVersion,
       codeOutputFormats: codeOutputFormats,
     );
   }
@@ -405,7 +405,10 @@ String _stripPackage(String package) {
 /// Validates a semantic versioning string.
 /// If the version matches the pattern, it returns the version string.
 /// Otherwise,it returns version from pubspec.yaml.
-String _validateVersionFormat(String version, String pubspecVersion) {
+String _validateVersionFormat(String? version, String pubspecVersion) {
+  if (version == null) {
+    return pubspecVersion;
+  }
   // '1.2.3'           = A valid SemVer version.
   // '2.3'             = Not a valid SemVer version.
   // '1.1.1-rc1'       = A valid SemVer version with pre-release.
