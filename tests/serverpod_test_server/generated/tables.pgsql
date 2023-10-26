@@ -76,6 +76,18 @@ ALTER TABLE ONLY "company"
   ADD CONSTRAINT company_pkey PRIMARY KEY (id);
 
 --
+-- Class Course as table course
+--
+
+CREATE TABLE "course" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "course"
+  ADD CONSTRAINT course_pkey PRIMARY KEY (id);
+
+--
 -- Class Customer as table customer
 --
 
@@ -86,6 +98,21 @@ CREATE TABLE "customer" (
 
 ALTER TABLE ONLY "customer"
   ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
+
+--
+-- Class Enrollment as table enrollment
+--
+
+CREATE TABLE "enrollment" (
+  "id" serial,
+  "studentId" integer NOT NULL,
+  "courseId" integer NOT NULL
+);
+
+ALTER TABLE ONLY "enrollment"
+  ADD CONSTRAINT enrollment_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX enrollment_index_idx ON "enrollment" USING btree ("studentId", "courseId");
 
 --
 -- Class ObjectFieldScopes as table object_field_scopes
@@ -313,6 +340,18 @@ ALTER TABLE ONLY "simple_date_time"
   ADD CONSTRAINT simple_date_time_pkey PRIMARY KEY (id);
 
 --
+-- Class Student as table student
+--
+
+CREATE TABLE "student" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "student"
+  ADD CONSTRAINT student_pkey PRIMARY KEY (id);
+
+--
 -- Class Team as table team
 --
 
@@ -416,6 +455,21 @@ ALTER TABLE ONLY "company"
   ADD CONSTRAINT company_fk_0
     FOREIGN KEY("townId")
       REFERENCES town(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "enrollment" table
+--
+
+ALTER TABLE ONLY "enrollment"
+  ADD CONSTRAINT enrollment_fk_0
+    FOREIGN KEY("studentId")
+      REFERENCES student(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "enrollment"
+  ADD CONSTRAINT enrollment_fk_1
+    FOREIGN KEY("courseId")
+      REFERENCES course(id)
         ON DELETE CASCADE;
 
 --
