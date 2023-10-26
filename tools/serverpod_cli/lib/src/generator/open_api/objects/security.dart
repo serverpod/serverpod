@@ -184,7 +184,7 @@ class OauthFlowObject {
         }
       }
     }
-    return {};
+    return map;
   }
 }
 
