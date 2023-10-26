@@ -4578,11 +4578,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/TestEnum"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/TestEnum"
+                                    }
                                 }
                             }
                         }
@@ -4633,11 +4630,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/TestEnum"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/TestEnum"
+                                    }
                                 }
                             }
                         }
@@ -6762,11 +6756,8 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/CustomClass"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/CustomClass"
+                                    }
                                 }
                             }
                         }
@@ -6863,11 +6854,8 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/CustomClass2"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/CustomClass2"
+                                    }
                                 }
                             }
                         }
@@ -6964,11 +6952,8 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/ExternalCustomClass"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/ExternalCustomClass"
+                                    }
                                 }
                             }
                         }
@@ -7065,11 +7050,8 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/FreezedCustomClass"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/FreezedCustomClass"
+                                    }
                                 }
                             }
                         }
@@ -12578,11 +12560,8 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "allOf": {
-                                            "$ref": "#/components/schemas/SimpleData"
-                                        }
-                                    },
-                                    "nullable": true
+                                        "$ref": "#/components/schemas/SimpleData"
+                                    }
                                 }
                             }
                         }
@@ -16515,7 +16494,12 @@
                         "nullable": true
                     },
                     "city": {
-                        "$ref": "#/components/schemas/City"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/City"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16534,10 +16518,11 @@
                         "nullable": true
                     },
                     "organization": {
-                        "$ref": "#/components/schemas/Organization"
-                    },
-                    "_cityCitizensCityId": {
-                        "type": "integer",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Organization"
+                            }
+                        ],
                         "nullable": true
                     }
                 }
@@ -16553,7 +16538,12 @@
                         "type": "string"
                     },
                     "team": {
-                        "$ref": "#/components/schemas/Team"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Team"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16572,7 +16562,12 @@
                         "nullable": true
                     },
                     "team": {
-                        "$ref": "#/components/schemas/Team"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Team"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16591,7 +16586,12 @@
                         "nullable": true
                     },
                     "arena": {
-                        "$ref": "#/components/schemas/Arena"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Arena"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "players": {
                         "type": "array",
@@ -16615,7 +16615,12 @@
                         "type": "integer"
                     },
                     "order": {
-                        "$ref": "#/components/schemas/Order"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Order"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16651,7 +16656,12 @@
                         "type": "integer"
                     },
                     "customer": {
-                        "$ref": "#/components/schemas/Customer"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "comments": {
                         "type": "array",
@@ -16676,7 +16686,12 @@
                         "nullable": true
                     },
                     "inhabitant": {
-                        "$ref": "#/components/schemas/Citizen"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Citizen"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16691,20 +16706,35 @@
                         "type": "string"
                     },
                     "address": {
-                        "$ref": "#/components/schemas/Address"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Address"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "companyId": {
                         "type": "integer"
                     },
                     "company": {
-                        "$ref": "#/components/schemas/Company"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Company"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "oldCompanyId": {
                         "type": "integer",
                         "nullable": true
                     },
                     "oldCompany": {
-                        "$ref": "#/components/schemas/Company"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Company"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16722,7 +16752,12 @@
                         "type": "integer"
                     },
                     "town": {
-                        "$ref": "#/components/schemas/Town"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Town"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16741,7 +16776,12 @@
                         "nullable": true
                     },
                     "mayor": {
-                        "$ref": "#/components/schemas/Citizen"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Citizen"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16756,14 +16796,24 @@
                         "type": "string"
                     },
                     "previous": {
-                        "$ref": "#/components/schemas/Post"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Post"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "nextId": {
                         "type": "integer",
                         "nullable": true
                     },
                     "next": {
-                        "$ref": "#/components/schemas/Post"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/Post"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },
@@ -16871,7 +16921,12 @@
                         "$ref": "#/components/schemas/SimpleData"
                     },
                     "aNullableObject": {
-                        "$ref": "#/components/schemas/SimpleData"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SimpleData"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "anIntList": {
                         "type": "array",
@@ -17070,10 +17125,6 @@
                     "api": {
                         "type": "string",
                         "nullable": true
-                    },
-                    "database": {
-                        "type": "string",
-                        "nullable": true
                     }
                 }
             },
@@ -17112,7 +17163,12 @@
                         "$ref": "#/components/schemas/TestEnum"
                     },
                     "nullableEnum": {
-                        "$ref": "#/components/schemas/TestEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TestEnum"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "enumList": {
                         "type": "array",
@@ -17264,7 +17320,12 @@
                         "$ref": "#/components/schemas/SimpleData"
                     },
                     "nullableData": {
-                        "$ref": "#/components/schemas/SimpleData"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SimpleData"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "dataList": {
                         "type": "array",
@@ -17344,7 +17405,12 @@
                         "type": "integer"
                     },
                     "uniqueData": {
-                        "$ref": "#/components/schemas/UniqueData"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/UniqueData"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "number": {
                         "type": "integer"
@@ -17475,7 +17541,12 @@
                         "nullable": true
                     },
                     "anEnum": {
-                        "$ref": "#/components/schemas/TestEnum"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TestEnum"
+                            }
+                        ],
+                        "nullable": true
                     }
                 }
             },

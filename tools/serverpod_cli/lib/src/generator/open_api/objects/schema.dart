@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
 
 /// Serializes [TypeDefinition] all type to JSON.
 Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
@@ -130,12 +131,35 @@ class OpenAPIComponentSchema {
 
     if (entityDefinition is ClassDefinition) {
       var classDefinition = entityDefinition as ClassDefinition;
+
+      var properties = <String, dynamic>{};
+
+      var filteredFields = classDefinition.fields
+          .where((field) => field.scope == EntityFieldScopeDefinition.all)
+          .toList();
+
+      // Note: In OpenAPI (3.0.x) components, sibling properties alongside
+      // $refs are not considered. Directly specifying 'nullable' or other
+      // properties in this context is not supported.
+      for (var field in filteredFields) {
+        if (field.type.nullable && (field.type.isUnknownSchemaType)) {
+          properties.addAll({
+            field.name: {
+              OpenAPIJsonKey.oneOf: [
+                typeDefinitionToJson(field.type, true),
+              ],
+              OpenAPIJsonKey.nullable: true,
+            },
+          });
+        } else {
+          properties.addAll({
+            field.name: typeDefinitionToJson(field.type, true),
+          });
+        }
+      }
       map[entityDefinition.className] = {
         OpenAPIJsonKey.type: OpenAPISchemaType.object.name,
-        OpenAPIJsonKey.properties: {
-          for (var field in classDefinition.fields)
-            field.name: typeDefinitionToJson(field.type, true),
-        }
+        OpenAPIJsonKey.properties: properties,
       };
     }
 
@@ -152,31 +176,12 @@ class OpenAPIRequestContentSchema {
   });
 
   Map<String, dynamic> toJson() {
-    var properties = <String, dynamic>{};
-    for (var param in params) {
-      if (param.type.nullable &&
-          param.type.toOpenAPISchemaType ==
-              OpenAPISchemaType.serializableObjects) {
-        // Note: In OpenAPI (3.0.x) components, sibling properties alongside
-        // $refs are not considered. Directly specifying 'nullable' or other
-        // properties in this context is not supported.
-        properties.addAll({
-          param.name: {
-            OpenAPIJsonKey.allOf: typeDefinitionToJson(param.type, true),
-          },
-          OpenAPIJsonKey.nullable: param.type.nullable
-        });
-      } else {
-        properties.addAll(
-          {
-            param.name: typeDefinitionToJson(param.type, true),
-          },
-        );
-      }
-    }
     return {
       OpenAPIJsonKey.type: OpenAPISchemaType.object.name,
-      OpenAPIJsonKey.properties: properties
+      OpenAPIJsonKey.properties: {
+        for (var param in params)
+          param.name: typeDefinitionToJson(param.type, true),
+      }
     };
   }
 }

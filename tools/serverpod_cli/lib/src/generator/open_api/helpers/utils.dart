@@ -142,6 +142,6 @@ class OpenAPIJsonKey {
   static const termOfService = 'termOfService';
   static const email = 'email';
   static const components = 'components';
-  static const allOf = 'allOf';
+  static const oneOf = 'oneOf';
   static const defaultKey = 'default';
 }
