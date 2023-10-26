@@ -1,3 +1,4 @@
+
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
@@ -79,11 +80,25 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
   );
   Map<String, dynamic> map = {};
 
-  // SerializableObjects types are always object.
-  if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
-  map[OpenAPIJsonKey.$ref] =
-      _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
-  if (type.nullable && !child) map[OpenAPIJsonKey.nullable] = true;
+  // Note: In OpenAPI (3.0.x) components, sibling properties alongside
+  // $refs are not considered. Directly specifying 'nullable' or other
+  // properties in this context is not supported.
+  if (type.nullable && child) {
+    map = {
+      OpenAPIJsonKey.oneOf: [
+        {
+          OpenAPIJsonKey.$ref: _getRef(type.className),
+        }
+      ],
+      OpenAPIJsonKey.nullable: true,
+    };
+  } else {
+// SerializableObjects types are always object.
+    if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
+    map[OpenAPIJsonKey.$ref] =
+        _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
+    if (type.nullable && !child) map[OpenAPIJsonKey.nullable] = true;
+  }
   return map;
 }
 
@@ -137,24 +152,10 @@ class OpenAPIComponentSchema {
           .where((field) => field.scope == EntityFieldScopeDefinition.all)
           .toList();
 
-      // Note: In OpenAPI (3.0.x) components, sibling properties alongside
-      // $refs are not considered. Directly specifying 'nullable' or other
-      // properties in this context is not supported.
       for (var field in filteredFields) {
-        if (field.type.nullable && (field.type.isUnknownSchemaType)) {
-          properties.addAll({
-            field.name: {
-              OpenAPIJsonKey.oneOf: [
-                typeDefinitionToJson(field.type, true),
-              ],
-              OpenAPIJsonKey.nullable: true,
-            },
-          });
-        } else {
-          properties.addAll({
-            field.name: typeDefinitionToJson(field.type, true),
-          });
-        }
+        properties.addAll({
+          field.name: typeDefinitionToJson(field.type, true),
+        });
       }
       map[entityDefinition.className] = {
         OpenAPIJsonKey.type: OpenAPISchemaType.object.name,

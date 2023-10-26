@@ -4578,7 +4578,12 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/TestEnum"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -4630,7 +4635,12 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "$ref": "#/components/schemas/TestEnum"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/TestEnum"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -6756,7 +6766,12 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/CustomClass"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/CustomClass"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -6775,7 +6790,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CustomClass"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/CustomClass"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -6854,7 +6874,12 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/CustomClass2"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/CustomClass2"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -6873,7 +6898,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CustomClass2"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/CustomClass2"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -6952,7 +6982,12 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/ExternalCustomClass"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/ExternalCustomClass"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -6971,7 +7006,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ExternalCustomClass"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ExternalCustomClass"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -7050,7 +7090,12 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/FreezedCustomClass"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/FreezedCustomClass"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -7069,7 +7114,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/FreezedCustomClass"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/FreezedCustomClass"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -7173,7 +7223,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SimpleData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SimpleData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -7222,7 +7277,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SimpleData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SimpleData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -7704,7 +7764,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Types"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Types"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -7803,7 +7868,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ObjectWithEnum"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ObjectWithEnum"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -8236,7 +8306,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SimpleDataList"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SimpleDataList"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -8388,7 +8463,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ObjectWithObject"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ObjectWithObject"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -8961,7 +9041,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UniqueData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UniqueData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -9010,7 +9095,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UniqueData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UniqueData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -9474,7 +9564,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UniqueData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UniqueData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -9523,7 +9618,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UniqueData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UniqueData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -10010,7 +10110,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/City"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/City"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -10259,7 +10364,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Organization"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Organization"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -11354,7 +11464,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Citizen"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Citizen"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -11451,7 +11566,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Address"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Address"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -12530,7 +12650,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ObjectFieldScopes"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/ObjectFieldScopes"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -12560,7 +12685,12 @@
                                 "type": "object",
                                 "properties": {
                                     "data": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/SimpleData"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -13631,7 +13761,12 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/SimpleData"
+                                                }
+                                            ],
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -13653,7 +13788,12 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/SimpleData"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -13741,7 +13881,12 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/SimpleData"
+                                                }
+                                            ],
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -13763,7 +13908,12 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/SimpleData"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -15167,7 +15317,12 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/SimpleData"
+                                                }
+                                            ],
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -15189,7 +15344,12 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/SimpleData"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -15280,7 +15440,12 @@
                                         "type": "object",
                                         "nullable": true,
                                         "additionalProperties": {
-                                            "$ref": "#/components/schemas/SimpleData"
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/SimpleData"
+                                                }
+                                            ],
+                                            "nullable": true
                                         }
                                     }
                                 }
@@ -15303,7 +15468,12 @@
                                     "type": "object",
                                     "nullable": true,
                                     "additionalProperties": {
-                                        "$ref": "#/components/schemas/SimpleData"
+                                        "oneOf": [
+                                            {
+                                                "$ref": "#/components/schemas/SimpleData"
+                                            }
+                                        ],
+                                        "nullable": true
                                     }
                                 }
                             }
@@ -15868,7 +16038,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SimpleData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SimpleData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -16007,7 +16182,12 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SimpleData"
+                                    "oneOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SimpleData"
+                                        }
+                                    ],
+                                    "nullable": true
                                 }
                             }
                         }
@@ -16494,7 +16674,7 @@
                         "nullable": true
                     },
                     "city": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/City"
                             }
@@ -16518,7 +16698,7 @@
                         "nullable": true
                     },
                     "organization": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Organization"
                             }
@@ -16538,7 +16718,7 @@
                         "type": "string"
                     },
                     "team": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Team"
                             }
@@ -16562,7 +16742,7 @@
                         "nullable": true
                     },
                     "team": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Team"
                             }
@@ -16586,7 +16766,7 @@
                         "nullable": true
                     },
                     "arena": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Arena"
                             }
@@ -16615,7 +16795,7 @@
                         "type": "integer"
                     },
                     "order": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Order"
                             }
@@ -16656,7 +16836,7 @@
                         "type": "integer"
                     },
                     "customer": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Customer"
                             }
@@ -16686,7 +16866,7 @@
                         "nullable": true
                     },
                     "inhabitant": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Citizen"
                             }
@@ -16706,7 +16886,7 @@
                         "type": "string"
                     },
                     "address": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Address"
                             }
@@ -16717,7 +16897,7 @@
                         "type": "integer"
                     },
                     "company": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Company"
                             }
@@ -16729,7 +16909,7 @@
                         "nullable": true
                     },
                     "oldCompany": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Company"
                             }
@@ -16752,7 +16932,7 @@
                         "type": "integer"
                     },
                     "town": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Town"
                             }
@@ -16776,7 +16956,7 @@
                         "nullable": true
                     },
                     "mayor": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Citizen"
                             }
@@ -16796,7 +16976,7 @@
                         "type": "string"
                     },
                     "previous": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Post"
                             }
@@ -16808,7 +16988,7 @@
                         "nullable": true
                     },
                     "next": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/Post"
                             }
@@ -16921,7 +17101,7 @@
                         "$ref": "#/components/schemas/SimpleData"
                     },
                     "aNullableObject": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/SimpleData"
                             }
@@ -16969,13 +17149,23 @@
                     "aListWithNullableObjects": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SimpleData"
+                                }
+                            ],
+                            "nullable": true
                         }
                     },
                     "aNullableListWithNullableObjects": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SimpleData"
+                                }
+                            ],
+                            "nullable": true
                         }
                     },
                     "aDateTimeList": {
@@ -17163,7 +17353,7 @@
                         "$ref": "#/components/schemas/TestEnum"
                     },
                     "nullableEnum": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/TestEnum"
                             }
@@ -17179,7 +17369,12 @@
                     "nullableEnumList": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/TestEnum"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/TestEnum"
+                                }
+                            ],
+                            "nullable": true
                         }
                     },
                     "enumListList": {
@@ -17256,7 +17451,12 @@
                     "nullableDataMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SimpleData"
+                                }
+                            ],
+                            "nullable": true
                         }
                     },
                     "nullableIntMap": {
@@ -17320,7 +17520,7 @@
                         "$ref": "#/components/schemas/SimpleData"
                     },
                     "nullableData": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/SimpleData"
                             }
@@ -17342,13 +17542,23 @@
                     "listWithNullableData": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SimpleData"
+                                }
+                            ],
+                            "nullable": true
                         }
                     },
                     "nullableListWithNullableData": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SimpleData"
+                            "oneOf": [
+                                {
+                                    "$ref": "#/components/schemas/SimpleData"
+                                }
+                            ],
+                            "nullable": true
                         }
                     }
                 }
@@ -17405,7 +17615,7 @@
                         "type": "integer"
                     },
                     "uniqueData": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/UniqueData"
                             }
@@ -17541,7 +17751,7 @@
                         "nullable": true
                     },
                     "anEnum": {
-                        "allOf": [
+                        "oneOf": [
                             {
                                 "$ref": "#/components/schemas/TestEnum"
                             }
