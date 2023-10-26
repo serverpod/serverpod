@@ -33,10 +33,9 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Generate OpenAPI schema.',
     );
-    argParser.addFlag(
+    argParser.addOption(
       'version',
-      defaultsTo: false,
-      negatable: false,
+      defaultsTo: null,
       help: 'Specified the version of the OpenAPI document.',
     );
   }
@@ -48,7 +47,7 @@ class GenerateCommand extends ServerpodCommand {
     // Whether to generate an OpenAPI schema or not.
     bool generateOpenAPI = argResults!['experimental-open-api'];
     // Whether an OpenAPI document version is specified or not.
-    bool hasOpenAPIdocumentVersion = argResults!['version'];
+    String? openAPIdocumentVersion = argResults!['version'];
 
     Set<CodeOutputFormat> codeOutputFormats = {
       CodeOutputFormat.dart,
@@ -57,9 +56,7 @@ class GenerateCommand extends ServerpodCommand {
 
     // TODO: add a -d option to select the directory
     var config = await GeneratorConfig.load(
-      openAPIdocumentVersion: hasOpenAPIdocumentVersion
-          ? _getOpenAPIDocumentVersion(argResults!)
-          : '',
+      openAPIdocumentVersion: openAPIdocumentVersion,
       codeOutputFormats: codeOutputFormats,
     );
 
@@ -104,15 +101,5 @@ class GenerateCommand extends ServerpodCommand {
     if (!success) {
       throw ExitException();
     }
-  }
-
-  String _getOpenAPIDocumentVersion(ArgResults argResult) {
-    var versionFlagIndex = argResult.arguments.indexOf('--version');
-    if (versionFlagIndex != -1 &&
-        versionFlagIndex + 1 < argResult.arguments.length) {
-      var versionValue = argResult.arguments[versionFlagIndex + 1];
-      return versionValue;
-    }
-    return '';
   }
 }
