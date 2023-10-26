@@ -1,0 +1,10 @@
+class: Enrollment
+table: enrollment
+fields:
+  student: Student?, relation(name=student_enrollments)
+  course: Course?, relation(name=course_enrollments)
+
+indexes:
+  enrollment_index_idx:
+    fields: studentId, courseId
+    unique: true
