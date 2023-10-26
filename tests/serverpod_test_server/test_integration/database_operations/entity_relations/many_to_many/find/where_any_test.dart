@@ -36,7 +36,7 @@ void main() async {
 
       var studentsFetched = await Student.db.find(
         session,
-        // Fetch all students enrolled to a course.
+        // Fetch all students enrolled to any course.
         where: (s) => s.enrollments.any(),
       );
 
@@ -77,7 +77,7 @@ void main() async {
 
       var studentsFetched = await Student.db.find(
         session,
-        // Fetch all students enrolled a level 2 course.
+        // Fetch all students enrolled any level 2 course.
         where: (s) =>
             s.enrollments.any((e) => e.course.name.ilike('level 2:%')),
       );

@@ -74,8 +74,8 @@ void main() async {
         // Viktor is enrolled in Level 1 Math and Level 1 History
         Enrollment(studentId: students[1].id!, courseId: courses[0].id!),
         Enrollment(studentId: students[1].id!, courseId: courses[2].id!),
-        // Isak is enrolled in Level 1 English
-        Enrollment(studentId: students[2].id!, courseId: courses[1].id!),
+        // Isak is enrolled in Level 2 English
+        Enrollment(studentId: students[2].id!, courseId: courses[4].id!),
         // Lisa is enrolled in Level 2 Math, Level 2 English and Level 2 History
         Enrollment(studentId: students[3].id!, courseId: courses[3].id!),
         Enrollment(studentId: students[3].id!, courseId: courses[4].id!),

@@ -149,7 +149,7 @@ void main() async {
     });
 
     test(
-        'when filtering on nested every many relation then result is as expected',
+        'when fetching entities filtered on nested every many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -201,7 +201,7 @@ void main() async {
     });
 
     test(
-        'when filtering on nested every many relation in combination with separate filter then result is as expected',
+        'when fetching entities filtered on nested every many relation in combination with separate filter then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -246,7 +246,8 @@ void main() async {
       );
 
       var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Alex', 'Lisa']);
+      expect(customerNames, hasLength(2));
+      expect(customerNames, containsAll(['Alex', 'Lisa']));
     });
   });
 }
