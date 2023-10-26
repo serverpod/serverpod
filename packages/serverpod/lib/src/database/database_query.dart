@@ -414,16 +414,7 @@ class DeleteQueryBuilder {
   ///
   /// If the where expression includes columns from a relation, the relation
   /// will be added to the query with a using statement.
-  ///
-  /// Throws a [UnimplementedError] if the where expression includes a count
-  /// column since these are not supported yet.
   DeleteQueryBuilder withWhere(Expression? where) {
-    if (where != null && where.columns.whereType<ColumnCount>().isNotEmpty) {
-      // TODO - Add support for count columns in where expressions.
-      throw UnimplementedError(
-        'Count columns are not supported in delete where expressions.',
-      );
-    }
     _where = where;
     return this;
   }
@@ -432,11 +423,15 @@ class DeleteQueryBuilder {
   String build() {
     _validateTableReferences(_table.tableName, where: _where);
 
+    var subQueries = _SubQueries.gatherSubQueries(where: _where);
     var using = _buildUsingQuery(where: _where);
+    var where = _buildWhereQuery(where: _where, subQueries: subQueries);
 
-    var query = 'DELETE FROM "${_table.tableName}"';
+    var query = '';
+    if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
+    query += 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (using != null) query += ' AND ${using.where}';
     if (_returningStatement != null) query += _returningStatement!;
     return query;
@@ -662,7 +657,7 @@ _UsingQuery? _buildUsingQuery({Expression? where}) {
   List<TableRelation> tableRelations = [];
   if (where != null) {
     tableRelations.addAll(
-      _gatherTableRelationsFromWhereWithoutSubQueries(where.columns),
+      _gatherTableRelationsFromWhere(where.columns),
     );
   }
 
@@ -1065,7 +1060,7 @@ LinkedHashMap<String, String> _gatherWhereAdditionJoins(List<Column> columns) {
   return joins;
 }
 
-List<TableRelation> _gatherTableRelationsFromWhereWithoutSubQueries(
+List<TableRelation> _gatherTableRelationsFromWhere(
   List<Column> columns,
 ) {
   // Linked hash map to preserve order and remove duplicates.
@@ -1078,8 +1073,17 @@ List<TableRelation> _gatherTableRelationsFromWhereWithoutSubQueries(
       continue;
     }
 
+    var skipLast = column is ColumnCount;
+
     List<TableRelation> subTableRelations = tableRelation.getRelations;
+
+    var lastEntryIndex = subTableRelations.length - 1;
     subTableRelations.forEachIndexed((index, subTableRelation) {
+      bool lastEntry = index == lastEntryIndex;
+      if (lastEntry && skipLast) {
+        return;
+      }
+
       joins[subTableRelation.relationQueryAlias] = subTableRelation;
     });
   }
