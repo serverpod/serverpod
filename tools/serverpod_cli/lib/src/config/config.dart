@@ -285,7 +285,6 @@ class GeneratorConfig {
       if (hasOpenAPIConfiguration) {
         try {
           Map openAPIMap = generatorConfig['openAPIConfig'];
-
           openAPIConfig = OpenAPIConfig.fromConfig(
             openAPIMap,
             version: openAPIdocumentVersion,
@@ -408,9 +407,9 @@ String _stripPackage(String package) {
 /// Otherwise,it returns version from pubspec.yaml.
 String _validateVersionFormat(String version, String pubspecVersion) {
   // '1.2.3'           = A valid SemVer version.
-  // '2.3'             = Not a valid SemVer version
-  // '1.1.1-rc1'       = A valid SemVer version with pre-release
-  // '1.2.3+build4567' = A valid SemVer version with build metadata
+  // '2.3'             = Not a valid SemVer version.
+  // '1.1.1-rc1'       = A valid SemVer version with pre-release.
+  // '1.2.3+build4567' = A valid SemVer version with build metadata.
   var pattern = RegExp(
       r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$');
 
