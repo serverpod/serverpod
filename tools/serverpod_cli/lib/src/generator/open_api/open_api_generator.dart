@@ -29,7 +29,7 @@ class OpenAPIGenerator {
     return {
       p.joinAll([
         ...config.generatedServerOpenAPIPathParts,
-        'openapi-${config.openAPIdocumentVersion}.json',
+        'openapi.json',
       ]): _generateOpenAPISchema(
         protocolDefinition,
         config,
