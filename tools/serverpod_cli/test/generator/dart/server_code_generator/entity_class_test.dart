@@ -474,6 +474,7 @@ void main() {
                 .withName('title')
                 .withTypeDefinition('String', true)
                 .withScope(EntityFieldScopeDefinition.serverOnly)
+                .withShouldPersist(false)
                 .build(),
           )
           .build()
