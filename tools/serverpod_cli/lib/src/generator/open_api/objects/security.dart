@@ -39,7 +39,7 @@ class HttpSecurityScheme extends SecuritySchemeObject {
   @override
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    map[OpenAPIJsonKey.type] = SecuritySchemeType.http;
+    map[OpenAPIJsonKey.type] = SecuritySchemeType.http.name;
 
     var theDescription = description;
     if (theDescription != null) {
