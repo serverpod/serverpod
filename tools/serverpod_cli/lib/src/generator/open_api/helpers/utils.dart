@@ -144,4 +144,5 @@ class OpenAPIJsonKey {
   static const components = 'components';
   static const oneOf = 'oneOf';
   static const defaultKey = 'default';
+  static const anyValue = 'AnyValue';
 }

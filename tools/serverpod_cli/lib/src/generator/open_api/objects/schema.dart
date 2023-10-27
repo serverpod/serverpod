@@ -1,4 +1,3 @@
-
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
@@ -162,6 +161,9 @@ class OpenAPIComponentSchema {
         OpenAPIJsonKey.properties: properties,
       };
     }
+
+    /// Needed for dynamic return.
+    map[OpenAPIJsonKey.anyValue] = {};
 
     return map;
   }
