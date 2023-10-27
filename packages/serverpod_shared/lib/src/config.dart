@@ -116,11 +116,16 @@ class ServerConfig {
   }
 
   /// Get [Uri] from publicHost, port and publicScheme.
-  Uri toUri() => Uri(
-        scheme: publicScheme,
-        host: publicHost,
-        port: publicPort,
-      );
+  Uri toUri() {
+    if (publicScheme != 'http' && publicScheme != 'https') {
+      throw Exception('Unsupported publicScheme $publicScheme.');
+    }
+    return Uri(
+      scheme: publicScheme,
+      host: publicHost,
+      port: publicPort,
+    );
+  }
 }
 
 /// Configuration for a Postgres database,
