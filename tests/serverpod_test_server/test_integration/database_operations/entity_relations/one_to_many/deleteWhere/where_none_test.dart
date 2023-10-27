@@ -14,7 +14,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered by any many relation then result is as expected.',
+        'when deleting entities filtered by none many relation then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -31,19 +31,19 @@ void main() async {
         Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order.
-        where: (c) => c.orders.any(),
+        // All customers with no order.
+        where: (c) => c.orders.none(),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(deletedCustomerIds, [
+        customers[1].id, // Isak
+      ]);
     });
 
     test(
-        'when fetching entities filtered by filtered any many relation then result is as expected',
+        'when deleting entities filtered by filtered none many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -60,18 +60,23 @@ void main() async {
         Order(description: 'Prem: Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order with a description starting with 'prem'.
-        where: (c) => c.orders.any((o) => o.description.ilike('prem%')),
+        // All customers with no orders with a description starting with 'prem'.
+        where: (c) => c.orders.none((o) => o.description.ilike('prem%')),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Viktor']);
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[0].id, // Alex
+            customers[1].id, // Isak
+          ]));
     });
 
     test(
-        'when fetching entities filtered on any many relation in combination with other filter then result is as expected.',
+        'when deleting entities filtered on none many relation in combination with other filter then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -81,21 +86,30 @@ void main() async {
       await Order.db.insert(session, [
         // Alex orders
         Order(description: 'Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 2', customerId: customers[0].id!),
+        Order(description: 'Order 3', customerId: customers[0].id!),
+        // Viktor orders
+        Order(description: 'Order 4', customerId: customers[2].id!),
+        Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order or name 'Isak'
-        where: (c) => c.orders.any() | c.name.equals('Isak'),
+        // All customers with no orders or name 'Viktor'
+        where: (c) => c.orders.none() | c.name.equals('Viktor'),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, containsAll(['Alex', 'Isak']));
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[1].id, // Isak
+            customers[2].id, // Viktor
+          ]));
     });
 
     test(
-        'when fetching entities filtered on OR filtered any many relation then result is as expected.',
+        'when deleting entities filtered on OR filtered none many relation then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -104,7 +118,7 @@ void main() async {
       ]);
       await Order.db.insert(session, [
         // Alex orders
-        Order(description: 'Basic: Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 1', customerId: customers[0].id!),
         Order(description: 'Basic: Order 2', customerId: customers[0].id!),
         Order(description: 'Order 3', customerId: customers[0].id!),
         // Viktor orders
@@ -112,21 +126,21 @@ void main() async {
         Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order with a description starting with 'prem'
+        // All customers with no orders with a description starting with 'prem'
         // or 'basic'.
-        where: (c) => c.orders.any((o) =>
+        where: (c) => c.orders.none((o) =>
             o.description.ilike('prem%') | o.description.ilike('basic%')),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(deletedCustomerIds, [
+        customers[1].id, // Isak
+      ]);
     });
 
     test(
-        'when fetching entities filtered on multiple filtered any many relation then result is as expected.',
+        'when deleting entities filtered on multiple filtered none many relation then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -144,17 +158,22 @@ void main() async {
         Order(description: 'Basic: Order 7', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order with a description starting with 'prem'
-        // and any order with a description starting with 'basic'.
+        // All customers with no orders with a description starting with 'prem'
+        // or no orders with a description starting with 'basic'.
         where: (c) =>
-            c.orders.any((o) => o.description.ilike('prem%')) &
-            c.orders.any((o) => o.description.ilike('basic%')),
+            c.orders.none((o) => o.description.ilike('prem%')) |
+            c.orders.none((o) => o.description.ilike('basic%')),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Viktor']);
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[0].id, // Alex
+            customers[1].id, // Isak
+          ]));
     });
   });
 
@@ -168,7 +187,7 @@ void main() async {
     });
 
     test(
-        'when filtering on nested any many relation then result is as expected',
+        'when filtering on nested none many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -184,6 +203,9 @@ void main() async {
         Order(description: 'Order 4', customerId: customers[1].id!),
       ]);
       await Comment.db.insert(session, [
+        // Alex - Order 1 comments
+        Comment(description: 'Comment 1', orderId: orders[0].id!),
+        Comment(description: 'Comment 2', orderId: orders[0].id!),
         // Isak - Order 3 comments
         Comment(description: 'Comment 6', orderId: orders[2].id!),
         Comment(description: 'Comment 7', orderId: orders[2].id!),
@@ -194,18 +216,23 @@ void main() async {
         Comment(description: 'Comment 11', orderId: orders[3].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order that have any comment.
-        where: (c) => c.orders.any((o) => o.comments.any()),
+        // All customers without orders that have no comments.
+        where: (c) => c.orders.none((o) => o.comments.none()),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Isak']);
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[1].id, // Isak
+            customers[2].id, // Viktor
+          ]));
     });
 
     test(
-        'when fetching entities filtered on filtered nested any many relation then result is as expected',
+        'when deleting entities filtered on filtered nested none many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -238,16 +265,21 @@ void main() async {
         Comment(description: 'Comment 11', orderId: orders[3].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        where: (c) => c.orders.any(
+        where: (c) => c.orders.none(
 
-            /// All customers with any order that has any comment with a description starting with 'del'.
-            (o) => o.comments.any((c) => c.description.ilike('del%'))),
+            /// All customers without orders that have no comments with a description starting with 'del'.
+            (o) => o.comments.none((c) => c.description.ilike('del%'))),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Isak']);
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[1].id, // Isak
+            customers[2].id, // Viktor
+          ]));
     });
   });
 }

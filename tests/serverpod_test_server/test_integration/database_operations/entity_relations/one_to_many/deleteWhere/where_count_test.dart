@@ -1,11 +1,10 @@
+import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:serverpod/database.dart' as db;
 import 'package:serverpod_test_server/src/generated/protocol.dart';
-import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
 
 void main() async {
   var session = await IntegrationTestServer().session();
-
   group('Given entities with one to many relation', () {
     tearDown(() async {
       await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
@@ -14,7 +13,71 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered by any many relation then result is as expected.',
+        'when deleting entities filtered on count of many relation then only matching entities are deleted',
+        () async {
+      var customers = await Customer.db.insert(session, [
+        Customer(name: 'Alex'),
+        Customer(name: 'Isak'),
+        Customer(name: 'Viktor'),
+      ]);
+      await Order.db.insert(session, [
+        // Alex orders
+        Order(description: 'Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 2', customerId: customers[0].id!),
+        Order(description: 'Order 3', customerId: customers[0].id!),
+        // Isak orders
+        Order(description: 'Order 4', customerId: customers[1].id!),
+        // Viktor orders
+        Order(description: 'Order 5', customerId: customers[2].id!),
+        Order(description: 'Order 6', customerId: customers[2].id!),
+      ]);
+
+      var deletedCustomerIds = await Customer.db.deleteWhere(
+        session,
+        // All customers with more than one order
+        where: (c) => c.orders.count() > 1,
+      );
+
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+        deletedCustomerIds,
+        containsAll([
+          customers[0].id, // Alex
+          customers[2].id, // Viktor
+        ]),
+      );
+    });
+    test(
+        'when deleting entities filtered on filtered many relation count then result is as expected',
+        () async {
+      var customers = await Customer.db.insert(session, [
+        Customer(name: 'Alex'),
+        Customer(name: 'Isak'),
+        Customer(name: 'Viktor'),
+      ]);
+      await Order.db.insert(session, [
+        // Alex orders
+        Order(description: 'Prem: Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 2', customerId: customers[0].id!),
+        Order(description: 'Order 3', customerId: customers[0].id!),
+        // Viktor orders
+        Order(description: 'Prem: Order 4', customerId: customers[2].id!),
+        Order(description: 'Prem: Order 5', customerId: customers[2].id!),
+      ]);
+
+      var deletedCustomerIds = await Customer.db.deleteWhere(
+        session,
+        // All customers with more than one order starting with 'prem'
+        where: (c) => c.orders.count((o) => o.description.ilike('prem%')) > 1,
+      );
+
+      expect(deletedCustomerIds, [
+        customers[2].id, // Viktor
+      ]);
+    });
+
+    test(
+        'when deleting entities filtered on many relation count in combination with other filter then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -31,19 +94,23 @@ void main() async {
         Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order.
-        where: (c) => c.orders.any(),
+        // All customers with more than two orders or name 'Isak'
+        where: (c) => (c.orders.count() > 2) | c.name.equals('Isak'),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(deletedCustomerIds, hasLength(2));
+      expect(
+          deletedCustomerIds,
+          containsAll([
+            customers[0].id, // Alex
+            customers[1].id, // Isak
+          ]));
     });
 
     test(
-        'when fetching entities filtered by filtered any many relation then result is as expected',
+        'when deleting entities filtered on multiple many relation count then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -56,77 +123,23 @@ void main() async {
         Order(description: 'Order 2', customerId: customers[0].id!),
         Order(description: 'Order 3', customerId: customers[0].id!),
         // Viktor orders
-        Order(description: 'Prem: Order 4', customerId: customers[2].id!),
-        Order(description: 'Prem: Order 5', customerId: customers[2].id!),
-      ]);
-
-      var fetchedCustomers = await Customer.db.find(
-        session,
-        // All customers with any order with a description starting with 'prem'.
-        where: (c) => c.orders.any((o) => o.description.ilike('prem%')),
-      );
-
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Viktor']);
-    });
-
-    test(
-        'when fetching entities filtered on any many relation in combination with other filter then result is as expected.',
-        () async {
-      var customers = await Customer.db.insert(session, [
-        Customer(name: 'Alex'),
-        Customer(name: 'Isak'),
-        Customer(name: 'Viktor'),
-      ]);
-      await Order.db.insert(session, [
-        // Alex orders
-        Order(description: 'Order 1', customerId: customers[0].id!),
-      ]);
-
-      var fetchedCustomers = await Customer.db.find(
-        session,
-        // All customers with any order or name 'Isak'
-        where: (c) => c.orders.any() | c.name.equals('Isak'),
-      );
-
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, containsAll(['Alex', 'Isak']));
-    });
-
-    test(
-        'when fetching entities filtered on OR filtered any many relation then result is as expected.',
-        () async {
-      var customers = await Customer.db.insert(session, [
-        Customer(name: 'Alex'),
-        Customer(name: 'Isak'),
-        Customer(name: 'Viktor'),
-      ]);
-      await Order.db.insert(session, [
-        // Alex orders
-        Order(description: 'Basic: Order 1', customerId: customers[0].id!),
-        Order(description: 'Basic: Order 2', customerId: customers[0].id!),
-        Order(description: 'Order 3', customerId: customers[0].id!),
-        // Viktor orders
-        Order(description: 'Prem: Order 4', customerId: customers[2].id!),
+        Order(description: 'Order 4', customerId: customers[2].id!),
         Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order with a description starting with 'prem'
-        // or 'basic'.
-        where: (c) => c.orders.any((o) =>
-            o.description.ilike('prem%') | o.description.ilike('basic%')),
+        // All customers with more than one orders but less than three
+        where: (c) => (c.orders.count() > 1) & (c.orders.count() < 3),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(deletedCustomerIds, [
+        customers[2].id, // Viktor
+      ]);
     });
 
     test(
-        'when fetching entities filtered on multiple filtered any many relation then result is as expected.',
+        'when deleting entities filtered on multiple filtered many relation count then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -137,6 +150,7 @@ void main() async {
         // Alex orders
         Order(description: 'Prem: Order 1', customerId: customers[0].id!),
         Order(description: 'Prem: Order 2', customerId: customers[0].id!),
+        Order(description: 'Basic: Order 3', customerId: customers[0].id!),
         // Viktor orders
         Order(description: 'Prem: Order 4', customerId: customers[2].id!),
         Order(description: 'Prem: Order 5', customerId: customers[2].id!),
@@ -144,17 +158,17 @@ void main() async {
         Order(description: 'Basic: Order 7', customerId: customers[2].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        // All customers with any order with a description starting with 'prem'
-        // and any order with a description starting with 'basic'.
+        // All customers with more than one premium order and one basic order
         where: (c) =>
-            c.orders.any((o) => o.description.ilike('prem%')) &
-            c.orders.any((o) => o.description.ilike('basic%')),
+            (c.orders.count((o) => o.description.ilike('prem%')) > 1) &
+            (c.orders.count((o) => o.description.ilike('basic%')) > 1),
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Viktor']);
+      expect(deletedCustomerIds, [
+        customers[2].id, // Viktor
+      ]);
     });
   });
 
@@ -168,7 +182,7 @@ void main() async {
     });
 
     test(
-        'when filtering on nested any many relation then result is as expected',
+        'when filtering on nested many relation count then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -182,43 +196,8 @@ void main() async {
         // Isak orders
         Order(description: 'Order 3', customerId: customers[1].id!),
         Order(description: 'Order 4', customerId: customers[1].id!),
-      ]);
-      await Comment.db.insert(session, [
-        // Isak - Order 3 comments
-        Comment(description: 'Comment 6', orderId: orders[2].id!),
-        Comment(description: 'Comment 7', orderId: orders[2].id!),
-        Comment(description: 'Comment 8', orderId: orders[2].id!),
-        // Isak - Order 4 comments
-        Comment(description: 'Comment 9', orderId: orders[3].id!),
-        Comment(description: 'Comment 10', orderId: orders[3].id!),
-        Comment(description: 'Comment 11', orderId: orders[3].id!),
-      ]);
-
-      var fetchedCustomers = await Customer.db.find(
-        session,
-        // All customers with any order that have any comment.
-        where: (c) => c.orders.any((o) => o.comments.any()),
-      );
-
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Isak']);
-    });
-
-    test(
-        'when fetching entities filtered on filtered nested any many relation then result is as expected',
-        () async {
-      var customers = await Customer.db.insert(session, [
-        Customer(name: 'Alex'),
-        Customer(name: 'Isak'),
-        Customer(name: 'Viktor'),
-      ]);
-      var orders = await Order.db.insert(session, [
-        // Alex orders
-        Order(description: 'Order 1', customerId: customers[0].id!),
-        Order(description: 'Order 2', customerId: customers[0].id!),
-        // Isak orders
-        Order(description: 'Order 3', customerId: customers[1].id!),
-        Order(description: 'Order 4', customerId: customers[1].id!),
+        // Viktor orders
+        Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
       await Comment.db.insert(session, [
         // Alex - Order 1 comments
@@ -229,6 +208,57 @@ void main() async {
         Comment(description: 'Comment 4', orderId: orders[1].id!),
         Comment(description: 'Comment 5', orderId: orders[1].id!),
         // Isak - Order 3 comments
+        Comment(description: 'Comment 6', orderId: orders[2].id!),
+        Comment(description: 'Comment 7', orderId: orders[2].id!),
+        Comment(description: 'Comment 8', orderId: orders[2].id!),
+        // Isak - Order 4 comments
+        Comment(description: 'Comment 9', orderId: orders[3].id!),
+        Comment(description: 'Comment 10', orderId: orders[3].id!),
+        Comment(description: 'Comment 11', orderId: orders[3].id!),
+        // Viktor - Order 5 comments
+        Comment(description: 'Comment 12', orderId: orders[4].id!),
+        Comment(description: 'Comment 13', orderId: orders[4].id!),
+        Comment(description: 'Comment 14', orderId: orders[4].id!),
+      ]);
+
+      var deletedCustomerIds = await Customer.db.deleteWhere(
+        session,
+        // All customers with more than one order with more than two comments
+        where: (c) => c.orders.count((o) => o.comments.count() > 2) > 1,
+      );
+
+      expect(deletedCustomerIds, [
+        customers[1].id, // Isak
+      ]);
+    });
+
+    test(
+        'when deleting entities filtered on filtered nested many relation count then result is as expected',
+        () async {
+      var customers = await Customer.db.insert(session, [
+        Customer(name: 'Alex'),
+        Customer(name: 'Isak'),
+        Customer(name: 'Viktor'),
+      ]);
+      var orders = await Order.db.insert(session, [
+        // Alex orders
+        Order(description: 'Order 1', customerId: customers[0].id!),
+        Order(description: 'Order 2', customerId: customers[0].id!),
+        // Isak orders
+        Order(description: 'Order 3', customerId: customers[1].id!),
+        Order(description: 'Order 4', customerId: customers[1].id!),
+        // Viktor orders
+        Order(description: 'Order 5', customerId: customers[2].id!),
+      ]);
+      await Comment.db.insert(session, [
+        // Alex - Order 1 comments
+        Comment(description: 'Del: Comment 1', orderId: orders[0].id!),
+        Comment(description: 'Del: Comment 2', orderId: orders[0].id!),
+        // Alex - Order 2 comments
+        Comment(description: 'Del: Comment 3', orderId: orders[1].id!),
+        Comment(description: 'Comment 4', orderId: orders[1].id!),
+        Comment(description: 'Comment 5', orderId: orders[1].id!),
+        // Isak - Order 3 comments
         Comment(description: 'Del: Comment 6', orderId: orders[2].id!),
         Comment(description: 'Del: Comment 7', orderId: orders[2].id!),
         Comment(description: 'Comment 8', orderId: orders[2].id!),
@@ -236,18 +266,22 @@ void main() async {
         Comment(description: 'Del: Comment 9', orderId: orders[3].id!),
         Comment(description: 'Del: Comment 10', orderId: orders[3].id!),
         Comment(description: 'Comment 11', orderId: orders[3].id!),
+        // Viktor - Order 5 comments
+        Comment(description: 'Del: Comment 12', orderId: orders[4].id!),
+        Comment(description: 'Del: Comment 13', orderId: orders[4].id!),
+        Comment(description: 'Comment 14', orderId: orders[4].id!),
       ]);
 
-      var fetchedCustomers = await Customer.db.find(
+      var deletedCustomerIds = await Customer.db.deleteWhere(
         session,
-        where: (c) => c.orders.any(
-
-            /// All customers with any order that has any comment with a description starting with 'del'.
-            (o) => o.comments.any((c) => c.description.ilike('del%'))),
+        where: (c) => c.orders.count(
+            // All customers with more than one order with more than one comment starting with 'del'
+            (o) => o.comments.count((c) => c.description.ilike('del%')) > 1) > 1,
       );
 
-      var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, ['Isak']);
+      expect(deletedCustomerIds, [
+        customers[1].id, // Isak
+      ]);
     });
   });
 }

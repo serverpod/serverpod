@@ -36,7 +36,7 @@ void main() async {
 
       var studentsCounted = await Student.db.count(
         session,
-        // Fetch all students enrolled to a course.
+        // Fetch all students enrolled to any course.
         where: (s) => s.enrollments.any(),
       );
 
@@ -75,7 +75,7 @@ void main() async {
 
       var studentsCounted = await Student.db.count(
         session,
-        // Fetch all students enrolled a level 2 course.
+        // Fetch all students enrolled to any level 2 course.
         where: (s) =>
             s.enrollments.any((e) => e.course.name.ilike('level 2:%')),
       );
@@ -151,7 +151,7 @@ void main() async {
 
       var studentsCounted = await Student.db.count(
         session,
-        // Fetch all students enrolled to any level 2 course or a math course.
+        // Fetch all students enrolled to any level 2 course or any math course.
         where: (s) =>
             (s.enrollments.any((e) => e.course.name.ilike('level 2:%'))) |
             (s.enrollments.any((e) => e.course.name.ilike('%math%'))),

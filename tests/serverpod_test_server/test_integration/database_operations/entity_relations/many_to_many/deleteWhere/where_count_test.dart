@@ -15,7 +15,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on many relation count then result is as expected',
+        'when deleting entities filtered on many relation count then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -39,19 +39,23 @@ void main() async {
         Enrollment(studentId: students[2].id!, courseId: courses[1].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to more than one course.
+        // All students enrolled to more than one course.
         where: (s) => s.enrollments.count() > 1,
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Alex', 'Viktor']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[1].id, // Viktor
+          ]));
     });
 
     test(
-        'when fetching entities filtered on filtered many relation count then result is as expected',
+        'when deleting entities filtered on filtered many relation count then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -82,19 +86,20 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
         // Fetch all students enrolled to more than one level 2 course.
         where: (s) =>
             s.enrollments.count((e) => e.course.name.ilike('level 2:%')) > 1,
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, ['Lisa']);
+      expect(deletedStudentIds, [
+        students[3].id, // Lisa
+      ]);
     });
 
     test(
-        'when fetching entities filtered on many relation count in combination with other filter then result is as expected',
+        'when deleting entities filtered on many relation count in combination with other filter then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -125,19 +130,23 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to more than two courses or is named Alex.
+        // All students enrolled to more than two courses or is named Alex.
         where: (s) => (s.enrollments.count() > 2) | s.name.equals('Alex'),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Lisa', 'Alex']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[3].id, // Lisa
+          ]));
     });
 
     test(
-        'when fetching entities filtered on multiple many relation count then result is as expected',
+        'when deleting entities filtered on multiple many relation count then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -165,19 +174,23 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[2].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to more than one course but less than three courses.
+        // All students enrolled to more than one course but less than three courses.
         where: (s) => (s.enrollments.count() > 1) & (s.enrollments.count() < 3),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Alex', 'Viktor']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[1].id, // Viktor
+          ]));
     });
 
     test(
-        'when fetching entities filtered on multiple filtered many relation count then result is as expected',
+        'when deleting entities filtered on multiple filtered many relation count then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -212,17 +225,21 @@ void main() async {
         Enrollment(studentId: students[4].id!, courseId: courses[3].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to more than one level 2 course or more than two level 1 courses.
+        // All students enrolled to more than one level 2 course or more than two level 1 courses.
         where: (s) =>
             (s.enrollments.count((e) => e.course.name.ilike('level 2:%')) > 1) |
             (s.enrollments.count((e) => e.course.name.ilike('level 1:%')) > 2),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Lisa', 'Viktor']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[1].id, // Viktor
+            students[3].id, // Lisa
+          ]));
     });
   });
 }

@@ -15,7 +15,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered by any many relation then result is as expected',
+        'when deleting entities filtered by any many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -34,19 +34,23 @@ void main() async {
         Enrollment(studentId: students[1].id!, courseId: courses[1].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to any course.
+        // All students enrolled to any course.
         where: (s) => s.enrollments.any(),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Alex', 'Isak']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[1].id, // Isak
+          ]));
     });
 
     test(
-        'when fetching entities filtered by filtered any many relation then result is as expected',
+        'when deleting entities filtered by filtered any many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -75,20 +79,24 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled any level 2 course.
+        // All students enrolled to any level 2 course.
         where: (s) =>
             s.enrollments.any((e) => e.course.name.ilike('level 2:%')),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Isak', 'Lisa']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[2].id, // Isak
+            students[3].id, // Lisa
+          ]));
     });
 
     test(
-        'when fetching entities filtered by any many relation in combination with other filter then result is as expected',
+        'when deleting entities filtered by any many relation in combination with other filter then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -114,19 +122,24 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to any course or is named Alex.
+        // All students enrolled to any course or is named Alex.
         where: (s) => (s.enrollments.any()) | s.name.equals('Alex'),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(3));
-      expect(studentNames, containsAll(['Viktor', 'Lisa', 'Alex']));
+      expect(deletedStudentIds, hasLength(3));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[1].id, // Viktor
+            students[3].id, // Lisa
+          ]));
     });
 
     test(
-        'when fetching entities filtered by multiple filtered any many relation then result is as expected',
+        'when deleting entities filtered by multiple filtered any many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -155,17 +168,21 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var studentsFetched = await Student.db.find(
+      var deletedStudentIds = await Student.db.deleteWhere(
         session,
-        // Fetch all students enrolled to any level 2 course or a math course.
+        // All students enrolled to any level 2 course or a any math course.
         where: (s) =>
             (s.enrollments.any((e) => e.course.name.ilike('level 2:%'))) |
             (s.enrollments.any((e) => e.course.name.ilike('%math%'))),
       );
 
-      var studentNames = studentsFetched.map((e) => e.name);
-      expect(studentNames, hasLength(2));
-      expect(studentNames, containsAll(['Alex', 'Lisa']));
+      expect(deletedStudentIds, hasLength(2));
+      expect(
+          deletedStudentIds,
+          containsAll([
+            students[0].id, // Alex
+            students[3].id, // Lisa
+          ]));
     });
   });
 }

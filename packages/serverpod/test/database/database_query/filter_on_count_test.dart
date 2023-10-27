@@ -113,4 +113,71 @@ void main() {
       });
     });
   });
+
+  group('Given DeleteQueryBuilder', () {
+    group('when filtering on many relation count', () {
+      var query = DeleteQueryBuilder(table: citizenTable)
+          .withWhere(manyRelation.count() > 3)
+          .build();
+      test('then a sub query is created for the filter.', () {
+        expect(
+            query,
+            contains(
+                'WITH "where_count_citizen_company_company_0" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" GROUP BY "citizen"."id" HAVING COUNT("citizen_company_company"."id") > 3)'));
+      });
+      test('then a sub query is joined with a where in main query.', () {
+        expect(
+            query,
+            contains(
+                'WHERE "citizen"."id" IN (SELECT "where_count_citizen_company_company_0"."citizen.id" FROM "where_count_citizen_company_company_0")'));
+      });
+    });
+
+    group('when filtering on filtered many relation count', () {
+      var query = DeleteQueryBuilder(table: citizenTable)
+          .withWhere(manyRelation.count((t) => t.id.equals(1)) > 3)
+          .build();
+
+      test('then having section is added.', () {
+        expect(query,
+            contains('HAVING COUNT("citizen_company_company"."id") > 3)'));
+      });
+    });
+
+    group('when filtering on multiple many relation count', () {
+      var where = (manyRelation.count() > 3) & (manyRelation.count() < 5);
+      var query =
+          DeleteQueryBuilder(table: citizenTable).withWhere(where).build();
+
+      test('then a sub query is created for the first many relation filter.',
+          () {
+        expect(
+            query,
+            contains(
+                '"where_count_citizen_company_company_1" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" GROUP BY "citizen"."id" HAVING COUNT("citizen_company_company"."id") > 3)'));
+      });
+
+      test('then a sub query is joined with a where in main query.', () {
+        expect(
+            query,
+            contains(
+                '"citizen"."id" IN (SELECT "where_count_citizen_company_company_1"."citizen.id" FROM "where_count_citizen_company_company_1"'));
+      });
+
+      test('then a sub query is created for the second many relation filter.',
+          () {
+        expect(
+            query,
+            contains(
+                '"where_count_citizen_company_company_2" AS (SELECT "citizen"."id" AS "citizen.id" FROM "citizen" LEFT JOIN "company" AS "citizen_company_company" ON "citizen"."id" = "citizen_company_company"."id" GROUP BY "citizen"."id" HAVING COUNT("citizen_company_company"."id") < 5)'));
+      });
+
+      test('then a sub query is joined with a where in main query.', () {
+        expect(
+            query,
+            contains(
+                '"citizen"."id" IN (SELECT "where_count_citizen_company_company_2"."citizen.id" FROM "where_count_citizen_company_company_2"'));
+      });
+    });
+  });
 }
