@@ -116,12 +116,11 @@ class ServerConfig {
   }
 
   /// Get [Uri] from publicHost, port and publicScheme.
-  Uri toUri() {
-    if (publicScheme == 'http') {
-      return Uri.http('$publicHost:$publicPort');
-    }
-    return Uri.https(publicHost);
-  }
+  Uri toUri() => Uri(
+        scheme: publicScheme,
+        host: publicHost,
+        port: publicPort,
+      );
 }
 
 /// Configuration for a Postgres database,
