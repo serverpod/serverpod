@@ -1,15 +1,39 @@
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
-import 'test_data_factory.dart';
-
 void main() {
+  var intType = TypeDefinitionBuilder().withClassName('int').build();
+  var intNullableType =
+      TypeDefinitionBuilder().withClassName('int').withNullable(true).build();
+
+  var stringType = TypeDefinitionBuilder().withClassName('String').build();
+  var stringNullableType = TypeDefinitionBuilder()
+      .withClassName('String')
+      .withNullable(true)
+      .build();
+
+  var doubleType = TypeDefinitionBuilder().withClassName('double').build();
+  var doubleNullableType = TypeDefinitionBuilder()
+      .withClassName('double')
+      .withNullable(true)
+      .build();
+
+  var bigIntType = TypeDefinitionBuilder().withClassName('BigInt').build();
+  var bigIntNullableType = TypeDefinitionBuilder()
+      .withClassName('BigInt')
+      .withNullable(true)
+      .build();
+
+  var boolType = TypeDefinitionBuilder().withClassName('bool').build();
+  var boolNullableType =
+      TypeDefinitionBuilder().withClassName('bool').withNullable(true).build();
   group('Serializes an int.', () {
     test(
         'Given an int when converting to json then the type is set to integer.',
         () {
       expect(
-        coreDartTypeToJson(intType),
+        typeDefinitionToJson(intType),
         {
           'type': 'integer',
         },
@@ -20,7 +44,7 @@ void main() {
         'Given a nullable int when converting to json then the type is set to integer and is nullable.',
         () {
       expect(
-        coreDartTypeToJson(intNullableType),
+        typeDefinitionToJson(intNullableType),
         {
           'type': 'integer',
           'nullable': true,
@@ -34,7 +58,7 @@ void main() {
         'Given a String when converting to json then the type is set to string.',
         () {
       expect(
-        coreDartTypeToJson(stringType),
+        typeDefinitionToJson(stringType),
         {
           'type': 'string',
         },
@@ -45,7 +69,7 @@ void main() {
         'Given a nullable String when converting to json then the type is set to string and is nullable.',
         () {
       expect(
-        coreDartTypeToJson(stringNullableType),
+        typeDefinitionToJson(stringNullableType),
         {
           'type': 'string',
           'nullable': true,
@@ -58,7 +82,7 @@ void main() {
         'Given a double when converting to json then the type is set to number.',
         () {
       expect(
-        coreDartTypeToJson(doubleType),
+        typeDefinitionToJson(doubleType),
         {
           'type': 'number',
         },
@@ -69,7 +93,7 @@ void main() {
         'Given a nullable double when converting to json then the type is set to number and is nullable.',
         () {
       expect(
-        coreDartTypeToJson(doubleNullableType),
+        typeDefinitionToJson(doubleNullableType),
         {
           'type': 'number',
           'nullable': true,
@@ -83,7 +107,7 @@ void main() {
         'Given a BigInt when converting to json then the type is set to number.',
         () {
       expect(
-        coreDartTypeToJson(bigIntType),
+        typeDefinitionToJson(bigIntType),
         {
           'type': 'number',
         },
@@ -94,7 +118,7 @@ void main() {
         'Given a nullable BigInt when converting to json then the type is set to number and is nullable.',
         () {
       expect(
-        coreDartTypeToJson(bigIntNullableType),
+        typeDefinitionToJson(bigIntNullableType),
         {
           'type': 'number',
           'nullable': true,
@@ -108,7 +132,7 @@ void main() {
         'Given an bool when converting to json then the type is set to boolean.',
         () {
       expect(
-        coreDartTypeToJson(boolType),
+        typeDefinitionToJson(boolType),
         {
           'type': 'boolean',
         },
@@ -119,7 +143,7 @@ void main() {
         'Given a nullable bool when converting to json then the type is set to boolean and is nullable.',
         () {
       expect(
-        coreDartTypeToJson(boolNullableType),
+        typeDefinitionToJson(boolNullableType),
         {
           'type': 'boolean',
           'nullable': true,

@@ -1,13 +1,29 @@
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
-import 'test_data_factory.dart';
-
 void main() {
+  var listBuilder = TypeDefinitionBuilder().withClassName('List');
+  var stringType = TypeDefinitionBuilder().withClassName('String').build();
+  var doubleType = TypeDefinitionBuilder().withClassName('double').build();
+  var bigIntType = TypeDefinitionBuilder().withClassName('BigInt').build();
+  var boolType = TypeDefinitionBuilder().withClassName('bool').build();
+  var intType = TypeDefinitionBuilder().withClassName('int').build();
+  var mapBuilder = TypeDefinitionBuilder().withClassName('Map');
+
   test('Given a Map when converting to json then the type is set to object.',
       () {
     expect(
-      mapTypeToJson(mapBuilder.build()),
+      typeDefinitionToJson(mapBuilder.build()),
+      {
+        'type': 'object',
+      },
+    );
+  });
+  test('Given a Map when converting to json then the type is set to object.',
+      () {
+    expect(
+      typeDefinitionToJson(mapBuilder.build(), true),
       {
         'type': 'object',
       },
@@ -15,10 +31,10 @@ void main() {
   });
 
   test(
-      'Given a Map<String,String> when converting to json then the type is set to object with additionalProperties set to string.',
+      'Given a Map<String,String> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics([
           stringType,
           stringType,
@@ -33,10 +49,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,int> when converting to json then the type is set to object with additionalProperties set to integer.',
+      'Given a Map<String,int> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics([
           stringType,
           intType,
@@ -52,10 +68,10 @@ void main() {
   });
 
   test(
-      'Given a Map<String,double> when converting to json then the type is set to object with additionalProperties set to number.',
+      'Given a Map<String,double> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics([
           stringType,
           doubleType,
@@ -70,10 +86,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,BigInt> when converting to json then the type is set to object with additionalProperties set to number.',
+      'Given a Map<String,BigInt> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics([
           stringType,
           bigIntType,
@@ -88,10 +104,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,bool> when converting to json then the type is set to object with additionalProperties set to boolean.',
+      'Given a Map<String,bool> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics([
           stringType,
           boolType,
@@ -106,10 +122,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,List<String>> when converting to json then the type is set to object with additionalProperties set to array with items of string.',
+      'Given a Map<String,List<String>> when converting to json then the type is set to object with the correct additionalProperties..',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics(
           [
             stringType,
@@ -130,10 +146,10 @@ void main() {
   });
 
   test(
-      'Given a Map<String,List<int>> when converting to json then the type is set to object with additionalProperties set to array with items of integer.',
+      'Given a Map<String,List<int>> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics(
           [
             stringType,
@@ -153,10 +169,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,List<double>> when converting to json then the type is set to object with additionalProperties set to array with items of number.',
+      'Given a Map<String,List<double>> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics(
           [
             stringType,
@@ -176,10 +192,10 @@ void main() {
     );
   });
   test(
-      'Given a Map<String,List<bool>> when converting to json then the type is set to object with additionalProperties set to array with items of boolean.',
+      'Given a Map<String,List<bool>> when converting to json then the type is set to object with the correct additionalProperties.',
       () {
     expect(
-      mapTypeToJson(
+      typeDefinitionToJson(
         mapBuilder.withGenerics(
           [
             stringType,

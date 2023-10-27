@@ -1,10 +1,16 @@
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
-import 'test_data_factory.dart';
-
 void main() {
+  var listBuilder = TypeDefinitionBuilder().withClassName('List');
+  var stringType = TypeDefinitionBuilder().withClassName('String').build();
+  var intType = TypeDefinitionBuilder().withClassName('int').build();
+  var mapBuilder = TypeDefinitionBuilder().withClassName('Map');
+  var exampleType = TypeDefinitionBuilder().withClassName('Example').build();
+  var dynamicType = TypeDefinitionBuilder().withClassName('dynamic').build();
+
   group('Serializes OpenAPIRequestContentSchema.', () {
     test(
         'Given the parameters (int id and string name) when converting to json then the type is set to object and properties contains id (integer) and name (string).',

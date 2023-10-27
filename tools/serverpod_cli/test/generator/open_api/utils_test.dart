@@ -1,10 +1,18 @@
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
-import 'test_data_factory.dart';
-
 void main() {
+  var intType = TypeDefinitionBuilder().withClassName('int').build();
+  var stringType = TypeDefinitionBuilder().withClassName('String').build();
+  var doubleType = TypeDefinitionBuilder().withClassName('double').build();
+  var bigIntType = TypeDefinitionBuilder().withClassName('BigInt').build();
+  var boolType = TypeDefinitionBuilder().withClassName('bool').build();
+  var dynamicType = TypeDefinitionBuilder().withClassName('dynamic').build();
+  var exampleType = TypeDefinitionBuilder().withClassName('Example').build();
+  var listType = TypeDefinitionBuilder().withClassName('List').build();
+  var mapType = TypeDefinitionBuilder().withClassName('Map').build();
   group('Test Utils: ', () {
     test(
         'Given a subDirs when calling getExtraPath Then it returns the expected path.',
@@ -56,7 +64,7 @@ void main() {
     test('Given a List when converting it then get OpenAPISchemaType.array.',
         () {
       expect(
-        listBuilder.build().toOpenAPISchemaType,
+        listType.toOpenAPISchemaType,
         OpenAPISchemaType.array,
       );
     });
@@ -64,7 +72,7 @@ void main() {
     test('Given a Map when converting it then get OpenAPISchemaType.object.',
         () {
       expect(
-        mapBuilder.build().toOpenAPISchemaType,
+        mapType.toOpenAPISchemaType,
         OpenAPISchemaType.object,
       );
     });

@@ -5,30 +5,27 @@ import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dar
 
 class MethodDefinitionBuilder {
   String _name;
-
   String? _documentation;
-
   final List<ParameterDefinition> _params;
   final List<ParameterDefinition> _parametersPositional;
   final List<ParameterDefinition> _parametersNamed;
-  TypeDefinition? _returnType;
+  TypeDefinition _returnType;
 
   MethodDefinitionBuilder()
       : _name = 'hello',
         _params = [],
         _parametersPositional = [],
-        _parametersNamed = [];
+        _parametersNamed = [],
+        _returnType = TypeDefinitionBuilder().withClassName('String').build();
 
   MethodDefinition build() {
-    var returnType =
-        _returnType ??= TypeDefinitionBuilder().withClassName('String').build();
     return MethodDefinition(
         name: _name,
         documentationComment: _documentation,
         parameters: _params,
         parametersPositional: _parametersPositional,
         parametersNamed: _parametersNamed,
-        returnType: returnType);
+        returnType: _returnType);
   }
 
   MethodDefinitionBuilder withMethodName(String methodName) {

@@ -1,12 +1,13 @@
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
+import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 import 'package:test/test.dart';
 
-import 'test_data_factory.dart';
-
 void main() {
+  var stringType = TypeDefinitionBuilder().withClassName('String').build();
+
   test(
-      'Given query name status in query when converting OpenAPIParameter to json then it is correctly generated.',
+      'Given query name status in query when converting to json then it is correctly generated.',
       () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'status',
@@ -29,7 +30,7 @@ void main() {
   });
 
   test(
-      'Given query name status in path when converting OpenAPIParameter to json then it is correctly generated.',
+      'Given query name status in path when converting to json then it is correctly generated.',
       () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'status',
@@ -55,7 +56,7 @@ void main() {
   });
 
   test(
-      'Given query name Authorization in header when converting OpenAPIParameter to json then it is correctly generated.',
+      'Given query name Authorization in header when converting to json then it is correctly generated.',
       () {
     OpenAPIParameter object = OpenAPIParameter(
       name: 'Authorization',

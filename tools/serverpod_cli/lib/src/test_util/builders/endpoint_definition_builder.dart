@@ -14,7 +14,7 @@ class EndpointDefinitionBuilder {
       : _name = 'Example',
         _className = 'ExampleEndpoint',
         _subDirParts = [],
-        _filePath = '',
+        _filePath = 'example_endpoint.dart',
         _methods = [];
   EndpointDefinition build() {
     return EndpointDefinition(
