@@ -185,10 +185,8 @@ void main() {
   );
 
   const exampleProjectName = 'example_project';
-  var generatorConfig = GeneratorConfigBuilder()
-      .withName(exampleProjectName)
-      .withOpenAPIDocumentVersion('2.0.0')
-      .build();
+  var generatorConfig =
+      GeneratorConfigBuilder().withName(exampleProjectName).build();
   const openAPIgenerator = OpenAPIGenerator();
 
   var expectedFilePath = path.join('generated', 'openapi', 'openapi.json');

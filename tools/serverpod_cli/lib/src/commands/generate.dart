@@ -32,11 +32,6 @@ class GenerateCommand extends ServerpodCommand {
       negatable: false,
       help: 'Generate OpenAPI schema.',
     );
-    argParser.addOption(
-      'version',
-      defaultsTo: null,
-      help: 'Specified the version of the OpenAPI document.',
-    );
   }
 
   @override
@@ -45,19 +40,13 @@ class GenerateCommand extends ServerpodCommand {
     bool watch = argResults!['watch'];
     // Whether to generate an OpenAPI schema or not.
     bool generateOpenAPI = argResults!['experimental-open-api'];
-    // Whether an OpenAPI document version is specified or not.
-    String? openAPIdocumentVersion = argResults!['version'];
-
     Set<CodeOutputFormat> codeOutputFormats = {
       CodeOutputFormat.dart,
       if (generateOpenAPI) CodeOutputFormat.openAPI,
     };
 
     // TODO: add a -d option to select the directory
-    var config = await GeneratorConfig.load(
-      openAPIDocVersion: openAPIdocumentVersion,
-      codeOutputFormats: codeOutputFormats,
-    );
+    var config = await GeneratorConfig.load();
 
     if (config == null) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
@@ -85,6 +74,7 @@ class GenerateCommand extends ServerpodCommand {
       () => performGenerate(
         config: config,
         endpointsAnalyzer: endpointsAnalyzer,
+        codeOutputFormats: codeOutputFormats,
       ),
     );
     if (watch) {

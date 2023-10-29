@@ -69,7 +69,7 @@ class OpenAPIDefinition {
     };
     OpenAPIConfig openAPIConfig = OpenAPIConfig(
       title: 'ServerPod Endpoint - OpenAPI',
-      version: config.openAPIDocumentVersion,
+      version: config.apiVersion,
       servers: servers,
     );
 

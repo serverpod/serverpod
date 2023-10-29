@@ -27,23 +27,19 @@ enum PackageType {
 
 /// The configuration of the generation and analyzing process.
 class GeneratorConfig {
-  const GeneratorConfig(
-      {required this.name,
-      required this.type,
-      required this.serverPackage,
-      required this.dartClientPackage,
-      required this.dartClientDependsOnServiceClient,
-      required this.serverPackageDirectoryPathParts,
-      required List<String> relativeDartClientPackagePathParts,
-      required this.modules,
-      required this.extraClasses,
-      this.openAPIConfig,
-      this.openAPIDocumentVersion = '1.0.0',
-      this.codeOutputFormats = const {
-        CodeOutputFormat.dart,
-      }})
-      : _relativeDartClientPackagePathParts =
-            relativeDartClientPackagePathParts;
+  const GeneratorConfig({
+    required this.name,
+    required this.type,
+    required this.serverPackage,
+    required this.dartClientPackage,
+    required this.dartClientDependsOnServiceClient,
+    required this.serverPackageDirectoryPathParts,
+    required List<String> relativeDartClientPackagePathParts,
+    required this.modules,
+    required this.extraClasses,
+    this.apiVersion = _fallBackApiVersion,
+    this.openAPIConfig,
+  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
   ///
@@ -124,20 +120,13 @@ class GeneratorConfig {
   /// Configuration for generation of OpenAPI specification.
   final OpenAPIConfig? openAPIConfig;
 
-  /// The version of OpenAPI document.
-  final String openAPIDocumentVersion;
+  /// The version of openAPI documents.
+  final String apiVersion;
 
-  /// The desired code output formats. The default is [CodeOutputFormat.dart].
-  final Set<CodeOutputFormat> codeOutputFormats;
+  static const _fallBackApiVersion = '1.0.0';
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig?> load({
-    String dir = '',
-    String? openAPIDocVersion,
-    Set<CodeOutputFormat> codeOutputFormats = const {
-      CodeOutputFormat.dart,
-    },
-  }) async {
+  static Future<GeneratorConfig?> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -270,27 +259,21 @@ class GeneratorConfig {
 
     Set<OpenAPIServer> servers = {};
     OpenAPIConfig? openAPIConfig;
-    String docVersion = '1.0.0';
-    if (codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
-      servers = _getServersFromConfigs(dir);
-      bool hasOpenAPIConfiguration =
-          generatorConfig.containsKey('openAPIConfig');
-      docVersion = _validateVersionFormat(
-          openAPIDocVersion, pubspec['version'] ?? '1.0.0');
-
-      if (hasOpenAPIConfiguration) {
-        try {
-          Map openAPIMap = generatorConfig['openAPIConfig'];
-          openAPIConfig = OpenAPIConfig.fromConfig(
-            openAPIMap,
-            version: docVersion,
-            servers: servers,
-          );
-        } catch (e) {
-          log.error(
-            'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
-          );
-        }
+    servers = _getServersFromConfigs(dir);
+    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
+    var apiVersion = pubspec['version'] ?? _fallBackApiVersion;
+    if (hasOpenAPIConfiguration) {
+      try {
+        Map openAPIMap = generatorConfig['openAPIConfig'];
+        openAPIConfig = OpenAPIConfig.fromConfig(
+          openAPIMap,
+          version: apiVersion,
+          servers: servers,
+        );
+      } catch (e) {
+        log.error(
+          'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
+        );
       }
     }
     return GeneratorConfig(
@@ -304,8 +287,7 @@ class GeneratorConfig {
       modules: modules,
       extraClasses: extraClasses,
       openAPIConfig: openAPIConfig,
-      openAPIDocumentVersion: docVersion,
-      codeOutputFormats: codeOutputFormats,
+      apiVersion: apiVersion,
     );
   }
 
@@ -396,24 +378,4 @@ String _stripPackage(String package) {
     return strippedPackage.substring(0, strippedPackage.length - 7);
   }
   return package;
-}
-
-/// Validates a semantic versioning string.
-/// If the version matches the pattern, it returns the version string.
-/// Otherwise,it returns version from pubspec.yaml.
-String _validateVersionFormat(String? version, String pubspecVersion) {
-  if (version == null) {
-    return pubspecVersion;
-  }
-  // '1.2.3'           = A valid SemVer version.
-  // '2.3'             = Not a valid SemVer version.
-  // '1.1.1-rc1'       = A valid SemVer version with pre-release.
-  // '1.2.3+build4567' = A valid SemVer version with build metadata.
-  var pattern = RegExp(
-      r'^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$');
-
-  if (pattern.hasMatch(version)) {
-    return version;
-  }
-  return pubspecVersion;
 }

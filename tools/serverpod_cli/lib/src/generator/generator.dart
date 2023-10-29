@@ -12,6 +12,9 @@ Future<bool> performGenerate({
   String? changedFile,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  Set<CodeOutputFormat> codeOutputFormats = const {
+    CodeOutputFormat.dart,
+  },
 }) async {
   var collector = CodeGenerationCollector();
   bool success = true;
@@ -73,7 +76,7 @@ Future<bool> performGenerate({
   );
 
   List<String>? generatedOpenAPIFiles;
-  if (config.codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
+  if (codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
     log.debug('Generating openAPI schema.');
     generatedOpenAPIFiles = await ServerpodCodeGenerator.generateOpenAPISchema(
       protocolDefinition: protocolDefinition,
