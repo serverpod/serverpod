@@ -1,11 +1,10 @@
 /// Converts a list of directory parts to a path string.
 ///
-/// Example: ['api', 'v1'] => '/api/v1'
+/// Example: \['api', 'v1'\] => '/api/v1'
 String getExtraPath(List<String> subDirParts) =>
     subDirParts.isEmpty ? '' : "/${subDirParts.join('/')}";
 
-/// The location of the parameter. Possible values are "query", "header",
-/// "path" or "cookie".
+/// The location of the parameter.
 enum ParameterLocation {
   query,
   header,
@@ -27,15 +26,15 @@ enum ParameterStyle {
 
 /// An enum representing different openAPI schema types.
 /// example
-/// ```
+/// ```yaml
 ///  schema:
-///       type: object
+///     type: object
 /// ```
 enum OpenAPISchemaType {
-  /// When type converting a [Map], it becomes an [object].
+  /// When converting a [Map], it becomes an [object].
   ///
-  /// When generating schemas, both [Map] and [serializableObjects] can be represented
-  /// as [object].
+  /// When generating schemas, both [Map] and [serializableObjects]
+  /// can be represented as [object].
   object,
   string,
   integer,

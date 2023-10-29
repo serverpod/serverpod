@@ -3,7 +3,8 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 
-/// Serializes [TypeDefinition] all type to JSON.
+/// Serializes a [TypeDefinition] to JSON by checking its type and calling the
+/// relevant toJson function.
 Map<String, dynamic> typeDefinitionToJson(TypeDefinition type,
     [bool child = false]) {
   Map<String, dynamic> map = {};
@@ -92,7 +93,7 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
       OpenAPIJsonKey.nullable: true,
     };
   } else {
-// SerializableObjects types are always object.
+    // SerializableObjects types are always object.
     if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
     map[OpenAPIJsonKey.$ref] =
         _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);

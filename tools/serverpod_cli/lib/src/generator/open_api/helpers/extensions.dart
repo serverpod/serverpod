@@ -1,8 +1,8 @@
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
-/// Check whether [TypeDefinition] is dartCoreType or not.
 extension TypeDefinitionExtension on TypeDefinition {
+  /// Check whether [TypeDefinition] is coreDartType or not.
   bool get isCoreDartType =>
       className == 'String' ||
       className == 'int' ||
@@ -65,7 +65,7 @@ extension TypeDefinitionExtension on TypeDefinition {
 }
 
 extension StringExtensions on String {
-  /// Removes '///' from dart comments without losing then indent.
+  /// Removes '///' from dart comments without losing the indentation.
   String get cleanedDartComment =>
       replaceAll(RegExp(r'/// '), '').replaceAll(RegExp(r'///'), '');
 }

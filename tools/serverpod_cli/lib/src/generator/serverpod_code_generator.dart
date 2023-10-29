@@ -88,7 +88,7 @@ abstract class ServerpodCodeGenerator {
     return allFiles.keys.toList();
   }
 
-  /// Generate openapi Schema from [OpenAPIGenerator]
+  /// Generate openAPI Schema from [OpenAPIGenerator]
   /// Return a generated file
   static Future<List<String>> generateOpenAPISchema({
     required ProtocolDefinition protocolDefinition,
