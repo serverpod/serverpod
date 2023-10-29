@@ -34,6 +34,15 @@ class OpenAPIServer {
     }
     return map;
   }
+
+  factory OpenAPIServer.fromJson(Map<String, dynamic> map) {
+    return OpenAPIServer(
+      url: map[OpenAPIJsonKey.url],
+      description: map.containsKey(OpenAPIJsonKey.description)
+          ? map[OpenAPIJsonKey.description]
+          : null,
+    );
+  }
 }
 
 /// An object representing a Server Variable for server URL template

@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:serverpod_cli/src/generator/open_api/helpers/utils.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/server.dart';
 
 /// The [OpenAPIConfig] is used to provide metadata and information about
 /// the API.
@@ -40,6 +42,12 @@ class OpenAPIConfig {
   /// License information for the exposed API.
   final OpenAPILicense? license;
 
+  /// An array of Server Objects, which provide connectivity information
+  /// to a target server.
+  /// If the servers property is not provided, or is an empty array,
+  /// the default value would be a Server Object with a url value of /.
+  final Set<OpenAPIServer> servers;
+
   /// The version of the OpenAPI document
   /// (which is distinct from the OpenAPI Specification version or
   /// the API implementation version).
@@ -51,6 +59,7 @@ class OpenAPIConfig {
     this.termsOfService,
     this.contact,
     this.license,
+    required this.servers,
     required this.version,
   });
 
@@ -59,6 +68,11 @@ class OpenAPIConfig {
       title: map[OpenAPIJsonKey.title],
       version: map[OpenAPIJsonKey.version],
       description: map[OpenAPIJsonKey.description],
+      servers: map.containsKey(OpenAPIJsonKey.servers)
+          ? map[OpenAPIJsonKey.servers]
+              .map((s) => OpenAPIServer.fromJson(s))
+              .toSet()
+          : <OpenAPIServer>{},
     );
   }
 
@@ -85,7 +99,8 @@ class OpenAPIConfig {
     return map;
   }
 
-  factory OpenAPIConfig.fromConfig(Map map, {required String version}) {
+  factory OpenAPIConfig.fromConfig(Map map,
+      {required String version, required Set<OpenAPIServer> servers}) {
     return OpenAPIConfig(
       title: map[OpenAPIJsonKey.title],
       summary: map.containsKey(OpenAPIJsonKey.summary)
@@ -102,6 +117,7 @@ class OpenAPIConfig {
           ? Uri.parse(map[OpenAPIJsonKey.termOfService])
           : null,
       version: version,
+      servers: servers,
     );
   }
 }

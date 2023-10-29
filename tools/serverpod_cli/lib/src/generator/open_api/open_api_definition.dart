@@ -19,12 +19,6 @@ class OpenAPIDefinition {
   ///  within this OAS document.
   final String? jsonSchemaDialect;
 
-  /// An array of Server Objects, which provide connectivity information
-  /// to a target server.
-  /// If the servers property is not provided, or is an empty array,
-  /// the default value would be a Server Object with a url value of /.
-  final Set<OpenAPIServer> servers;
-
   /// The available paths and operations for the API.
   final Set<OpenAPIPaths> paths;
 
@@ -40,7 +34,6 @@ class OpenAPIDefinition {
     this.openAPI = '3.0.0',
     required this.info,
     this.jsonSchemaDialect,
-    required this.servers,
     required this.paths,
     required this.components,
     required this.tags,
@@ -56,7 +49,7 @@ class OpenAPIDefinition {
     if (theJsonSchemaDialect != null) {
       map[OpenAPIJsonKey.jsonSchemaDialect] = theJsonSchemaDialect;
     }
-    map[OpenAPIJsonKey.servers] = servers.map((e) => e.toJson()).toList();
+    map[OpenAPIJsonKey.servers] = info.servers.map((e) => e.toJson()).toList();
     map[OpenAPIJsonKey.tags] = tags.map((tag) => tag.toJson()).toList();
     map[OpenAPIJsonKey.paths] = _allPathsToJson(paths);
     map[OpenAPIJsonKey.components] = components.toJson();
@@ -70,9 +63,14 @@ class OpenAPIDefinition {
 
   factory OpenAPIDefinition.fromProtocolDefinition(
       ProtocolDefinition protocolDefinition, GeneratorConfig config) {
-    OpenAPIConfig infoObject = OpenAPIConfig(
+    var servers = {
+      OpenAPIServer(
+          url: Uri.http('localhost:8080'), description: 'Development Server')
+    };
+    OpenAPIConfig openAPIConfig = OpenAPIConfig(
       title: 'ServerPod Endpoint - OpenAPI',
       version: config.openAPIDocumentVersion,
+      servers: servers,
     );
 
     var returnTypeList = _getEntitiesFromEndpointsReturnType(
@@ -92,14 +90,8 @@ class OpenAPIDefinition {
       serverpodAuth,
     });
 
-    var servers = {
-      OpenAPIServer(
-          url: Uri.http('localhost:8080'), description: 'Development Server')
-    };
-
     return OpenAPIDefinition(
-      info: config.openAPIConfig ?? infoObject,
-      servers: config.servers.isNotEmpty ? config.servers : servers,
+      info: config.openAPIConfig ?? openAPIConfig,
       tags: tags,
       paths: paths,
       components: componentsObject,

@@ -37,7 +37,6 @@ class GeneratorConfig {
       required List<String> relativeDartClientPackagePathParts,
       required this.modules,
       required this.extraClasses,
-      this.servers = const {},
       this.openAPIConfig,
       this.openAPIDocumentVersion = '1.0.0',
       this.codeOutputFormats = const {
@@ -121,9 +120,6 @@ class GeneratorConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
-
-  /// List of server runtime configurations, used by OpenAPI generator.
-  final Set<OpenAPIServer> servers;
 
   /// Configuration for generation of OpenAPI specification.
   final OpenAPIConfig? openAPIConfig;
@@ -288,6 +284,7 @@ class GeneratorConfig {
           openAPIConfig = OpenAPIConfig.fromConfig(
             openAPIMap,
             version: docVersion,
+            servers: servers,
           );
         } catch (e) {
           log.error(
@@ -306,7 +303,6 @@ class GeneratorConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
-      servers: servers,
       openAPIConfig: openAPIConfig,
       openAPIDocumentVersion: docVersion,
       codeOutputFormats: codeOutputFormats,
