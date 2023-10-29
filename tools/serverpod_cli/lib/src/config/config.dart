@@ -310,17 +310,18 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
 
   static Set<OpenAPIServer> _getServersFromConfigs(String dir) {
     Set<OpenAPIServer> servers = {};
-    for (var path in ['development', 'staging', 'production']) {
+    for (var runMode in ['development', 'staging', 'production']) {
       try {
-        var config = ServerpodConfig(path, 'undefined', {'database': ''});
+        var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+        var config = ServerpodConfig(runMode, 'undefined', passwords);
         servers.add(
           OpenAPIServer(
             url: config.apiServer.toUri(),
-            description: '${path.toCamelCase()} Server',
+            description: '${runMode.toCamelCase()} Server',
           ),
         );
       } catch (e, s) {
-        log.debug('Failed to load config/$path.yaml, $e\n$s');
+        log.debug('Failed to load config/$runMode.yaml, $e\n$s');
       }
     }
     return servers;
