@@ -1,8 +1,9 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
+import 'package:serverpod_cli/src/generator/open_api/objects/components.dart';
 
-import '../../analyzer/dart/definitions.dart';
 import 'helpers/utils.dart';
 import 'open_api_objects.dart';
 
