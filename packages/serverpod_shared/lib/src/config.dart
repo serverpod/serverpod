@@ -117,7 +117,8 @@ class ServerConfig {
 
   /// Get [Uri] from publicHost, port and publicScheme.
   Uri toUri() {
-    if (publicScheme != 'http' && publicScheme != 'https') {
+    const supportedUriSchemes = ['http', 'https'];
+    if (!supportedUriSchemes.contains(publicScheme)) {
       throw Exception('Unsupported publicScheme $publicScheme.');
     }
     return Uri(
