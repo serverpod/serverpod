@@ -306,6 +306,7 @@ class LogManager {
 
   /// Called automatically when a session is closed. Writes the session and its
   /// logs to the database, if configuration says so.
+  @internal
   Future<int?> finalizeSessionLog(
     Session session, {
     int? authenticatedUserId,
@@ -314,6 +315,15 @@ class LogManager {
   }) async {
     // Remove from open sessions
     _openSessionLogs.removeWhere((logEntry) => logEntry.session == session);
+
+    // If verbose logging is enabled, output otherwise unlogged exceptions to
+    // console.
+    if (exception != null && !session.enableLogging) {
+      session.serverpod.logVerbose(exception);
+      if (stackTrace != null) {
+        session.serverpod.logVerbose(stackTrace.toString());
+      }
+    }
 
     // Check if we should log to database
     if (!session.enableLogging) return null;
