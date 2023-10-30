@@ -321,7 +321,8 @@ class InsightsEndpoint extends Endpoint {
     }
   }
 
-  /// Fetches a file from the server. Only whitelisted files can be fetched.
+  /// Fetches a file from the server. Only whitelisted files in
+  /// [Serverpod.filesWhitelistedForInsights] can be fetched.
   /// The file path must be in unix format and relative to the servers root
   /// directory.
   Future<String> fetchFile(Session session, String path) async {

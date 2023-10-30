@@ -7,18 +7,9 @@ class PathUtil {
   /// slash. The path and whitelisted paths are case sensitive and should be
   /// in unix/posix format.
   static bool isFileWhitelisted(String path, Set<String> whitelistedFiles) {
-    for (var whitelistedFile in whitelistedFiles) {
-      if (whitelistedFile.endsWith('/')) {
-        if (path.startsWith(whitelistedFile)) {
-          return true;
-        }
-      } else {
-        if (path == whitelistedFile) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return whitelistedFiles.any(
+      (e) => (e.endsWith('/') && path.startsWith(e)) || e == path,
+    );
   }
 
   /// Converts a relative path in unix/posix format to a platform specific

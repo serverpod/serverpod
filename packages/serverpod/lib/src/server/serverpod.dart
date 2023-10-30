@@ -207,7 +207,8 @@ class Serverpod {
 
   /// Files that are allowed to be accessed through the [InsightsEndpoint].
   /// File paths are relative to the root directory of the server. Complete
-  /// directories can be whitelisted by adding a trailing slash.
+  /// directories (including sub directories) can be whitelisted by adding a
+  /// trailing slash.
   Set<String> filesWhitelistedForInsights = {
     'generated/protocol.yaml',
   };

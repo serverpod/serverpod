@@ -476,7 +476,7 @@ void main() {
     test('Fetch file outside whitelist', () async {
       expect(
         () async {
-          await serviceClient.insights.fetchFile('non-existant-file');
+          await serviceClient.insights.fetchFile('config/passwords.yaml');
         },
         throwsA(isA<service.AccessDeniedException>()),
       );
