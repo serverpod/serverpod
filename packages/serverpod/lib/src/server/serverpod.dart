@@ -205,6 +205,13 @@ class Serverpod {
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
 
+  /// Files that are allowed to be accessed through the [InsightsEndpoint].
+  /// File paths are relative to the root directory of the server. Complete
+  /// directories can be whitelisted by adding a trailing slash.
+  Set<String> filesWhitelistedForInsights = {
+    'generated/protocol.yaml',
+  };
+
   late final HealthCheckManager _healthCheckManager;
 
   /// The [ClusterManager] provides information about other servers in the same
@@ -416,7 +423,7 @@ class Serverpod {
       if (commandLineArgs.role == ServerpodRole.monolith ||
           commandLineArgs.role == ServerpodRole.serverless) {
         // Serverpod Insights.
-        await _startServiceServer();
+        await _startInsightsServer();
 
         // Main API server.
         await server.start();
@@ -487,7 +494,7 @@ class Serverpod {
     }
   }
 
-  Future<void> _startServiceServer() async {
+  Future<void> _startInsightsServer() async {
     // var context = SecurityContext();
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
