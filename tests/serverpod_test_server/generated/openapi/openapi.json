@@ -156,10 +156,12 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "seconds": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -206,7 +208,8 @@
                                 "type": "object",
                                 "properties": {
                                     "seconds": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -311,7 +314,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -487,6 +491,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -507,6 +512,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -538,6 +544,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "number",
+                                        "format": "float",
                                         "nullable": true
                                     }
                                 }
@@ -558,6 +565,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "number",
+                                    "format": "float",
                                     "nullable": true
                                 }
                             }
@@ -640,6 +648,7 @@
                                 "properties": {
                                     "dateTime": {
                                         "type": "string",
+                                        "format": "date-time",
                                         "nullable": true
                                     }
                                 }
@@ -660,6 +669,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "string",
+                                    "format": "date-time",
                                     "nullable": true
                                 }
                             }
@@ -742,6 +752,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "byte",
                                         "nullable": true
                                     }
                                 }
@@ -762,6 +773,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "string",
+                                    "format": "byte",
                                     "nullable": true
                                 }
                             }
@@ -793,6 +805,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "duration",
                                         "nullable": true
                                     }
                                 }
@@ -813,6 +826,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "duration",
                                     "nullable": true
                                 }
                             }
@@ -844,6 +858,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "uuid",
                                         "nullable": true
                                     }
                                 }
@@ -864,6 +879,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "string",
+                                    "format": "uuid",
                                     "nullable": true
                                 }
                             }
@@ -940,7 +956,8 @@
                                         "type": "string"
                                     },
                                     "byteData": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "byte"
                                     }
                                 }
                             }
@@ -1007,6 +1024,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "string",
+                                    "format": "byte",
                                     "nullable": true
                                 }
                             }
@@ -1286,7 +1304,8 @@
                                         "type": "string"
                                     },
                                     "byteData": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "byte"
                                     }
                                 }
                             }
@@ -1353,6 +1372,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "string",
+                                    "format": "byte",
                                     "nullable": true
                                 }
                             }
@@ -1694,7 +1714,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -2157,7 +2178,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -2236,6 +2258,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "date-time",
                                         "nullable": true
                                     }
                                 }
@@ -2289,6 +2312,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "date-time",
                                         "nullable": true
                                     }
                                 }
@@ -2343,7 +2367,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "date-time"
                                         }
                                     }
                                 }
@@ -2398,7 +2423,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "date-time"
                                         }
                                     }
                                 }
@@ -2451,7 +2477,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2503,7 +2530,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2555,7 +2583,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2607,7 +2636,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2659,7 +2689,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2711,7 +2742,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2763,10 +2795,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2818,10 +2852,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     },
                                     "max": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -2938,7 +2974,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -3017,6 +3054,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "number",
+                                        "format": "float",
                                         "nullable": true
                                     }
                                 }
@@ -3070,6 +3108,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "number",
+                                        "format": "float",
                                         "nullable": true
                                     }
                                 }
@@ -3124,7 +3163,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "number"
+                                            "type": "number",
+                                            "format": "float"
                                         }
                                     }
                                 }
@@ -3179,7 +3219,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "number"
+                                            "type": "number",
+                                            "format": "float"
                                         }
                                     }
                                 }
@@ -3232,7 +3273,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3284,7 +3326,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3336,7 +3379,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3388,7 +3432,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3440,7 +3485,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3492,7 +3538,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3544,10 +3591,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     },
                                     "max": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3599,10 +3648,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     },
                                     "max": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -3719,7 +3770,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -3798,6 +3850,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "duration",
                                         "nullable": true
                                     }
                                 }
@@ -3851,6 +3904,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "duration",
                                         "nullable": true
                                     }
                                 }
@@ -3905,7 +3959,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "duration"
                                         }
                                     }
                                 }
@@ -3960,7 +4015,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "duration"
                                         }
                                     }
                                 }
@@ -4013,7 +4069,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4065,7 +4122,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4117,7 +4175,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4169,7 +4228,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4221,7 +4281,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4273,7 +4334,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4325,10 +4387,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     },
                                     "max": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4380,10 +4444,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     },
                                     "max": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -4500,7 +4566,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -4971,7 +5038,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -5050,6 +5118,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -5103,6 +5172,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -5157,7 +5227,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -5212,7 +5283,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -5265,7 +5337,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5317,7 +5390,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5369,7 +5443,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5421,7 +5496,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5473,7 +5549,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5525,7 +5602,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5577,10 +5655,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "max": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5632,10 +5712,12 @@
                                 "type": "object",
                                 "properties": {
                                     "min": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "max": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -5752,7 +5834,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -6319,7 +6402,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -6398,6 +6482,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "uuid",
                                         "nullable": true
                                     }
                                 }
@@ -6451,6 +6536,7 @@
                                 "properties": {
                                     "value": {
                                         "type": "string",
+                                        "format": "uuid",
                                         "nullable": true
                                     }
                                 }
@@ -6505,7 +6591,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "uuid"
                                         }
                                     }
                                 }
@@ -6560,7 +6647,8 @@
                                     "value": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "uuid"
                                         }
                                     }
                                 }
@@ -6613,7 +6701,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "uuid"
                                     }
                                 }
                             }
@@ -6665,7 +6754,8 @@
                                 "type": "object",
                                 "properties": {
                                     "value": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "uuid"
                                     }
                                 }
                             }
@@ -7149,10 +7239,12 @@
                                 "type": "object",
                                 "properties": {
                                     "limit": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "offset": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7204,7 +7296,8 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7258,7 +7351,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7429,7 +7523,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -7476,7 +7571,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7522,7 +7618,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -7665,7 +7762,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -7715,6 +7813,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -7745,7 +7844,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7819,6 +7919,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -7849,7 +7950,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7903,7 +8005,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -7923,6 +8026,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -7969,6 +8073,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -8015,6 +8120,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -8045,7 +8151,8 @@
                                 "type": "object",
                                 "properties": {
                                     "numRows": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -8108,6 +8215,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -8181,7 +8289,8 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -8228,7 +8337,8 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -8278,13 +8388,16 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "offset": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "limit": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "descending": {
                                         "type": "boolean"
@@ -8341,10 +8454,12 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "newNum": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -8414,6 +8529,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -8444,7 +8560,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -8942,7 +9059,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -9076,7 +9194,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -9465,7 +9584,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -9599,7 +9719,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -10091,7 +10212,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -10345,7 +10467,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -10442,7 +10565,8 @@
                                 "type": "object",
                                 "properties": {
                                     "num": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -10489,13 +10613,16 @@
                                 "type": "object",
                                 "properties": {
                                     "numUpdate": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "numInsert": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "numDelete": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -10824,7 +10951,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -11073,7 +11201,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -11122,7 +11251,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -11171,7 +11301,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -11220,7 +11351,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -11445,7 +11577,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -11547,7 +11680,8 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -11961,6 +12095,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -12011,6 +12146,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -12061,6 +12197,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -12111,6 +12248,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -12161,6 +12299,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -12206,7 +12345,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -12739,7 +12879,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -12761,7 +12902,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -12796,7 +12938,8 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "type": "integer"
+                                                "type": "integer",
+                                                "format": "int64"
                                             }
                                         }
                                     }
@@ -12821,7 +12964,8 @@
                                     "items": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -12855,7 +12999,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -12877,7 +13022,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -12912,7 +13058,8 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "type": "integer"
+                                                "type": "integer",
+                                                "format": "int64"
                                             }
                                         }
                                     }
@@ -12937,7 +13084,8 @@
                                     "items": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -12973,7 +13121,8 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "type": "integer"
+                                                "type": "integer",
+                                                "format": "int64"
                                             }
                                         }
                                     }
@@ -12998,7 +13147,8 @@
                                     "items": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -13033,6 +13183,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "integer",
+                                            "format": "int64",
                                             "nullable": true
                                         }
                                     }
@@ -13056,6 +13207,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -13090,6 +13242,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "integer",
+                                            "format": "int64",
                                             "nullable": true
                                         }
                                     }
@@ -13113,6 +13266,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -13146,7 +13300,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "number"
+                                            "type": "number",
+                                            "format": "float"
                                         }
                                     }
                                 }
@@ -13168,7 +13323,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -13202,6 +13358,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "number",
+                                            "format": "float",
                                             "nullable": true
                                         }
                                     }
@@ -13225,6 +13382,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "number",
+                                        "format": "float",
                                         "nullable": true
                                     }
                                 }
@@ -13482,7 +13640,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "date-time"
                                         }
                                     }
                                 }
@@ -13504,7 +13663,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -13538,6 +13698,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "string",
+                                            "format": "date-time",
                                             "nullable": true
                                         }
                                     }
@@ -13561,6 +13722,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "string",
+                                        "format": "date-time",
                                         "nullable": true
                                     }
                                 }
@@ -13594,7 +13756,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "byte"
                                         }
                                     }
                                 }
@@ -13616,7 +13779,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "byte"
                                     }
                                 }
                             }
@@ -13650,6 +13814,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "string",
+                                            "format": "byte",
                                             "nullable": true
                                         }
                                     }
@@ -13673,6 +13838,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "string",
+                                        "format": "byte",
                                         "nullable": true
                                     }
                                 }
@@ -13946,7 +14112,8 @@
                                     "list": {
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "duration"
                                         }
                                     }
                                 }
@@ -13968,7 +14135,8 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -14002,6 +14170,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "integer",
+                                            "format": "duration",
                                             "nullable": true
                                         }
                                     }
@@ -14025,6 +14194,7 @@
                                     "type": "array",
                                     "items": {
                                         "type": "integer",
+                                        "format": "duration",
                                         "nullable": true
                                     }
                                 }
@@ -14248,7 +14418,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -14270,7 +14441,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -14304,7 +14476,8 @@
                                         "type": "object",
                                         "nullable": true,
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -14327,7 +14500,8 @@
                                     "type": "object",
                                     "nullable": true,
                                     "additionalProperties": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -14362,7 +14536,8 @@
                                         "additionalProperties": {
                                             "type": "object",
                                             "additionalProperties": {
-                                                "type": "integer"
+                                                "type": "integer",
+                                                "format": "int64"
                                             }
                                         }
                                     }
@@ -14387,7 +14562,8 @@
                                     "additionalProperties": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -14422,6 +14598,7 @@
                                         "type": "object",
                                         "additionalProperties": {
                                             "type": "integer",
+                                            "format": "int64",
                                             "nullable": true
                                         }
                                     }
@@ -14445,6 +14622,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -14480,6 +14658,7 @@
                                         "nullable": true,
                                         "additionalProperties": {
                                             "type": "integer",
+                                            "format": "int64",
                                             "nullable": true
                                         }
                                     }
@@ -14504,6 +14683,7 @@
                                     "nullable": true,
                                     "additionalProperties": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -14537,7 +14717,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -14559,7 +14740,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -14592,7 +14774,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "int64"
                                         }
                                     }
                                 }
@@ -14614,7 +14797,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     }
                                 }
                             }
@@ -14702,7 +14886,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "number"
+                                            "type": "number",
+                                            "format": "float"
                                         }
                                     }
                                 }
@@ -14724,7 +14909,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "number"
+                                        "type": "number",
+                                        "format": "float"
                                     }
                                 }
                             }
@@ -14758,6 +14944,7 @@
                                         "type": "object",
                                         "additionalProperties": {
                                             "type": "number",
+                                            "format": "float",
                                             "nullable": true
                                         }
                                     }
@@ -14781,6 +14968,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                         "type": "number",
+                                        "format": "float",
                                         "nullable": true
                                     }
                                 }
@@ -15038,7 +15226,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "date-time"
                                         }
                                     }
                                 }
@@ -15060,7 +15249,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "date-time"
                                     }
                                 }
                             }
@@ -15094,6 +15284,7 @@
                                         "type": "object",
                                         "additionalProperties": {
                                             "type": "string",
+                                            "format": "date-time",
                                             "nullable": true
                                         }
                                     }
@@ -15117,6 +15308,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                         "type": "string",
+                                        "format": "date-time",
                                         "nullable": true
                                     }
                                 }
@@ -15150,7 +15342,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "format": "byte"
                                         }
                                     }
                                 }
@@ -15172,7 +15365,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "byte"
                                     }
                                 }
                             }
@@ -15206,6 +15400,7 @@
                                         "type": "object",
                                         "additionalProperties": {
                                             "type": "string",
+                                            "format": "byte",
                                             "nullable": true
                                         }
                                     }
@@ -15229,6 +15424,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                         "type": "string",
+                                        "format": "byte",
                                         "nullable": true
                                     }
                                 }
@@ -15506,7 +15702,8 @@
                                     "map": {
                                         "type": "object",
                                         "additionalProperties": {
-                                            "type": "integer"
+                                            "type": "integer",
+                                            "format": "duration"
                                         }
                                     }
                                 }
@@ -15528,7 +15725,8 @@
                                 "schema": {
                                     "type": "object",
                                     "additionalProperties": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "duration"
                                     }
                                 }
                             }
@@ -15562,6 +15760,7 @@
                                         "type": "object",
                                         "additionalProperties": {
                                             "type": "integer",
+                                            "format": "duration",
                                             "nullable": true
                                         }
                                     }
@@ -15585,6 +15784,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                         "type": "integer",
+                                        "format": "duration",
                                         "nullable": true
                                     }
                                 }
@@ -15755,17 +15955,21 @@
                                 "type": "object",
                                 "properties": {
                                     "namedInt": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "intWithDefaultValue": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "nullableInt": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     },
                                     "nullableIntWithDefaultValue": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -15815,10 +16019,12 @@
                                 "type": "object",
                                 "properties": {
                                     "namedInt": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "format": "int64"
                                     },
                                     "nullableInt": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -15869,6 +16075,7 @@
                                 "properties": {
                                     "optionalInt": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -15889,6 +16096,7 @@
                             "application/json": {
                                 "schema": {
                                     "type": "integer",
+                                    "format": "int64",
                                     "nullable": true
                                 }
                             }
@@ -16282,7 +16490,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -16359,10 +16568,12 @@
                                 "properties": {
                                     "value": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     },
                                     "secondValue": {
                                         "type": "integer",
+                                        "format": "int64",
                                         "nullable": true
                                     }
                                 }
@@ -16470,7 +16681,8 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "format": "int64"
                                 }
                             }
                         }
@@ -16634,6 +16846,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16659,6 +16872,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16672,6 +16886,7 @@
                     },
                     "cityId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "city": {
@@ -16689,6 +16904,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16696,6 +16912,7 @@
                     },
                     "organizationId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "organization": {
@@ -16713,6 +16930,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16733,6 +16951,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16740,6 +16959,7 @@
                     },
                     "teamId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "team": {
@@ -16757,6 +16977,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16764,6 +16985,7 @@
                     },
                     "arenaId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "arena": {
@@ -16787,13 +17009,15 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "description": {
                         "type": "string"
                     },
                     "orderId": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "order": {
                         "oneOf": [
@@ -16810,6 +17034,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16828,13 +17053,15 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "description": {
                         "type": "string"
                     },
                     "customerId": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "customer": {
                         "oneOf": [
@@ -16857,6 +17084,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "street": {
@@ -16864,6 +17092,7 @@
                     },
                     "inhabitantId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "inhabitant": {
@@ -16881,6 +17110,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16895,7 +17125,8 @@
                         "nullable": true
                     },
                     "companyId": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "company": {
                         "oneOf": [
@@ -16907,6 +17138,7 @@
                     },
                     "oldCompanyId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "oldCompany": {
@@ -16924,13 +17156,15 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
                         "type": "string"
                     },
                     "townId": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "town": {
                         "oneOf": [
@@ -16947,6 +17181,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "name": {
@@ -16954,6 +17189,7 @@
                     },
                     "mayorId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "mayor": {
@@ -16971,6 +17207,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "content": {
@@ -16986,6 +17223,7 @@
                     },
                     "nextId": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "next": {
@@ -17005,7 +17243,8 @@
                         "type": "string"
                     },
                     "creationDate": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "errorFields": {
                         "type": "array",
@@ -17015,6 +17254,7 @@
                     },
                     "someNullableField": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     }
                 }
@@ -17043,17 +17283,21 @@
                 "type": "object",
                 "properties": {
                     "anInt": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "aNullableInt": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "aDouble": {
-                        "type": "number"
+                        "type": "number",
+                        "format": "float"
                     },
                     "aNullableDouble": {
                         "type": "number",
+                        "format": "float",
                         "nullable": true
                     },
                     "aBool": {
@@ -17071,31 +17315,39 @@
                         "nullable": true
                     },
                     "aDateTime": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     },
                     "aNullableDateTime": {
                         "type": "string",
+                        "format": "date-time",
                         "nullable": true
                     },
                     "aByteData": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "byte"
                     },
                     "aNullableByteData": {
                         "type": "string",
+                        "format": "byte",
                         "nullable": true
                     },
                     "aDuration": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "duration"
                     },
                     "aNullableDuration": {
                         "type": "integer",
+                        "format": "duration",
                         "nullable": true
                     },
                     "aUuid": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "uuid"
                     },
                     "aNullableUuid": {
                         "type": "string",
+                        "format": "uuid",
                         "nullable": true
                     },
                     "anObject": {
@@ -17112,19 +17364,22 @@
                     "anIntList": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     "aNullableIntList": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     "aListWithNullableInts": {
                         "type": "array",
                         "items": {
                             "type": "integer",
+                            "format": "int64",
                             "nullable": true
                         }
                     },
@@ -17132,6 +17387,7 @@
                         "type": "array",
                         "items": {
                             "type": "integer",
+                            "format": "int64",
                             "nullable": true
                         }
                     },
@@ -17172,19 +17428,22 @@
                     "aDateTimeList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         }
                     },
                     "aNullableDateTimeList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         }
                     },
                     "aListWithNullableDateTimes": {
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "date-time",
                             "nullable": true
                         }
                     },
@@ -17192,25 +17451,29 @@
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "date-time",
                             "nullable": true
                         }
                     },
                     "aByteDataList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "byte"
                         }
                     },
                     "aNullableByteDataList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "byte"
                         }
                     },
                     "aListWithNullableByteDatas": {
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "byte",
                             "nullable": true
                         }
                     },
@@ -17218,25 +17481,29 @@
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "byte",
                             "nullable": true
                         }
                     },
                     "aDurationList": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "duration"
                         }
                     },
                     "aNullableDurationList": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "duration"
                         }
                     },
                     "aListWithNullableDurations": {
                         "type": "array",
                         "items": {
                             "type": "integer",
+                            "format": "duration",
                             "nullable": true
                         }
                     },
@@ -17244,25 +17511,29 @@
                         "type": "array",
                         "items": {
                             "type": "integer",
+                            "format": "duration",
                             "nullable": true
                         }
                     },
                     "aUuidList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     "aNullableUuidList": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     "aListWithNullableUuids": {
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "uuid",
                             "nullable": true
                         }
                     },
@@ -17270,26 +17541,30 @@
                         "type": "array",
                         "items": {
                             "type": "string",
+                            "format": "uuid",
                             "nullable": true
                         }
                     },
                     "anIntMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     "aNullableIntMap": {
                         "type": "object",
                         "nullable": true,
                         "additionalProperties": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     "aMapWithNullableInts": {
                         "type": "object",
                         "additionalProperties": {
                             "type": "integer",
+                            "format": "int64",
                             "nullable": true
                         }
                     },
@@ -17298,6 +17573,7 @@
                         "nullable": true,
                         "additionalProperties": {
                             "type": "integer",
+                            "format": "int64",
                             "nullable": true
                         }
                     }
@@ -17308,6 +17584,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "normal": {
@@ -17324,10 +17601,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "byteData": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "byte"
                     }
                 }
             },
@@ -17336,10 +17615,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "duration": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "duration"
                     }
                 }
             },
@@ -17348,6 +17629,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "testEnum": {
@@ -17394,13 +17676,16 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "indexed": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "indexed2": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             },
@@ -17416,7 +17701,8 @@
                     "intMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     },
                     "stringMap": {
@@ -17428,25 +17714,29 @@
                     "dateTimeMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "date-time"
                         }
                     },
                     "byteDataMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "byte"
                         }
                     },
                     "durationMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "duration"
                         }
                     },
                     "uuidMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "string"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     "nullableDataMap": {
@@ -17464,6 +17754,7 @@
                         "type": "object",
                         "additionalProperties": {
                             "type": "integer",
+                            "format": "int64",
                             "nullable": true
                         }
                     },
@@ -17478,6 +17769,7 @@
                         "type": "object",
                         "additionalProperties": {
                             "type": "string",
+                            "format": "date-time",
                             "nullable": true
                         }
                     },
@@ -17485,6 +17777,7 @@
                         "type": "object",
                         "additionalProperties": {
                             "type": "string",
+                            "format": "byte",
                             "nullable": true
                         }
                     },
@@ -17492,6 +17785,7 @@
                         "type": "object",
                         "additionalProperties": {
                             "type": "integer",
+                            "format": "duration",
                             "nullable": true
                         }
                     },
@@ -17499,13 +17793,15 @@
                         "type": "object",
                         "additionalProperties": {
                             "type": "string",
+                            "format": "uuid",
                             "nullable": true
                         }
                     },
                     "intIntMap": {
                         "type": "object",
                         "additionalProperties": {
-                            "type": "integer"
+                            "type": "integer",
+                            "format": "int64"
                         }
                     }
                 }
@@ -17515,6 +17811,7 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "data": {
@@ -17569,10 +17866,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "other": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             },
@@ -17581,10 +17880,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "other": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     }
                 }
@@ -17594,13 +17895,16 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "uuid": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "uuid"
                     },
                     "uuidNullable": {
                         "type": "string",
+                        "format": "uuid",
                         "nullable": true
                     }
                 }
@@ -17610,10 +17914,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "uniqueDataId": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "uniqueData": {
                         "oneOf": [
@@ -17624,7 +17930,8 @@
                         "nullable": true
                     },
                     "number": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             },
@@ -17663,10 +17970,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "num": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     }
                 }
             },
@@ -17697,10 +18006,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "dateTime": {
-                        "type": "string"
+                        "type": "string",
+                        "format": "date-time"
                     }
                 }
             },
@@ -17717,10 +18028,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "anInt": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "aBool": {
@@ -17729,10 +18042,12 @@
                     },
                     "aDouble": {
                         "type": "number",
+                        "format": "float",
                         "nullable": true
                     },
                     "aDateTime": {
                         "type": "string",
+                        "format": "date-time",
                         "nullable": true
                     },
                     "aString": {
@@ -17741,14 +18056,17 @@
                     },
                     "aByteData": {
                         "type": "string",
+                        "format": "byte",
                         "nullable": true
                     },
                     "aDuration": {
-                        "type": "integer",
+                        "type": "string",
+                        "format": "duration",
                         "nullable": true
                     },
                     "aUuid": {
                         "type": "string",
+                        "format": "uuid",
                         "nullable": true
                     },
                     "anEnum": {
@@ -17766,10 +18084,12 @@
                 "properties": {
                     "id": {
                         "type": "integer",
+                        "format": "int64",
                         "nullable": true
                     },
                     "number": {
-                        "type": "integer"
+                        "type": "integer",
+                        "format": "int64"
                     },
                     "email": {
                         "type": "string"

@@ -54,12 +54,15 @@ extension TypeDefinitionExtension on TypeDefinition {
       toOpenAPISchemaType == OpenAPISchemaType.serializableObjects;
 
   /// Converts [TypeDefinition] className to [SchemaObjetFormat] .
-  SchemaObjectFormat? get toSchemaObjectFormat {
+  String? get toSchemaObjectFormat {
     if (className == 'int') return SchemaObjectFormat.int64;
     if (className == 'double') return SchemaObjectFormat.float;
     if (className == 'DateTime') return SchemaObjectFormat.dateTime;
     if (className == 'ByteData') return SchemaObjectFormat.byte;
     if (className == 'UuidValue') return SchemaObjectFormat.uuid;
+    if (className == 'Duration') return SchemaObjectFormat.duration;
+    if (className == 'Uri') return SchemaObjectFormat.uri;
+    if (className == 'ByteData') return SchemaObjectFormat.binary;
     return null;
   }
 }

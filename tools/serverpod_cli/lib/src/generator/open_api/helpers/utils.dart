@@ -48,42 +48,42 @@ enum OpenAPISchemaType {
 }
 
 /// An openAPI string format
-enum SchemaObjectFormat {
+class SchemaObjectFormat {
   /// Full-date notation as defined by RFC 3339, section 5.6, for example,
   /// 2017-07-21.
-  date,
+  static const data = 'date';
 
   /// The date-time notation as defined by RFC 3339, section 5.6,
   /// for example, 2017-07-21T17:32:28Z.
-  dateTime,
+  static const dateTime = 'date-time';
 
   /// A hint to UIs to mask the input.
-  password,
+  static const password = 'password';
 
   /// base64-encoded characters, for example, U3dhZ2dlciByb2Nrcw== .
-  byte,
+  static const byte = 'byte';
 
   /// binary data, used to describe files
-  binary,
+  static const binary = 'binary';
 
-  boolean,
+  static const boolean = 'boolean';
 
   /// unsupported
-  email,
-  int32,
-  int64,
-  uri,
-  uuid,
-  hostname,
-  ipv4,
-  ipv6,
-  float,
-  double,
-  time,
-  any,
+  static const email = 'email';
+  static const int32 = 'int32';
+  static const int64 = 'int64';
+  static const uri = 'uri';
+  static const uuid = 'uuid';
+  static const hostname = 'hostname';
+  static const ipv4 = 'ipv4';
+  static const ipv6 = 'ipv6';
+  static const float = 'float';
+  static const double = 'double';
+  static const time = 'time';
+  static const any = 'any';
 
   /// A duration as defined by duration - RFC3339.
-  duration,
+  static const duration = 'duration';
 }
 
 enum SecuritySchemeType {
@@ -95,6 +95,7 @@ enum SecuritySchemeType {
 }
 
 class OpenAPIJsonKey {
+  static const format = 'format';
   static const inKey = 'in';
   static const requiredKey = 'required';
   static const enumKey = 'enum';

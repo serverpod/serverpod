@@ -67,6 +67,9 @@ Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
   );
   Map<String, dynamic> map = {};
   map[OpenAPIJsonKey.type] = type.toOpenAPISchemaType.name;
+  if (type.toSchemaObjectFormat != null) {
+    map[OpenAPIJsonKey.format] = type.toSchemaObjectFormat;
+  }
   if (type.nullable) map[OpenAPIJsonKey.nullable] = true;
   return map;
 }
