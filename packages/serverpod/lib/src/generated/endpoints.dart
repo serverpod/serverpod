@@ -307,6 +307,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['sql'],
           ),
         ),
+        'fetchFile': _i1.MethodConnector(
+          name: 'fetchFile',
+          params: {
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).fetchFile(
+            session,
+            params['path'],
+          ),
+        ),
       },
     );
   }
