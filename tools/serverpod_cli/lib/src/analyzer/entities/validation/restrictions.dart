@@ -449,8 +449,8 @@ class Restrictions {
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return [];
 
-    var field = classDefinition.findField(fieldName);
-    if (field == null) {
+    var foreignKeyField = classDefinition.findField(fieldName);
+    if (foreignKeyField == null) {
       return [
         SourceSpanSeverityException(
           'The field "$fieldName" was not found in the class.',
@@ -459,7 +459,7 @@ class Restrictions {
       ];
     }
 
-    if (!field.shouldPersist) {
+    if (!foreignKeyField.shouldPersist) {
       return [
         SourceSpanSeverityException(
           'The field "$fieldName" is not persisted and cannot be used in a relation.',
@@ -468,22 +468,36 @@ class Restrictions {
       ];
     }
 
-    var relation = field.relation;
-    if (relation is! ForeignRelationDefinition) return [];
+    var foreignKeyRelation = foreignKeyField.relation;
+    if (foreignKeyRelation is! ForeignRelationDefinition) return [];
 
-    var parentClasses = entityRelations?.tableNames[relation.parentTable];
+    var field = classDefinition.findField(parentNodeName);
+    var relation = field?.relation;
+    if (relation is UnresolvableObjectRelationDefinition &&
+        relation.reason == UnresolvableReason.relationAlreadyDefinedForField) {
+      return [
+        SourceSpanSeverityException(
+          'The field "${foreignKeyField.name}" already has a relation and cannot be used as relation field.',
+          span,
+        )
+      ];
+    }
+
+    var parentClasses =
+        entityRelations?.tableNames[foreignKeyRelation.parentTable];
 
     if (parentClasses == null || parentClasses.isEmpty) return [];
 
     var parentClass = parentClasses.first;
     if (parentClass is! ClassDefinition) return [];
 
-    var referenceField = parentClass.findField(relation.foreignFieldName);
+    var referenceField =
+        parentClass.findField(foreignKeyRelation.foreignFieldName);
 
-    if (field.type.className != referenceField?.type.className) {
+    if (foreignKeyField.type.className != referenceField?.type.className) {
       return [
         SourceSpanSeverityException(
-          'The field "$fieldName" is of type "${field.type.className}" but reference field "${relation.foreignFieldName}" is of type "${referenceField?.type.className}".',
+          'The field "$fieldName" is of type "${foreignKeyField.type.className}" but reference field "${foreignKeyRelation.foreignFieldName}" is of type "${referenceField?.type.className}".',
           span,
         )
       ];

@@ -187,6 +187,14 @@ class EntityDependencyResolver {
     var field = classDefinition.findField(relationFieldName);
     if (field == null) return;
 
+    if (field.relation != null) {
+      fieldDefinition.relation = UnresolvableObjectRelationDefinition(
+        relation,
+        UnresolvableReason.relationAlreadyDefinedForField,
+      );
+      return;
+    }
+
     field.relation = ForeignRelationDefinition(
       name: relation.name,
       parentTable: tableName,
