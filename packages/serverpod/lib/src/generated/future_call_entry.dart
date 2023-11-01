@@ -483,10 +483,12 @@ class FutureCallEntryRepository {
   Future<List<FutureCallEntry>> update(
     _i1.Session session,
     List<FutureCallEntry> rows, {
+    _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<FutureCallEntry>(
       rows,
+      columns: columns?.call(FutureCallEntry.t),
       transaction: transaction,
     );
   }
@@ -494,10 +496,12 @@ class FutureCallEntryRepository {
   Future<FutureCallEntry> updateRow(
     _i1.Session session,
     FutureCallEntry row, {
+    _i1.ColumnSelections<FutureCallEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<FutureCallEntry>(
       row,
+      columns: columns?.call(FutureCallEntry.t),
       transaction: transaction,
     );
   }

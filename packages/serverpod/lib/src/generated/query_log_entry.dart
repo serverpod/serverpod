@@ -614,10 +614,12 @@ class QueryLogEntryRepository {
   Future<List<QueryLogEntry>> update(
     _i1.Session session,
     List<QueryLogEntry> rows, {
+    _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<QueryLogEntry>(
       rows,
+      columns: columns?.call(QueryLogEntry.t),
       transaction: transaction,
     );
   }
@@ -625,10 +627,12 @@ class QueryLogEntryRepository {
   Future<QueryLogEntry> updateRow(
     _i1.Session session,
     QueryLogEntry row, {
+    _i1.ColumnSelections<QueryLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<QueryLogEntry>(
       row,
+      columns: columns?.call(QueryLogEntry.t),
       transaction: transaction,
     );
   }

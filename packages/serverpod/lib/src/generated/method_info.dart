@@ -404,10 +404,12 @@ class MethodInfoRepository {
   Future<List<MethodInfo>> update(
     _i1.Session session,
     List<MethodInfo> rows, {
+    _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<MethodInfo>(
       rows,
+      columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }
@@ -415,10 +417,12 @@ class MethodInfoRepository {
   Future<MethodInfo> updateRow(
     _i1.Session session,
     MethodInfo row, {
+    _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<MethodInfo>(
       row,
+      columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }

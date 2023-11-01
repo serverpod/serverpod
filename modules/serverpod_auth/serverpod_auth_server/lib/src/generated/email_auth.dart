@@ -429,10 +429,12 @@ class EmailAuthRepository {
   Future<List<EmailAuth>> update(
     _i1.Session session,
     List<EmailAuth> rows, {
+    _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<EmailAuth>(
       rows,
+      columns: columns?.call(EmailAuth.t),
       transaction: transaction,
     );
   }
@@ -440,10 +442,12 @@ class EmailAuthRepository {
   Future<EmailAuth> updateRow(
     _i1.Session session,
     EmailAuth row, {
+    _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<EmailAuth>(
       row,
+      columns: columns?.call(EmailAuth.t),
       transaction: transaction,
     );
   }
