@@ -649,7 +649,7 @@ class SessionLogEntryRepository {
     );
   }
 
-  Future<SessionLogEntry?> findRow(
+  Future<SessionLogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? offset,
@@ -657,7 +657,7 @@ class SessionLogEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<SessionLogEntry>(
+    return session.dbNext.findFirstRow<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       transaction: transaction,
     );

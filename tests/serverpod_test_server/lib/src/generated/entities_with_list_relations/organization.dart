@@ -472,7 +472,7 @@ class OrganizationRepository {
     );
   }
 
-  Future<Organization?> findRow(
+  Future<Organization?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
@@ -481,7 +481,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.dbNext.findRow<Organization>(
+    return session.dbNext.findFirstRow<Organization>(
       where: where?.call(Organization.t),
       transaction: transaction,
       include: include,

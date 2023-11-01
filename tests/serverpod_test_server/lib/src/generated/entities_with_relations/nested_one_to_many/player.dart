@@ -402,7 +402,7 @@ class PlayerRepository {
     );
   }
 
-  Future<Player?> findRow(
+  Future<Player?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? offset,
@@ -411,7 +411,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.dbNext.findRow<Player>(
+    return session.dbNext.findFirstRow<Player>(
       where: where?.call(Player.t),
       transaction: transaction,
       include: include,

@@ -354,7 +354,7 @@ class MethodInfoRepository {
     );
   }
 
-  Future<MethodInfo?> findRow(
+  Future<MethodInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
@@ -362,7 +362,7 @@ class MethodInfoRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<MethodInfo>(
+    return session.dbNext.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       transaction: transaction,
     );

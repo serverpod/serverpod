@@ -471,7 +471,7 @@ class CityRepository {
     );
   }
 
-  Future<City?> findRow(
+  Future<City?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
@@ -480,7 +480,7 @@ class CityRepository {
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
-    return session.dbNext.findRow<City>(
+    return session.dbNext.findFirstRow<City>(
       where: where?.call(City.t),
       transaction: transaction,
       include: include,

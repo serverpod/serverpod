@@ -360,7 +360,7 @@ class ObjectFieldScopesRepository {
     );
   }
 
-  Future<ObjectFieldScopes?> findRow(
+  Future<ObjectFieldScopes?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
@@ -368,7 +368,7 @@ class ObjectFieldScopesRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectFieldScopes>(
+    return session.dbNext.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       transaction: transaction,
     );

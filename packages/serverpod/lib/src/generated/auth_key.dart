@@ -419,7 +419,7 @@ class AuthKeyRepository {
     );
   }
 
-  Future<AuthKey?> findRow(
+  Future<AuthKey?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
@@ -427,7 +427,7 @@ class AuthKeyRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<AuthKey>(
+    return session.dbNext.findFirstRow<AuthKey>(
       where: where?.call(AuthKey.t),
       transaction: transaction,
     );

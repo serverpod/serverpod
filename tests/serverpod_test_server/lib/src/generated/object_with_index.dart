@@ -349,7 +349,7 @@ class ObjectWithIndexRepository {
     );
   }
 
-  Future<ObjectWithIndex?> findRow(
+  Future<ObjectWithIndex?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? offset,
@@ -357,7 +357,7 @@ class ObjectWithIndexRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithIndex>(
+    return session.dbNext.findFirstRow<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       transaction: transaction,
     );

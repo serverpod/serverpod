@@ -2678,7 +2678,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i16.BasicDatabase)
-                  .findRowSimpleData(
+                  .findFirstRowSimpleData(
             session,
             params['num'],
           ),

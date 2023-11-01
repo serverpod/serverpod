@@ -330,7 +330,7 @@ class SimpleDataRepository {
     );
   }
 
-  Future<SimpleData?> findRow(
+  Future<SimpleData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
@@ -338,7 +338,7 @@ class SimpleDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<SimpleData>(
+    return session.dbNext.findFirstRow<SimpleData>(
       where: where?.call(SimpleData.t),
       transaction: transaction,
     );

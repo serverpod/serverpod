@@ -507,7 +507,7 @@ class ChatMessageRepository {
     );
   }
 
-  Future<ChatMessage?> findRow(
+  Future<ChatMessage?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? offset,
@@ -515,7 +515,7 @@ class ChatMessageRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ChatMessage>(
+    return session.dbNext.findFirstRow<ChatMessage>(
       where: where?.call(ChatMessage.t),
       transaction: transaction,
     );

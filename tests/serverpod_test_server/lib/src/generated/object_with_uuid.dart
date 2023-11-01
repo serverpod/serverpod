@@ -350,7 +350,7 @@ class ObjectWithUuidRepository {
     );
   }
 
-  Future<ObjectWithUuid?> findRow(
+  Future<ObjectWithUuid?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? offset,
@@ -358,7 +358,7 @@ class ObjectWithUuidRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithUuid>(
+    return session.dbNext.findFirstRow<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       transaction: transaction,
     );

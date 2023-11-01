@@ -447,7 +447,7 @@ class EnrollmentRepository {
     );
   }
 
-  Future<Enrollment?> findRow(
+  Future<Enrollment?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
     int? offset,
@@ -456,7 +456,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
-    return session.dbNext.findRow<Enrollment>(
+    return session.dbNext.findFirstRow<Enrollment>(
       where: where?.call(Enrollment.t),
       transaction: transaction,
       include: include,

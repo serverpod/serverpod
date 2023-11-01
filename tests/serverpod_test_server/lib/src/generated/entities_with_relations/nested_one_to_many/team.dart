@@ -472,7 +472,7 @@ class TeamRepository {
     );
   }
 
-  Future<Team?> findRow(
+  Future<Team?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? offset,
@@ -481,7 +481,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
-    return session.dbNext.findRow<Team>(
+    return session.dbNext.findFirstRow<Team>(
       where: where?.call(Team.t),
       transaction: transaction,
       include: include,

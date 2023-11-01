@@ -462,7 +462,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
-  Future<ServerHealthConnectionInfo?> findRow(
+  Future<ServerHealthConnectionInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
@@ -470,7 +470,7 @@ class ServerHealthConnectionInfoRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ServerHealthConnectionInfo>(
+    return session.dbNext.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );

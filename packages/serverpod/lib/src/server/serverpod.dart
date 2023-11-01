@@ -170,7 +170,7 @@ class Serverpod {
     var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(session);
       if (oldRuntimeSettings == null) {
         settings.id = null;
         settings =
@@ -190,7 +190,7 @@ class Serverpod {
   Future<void> reloadRuntimeSettings() async {
     var session = await createSession(enableLogging: false);
     try {
-      var settings = await internal.RuntimeSettings.db.findRow(session);
+      var settings = await internal.RuntimeSettings.db.findFirstRow(session);
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -383,7 +383,7 @@ class Serverpod {
         try {
           logVerbose('Loading runtime settings.');
 
-          _runtimeSettings = await internal.RuntimeSettings.db.findRow(session);
+          _runtimeSettings = await internal.RuntimeSettings.db.findFirstRow(session);
         } catch (e) {
           stderr.writeln(
             'Failed to load runtime settings. $e',

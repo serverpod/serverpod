@@ -400,7 +400,7 @@ class StudentRepository {
     );
   }
 
-  Future<Student?> findRow(
+  Future<Student?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? offset,
@@ -409,7 +409,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.dbNext.findRow<Student>(
+    return session.dbNext.findFirstRow<Student>(
       where: where?.call(Student.t),
       transaction: transaction,
       include: include,

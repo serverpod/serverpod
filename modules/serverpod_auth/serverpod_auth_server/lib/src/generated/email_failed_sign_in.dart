@@ -381,7 +381,7 @@ class EmailFailedSignInRepository {
     );
   }
 
-  Future<EmailFailedSignIn?> findRow(
+  Future<EmailFailedSignIn?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
@@ -389,7 +389,7 @@ class EmailFailedSignInRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<EmailFailedSignIn>(
+    return session.dbNext.findFirstRow<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       transaction: transaction,
     );

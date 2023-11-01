@@ -49,7 +49,7 @@ class Emails {
     }
 
     // Check if there is email authentication in place already
-    var oldAuth = await EmailAuth.db.findRow(
+    var oldAuth = await EmailAuth.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userInfo?.id!),
     );
@@ -82,7 +82,7 @@ class Emails {
     String oldPassword,
     String newPassword,
   ) async {
-    var auth = await EmailAuth.db.findRow(
+    var auth = await EmailAuth.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userId),
     );
@@ -143,7 +143,7 @@ class Emails {
   ) async {
     session.log('verificationCode: $verificationCode', level: LogLevel.debug);
 
-    var passwordReset = await EmailReset.db.findRow(session, where: (t) {
+    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
       return t.verificationCode.equals(verificationCode) &
           (t.expiration > DateTime.now().toUtc());
     });
@@ -167,14 +167,14 @@ class Emails {
     String verificationCode,
     String password,
   ) async {
-    var passwordReset = await EmailReset.db.findRow(session, where: (t) {
+    var passwordReset = await EmailReset.db.findFirstRow(session, where: (t) {
       return t.verificationCode.equals(verificationCode) &
           (t.expiration > DateTime.now().toUtc());
     });
 
     if (passwordReset == null) return false;
 
-    var emailAuth = await EmailAuth.db.findRow(session, where: (t) {
+    var emailAuth = await EmailAuth.db.findFirstRow(session, where: (t) {
       return t.userId.equals(passwordReset.userId);
     });
 
@@ -252,7 +252,7 @@ class Emails {
     Session session,
     String email,
   ) async {
-    return await EmailCreateAccountRequest.db.findRow(
+    return await EmailCreateAccountRequest.db.findFirstRow(
       session,
       where: (t) => t.email.equals(email),
     );
