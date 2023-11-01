@@ -3,4 +3,4 @@ fields:
   actions: List<DatabaseMigrationAction>
   warnings: List<DatabaseMigrationWarning>
   priority: int
-  version: int
+  migrationApiVersion: int

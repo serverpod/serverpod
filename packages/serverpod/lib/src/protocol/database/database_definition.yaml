@@ -18,4 +18,4 @@ fields:
   installedModules: List<DatabaseMigrationVersion>?
 
   ### The version of the database definition.
-  version: int 
+  migrationApiVersion: int 
