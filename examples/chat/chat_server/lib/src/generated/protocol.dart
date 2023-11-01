@@ -24,55 +24,58 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
-      name: 'channel',
-      dartName: 'Channel',
-      schema: 'public',
-      module: 'chat',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'channel',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'channel_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    ..._i3.Protocol.targetDatabaseDefinition.tables,
-    ..._i4.Protocol.targetDatabaseDefinition.tables,
-    ..._i2.Protocol.targetDatabaseDefinition.tables,
-  ]);
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    tables: [
+      _i2.TableDefinition(
+        name: 'channel',
+        dartName: 'Channel',
+        schema: 'public',
+        module: 'chat',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'channel',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'channel_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      ..._i3.Protocol.targetDatabaseDefinition.tables,
+      ..._i4.Protocol.targetDatabaseDefinition.tables,
+      ..._i2.Protocol.targetDatabaseDefinition.tables,
+    ],
+    version: 1,
+  );
 
   @override
   T deserialize<T>(
