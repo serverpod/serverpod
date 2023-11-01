@@ -684,6 +684,9 @@ class Transaction {
 /// clauses.
 typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
 
+/// A function that returns a [Column] for a [Table].
+typedef ColumnSelections<T extends Table> = List<Column> Function(T);
+
 /// The base include class, should not be used directly.
 abstract class Include {
   /// Map containing the relation field name as key and the [Include] object
