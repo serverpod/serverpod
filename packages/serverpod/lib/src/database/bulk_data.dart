@@ -120,8 +120,7 @@ class DatabaseBulkData {
       int numAffectedRows = 0;
 
       for (var query in queries) {
-        result =
-            await database.unsafeQuery(query, transaction: transaction);
+        result = await database.unsafeQuery(query, transaction: transaction);
         numAffectedRows += result.affectedRowCount;
       }
       result!;
