@@ -52,7 +52,7 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
 
   var databaseDefinition = DatabaseDefinition(
     tables: tableDefinitions,
-    version: DatabaseConstants.databaseDefinitionVersion,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 
   return databaseDefinition;

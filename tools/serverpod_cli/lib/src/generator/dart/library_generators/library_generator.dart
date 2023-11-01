@@ -763,7 +763,7 @@ extension on DatabaseDefinition {
           }),
         ...additionalTables,
       ]),
-      'version': literalNum(DatabaseConstants.databaseDefinitionVersion)
+      'migrationApiVersion': literalNum(DatabaseConstants.migrationApiVersion)
     }).code;
   }
 }

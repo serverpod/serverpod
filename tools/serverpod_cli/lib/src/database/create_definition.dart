@@ -65,7 +65,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
 
   return DatabaseDefinition(
     tables: tables,
-    version: DatabaseConstants.databaseDefinitionVersion,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 }
 

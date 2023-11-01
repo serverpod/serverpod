@@ -86,7 +86,7 @@ DatabaseMigration generateDatabaseMigration({
     actions: actions,
     warnings: [],
     priority: priority,
-    version: DatabaseConstants.databaseMigrationVersion,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 }
 

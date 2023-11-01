@@ -160,7 +160,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
           indexes: indexes,
         );
       })),
-      version: DatabaseConstants.databaseDefinitionVersion,
+      migrationApiVersion: DatabaseConstants.migrationApiVersion,
     );
   }
 

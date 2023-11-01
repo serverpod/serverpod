@@ -118,7 +118,7 @@ class MigrationGenerator {
         DatabaseDefinition(
           tables: [],
           priority: priority,
-          version: DatabaseConstants.databaseDefinitionVersion,
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
         );
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
@@ -181,7 +181,7 @@ class MigrationGenerator {
 
     var dstDatabase = DatabaseDefinition(
       tables: dstDefinitions.expand((e) => e.tables).toList(),
-      version: DatabaseConstants.databaseDefinitionVersion,
+      migrationApiVersion: DatabaseConstants.migrationApiVersion,
     );
 
     // Get the live database definition from the server.
