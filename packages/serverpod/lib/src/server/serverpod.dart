@@ -383,7 +383,8 @@ class Serverpod {
         try {
           logVerbose('Loading runtime settings.');
 
-          _runtimeSettings = await internal.RuntimeSettings.db.findFirstRow(session);
+          _runtimeSettings =
+              await internal.RuntimeSettings.db.findFirstRow(session);
         } catch (e) {
           stderr.writeln(
             'Failed to load runtime settings. $e',
