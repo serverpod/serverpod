@@ -2664,8 +2664,8 @@ class Endpoints extends _i1.EndpointDispatch {
             offset: params['offset'],
           ),
         ),
-        'findRowSimpleData': _i1.MethodConnector(
-          name: 'findRowSimpleData',
+        'findFirstRowSimpleData': _i1.MethodConnector(
+          name: 'findFirstRowSimpleData',
           params: {
             'num': _i1.ParameterDescription(
               name: 'num',

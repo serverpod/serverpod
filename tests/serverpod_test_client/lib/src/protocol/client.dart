@@ -1098,10 +1098,10 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i11.SimpleData?> findRowSimpleData(int num) =>
+  _i2.Future<_i11.SimpleData?> findFirstRowSimpleData(int num) =>
       caller.callServerEndpoint<_i11.SimpleData?>(
         'basicDatabase',
-        'findRowSimpleData',
+        'findFirstRowSimpleData',
         {'num': num},
       );
 
