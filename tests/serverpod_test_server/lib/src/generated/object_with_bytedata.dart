@@ -376,10 +376,12 @@ class ObjectWithByteDataRepository {
   Future<List<ObjectWithByteData>> update(
     _i1.Session session,
     List<ObjectWithByteData> rows, {
+    _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithByteData>(
       rows,
+      columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }
@@ -387,10 +389,12 @@ class ObjectWithByteDataRepository {
   Future<ObjectWithByteData> updateRow(
     _i1.Session session,
     ObjectWithByteData row, {
+    _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithByteData>(
       row,
+      columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }

@@ -526,10 +526,12 @@ class TeamRepository {
   Future<List<Team>> update(
     _i1.Session session,
     List<Team> rows, {
+    _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Team>(
       rows,
+      columns: columns?.call(Team.t),
       transaction: transaction,
     );
   }
@@ -537,10 +539,12 @@ class TeamRepository {
   Future<Team> updateRow(
     _i1.Session session,
     Team row, {
+    _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Team>(
       row,
+      columns: columns?.call(Team.t),
       transaction: transaction,
     );
   }

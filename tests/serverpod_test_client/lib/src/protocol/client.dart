@@ -1345,22 +1345,6 @@ class EndpointDatabaseBatch extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<List<_i15.UniqueData>> batchUpdateWithInvalidColumn(
-          List<_i15.UniqueData> value) =>
-      caller.callServerEndpoint<List<_i15.UniqueData>>(
-        'databaseBatch',
-        'batchUpdateWithInvalidColumn',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i15.UniqueData>> batchUpdateNumberOnly(
-          List<_i15.UniqueData> value) =>
-      caller.callServerEndpoint<List<_i15.UniqueData>>(
-        'databaseBatch',
-        'batchUpdateNumberOnly',
-        {'value': value},
-      );
-
   _i2.Future<List<int>> batchDelete(List<_i15.UniqueData> value) =>
       caller.callServerEndpoint<List<int>>(
         'databaseBatch',

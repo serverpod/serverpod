@@ -374,10 +374,12 @@ class ObjectWithSelfParentRepository {
   Future<List<ObjectWithSelfParent>> update(
     _i1.Session session,
     List<ObjectWithSelfParent> rows, {
+    _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithSelfParent>(
       rows,
+      columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
     );
   }
@@ -385,10 +387,12 @@ class ObjectWithSelfParentRepository {
   Future<ObjectWithSelfParent> updateRow(
     _i1.Session session,
     ObjectWithSelfParent row, {
+    _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithSelfParent>(
       row,
+      columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
     );
   }

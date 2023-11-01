@@ -501,10 +501,12 @@ class EnrollmentRepository {
   Future<List<Enrollment>> update(
     _i1.Session session,
     List<Enrollment> rows, {
+    _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Enrollment>(
       rows,
+      columns: columns?.call(Enrollment.t),
       transaction: transaction,
     );
   }
@@ -512,10 +514,12 @@ class EnrollmentRepository {
   Future<Enrollment> updateRow(
     _i1.Session session,
     Enrollment row, {
+    _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Enrollment>(
       row,
+      columns: columns?.call(Enrollment.t),
       transaction: transaction,
     );
   }

@@ -398,10 +398,12 @@ class UniqueDataRepository {
   Future<List<UniqueData>> update(
     _i1.Session session,
     List<UniqueData> rows, {
+    _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<UniqueData>(
       rows,
+      columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }
@@ -409,10 +411,12 @@ class UniqueDataRepository {
   Future<UniqueData> updateRow(
     _i1.Session session,
     UniqueData row, {
+    _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<UniqueData>(
       row,
+      columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }

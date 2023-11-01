@@ -378,10 +378,12 @@ class SimpleDateTimeRepository {
   Future<List<SimpleDateTime>> update(
     _i1.Session session,
     List<SimpleDateTime> rows, {
+    _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<SimpleDateTime>(
       rows,
+      columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }
@@ -389,10 +391,12 @@ class SimpleDateTimeRepository {
   Future<SimpleDateTime> updateRow(
     _i1.Session session,
     SimpleDateTime row, {
+    _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<SimpleDateTime>(
       row,
+      columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }

@@ -458,10 +458,12 @@ class AddressRepository {
   Future<List<Address>> update(
     _i1.Session session,
     List<Address> rows, {
+    _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Address>(
       rows,
+      columns: columns?.call(Address.t),
       transaction: transaction,
     );
   }
@@ -469,10 +471,12 @@ class AddressRepository {
   Future<Address> updateRow(
     _i1.Session session,
     Address row, {
+    _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Address>(
       row,
+      columns: columns?.call(Address.t),
       transaction: transaction,
     );
   }
