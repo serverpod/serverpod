@@ -1304,7 +1304,7 @@ class Protocol extends _i1.SerializationManagerServer {
         managed: true,
       ),
     ],
-    version: 1,
+    migrationApiVersion: 1,
   );
 
   @override

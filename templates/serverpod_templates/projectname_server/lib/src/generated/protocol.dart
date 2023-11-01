@@ -23,7 +23,7 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(
     tables: [..._i2.Protocol.targetDatabaseDefinition.tables],
-    version: 1,
+    migrationApiVersion: 1,
   );
 
   @override

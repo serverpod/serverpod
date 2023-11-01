@@ -74,7 +74,7 @@ class Protocol extends _i1.SerializationManagerServer {
       ..._i4.Protocol.targetDatabaseDefinition.tables,
       ..._i2.Protocol.targetDatabaseDefinition.tables,
     ],
-    version: 1,
+    migrationApiVersion: 1,
   );
 
   @override
