@@ -112,7 +112,7 @@ class Users {
 
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
-    await session.dbNext.dangerouslyQuery(
+    await session.dbNext.unsafeQuery(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
     if (AuthConfig.current.onUserUpdated != null) {
