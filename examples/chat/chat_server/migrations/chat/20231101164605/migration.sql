@@ -14,9 +14,9 @@ CREATE TABLE "channel" (
 -- MIGRATION VERSION FOR chat
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('chat', '20231101153524', 2, now())
+    VALUES ('chat', '20231101164605', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231101153524', "priority" = 2;
+    DO UPDATE SET "version" = '20231101164605', "priority" = 2;
 
 
 COMMIT;
