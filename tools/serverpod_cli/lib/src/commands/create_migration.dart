@@ -7,17 +7,17 @@ import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
-class MigrateCommand extends ServerpodCommand {
+class CreateMigrationCommand extends ServerpodCommand {
   static const _runModes = <String>['development', 'staging', 'production'];
 
   @override
-  final name = 'migrate';
+  final name = 'create-migration';
 
   @override
   final description =
       'Creates a migration from the last migration to the current state of the database.';
 
-  MigrateCommand() {
+  CreateMigrationCommand() {
     argParser.addFlag(
       'force',
       abbr: 'f',
@@ -104,7 +104,7 @@ class MigrateCommand extends ServerpodCommand {
         return migration != null;
       });
     } else {
-      await log.progress('Creating migration', () async {
+      var success = await log.progress('Creating migration', () async {
         var migration = await generator.createMigration(
           tag: tag,
           force: force,
@@ -113,10 +113,12 @@ class MigrateCommand extends ServerpodCommand {
 
         return migration != null;
       });
-      log.info(
-        'Done.',
-        type: TextLogType.success,
-      );
+      if (success) {
+        log.info(
+          'Done.',
+          type: TextLogType.success,
+        );
+      }
     }
   }
 }
