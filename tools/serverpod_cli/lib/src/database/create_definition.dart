@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
@@ -62,7 +63,10 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
   // Sort the database definitions
   _sortTableDefinitions(tables);
 
-  return DatabaseDefinition(tables: tables);
+  return DatabaseDefinition(
+    tables: tables,
+    version: DatabaseConstants.databaseDefinitionVersion,
+  );
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {

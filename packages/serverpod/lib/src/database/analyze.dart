@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
 
@@ -159,6 +160,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
           indexes: indexes,
         );
       })),
+      version: DatabaseConstants.databaseDefinitionVersion,
     );
   }
 

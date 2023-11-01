@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -117,6 +118,7 @@ class MigrationGenerator {
         DatabaseDefinition(
           tables: [],
           priority: priority,
+          version: DatabaseConstants.databaseDefinitionVersion,
         );
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
@@ -179,6 +181,7 @@ class MigrationGenerator {
 
     var dstDatabase = DatabaseDefinition(
       tables: dstDefinitions.expand((e) => e.tables).toList(),
+      version: DatabaseConstants.databaseDefinitionVersion,
     );
 
     // Get the live database definition from the server.

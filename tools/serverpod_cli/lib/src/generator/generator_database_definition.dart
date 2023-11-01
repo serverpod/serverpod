@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
@@ -49,7 +50,10 @@ Future<DatabaseDefinition> _generateFullDatabaseDefinition({
     tableDefinitions.addAll(moduleDatabaseDefinition.tables);
   }
 
-  var databaseDefinition = DatabaseDefinition(tables: tableDefinitions);
+  var databaseDefinition = DatabaseDefinition(
+    tables: tableDefinitions,
+    version: DatabaseConstants.databaseDefinitionVersion,
+  );
 
   return databaseDefinition;
 }
