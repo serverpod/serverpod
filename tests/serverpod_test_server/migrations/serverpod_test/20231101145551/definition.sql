@@ -465,9 +465,9 @@ ALTER TABLE ONLY "town"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20231026073537', 2, now())
+    VALUES ('serverpod_test', '20231101145551', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231026073537', "priority" = 2;
+    DO UPDATE SET "version" = '20231101145551', "priority" = 2;
 
 
 COMMIT;
