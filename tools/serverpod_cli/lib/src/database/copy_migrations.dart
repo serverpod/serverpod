@@ -44,6 +44,10 @@ Future<void> copyMigrations(GeneratorConfig config) async {
       continue;
     }
 
+    if (dstDirectory.existsSync()) {
+      dstDirectory.deleteSync(recursive: true);
+    }
+
     copyDirectory(srcDirectory, dstDirectory);
   }
 }
