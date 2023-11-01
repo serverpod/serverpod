@@ -374,12 +374,14 @@ class ForeignRelationDefinition extends RelationDefinition {
     String? name,
     required this.parentTable,
     required this.foreignFieldName,
-    this.onDelete = onDeleteDefault,
+    this.onDelete = onUpdateDefault,
     this.onUpdate = onUpdateDefault,
   }) : super(name, true);
 }
 
-const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
+const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
+
+const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 

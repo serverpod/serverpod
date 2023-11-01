@@ -259,6 +259,7 @@ class EntityParser {
     return _parseDatabaseAction(
       Keyword.onUpdate,
       onUpdateDefault,
+      onUpdateDefault,
       node,
     );
   }
@@ -267,6 +268,7 @@ class EntityParser {
     return _parseDatabaseAction(
       Keyword.onDelete,
       onDeleteDefault,
+      onDeleteDefaultOld,
       node,
     );
   }
@@ -274,8 +276,11 @@ class EntityParser {
   static ForeignKeyAction _parseDatabaseAction(
     String key,
     ForeignKeyAction defaultValue,
+    ForeignKeyAction oldDefaultValue,
     YamlMap node,
   ) {
+    if (node.containsKey(Keyword.parent)) return oldDefaultValue;
+
     var action = _parseRelationNode(node, key)?.value;
     if (action is! String) return defaultValue;
 
