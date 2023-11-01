@@ -416,6 +416,16 @@ class Restrictions {
     return isLocalFieldForeignKeyOrigin || isForeignFieldForeignKeyOrigin;
   }
 
+  bool _isImplicitManyToManyRelation(
+    SerializableEntityFieldDefinition field,
+    SerializableEntityFieldDefinition foreignField,
+  ) {
+    if (!field.type.isListType) return false;
+    if (!foreignField.type.isListType) return false;
+
+    return true;
+  }
+
   bool _isForeignKeyDefinedOnBothSides(
     SerializableEntityFieldDefinition field,
     List<SerializableEntityFieldDefinition> foreignFields,
@@ -794,6 +804,15 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'Unable to resolve ambiguous relation, there are several named relations with name "$name" on the class "$foreignClassName".',
+          span,
+        )
+      ];
+    }
+
+    if (_isImplicitManyToManyRelation(field, foreignFields.first)) {
+      return [
+        SourceSpanSeverityException(
+          'A named relation to another list field is not supported.',
           span,
         )
       ];
