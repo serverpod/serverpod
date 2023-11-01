@@ -104,7 +104,7 @@ class CreateMigrationCommand extends ServerpodCommand {
         return migration != null;
       });
     } else {
-      await log.progress('Creating migration', () async {
+      var success = await log.progress('Creating migration', () async {
         var migration = await generator.createMigration(
           tag: tag,
           force: force,
@@ -113,10 +113,12 @@ class CreateMigrationCommand extends ServerpodCommand {
 
         return migration != null;
       });
-      log.info(
-        'Done.',
-        type: TextLogType.success,
-      );
+      if (success) {
+        log.info(
+          'Done.',
+          type: TextLogType.success,
+        );
+      }
     }
   }
 }
