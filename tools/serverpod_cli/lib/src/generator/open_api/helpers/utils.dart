@@ -96,6 +96,7 @@ enum SecuritySchemeType {
 
 class OpenAPIJsonKey {
   static const format = 'format';
+  static const $null = 'null';
   static const inKey = 'in';
   static const requiredKey = 'required';
   static const enumKey = 'enum';

@@ -32,7 +32,7 @@ class OpenAPIDefinition {
   /// Additional external documentation.
   final OpenAPIExternalDocumentation? externalDocs;
   OpenAPIDefinition({
-    this.openAPI = '3.0.0',
+    this.openAPI = '3.1.0',
     required this.info,
     this.jsonSchemaDialect,
     required this.paths,

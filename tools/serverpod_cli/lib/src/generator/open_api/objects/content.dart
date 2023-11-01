@@ -41,7 +41,7 @@ class OpenAPIContent {
     var response = responseType;
     if (response != null) {
       contentMap[ContentType.applicationJson] = {
-        OpenAPIJsonKey.schema: typeDefinitionToJson(response, true)
+        OpenAPIJsonKey.schema: typeDefinitionToJson(response)
       };
       return contentMap;
     }

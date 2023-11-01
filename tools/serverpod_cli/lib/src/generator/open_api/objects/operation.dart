@@ -90,9 +90,7 @@ class OperationObject {
       map[OpenAPIJsonKey.tags] = tags;
     }
 
-    if (summary != null) {
-      map[OpenAPIJsonKey.summary] = summary;
-    }
+    map[OpenAPIJsonKey.summary] = summary ?? 'The $operationId from $tags.';
 
     if (description != null) {
       map[OpenAPIJsonKey.description] = description;

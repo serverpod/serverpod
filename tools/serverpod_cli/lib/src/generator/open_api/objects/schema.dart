@@ -36,9 +36,14 @@ Map<String, dynamic> mapTypeToJson(TypeDefinition type, [bool child = false]) {
     'Use mapTypeToJson only when the typeDefinition is of the MapType.',
   );
 
-  Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
-  if (type.nullable) map[OpenAPIJsonKey.nullable] = true;
+  Map<String, dynamic> map = {
+    OpenAPIJsonKey.type: type.nullable
+        ? [
+            OpenAPISchemaType.object.name,
+            OpenAPIJsonKey.$null,
+          ]
+        : OpenAPISchemaType.object.name,
+  };
 
   // If data is Map<String,int> use last int from generics as
   // additionalProperties.
@@ -66,11 +71,12 @@ Map<String, dynamic> coreDartTypeToJson(TypeDefinition type,
     'OpenAPISchemaType should not be object type.',
   );
   Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type] = type.toOpenAPISchemaType.name;
+  map[OpenAPIJsonKey.type] = type.nullable
+      ? [type.toOpenAPISchemaType.name, OpenAPIJsonKey.$null]
+      : type.toOpenAPISchemaType.name;
   if (type.toSchemaObjectFormat != null) {
     map[OpenAPIJsonKey.format] = type.toSchemaObjectFormat;
   }
-  if (type.nullable) map[OpenAPIJsonKey.nullable] = true;
   return map;
 }
 
@@ -81,28 +87,36 @@ Map<String, dynamic> unknownSchemaTypeToJson(TypeDefinition type,
     type.toOpenAPISchemaType == OpenAPISchemaType.serializableObjects,
     'Use unknownSchemaTypeToJson only when the OpenAPISchemaType is serializableObjects.',
   );
-  Map<String, dynamic> map = {};
+  // Map<String, dynamic> map = {};
 
-  // Note: In OpenAPI (3.0.x) components, sibling properties alongside
-  // $refs are not considered. Directly specifying 'nullable' or other
-  // properties in this context is not supported.
-  if (type.nullable && child) {
-    map = {
-      OpenAPIJsonKey.oneOf: [
-        {
-          OpenAPIJsonKey.$ref: _getRef(type.className),
-        }
-      ],
-      OpenAPIJsonKey.nullable: true,
-    };
-  } else {
-    // SerializableObjects types are always object.
-    if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
-    map[OpenAPIJsonKey.$ref] =
-        _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
-    if (type.nullable && !child) map[OpenAPIJsonKey.nullable] = true;
-  }
-  return map;
+  // // Note: In OpenAPI (3.0.x) components, sibling properties alongside
+  // // $refs are not considered. Directly specifying 'nullable' or other
+  // // properties in this context is not supported.
+  // if (type.nullable && child) {
+  //   map = {
+  //     OpenAPIJsonKey.oneOf: [
+  //       {
+  //         OpenAPIJsonKey.$ref: _getRef(type.className),
+  //       }
+  //     ],
+  //     OpenAPIJsonKey.nullable: true,
+  //   };
+  // } else {
+  //   // SerializableObjects types are always object.
+  //   if (!child) map[OpenAPIJsonKey.type] = OpenAPISchemaType.object.name;
+  //   map[OpenAPIJsonKey.$ref] =
+  //       _getRef(type.className == 'dynamic' ? 'AnyValue' : type.className);
+  //   if (type.nullable && !child) map[OpenAPIJsonKey.nullable] = true;
+  // }
+
+  return {
+    if (!child)
+      OpenAPIJsonKey.type: type.nullable
+          ? [OpenAPISchemaType.object.name, OpenAPIJsonKey.$null]
+          : OpenAPISchemaType.object.name,
+    OpenAPIJsonKey.$ref: _getRef(
+        type.className == 'dynamic' ? OpenAPIJsonKey.anyValue : type.className)
+  };
 }
 
 /// Serializes a [TypeDefinition] [List] type to JSON.
@@ -111,18 +125,28 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
     type.isListType,
     'Use listTypeToJson only when the typeDefinition is of the ListType.',
   );
-  Map<String, dynamic> map = {};
-  map[OpenAPIJsonKey.type] = OpenAPISchemaType.array.name;
+  // Map<String, dynamic> map = {};
+  // map[OpenAPIJsonKey.type] = OpenAPISchemaType.array.name;
 
-  map[OpenAPIJsonKey.items] = {};
+  // map[OpenAPIJsonKey.items] = {};
 
   var generic = type.generics;
-  if (generic.isEmpty) {
-    map[OpenAPIJsonKey.items][OpenAPIJsonKey.$ref] = _getRef('AnyValue');
-    return map;
-  }
-  map[OpenAPIJsonKey.items] = typeDefinitionToJson(generic.first, true);
-  return map;
+  // if (generic.isEmpty) {
+  //   map[OpenAPIJsonKey.items][OpenAPIJsonKey.$ref] = _getRef('AnyValue');
+  //   return map;
+  // }
+  // map[OpenAPIJsonKey.items] = typeDefinitionToJson(generic.first, true);
+  return {
+    OpenAPIJsonKey.type: type.nullable
+        ? [
+            OpenAPISchemaType.array.name,
+            OpenAPIJsonKey.$null,
+          ]
+        : OpenAPISchemaType.array.name,
+    OpenAPIJsonKey.items: generic.isEmpty
+        ? _getRef(OpenAPIJsonKey.anyValue)
+        : typeDefinitionToJson(generic.first, true),
+  };
 }
 
 /// A schema object used within [OpenAPIComponent].
