@@ -16,7 +16,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     required this.tables,
     this.priority,
     this.installedModules,
-    required this.version,
+    required this.migrationApiVersion,
   });
 
   factory DatabaseDefinition({
@@ -24,7 +24,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     required List<_i2.TableDefinition> tables,
     int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
-    required int version,
+    required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
   factory DatabaseDefinition.fromJson(
@@ -41,8 +41,8 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
       installedModules:
           serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>?>(
               jsonSerialization['installedModules']),
-      version:
-          serializationManager.deserialize<int>(jsonSerialization['version']),
+      migrationApiVersion: serializationManager
+          .deserialize<int>(jsonSerialization['migrationApiVersion']),
     );
   }
 
@@ -63,14 +63,14 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   List<_i2.DatabaseMigrationVersion>? installedModules;
 
   /// The version of the database definition.
-  int version;
+  int migrationApiVersion;
 
   DatabaseDefinition copyWith({
     String? name,
     List<_i2.TableDefinition>? tables,
     int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
-    int? version,
+    int? migrationApiVersion,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -79,7 +79,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
       'tables': tables,
       'priority': priority,
       'installedModules': installedModules,
-      'version': version,
+      'migrationApiVersion': migrationApiVersion,
     };
   }
 
@@ -90,7 +90,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
       'tables': tables,
       'priority': priority,
       'installedModules': installedModules,
-      'version': version,
+      'migrationApiVersion': migrationApiVersion,
     };
   }
 }
@@ -103,13 +103,13 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     required List<_i2.TableDefinition> tables,
     int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
-    required int version,
+    required int migrationApiVersion,
   }) : super._(
           name: name,
           tables: tables,
           priority: priority,
           installedModules: installedModules,
-          version: version,
+          migrationApiVersion: migrationApiVersion,
         );
 
   @override
@@ -118,7 +118,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     List<_i2.TableDefinition>? tables,
     Object? priority = _Undefined,
     Object? installedModules = _Undefined,
-    int? version,
+    int? migrationApiVersion,
   }) {
     return DatabaseDefinition(
       name: name is String? ? name : this.name,
@@ -127,7 +127,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
       installedModules: installedModules is List<_i2.DatabaseMigrationVersion>?
           ? installedModules
           : this.installedModules?.clone(),
-      version: version ?? this.version,
+      migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }
 }
