@@ -49,6 +49,7 @@ class ChatEndpoint extends Endpoint {
             ChatJoinChannelFailed(
                 channel: message.channel,
                 reason: 'User must be authenticated'));
+        return;
       }
 
       if (message.userName != null && chatSession.userInfo == null) {
