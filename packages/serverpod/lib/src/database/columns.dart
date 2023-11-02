@@ -63,7 +63,7 @@ class ColumnEnumSerializedAsString<E extends Enum>
   Expression _encodeValueForQuery(value) => EscapedExpression(value.name);
 }
 
-/// A [Column] holding an enum serialized as an int.
+/// A [Column] holding an enum serialized as an integer.
 class ColumnEnumSerializedAsInteger<E extends Enum>
     extends _ValueOperatorColumn<E> with _NullableColumnDefaultOperations<E> {
   /// Creates a new [Column], this is typically done in generated code only.
