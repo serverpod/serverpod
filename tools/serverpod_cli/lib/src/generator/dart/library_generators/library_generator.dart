@@ -300,6 +300,14 @@ class LibraryGenerator {
         (c) => c
           ..name = 'Endpoints'
           ..extend = refer('EndpointDispatch', serverpodUrl(true))
+          ..fields.addAll([
+            for (var endpoint in protocolDefinition.endpoints)
+              Field((f) => f
+                ..modifier = FieldModifier.final$
+                ..name = endpoint.name.camelCase
+                ..assignment = refer(endpoint.className, endpointPath(endpoint))
+                    .call([]).code),
+          ])
           // Init method
           ..methods.add(
             Method.returnsVoid(
@@ -314,17 +322,15 @@ class LibraryGenerator {
                   refer('var endpoints')
                       .assign(literalMap({
                         for (var endpoint in protocolDefinition.endpoints)
-                          endpoint.name:
-                              refer(endpoint.className, endpointPath(endpoint))
-                                  .call([])
-                                  .cascade('initialize')
-                                  .call([
-                                    refer('server'),
-                                    literalString(endpoint.name),
-                                    config.type != PackageType.module
-                                        ? refer('null')
-                                        : literalString(config.name)
-                                  ])
+                          endpoint.name: refer(endpoint.name.camelCase)
+                              .cascade('initialize')
+                              .call([
+                            refer('server'),
+                            literalString(endpoint.name),
+                            config.type != PackageType.module
+                                ? refer('null')
+                                : literalString(config.name)
+                          ])
                       }, refer('String'),
                           refer('Endpoint', serverpodUrl(true))))
                       .statement,
