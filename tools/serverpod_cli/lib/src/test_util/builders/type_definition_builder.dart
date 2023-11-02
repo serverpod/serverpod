@@ -19,7 +19,7 @@ class TypeDefinitionBuilder {
         _dartType = null,
         _customClass = false,
         _isEnum = false,
-        // TODO: in Serverpod 2.0, change this default to true
+        // TODO: For Serverpod 2.0, change the default to `true`.
         _enumSerializedAsName = false;
 
   TypeDefinitionBuilder withClassName(String className) {

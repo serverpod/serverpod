@@ -15,7 +15,7 @@ class EnumDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
-        // TODO: Switch this default to true in Serverpod 2.0.
+        // TODO: For Serverpod 2.0, change the default to `true`.
         _serializedAsName = false,
         _subDirParts = [],
         _serverOnly = false,
