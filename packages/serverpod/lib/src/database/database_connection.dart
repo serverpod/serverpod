@@ -70,7 +70,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<T?> findRow<T extends TableRow>(
+  Future<T?> findFirstRow<T extends TableRow>(
     Session session, {
     Expression? where,
     int? offset,
@@ -104,7 +104,7 @@ class DatabaseConnection {
     Include? include,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'findById');
-    return await findRow<T>(
+    return await findFirstRow<T>(
       session,
       where: table.id.equals(id),
       transaction: transaction,

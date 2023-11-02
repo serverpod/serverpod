@@ -16,8 +16,8 @@ class BasicDatabase extends Endpoint {
     );
   }
 
-  Future<SimpleData?> findRowSimpleData(Session session, int num) async {
-    return SimpleData.db.findRow(
+  Future<SimpleData?> findFirstRowSimpleData(Session session, int num) async {
+    return SimpleData.db.findFirstRow(
       session,
       where: (t) => t.num.equals(num),
     );

@@ -33,7 +33,7 @@ class Users {
   /// Finds a user by its email address. Returns null if no user is found.
   static Future<UserInfo?> findUserByEmail(
       Session session, String email) async {
-    return await UserInfo.db.findRow(
+    return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.email.equals(email),
     );
@@ -44,7 +44,7 @@ class Users {
   /// Returns null if no user is found.
   static Future<UserInfo?> findUserByIdentifier(
       Session session, String identifier) async {
-    return await UserInfo.db.findRow(
+    return await UserInfo.db.findFirstRow(
       session,
       where: (t) => t.userIdentifier.equals(identifier),
     );

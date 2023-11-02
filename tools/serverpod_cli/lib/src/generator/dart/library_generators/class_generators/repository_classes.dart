@@ -64,7 +64,7 @@ class BuildRepositoryClass {
         ])
         ..methods.addAll([
           _buildFindMethod(className, relationFields),
-          _buildFindRow(className, relationFields),
+          _buildFindFirstRow(className, relationFields),
           _buildFindByIdMethod(className, relationFields),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
@@ -304,12 +304,12 @@ class BuildRepositoryClass {
           .statement);
   }
 
-  Method _buildFindRow(
+  Method _buildFindFirstRow(
     String className,
     Iterable<SerializableEntityFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
-      ..name = 'findRow'
+      ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
           ..symbol = 'Future'
@@ -368,7 +368,7 @@ class BuildRepositoryClass {
       ..modifier = MethodModifier.async
       ..body = refer('session')
           .property('dbNext')
-          .property('findRow')
+          .property('findFirstRow')
           .call(
             [],
             {

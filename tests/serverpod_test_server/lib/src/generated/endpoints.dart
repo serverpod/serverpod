@@ -2664,8 +2664,8 @@ class Endpoints extends _i1.EndpointDispatch {
             offset: params['offset'],
           ),
         ),
-        'findRowSimpleData': _i1.MethodConnector(
-          name: 'findRowSimpleData',
+        'findFirstRowSimpleData': _i1.MethodConnector(
+          name: 'findFirstRowSimpleData',
           params: {
             'num': _i1.ParameterDescription(
               name: 'num',
@@ -2678,7 +2678,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i16.BasicDatabase)
-                  .findRowSimpleData(
+                  .findFirstRowSimpleData(
             session,
             params['num'],
           ),

@@ -433,7 +433,7 @@ class FutureCallEntryRepository {
     );
   }
 
-  Future<FutureCallEntry?> findRow(
+  Future<FutureCallEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
@@ -441,7 +441,7 @@ class FutureCallEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<FutureCallEntry>(
+    return session.dbNext.findFirstRow<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
       transaction: transaction,
     );

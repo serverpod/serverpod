@@ -379,7 +379,7 @@ class EmailAuthRepository {
     );
   }
 
-  Future<EmailAuth?> findRow(
+  Future<EmailAuth?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
@@ -387,7 +387,7 @@ class EmailAuthRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<EmailAuth>(
+    return session.dbNext.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
       transaction: transaction,
     );

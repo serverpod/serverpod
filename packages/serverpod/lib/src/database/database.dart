@@ -51,7 +51,7 @@ class Database {
   }
 
   /// Find a single [TableRow] from a table, using the provided [where]
-  Future<T?> findRow<T extends TableRow>({
+  Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -59,7 +59,7 @@ class Database {
     Transaction? transaction,
     Include? include,
   }) async {
-    return await _databaseConnection.findRow<T>(
+    return await _databaseConnection.findFirstRow<T>(
       _session,
       where: where,
       offset: offset,

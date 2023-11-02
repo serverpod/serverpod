@@ -404,7 +404,7 @@ class AddressRepository {
     );
   }
 
-  Future<Address?> findRow(
+  Future<Address?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
@@ -413,7 +413,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.dbNext.findRow<Address>(
+    return session.dbNext.findFirstRow<Address>(
       where: where?.call(Address.t),
       transaction: transaction,
       include: include,

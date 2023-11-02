@@ -22,7 +22,7 @@ class EmailEndpoint extends Endpoint {
     session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
 
     // Fetch password entry
-    var entry = await EmailAuth.db.findRow(session, where: (t) {
+    var entry = await EmailAuth.db.findFirstRow(session, where: (t) {
       return t.email.equals(email);
     });
 

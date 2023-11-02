@@ -380,7 +380,7 @@ class EmailResetRepository {
     );
   }
 
-  Future<EmailReset?> findRow(
+  Future<EmailReset?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
@@ -388,7 +388,7 @@ class EmailResetRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<EmailReset>(
+    return session.dbNext.findFirstRow<EmailReset>(
       where: where?.call(EmailReset.t),
       transaction: transaction,
     );

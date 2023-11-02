@@ -407,7 +407,7 @@ class EmailCreateAccountRequestRepository {
     );
   }
 
-  Future<EmailCreateAccountRequest?> findRow(
+  Future<EmailCreateAccountRequest?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
@@ -415,7 +415,7 @@ class EmailCreateAccountRequestRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<EmailCreateAccountRequest>(
+    return session.dbNext.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
     );

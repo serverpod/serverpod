@@ -326,7 +326,7 @@ class ObjectWithByteDataRepository {
     );
   }
 
-  Future<ObjectWithByteData?> findRow(
+  Future<ObjectWithByteData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
@@ -334,7 +334,7 @@ class ObjectWithByteDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithByteData>(
+    return session.dbNext.findFirstRow<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       transaction: transaction,
     );

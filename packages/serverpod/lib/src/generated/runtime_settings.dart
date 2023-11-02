@@ -409,7 +409,7 @@ class RuntimeSettingsRepository {
     );
   }
 
-  Future<RuntimeSettings?> findRow(
+  Future<RuntimeSettings?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
@@ -417,7 +417,7 @@ class RuntimeSettingsRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<RuntimeSettings>(
+    return session.dbNext.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       transaction: transaction,
     );

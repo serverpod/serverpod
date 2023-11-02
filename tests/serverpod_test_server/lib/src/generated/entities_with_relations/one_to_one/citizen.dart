@@ -511,7 +511,7 @@ class CitizenRepository {
     );
   }
 
-  Future<Citizen?> findRow(
+  Future<Citizen?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
@@ -520,7 +520,7 @@ class CitizenRepository {
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
-    return session.dbNext.findRow<Citizen>(
+    return session.dbNext.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
       transaction: transaction,
       include: include,

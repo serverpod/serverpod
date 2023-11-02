@@ -324,7 +324,7 @@ class ObjectWithSelfParentRepository {
     );
   }
 
-  Future<ObjectWithSelfParent?> findRow(
+  Future<ObjectWithSelfParent?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? offset,
@@ -332,7 +332,7 @@ class ObjectWithSelfParentRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithSelfParent>(
+    return session.dbNext.findFirstRow<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       transaction: transaction,
     );

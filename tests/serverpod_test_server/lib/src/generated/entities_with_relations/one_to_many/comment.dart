@@ -401,7 +401,7 @@ class CommentRepository {
     );
   }
 
-  Future<Comment?> findRow(
+  Future<Comment?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
@@ -410,7 +410,7 @@ class CommentRepository {
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
-    return session.dbNext.findRow<Comment>(
+    return session.dbNext.findFirstRow<Comment>(
       where: where?.call(Comment.t),
       transaction: transaction,
       include: include,

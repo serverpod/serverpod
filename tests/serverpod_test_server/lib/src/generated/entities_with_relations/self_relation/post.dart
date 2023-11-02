@@ -449,7 +449,7 @@ class PostRepository {
     );
   }
 
-  Future<Post?> findRow(
+  Future<Post?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
@@ -458,7 +458,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.dbNext.findRow<Post>(
+    return session.dbNext.findFirstRow<Post>(
       where: where?.call(Post.t),
       transaction: transaction,
       include: include,

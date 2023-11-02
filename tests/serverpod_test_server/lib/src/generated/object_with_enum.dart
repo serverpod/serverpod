@@ -423,7 +423,7 @@ class ObjectWithEnumRepository {
     );
   }
 
-  Future<ObjectWithEnum?> findRow(
+  Future<ObjectWithEnum?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
@@ -431,7 +431,7 @@ class ObjectWithEnumRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithEnum>(
+    return session.dbNext.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       transaction: transaction,
     );

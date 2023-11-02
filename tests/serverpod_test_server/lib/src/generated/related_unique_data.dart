@@ -404,7 +404,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  Future<RelatedUniqueData?> findRow(
+  Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
@@ -413,7 +413,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findRow<RelatedUniqueData>(
+    return session.dbNext.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       transaction: transaction,
       include: include,

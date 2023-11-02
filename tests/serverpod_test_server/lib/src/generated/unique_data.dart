@@ -348,7 +348,7 @@ class UniqueDataRepository {
     );
   }
 
-  Future<UniqueData?> findRow(
+  Future<UniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? offset,
@@ -356,7 +356,7 @@ class UniqueDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UniqueData>(
+    return session.dbNext.findFirstRow<UniqueData>(
       where: where?.call(UniqueData.t),
       transaction: transaction,
     );

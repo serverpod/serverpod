@@ -379,7 +379,7 @@ class UserImageRepository {
     );
   }
 
-  Future<UserImage?> findRow(
+  Future<UserImage?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
@@ -387,7 +387,7 @@ class UserImageRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UserImage>(
+    return session.dbNext.findFirstRow<UserImage>(
       where: where?.call(UserImage.t),
       transaction: transaction,
     );

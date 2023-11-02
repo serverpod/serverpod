@@ -516,7 +516,7 @@ class UserInfoRepository {
     );
   }
 
-  Future<UserInfo?> findRow(
+  Future<UserInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? offset,
@@ -524,7 +524,7 @@ class UserInfoRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UserInfo>(
+    return session.dbNext.findFirstRow<UserInfo>(
       where: where?.call(UserInfo.t),
       transaction: transaction,
     );

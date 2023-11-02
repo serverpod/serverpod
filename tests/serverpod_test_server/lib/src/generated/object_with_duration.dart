@@ -325,7 +325,7 @@ class ObjectWithDurationRepository {
     );
   }
 
-  Future<ObjectWithDuration?> findRow(
+  Future<ObjectWithDuration?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
@@ -333,7 +333,7 @@ class ObjectWithDurationRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithDuration>(
+    return session.dbNext.findFirstRow<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       transaction: transaction,
     );

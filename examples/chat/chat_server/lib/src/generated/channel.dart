@@ -352,7 +352,7 @@ class ChannelRepository {
     );
   }
 
-  Future<Channel?> findRow(
+  Future<Channel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
@@ -360,7 +360,7 @@ class ChannelRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<Channel>(
+    return session.dbNext.findFirstRow<Channel>(
       where: where?.call(Channel.t),
       transaction: transaction,
     );

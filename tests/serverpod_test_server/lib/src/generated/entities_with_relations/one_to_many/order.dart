@@ -471,7 +471,7 @@ class OrderRepository {
     );
   }
 
-  Future<Order?> findRow(
+  Future<Order?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
@@ -480,7 +480,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.dbNext.findRow<Order>(
+    return session.dbNext.findFirstRow<Order>(
       where: where?.call(Order.t),
       transaction: transaction,
       include: include,

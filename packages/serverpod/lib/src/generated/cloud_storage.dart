@@ -458,7 +458,7 @@ class CloudStorageEntryRepository {
     );
   }
 
-  Future<CloudStorageEntry?> findRow(
+  Future<CloudStorageEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
@@ -466,7 +466,7 @@ class CloudStorageEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<CloudStorageEntry>(
+    return session.dbNext.findFirstRow<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
