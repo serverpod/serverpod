@@ -170,7 +170,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -269,7 +269,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
           _i2.ForeignKeyDefinition(
@@ -279,7 +279,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
         ],
@@ -372,7 +372,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -427,7 +427,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -558,7 +558,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
           _i2.ForeignKeyDefinition(
@@ -568,7 +568,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
         ],
@@ -945,7 +945,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -995,7 +995,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1094,7 +1094,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1149,7 +1149,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1210,7 +1210,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
           _i2.ForeignKeyDefinition(
@@ -1220,7 +1220,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           ),
         ],
@@ -1275,7 +1275,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1330,7 +1330,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1554,7 +1554,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
@@ -1609,7 +1609,7 @@ class Protocol extends _i1.SerializationManagerServer {
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
             onUpdate: _i2.ForeignKeyAction.noAction,
-            onDelete: _i2.ForeignKeyAction.cascade,
+            onDelete: _i2.ForeignKeyAction.noAction,
             matchType: null,
           )
         ],
