@@ -7,14 +7,14 @@ class FailedCallsEndpoint extends Endpoint {
 
   Future<void> failedDatabaseQuery(Session session) async {
     // This call should fail and throw an exception
-    await session.dbNext.dangerouslyQuery(
+    await session.dbNext.unsafeQuery(
       'SELECT * FROM non_existing_table LIMIT 1',
     );
   }
 
   Future<bool> failedDatabaseQueryCaughtException(Session session) async {
     try {
-      await session.dbNext.dangerouslyQuery(
+      await session.dbNext.unsafeQuery(
         'SELECT * FROM non_existing_table LIMIT 1',
       );
     } catch (e) {
