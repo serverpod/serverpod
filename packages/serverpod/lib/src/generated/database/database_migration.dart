@@ -14,12 +14,14 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
     required this.actions,
     required this.warnings,
     required this.priority,
+    required this.migrationApiVersion,
   });
 
   factory DatabaseMigration({
     required List<_i2.DatabaseMigrationAction> actions,
     required List<_i2.DatabaseMigrationWarning> warnings,
     required int priority,
+    required int migrationApiVersion,
   }) = _DatabaseMigrationImpl;
 
   factory DatabaseMigration.fromJson(
@@ -35,6 +37,8 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
               jsonSerialization['warnings']),
       priority:
           serializationManager.deserialize<int>(jsonSerialization['priority']),
+      migrationApiVersion: serializationManager
+          .deserialize<int>(jsonSerialization['migrationApiVersion']),
     );
   }
 
@@ -44,10 +48,13 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
 
   int priority;
 
+  int migrationApiVersion;
+
   DatabaseMigration copyWith({
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
     int? priority,
+    int? migrationApiVersion,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -55,6 +62,7 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
       'actions': actions,
       'warnings': warnings,
       'priority': priority,
+      'migrationApiVersion': migrationApiVersion,
     };
   }
 
@@ -64,6 +72,7 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
       'actions': actions,
       'warnings': warnings,
       'priority': priority,
+      'migrationApiVersion': migrationApiVersion,
     };
   }
 }
@@ -73,10 +82,12 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     required List<_i2.DatabaseMigrationAction> actions,
     required List<_i2.DatabaseMigrationWarning> warnings,
     required int priority,
+    required int migrationApiVersion,
   }) : super._(
           actions: actions,
           warnings: warnings,
           priority: priority,
+          migrationApiVersion: migrationApiVersion,
         );
 
   @override
@@ -84,11 +95,13 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
     List<_i2.DatabaseMigrationAction>? actions,
     List<_i2.DatabaseMigrationWarning>? warnings,
     int? priority,
+    int? migrationApiVersion,
   }) {
     return DatabaseMigration(
       actions: actions ?? this.actions.clone(),
       warnings: warnings ?? this.warnings.clone(),
       priority: priority ?? this.priority,
+      migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }
 }

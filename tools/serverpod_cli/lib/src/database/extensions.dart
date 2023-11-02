@@ -487,6 +487,8 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
 
     if (createTable == null) return out;
 
+    if (createTable!.foreignKeys.isEmpty) return out;
+
     out += '--\n';
     out += '-- ACTION CREATE FOREIGN KEY\n';
     out += '--\n';

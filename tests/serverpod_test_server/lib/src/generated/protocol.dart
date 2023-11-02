@@ -134,1648 +134,1651 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
-      name: 'address',
-      dartName: 'Address',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'address_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'street',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'inhabitantId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'address_fk_0',
-          columns: ['inhabitantId'],
-          referenceTable: 'citizen',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'address_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'arena',
-      dartName: 'Arena',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'arena_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'arena_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'citizen',
-      dartName: 'Citizen',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'citizen_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'companyId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'oldCompanyId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'citizen_fk_0',
-          columns: ['companyId'],
-          referenceTable: 'company',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'citizen_fk_1',
-          columns: ['oldCompanyId'],
-          referenceTable: 'company',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'citizen_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'city',
-      dartName: 'City',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'city_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'city_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'comment',
-      dartName: 'Comment',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'comment_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'description',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'orderId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'comment_fk_0',
-          columns: ['orderId'],
-          referenceTable: 'order',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'comment_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'company',
-      dartName: 'Company',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'company_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'townId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'company_fk_0',
-          columns: ['townId'],
-          referenceTable: 'town',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'company_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'course',
-      dartName: 'Course',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'course_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'course_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'customer',
-      dartName: 'Customer',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'customer_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'customer_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'enrollment',
-      dartName: 'Enrollment',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'enrollment_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'studentId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'courseId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'enrollment_fk_0',
-          columns: ['studentId'],
-          referenceTable: 'student',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'enrollment_fk_1',
-          columns: ['courseId'],
-          referenceTable: 'course',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'enrollment_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'enrollment_index_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'studentId',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'courseId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_field_scopes',
-      dartName: 'ObjectFieldScopes',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_field_scopes_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'normal',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'database',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_field_scopes_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_bytedata',
-      dartName: 'ObjectWithByteData',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_bytedata_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'byteData',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: false,
-          dartType: 'dart:typed_data:ByteData',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_bytedata_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_duration',
-      dartName: 'ObjectWithDuration',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_duration_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'duration',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: false,
-          dartType: 'Duration',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_duration_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_enum',
-      dartName: 'ObjectWithEnum',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_enum_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'testEnum',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'protocol:TestEnum',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableEnum',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'protocol:TestEnum?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'enumList',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:TestEnum>',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableEnumList',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:TestEnum?>',
-        ),
-        _i2.ColumnDefinition(
-          name: 'enumListList',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<List<protocol:TestEnum>>',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_enum_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_index',
-      dartName: 'ObjectWithIndex',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_index_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'indexed',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'indexed2',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_index_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'object_with_index_test_index',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'indexed2',
-            ),
-          ],
-          type: 'brin',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_object',
-      dartName: 'ObjectWithObject',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_object_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'data',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'protocol:SimpleData',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableData',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'protocol:SimpleData?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'dataList',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:SimpleData>',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableDataList',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'List<protocol:SimpleData>?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'listWithNullableData',
-          columnType: _i2.ColumnType.json,
-          isNullable: false,
-          dartType: 'List<protocol:SimpleData?>',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nullableListWithNullableData',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'List<protocol:SimpleData?>?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_object_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_parent',
-      dartName: 'ObjectWithParent',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_parent_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'other',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'object_with_parent_fk_0',
-          columns: ['other'],
-          referenceTable: 'object_field_scopes',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_parent_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_self_parent',
-      dartName: 'ObjectWithSelfParent',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'object_with_self_parent_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'other',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'object_with_self_parent_fk_0',
-          columns: ['other'],
-          referenceTable: 'object_with_self_parent',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_self_parent_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'object_with_uuid',
-      dartName: 'ObjectWithUuid',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'object_with_uuid_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'uuid',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: false,
-          dartType: 'UuidValue',
-        ),
-        _i2.ColumnDefinition(
-          name: 'uuidNullable',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: true,
-          dartType: 'UuidValue?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'object_with_uuid_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'order',
-      dartName: 'Order',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'order_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'description',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'customerId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'order_fk_0',
-          columns: ['customerId'],
-          referenceTable: 'customer',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'order_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'organization',
-      dartName: 'Organization',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'organization_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'cityId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'organization_fk_0',
-          columns: ['cityId'],
-          referenceTable: 'city',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'organization_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'person',
-      dartName: 'Person',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'person_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'organizationId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: '_cityCitizensCityId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'person_fk_0',
-          columns: ['organizationId'],
-          referenceTable: 'organization',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-        _i2.ForeignKeyDefinition(
-          constraintName: 'person_fk_1',
-          columns: ['_cityCitizensCityId'],
-          referenceTable: 'city',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        ),
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'person_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'player',
-      dartName: 'Player',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'player_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'teamId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'player_fk_0',
-          columns: ['teamId'],
-          referenceTable: 'team',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'player_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'post',
-      dartName: 'Post',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'post_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'content',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'nextId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'post_fk_0',
-          columns: ['nextId'],
-          referenceTable: 'post',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'post_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'related_unique_data',
-      dartName: 'RelatedUniqueData',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'related_unique_data_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'uniqueDataId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'number',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'related_unique_data_fk_0',
-          columns: ['uniqueDataId'],
-          referenceTable: 'unique_data',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.restrict,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'related_unique_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'simple_data',
-      dartName: 'SimpleData',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'simple_data_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'num',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'simple_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'simple_date_time',
-      dartName: 'SimpleDateTime',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'simple_date_time_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'dateTime',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'simple_date_time_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'student',
-      dartName: 'Student',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'student_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'student_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'team',
-      dartName: 'Team',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'team_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'arenaId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'team_fk_0',
-          columns: ['arenaId'],
-          referenceTable: 'arena',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'team_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'town',
-      dartName: 'Town',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'town_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'name',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'mayorId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-      ],
-      foreignKeys: [
-        _i2.ForeignKeyDefinition(
-          constraintName: 'town_fk_0',
-          columns: ['mayorId'],
-          referenceTable: 'citizen',
-          referenceTableSchema: 'public',
-          referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
-          matchType: null,
-        )
-      ],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'town_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'types',
-      dartName: 'Types',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'types_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'anInt',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'int?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aBool',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: true,
-          dartType: 'bool?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aDouble',
-          columnType: _i2.ColumnType.doublePrecision,
-          isNullable: true,
-          dartType: 'double?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aDateTime',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: true,
-          dartType: 'DateTime?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aString',
-          columnType: _i2.ColumnType.text,
-          isNullable: true,
-          dartType: 'String?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aByteData',
-          columnType: _i2.ColumnType.bytea,
-          isNullable: true,
-          dartType: 'dart:typed_data:ByteData?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aDuration',
-          columnType: _i2.ColumnType.bigint,
-          isNullable: true,
-          dartType: 'Duration?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'aUuid',
-          columnType: _i2.ColumnType.uuid,
-          isNullable: true,
-          dartType: 'UuidValue?',
-        ),
-        _i2.ColumnDefinition(
-          name: 'anEnum',
-          columnType: _i2.ColumnType.integer,
-          isNullable: true,
-          dartType: 'protocol:TestEnum?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'types_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        )
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'unique_data',
-      dartName: 'UniqueData',
-      schema: 'public',
-      module: 'serverpod_test',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'unique_data_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'number',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'email',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'unique_data_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'email_index_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'email',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    ..._i3.Protocol.targetDatabaseDefinition.tables,
-    ..._i4.Protocol.targetDatabaseDefinition.tables,
-    ..._i2.Protocol.targetDatabaseDefinition.tables,
-  ]);
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    tables: [
+      _i2.TableDefinition(
+        name: 'address',
+        dartName: 'Address',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'address_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'street',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'inhabitantId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'address_fk_0',
+            columns: ['inhabitantId'],
+            referenceTable: 'citizen',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'address_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'arena',
+        dartName: 'Arena',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'arena_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'arena_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'citizen',
+        dartName: 'Citizen',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'citizen_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'companyId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'oldCompanyId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'citizen_fk_0',
+            columns: ['companyId'],
+            referenceTable: 'company',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+          _i2.ForeignKeyDefinition(
+            constraintName: 'citizen_fk_1',
+            columns: ['oldCompanyId'],
+            referenceTable: 'company',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'citizen_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'city',
+        dartName: 'City',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'city_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'city_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'comment',
+        dartName: 'Comment',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'comment_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'description',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'orderId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'comment_fk_0',
+            columns: ['orderId'],
+            referenceTable: 'order',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'comment_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'company',
+        dartName: 'Company',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'company_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'townId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'company_fk_0',
+            columns: ['townId'],
+            referenceTable: 'town',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'company_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'course',
+        dartName: 'Course',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'course_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'course_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'customer',
+        dartName: 'Customer',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'customer_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'customer_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'enrollment',
+        dartName: 'Enrollment',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'enrollment_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'studentId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'courseId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'enrollment_fk_0',
+            columns: ['studentId'],
+            referenceTable: 'student',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+          _i2.ForeignKeyDefinition(
+            constraintName: 'enrollment_fk_1',
+            columns: ['courseId'],
+            referenceTable: 'course',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'enrollment_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'enrollment_index_idx',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'studentId',
+              ),
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'courseId',
+              ),
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_field_scopes',
+        dartName: 'ObjectFieldScopes',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_field_scopes_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'normal',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'database',
+            columnType: _i2.ColumnType.text,
+            isNullable: true,
+            dartType: 'String?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_field_scopes_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_bytedata',
+        dartName: 'ObjectWithByteData',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_bytedata_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'byteData',
+            columnType: _i2.ColumnType.bytea,
+            isNullable: false,
+            dartType: 'dart:typed_data:ByteData',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_bytedata_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_duration',
+        dartName: 'ObjectWithDuration',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_duration_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'duration',
+            columnType: _i2.ColumnType.bigint,
+            isNullable: false,
+            dartType: 'Duration',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_duration_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_enum',
+        dartName: 'ObjectWithEnum',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_enum_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'testEnum',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'protocol:TestEnum',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nullableEnum',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'protocol:TestEnum?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'enumList',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'List<protocol:TestEnum>',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nullableEnumList',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'List<protocol:TestEnum?>',
+          ),
+          _i2.ColumnDefinition(
+            name: 'enumListList',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'List<List<protocol:TestEnum>>',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_enum_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_index',
+        dartName: 'ObjectWithIndex',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_index_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'indexed',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'indexed2',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_index_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'object_with_index_test_index',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'indexed',
+              ),
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'indexed2',
+              ),
+            ],
+            type: 'brin',
+            isUnique: false,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_object',
+        dartName: 'ObjectWithObject',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_object_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'data',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'protocol:SimpleData',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nullableData',
+            columnType: _i2.ColumnType.json,
+            isNullable: true,
+            dartType: 'protocol:SimpleData?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'dataList',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'List<protocol:SimpleData>',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nullableDataList',
+            columnType: _i2.ColumnType.json,
+            isNullable: true,
+            dartType: 'List<protocol:SimpleData>?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'listWithNullableData',
+            columnType: _i2.ColumnType.json,
+            isNullable: false,
+            dartType: 'List<protocol:SimpleData?>',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nullableListWithNullableData',
+            columnType: _i2.ColumnType.json,
+            isNullable: true,
+            dartType: 'List<protocol:SimpleData?>?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_object_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_parent',
+        dartName: 'ObjectWithParent',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_parent_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'other',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'object_with_parent_fk_0',
+            columns: ['other'],
+            referenceTable: 'object_field_scopes',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_parent_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_self_parent',
+        dartName: 'ObjectWithSelfParent',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault:
+                'nextval(\'object_with_self_parent_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'other',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'object_with_self_parent_fk_0',
+            columns: ['other'],
+            referenceTable: 'object_with_self_parent',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_self_parent_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'object_with_uuid',
+        dartName: 'ObjectWithUuid',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'object_with_uuid_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'uuid',
+            columnType: _i2.ColumnType.uuid,
+            isNullable: false,
+            dartType: 'UuidValue',
+          ),
+          _i2.ColumnDefinition(
+            name: 'uuidNullable',
+            columnType: _i2.ColumnType.uuid,
+            isNullable: true,
+            dartType: 'UuidValue?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'object_with_uuid_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'order',
+        dartName: 'Order',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'order_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'description',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'customerId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'order_fk_0',
+            columns: ['customerId'],
+            referenceTable: 'customer',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'order_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'organization',
+        dartName: 'Organization',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'organization_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'cityId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'organization_fk_0',
+            columns: ['cityId'],
+            referenceTable: 'city',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'organization_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'person',
+        dartName: 'Person',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'person_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'organizationId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+          _i2.ColumnDefinition(
+            name: '_cityCitizensCityId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'person_fk_0',
+            columns: ['organizationId'],
+            referenceTable: 'organization',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+          _i2.ForeignKeyDefinition(
+            constraintName: 'person_fk_1',
+            columns: ['_cityCitizensCityId'],
+            referenceTable: 'city',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          ),
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'person_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'player',
+        dartName: 'Player',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'player_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'teamId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'player_fk_0',
+            columns: ['teamId'],
+            referenceTable: 'team',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'player_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'post',
+        dartName: 'Post',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'post_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'content',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'nextId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'post_fk_0',
+            columns: ['nextId'],
+            referenceTable: 'post',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'post_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'related_unique_data',
+        dartName: 'RelatedUniqueData',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'related_unique_data_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'uniqueDataId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'number',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'related_unique_data_fk_0',
+            columns: ['uniqueDataId'],
+            referenceTable: 'unique_data',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.restrict,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'related_unique_data_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'simple_data',
+        dartName: 'SimpleData',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'simple_data_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'num',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'simple_data_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'simple_date_time',
+        dartName: 'SimpleDateTime',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'simple_date_time_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'dateTime',
+            columnType: _i2.ColumnType.timestampWithoutTimeZone,
+            isNullable: false,
+            dartType: 'DateTime',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'simple_date_time_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'student',
+        dartName: 'Student',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'student_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'student_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'team',
+        dartName: 'Team',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'team_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'arenaId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'team_fk_0',
+            columns: ['arenaId'],
+            referenceTable: 'arena',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'team_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'town',
+        dartName: 'Town',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'town_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'mayorId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+        ],
+        foreignKeys: [
+          _i2.ForeignKeyDefinition(
+            constraintName: 'town_fk_0',
+            columns: ['mayorId'],
+            referenceTable: 'citizen',
+            referenceTableSchema: 'public',
+            referenceColumns: ['id'],
+            onUpdate: _i2.ForeignKeyAction.noAction,
+            onDelete: _i2.ForeignKeyAction.cascade,
+            matchType: null,
+          )
+        ],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'town_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'types',
+        dartName: 'Types',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'types_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'anInt',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'int?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aBool',
+            columnType: _i2.ColumnType.boolean,
+            isNullable: true,
+            dartType: 'bool?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aDouble',
+            columnType: _i2.ColumnType.doublePrecision,
+            isNullable: true,
+            dartType: 'double?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aDateTime',
+            columnType: _i2.ColumnType.timestampWithoutTimeZone,
+            isNullable: true,
+            dartType: 'DateTime?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aString',
+            columnType: _i2.ColumnType.text,
+            isNullable: true,
+            dartType: 'String?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aByteData',
+            columnType: _i2.ColumnType.bytea,
+            isNullable: true,
+            dartType: 'dart:typed_data:ByteData?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aDuration',
+            columnType: _i2.ColumnType.bigint,
+            isNullable: true,
+            dartType: 'Duration?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'aUuid',
+            columnType: _i2.ColumnType.uuid,
+            isNullable: true,
+            dartType: 'UuidValue?',
+          ),
+          _i2.ColumnDefinition(
+            name: 'anEnum',
+            columnType: _i2.ColumnType.integer,
+            isNullable: true,
+            dartType: 'protocol:TestEnum?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'types_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          )
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'unique_data',
+        dartName: 'UniqueData',
+        schema: 'public',
+        module: 'serverpod_test',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'unique_data_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'number',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'email',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'unique_data_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'email_index_idx',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'email',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      ..._i3.Protocol.targetDatabaseDefinition.tables,
+      ..._i4.Protocol.targetDatabaseDefinition.tables,
+      ..._i2.Protocol.targetDatabaseDefinition.tables,
+    ],
+    migrationApiVersion: 1,
+  );
 
   @override
   T deserialize<T>(
