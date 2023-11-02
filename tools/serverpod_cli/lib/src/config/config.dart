@@ -24,7 +24,7 @@ enum PackageType {
 
 /// The configuration of the generation and analyzing process.
 class GeneratorConfig {
-  const GeneratorConfig({
+  GeneratorConfig({
     required this.name,
     required this.type,
     required this.serverPackage,
@@ -35,7 +35,11 @@ class GeneratorConfig {
     required this.modules,
     required this.extraClasses,
     required this.serializeEnumValuesAsStrings,
-  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+  }) : _relativeDartClientPackagePathParts =
+            relativeDartClientPackagePathParts {
+    assert(_instance == null, 'GeneratorConfig should only be loaded once.');
+    _instance = this;
+  }
 
   /// The current [GeneratorConfig] instance.
   static GeneratorConfig? _instance;
@@ -261,7 +265,7 @@ class GeneratorConfig {
       }
     }
 
-    var config = GeneratorConfig(
+    return GeneratorConfig(
         name: name,
         type: type,
         serverPackage: serverPackage,
@@ -272,11 +276,6 @@ class GeneratorConfig {
         modules: modules,
         extraClasses: extraClasses,
         serializeEnumValuesAsStrings: serializeEnumValuesAsStrings);
-
-    assert(_instance == null, 'GeneratorConfig should only be loaded once.');
-    _instance = config;
-
-    return config;
   }
 
   @override
