@@ -182,13 +182,12 @@ class TypeDefinition {
     // TODO: add all supported types here
     var serializeEnumValuesAsStrings =
         GeneratorConfig.instance.serializeEnumValuesAsStrings;
-    if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
-      return 'text';
+    if (isEnum) {
+      return serializeEnumValuesAsStrings ? 'text' : 'integer';
     }
-    if (className == 'int' || (isEnum && !serializeEnumValuesAsStrings)) {
-      return 'integer';
-    }
+    if (className == 'String') return 'text';
     if (className == 'bool') return 'boolean';
+    if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
