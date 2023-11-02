@@ -241,6 +241,8 @@ class GeneratorConfig {
     }
     var serializeEnumValuesAsStrings =
         // TODO: switch the default from `false` to `true` in Serverpod 2.0.
+        // Also switch the default in:
+        // tools/serverpod_cli/lib/src/test_util/builders/generator_config_builder.dart
         (serializeEnumValuesAsStringsConfig as bool?) ?? false;
 
     // Load extraClasses

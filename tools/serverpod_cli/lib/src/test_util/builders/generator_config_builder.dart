@@ -23,7 +23,10 @@ class GeneratorConfigBuilder {
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
         _modules = [],
         _extraClasses = [],
-        _serializeEnumValuesAsStrings = true;
+        // TODO: switch the default from `false` to `true` in Serverpod 2.0.
+        // Also switch the default in:
+        // tools/serverpod_cli/lib/src/config/config.dart
+        _serializeEnumValuesAsStrings = false;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
