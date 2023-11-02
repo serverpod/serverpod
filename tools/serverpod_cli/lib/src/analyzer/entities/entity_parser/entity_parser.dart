@@ -95,13 +95,13 @@ class EntityParser {
   static bool _parseSerializedAs(YamlMap documentContents) {
     var serializedAs = documentContents.nodes[Keyword.serializedAs]?.value;
     if (serializedAs is! String ||
-        (serializedAs != 'name' && serializedAs != 'index')) {
-      // If no `serializedAs` is specified, default to `index`.
-      // TODO: For Serverpod 2.0, change the default to `true` (i.e. `name`).
+        (serializedAs != Keyword.name && serializedAs != Keyword.index)) {
+      // If no `serializedAs` is specified, default to serializing as index.
+      // TODO: For Serverpod 2.0, change the default to `true`.
       return false;
     }
 
-    return serializedAs == 'name';
+    return serializedAs == Keyword.name;
   }
 
   static String? _parseTableName(YamlMap documentContents) {

@@ -11,8 +11,7 @@ class Keyword {
 
   static const String type = 'type';
   static const String serializedAs = 'serializedAs';
-  static const String serializedAsName = 'name';
-  static const String serializedAsIndex = 'index';
+  static const String index = 'index';
   static const String unique = 'unique';
   static const String parent = 'parent';
   static const String relation = 'relation';
