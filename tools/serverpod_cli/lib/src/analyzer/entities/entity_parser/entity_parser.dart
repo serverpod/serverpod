@@ -98,7 +98,6 @@ class EntityParser {
         (serializedAs != 'name' && serializedAs != 'index')) {
       // If no `serializedAs` is specified, default to `index`.
       // TODO: For Serverpod 2.0, change the default to `true` (i.e. `name`).
-      // TODO: Also switch this default in enum_definition_builder.dart.
       return false;
     }
 

@@ -16,7 +16,6 @@ class EnumDefinitionBuilder {
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         // TODO: Switch this default to true in Serverpod 2.0.
-        // TODO: Also switch this default in entity_parser.dart.
         _serializedAsName = false,
         _subDirParts = [],
         _serverOnly = false,
