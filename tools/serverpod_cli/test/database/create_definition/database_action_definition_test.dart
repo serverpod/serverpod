@@ -2,11 +2,15 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
+  // Cache GeneratorConfig
+  GeneratorConfigBuilder().withName('database_action_definition_test').build();
+
   test(
       'Given a class definition with a table, then generate a table with that name.',
       () {
