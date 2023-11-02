@@ -1,12 +1,12 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
-import 'package:path/path.dart' as p;
 
 import '../config/config.dart';
 
@@ -85,6 +85,7 @@ class TypeDefinition {
       nullable: nullable,
       dartType: type,
       generics: generics,
+      isEnum: type.isDartCoreEnum,
       url: url,
     );
   }
@@ -176,12 +177,18 @@ class TypeDefinition {
     );
   }
 
-  /// Get the qgsql type that represents this [TypeDefinition] in the database.
+  /// Get the pgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
-    // TODO: add all suported types here
-    if (className == 'String') return 'text';
+    // TODO: add all supported types here
+    var serializeEnumValuesAsStrings =
+        GeneratorConfig.instance.serializeEnumValuesAsStrings;
+    if (className == 'String' || (isEnum && serializeEnumValuesAsStrings)) {
+      return 'text';
+    }
+    if (className == 'int' || (isEnum && !serializeEnumValuesAsStrings)) {
+      return 'integer';
+    }
     if (className == 'bool') return 'boolean';
-    if (className == 'int' || isEnum) return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
@@ -199,12 +206,16 @@ class TypeDefinition {
 
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
-    // TODO: add all suported types here
-    if (className == 'int') return 'ColumnInt';
-    if (isEnum) return 'ColumnEnum';
-    if (className == 'double') return 'ColumnDouble';
-    if (className == 'bool') return 'ColumnBool';
+    // TODO: add all supported types here
     if (className == 'String') return 'ColumnString';
+    if (className == 'int') return 'ColumnInt';
+    if (isEnum) {
+      return GeneratorConfig.instance.serializeEnumValuesAsStrings
+          ? 'ColumnEnumSerializedAsString'
+          : 'ColumnEnumSerializedAsInteger';
+    }
+    if (className == 'bool') return 'ColumnBool';
+    if (className == 'double') return 'ColumnDouble';
     if (className == 'DateTime') return 'ColumnDateTime';
     if (className == 'ByteData') return 'ColumnByteData';
     if (className == 'Duration') return 'ColumnDuration';
@@ -213,7 +224,7 @@ class TypeDefinition {
     return 'ColumnSerializable';
   }
 
-  /// Strip the outer most future of this type.
+  /// Strip the outermost future of this type.
   /// Throws, if this type is not a future.
   TypeDefinition stripFuture() {
     if (dartType?.isDartAsyncFuture ?? className == 'Future') {
@@ -372,7 +383,7 @@ class TypeDefinition {
 
 /// Analyze the type at the start of [input].
 /// [input] must not contain spaces.
-/// Returns a [_TypeResult] containing the type,
+/// Returns a [TypeParseResult] containing the type,
 /// as well as the position of the last parsed character.
 /// So when calling with "List<List<String?>?>,database",
 /// the position will point at the ','.

@@ -422,7 +422,7 @@ class TypesTable extends _i1.Table {
       'aUuid',
       this,
     );
-    anEnum = _i1.ColumnEnum<_i3.TestEnum>(
+    anEnum = _i1.ColumnEnumSerializedAsInteger<_i3.TestEnum>(
       'anEnum',
       this,
     );
@@ -444,7 +444,7 @@ class TypesTable extends _i1.Table {
 
   late final _i1.ColumnUuid aUuid;
 
-  late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
+  late final _i1.ColumnEnumSerializedAsInteger<_i3.TestEnum> anEnum;
 
   @override
   List<_i1.Column> get columns => [

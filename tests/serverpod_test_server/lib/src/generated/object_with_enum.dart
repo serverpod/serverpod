@@ -323,11 +323,11 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
 class ObjectWithEnumTable extends _i1.Table {
   ObjectWithEnumTable({super.tableRelation})
       : super(tableName: 'object_with_enum') {
-    testEnum = _i1.ColumnEnum<_i2.TestEnum>(
+    testEnum = _i1.ColumnEnumSerializedAsInteger<_i2.TestEnum>(
       'testEnum',
       this,
     );
-    nullableEnum = _i1.ColumnEnum<_i2.TestEnum>(
+    nullableEnum = _i1.ColumnEnumSerializedAsInteger<_i2.TestEnum>(
       'nullableEnum',
       this,
     );
@@ -345,9 +345,9 @@ class ObjectWithEnumTable extends _i1.Table {
     );
   }
 
-  late final _i1.ColumnEnum<_i2.TestEnum> testEnum;
+  late final _i1.ColumnEnumSerializedAsInteger<_i2.TestEnum> testEnum;
 
-  late final _i1.ColumnEnum<_i2.TestEnum> nullableEnum;
+  late final _i1.ColumnEnumSerializedAsInteger<_i2.TestEnum> nullableEnum;
 
   late final _i1.ColumnSerializable enumList;
 

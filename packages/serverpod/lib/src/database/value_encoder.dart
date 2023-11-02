@@ -20,6 +20,22 @@ class ValueEncoder extends PostgresTextEncoder {
           escapeStrings: escapeStrings);
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
+    } else if (input is Enum) {
+      // Determine whether the Enum is serialized as an integer or as a String
+      var enumValueAsJson = (input as dynamic)?.toJson();
+      if (enumValueAsJson is int) {
+        // Enum is serialized as an integer.
+        return enumValueAsJson.toString();
+      } else if (enumValueAsJson is String) {
+        // Enum is serialized as a String.
+        // Encode enum values without extra quotes (which would otherwise be
+        // added by JSON encoding during `SerializationManager.encode` below,
+        // i.e. as "\"'${input.name}'\"").
+        return "'${input.name}'";
+      } else {
+        // Should not happen
+        throw 'Invalid enum Json type';
+      }
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {

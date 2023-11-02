@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
-import 'package:path/path.dart' as p;
 
 import '../generator/types.dart';
 
@@ -34,7 +34,17 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required this.modules,
     required this.extraClasses,
+    required this.serializeEnumValuesAsStrings,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+
+  /// The current [GeneratorConfig] instance.
+  static GeneratorConfig? _instance;
+
+  /// Get the current [GeneratorConfig] instance.
+  static GeneratorConfig get instance {
+    assert(_instance != null, 'GeneratorConfig is not loaded.');
+    return _instance!;
+  }
 
   /// The name of the serverpod project.
   ///
@@ -103,6 +113,9 @@ class GeneratorConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Whether to serialize enums as Strings rather than ints
+  final bool serializeEnumValuesAsStrings;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -214,6 +227,18 @@ class GeneratorConfig {
       }
     }
 
+    var serializeEnumValuesAsStringsConfig =
+        generatorConfig['serializeEnumValuesAsStrings'];
+    if (serializeEnumValuesAsStringsConfig != null &&
+        serializeEnumValuesAsStringsConfig is! bool) {
+      throw const FormatException(
+          'Option "serializeEnumValuesAsStringsConfig" must be of type bool '
+          'in config/generator.yaml');
+    }
+    var serializeEnumValuesAsStrings =
+        // TODO: switch the default from `false` to `true` in Serverpod 2.0.
+        (serializeEnumValuesAsStringsConfig as bool?) ?? false;
+
     // Load extraClasses
     var extraClasses = <TypeDefinition>[];
     if (generatorConfig['extraClasses'] != null) {
@@ -236,7 +261,7 @@ class GeneratorConfig {
       }
     }
 
-    return GeneratorConfig(
+    var config = GeneratorConfig(
         name: name,
         type: type,
         serverPackage: serverPackage,
@@ -245,7 +270,13 @@ class GeneratorConfig {
         serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
         relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
         modules: modules,
-        extraClasses: extraClasses);
+        extraClasses: extraClasses,
+        serializeEnumValuesAsStrings: serializeEnumValuesAsStrings);
+
+    assert(_instance == null, 'GeneratorConfig should only be loaded once.');
+    _instance = config;
+
+    return config;
   }
 
   @override

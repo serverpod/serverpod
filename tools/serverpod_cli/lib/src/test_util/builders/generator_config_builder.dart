@@ -11,6 +11,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  bool _serializeEnumValuesAsStrings;
 
   GeneratorConfigBuilder()
       : _name = 'example',
@@ -21,7 +22,8 @@ class GeneratorConfigBuilder {
         _serverPackageDirectoryPathParts = [],
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
         _modules = [],
-        _extraClasses = [];
+        _extraClasses = [],
+        _serializeEnumValuesAsStrings = true;
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -74,6 +76,12 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder serializeEnumsValuesAsStrings(
+      bool serializeEnumValuesAsStrings) {
+    _serializeEnumValuesAsStrings = serializeEnumValuesAsStrings;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -85,6 +93,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      serializeEnumValuesAsStrings: _serializeEnumValuesAsStrings,
     );
   }
 }

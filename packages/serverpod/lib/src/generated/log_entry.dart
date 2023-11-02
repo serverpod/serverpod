@@ -436,7 +436,7 @@ class LogEntryTable extends _i1.Table {
       'time',
       this,
     );
-    logLevel = _i1.ColumnEnum<_i2.LogLevel>(
+    logLevel = _i1.ColumnEnumSerializedAsInteger<_i2.LogLevel>(
       'logLevel',
       this,
     );
@@ -474,7 +474,7 @@ class LogEntryTable extends _i1.Table {
   late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.
-  late final _i1.ColumnEnum<_i2.LogLevel> logLevel;
+  late final _i1.ColumnEnumSerializedAsInteger<_i2.LogLevel> logLevel;
 
   /// The logging message.
   late final _i1.ColumnString message;

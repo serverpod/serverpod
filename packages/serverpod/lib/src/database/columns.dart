@@ -53,11 +53,21 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   Expression _encodeValueForQuery(T value);
 }
 
-/// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
-    with _NullableColumnDefaultOperations<E> {
+/// A [Column] holding an enum serialized as a string.
+class ColumnEnumSerializedAsString<E extends Enum>
+    extends _ValueOperatorColumn<E> with _NullableColumnDefaultOperations<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(super.columnName, super.table);
+  ColumnEnumSerializedAsString(super.columnName, super.table);
+
+  @override
+  Expression _encodeValueForQuery(value) => EscapedExpression(value.name);
+}
+
+/// A [Column] holding an enum serialized as an int.
+class ColumnEnumSerializedAsInteger<E extends Enum>
+    extends _ValueOperatorColumn<E> with _NullableColumnDefaultOperations<E> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnEnumSerializedAsInteger(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value.index);
