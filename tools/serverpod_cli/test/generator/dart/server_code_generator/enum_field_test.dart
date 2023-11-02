@@ -50,7 +50,7 @@ void main() {
       expect(
           codeMap[expectedFileName],
           contains(config.serializeEnumValuesAsStrings
-              ? 'int toJson() => name;'
+              ? 'String toJson() => name;'
               : 'int toJson() => index;'));
     });
   });
