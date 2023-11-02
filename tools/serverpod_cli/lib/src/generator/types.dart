@@ -1,12 +1,12 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
-import 'package:path/path.dart' as p;
 
 import '../config/config.dart';
 
@@ -31,6 +31,10 @@ class TypeDefinition {
   /// True if this type references a enum.
   bool isEnum;
 
+  /// True if this type references a enum, and the enum is serialized as a
+  /// string, rather than as an integer.
+  bool enumSerializedAsName;
+
   TypeDefinition({
     required this.className,
     this.generics = const [],
@@ -39,6 +43,7 @@ class TypeDefinition {
     this.dartType,
     this.customClass = false,
     this.isEnum = false,
+    this.enumSerializedAsName = false,
   });
 
   bool get isListType => className == 'List';
@@ -179,10 +184,13 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (className == 'String') return 'text';
-    if (className == 'bool') return 'boolean';
-    if (className == 'int' || isEnum) return 'integer';
+    if (isEnum) {
+      return enumSerializedAsName ? 'text' : 'integer';
+    }
+    if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
+    if (className == 'bool') return 'boolean';
+    if (className == 'String') return 'text';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
@@ -200,8 +208,12 @@ class TypeDefinition {
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
     // TODO: add all suported types here
+    if (isEnum) {
+      return enumSerializedAsName
+          ? 'ColumnEnumSerializedAsName'
+          : 'ColumnEnumSerializedAsIndex';
+    }
     if (className == 'int') return 'ColumnInt';
-    if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
     if (className == 'String') return 'ColumnString';

@@ -20,6 +20,22 @@ class ValueEncoder extends PostgresTextEncoder {
           escapeStrings: escapeStrings);
     } else if (input is UuidValue) {
       return "'${input.uuid}'";
+    } else if (input is Enum) {
+      // To access the mixin toJson method, we need to cast to dynamic.
+      var enumValueAsJson = (input as dynamic)?.toJson();
+      if (enumValueAsJson is int) {
+        // Enum is serialized as an index, because toJson has int return type.
+        return enumValueAsJson.toString();
+      } else if (enumValueAsJson is String) {
+        // Enum is serialized as enum value name, because toJson has String
+        // return type. N.B. need to encode enum values without extra quotes
+        // (which would otherwise be added by JSON encoding below, during
+        // `SerializationManager.encode`, i.e. as "\"'${input.name}'\"").
+        return "'${input.name}'";
+      } else {
+        // Should not happen
+        throw 'Invalid enum Json type';
+      }
     } else if (input is String &&
         input.startsWith('decode(\'') &&
         input.endsWith('\', \'base64\')')) {

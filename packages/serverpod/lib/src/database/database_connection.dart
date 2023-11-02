@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:retry/retry.dart';
+
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_connection_legacy.dart';
 import 'package:serverpod/src/database/database_query.dart';
@@ -631,7 +632,8 @@ class DatabaseConnection {
     if (column is ColumnString) return 'text';
     if (column is ColumnBool) return 'boolean';
     if (column is ColumnInt) return 'integer';
-    if (column is ColumnEnum) return 'integer';
+    if (column is ColumnEnumSerializedAsName) return 'text';
+    if (column is ColumnEnumSerializedAsIndex) return 'integer';
     if (column is ColumnDouble) return 'double precision';
     if (column is ColumnDateTime) return 'timestamp without time zone';
     if (column is ColumnByteData) return 'bytea';

@@ -9,6 +9,7 @@ class TypeDefinitionBuilder {
   DartType? _dartType;
   bool _customClass;
   bool _isEnum;
+  bool _enumSerializedAsName;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -17,7 +18,9 @@ class TypeDefinitionBuilder {
         _url = null,
         _dartType = null,
         _customClass = false,
-        _isEnum = false;
+        _isEnum = false,
+        // TODO: in Serverpod 2.0, change this default to true
+        _enumSerializedAsName = false;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -74,6 +77,11 @@ class TypeDefinitionBuilder {
     return this;
   }
 
+  TypeDefinitionBuilder withEnumSerializedAsName(bool enumSerializedAsName) {
+    _enumSerializedAsName = enumSerializedAsName;
+    return this;
+  }
+
   TypeDefinition build() {
     return TypeDefinition(
       className: _className,
@@ -83,6 +91,7 @@ class TypeDefinitionBuilder {
       dartType: _dartType,
       customClass: _customClass,
       isEnum: _isEnum,
+      enumSerializedAsName: _enumSerializedAsName,
     );
   }
 }

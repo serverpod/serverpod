@@ -53,14 +53,32 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   Expression _encodeValueForQuery(T value);
 }
 
-/// A [Column] holding an enum.
-class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
+/// A [Column] holding an enum that is serialized as the enum value name.
+class ColumnEnumSerializedAsName<E extends Enum> extends _ValueOperatorColumn<E>
     with _NullableColumnDefaultOperations<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(super.columnName, super.table);
+  ColumnEnumSerializedAsName(super.columnName, super.table);
+
+  @override
+  Expression _encodeValueForQuery(value) => EscapedExpression(value.name);
+}
+
+/// A [Column] holding an enum that is serialized as the enum value index.
+class ColumnEnumSerializedAsIndex<E extends Enum>
+    extends _ValueOperatorColumn<E> with _NullableColumnDefaultOperations<E> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnEnumSerializedAsIndex(super.columnName, super.table);
 
   @override
   Expression _encodeValueForQuery(value) => Expression(value.index);
+}
+
+/// A [Column] holding an enum that is serialized as the enum value index
+/// (included for backwards compatibility).
+// TODO: For Serverpod 2.0, remove this, or make it extend ColumnEnumSerializedAsName
+class ColumnEnum<E extends Enum> extends ColumnEnumSerializedAsIndex<E> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnEnum(super.columnName, super.table);
 }
 
 /// A [Column] holding an [String].

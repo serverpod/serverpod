@@ -1,15 +1,13 @@
-import 'package:serverpod_cli/src/util/extensions.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
-import 'package:serverpod_cli/src/util/yaml_docs.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
-
-import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
-
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/extensions.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/yaml_docs.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
 
 class EntityParser {
   static SerializableEntityDefinition? serializeClassFile(
@@ -72,12 +70,14 @@ class EntityParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
+    var serializedAsName = _parseSerializedAs(documentContents);
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
+      serializedAsName: serializedAsName,
       values: values,
       documentation: enumDocumentation,
       subDirParts: protocolSource.protocolRootPathParts,
@@ -90,6 +90,19 @@ class EntityParser {
     if (serverOnly is! bool) return false;
 
     return serverOnly;
+  }
+
+  static bool _parseSerializedAs(YamlMap documentContents) {
+    var serializedAs = documentContents.nodes[Keyword.serializedAs]?.value;
+    if (serializedAs is! String ||
+        (serializedAs != 'name' && serializedAs != 'index')) {
+      // If no `serializedAs` is specified, default to `index`.
+      // TODO: For Serverpod 2.0, change the default to `true` (i.e. `name`).
+      // TODO: Also switch this default in enum_definition_builder.dart.
+      return false;
+    }
+
+    return serializedAs == 'name';
   }
 
   static String? _parseTableName(YamlMap documentContents) {

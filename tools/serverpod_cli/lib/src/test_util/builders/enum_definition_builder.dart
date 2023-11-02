@@ -4,6 +4,7 @@ class EnumDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
+  bool _serializedAsName;
   List<String> _subDirParts;
   bool _serverOnly;
 
@@ -14,6 +15,9 @@ class EnumDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
+        // TODO: Switch this default to true in Serverpod 2.0.
+        // TODO: Also switch this default in entity_parser.dart.
+        _serializedAsName = false,
         _subDirParts = [],
         _serverOnly = false,
         _values = [
@@ -28,6 +32,7 @@ class EnumDefinitionBuilder {
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
+      serializedAsName: _serializedAsName,
       values: _values,
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
@@ -57,6 +62,11 @@ class EnumDefinitionBuilder {
 
   EnumDefinitionBuilder withServerOnly(bool serverOnly) {
     _serverOnly = serverOnly;
+    return this;
+  }
+
+  EnumDefinitionBuilder withSerializedAsName(bool serializedAsName) {
+    _serializedAsName = serializedAsName;
     return this;
   }
 
