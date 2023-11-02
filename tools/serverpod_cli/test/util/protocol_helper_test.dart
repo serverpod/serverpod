@@ -22,17 +22,19 @@ GeneratorConfig createGeneratorConfig([
   );
 }
 
+final serverRootDir = Directory(join(
+  'test',
+  'util',
+  'test_assets',
+  'protocol_helper',
+  'has_serverpod_server_project',
+  'test_server',
+));
+
+final config = createGeneratorConfig(split(serverRootDir.path));
+
 void main() {
   group('Test path extraction.', () {
-    var serverRootDir = Directory(join(
-      'test',
-      'util',
-      'test_assets',
-      'protocol_helper',
-      'has_serverpod_server_project',
-      'test_server',
-    ));
-
     test(
         'Given a protocol path directly inside the protocol folder, then the parts list is empty.',
         () {
@@ -48,8 +50,6 @@ void main() {
         'protocol',
         'test.yaml',
       ));
-
-      var config = createGeneratorConfig(split(serverRootDir.path));
 
       var pathParts = ProtocolHelper.extractPathFromProtocolRoot(
         config,
@@ -77,8 +77,6 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
-
       var pathParts = ProtocolHelper.extractPathFromProtocolRoot(
         config,
         protocolFile.uri,
@@ -88,17 +86,6 @@ void main() {
     });
 
     group('Test yaml protocol loader.', () {
-      var serverRootDir = Directory(join(
-        'test',
-        'util',
-        'test_assets',
-        'protocol_helper',
-        'has_serverpod_server_project',
-        'test_server',
-      ));
-
-      var config = createGeneratorConfig(split(serverRootDir.path));
-
       test(
           'Given a serverpod project with protocol files, then the converted protocol path has the file uri set.',
           () async {

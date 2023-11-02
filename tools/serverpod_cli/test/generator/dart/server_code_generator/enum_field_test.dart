@@ -1,10 +1,9 @@
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
-import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
-
 import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
+import 'package:test/test.dart';
 
 const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
@@ -40,12 +39,19 @@ void main() {
     });
 
     test('then generated enum has static fromJson method', () {
-      expect(codeMap[expectedFileName],
-          contains('static Example? fromJson(int index)'));
+      expect(
+          codeMap[expectedFileName],
+          contains(config.serializeEnumValuesAsStrings
+              ? 'static Example? fromJson(String name)'
+              : 'static Example? fromJson(int index)'));
     });
 
     test('then generated enum has toJson method', () {
-      expect(codeMap[expectedFileName], contains('int toJson() => index;'));
+      expect(
+          codeMap[expectedFileName],
+          contains(config.serializeEnumValuesAsStrings
+              ? 'int toJson() => name;'
+              : 'int toJson() => index;'));
     });
   });
 
