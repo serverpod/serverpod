@@ -46,13 +46,18 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
-  bool _isType<T>(Type t) => t == T;
-
   bool _isAssignableToMaybeNullable<T1, T2>(dynamic data, Type t) =>
       t == T1 && data is T1 || t == T2 && data is T2;
 
   bool _isAssignableTo<T>(dynamic data, Type t) =>
       _isAssignableToMaybeNullable<T, T?>(data, t);
+
+  bool _isConvertibleFromMaybeNullable<T1, T1Nullable, T2, T2Nullable>(
+          dynamic data, Type t) =>
+      t == T1 && data is T2 || t == T1Nullable && data is T2Nullable;
+
+  bool _isConvertibleFrom<T1, T2>(dynamic data, Type t) =>
+      _isConvertibleFromMaybeNullable<T1, T1?, T2, T2?>(data, t);
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
@@ -72,8 +77,8 @@ abstract class SerializationManager {
       if (data is DateTime) return data as T;
       return (DateTime.tryParse(data)?.toUtc() ??
           (throw 'Invalid date format: $data')) as T;
-    } else if (_isType<ByteData>(t) && (data is Uint8List || data is String) ||
-        _isType<ByteData?>(t) && (data is Uint8List? || data is String?)) {
+    } else if (_isConvertibleFrom<ByteData, Uint8List>(data, t) ||
+        _isConvertibleFrom<ByteData, String>(data, t)) {
       if (data == null) return null as T;
       if (data is Uint8List) {
         var byteData = ByteData.view(
@@ -85,12 +90,10 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isType<Duration>(t) && data is int ||
-        _isType<Duration?>(t) && data is int?) {
+    } else if (_isConvertibleFrom<Duration, int>(data, t)) {
       if (data == null) return null as T;
       return Duration(milliseconds: (data as int)) as T;
-    } else if (_isType<UuidValue>(t) && data is String ||
-        _isType<UuidValue?>(t) && data is String?) {
+    } else if (_isConvertibleFrom<UuidValue, String>(data, t)) {
       if (data == null) return null as T;
       return UuidValue(data as String) as T;
     }
