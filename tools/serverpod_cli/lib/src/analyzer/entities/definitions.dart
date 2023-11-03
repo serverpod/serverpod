@@ -374,7 +374,7 @@ class ForeignRelationDefinition extends RelationDefinition {
     String? name,
     required this.parentTable,
     required this.foreignFieldName,
-    this.onDelete = onUpdateDefault,
+    this.onDelete = onDeleteDefault,
     this.onUpdate = onUpdateDefault,
   }) : super(name, true);
 }
