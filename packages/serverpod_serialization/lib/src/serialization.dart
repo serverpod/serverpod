@@ -52,12 +52,12 @@ abstract class SerializationManager {
   bool _isAssignableTo<T>(dynamic data, Type t) =>
       _isAssignableToMaybeNullable<T, T?>(data, t);
 
-  bool _isConvertibleFromMaybeNullable<T1, T1Nullable, T2, T2Nullable>(
+  bool _isConvertibleToMaybeNullable<TFrom, TFromNullable, TTo, TToNullable>(
           dynamic data, Type t) =>
-      t == T1 && data is T2 || t == T1Nullable && data is T2Nullable;
+      t == TTo && data is TFrom || t == TToNullable && data is TFromNullable;
 
-  bool _isConvertibleFrom<T1, T2>(dynamic data, Type t) =>
-      _isConvertibleFromMaybeNullable<T1, T1?, T2, T2?>(data, t);
+  bool _isConvertibleTo<TFrom, TTo>(dynamic data, Type t) =>
+      _isConvertibleToMaybeNullable<TFrom, TFrom?, TTo, TTo?>(data, t);
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
@@ -77,8 +77,8 @@ abstract class SerializationManager {
       if (data is DateTime) return data as T;
       return (DateTime.tryParse(data)?.toUtc() ??
           (throw 'Invalid date format: $data')) as T;
-    } else if (_isConvertibleFrom<ByteData, Uint8List>(data, t) ||
-        _isConvertibleFrom<ByteData, String>(data, t)) {
+    } else if (_isConvertibleTo<Uint8List, ByteData>(data, t) ||
+        _isConvertibleTo<String, ByteData>(data, t)) {
       if (data == null) return null as T;
       if (data is Uint8List) {
         var byteData = ByteData.view(
@@ -90,10 +90,10 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isConvertibleFrom<Duration, int>(data, t)) {
+    } else if (_isConvertibleTo<int, Duration>(data, t)) {
       if (data == null) return null as T;
       return Duration(milliseconds: (data as int)) as T;
-    } else if (_isConvertibleFrom<UuidValue, String>(data, t)) {
+    } else if (_isConvertibleTo<String, UuidValue>(data, t)) {
       if (data == null) return null as T;
       return UuidValue(data as String) as T;
     }
