@@ -456,10 +456,12 @@ class CustomerRepository {
   Future<List<Customer>> update(
     _i1.Session session,
     List<Customer> rows, {
+    _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Customer>(
       rows,
+      columns: columns?.call(Customer.t),
       transaction: transaction,
     );
   }
@@ -467,10 +469,12 @@ class CustomerRepository {
   Future<Customer> updateRow(
     _i1.Session session,
     Customer row, {
+    _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Customer>(
       row,
+      columns: columns?.call(Customer.t),
       transaction: transaction,
     );
   }

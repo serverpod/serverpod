@@ -473,10 +473,12 @@ class ObjectWithEnumRepository {
   Future<List<ObjectWithEnum>> update(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
+    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithEnum>(
       rows,
+      columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }
@@ -484,10 +486,12 @@ class ObjectWithEnumRepository {
   Future<ObjectWithEnum> updateRow(
     _i1.Session session,
     ObjectWithEnum row, {
+    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithEnum>(
       row,
+      columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }

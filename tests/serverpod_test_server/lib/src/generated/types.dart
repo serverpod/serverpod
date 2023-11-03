@@ -568,10 +568,12 @@ class TypesRepository {
   Future<List<Types>> update(
     _i1.Session session,
     List<Types> rows, {
+    _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Types>(
       rows,
+      columns: columns?.call(Types.t),
       transaction: transaction,
     );
   }
@@ -579,10 +581,12 @@ class TypesRepository {
   Future<Types> updateRow(
     _i1.Session session,
     Types row, {
+    _i1.ColumnSelections<TypesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Types>(
       row,
+      columns: columns?.call(Types.t),
       transaction: transaction,
     );
   }

@@ -508,10 +508,12 @@ class CloudStorageEntryRepository {
   Future<List<CloudStorageEntry>> update(
     _i1.Session session,
     List<CloudStorageEntry> rows, {
+    _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<CloudStorageEntry>(
       rows,
+      columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }
@@ -519,10 +521,12 @@ class CloudStorageEntryRepository {
   Future<CloudStorageEntry> updateRow(
     _i1.Session session,
     CloudStorageEntry row, {
+    _i1.ColumnSelections<CloudStorageEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<CloudStorageEntry>(
       row,
+      columns: columns?.call(CloudStorageEntry.t),
       transaction: transaction,
     );
   }

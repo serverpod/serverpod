@@ -375,10 +375,12 @@ class ObjectWithDurationRepository {
   Future<List<ObjectWithDuration>> update(
     _i1.Session session,
     List<ObjectWithDuration> rows, {
+    _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithDuration>(
       rows,
+      columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
     );
   }
@@ -386,10 +388,12 @@ class ObjectWithDurationRepository {
   Future<ObjectWithDuration> updateRow(
     _i1.Session session,
     ObjectWithDuration row, {
+    _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithDuration>(
       row,
+      columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
     );
   }

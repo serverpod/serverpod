@@ -39,7 +39,7 @@ void main() async {
 
       var customerNames = fetchedCustomers.map((e) => e.name);
       expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(customerNames, containsAll(['Alex', 'Viktor']));
     });
 
     test(

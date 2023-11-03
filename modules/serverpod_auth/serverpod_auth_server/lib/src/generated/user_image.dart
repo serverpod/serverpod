@@ -429,10 +429,12 @@ class UserImageRepository {
   Future<List<UserImage>> update(
     _i1.Session session,
     List<UserImage> rows, {
+    _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<UserImage>(
       rows,
+      columns: columns?.call(UserImage.t),
       transaction: transaction,
     );
   }
@@ -440,10 +442,12 @@ class UserImageRepository {
   Future<UserImage> updateRow(
     _i1.Session session,
     UserImage row, {
+    _i1.ColumnSelections<UserImageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<UserImage>(
       row,
+      columns: columns?.call(UserImage.t),
       transaction: transaction,
     );
   }

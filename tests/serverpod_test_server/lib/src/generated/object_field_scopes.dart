@@ -410,10 +410,12 @@ class ObjectFieldScopesRepository {
   Future<List<ObjectFieldScopes>> update(
     _i1.Session session,
     List<ObjectFieldScopes> rows, {
+    _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectFieldScopes>(
       rows,
+      columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
     );
   }
@@ -421,10 +423,12 @@ class ObjectFieldScopesRepository {
   Future<ObjectFieldScopes> updateRow(
     _i1.Session session,
     ObjectFieldScopes row, {
+    _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectFieldScopes>(
       row,
+      columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
     );
   }

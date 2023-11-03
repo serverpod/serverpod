@@ -455,10 +455,12 @@ class CommentRepository {
   Future<List<Comment>> update(
     _i1.Session session,
     List<Comment> rows, {
+    _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Comment>(
       rows,
+      columns: columns?.call(Comment.t),
       transaction: transaction,
     );
   }
@@ -466,10 +468,12 @@ class CommentRepository {
   Future<Comment> updateRow(
     _i1.Session session,
     Comment row, {
+    _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Comment>(
       row,
+      columns: columns?.call(Comment.t),
       transaction: transaction,
     );
   }

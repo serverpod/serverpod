@@ -400,10 +400,12 @@ class ObjectWithUuidRepository {
   Future<List<ObjectWithUuid>> update(
     _i1.Session session,
     List<ObjectWithUuid> rows, {
+    _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithUuid>(
       rows,
+      columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
     );
   }
@@ -411,10 +413,12 @@ class ObjectWithUuidRepository {
   Future<ObjectWithUuid> updateRow(
     _i1.Session session,
     ObjectWithUuid row, {
+    _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithUuid>(
       row,
+      columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
     );
   }

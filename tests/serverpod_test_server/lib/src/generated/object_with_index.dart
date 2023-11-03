@@ -399,10 +399,12 @@ class ObjectWithIndexRepository {
   Future<List<ObjectWithIndex>> update(
     _i1.Session session,
     List<ObjectWithIndex> rows, {
+    _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithIndex>(
       rows,
+      columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }
@@ -410,10 +412,12 @@ class ObjectWithIndexRepository {
   Future<ObjectWithIndex> updateRow(
     _i1.Session session,
     ObjectWithIndex row, {
+    _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithIndex>(
       row,
+      columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
     );
   }

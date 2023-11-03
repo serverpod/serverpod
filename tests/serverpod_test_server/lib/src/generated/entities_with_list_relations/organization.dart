@@ -526,10 +526,12 @@ class OrganizationRepository {
   Future<List<Organization>> update(
     _i1.Session session,
     List<Organization> rows, {
+    _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Organization>(
       rows,
+      columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }
@@ -537,10 +539,12 @@ class OrganizationRepository {
   Future<Organization> updateRow(
     _i1.Session session,
     Organization row, {
+    _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Organization>(
       row,
+      columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }

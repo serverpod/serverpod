@@ -525,10 +525,12 @@ class CityRepository {
   Future<List<City>> update(
     _i1.Session session,
     List<City> rows, {
+    _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<City>(
       rows,
+      columns: columns?.call(City.t),
       transaction: transaction,
     );
   }
@@ -536,10 +538,12 @@ class CityRepository {
   Future<City> updateRow(
     _i1.Session session,
     City row, {
+    _i1.ColumnSelections<CityTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<City>(
       row,
+      columns: columns?.call(City.t),
       transaction: transaction,
     );
   }

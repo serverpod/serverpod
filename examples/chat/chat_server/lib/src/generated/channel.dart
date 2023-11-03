@@ -402,10 +402,12 @@ class ChannelRepository {
   Future<List<Channel>> update(
     _i1.Session session,
     List<Channel> rows, {
+    _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Channel>(
       rows,
+      columns: columns?.call(Channel.t),
       transaction: transaction,
     );
   }
@@ -413,10 +415,12 @@ class ChannelRepository {
   Future<Channel> updateRow(
     _i1.Session session,
     Channel row, {
+    _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Channel>(
       row,
+      columns: columns?.call(Channel.t),
       transaction: transaction,
     );
   }

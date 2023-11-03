@@ -432,10 +432,12 @@ class ArenaRepository {
   Future<List<Arena>> update(
     _i1.Session session,
     List<Arena> rows, {
+    _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Arena>(
       rows,
+      columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }
@@ -443,10 +445,12 @@ class ArenaRepository {
   Future<Arena> updateRow(
     _i1.Session session,
     Arena row, {
+    _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Arena>(
       row,
+      columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }

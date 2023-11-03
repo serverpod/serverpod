@@ -30,26 +30,6 @@ class DatabaseBatch extends Endpoint {
     return session.dbNext.update<Types>(value);
   }
 
-  Future<List<UniqueData>> batchUpdateWithInvalidColumn(
-    Session session,
-    List<UniqueData> value,
-  ) async {
-    return session.dbNext.update<UniqueData>(
-      value,
-      columns: [SimpleData.t.num],
-    );
-  }
-
-  Future<List<UniqueData>> batchUpdateNumberOnly(
-    Session session,
-    List<UniqueData> value,
-  ) async {
-    return session.dbNext.update<UniqueData>(
-      value,
-      columns: [UniqueData.t.number],
-    );
-  }
-
   Future<List<int>> batchDelete(
     Session session,
     List<UniqueData> value,

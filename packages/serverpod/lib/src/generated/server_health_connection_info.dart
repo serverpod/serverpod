@@ -512,10 +512,12 @@ class ServerHealthConnectionInfoRepository {
   Future<List<ServerHealthConnectionInfo>> update(
     _i1.Session session,
     List<ServerHealthConnectionInfo> rows, {
+    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ServerHealthConnectionInfo>(
       rows,
+      columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
   }
@@ -523,10 +525,12 @@ class ServerHealthConnectionInfoRepository {
   Future<ServerHealthConnectionInfo> updateRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
+    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ServerHealthConnectionInfo>(
       row,
+      columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
   }

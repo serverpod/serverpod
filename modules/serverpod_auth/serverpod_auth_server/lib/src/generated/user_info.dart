@@ -566,10 +566,12 @@ class UserInfoRepository {
   Future<List<UserInfo>> update(
     _i1.Session session,
     List<UserInfo> rows, {
+    _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<UserInfo>(
       rows,
+      columns: columns?.call(UserInfo.t),
       transaction: transaction,
     );
   }
@@ -577,10 +579,12 @@ class UserInfoRepository {
   Future<UserInfo> updateRow(
     _i1.Session session,
     UserInfo row, {
+    _i1.ColumnSelections<UserInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<UserInfo>(
       row,
+      columns: columns?.call(UserInfo.t),
       transaction: transaction,
     );
   }

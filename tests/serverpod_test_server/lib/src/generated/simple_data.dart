@@ -380,10 +380,12 @@ class SimpleDataRepository {
   Future<List<SimpleData>> update(
     _i1.Session session,
     List<SimpleData> rows, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<SimpleData>(
       rows,
+      columns: columns?.call(SimpleData.t),
       transaction: transaction,
     );
   }
@@ -391,10 +393,12 @@ class SimpleDataRepository {
   Future<SimpleData> updateRow(
     _i1.Session session,
     SimpleData row, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<SimpleData>(
       row,
+      columns: columns?.call(SimpleData.t),
       transaction: transaction,
     );
   }
