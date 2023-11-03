@@ -46,30 +46,32 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
-  bool _isAssignableMaybeNullable<T1, T2>(dynamic data, Type t) =>
+  bool _isAssignableToMaybeNullable<T1, T2>(dynamic data, Type t) =>
       t == T1 && data is T1 || t == T2 && data is T2;
 
-  bool _isAssignable<T>(dynamic data, Type t) =>
-      _isAssignableMaybeNullable<T, T?>(data, t);
+  bool _isAssignableTo<T>(dynamic data, Type t) =>
+      _isAssignableToMaybeNullable<T, T?>(data, t);
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
-    if (_isAssignable<int>(data, t)) {
+    if (_isAssignableTo<int>(data, t)) {
       return data as T;
-    } else if (_isAssignable<double>(data, t)) {
+    } else if (_isAssignableTo<double>(data, t)) {
       return (data as num?)?.toDouble() as T;
-    } else if (_isAssignable<String>(data, t)) {
+    } else if (_isAssignableTo<String>(data, t)) {
       return data as T;
-    } else if (_isAssignable<bool>(data, t)) {
+    } else if (_isAssignableTo<bool>(data, t)) {
       return data as T;
-    } else if (_isAssignable<DateTime>(data, t)) {
-      if (data is DateTime) return data as T;
+    } else if (_isAssignableTo<DateTime>(data, t)) {
       if (data == null) return null as T;
-      return DateTime.tryParse(data)?.toUtc() as T;
-    } else if (_isAssignable<ByteData>(data, t)) {
+      if (data is DateTime) return data as T;
+      return (DateTime.tryParse(data)?.toUtc() ??
+          (throw 'Invalid date format: $data')) as T;
+    } else if (_isAssignableTo<ByteData>(data, t)) {
+      if (data == null) return null as T;
       if (data is Uint8List) {
         var byteData = ByteData.view(
           data.buffer,
@@ -80,10 +82,12 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isAssignable<Duration>(data, t)) {
-      return data == null ? data : Duration(milliseconds: (data as int)) as T;
-    } else if (_isAssignable<UuidValue>(data, t)) {
-      return (data == null ? null : UuidValue(data as String)) as T;
+    } else if (_isAssignableTo<Duration>(data, t)) {
+      if (data == null) return null as T;
+      return Duration(milliseconds: (data as int)) as T;
+    } else if (_isAssignableTo<UuidValue>(data, t)) {
+      if (data == null) return null as T;
+      return UuidValue(data as String) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
