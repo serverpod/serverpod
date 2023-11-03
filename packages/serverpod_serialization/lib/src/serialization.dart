@@ -46,29 +46,30 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
-  bool _isType<T1, T2>(dynamic data, Type t) =>
+  bool _isAssignableMaybeNullable<T1, T2>(dynamic data, Type t) =>
       t == T1 && data is T1 || t == T2 && data is T2;
 
-  bool _isNullableType<T>(dynamic data, Type t) => _isType<T, T?>(data, t);
+  bool _isAssignable<T>(dynamic data, Type t) =>
+      _isAssignableMaybeNullable<T, T?>(data, t);
 
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
-    if (_isNullableType<int>(data, t)) {
+    if (_isAssignable<int>(data, t)) {
       return data as T;
-    } else if (_isNullableType<double>(data, t)) {
+    } else if (_isAssignable<double>(data, t)) {
       return (data as num?)?.toDouble() as T;
-    } else if (_isNullableType<String>(data, t)) {
+    } else if (_isAssignable<String>(data, t)) {
       return data as T;
-    } else if (_isNullableType<bool>(data, t)) {
+    } else if (_isAssignable<bool>(data, t)) {
       return data as T;
-    } else if (_isNullableType<DateTime>(data, t)) {
+    } else if (_isAssignable<DateTime>(data, t)) {
       if (data is DateTime) return data as T;
       if (data == null) return null as T;
       return DateTime.tryParse(data)?.toUtc() as T;
-    } else if (_isNullableType<ByteData>(data, t)) {
+    } else if (_isAssignable<ByteData>(data, t)) {
       if (data is Uint8List) {
         var byteData = ByteData.view(
           data.buffer,
@@ -79,9 +80,9 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isNullableType<Duration>(data, t)) {
+    } else if (_isAssignable<Duration>(data, t)) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
-    } else if (_isNullableType<UuidValue>(data, t)) {
+    } else if (_isAssignable<UuidValue>(data, t)) {
       return (data == null ? null : UuidValue(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');
