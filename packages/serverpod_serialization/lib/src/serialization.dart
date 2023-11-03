@@ -77,19 +77,17 @@ abstract class SerializationManager {
       if (data is DateTime) return data as T;
       return (DateTime.tryParse(data)?.toUtc() ??
           (throw 'Invalid date format: $data')) as T;
-    } else if (_isConvertibleTo<Uint8List, ByteData>(data, t) ||
-        _isConvertibleTo<String, ByteData>(data, t)) {
+    } else if (_isConvertibleTo<Uint8List, ByteData>(data, t)) {
       if (data == null) return null as T;
-      if (data is Uint8List) {
-        var byteData = ByteData.view(
-          data.buffer,
-          data.offsetInBytes,
-          data.lengthInBytes,
-        );
-        return byteData as T;
-      } else {
-        return (data as String?)?.base64DecodedByteData() as T;
-      }
+      var byteData = ByteData.view(
+        data.buffer,
+        data.offsetInBytes,
+        data.lengthInBytes,
+      );
+      return byteData as T;
+    } else if (_isConvertibleTo<String, ByteData>(data, t)) {
+      if (data == null) return null as T;
+      return (data as String).base64DecodedByteData() as T;
     } else if (_isConvertibleTo<int, Duration>(data, t)) {
       if (data == null) return null as T;
       return Duration(milliseconds: (data as int)) as T;
