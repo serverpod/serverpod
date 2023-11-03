@@ -29,6 +29,7 @@ void main() {
           'properties': {
             'id': {
               'type': 'integer',
+              'format': 'int64',
             },
             'name': {
               'type': 'string',
@@ -77,6 +78,7 @@ void main() {
           'properties': {
             'id': {
               'type': 'integer',
+              'format': 'int64',
             },
             'example': {
               '\$ref': '#/components/schemas/Example',
@@ -106,6 +108,7 @@ void main() {
           'properties': {
             'id': {
               'type': 'integer',
+              'format': 'int64',
             },
             'examples': {
               'type': 'array',
@@ -138,6 +141,7 @@ void main() {
           'properties': {
             'id': {
               'type': 'integer',
+              'format': 'int64',
             },
             'map': {
               'type': 'object',

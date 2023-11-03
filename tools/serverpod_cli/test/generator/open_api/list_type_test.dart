@@ -99,6 +99,7 @@ void main() {
         'type': 'array',
         'items': {
           'type': 'integer',
+          'format': 'int64',
         }
       },
     );
@@ -112,6 +113,7 @@ void main() {
         'type': 'array',
         'items': {
           'type': 'integer',
+          'format': 'int64',
         }
       },
     );
@@ -125,6 +127,7 @@ void main() {
         'type': 'array',
         'items': {
           'type': 'number',
+          'format': 'float',
         }
       },
     );
@@ -139,6 +142,7 @@ void main() {
         'type': 'array',
         'items': {
           'type': 'number',
+          'format': 'float',
         }
       },
     );

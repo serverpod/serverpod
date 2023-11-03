@@ -36,6 +36,7 @@ void main() {
         typeDefinitionToJson(intType),
         {
           'type': 'integer',
+          'format': 'int64',
         },
       );
     });
@@ -46,8 +47,8 @@ void main() {
       expect(
         typeDefinitionToJson(intNullableType),
         {
-          'type': 'integer',
-          'nullable': true,
+          'type': ['integer', 'null'],
+          'format': 'int64',
         },
       );
     });
@@ -71,8 +72,7 @@ void main() {
       expect(
         typeDefinitionToJson(stringNullableType),
         {
-          'type': 'string',
-          'nullable': true,
+          'type': ['string', 'null'],
         },
       );
     });
@@ -85,6 +85,7 @@ void main() {
         typeDefinitionToJson(doubleType),
         {
           'type': 'number',
+          'format': 'float',
         },
       );
     });
@@ -95,8 +96,8 @@ void main() {
       expect(
         typeDefinitionToJson(doubleNullableType),
         {
-          'type': 'number',
-          'nullable': true,
+          'type': ['number', 'null'],
+          'format': 'float',
         },
       );
     });
@@ -120,8 +121,7 @@ void main() {
       expect(
         typeDefinitionToJson(bigIntNullableType),
         {
-          'type': 'number',
-          'nullable': true,
+          'type': ['number', 'null'],
         },
       );
     });
@@ -145,8 +145,7 @@ void main() {
       expect(
         typeDefinitionToJson(boolNullableType),
         {
-          'type': 'boolean',
-          'nullable': true,
+          'type': ['boolean', 'null'],
         },
       );
     });

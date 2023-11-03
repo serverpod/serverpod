@@ -62,6 +62,7 @@ void main() {
         'type': 'object',
         'additionalProperties': {
           'type': 'integer',
+          'format': 'int64',
         }
       },
     );
@@ -81,6 +82,7 @@ void main() {
         'type': 'object',
         'additionalProperties': {
           'type': 'number',
+          'format': 'float',
         }
       },
     );
@@ -163,7 +165,10 @@ void main() {
         'type': 'object',
         'additionalProperties': {
           'type': 'array',
-          'items': {'type': 'integer'}
+          'items': {
+            'type': 'integer',
+            'format': 'int64',
+          }
         }
       },
     );
@@ -186,7 +191,10 @@ void main() {
         'type': 'object',
         'additionalProperties': {
           'type': 'array',
-          'items': {'type': 'number'}
+          'items': {
+            'type': 'number',
+            'format': 'float',
+          }
         }
       },
     );

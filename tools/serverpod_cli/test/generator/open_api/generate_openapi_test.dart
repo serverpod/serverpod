@@ -223,11 +223,11 @@ void main() {
       );
 
       test(
-        'then openAPI version is 3.0.0.',
+        'then openAPI version is 3.1.0.',
         () {
           expect(
             openAPISchema['openapi'],
-            equals('3.0.0'),
+            equals('3.1.0'),
           );
         },
       );
@@ -236,7 +236,7 @@ void main() {
         () {
           expect(
             openAPISchema['info'],
-            {'title': 'ServerPod Endpoint - OpenAPI', 'version': '2.0.0'},
+            {'title': 'ServerPod Endpoint - OpenAPI', 'version': '1.0.0'},
           );
         },
       );
@@ -489,11 +489,9 @@ void main() {
                     'content': {
                       'application/json': {
                         'schema': {
-                          'oneOf': [
-                            {'\$ref': '#/components/schemas/Example'}
-                          ],
-                          'nullable': true
-                        }
+                          'type': ['object', 'null'],
+                          '\$ref': '#/components/schemas/Example'
+                        },
                       }
                     }
                   },
@@ -560,9 +558,9 @@ void main() {
                       'schema': {
                         'type': 'object',
                         'properties': {
-                          'id': {'type': 'integer'},
+                          'id': {'type': 'integer', 'format': 'int64'},
                           'name': {'type': 'string'},
-                          'amount': {'type': 'number'},
+                          'amount': {'type': 'number', 'format': 'float'},
                           'items': {
                             'type': 'array',
                             'items': {'type': 'string'}
@@ -690,12 +688,24 @@ void main() {
               'type': 'object',
               'properties': {
                 'accountBalance': {'type': 'number'},
-                'isTrue': {'type': 'boolean', 'nullable': true},
-                'totalDebt': {'type': 'number', 'nullable': true},
-                'funding': {'type': 'number', 'nullable': true},
-                'findName': {'type': 'string', 'nullable': true},
+                'isTrue': {
+                  'type': ['boolean', 'null']
+                },
+                'totalDebt': {
+                  'type': ['number', 'null']
+                },
+                'funding': {
+                  'type': ['number', 'null'],
+                  'format': 'float'
+                },
+                'findName': {
+                  'type': ['string', 'null']
+                },
                 'example': {'\$ref': '#/components/schemas/Example'},
-                'amount': {'type': 'integer', 'nullable': true}
+                'amount': {
+                  'type': ['integer', 'null'],
+                  'format': 'int64'
+                }
               }
             });
           });

@@ -23,7 +23,10 @@ void main() {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       intType,
     );
-    expect({'type': 'integer'}, object.toJson());
+    expect({
+      'type': 'integer',
+      'format': 'int64',
+    }, object.toJson());
   });
 
   test(
@@ -32,7 +35,10 @@ void main() {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       doubleType,
     );
-    expect({'type': 'number'}, object.toJson());
+    expect({
+      'type': 'number',
+      'format': 'float',
+    }, object.toJson());
   });
 
   test(
@@ -44,6 +50,7 @@ void main() {
       'type': 'array',
       'items': {
         'type': 'integer',
+        'format': 'int64',
       }
     }, object.toJson());
   });
@@ -70,6 +77,7 @@ void main() {
       'type': 'array',
       'items': {
         'type': 'number',
+        'format': 'float',
       }
     }, object.toJson());
   });

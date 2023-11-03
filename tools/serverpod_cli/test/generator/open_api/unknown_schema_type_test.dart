@@ -37,21 +37,18 @@ void main() {
     expect(
       typeDefinitionToJson(exampleTypeNullable),
       {
-        'type': 'object',
+        'type': ['object', 'null'],
         '\$ref': '#/components/schemas/Example',
-        'nullable': true
       },
     );
   });
   test(
       'Given a nullable Example type with the child arg set to true when converting to json then got the expected output.',
       () {
-    expect(typeDefinitionToJson(exampleTypeNullable, true), {
-      'oneOf': [
-        {'\$ref': '#/components/schemas/Example'}
-      ],
-      'nullable': true
-    });
+    expect(
+      typeDefinitionToJson(exampleTypeNullable, true),
+      {'\$ref': '#/components/schemas/Example'},
+    );
   });
   test(
       'Given an Example type  when converting to json with child set to true then  the type is excluded.',
