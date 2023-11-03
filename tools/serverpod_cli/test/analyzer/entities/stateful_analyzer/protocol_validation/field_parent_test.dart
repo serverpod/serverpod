@@ -100,7 +100,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the onDelete default has changed from "Cascade" to "NoAction" to preserve the existing behavior you also need to add relation(onDelete=Cascade).',
+        'The "parent" property is deprecated. Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
       );
     },
   );
