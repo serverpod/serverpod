@@ -43,15 +43,9 @@ class StatefulAnalyzer {
   List<SerializableEntityDefinition> validateAll() {
     _updateAllEntities();
     _validateAllProtocols();
-    return _entities;
+    return _validEntities;
   }
 
-  /// Returns all valid entities in the state.
-  List<SerializableEntityDefinition> get validEntities => _protocolStates.values
-      .where((state) => state.errors.isEmpty)
-      .map((state) => state.entity)
-      .whereType<SerializableEntityDefinition>()
-      .toList();
 
   /// Runs the validation on a single protocol. The protocol must exist in the
   /// state, if not this returns the last validated state.
@@ -70,7 +64,7 @@ class StatefulAnalyzer {
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllProtocols();
-    return _entities;
+    return _validEntities;
   }
 
   /// Adds a new protocol to the state but leaves the responsibility of validating
@@ -114,6 +108,13 @@ class StatefulAnalyzer {
 
     SerializableEntityAnalyzer.resolveEntityDependencies(_entities);
   }
+
+  /// Returns all valid entities in the state.
+  List<SerializableEntityDefinition> get _validEntities => _protocolStates.values
+      .where((state) => state.errors.isEmpty)
+      .map((state) => state.entity)
+      .whereType<SerializableEntityDefinition>()
+      .toList();
 
   void _validateAllProtocols() {
     for (var state in _protocolStates.values) {
