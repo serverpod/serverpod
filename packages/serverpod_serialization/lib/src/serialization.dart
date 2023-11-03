@@ -75,20 +75,18 @@ abstract class SerializationManager {
     } else if (_isAssignableTo<DateTime>(data, t)) {
       return data as T;
     } else if (_isConvertibleTo<String, DateTime>(data, t)) {
-      if (data == null) return null as T;
-      return DateTime.parse(data as String).toUtc() as T;
+      return (data == null ? null : DateTime.parse(data as String).toUtc())
+          as T;
     } else if (_isConvertibleTo<Uint8List, ByteData>(data, t)) {
-      if (data == null) return null as T;
-      return (data as Uint8List).buffer.asByteData() as T;
+      return (data == null ? null : (data as Uint8List).buffer.asByteData())
+          as T;
     } else if (_isConvertibleTo<String, ByteData>(data, t)) {
-      if (data == null) return null as T;
-      return (data as String).base64DecodedByteData() as T;
+      return (data == null ? null : (data as String).base64DecodedByteData())
+          as T;
     } else if (_isConvertibleTo<int, Duration>(data, t)) {
-      if (data == null) return null as T;
-      return Duration(milliseconds: (data as int)) as T;
+      return (data == null ? null : Duration(milliseconds: (data as int))) as T;
     } else if (_isConvertibleTo<String, UuidValue>(data, t)) {
-      if (data == null) return null as T;
-      return UuidValue(data as String) as T;
+      return (data == null ? null : UuidValue(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
