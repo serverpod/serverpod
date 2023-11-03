@@ -31,6 +31,7 @@ class ObjectWithDuration extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_duration';
+
   @override
   Map<String, dynamic> toJson() {
     return {

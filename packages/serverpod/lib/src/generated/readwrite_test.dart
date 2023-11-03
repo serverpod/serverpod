@@ -34,6 +34,7 @@ class ReadWriteTestEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_readwrite_test';
+
   @override
   Map<String, dynamic> toJson() {
     return {

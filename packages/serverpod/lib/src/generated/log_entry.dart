@@ -87,6 +87,7 @@ class LogEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_log';
+
   @override
   Map<String, dynamic> toJson() {
     return {

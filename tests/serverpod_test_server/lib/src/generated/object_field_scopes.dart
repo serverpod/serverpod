@@ -40,6 +40,7 @@ class ObjectFieldScopes extends _i1.TableRow {
 
   @override
   String get tableName => 'object_field_scopes';
+
   @override
   Map<String, dynamic> toJson() {
     return {

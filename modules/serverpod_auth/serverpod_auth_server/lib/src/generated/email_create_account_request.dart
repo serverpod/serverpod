@@ -51,6 +51,7 @@ class EmailCreateAccountRequest extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_email_create_request';
+
   @override
   Map<String, dynamic> toJson() {
     return {

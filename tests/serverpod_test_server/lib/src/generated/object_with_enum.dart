@@ -52,6 +52,7 @@ class ObjectWithEnum extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_enum';
+
   @override
   Map<String, dynamic> toJson() {
     return {

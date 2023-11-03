@@ -36,6 +36,7 @@ class ObjectWithUuid extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_uuid';
+
   @override
   Map<String, dynamic> toJson() {
     return {

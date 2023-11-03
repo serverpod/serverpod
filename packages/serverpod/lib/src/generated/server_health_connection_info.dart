@@ -65,6 +65,7 @@ class ServerHealthConnectionInfo extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_health_connection_info';
+
   @override
   Map<String, dynamic> toJson() {
     return {

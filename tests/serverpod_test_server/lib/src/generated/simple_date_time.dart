@@ -33,6 +33,7 @@ class SimpleDateTime extends _i1.TableRow {
 
   @override
   String get tableName => 'simple_date_time';
+
   @override
   Map<String, dynamic> toJson() {
     return {

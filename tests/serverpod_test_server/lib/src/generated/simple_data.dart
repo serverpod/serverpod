@@ -34,6 +34,7 @@ class SimpleData extends _i1.TableRow {
 
   @override
   String get tableName => 'simple_data';
+
   @override
   Map<String, dynamic> toJson() {
     return {

@@ -45,6 +45,7 @@ class EmailReset extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_email_reset';
+
   @override
   Map<String, dynamic> toJson() {
     return {

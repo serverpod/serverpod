@@ -51,6 +51,7 @@ class FacebookLongLivedToken extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_facebook_long_lived_token';
+
   @override
   Map<String, dynamic> toJson() {
     return {

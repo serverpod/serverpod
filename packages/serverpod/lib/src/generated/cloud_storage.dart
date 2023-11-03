@@ -63,6 +63,7 @@ class CloudStorageEntry extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_cloud_storage';
+
   @override
   Map<String, dynamic> toJson() {
     return {

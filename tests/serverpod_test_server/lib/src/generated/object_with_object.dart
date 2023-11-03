@@ -59,6 +59,7 @@ class ObjectWithObject extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_object';
+
   @override
   Map<String, dynamic> toJson() {
     return {

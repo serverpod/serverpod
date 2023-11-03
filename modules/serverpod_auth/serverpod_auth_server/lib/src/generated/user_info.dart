@@ -80,6 +80,7 @@ class UserInfo extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_user_info';
+
   @override
   Map<String, dynamic> toJson() {
     return {

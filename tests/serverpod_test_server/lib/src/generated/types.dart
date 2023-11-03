@@ -66,6 +66,7 @@ class Types extends _i1.TableRow {
 
   @override
   String get tableName => 'types';
+
   @override
   Map<String, dynamic> toJson() {
     return {

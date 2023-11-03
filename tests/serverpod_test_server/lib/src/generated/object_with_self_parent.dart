@@ -30,6 +30,7 @@ class ObjectWithSelfParent extends _i1.TableRow {
 
   @override
   String get tableName => 'object_with_self_parent';
+
   @override
   Map<String, dynamic> toJson() {
     return {

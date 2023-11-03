@@ -81,7 +81,6 @@ ALTER TABLE ONLY "serverpod_facebook_long_lived_token"
 
 CREATE UNIQUE INDEX serverpod_facebook_long_lived_token_idx ON "serverpod_facebook_long_lived_token" USING btree ("userId");
 
-
 --
 -- Class GoogleRefreshToken as table serverpod_google_refresh_token
 --

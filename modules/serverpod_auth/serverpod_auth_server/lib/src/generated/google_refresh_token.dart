@@ -39,6 +39,7 @@ class GoogleRefreshToken extends _i1.TableRow {
 
   @override
   String get tableName => 'serverpod_google_refresh_token';
+
   @override
   Map<String, dynamic> toJson() {
     return {
