@@ -204,7 +204,7 @@ class FacebookEndpoint extends Endpoint {
         userName: name,
         fullName: fullName,
         email: email,
-        banned: false,
+        blocked: false,
         created: DateTime.now().toUtc(),
         scopeNames: scopeNames,
       );
