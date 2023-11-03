@@ -1238,17 +1238,30 @@ class SerializableEntityLibraryGenerator {
           p.type = refer('SerializationManager', serverpodUrl(serverCode));
         }),
       ]);
+
+      Expression deserializeField(SerializableEntityFieldDefinition field) {
+        var jsonProperty =
+            refer('jsonSerialization').index(literalString(field.name));
+        // Throw exception if field is not nullable, but JSON does not
+        // contain a value for the field.
+        var jsonPropertyChecked = field.type.nullable
+            ? jsonProperty
+            : jsonProperty.ifNullThen(CodeExpression(Code(
+                '(throw \'JSON is missing required property `${field.name}`\')',
+              )));
+        return refer('serializationManager').property('deserialize').call([
+          jsonPropertyChecked
+        ], {}, [
+          field.type.reference(serverCode,
+              subDirParts: classDefinition.subDirParts, config: config)
+        ]);
+      }
+
       c.body = refer(className)
           .call([], {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
-                field.name:
-                    refer('serializationManager').property('deserialize').call([
-                  refer('jsonSerialization').index(literalString(field.name))
-                ], {}, [
-                  field.type.reference(serverCode,
-                      subDirParts: classDefinition.subDirParts, config: config)
-                ])
+                field.name: deserializeField(field)
           })
           .returned
           .statement;
