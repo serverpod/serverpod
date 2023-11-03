@@ -79,12 +79,7 @@ abstract class SerializationManager {
           (throw 'Invalid date format: $data')) as T;
     } else if (_isConvertibleTo<Uint8List, ByteData>(data, t)) {
       if (data == null) return null as T;
-      var byteData = ByteData.view(
-        data.buffer,
-        data.offsetInBytes,
-        data.lengthInBytes,
-      );
-      return byteData as T;
+      return (data as Uint8List).buffer.asByteData() as T;
     } else if (_isConvertibleTo<String, ByteData>(data, t)) {
       if (data == null) return null as T;
       return (data as String).base64DecodedByteData() as T;
