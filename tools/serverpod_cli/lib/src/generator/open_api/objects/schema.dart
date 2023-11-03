@@ -144,7 +144,7 @@ Map<String, dynamic> listTypeToJson(TypeDefinition type, [bool child = false]) {
           ]
         : OpenAPISchemaType.array.name,
     OpenAPIJsonKey.items: generic.isEmpty
-        ? _getRef(OpenAPIJsonKey.anyValue)
+        ? {OpenAPIJsonKey.$ref: _getRef(OpenAPIJsonKey.anyValue)}
         : typeDefinitionToJson(generic.first, true),
   };
 }
