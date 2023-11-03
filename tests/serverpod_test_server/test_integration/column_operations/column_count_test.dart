@@ -6,9 +6,9 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
   tearDown(() async {
+    await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     await Customer.db
         .deleteWhere(session, where: (_) => db.Constant.bool(true));
-    await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
   });
 
   group('Given count column in database', () {
