@@ -22,10 +22,13 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    ..._i3.Protocol.targetDatabaseDefinition.tables,
-    ..._i2.Protocol.targetDatabaseDefinition.tables,
-  ]);
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    tables: [
+      ..._i3.Protocol.targetDatabaseDefinition.tables,
+      ..._i2.Protocol.targetDatabaseDefinition.tables,
+    ],
+    migrationApiVersion: 1,
+  );
 
   @override
   T deserialize<T>(

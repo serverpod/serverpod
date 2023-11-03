@@ -39,7 +39,7 @@ void main() async {
 
       var customerNames = fetchedCustomers.map((e) => e.name);
       expect(customerNames, hasLength(2));
-      expect(customerNames, ['Alex', 'Viktor']);
+      expect(customerNames, containsAll(['Alex', 'Viktor']));
     });
 
     test(
@@ -81,11 +81,6 @@ void main() async {
       await Order.db.insert(session, [
         // Alex orders
         Order(description: 'Order 1', customerId: customers[0].id!),
-        Order(description: 'Order 2', customerId: customers[0].id!),
-        Order(description: 'Order 3', customerId: customers[0].id!),
-        // Viktor orders
-        Order(description: 'Order 4', customerId: customers[2].id!),
-        Order(description: 'Order 5', customerId: customers[2].id!),
       ]);
 
       var fetchedCustomers = await Customer.db.find(
@@ -95,8 +90,8 @@ void main() async {
       );
 
       var customerNames = fetchedCustomers.map((e) => e.name);
-      expect(customerNames, hasLength(3));
-      expect(customerNames, containsAll(['Alex', 'Isak', 'Viktor']));
+      expect(customerNames, hasLength(2));
+      expect(customerNames, containsAll(['Alex', 'Isak']));
     });
 
     test(

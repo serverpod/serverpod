@@ -30,8 +30,7 @@ Future<bool> performGenerate({
     }
   });
 
-  analyzer.validateAll();
-  var entities = analyzer.validEntities;
+  var entities = analyzer.validateAll();
 
   log.debug('Generating files for serializable entities.');
 

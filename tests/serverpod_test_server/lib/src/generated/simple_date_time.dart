@@ -328,7 +328,7 @@ class SimpleDateTimeRepository {
     );
   }
 
-  Future<SimpleDateTime?> findRow(
+  Future<SimpleDateTime?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     int? offset,
@@ -336,7 +336,7 @@ class SimpleDateTimeRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<SimpleDateTime>(
+    return session.dbNext.findFirstRow<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       transaction: transaction,
     );
@@ -378,10 +378,12 @@ class SimpleDateTimeRepository {
   Future<List<SimpleDateTime>> update(
     _i1.Session session,
     List<SimpleDateTime> rows, {
+    _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<SimpleDateTime>(
       rows,
+      columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }
@@ -389,10 +391,12 @@ class SimpleDateTimeRepository {
   Future<SimpleDateTime> updateRow(
     _i1.Session session,
     SimpleDateTime row, {
+    _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<SimpleDateTime>(
       row,
+      columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
     );
   }

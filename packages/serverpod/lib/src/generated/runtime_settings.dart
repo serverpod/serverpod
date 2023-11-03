@@ -409,7 +409,7 @@ class RuntimeSettingsRepository {
     );
   }
 
-  Future<RuntimeSettings?> findRow(
+  Future<RuntimeSettings?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
@@ -417,7 +417,7 @@ class RuntimeSettingsRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<RuntimeSettings>(
+    return session.dbNext.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       transaction: transaction,
     );
@@ -459,10 +459,12 @@ class RuntimeSettingsRepository {
   Future<List<RuntimeSettings>> update(
     _i1.Session session,
     List<RuntimeSettings> rows, {
+    _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<RuntimeSettings>(
       rows,
+      columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
     );
   }
@@ -470,10 +472,12 @@ class RuntimeSettingsRepository {
   Future<RuntimeSettings> updateRow(
     _i1.Session session,
     RuntimeSettings row, {
+    _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<RuntimeSettings>(
       row,
+      columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
     );
   }

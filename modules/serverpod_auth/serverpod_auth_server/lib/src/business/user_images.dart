@@ -64,7 +64,7 @@ class UserImages {
   static Future<bool> _setUserImage(
       Session session, int userId, ByteData imageData) async {
     // Find the latest version of the user image if any.
-    var oldImageRef = await UserImage.db.findRow(
+    var oldImageRef = await UserImage.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userId),
       orderDescending: true,

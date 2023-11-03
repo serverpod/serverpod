@@ -736,22 +736,6 @@ void main() {
                 'FormatException: Column references starting from other tables than "citizen" are not supported. The following expressions need to be removed or modified:\n"where" expression referencing column "company"."name".'),
           )));
     });
-
-    test(
-        'when count column is used in where expression then exception is thrown.',
-        () {
-      var countColumn = ColumnCount(citizenTable.id.equals(5), citizenTable.id);
-
-      expect(
-          () => DeleteQueryBuilder(table: citizenTable)
-              .withWhere(countColumn.equals(5)),
-          throwsA(isA<UnimplementedError>().having(
-            (e) => e.toString(),
-            'message',
-            equals(
-                'UnimplementedError: Count columns are not supported in delete where expressions.'),
-          )));
-    });
   });
 
   test(

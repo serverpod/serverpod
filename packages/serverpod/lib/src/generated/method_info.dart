@@ -354,7 +354,7 @@ class MethodInfoRepository {
     );
   }
 
-  Future<MethodInfo?> findRow(
+  Future<MethodInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
@@ -362,7 +362,7 @@ class MethodInfoRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<MethodInfo>(
+    return session.dbNext.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       transaction: transaction,
     );
@@ -404,10 +404,12 @@ class MethodInfoRepository {
   Future<List<MethodInfo>> update(
     _i1.Session session,
     List<MethodInfo> rows, {
+    _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<MethodInfo>(
       rows,
+      columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }
@@ -415,10 +417,12 @@ class MethodInfoRepository {
   Future<MethodInfo> updateRow(
     _i1.Session session,
     MethodInfo row, {
+    _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<MethodInfo>(
       row,
+      columns: columns?.call(MethodInfo.t),
       transaction: transaction,
     );
   }

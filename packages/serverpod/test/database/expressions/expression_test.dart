@@ -26,6 +26,69 @@ void main() {
     });
   });
 
+  group('Given one expression wrapped in NOT expression', () {
+    var expression = const Expression('TRUE');
+    var notWrappedExpression = NotExpression(expression);
+
+    test('when toString is called then string matches expected.', () {
+      expect(notWrappedExpression.toString(), 'NOT TRUE');
+    });
+
+    test('when subExpression is called then wrapped expression is returned',
+        () {
+      expect(notWrappedExpression.subExpression, expression);
+    });
+
+    group('when iterating not wrapped expression', () {
+      test('then both expressions are represented.', () {
+        expect(notWrappedExpression.depthFirst, hasLength(2));
+      });
+
+      test('then first expression is NOT expression.', () {
+        expect(notWrappedExpression.depthFirst.first, notWrappedExpression);
+      });
+
+      test('then last expression is wrapped expression.', () {
+        expect(notWrappedExpression.depthFirst.last, expression);
+      });
+    });
+  });
+
+  group('Given a combined expression wrapped in NOT expression', () {
+    var expression1 = const Expression('true = true');
+    var expression2 = const Expression('"A" = "A"');
+    var combinedExpression = expression1 & expression2;
+    var notWrappedExpression = NotExpression(combinedExpression);
+
+    test('when toString is called then expression is returned', () {
+      expect(
+        notWrappedExpression.toString(),
+        'NOT (true = true AND "A" = "A")',
+      );
+    });
+
+    group('when iterating not wrapped expression', () {
+      test('then all expressions are represented.', () {
+        expect(notWrappedExpression.depthFirst, hasLength(4));
+      });
+
+      test('then order matches expressions.', () {
+        var expectedExpressions = [
+          notWrappedExpression,
+          combinedExpression,
+          expression1,
+          expression2,
+        ];
+
+        var i = 0;
+        for (var expression in notWrappedExpression.depthFirst) {
+          expect(expression, expectedExpressions[i]);
+          i++;
+        }
+      });
+    });
+  });
+
   group('Given two AND operator combined expressions', () {
     var expression1 = const Expression('true = true');
     var expression2 = const Expression('"A" = "A"');
@@ -200,6 +263,18 @@ void main() {
     var expression = EscapedExpression(expressionToEscape);
     test('when toString is called then escaped expression is returned', () {
       expect(expression.toString(), '\'; DROP TABLE users;\'');
+    });
+  });
+
+  group('Given column in expression wrapped in NotExpression', () {
+    ColumnString column = ColumnString('test', testTable);
+    var expression = column.ilike('s%');
+    var notWrappedExpression = NotExpression(expression);
+
+    test('when retrieving columns then wrapped expression column is returned',
+        () {
+      expect(notWrappedExpression.columns, hasLength(1));
+      expect(notWrappedExpression.columns.first, column);
     });
   });
 

@@ -378,7 +378,7 @@ class ArenaRepository {
     );
   }
 
-  Future<Arena?> findRow(
+  Future<Arena?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
@@ -387,7 +387,7 @@ class ArenaRepository {
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
-    return session.dbNext.findRow<Arena>(
+    return session.dbNext.findFirstRow<Arena>(
       where: where?.call(Arena.t),
       transaction: transaction,
       include: include,
@@ -432,10 +432,12 @@ class ArenaRepository {
   Future<List<Arena>> update(
     _i1.Session session,
     List<Arena> rows, {
+    _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Arena>(
       rows,
+      columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }
@@ -443,10 +445,12 @@ class ArenaRepository {
   Future<Arena> updateRow(
     _i1.Session session,
     Arena row, {
+    _i1.ColumnSelections<ArenaTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Arena>(
       row,
+      columns: columns?.call(Arena.t),
       transaction: transaction,
     );
   }

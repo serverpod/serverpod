@@ -224,18 +224,6 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
     return _NotInSetExpression(this, valuesAsExpressions);
   }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isDistinctFrom(T value) {
-    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isNotDistinctFrom(T value) {
-    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
 }
 
 mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
@@ -251,13 +239,14 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates an [Expression] checking if the value in the column does not equal
   /// the specified value.
+  ///
+  /// A non null [value] will include rows where the column is null.
   Expression notEquals(T? value) {
     if (value == null) {
       return _IsNotNullExpression(this);
     }
 
-    return _NotEqualsExpression(this, _encodeValueForQuery(value)) |
-        _IsNullExpression(this);
+    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
   }
 
   /// Creates and [Expression] checking if the value in the column is included
@@ -277,18 +266,6 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
     return _NotInSetExpression(this, valuesAsExpressions) |
         _IsNullExpression(this);
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isDistinctFrom(T value) {
-    return _IsDistinctFromExpression(this, _encodeValueForQuery(value));
-  }
-
-  /// Creates an [Expression] checking if the value in the column is distinct
-  /// from the specified value.
-  Expression isNotDistinctFrom(T value) {
-    return _IsNotDistinctFromExpression(this, _encodeValueForQuery(value));
   }
 }
 
@@ -440,6 +417,26 @@ class AnyExpression<T> extends _IsNotNullExpression<T> {
   }
 }
 
+/// A database expression that returns all rows where all of the related rows
+/// match the filtering criteria.
+class EveryExpression<T> extends _IsNullExpression<T> {
+  /// Creates a new [EveryExpression].
+  EveryExpression(super.column);
+
+  @override
+  String _formatColumnName(ColumnCount columnCount) {
+    var tableRelation = columnCount.table.tableRelation;
+    if (tableRelation == null) {
+      throw StateError('Table relation is null for ColumnCount.');
+    }
+
+    // When ColumnCount appears in a EveryExpression it is always expressed as a
+    // sub query. Therefore, we reference the column from the last table in
+    // the relation without any query alias.
+    return tableRelation.lastRelation.foreignFieldNameWithJoins;
+  }
+}
+
 class _IsNotNullExpression<T> extends ColumnExpression<T> {
   _IsNotNullExpression(super.column);
 
@@ -536,13 +533,6 @@ class _IsDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
 
   @override
   String get operator => 'IS DISTINCT FROM';
-}
-
-class _IsNotDistinctFromExpression<T> extends _TwoPartColumnExpression<T> {
-  _IsNotDistinctFromExpression(super.column, super.other);
-
-  @override
-  String get operator => 'IS NOT DISTINCT FROM';
 }
 
 abstract class _MinMaxColumnExpression<T> extends ColumnExpression<T> {

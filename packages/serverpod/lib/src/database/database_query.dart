@@ -24,6 +24,7 @@ class SelectQueryBuilder {
   Include? _include;
   _ListQueryAdditions? _listQueryAdditions;
   bool _joinOneLevelManyRelationWhereExpressions = false;
+  bool _wrapWhereInNot = false;
   TableRelation? _countTableRelation;
 
   /// Creates a new [SelectQueryBuilder].
@@ -79,10 +80,12 @@ class SelectQueryBuilder {
     );
 
     var where = _buildWhereQuery(
-        where: _where,
-        manyRelationWhereAddition: _manyRelationWhereAddition,
-        listQueryAdditions: _listQueryAdditions,
-        subQueries: subQueries);
+      where: _where,
+      manyRelationWhereAddition: _manyRelationWhereAddition,
+      listQueryAdditions: _listQueryAdditions,
+      subQueries: subQueries,
+      wrapWhereInNot: _wrapWhereInNot,
+    );
 
     var orderBy = _buildOrderByQuery(orderBy: _orderBy, subQueries: subQueries);
 
@@ -270,6 +273,12 @@ class SelectQueryBuilder {
     return this;
   }
 
+  /// Wraps the where expression in a NOT statement.
+  SelectQueryBuilder _wrapWhereInNotStatement() {
+    _wrapWhereInNot = true;
+    return this;
+  }
+
   /// Forces the query to include a group by statement.
   SelectQueryBuilder forceGroupBy() {
     _forceGroupBy = true;
@@ -405,16 +414,7 @@ class DeleteQueryBuilder {
   ///
   /// If the where expression includes columns from a relation, the relation
   /// will be added to the query with a using statement.
-  ///
-  /// Throws a [UnimplementedError] if the where expression includes a count
-  /// column since these are not supported yet.
   DeleteQueryBuilder withWhere(Expression? where) {
-    if (where != null && where.columns.whereType<ColumnCount>().isNotEmpty) {
-      // TODO - Add support for count columns in where expressions.
-      throw UnimplementedError(
-        'Count columns are not supported in delete where expressions.',
-      );
-    }
     _where = where;
     return this;
   }
@@ -423,11 +423,15 @@ class DeleteQueryBuilder {
   String build() {
     _validateTableReferences(_table.tableName, where: _where);
 
+    var subQueries = _SubQueries.gatherSubQueries(where: _where);
     var using = _buildUsingQuery(where: _where);
+    var where = _buildWhereQuery(where: _where, subQueries: subQueries);
 
-    var query = 'DELETE FROM "${_table.tableName}"';
+    var query = '';
+    if (subQueries != null) query += 'WITH ${subQueries.buildQueries()} ';
+    query += 'DELETE FROM "${_table.tableName}"';
     if (using != null) query += ' USING ${using.using}';
-    if (_where != null) query += ' WHERE $_where';
+    if (where != null) query += ' WHERE $where';
     if (using != null) query += ' AND ${using.where}';
     if (_returningStatement != null) query += _returningStatement!;
     return query;
@@ -568,26 +572,33 @@ String? _buildWhereQuery({
   Expression? manyRelationWhereAddition,
   _SubQueries? subQueries,
   _ListQueryAdditions? listQueryAdditions,
+  bool wrapWhereInNot = false,
 }) {
-  List<String> whereQuery = [];
+  var whereQuery = '';
 
   if (where != null) {
-    whereQuery.add(_resolveWhereQuery(where: where, subQueries: subQueries));
+    whereQuery += wrapWhereInNot ? 'NOT ' : '';
+    whereQuery += _resolveWhereQuery(where: where, subQueries: subQueries);
   }
 
   if (listQueryAdditions != null) {
-    whereQuery.add('${listQueryAdditions.whereAddition}');
+    whereQuery += whereQuery.isNotEmpty ? ' AND ' : '';
+    whereQuery += '${listQueryAdditions.whereAddition}';
   }
 
   if (manyRelationWhereAddition != null) {
-    whereQuery.add('$manyRelationWhereAddition');
+    if (whereQuery.isEmpty) {
+      whereQuery += '';
+    } else if (manyRelationWhereAddition is EveryExpression) {
+      whereQuery += ' OR ';
+    } else {
+      whereQuery += ' AND ';
+    }
+
+    whereQuery += '$manyRelationWhereAddition';
   }
 
-  if (whereQuery.isEmpty) {
-    return null;
-  }
-
-  return whereQuery.join(' AND ');
+  return whereQuery.isEmpty ? null : whereQuery;
 }
 
 String _resolveWhereQuery(
@@ -606,6 +617,9 @@ String _resolveWhereQuery(
         .map((e) => _resolveWhereQuery(where: e, subQueries: subQueries))
         .join(' ${where.operator} ');
     whereQuery += ')';
+  } else if (where is NotExpression) {
+    whereQuery += where.wrapExpression(
+        _resolveWhereQuery(where: where.subExpression, subQueries: subQueries));
   } else if (where is ColumnExpression && where.isManyRelationExpression) {
     var column = where.column;
     var tableRelation = column.table.tableRelation;
@@ -624,7 +638,7 @@ String _resolveWhereQuery(
           'Sub query for expression index \'$expressionIndex\' is null');
     }
 
-    if (where is NoneExpression) {
+    if (where is NoneExpression || where is EveryExpression) {
       whereQuery = '${tableRelation.fieldNameWithJoins} NOT IN '
           '(SELECT "${subQuery.alias}"."${tableRelation.fieldQueryAlias}" '
           'FROM "${subQuery.alias}")';
@@ -643,7 +657,7 @@ _UsingQuery? _buildUsingQuery({Expression? where}) {
   List<TableRelation> tableRelations = [];
   if (where != null) {
     tableRelations.addAll(
-      _gatherTableRelationsFromWhereWithoutSubQueries(where.columns),
+      _gatherTableRelationsFromWhere(where.columns),
     );
   }
 
@@ -666,6 +680,7 @@ class _SubQueries {
   static const String whereCountPrefix = 'where_count';
   static const String whereNonePrefix = 'where_none';
   static const String whereAnyPrefix = 'where_any';
+  static const String whereEveryPrefix = 'where_every';
   final Map<int, _SubQuery> _orderByQueries = {};
   final Map<int, _SubQuery> _whereCountQueries = {};
 
@@ -764,6 +779,14 @@ class _SubQueries {
           column,
           expression,
         );
+      } else if (expression is EveryExpression) {
+        subQueries[index] = _buildWhereEverySubQuery(
+          relationQueryAlias,
+          index,
+          tableRelation,
+          column,
+          expression,
+        );
       } else {
         subQueries[index] = _buildWhereCountSubQuery(
           relationQueryAlias,
@@ -831,6 +854,27 @@ class _SubQueries {
         .withManyRelationWhereAddition(expression)
         .withSelectFields([tableRelation.fieldColumn])
         .enableOneLevelWhereExpressionJoins()
+        .forceGroupBy()
+        .build();
+
+    return _SubQuery(subQuery, uniqueRelationQueryAlias);
+  }
+
+  static _SubQuery _buildWhereEverySubQuery(
+      String relationQueryAlias,
+      int index,
+      TableRelation tableRelation,
+      ColumnCount column,
+      ColumnExpression<dynamic> expression) {
+    var uniqueRelationQueryAlias =
+        buildUniqueQueryAlias(whereEveryPrefix, relationQueryAlias, index);
+
+    var subQuery = SelectQueryBuilder(table: tableRelation.fieldTable)
+        .withWhere(column.innerWhere)
+        .withManyRelationWhereAddition(expression)
+        .withSelectFields([tableRelation.fieldColumn])
+        .enableOneLevelWhereExpressionJoins()
+        ._wrapWhereInNotStatement()
         .forceGroupBy()
         .build();
 
@@ -1016,7 +1060,7 @@ LinkedHashMap<String, String> _gatherWhereAdditionJoins(List<Column> columns) {
   return joins;
 }
 
-List<TableRelation> _gatherTableRelationsFromWhereWithoutSubQueries(
+List<TableRelation> _gatherTableRelationsFromWhere(
   List<Column> columns,
 ) {
   // Linked hash map to preserve order and remove duplicates.
@@ -1029,8 +1073,17 @@ List<TableRelation> _gatherTableRelationsFromWhereWithoutSubQueries(
       continue;
     }
 
+    var skipLast = column is ColumnCount;
+
     List<TableRelation> subTableRelations = tableRelation.getRelations;
+
+    var lastEntryIndex = subTableRelations.length - 1;
     subTableRelations.forEachIndexed((index, subTableRelation) {
+      bool lastEntry = index == lastEntryIndex;
+      if (lastEntry && skipLast) {
+        return;
+      }
+
       joins[subTableRelation.relationQueryAlias] = subTableRelation;
     });
   }

@@ -471,7 +471,7 @@ class OrderRepository {
     );
   }
 
-  Future<Order?> findRow(
+  Future<Order?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
@@ -480,7 +480,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.dbNext.findRow<Order>(
+    return session.dbNext.findFirstRow<Order>(
       where: where?.call(Order.t),
       transaction: transaction,
       include: include,
@@ -525,10 +525,12 @@ class OrderRepository {
   Future<List<Order>> update(
     _i1.Session session,
     List<Order> rows, {
+    _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Order>(
       rows,
+      columns: columns?.call(Order.t),
       transaction: transaction,
     );
   }
@@ -536,10 +538,12 @@ class OrderRepository {
   Future<Order> updateRow(
     _i1.Session session,
     Order row, {
+    _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Order>(
       row,
+      columns: columns?.call(Order.t),
       transaction: transaction,
     );
   }

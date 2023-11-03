@@ -507,7 +507,7 @@ class ChatMessageRepository {
     );
   }
 
-  Future<ChatMessage?> findRow(
+  Future<ChatMessage?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? offset,
@@ -515,7 +515,7 @@ class ChatMessageRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ChatMessage>(
+    return session.dbNext.findFirstRow<ChatMessage>(
       where: where?.call(ChatMessage.t),
       transaction: transaction,
     );
@@ -557,10 +557,12 @@ class ChatMessageRepository {
   Future<List<ChatMessage>> update(
     _i1.Session session,
     List<ChatMessage> rows, {
+    _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ChatMessage>(
       rows,
+      columns: columns?.call(ChatMessage.t),
       transaction: transaction,
     );
   }
@@ -568,10 +570,12 @@ class ChatMessageRepository {
   Future<ChatMessage> updateRow(
     _i1.Session session,
     ChatMessage row, {
+    _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ChatMessage>(
       row,
+      columns: columns?.call(ChatMessage.t),
       transaction: transaction,
     );
   }

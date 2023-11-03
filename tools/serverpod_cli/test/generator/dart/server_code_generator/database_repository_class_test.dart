@@ -149,16 +149,16 @@ void main() {
         });
       });
 
-      group('has a findRow method', () {
+      group('has a findFirstRow method', () {
         var findRowMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
           repositoryClass!,
-          name: 'findRow',
+          name: 'findFirstRow',
         );
         test('defined', () {
           expect(
             CompilationUnitHelpers.hasMethodDeclaration(
               repositoryClass,
-              name: 'findRow',
+              name: 'findFirstRow',
             ),
             isTrue,
           );

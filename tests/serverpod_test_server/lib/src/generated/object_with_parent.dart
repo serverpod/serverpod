@@ -324,7 +324,7 @@ class ObjectWithParentRepository {
     );
   }
 
-  Future<ObjectWithParent?> findRow(
+  Future<ObjectWithParent?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? offset,
@@ -332,7 +332,7 @@ class ObjectWithParentRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithParent>(
+    return session.dbNext.findFirstRow<ObjectWithParent>(
       where: where?.call(ObjectWithParent.t),
       transaction: transaction,
     );
@@ -374,10 +374,12 @@ class ObjectWithParentRepository {
   Future<List<ObjectWithParent>> update(
     _i1.Session session,
     List<ObjectWithParent> rows, {
+    _i1.ColumnSelections<ObjectWithParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithParent>(
       rows,
+      columns: columns?.call(ObjectWithParent.t),
       transaction: transaction,
     );
   }
@@ -385,10 +387,12 @@ class ObjectWithParentRepository {
   Future<ObjectWithParent> updateRow(
     _i1.Session session,
     ObjectWithParent row, {
+    _i1.ColumnSelections<ObjectWithParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithParent>(
       row,
+      columns: columns?.call(ObjectWithParent.t),
       transaction: transaction,
     );
   }

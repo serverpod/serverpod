@@ -98,27 +98,6 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDuration.isDistinctFrom(firstDuration),
-      );
-
-      expect(result.length, 3);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aDuration.isNotDistinctFrom(firstDuration),
-      );
-
-      expect(result.first.aDuration, firstDuration);
-    });
-
     test('when filtering using greater than then matching rows are returned.',
         () async {
       var result = await Types.db.find(

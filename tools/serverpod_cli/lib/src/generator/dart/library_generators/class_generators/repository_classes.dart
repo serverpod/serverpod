@@ -64,7 +64,7 @@ class BuildRepositoryClass {
         ])
         ..methods.addAll([
           _buildFindMethod(className, relationFields),
-          _buildFindRow(className, relationFields),
+          _buildFindFirstRow(className, relationFields),
           _buildFindByIdMethod(className, relationFields),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
@@ -304,12 +304,12 @@ class BuildRepositoryClass {
           .statement);
   }
 
-  Method _buildFindRow(
+  Method _buildFindFirstRow(
     String className,
     Iterable<SerializableEntityFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
-      ..name = 'findRow'
+      ..name = 'findFirstRow'
       ..returns = TypeReference(
         (r) => r
           ..symbol = 'Future'
@@ -368,7 +368,7 @@ class BuildRepositoryClass {
       ..modifier = MethodModifier.async
       ..body = refer('session')
           .property('dbNext')
-          .property('findRow')
+          .property('findFirstRow')
           .call(
             [],
             {
@@ -542,6 +542,13 @@ class BuildRepositoryClass {
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..isNullable = true
+              ..symbol = 'ColumnSelections<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'columns'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
               ..symbol = 'Transaction'
               ..url = 'package:serverpod/serverpod.dart')
             ..name = 'transaction'
@@ -554,6 +561,9 @@ class BuildRepositoryClass {
             .call([
               refer('rows')
             ], {
+              'columns': refer('columns').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
               'transaction': refer('transaction'),
             }, [
               refer(className)
@@ -584,6 +594,13 @@ class BuildRepositoryClass {
           Parameter((p) => p
             ..type = TypeReference((b) => b
               ..isNullable = true
+              ..symbol = 'ColumnSelections<${className}Table>'
+              ..url = 'package:serverpod/serverpod.dart')
+            ..name = 'columns'
+            ..named = true),
+          Parameter((p) => p
+            ..type = TypeReference((b) => b
+              ..isNullable = true
               ..symbol = 'Transaction'
               ..url = 'package:serverpod/serverpod.dart')
             ..name = 'transaction'
@@ -596,6 +613,9 @@ class BuildRepositoryClass {
             .call([
               refer('row')
             ], {
+              'columns': refer('columns').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
               'transaction': refer('transaction'),
             }, [
               refer(className)

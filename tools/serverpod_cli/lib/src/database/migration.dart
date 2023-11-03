@@ -1,3 +1,4 @@
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'extensions.dart';
 
@@ -85,6 +86,7 @@ DatabaseMigration generateDatabaseMigration({
     actions: actions,
     warnings: [],
     priority: priority,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 }
 

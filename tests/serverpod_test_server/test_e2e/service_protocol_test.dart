@@ -17,6 +17,18 @@ void main() {
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
+  group('Health metrics', () {
+    test('Fetch health metrics', () async {
+      // Fetch something far back, there should be no data.
+      var result = await serviceClient.insights.getHealthData(
+        DateTime(1976, 09, 10),
+        DateTime(1980, 04, 02),
+      );
+
+      expect(result.metrics.length, equals(0));
+    });
+  });
+
   group('Logging', () {
     test('Set runtime settings', () async {
       // Log everything
@@ -451,6 +463,23 @@ void main() {
 
         live.matchesTarget(target);
       });
+    });
+  });
+
+  group('File retrieval', () {
+    test('Fetch generated/protocol.yaml file', () async {
+      var file =
+          await serviceClient.insights.fetchFile('generated/protocol.yaml');
+      expect(file, isNotNull);
+      expect(file.length, greaterThan(0));
+    });
+    test('Fetch file outside whitelist', () async {
+      expect(
+        () async {
+          await serviceClient.insights.fetchFile('config/passwords.yaml');
+        },
+        throwsA(isA<service.AccessDeniedException>()),
+      );
     });
   });
 }

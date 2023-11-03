@@ -346,4 +346,56 @@ fields:
       }, skip: relation is! ObjectRelationDefinition);
     });
   });
+
+  group(
+      'Given a class with a relation pointing to a field that already has a relation',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, relation(parent=example_parent)
+          parent: ExampleParent?, relation(name=example_parent, field=parentId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+        '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+          example: Example?, relation(name=example_parent)
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error was collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error message reports that the relation points to a field that already has a relation.',
+        () {
+      var error = errors.first;
+      expect(
+        error.message,
+        'The field "parentId" already has a relation and cannot be used as relation field.',
+      );
+    }, skip: errors.isEmpty);
+
+    test('then the error is reported at the relation field location.', () {
+      var span = errors.first.span;
+      expect(span?.start.line, 4);
+      expect(span?.start.column, 70);
+      expect(span?.end.line, 4);
+      expect(span?.end.column, 70 + 'parentId'.length);
+    }, skip: errors.isEmpty);
+  });
 }

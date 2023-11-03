@@ -76,22 +76,6 @@ void main() async {
       expect(result.length, 3);
     });
 
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await client.columnDateTimeLegacy.isDistinctFrom(firstDate);
-
-      expect(result.length, 3);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result =
-          await client.columnDateTimeLegacy.isNotDistinctFrom(firstDate);
-
-      expect(result.first.aDateTime, firstDate);
-    });
-
     test('when filtering using greater than then matching rows are returned.',
         () async {
       var result = await client.columnDateTimeLegacy.greaterThan(firstDate);

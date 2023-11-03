@@ -45,7 +45,8 @@ class DatabaseBatchGenerated extends Endpoint {
   }
 
   Future<UniqueData?> findByEmail(Session session, String email) async {
-    return UniqueData.db.findRow(session, where: (t) => t.email.equals(email));
+    return UniqueData.db
+        .findFirstRow(session, where: (t) => t.email.equals(email));
   }
 
   Future<UniqueData?> findById(Session session, int id) async {

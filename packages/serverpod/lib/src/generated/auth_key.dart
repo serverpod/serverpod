@@ -419,7 +419,7 @@ class AuthKeyRepository {
     );
   }
 
-  Future<AuthKey?> findRow(
+  Future<AuthKey?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
@@ -427,7 +427,7 @@ class AuthKeyRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<AuthKey>(
+    return session.dbNext.findFirstRow<AuthKey>(
       where: where?.call(AuthKey.t),
       transaction: transaction,
     );
@@ -469,10 +469,12 @@ class AuthKeyRepository {
   Future<List<AuthKey>> update(
     _i1.Session session,
     List<AuthKey> rows, {
+    _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<AuthKey>(
       rows,
+      columns: columns?.call(AuthKey.t),
       transaction: transaction,
     );
   }
@@ -480,10 +482,12 @@ class AuthKeyRepository {
   Future<AuthKey> updateRow(
     _i1.Session session,
     AuthKey row, {
+    _i1.ColumnSelections<AuthKeyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<AuthKey>(
       row,
+      columns: columns?.call(AuthKey.t),
       transaction: transaction,
     );
   }

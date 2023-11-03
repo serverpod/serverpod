@@ -95,26 +95,5 @@ void main() async {
 
       expect(result.length, 2);
     });
-
-    test('when filtering using isDistinctFrom then matching rows are returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.isDistinctFrom(firstUuid),
-      );
-
-      expect(result.length, 2);
-    });
-
-    test(
-        'when filtering using isNotDistinctFrom then matching row is returned.',
-        () async {
-      var result = await Types.db.find(
-        session,
-        where: (t) => t.aUuid.isNotDistinctFrom(firstUuid),
-      );
-
-      expect(result.first.aUuid, firstUuid);
-    });
   });
 }

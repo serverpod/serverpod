@@ -292,6 +292,25 @@ class ObjectRelationDefinition extends RelationDefinition {
   }) : super(name, isForeignKeyOrigin);
 }
 
+enum UnresolvableReason {
+  relationAlreadyDefinedForField,
+}
+
+/// Stores information about a relation that could not be resolved.
+/// This is used to report errors to the user in the analyzer.
+class UnresolvableObjectRelationDefinition extends RelationDefinition {
+  final UnresolvedObjectRelationDefinition objectRelationDefinition;
+  final UnresolvableReason reason;
+
+  UnresolvableObjectRelationDefinition(
+    this.objectRelationDefinition,
+    this.reason,
+  ) : super(
+          objectRelationDefinition.name,
+          objectRelationDefinition.isForeignKeyOrigin,
+        );
+}
+
 class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// References the field in the current object that points to the foreign table.
   final String? fieldName;

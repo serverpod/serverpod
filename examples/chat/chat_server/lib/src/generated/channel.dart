@@ -352,7 +352,7 @@ class ChannelRepository {
     );
   }
 
-  Future<Channel?> findRow(
+  Future<Channel?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? offset,
@@ -360,7 +360,7 @@ class ChannelRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<Channel>(
+    return session.dbNext.findFirstRow<Channel>(
       where: where?.call(Channel.t),
       transaction: transaction,
     );
@@ -402,10 +402,12 @@ class ChannelRepository {
   Future<List<Channel>> update(
     _i1.Session session,
     List<Channel> rows, {
+    _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Channel>(
       rows,
+      columns: columns?.call(Channel.t),
       transaction: transaction,
     );
   }
@@ -413,10 +415,12 @@ class ChannelRepository {
   Future<Channel> updateRow(
     _i1.Session session,
     Channel row, {
+    _i1.ColumnSelections<ChannelTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Channel>(
       row,
+      columns: columns?.call(Channel.t),
       transaction: transaction,
     );
   }

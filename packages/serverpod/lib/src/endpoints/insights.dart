@@ -5,6 +5,7 @@ import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
@@ -162,7 +163,7 @@ class InsightsEndpoint extends Endpoint {
     var connectionInfos = await ServerHealthConnectionInfo.db.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
-      orderBy: ServerHealthMetric.t.timestamp,
+      orderBy: ServerHealthConnectionInfo.t.timestamp,
     );
 
     return ServerHealthResult(
@@ -311,12 +312,36 @@ class InsightsEndpoint extends Endpoint {
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
     try {
-      return await session.dbNext.dangerouslyExecute(sql);
+      return await session.dbNext.unsafeExecute(sql);
     } catch (e) {
       throw ServerpodSqlException(
         message: '$e',
         sql: sql,
       );
     }
+  }
+
+  /// Fetches a file from the server. Only whitelisted files in
+  /// [Serverpod.filesWhitelistedForInsights] can be fetched.
+  /// The file path must be in unix format and relative to the servers root
+  /// directory.
+  Future<String> fetchFile(Session session, String path) async {
+    // Test the file in unix format.
+    if (!PathUtil.isFileWhitelisted(
+        path, session.serverpod.filesWhitelistedForInsights)) {
+      throw AccessDeniedException(
+        message: 'File is not in whitelist: $path',
+      );
+    }
+
+    // Convert the path to platform specific format and fetch the file.
+    var file = File(PathUtil.relativePathToPlatformPath(path));
+    if (!await file.exists()) {
+      throw FileNotFoundException(
+        message: 'File not found: $path',
+      );
+    }
+
+    return await file.readAsString();
   }
 }

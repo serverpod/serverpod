@@ -170,7 +170,7 @@ class Serverpod {
     var session = await createSession(enableLogging: false);
     try {
       var oldRuntimeSettings =
-          await internal.RuntimeSettings.db.findRow(session);
+          await internal.RuntimeSettings.db.findFirstRow(session);
       if (oldRuntimeSettings == null) {
         settings.id = null;
         settings =
@@ -190,7 +190,7 @@ class Serverpod {
   Future<void> reloadRuntimeSettings() async {
     var session = await createSession(enableLogging: false);
     try {
-      var settings = await internal.RuntimeSettings.db.findRow(session);
+      var settings = await internal.RuntimeSettings.db.findFirstRow(session);
       if (settings != null) {
         _runtimeSettings = settings;
         _logManager = LogManager(settings);
@@ -204,6 +204,14 @@ class Serverpod {
 
   /// Currently not used.
   List<String>? whitelistedExternalCalls;
+
+  /// Files that are allowed to be accessed through the [InsightsEndpoint].
+  /// File paths are relative to the root directory of the server. Complete
+  /// directories (including sub directories) can be whitelisted by adding a
+  /// trailing slash.
+  Set<String> filesWhitelistedForInsights = {
+    'generated/protocol.yaml',
+  };
 
   late final HealthCheckManager _healthCheckManager;
 
@@ -375,7 +383,8 @@ class Serverpod {
         try {
           logVerbose('Loading runtime settings.');
 
-          _runtimeSettings = await internal.RuntimeSettings.db.findRow(session);
+          _runtimeSettings =
+              await internal.RuntimeSettings.db.findFirstRow(session);
         } catch (e) {
           stderr.writeln(
             'Failed to load runtime settings. $e',
@@ -416,7 +425,7 @@ class Serverpod {
       if (commandLineArgs.role == ServerpodRole.monolith ||
           commandLineArgs.role == ServerpodRole.serverless) {
         // Serverpod Insights.
-        await _startServiceServer();
+        await _startInsightsServer();
 
         // Main API server.
         await server.start();
@@ -487,7 +496,7 @@ class Serverpod {
     }
   }
 
-  Future<void> _startServiceServer() async {
+  Future<void> _startInsightsServer() async {
     // var context = SecurityContext();
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));

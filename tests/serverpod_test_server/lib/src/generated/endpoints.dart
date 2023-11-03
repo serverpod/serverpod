@@ -1039,44 +1039,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<bool>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnBoolLegacy'] as _i7.ColumnBoolLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<bool>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnBoolLegacy'] as _i7.ColumnBoolLegacyEndpoint)
-                  .isNotDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
       },
     );
     connectors['columnDateTimeLegacy'] = _i1.EndpointConnector(
@@ -1201,46 +1163,6 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['columnDateTimeLegacy']
                       as _i8.ColumnDateTimeLegacyEndpoint)
                   .notInSet(
-            session,
-            params['value'],
-          ),
-        ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<DateTime>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDateTimeLegacy']
-                      as _i8.ColumnDateTimeLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<DateTime>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDateTimeLegacy']
-                      as _i8.ColumnDateTimeLegacyEndpoint)
-                  .isNotDistinctFrom(
             session,
             params['value'],
           ),
@@ -1505,46 +1427,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<double>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDoubleLegacy']
-                      as _i9.ColumnDoubleLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<double>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDoubleLegacy']
-                      as _i9.ColumnDoubleLegacyEndpoint)
-                  .isNotDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
         'greaterThan': _i1.MethodConnector(
           name: 'greaterThan',
           params: {
@@ -1805,46 +1687,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<Duration>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDurationLegacy']
-                      as _i10.ColumnDurationLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<Duration>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnDurationLegacy']
-                      as _i10.ColumnDurationLegacyEndpoint)
-                  .isNotDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
         'greaterThan': _i1.MethodConnector(
           name: 'greaterThan',
           params: {
@@ -2098,44 +1940,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<_i45.TestEnum>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnEnumLegacy'] as _i11.ColumnEnumLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<_i45.TestEnum>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnEnumLegacy'] as _i11.ColumnEnumLegacyEndpoint)
-                  .isNotDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
       },
     );
     connectors['columnIntLegacy'] = _i1.EndpointConnector(
@@ -2253,44 +2057,6 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['columnIntLegacy'] as _i12.ColumnIntLegacyEndpoint)
                   .notInSet(
-            session,
-            params['value'],
-          ),
-        ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<int>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnIntLegacy'] as _i12.ColumnIntLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<int>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnIntLegacy'] as _i12.ColumnIntLegacyEndpoint)
-                  .isNotDistinctFrom(
             session,
             params['value'],
           ),
@@ -2549,46 +2315,6 @@ class Endpoints extends _i1.EndpointDispatch {
             params['value'],
           ),
         ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnStringLegacy']
-                      as _i13.ColumnStringLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<String>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnStringLegacy']
-                      as _i13.ColumnStringLegacyEndpoint)
-                  .isNotDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
         'like': _i1.MethodConnector(
           name: 'like',
           params: {
@@ -2746,44 +2472,6 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['columnUuidLegacy'] as _i14.ColumnUuidLegacyEndpoint)
                   .notInSet(
-            session,
-            params['value'],
-          ),
-        ),
-        'isDistinctFrom': _i1.MethodConnector(
-          name: 'isDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<_i43.UuidValue>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnUuidLegacy'] as _i14.ColumnUuidLegacyEndpoint)
-                  .isDistinctFrom(
-            session,
-            params['value'],
-          ),
-        ),
-        'isNotDistinctFrom': _i1.MethodConnector(
-          name: 'isNotDistinctFrom',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<_i43.UuidValue>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['columnUuidLegacy'] as _i14.ColumnUuidLegacyEndpoint)
-                  .isNotDistinctFrom(
             session,
             params['value'],
           ),
@@ -2976,8 +2664,8 @@ class Endpoints extends _i1.EndpointDispatch {
             offset: params['offset'],
           ),
         ),
-        'findRowSimpleData': _i1.MethodConnector(
-          name: 'findRowSimpleData',
+        'findFirstRowSimpleData': _i1.MethodConnector(
+          name: 'findFirstRowSimpleData',
           params: {
             'num': _i1.ParameterDescription(
               name: 'num',
@@ -2990,7 +2678,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i16.BasicDatabase)
-                  .findRowSimpleData(
+                  .findFirstRowSimpleData(
             session,
             params['num'],
           ),
@@ -3531,44 +3219,6 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['databaseBatch'] as _i18.DatabaseBatch)
                   .batchUpdateTypes(
-            session,
-            params['value'],
-          ),
-        ),
-        'batchUpdateWithInvalidColumn': _i1.MethodConnector(
-          name: 'batchUpdateWithInvalidColumn',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<List<_i52.UniqueData>>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['databaseBatch'] as _i18.DatabaseBatch)
-                  .batchUpdateWithInvalidColumn(
-            session,
-            params['value'],
-          ),
-        ),
-        'batchUpdateNumberOnly': _i1.MethodConnector(
-          name: 'batchUpdateNumberOnly',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<List<_i52.UniqueData>>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['databaseBatch'] as _i18.DatabaseBatch)
-                  .batchUpdateNumberOnly(
             session,
             params['value'],
           ),

@@ -449,7 +449,7 @@ class PostRepository {
     );
   }
 
-  Future<Post?> findRow(
+  Future<Post?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
@@ -458,7 +458,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.dbNext.findRow<Post>(
+    return session.dbNext.findFirstRow<Post>(
       where: where?.call(Post.t),
       transaction: transaction,
       include: include,
@@ -503,10 +503,12 @@ class PostRepository {
   Future<List<Post>> update(
     _i1.Session session,
     List<Post> rows, {
+    _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Post>(
       rows,
+      columns: columns?.call(Post.t),
       transaction: transaction,
     );
   }
@@ -514,10 +516,12 @@ class PostRepository {
   Future<Post> updateRow(
     _i1.Session session,
     Post row, {
+    _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Post>(
       row,
+      columns: columns?.call(Post.t),
       transaction: transaction,
     );
   }

@@ -52,7 +52,7 @@ void main() {
         var comparisonExpression = column.notEquals(DateTime.utc(1991, 5, 28));
 
         expect(comparisonExpression.toString(),
-            '($column != \'"1991-05-28T00:00:00.000Z"\' OR $column IS NULL)');
+            '$column IS DISTINCT FROM \'"1991-05-28T00:00:00.000Z"\'');
       });
 
       test(
@@ -79,26 +79,6 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'"1991-05-28T00:00:00.000Z"\', \'"1991-05-29T00:00:00.000Z"\', \'"1991-05-30T00:00:00.000Z"\') OR $column IS NULL)');
-      });
-
-      test(
-          'when is distinct from compared to date time value then output is IS DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isDistinctFrom(DateTime.utc(1991, 5, 28));
-
-        expect(comparisonExpression.toString(),
-            '$column IS DISTINCT FROM \'"1991-05-28T00:00:00.000Z"\'');
-      });
-
-      test(
-          'when is NOT distinct from compared to date time value then output is IS NOT DISTINCT FROM expression.',
-          () {
-        var comparisonExpression =
-            column.isNotDistinctFrom(DateTime.utc(1991, 5, 28));
-
-        expect(comparisonExpression.toString(),
-            '$column IS NOT DISTINCT FROM \'"1991-05-28T00:00:00.000Z"\'');
       });
     });
 

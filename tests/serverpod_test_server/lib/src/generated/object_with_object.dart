@@ -456,7 +456,7 @@ class ObjectWithObjectRepository {
     );
   }
 
-  Future<ObjectWithObject?> findRow(
+  Future<ObjectWithObject?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? offset,
@@ -464,7 +464,7 @@ class ObjectWithObjectRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithObject>(
+    return session.dbNext.findFirstRow<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
       transaction: transaction,
     );
@@ -506,10 +506,12 @@ class ObjectWithObjectRepository {
   Future<List<ObjectWithObject>> update(
     _i1.Session session,
     List<ObjectWithObject> rows, {
+    _i1.ColumnSelections<ObjectWithObjectTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithObject>(
       rows,
+      columns: columns?.call(ObjectWithObject.t),
       transaction: transaction,
     );
   }
@@ -517,10 +519,12 @@ class ObjectWithObjectRepository {
   Future<ObjectWithObject> updateRow(
     _i1.Session session,
     ObjectWithObject row, {
+    _i1.ColumnSelections<ObjectWithObjectTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithObject>(
       row,
+      columns: columns?.call(ObjectWithObject.t),
       transaction: transaction,
     );
   }

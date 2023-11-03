@@ -51,7 +51,7 @@ class Database {
   }
 
   /// Find a single [TableRow] from a table, using the provided [where]
-  Future<T?> findRow<T extends TableRow>({
+  Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,
     Column? orderBy,
@@ -59,7 +59,7 @@ class Database {
     Transaction? transaction,
     Include? include,
   }) async {
-    return await _databaseConnection.findRow<T>(
+    return await _databaseConnection.findFirstRow<T>(
       _session,
       where: where,
       offset: offset,
@@ -242,7 +242,7 @@ class Database {
   /// the table name and value is another [Map] with the keys as column names and
   /// the value as the contents of the column.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<List<Map<String, Map<String, dynamic>>>> dangerouslyQueryMappedResults(
+  Future<List<Map<String, Map<String, dynamic>>>> unsafeQueryMappedResults(
     Session session,
     String query, {
     int? timeoutInSeconds,
@@ -259,7 +259,7 @@ class Database {
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<PostgreSQLResult> dangerouslyQuery(
+  Future<PostgreSQLResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
@@ -275,7 +275,7 @@ class Database {
   /// Executes a single SQL query. Returns the number of rows that were affected
   /// by the query.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<int> dangerouslyExecute(
+  Future<int> unsafeExecute(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,

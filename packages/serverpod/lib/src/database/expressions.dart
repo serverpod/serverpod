@@ -104,6 +104,34 @@ class Constant extends Expression {
   }
 }
 
+/// A database expression to invert the result of another expression.
+class NotExpression extends Expression {
+  /// Creates a new [NotExpression].
+  NotExpression(Expression super.expression);
+
+  @override
+  Iterable<Expression> get depthFirst sync* {
+    yield* super.depthFirst;
+    yield* super._expression.depthFirst;
+  }
+
+  /// Returns the expression wrapped in NOT.
+  Expression get subExpression => _expression;
+
+  @override
+  List<Column> get columns => _expression.columns;
+
+  /// Returns the expression as a string wrapped in NOT.
+  String wrapExpression(String expression) {
+    return 'NOT $_expression';
+  }
+
+  @override
+  String toString() {
+    return 'NOT $_expression';
+  }
+}
+
 /// A database expression with two parts.
 abstract class TwoPartExpression extends Expression {
   final Expression _other;

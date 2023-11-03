@@ -18,7 +18,7 @@ void main() {
     });
 
     test('when trying to find a row then null is returned.', () async {
-      var retrieved = await client.basicDatabase.findRowSimpleData(1);
+      var retrieved = await client.basicDatabase.findFirstRowSimpleData(1);
       expect(retrieved, isNull);
     });
 
@@ -91,7 +91,7 @@ void main() {
     await client.basicDatabase.insertRowSimpleData(simpleData1);
     var expected = await client.basicDatabase.insertRowSimpleData(simpleData2);
 
-    var retrieved = await client.basicDatabase.findRowSimpleData(2);
+    var retrieved = await client.basicDatabase.findFirstRowSimpleData(2);
 
     expect(retrieved, isNotNull);
     expect(retrieved?.id, expected.id);

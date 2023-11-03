@@ -215,6 +215,17 @@ class EndpointInsights extends _i1.EndpointRef {
         'executeSql',
         {'sql': sql},
       );
+
+  /// Fetches a file from the server. Only whitelisted files in
+  /// [Serverpod.filesWhitelistedForInsights] can be fetched.
+  /// The file path must be in unix format and relative to the servers root
+  /// directory.
+  _i2.Future<String> fetchFile(String path) =>
+      caller.callServerEndpoint<String>(
+        'insights',
+        'fetchFile',
+        {'path': path},
+      );
 }
 
 class Client extends _i1.ServerpodClient {

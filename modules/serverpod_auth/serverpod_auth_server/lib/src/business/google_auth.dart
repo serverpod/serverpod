@@ -41,7 +41,7 @@ class GoogleAuth {
       'Google client secret from $_configFilePath is not loaded',
     );
 
-    var refreshTokenData = await GoogleRefreshToken.db.findRow(
+    var refreshTokenData = await GoogleRefreshToken.db.findFirstRow(
       session,
       where: (t) => t.userId.equals(userId),
     );
