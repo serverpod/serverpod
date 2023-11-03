@@ -156,9 +156,16 @@ class EntityRelations {
     var relationName = fieldRelation.name;
     if (relationName == null) return [];
 
-    String? foreignClassName = extractReferenceClassName(field);
+    List<SerializableEntityDefinition> foreignClasses;
 
-    var foreignClasses = findAllByClassName(foreignClassName);
+    var relation = field.relation;
+    if (field.type.isIdType && relation is ForeignRelationDefinition) {
+      foreignClasses = findAllByTableName(relation.parentTable);
+    } else {
+      String? foreignClassName = extractReferenceClassName(field);
+      foreignClasses = findAllByClassName(foreignClassName);
+    }
+
     if (foreignClasses.isEmpty) return [];
 
     var foreignClass = foreignClasses.first;
