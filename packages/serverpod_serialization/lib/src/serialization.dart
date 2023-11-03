@@ -73,10 +73,10 @@ abstract class SerializationManager {
     } else if (_isAssignableTo<bool>(data, t)) {
       return data as T;
     } else if (_isAssignableTo<DateTime>(data, t)) {
+      return data as T;
+    } else if (_isConvertibleTo<String, DateTime>(data, t)) {
       if (data == null) return null as T;
-      if (data is DateTime) return data as T;
-      return (DateTime.tryParse(data)?.toUtc() ??
-          (throw 'Invalid date format: $data')) as T;
+      return DateTime.parse(data as String).toUtc() as T;
     } else if (_isConvertibleTo<Uint8List, ByteData>(data, t)) {
       if (data == null) return null as T;
       return (data as Uint8List).buffer.asByteData() as T;
