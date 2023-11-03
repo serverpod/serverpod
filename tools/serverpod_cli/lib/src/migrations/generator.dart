@@ -52,13 +52,11 @@ class MigrationGenerator {
     return names;
   }
 
-  List<String> getMigrationVersions({
-    String? module,
-  }) {
+  List<String> getMigrationVersions(String module) {
     var migrationsDirectory = Directory(
       path.join(
         migrationsBaseDirectory.path,
-        module ?? projectName,
+        module,
       ),
     );
     if (!migrationsDirectory.existsSync()) {
@@ -76,13 +74,13 @@ class MigrationGenerator {
   }
 
   Future<MigrationVersion> getMigrationVersion(
-    String versionName, {
-    String? module,
-  }) async {
+    String versionName,
+    String module,
+  ) async {
     var migrationsDirectory = Directory(
       path.join(
         migrationsBaseDirectory.path,
-        module ?? projectName,
+        module,
       ),
     );
     return await MigrationVersion.load(
@@ -91,16 +89,16 @@ class MigrationGenerator {
     );
   }
 
-  Future<MigrationVersion?> getLatestMigrationVersion({
-    String? module,
-  }) async {
-    var versions = getMigrationVersions(module: module);
+  Future<MigrationVersion?> getLatestMigrationVersion(
+    String module,
+  ) async {
+    var versions = getMigrationVersions(module);
     if (versions.isEmpty) {
       return null;
     }
     return await getMigrationVersion(
       versions.last,
-      module: module,
+      module,
     );
   }
 
@@ -110,9 +108,7 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    var versionName = createVersionName(tag);
-
-    var latest = await getLatestMigrationVersion();
+    var latest = await getLatestMigrationVersion(projectName);
 
     var srcDatabase = latest?.databaseDefinition ??
         DatabaseDefinition(
@@ -145,6 +141,7 @@ class MigrationGenerator {
       return null;
     }
 
+    var versionName = createVersionName(tag);
     var migrationVersion = MigrationVersion(
       migrationsDirectory: migrationsProjectDirectory,
       versionName: versionName,
@@ -171,7 +168,7 @@ class MigrationGenerator {
     var modules = getMigrationModules();
     var dstDefinitions = <DatabaseDefinition>[];
     for (var module in modules) {
-      var version = await getLatestMigrationVersion(module: module);
+      var version = await getLatestMigrationVersion(module);
       if (version == null) {
         continue;
       }
