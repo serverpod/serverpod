@@ -46,6 +46,8 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
+  bool _isType<T>(Type t) => t == T;
+
   bool _isAssignableToMaybeNullable<T1, T2>(dynamic data, Type t) =>
       t == T1 && data is T1 || t == T2 && data is T2;
 
@@ -70,7 +72,8 @@ abstract class SerializationManager {
       if (data is DateTime) return data as T;
       return (DateTime.tryParse(data)?.toUtc() ??
           (throw 'Invalid date format: $data')) as T;
-    } else if (_isAssignableTo<ByteData>(data, t)) {
+    } else if (_isType<ByteData>(t) && (data is Uint8List || data is String) ||
+        _isType<ByteData?>(t) && (data is Uint8List? || data is String?)) {
       if (data == null) return null as T;
       if (data is Uint8List) {
         var byteData = ByteData.view(
@@ -82,10 +85,12 @@ abstract class SerializationManager {
       } else {
         return (data as String?)?.base64DecodedByteData() as T;
       }
-    } else if (_isAssignableTo<Duration>(data, t)) {
+    } else if (_isType<Duration>(t) && data is int ||
+        _isType<Duration?>(t) && data is int?) {
       if (data == null) return null as T;
       return Duration(milliseconds: (data as int)) as T;
-    } else if (_isAssignableTo<UuidValue>(data, t)) {
+    } else if (_isType<UuidValue>(t) && data is String ||
+        _isType<UuidValue?>(t) && data is String?) {
       if (data == null) return null as T;
       return UuidValue(data as String) as T;
     }
