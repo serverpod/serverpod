@@ -310,13 +310,13 @@ ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
     FOREIGN KEY("companyId")
     REFERENCES "company"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_1"
     FOREIGN KEY("oldCompanyId")
     REFERENCES "company"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -336,7 +336,7 @@ ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -362,7 +362,7 @@ ALTER TABLE ONLY "object_with_parent"
     ADD CONSTRAINT "object_with_parent_fk_0"
     FOREIGN KEY("other")
     REFERENCES "object_field_scopes"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -372,7 +372,7 @@ ALTER TABLE ONLY "object_with_self_parent"
     ADD CONSTRAINT "object_with_self_parent_fk_0"
     FOREIGN KEY("other")
     REFERENCES "object_with_self_parent"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -392,7 +392,7 @@ ALTER TABLE ONLY "organization"
     ADD CONSTRAINT "organization_fk_0"
     FOREIGN KEY("cityId")
     REFERENCES "city"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -402,13 +402,13 @@ ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_0"
     FOREIGN KEY("organizationId")
     REFERENCES "organization"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_1"
     FOREIGN KEY("_cityCitizensCityId")
     REFERENCES "city"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
@@ -418,7 +418,7 @@ ALTER TABLE ONLY "player"
     ADD CONSTRAINT "player_fk_0"
     FOREIGN KEY("teamId")
     REFERENCES "team"("id")
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE NO ACTION;
 
 --
@@ -428,7 +428,7 @@ ALTER TABLE ONLY "post"
     ADD CONSTRAINT "post_fk_0"
     FOREIGN KEY("nextId")
     REFERENCES "post"("id")
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE NO ACTION;
 
 --
@@ -448,7 +448,7 @@ ALTER TABLE ONLY "team"
     ADD CONSTRAINT "team_fk_0"
     FOREIGN KEY("arenaId")
     REFERENCES "arena"("id")
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE NO ACTION;
 
 --
@@ -458,16 +458,16 @@ ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
     FOREIGN KEY("mayorId")
     REFERENCES "citizen"("id")
-    ON DELETE CASCADE
+    ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20231101164049', 2, now())
+    VALUES ('serverpod_test', '20231103144707', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231101164049', "priority" = 2;
+    DO UPDATE SET "version" = '20231103144707', "priority" = 2;
 
 
 COMMIT;

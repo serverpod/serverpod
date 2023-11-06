@@ -379,7 +379,9 @@ class ForeignRelationDefinition extends RelationDefinition {
   }) : super(name, true);
 }
 
-const ForeignKeyAction onDeleteDefault = ForeignKeyAction.cascade;
+const ForeignKeyAction onDeleteDefault = ForeignKeyAction.noAction;
+
+const ForeignKeyAction onDeleteDefaultOld = ForeignKeyAction.cascade;
 
 const ForeignKeyAction onUpdateDefault = ForeignKeyAction.noAction;
 

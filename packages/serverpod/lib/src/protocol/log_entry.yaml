@@ -3,7 +3,7 @@ class: LogEntry
 table: serverpod_log
 fields:
   ### The id of the session this log entry is associated with.
-  sessionLogId: int, relation(parent=serverpod_session_log)
+  sessionLogId: int, relation(parent=serverpod_session_log, onDelete=Cascade)
 
   ### The message id this entry is associated with, if in a streaming session.
   messageId: int?
