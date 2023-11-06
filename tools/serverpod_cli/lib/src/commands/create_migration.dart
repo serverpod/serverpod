@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
 class CreateMigrationCommand extends ServerpodCommand {
-  static const _runModes = <String>['development', 'staging', 'production'];
+  static const runModes = <String>['development', 'staging', 'production'];
 
   @override
   final name = 'create-migration';
@@ -40,7 +40,7 @@ class CreateMigrationCommand extends ServerpodCommand {
       'mode',
       abbr: 'm',
       defaultsTo: 'development',
-      allowed: _runModes,
+      allowed: runModes,
       help: 'Use together with --repair to specify which database to repair.',
     );
     argParser.addOption(

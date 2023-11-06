@@ -83,10 +83,18 @@ class MigrationGenerator {
         module,
       ),
     );
-    return await MigrationVersion.load(
-      versionName: versionName,
-      migrationsDirectory: migrationsDirectory,
-    );
+    try {
+      return await MigrationVersion.load(
+        versionName: versionName,
+        migrationsDirectory: migrationsDirectory,
+      );
+    } catch (e) {
+      throw _MigrationLoadException(
+        versionName: versionName,
+        moduleName: module,
+        exception: e.toString(),
+      );
+    }
   }
 
   Future<MigrationVersion?> getLatestMigrationVersion(
@@ -102,12 +110,7 @@ class MigrationGenerator {
     );
   }
 
-  Future<MigrationVersion?> createMigration({
-    String? tag,
-    required bool force,
-    required int priority,
-    bool write = true,
-  }) async {
+  Future<DatabaseDefinition> _getSrcDatabaseDefinition(int priority) async {
     var latest = await getLatestMigrationVersion(projectName);
 
     var srcDatabase = latest?.databaseDefinition ??
@@ -116,6 +119,29 @@ class MigrationGenerator {
           priority: priority,
           migrationApiVersion: DatabaseConstants.migrationApiVersion,
         );
+
+    return srcDatabase;
+  }
+
+  Future<MigrationVersion?> createMigration({
+    String? tag,
+    required bool force,
+    required int priority,
+    bool write = true,
+  }) async {
+    late DatabaseDefinition srcDatabase;
+    try {
+      srcDatabase = await _getSrcDatabaseDefinition(priority);
+    } on _MigrationLoadException catch (e) {
+      log.error(
+        'Unable to determine latest database definition due to a corrupted '
+        'migration. Please re-create or remove the migration version and try '
+        'again. Migration version: "${e.versionName}".',
+      );
+      log.error(e.exception);
+      return null;
+    }
+
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
       priority: priority,
@@ -166,10 +192,24 @@ class MigrationGenerator {
     var modules = getMigrationModules();
     var dstDefinitions = <DatabaseDefinition>[];
     for (var module in modules) {
-      var version = await getLatestMigrationVersion(module);
+      MigrationVersion? version;
+      try {
+        version = await getLatestMigrationVersion(module);
+      } on _MigrationLoadException catch (e) {
+        log.error(
+          'Unable to determine latest database definition due to a corrupted '
+          'migration. Please re-create or remove the migration version and try '
+          'again. Migration version: "${e.versionName}" for module '
+          '"${e.moduleName}".',
+        );
+        log.error(e.exception);
+        return null;
+      }
+
       if (version == null) {
         continue;
       }
+
       versions[module] = version.versionName;
       dstDefinitions.add(version.databaseDefinition);
     }
@@ -338,4 +378,16 @@ class MigrationVersion {
     ));
     await migrationSqlFile.writeAsString(migrationSql);
   }
+}
+
+class _MigrationLoadException implements Exception {
+  final String versionName;
+  final String moduleName;
+  final String exception;
+
+  _MigrationLoadException({
+    required this.versionName,
+    required this.moduleName,
+    required this.exception,
+  });
 }
