@@ -18,6 +18,27 @@ CREATE TABLE "arena" (
 );
 
 --
+-- Class Blocking as table blocking
+--
+CREATE TABLE "blocking" (
+    "id" serial PRIMARY KEY,
+    "blockingId" integer NOT NULL,
+    "blockedById" integer NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "blocking_blocked_unique_idx" ON "blocking" USING btree ("blockingId", "blockedById");
+
+--
+-- Class Cat as table cat
+--
+CREATE TABLE "cat" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL,
+    "motherId" integer
+);
+
+--
 -- Class Citizen as table citizen
 --
 CREATE TABLE "citizen" (
@@ -80,6 +101,13 @@ CREATE TABLE "enrollment" (
 
 -- Indexes
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
+
+--
+-- Class Member as table member
+--
+CREATE TABLE "member" (
+    "id" serial PRIMARY KEY
+);
 
 --
 -- Class ObjectFieldScopes as table object_field_scopes
@@ -214,6 +242,9 @@ CREATE TABLE "post" (
     "nextId" integer
 );
 
+-- Indexes
+CREATE UNIQUE INDEX "next_unique_idx" ON "post" USING btree ("nextId");
+
 --
 -- Class RelatedUniqueData as table related_unique_data
 --
@@ -304,19 +335,45 @@ ALTER TABLE ONLY "address"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "blocking" table
+--
+ALTER TABLE ONLY "blocking"
+    ADD CONSTRAINT "blocking_fk_0"
+    FOREIGN KEY("blockingId")
+    REFERENCES "member"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "blocking"
+    ADD CONSTRAINT "blocking_fk_1"
+    FOREIGN KEY("blockedById")
+    REFERENCES "member"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "cat" table
+--
+ALTER TABLE ONLY "cat"
+    ADD CONSTRAINT "cat_fk_0"
+    FOREIGN KEY("motherId")
+    REFERENCES "cat"("id")
+    ON DELETE SET NULL
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "citizen" table
 --
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
     FOREIGN KEY("companyId")
     REFERENCES "company"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_1"
     FOREIGN KEY("oldCompanyId")
     REFERENCES "company"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -336,7 +393,7 @@ ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
     FOREIGN KEY("townId")
     REFERENCES "town"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -362,7 +419,7 @@ ALTER TABLE ONLY "object_with_parent"
     ADD CONSTRAINT "object_with_parent_fk_0"
     FOREIGN KEY("other")
     REFERENCES "object_field_scopes"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -372,7 +429,7 @@ ALTER TABLE ONLY "object_with_self_parent"
     ADD CONSTRAINT "object_with_self_parent_fk_0"
     FOREIGN KEY("other")
     REFERENCES "object_with_self_parent"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -392,7 +449,7 @@ ALTER TABLE ONLY "organization"
     ADD CONSTRAINT "organization_fk_0"
     FOREIGN KEY("cityId")
     REFERENCES "city"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -402,13 +459,13 @@ ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_0"
     FOREIGN KEY("organizationId")
     REFERENCES "organization"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_1"
     FOREIGN KEY("_cityCitizensCityId")
     REFERENCES "city"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
@@ -458,16 +515,16 @@ ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
     FOREIGN KEY("mayorId")
     REFERENCES "citizen"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20231103144707', 2, now())
+    VALUES ('serverpod_test', '20231108134232', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231103144707', "priority" = 2;
+    DO UPDATE SET "version" = '20231108134232', "priority" = 2;
 
 
 COMMIT;

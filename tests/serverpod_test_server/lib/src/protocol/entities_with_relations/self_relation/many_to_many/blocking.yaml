@@ -1,0 +1,9 @@
+class: Blocking
+table: blocking
+fields:
+  blocking: Member?, relation(name=member_blocking, onDelete=Cascade)
+  blockedBy: Member?, relation(name=member_blockedBy, onDelete=Cascade)
+indexes:
+  blocking_blocked_unique_idx:
+    fields: blockingId, blockedById
+    unique: true
