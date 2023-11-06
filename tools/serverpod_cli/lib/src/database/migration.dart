@@ -5,9 +5,9 @@ import 'extensions.dart';
 DatabaseMigration generateDatabaseMigration({
   required DatabaseDefinition srcDatabase,
   required DatabaseDefinition dstDatabase,
-  required List<DatabaseMigrationWarning> warnings,
   required int priority,
 }) {
+  var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
   // Find deleted tables
@@ -84,7 +84,7 @@ DatabaseMigration generateDatabaseMigration({
 
   return DatabaseMigration(
     actions: actions,
-    warnings: [],
+    warnings: warnings,
     priority: priority,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );

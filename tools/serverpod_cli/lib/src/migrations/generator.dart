@@ -121,14 +121,13 @@ class MigrationGenerator {
       priority: priority,
     );
 
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: srcDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: priority,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
@@ -185,14 +184,13 @@ class MigrationGenerator {
     var liveDatabase = await client.insights.getLiveDatabaseDefinition();
 
     // Print warnings, if any exists.
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: liveDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: 0,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
