@@ -93,8 +93,9 @@ class CreateMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
+    var success = false;
     if (repair) {
-      await log.progress('Creating repair migration', () async {
+      success = await log.progress('Creating repair migration', () async {
         var migration = await generator.repairMigration(
           tag: tag,
           force: force,
@@ -104,7 +105,7 @@ class CreateMigrationCommand extends ServerpodCommand {
         return migration != null;
       });
     } else {
-      var success = await log.progress('Creating migration', () async {
+      success = await log.progress('Creating migration', () async {
         var migration = await generator.createMigration(
           tag: tag,
           force: force,
@@ -113,12 +114,12 @@ class CreateMigrationCommand extends ServerpodCommand {
 
         return migration != null;
       });
-      if (success) {
-        log.info(
-          'Done.',
-          type: TextLogType.success,
-        );
-      }
     }
+
+    if (!success) {
+      throw ExitException();
+    }
+
+    log.info('Done.', type: TextLogType.success);
   }
 }
