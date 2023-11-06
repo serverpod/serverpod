@@ -130,18 +130,7 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    late DatabaseDefinition srcDatabase;
-    try {
-      srcDatabase = await _getSrcDatabaseDefinition(priority);
-    } on MigrationVersionLoadException catch (e) {
-      log.error(
-        'Unable to determine latest database definition due to a corrupted '
-        'migration. Please re-create or remove the migration version and try '
-        'again. Migration version: "${e.versionName}".',
-      );
-      log.error(e.exception);
-      return null;
-    }
+    var srcDatabase = await _getSrcDatabaseDefinition(priority);
 
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
@@ -193,19 +182,7 @@ class MigrationGenerator {
     var modules = getMigrationModules();
     var dstDefinitions = <DatabaseDefinition>[];
     for (var module in modules) {
-      MigrationVersion? version;
-      try {
-        version = await getLatestMigrationVersion(module);
-      } on MigrationVersionLoadException catch (e) {
-        log.error(
-          'Unable to determine latest database definition due to a corrupted '
-          'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}" for module '
-          '"${e.moduleName}".',
-        );
-        log.error(e.exception);
-        return null;
-      }
+      var version = await getLatestMigrationVersion(module);
 
       if (version == null) {
         continue;

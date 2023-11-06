@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
@@ -96,21 +97,42 @@ class CreateMigrationCommand extends ServerpodCommand {
     var success = false;
     if (repair) {
       success = await log.progress('Creating repair migration', () async {
-        var migration = await generator.repairMigration(
-          tag: tag,
-          force: force,
-          runMode: mode,
-        );
+        String? migrationSql;
+        try {
+          migrationSql = await generator.repairMigration(
+            tag: tag,
+            force: force,
+            runMode: mode,
+          );
+        } on MigrationVersionLoadException catch (e) {
+          log.error(
+            'Unable to determine latest database definition due to a corrupted '
+            'migration. Please re-create or remove the migration version and try '
+            'again. Migration version: "${e.versionName}" for module '
+            '"${e.moduleName}".',
+          );
+          log.error(e.exception);
+        }
 
-        return migration != null;
+        return migrationSql != null;
       });
     } else {
       success = await log.progress('Creating migration', () async {
-        var migration = await generator.createMigration(
-          tag: tag,
-          force: force,
-          priority: priority,
-        );
+        MigrationVersion? migration;
+        try {
+          migration = await generator.createMigration(
+            tag: tag,
+            force: force,
+            priority: priority,
+          );
+        } on MigrationVersionLoadException catch (e) {
+          log.error(
+            'Unable to determine latest database definition due to a corrupted '
+            'migration. Please re-create or remove the migration version and try '
+            'again. Migration version: "${e.versionName}".',
+          );
+          log.error(e.exception);
+        }
 
         return migration != null;
       });
