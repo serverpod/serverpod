@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
+import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -89,7 +90,7 @@ class MigrationGenerator {
         migrationsDirectory: migrationsDirectory,
       );
     } catch (e) {
-      throw _MigrationLoadException(
+      throw MigrationVersionLoadException(
         versionName: versionName,
         moduleName: module,
         exception: e.toString(),
@@ -132,7 +133,7 @@ class MigrationGenerator {
     late DatabaseDefinition srcDatabase;
     try {
       srcDatabase = await _getSrcDatabaseDefinition(priority);
-    } on _MigrationLoadException catch (e) {
+    } on MigrationVersionLoadException catch (e) {
       log.error(
         'Unable to determine latest database definition due to a corrupted '
         'migration. Please re-create or remove the migration version and try '
@@ -195,7 +196,7 @@ class MigrationGenerator {
       MigrationVersion? version;
       try {
         version = await getLatestMigrationVersion(module);
-      } on _MigrationLoadException catch (e) {
+      } on MigrationVersionLoadException catch (e) {
         log.error(
           'Unable to determine latest database definition due to a corrupted '
           'migration. Please re-create or remove the migration version and try '
@@ -378,16 +379,4 @@ class MigrationVersion {
     ));
     await migrationSqlFile.writeAsString(migrationSql);
   }
-}
-
-class _MigrationLoadException implements Exception {
-  final String versionName;
-  final String moduleName;
-  final String exception;
-
-  _MigrationLoadException({
-    required this.versionName,
-    required this.moduleName,
-    required this.exception,
-  });
 }
