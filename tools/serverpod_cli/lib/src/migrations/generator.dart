@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -53,27 +54,6 @@ class MigrationGenerator {
     return names;
   }
 
-  List<String> getMigrationVersions(String module) {
-    var migrationsDirectory = Directory(
-      path.join(
-        migrationsBaseDirectory.path,
-        module,
-      ),
-    );
-    if (!migrationsDirectory.existsSync()) {
-      return [];
-    }
-    var versions = <String>[];
-    var fileEntities = migrationsDirectory.listSync();
-    for (var entity in fileEntities) {
-      if (entity is Directory) {
-        versions.add(path.basename(entity.path));
-      }
-    }
-    versions.sort();
-    return versions;
-  }
-
   Future<MigrationVersion> getMigrationVersion(
     String versionName,
     String module,
@@ -101,27 +81,40 @@ class MigrationGenerator {
   Future<MigrationVersion?> getLatestMigrationVersion(
     String module,
   ) async {
-    var versions = getMigrationVersions(module);
-    if (versions.isEmpty) {
+    var migrationsDirectory = Directory(
+      path.join(
+        migrationsBaseDirectory.path,
+        module,
+      ),
+    );
+
+    var migrationRegistry = await MigrationRegistry.load(migrationsDirectory);
+
+    var latestVersion = migrationRegistry.getLatest();
+    if (latestVersion == null) {
       return null;
     }
+
     return await getMigrationVersion(
-      versions.last,
+      latestVersion,
       module,
     );
   }
 
-  Future<DatabaseDefinition> _getSrcDatabaseDefinition(int priority) async {
-    var latest = await getLatestMigrationVersion(projectName);
+  Future<DatabaseDefinition> _getSrcDatabaseDefinition(
+    String? latestVersion,
+    int priority,
+  ) async {
+    if (latestVersion == null) {
+      return DatabaseDefinition(
+        tables: [],
+        priority: priority,
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      );
+    }
 
-    var srcDatabase = latest?.databaseDefinition ??
-        DatabaseDefinition(
-          tables: [],
-          priority: priority,
-          migrationApiVersion: DatabaseConstants.migrationApiVersion,
-        );
-
-    return srcDatabase;
+    var latest = await getMigrationVersion(latestVersion, projectName);
+    return latest.databaseDefinition;
   }
 
   Future<MigrationVersion?> createMigration({
@@ -130,7 +123,14 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    var srcDatabase = await _getSrcDatabaseDefinition(priority);
+    var migrationRegistry = await MigrationRegistry.load(
+      migrationsProjectDirectory,
+    );
+
+    var srcDatabase = await _getSrcDatabaseDefinition(
+      migrationRegistry.getLatest(),
+      priority,
+    );
 
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
@@ -166,6 +166,8 @@ class MigrationGenerator {
 
     if (write) {
       await migrationVersion.write(module: projectName);
+      migrationRegistry.add(versionName);
+      await migrationRegistry.write();
     }
 
     return migrationVersion;

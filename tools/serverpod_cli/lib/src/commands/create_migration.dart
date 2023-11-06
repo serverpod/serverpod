@@ -112,6 +112,9 @@ class CreateMigrationCommand extends ServerpodCommand {
             '"${e.moduleName}".',
           );
           log.error(e.exception);
+        } on MigrationRegistryLoadException catch (e) {
+          log.error(
+              'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
         }
 
         return migrationSql != null;
@@ -132,6 +135,9 @@ class CreateMigrationCommand extends ServerpodCommand {
             'again. Migration version: "${e.versionName}".',
           );
           log.error(e.exception);
+        } on MigrationRegistryLoadException catch (e) {
+          log.error(
+              'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
         }
 
         return migration != null;
