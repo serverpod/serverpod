@@ -43,8 +43,12 @@ void main() {
 
     group('when creating migration', () {
       test('then null is returned.', () async {
-        expect(
-            await generator.createMigration(force: false, priority: 0), isNull);
+        var migration = await generator.createMigration(
+          force: false,
+          priority: 0,
+        );
+
+        expect(migration, isNull);
       });
 
       test('then expected error messages are logged.', () async {
@@ -71,12 +75,11 @@ void main() {
 
     group('when creating repair migration', () {
       test('then null is returned.', () async {
-        expect(
-            await generator.repairMigration(
-              runMode: CreateMigrationCommand.runModes.first /* development */,
-              force: false,
-            ),
-            isNull);
+        var repairSql = await generator.repairMigration(
+          runMode: CreateMigrationCommand.runModes.first /* development */,
+          force: false,
+        );
+        expect(repairSql, isNull);
       });
 
       test('then expected error message is logged.', () async {
