@@ -52,13 +52,11 @@ class MigrationGenerator {
     return names;
   }
 
-  List<String> getMigrationVersions({
-    String? module,
-  }) {
+  List<String> getMigrationVersions(String module) {
     var migrationsDirectory = Directory(
       path.join(
         migrationsBaseDirectory.path,
-        module ?? projectName,
+        module,
       ),
     );
     if (!migrationsDirectory.existsSync()) {
@@ -76,32 +74,53 @@ class MigrationGenerator {
   }
 
   Future<MigrationVersion> getMigrationVersion(
-    String versionName, {
-    String? module,
-  }) async {
+    String versionName,
+    String module,
+  ) async {
     var migrationsDirectory = Directory(
       path.join(
         migrationsBaseDirectory.path,
-        module ?? projectName,
+        module,
       ),
     );
-    return await MigrationVersion.load(
-      versionName: versionName,
-      migrationsDirectory: migrationsDirectory,
-    );
+    try {
+      return await MigrationVersion.load(
+        versionName: versionName,
+        migrationsDirectory: migrationsDirectory,
+      );
+    } catch (e) {
+      throw _MigrationLoadException(
+        versionName: versionName,
+        moduleName: module,
+        exception: e.toString(),
+      );
+    }
   }
 
-  Future<MigrationVersion?> getLatestMigrationVersion({
-    String? module,
-  }) async {
-    var versions = getMigrationVersions(module: module);
+  Future<MigrationVersion?> getLatestMigrationVersion(
+    String module,
+  ) async {
+    var versions = getMigrationVersions(module);
     if (versions.isEmpty) {
       return null;
     }
     return await getMigrationVersion(
       versions.last,
-      module: module,
+      module,
     );
+  }
+
+  Future<DatabaseDefinition> _getSrcDatabaseDefinition(int priority) async {
+    var latest = await getLatestMigrationVersion(projectName);
+
+    var srcDatabase = latest?.databaseDefinition ??
+        DatabaseDefinition(
+          tables: [],
+          priority: priority,
+          migrationApiVersion: DatabaseConstants.migrationApiVersion,
+        );
+
+    return srcDatabase;
   }
 
   Future<MigrationVersion?> createMigration({
@@ -110,29 +129,31 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    var versionName = createVersionName(tag);
+    late DatabaseDefinition srcDatabase;
+    try {
+      srcDatabase = await _getSrcDatabaseDefinition(priority);
+    } on _MigrationLoadException catch (e) {
+      log.error(
+        'Unable to determine latest database definition due to a corrupted '
+        'migration. Please re-create or remove the migration version and try '
+        'again. Migration version: "${e.versionName}".',
+      );
+      log.error(e.exception);
+      return null;
+    }
 
-    var latest = await getLatestMigrationVersion();
-
-    var srcDatabase = latest?.databaseDefinition ??
-        DatabaseDefinition(
-          tables: [],
-          priority: priority,
-          migrationApiVersion: DatabaseConstants.migrationApiVersion,
-        );
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
       priority: priority,
     );
 
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: srcDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: priority,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
@@ -145,6 +166,7 @@ class MigrationGenerator {
       return null;
     }
 
+    var versionName = createVersionName(tag);
     var migrationVersion = MigrationVersion(
       migrationsDirectory: migrationsProjectDirectory,
       versionName: versionName,
@@ -164,17 +186,30 @@ class MigrationGenerator {
     required bool force,
     required String runMode,
   }) async {
-    var client = ConfigInfo(runMode).createServiceClient();
     var versions = <String, String>{};
 
     // Load the latest migration from all modules.
     var modules = getMigrationModules();
     var dstDefinitions = <DatabaseDefinition>[];
     for (var module in modules) {
-      var version = await getLatestMigrationVersion(module: module);
+      MigrationVersion? version;
+      try {
+        version = await getLatestMigrationVersion(module);
+      } on _MigrationLoadException catch (e) {
+        log.error(
+          'Unable to determine latest database definition due to a corrupted '
+          'migration. Please re-create or remove the migration version and try '
+          'again. Migration version: "${e.versionName}" for module '
+          '"${e.moduleName}".',
+        );
+        log.error(e.exception);
+        return null;
+      }
+
       if (version == null) {
         continue;
       }
+
       versions[module] = version.versionName;
       dstDefinitions.add(version.databaseDefinition);
     }
@@ -185,17 +220,17 @@ class MigrationGenerator {
     );
 
     // Get the live database definition from the server.
+    var client = ConfigInfo(runMode).createServiceClient();
     var liveDatabase = await client.insights.getLiveDatabaseDefinition();
 
     // Print warnings, if any exists.
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: liveDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: 0,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
@@ -343,4 +378,16 @@ class MigrationVersion {
     ));
     await migrationSqlFile.writeAsString(migrationSql);
   }
+}
+
+class _MigrationLoadException implements Exception {
+  final String versionName;
+  final String moduleName;
+  final String exception;
+
+  _MigrationLoadException({
+    required this.versionName,
+    required this.moduleName,
+    required this.exception,
+  });
 }
