@@ -160,7 +160,6 @@ class MigrationGenerator {
     required bool force,
     required String runMode,
   }) async {
-    var client = ConfigInfo(runMode).createServiceClient();
     var versions = <String, String>{};
 
     // Load the latest migration from all modules.
@@ -181,6 +180,7 @@ class MigrationGenerator {
     );
 
     // Get the live database definition from the server.
+    var client = ConfigInfo(runMode).createServiceClient();
     var liveDatabase = await client.insights.getLiveDatabaseDefinition();
 
     // Print warnings, if any exists.
