@@ -44,7 +44,7 @@ import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_t
     as _i23;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
     as _i24;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/one_to_one/post.dart'
     as _i25;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
     as _i26;
