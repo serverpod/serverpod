@@ -103,9 +103,9 @@ CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_auth', '20231101163840', 1, now())
+    VALUES ('serverpod_auth', '20231110163126', 1, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231101163840', "priority" = 1;
+    DO UPDATE SET "version" = '20231110163126', "priority" = 1;
 
 
 COMMIT;
