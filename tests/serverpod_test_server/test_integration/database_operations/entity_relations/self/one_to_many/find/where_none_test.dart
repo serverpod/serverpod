@@ -182,7 +182,7 @@ void main() async {
 
         var catNames = fetchedCats.map((e) => e.name);
         expect(catNames, hasLength(3));
-        expect(catNames, containsAll(['Smulan II', 'Kitten2']));
+        expect(catNames, containsAll(['Zelda', 'Smulan II', 'Kitten2']));
       },
     );
   });
