@@ -1,0 +1,4 @@
+class: MigratedTable3
+table: migrated_table_3
+fields:
+  aString: String

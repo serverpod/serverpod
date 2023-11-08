@@ -1,0 +1,8 @@
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int
+indexes:
+  migrated_table_index:
+    fields: anInt
+    unique: false

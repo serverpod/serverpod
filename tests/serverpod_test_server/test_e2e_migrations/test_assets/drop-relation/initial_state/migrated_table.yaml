@@ -1,0 +1,4 @@
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int, relation(parent=migrated_table)
