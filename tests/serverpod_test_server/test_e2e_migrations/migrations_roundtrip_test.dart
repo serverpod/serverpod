@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/service_key_manager.dart';
@@ -1021,7 +1022,8 @@ Future<void> _migrationTestCleanup({
   _removeAllTaggedMigrations();
   _removeMigrationTestProtocolFolder();
   await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
-  await _setDatabaseMigrationToLatest(serviceClient: serviceClient);
+  await _removeTaggedMigrationsFromRegistry();
+  await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
 }
 
 Future<int> _runApplyMigrations() async {
@@ -1123,23 +1125,28 @@ void _removeMigrationTestProtocolFolder() {
   }
 }
 
-String _getLatestMigration() {
-  var migrationsDirectory = _migrationsProjectDirectory();
-  List<String> versions = [];
-  var fileEntities = migrationsDirectory.listSync();
-  for (var entity in fileEntities) {
-    if (entity is Directory) {
-      versions.add(path.basename(entity.path));
-    }
+Future<void> _removeTaggedMigrationsFromRegistry() async {
+  var migrationRegistry = await MigrationRegistry.load(
+    _migrationsProjectDirectory(),
+  );
+
+  var lastMigration = migrationRegistry.getLatest();
+  while (lastMigration != null && lastMigration.contains('-')) {
+    migrationRegistry.removeLast();
+    lastMigration = migrationRegistry.getLatest();
   }
-  versions.sort();
-  return versions.last;
+
+  await migrationRegistry.write();
 }
 
-Future<void> _setDatabaseMigrationToLatest({
+Future<void> _setDatabaseMigrationToLatestInRegistry({
   required Client serviceClient,
 }) async {
-  var latestMigration = _getLatestMigration();
+  var migrationRegistry = await MigrationRegistry.load(
+    _migrationsProjectDirectory(),
+  );
+
+  var latestMigration = migrationRegistry.getLatest();
 
   await serviceClient.insights.executeSql('''
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
