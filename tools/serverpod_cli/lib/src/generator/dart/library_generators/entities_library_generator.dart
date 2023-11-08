@@ -432,7 +432,7 @@ class SerializableEntityLibraryGenerator {
         .fold({}, (map, field) {
       Expression assignment;
 
-      if ((field.type.isEnum ||
+      if ((field.type.isEnumType ||
           noneMutableTypeNames.contains(field.type.className))) {
         assignment = refer('this').property(field.name);
       } else if (clonableTypeNames.contains(field.type.className)) {
@@ -1509,7 +1509,7 @@ class SerializableEntityLibraryGenerator {
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
             ..url = 'package:serverpod/serverpod.dart'
-            ..types.addAll(field.type.isEnum
+            ..types.addAll(field.type.isEnumType
                 ? [
                     field.type.reference(
                       serverCode,
@@ -1798,7 +1798,7 @@ class SerializableEntityLibraryGenerator {
                 .assign(TypeReference((t) => t
                   ..symbol = field.type.columnType
                   ..url = 'package:serverpod/serverpod.dart'
-                  ..types.addAll(field.type.isEnum
+                  ..types.addAll(field.type.isEnumType
                       ? [
                           field.type.reference(
                             serverCode,

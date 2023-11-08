@@ -128,4 +128,95 @@ void main() {
       '"Invalid" is not a valid property. Valid properties are (string, int).',
     );
   });
+
+  group(
+      'Given a class with a field with the type ExampleEnum serialized as an int',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('example').withYaml(
+        '''
+        class: Example
+        fields:
+          myEnum: ExampleEnum
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_enum').withYaml(
+        '''
+        enum: ExampleEnum
+        serializeAs: int
+        values:
+          - first
+          - second
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ClassDefinition;
+
+    test('then no errors was generated', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then the field type is tagged as an enum', () {
+      expect(definition.fields.first.type.isEnumType, isTrue);
+    });
+
+    test('then the field type is serialized as an int', () {
+      expect(definition.fields.first.type.serializeEnumAs, SerializeEnumAs.int);
+    });
+  });
+
+  group(
+      'Given a class with a field with the type ExampleEnum serialized as a String',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('example').withYaml(
+        '''
+        class: Example
+        fields:
+          myEnum: ExampleEnum
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('example_enum').withYaml(
+        '''
+        enum: ExampleEnum
+        serializeAs: String
+        values:
+          - first
+          - second
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    var definition = definitions.first as ClassDefinition;
+
+    test('then no errors was generated', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then the field type is tagged as an enum', () {
+      expect(definition.fields.first.type.isEnumType, isTrue);
+    });
+
+    test('then the field type is serialized as a String', () {
+      expect(
+        definition.fields.first.type.serializeEnumAs,
+        SerializeEnumAs.string,
+      );
+    });
+  });
 }

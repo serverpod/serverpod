@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
 class TypeDefinitionBuilder {
@@ -8,8 +9,7 @@ class TypeDefinitionBuilder {
   String? _url;
   DartType? _dartType;
   bool _customClass;
-  bool _isEnum;
-  bool _enumSerializedAsName;
+  SerializeEnumAs? _serializeEnumAs;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -17,10 +17,7 @@ class TypeDefinitionBuilder {
         _nullable = false,
         _url = null,
         _dartType = null,
-        _customClass = false,
-        _isEnum = false,
-        // TODO: For Serverpod 2.0, change the default to `true`.
-        _enumSerializedAsName = false;
+        _customClass = false;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -72,13 +69,8 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withIsEnum(bool isEnum) {
-    _isEnum = isEnum;
-    return this;
-  }
-
-  TypeDefinitionBuilder withEnumSerializedAsName(bool enumSerializedAsName) {
-    _enumSerializedAsName = enumSerializedAsName;
+  TypeDefinitionBuilder withEnumSerializeAs(SerializeEnumAs serializeEnumAs) {
+    _serializeEnumAs = serializeEnumAs;
     return this;
   }
 
@@ -90,8 +82,7 @@ class TypeDefinitionBuilder {
       url: _url,
       dartType: _dartType,
       customClass: _customClass,
-      isEnum: _isEnum,
-      enumSerializedAsName: _enumSerializedAsName,
+      serializeEnumAs: _serializeEnumAs,
     );
   }
 }
