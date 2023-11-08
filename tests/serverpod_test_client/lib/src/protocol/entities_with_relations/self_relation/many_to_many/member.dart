@@ -12,12 +12,14 @@ import '../../../protocol.dart' as _i2;
 abstract class Member extends _i1.SerializableEntity {
   Member._({
     this.id,
+    required this.name,
     this.blocking,
     this.blockedBy,
   });
 
   factory Member({
     int? id,
+    required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   }) = _MemberImpl;
@@ -28,6 +30,7 @@ abstract class Member extends _i1.SerializableEntity {
   ) {
     return Member(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       blocking: serializationManager
           .deserialize<List<_i2.Blocking>?>(jsonSerialization['blocking']),
       blockedBy: serializationManager
@@ -40,12 +43,15 @@ abstract class Member extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
+  String name;
+
   List<_i2.Blocking>? blocking;
 
   List<_i2.Blocking>? blockedBy;
 
   Member copyWith({
     int? id,
+    String? name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   });
@@ -53,6 +59,7 @@ abstract class Member extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': name,
       'blocking': blocking,
       'blockedBy': blockedBy,
     };
@@ -64,10 +71,12 @@ class _Undefined {}
 class _MemberImpl extends Member {
   _MemberImpl({
     int? id,
+    required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   }) : super._(
           id: id,
+          name: name,
           blocking: blocking,
           blockedBy: blockedBy,
         );
@@ -75,11 +84,13 @@ class _MemberImpl extends Member {
   @override
   Member copyWith({
     Object? id = _Undefined,
+    String? name,
     Object? blocking = _Undefined,
     Object? blockedBy = _Undefined,
   }) {
     return Member(
       id: id is int? ? id : this.id,
+      name: name ?? this.name,
       blocking:
           blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
       blockedBy: blockedBy is List<_i2.Blocking>?

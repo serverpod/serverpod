@@ -12,16 +12,16 @@ import '../../../protocol.dart' as _i2;
 abstract class Blocking extends _i1.TableRow {
   Blocking._({
     int? id,
-    required this.blockingId,
-    this.blocking,
+    required this.blockedId,
+    this.blocked,
     required this.blockedById,
     this.blockedBy,
   }) : super(id);
 
   factory Blocking({
     int? id,
-    required int blockingId,
-    _i2.Member? blocking,
+    required int blockedId,
+    _i2.Member? blocked,
     required int blockedById,
     _i2.Member? blockedBy,
   }) = _BlockingImpl;
@@ -32,10 +32,10 @@ abstract class Blocking extends _i1.TableRow {
   ) {
     return Blocking(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      blockingId: serializationManager
-          .deserialize<int>(jsonSerialization['blockingId']),
-      blocking: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blocking']),
+      blockedId:
+          serializationManager.deserialize<int>(jsonSerialization['blockedId']),
+      blocked: serializationManager
+          .deserialize<_i2.Member?>(jsonSerialization['blocked']),
       blockedById: serializationManager
           .deserialize<int>(jsonSerialization['blockedById']),
       blockedBy: serializationManager
@@ -47,9 +47,9 @@ abstract class Blocking extends _i1.TableRow {
 
   static const db = BlockingRepository._();
 
-  int blockingId;
+  int blockedId;
 
-  _i2.Member? blocking;
+  _i2.Member? blocked;
 
   int blockedById;
 
@@ -60,8 +60,8 @@ abstract class Blocking extends _i1.TableRow {
 
   Blocking copyWith({
     int? id,
-    int? blockingId,
-    _i2.Member? blocking,
+    int? blockedId,
+    _i2.Member? blocked,
     int? blockedById,
     _i2.Member? blockedBy,
   });
@@ -69,8 +69,8 @@ abstract class Blocking extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'blockingId': blockingId,
-      'blocking': blocking,
+      'blockedId': blockedId,
+      'blocked': blocked,
       'blockedById': blockedById,
       'blockedBy': blockedBy,
     };
@@ -81,7 +81,7 @@ abstract class Blocking extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       'id': id,
-      'blockingId': blockingId,
+      'blockedId': blockedId,
       'blockedById': blockedById,
     };
   }
@@ -90,8 +90,8 @@ abstract class Blocking extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
-      'blockingId': blockingId,
-      'blocking': blocking,
+      'blockedId': blockedId,
+      'blocked': blocked,
       'blockedById': blockedById,
       'blockedBy': blockedBy,
     };
@@ -106,8 +106,8 @@ abstract class Blocking extends _i1.TableRow {
       case 'id':
         id = value;
         return;
-      case 'blockingId':
-        blockingId = value;
+      case 'blockedId':
+        blockedId = value;
         return;
       case 'blockedById':
         blockedById = value;
@@ -243,11 +243,11 @@ abstract class Blocking extends _i1.TableRow {
   }
 
   static BlockingInclude include({
-    _i2.MemberInclude? blocking,
+    _i2.MemberInclude? blocked,
     _i2.MemberInclude? blockedBy,
   }) {
     return BlockingInclude._(
-      blocking: blocking,
+      blocked: blocked,
       blockedBy: blockedBy,
     );
   }
@@ -278,14 +278,14 @@ class _Undefined {}
 class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
-    required int blockingId,
-    _i2.Member? blocking,
+    required int blockedId,
+    _i2.Member? blocked,
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
           id: id,
-          blockingId: blockingId,
-          blocking: blocking,
+          blockedId: blockedId,
+          blocked: blocked,
           blockedById: blockedById,
           blockedBy: blockedBy,
         );
@@ -293,15 +293,15 @@ class _BlockingImpl extends Blocking {
   @override
   Blocking copyWith({
     Object? id = _Undefined,
-    int? blockingId,
-    Object? blocking = _Undefined,
+    int? blockedId,
+    Object? blocked = _Undefined,
     int? blockedById,
     Object? blockedBy = _Undefined,
   }) {
     return Blocking(
       id: id is int? ? id : this.id,
-      blockingId: blockingId ?? this.blockingId,
-      blocking: blocking is _i2.Member? ? blocking : this.blocking?.copyWith(),
+      blockedId: blockedId ?? this.blockedId,
+      blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
       blockedBy:
           blockedBy is _i2.Member? ? blockedBy : this.blockedBy?.copyWith(),
@@ -311,8 +311,8 @@ class _BlockingImpl extends Blocking {
 
 class BlockingTable extends _i1.Table {
   BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
-    blockingId = _i1.ColumnInt(
-      'blockingId',
+    blockedId = _i1.ColumnInt(
+      'blockedId',
       this,
     );
     blockedById = _i1.ColumnInt(
@@ -321,25 +321,25 @@ class BlockingTable extends _i1.Table {
     );
   }
 
-  late final _i1.ColumnInt blockingId;
+  late final _i1.ColumnInt blockedId;
 
-  _i2.MemberTable? _blocking;
+  _i2.MemberTable? _blocked;
 
   late final _i1.ColumnInt blockedById;
 
   _i2.MemberTable? _blockedBy;
 
-  _i2.MemberTable get blocking {
-    if (_blocking != null) return _blocking!;
-    _blocking = _i1.createRelationTable(
-      relationFieldName: 'blocking',
-      field: Blocking.t.blockingId,
+  _i2.MemberTable get blocked {
+    if (_blocked != null) return _blocked!;
+    _blocked = _i1.createRelationTable(
+      relationFieldName: 'blocked',
+      field: Blocking.t.blockedId,
       foreignField: _i2.Member.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.MemberTable(tableRelation: foreignTableRelation),
     );
-    return _blocking!;
+    return _blocked!;
   }
 
   _i2.MemberTable get blockedBy {
@@ -358,14 +358,14 @@ class BlockingTable extends _i1.Table {
   @override
   List<_i1.Column> get columns => [
         id,
-        blockingId,
+        blockedId,
         blockedById,
       ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
-    if (relationField == 'blocking') {
-      return blocking;
+    if (relationField == 'blocked') {
+      return blocked;
     }
     if (relationField == 'blockedBy') {
       return blockedBy;
@@ -379,20 +379,20 @@ BlockingTable tBlocking = BlockingTable();
 
 class BlockingInclude extends _i1.IncludeObject {
   BlockingInclude._({
-    _i2.MemberInclude? blocking,
+    _i2.MemberInclude? blocked,
     _i2.MemberInclude? blockedBy,
   }) {
-    _blocking = blocking;
+    _blocked = blocked;
     _blockedBy = blockedBy;
   }
 
-  _i2.MemberInclude? _blocking;
+  _i2.MemberInclude? _blocked;
 
   _i2.MemberInclude? _blockedBy;
 
   @override
   Map<String, _i1.Include?> get includes => {
-        'blocking': _blocking,
+        'blocked': _blocked,
         'blockedBy': _blockedBy,
       };
 
@@ -575,22 +575,22 @@ class BlockingRepository {
 class BlockingAttachRowRepository {
   const BlockingAttachRowRepository._();
 
-  Future<void> blocking(
+  Future<void> blocked(
     _i1.Session session,
     Blocking blocking,
-    _i2.Member nestedBlocking,
+    _i2.Member blocked,
   ) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
     }
-    if (nestedBlocking.id == null) {
-      throw ArgumentError.notNull('nestedBlocking.id');
+    if (blocked.id == null) {
+      throw ArgumentError.notNull('blocked.id');
     }
 
-    var $blocking = blocking.copyWith(blockingId: nestedBlocking.id);
+    var $blocking = blocking.copyWith(blockedId: blocked.id);
     await session.dbNext.updateRow<Blocking>(
       $blocking,
-      columns: [Blocking.t.blockingId],
+      columns: [Blocking.t.blockedId],
     );
   }
 

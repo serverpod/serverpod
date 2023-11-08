@@ -29,14 +29,14 @@ ALTER TABLE ONLY "arena"
 
 CREATE TABLE "blocking" (
   "id" serial,
-  "blockingId" integer NOT NULL,
+  "blockedId" integer NOT NULL,
   "blockedById" integer NOT NULL
 );
 
 ALTER TABLE ONLY "blocking"
   ADD CONSTRAINT blocking_pkey PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX blocking_blocked_unique_idx ON "blocking" USING btree ("blockingId", "blockedById");
+CREATE UNIQUE INDEX blocking_blocked_unique_idx ON "blocking" USING btree ("blockedId", "blockedById");
 
 --
 -- Class Cat as table cat
@@ -147,7 +147,8 @@ CREATE UNIQUE INDEX enrollment_index_idx ON "enrollment" USING btree ("studentId
 --
 
 CREATE TABLE "member" (
-  "id" serial
+  "id" serial,
+  "name" text NOT NULL
 );
 
 ALTER TABLE ONLY "member"
@@ -469,7 +470,7 @@ ALTER TABLE ONLY "address"
 
 ALTER TABLE ONLY "blocking"
   ADD CONSTRAINT blocking_fk_0
-    FOREIGN KEY("blockingId")
+    FOREIGN KEY("blockedId")
       REFERENCES member(id)
         ON DELETE CASCADE;
 ALTER TABLE ONLY "blocking"

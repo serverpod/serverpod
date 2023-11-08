@@ -12,16 +12,16 @@ import '../../../protocol.dart' as _i2;
 abstract class Blocking extends _i1.SerializableEntity {
   Blocking._({
     this.id,
-    required this.blockingId,
-    this.blocking,
+    required this.blockedId,
+    this.blocked,
     required this.blockedById,
     this.blockedBy,
   });
 
   factory Blocking({
     int? id,
-    required int blockingId,
-    _i2.Member? blocking,
+    required int blockedId,
+    _i2.Member? blocked,
     required int blockedById,
     _i2.Member? blockedBy,
   }) = _BlockingImpl;
@@ -32,10 +32,10 @@ abstract class Blocking extends _i1.SerializableEntity {
   ) {
     return Blocking(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      blockingId: serializationManager
-          .deserialize<int>(jsonSerialization['blockingId']),
-      blocking: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blocking']),
+      blockedId:
+          serializationManager.deserialize<int>(jsonSerialization['blockedId']),
+      blocked: serializationManager
+          .deserialize<_i2.Member?>(jsonSerialization['blocked']),
       blockedById: serializationManager
           .deserialize<int>(jsonSerialization['blockedById']),
       blockedBy: serializationManager
@@ -48,9 +48,9 @@ abstract class Blocking extends _i1.SerializableEntity {
   /// the id will be null.
   int? id;
 
-  int blockingId;
+  int blockedId;
 
-  _i2.Member? blocking;
+  _i2.Member? blocked;
 
   int blockedById;
 
@@ -58,8 +58,8 @@ abstract class Blocking extends _i1.SerializableEntity {
 
   Blocking copyWith({
     int? id,
-    int? blockingId,
-    _i2.Member? blocking,
+    int? blockedId,
+    _i2.Member? blocked,
     int? blockedById,
     _i2.Member? blockedBy,
   });
@@ -67,8 +67,8 @@ abstract class Blocking extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'blockingId': blockingId,
-      'blocking': blocking,
+      'blockedId': blockedId,
+      'blocked': blocked,
       'blockedById': blockedById,
       'blockedBy': blockedBy,
     };
@@ -80,14 +80,14 @@ class _Undefined {}
 class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
-    required int blockingId,
-    _i2.Member? blocking,
+    required int blockedId,
+    _i2.Member? blocked,
     required int blockedById,
     _i2.Member? blockedBy,
   }) : super._(
           id: id,
-          blockingId: blockingId,
-          blocking: blocking,
+          blockedId: blockedId,
+          blocked: blocked,
           blockedById: blockedById,
           blockedBy: blockedBy,
         );
@@ -95,15 +95,15 @@ class _BlockingImpl extends Blocking {
   @override
   Blocking copyWith({
     Object? id = _Undefined,
-    int? blockingId,
-    Object? blocking = _Undefined,
+    int? blockedId,
+    Object? blocked = _Undefined,
     int? blockedById,
     Object? blockedBy = _Undefined,
   }) {
     return Blocking(
       id: id is int? ? id : this.id,
-      blockingId: blockingId ?? this.blockingId,
-      blocking: blocking is _i2.Member? ? blocking : this.blocking?.copyWith(),
+      blockedId: blockedId ?? this.blockedId,
+      blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
       blockedBy:
           blockedBy is _i2.Member? ? blockedBy : this.blockedBy?.copyWith(),

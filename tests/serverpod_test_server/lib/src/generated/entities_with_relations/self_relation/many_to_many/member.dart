@@ -12,12 +12,14 @@ import '../../../protocol.dart' as _i2;
 abstract class Member extends _i1.TableRow {
   Member._({
     int? id,
+    required this.name,
     this.blocking,
     this.blockedBy,
   }) : super(id);
 
   factory Member({
     int? id,
+    required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   }) = _MemberImpl;
@@ -28,6 +30,7 @@ abstract class Member extends _i1.TableRow {
   ) {
     return Member(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      name: serializationManager.deserialize<String>(jsonSerialization['name']),
       blocking: serializationManager
           .deserialize<List<_i2.Blocking>?>(jsonSerialization['blocking']),
       blockedBy: serializationManager
@@ -39,6 +42,8 @@ abstract class Member extends _i1.TableRow {
 
   static const db = MemberRepository._();
 
+  String name;
+
   List<_i2.Blocking>? blocking;
 
   List<_i2.Blocking>? blockedBy;
@@ -48,6 +53,7 @@ abstract class Member extends _i1.TableRow {
 
   Member copyWith({
     int? id,
+    String? name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   });
@@ -55,6 +61,7 @@ abstract class Member extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': name,
       'blocking': blocking,
       'blockedBy': blockedBy,
     };
@@ -63,13 +70,17 @@ abstract class Member extends _i1.TableRow {
   @override
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
-    return {'id': id};
+    return {
+      'id': id,
+      'name': name,
+    };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
       'id': id,
+      'name': name,
       'blocking': blocking,
       'blockedBy': blockedBy,
     };
@@ -83,6 +94,9 @@ abstract class Member extends _i1.TableRow {
     switch (columnName) {
       case 'id':
         id = value;
+        return;
+      case 'name':
+        name = value;
         return;
       default:
         throw UnimplementedError();
@@ -250,10 +264,12 @@ class _Undefined {}
 class _MemberImpl extends Member {
   _MemberImpl({
     int? id,
+    required String name,
     List<_i2.Blocking>? blocking,
     List<_i2.Blocking>? blockedBy,
   }) : super._(
           id: id,
+          name: name,
           blocking: blocking,
           blockedBy: blockedBy,
         );
@@ -261,11 +277,13 @@ class _MemberImpl extends Member {
   @override
   Member copyWith({
     Object? id = _Undefined,
+    String? name,
     Object? blocking = _Undefined,
     Object? blockedBy = _Undefined,
   }) {
     return Member(
       id: id is int? ? id : this.id,
+      name: name ?? this.name,
       blocking:
           blocking is List<_i2.Blocking>? ? blocking : this.blocking?.clone(),
       blockedBy: blockedBy is List<_i2.Blocking>?
@@ -276,7 +294,14 @@ class _MemberImpl extends Member {
 }
 
 class MemberTable extends _i1.Table {
-  MemberTable({super.tableRelation}) : super(tableName: 'member') {}
+  MemberTable({super.tableRelation}) : super(tableName: 'member') {
+    name = _i1.ColumnString(
+      'name',
+      this,
+    );
+  }
+
+  late final _i1.ColumnString name;
 
   _i2.BlockingTable? ___blocking;
 
@@ -291,7 +316,7 @@ class MemberTable extends _i1.Table {
     ___blocking = _i1.createRelationTable(
       relationFieldName: '__blocking',
       field: Member.t.id,
-      foreignField: _i2.Blocking.t.blockingId,
+      foreignField: _i2.Blocking.t.blockedById,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.BlockingTable(tableRelation: foreignTableRelation),
@@ -304,7 +329,7 @@ class MemberTable extends _i1.Table {
     ___blockedBy = _i1.createRelationTable(
       relationFieldName: '__blockedBy',
       field: Member.t.id,
-      foreignField: _i2.Blocking.t.blockedById,
+      foreignField: _i2.Blocking.t.blockedId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.BlockingTable(tableRelation: foreignTableRelation),
@@ -317,7 +342,7 @@ class MemberTable extends _i1.Table {
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'blocking',
       field: Member.t.id,
-      foreignField: _i2.Blocking.t.blockingId,
+      foreignField: _i2.Blocking.t.blockedById,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.BlockingTable(tableRelation: foreignTableRelation),
@@ -335,7 +360,7 @@ class MemberTable extends _i1.Table {
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'blockedBy',
       field: Member.t.id,
-      foreignField: _i2.Blocking.t.blockedById,
+      foreignField: _i2.Blocking.t.blockedId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
           _i2.BlockingTable(tableRelation: foreignTableRelation),
@@ -349,7 +374,10 @@ class MemberTable extends _i1.Table {
   }
 
   @override
-  List<_i1.Column> get columns => [id];
+  List<_i1.Column> get columns => [
+        id,
+        name,
+      ];
 
   @override
   _i1.Table? getRelationTable(String relationField) {
@@ -579,10 +607,10 @@ class MemberAttachRepository {
     }
 
     var $blocking =
-        blocking.map((e) => e.copyWith(blockingId: member.id)).toList();
+        blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
     await session.dbNext.update<_i2.Blocking>(
       $blocking,
-      columns: [_i2.Blocking.t.blockingId],
+      columns: [_i2.Blocking.t.blockedById],
     );
   }
 
@@ -599,10 +627,10 @@ class MemberAttachRepository {
     }
 
     var $blocking =
-        blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
+        blocking.map((e) => e.copyWith(blockedId: member.id)).toList();
     await session.dbNext.update<_i2.Blocking>(
       $blocking,
-      columns: [_i2.Blocking.t.blockedById],
+      columns: [_i2.Blocking.t.blockedId],
     );
   }
 }
@@ -622,10 +650,10 @@ class MemberAttachRowRepository {
       throw ArgumentError.notNull('member.id');
     }
 
-    var $blocking = blocking.copyWith(blockingId: member.id);
+    var $blocking = blocking.copyWith(blockedById: member.id);
     await session.dbNext.updateRow<_i2.Blocking>(
       $blocking,
-      columns: [_i2.Blocking.t.blockingId],
+      columns: [_i2.Blocking.t.blockedById],
     );
   }
 
@@ -641,10 +669,10 @@ class MemberAttachRowRepository {
       throw ArgumentError.notNull('member.id');
     }
 
-    var $blocking = blocking.copyWith(blockedById: member.id);
+    var $blocking = blocking.copyWith(blockedId: member.id);
     await session.dbNext.updateRow<_i2.Blocking>(
       $blocking,
-      columns: [_i2.Blocking.t.blockedById],
+      columns: [_i2.Blocking.t.blockedId],
     );
   }
 }

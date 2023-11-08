@@ -252,7 +252,7 @@ class Protocol extends _i1.SerializationManagerServer {
             columnDefault: 'nextval(\'blocking_id_seq\'::regclass)',
           ),
           _i2.ColumnDefinition(
-            name: 'blockingId',
+            name: 'blockedId',
             columnType: _i2.ColumnType.integer,
             isNullable: false,
             dartType: 'int',
@@ -267,7 +267,7 @@ class Protocol extends _i1.SerializationManagerServer {
         foreignKeys: [
           _i2.ForeignKeyDefinition(
             constraintName: 'blocking_fk_0',
-            columns: ['blockingId'],
+            columns: ['blockedId'],
             referenceTable: 'member',
             referenceTableSchema: 'public',
             referenceColumns: ['id'],
@@ -306,7 +306,7 @@ class Protocol extends _i1.SerializationManagerServer {
             elements: [
               _i2.IndexElementDefinition(
                 type: _i2.IndexElementDefinitionType.column,
-                definition: 'blockingId',
+                definition: 'blockedId',
               ),
               _i2.IndexElementDefinition(
                 type: _i2.IndexElementDefinitionType.column,
@@ -764,7 +764,13 @@ class Protocol extends _i1.SerializationManagerServer {
             isNullable: false,
             dartType: 'int?',
             columnDefault: 'nextval(\'member_id_seq\'::regclass)',
-          )
+          ),
+          _i2.ColumnDefinition(
+            name: 'name',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
         ],
         foreignKeys: [],
         indexes: [
