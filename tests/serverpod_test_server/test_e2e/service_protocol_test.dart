@@ -1,9 +1,9 @@
 import 'package:serverpod_service_client/serverpod_service_client.dart'
     as service;
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod_test_server/test_util/service_key_manager.dart';
 import 'package:test/test.dart';
-
-import 'config.dart';
 
 Future<void> setupTestData(Client client) async {
   await client.basicDatabaseLegacy.deleteAllSimpleTestData();
@@ -589,24 +589,6 @@ extension on service.IndexDefinition {
       expect(elements[i].definition, definition.elements[i].definition);
     }
   }
-}
-
-class ServiceKeyManager extends AuthenticationKeyManager {
-  final String name;
-  final String serviceSecret;
-
-  ServiceKeyManager(this.name, this.serviceSecret);
-
-  @override
-  Future<String> get() async {
-    return 'name:$serviceSecret';
-  }
-
-  @override
-  Future<void> put(String key) async {}
-
-  @override
-  Future<void> remove() async {}
 }
 
 List<List<bool>> performIteration(List<List<bool>> board) {

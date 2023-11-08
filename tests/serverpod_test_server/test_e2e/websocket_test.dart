@@ -1,10 +1,10 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
 import 'authentication_test.dart';
-import 'config.dart';
 
 void main() {
   var client = Client(
