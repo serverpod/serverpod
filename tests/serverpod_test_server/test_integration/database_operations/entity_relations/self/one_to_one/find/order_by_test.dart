@@ -63,7 +63,8 @@ void main() async {
 
       expect(postsFetched[0].content, '2 Hello world!'); // next.next is 1
       expect(postsFetched[1].content, '1 Hello again!'); // next.next is null
-      expect(postsFetched[2].content, '3 Hello a third time!'); // next.next is null
+      expect(postsFetched[2].content,
+          '3 Hello a third time!'); // next.next is null
     });
   });
 }
