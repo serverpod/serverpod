@@ -39,17 +39,20 @@ class EntityDependencyResolver {
   static void _resolveEnumType(
       SerializableEntityFieldDefinition fieldDefinition,
       List<SerializableEntityDefinition> entityDefinitions) {
-    if (fieldDefinition.type.url == 'protocol') {
-      var enumDefinitionList = entityDefinitions
-          .whereType<EnumDefinition>()
-          .where((e) => e.className == fieldDefinition.type.className)
-          .toList();
-      if (enumDefinitionList.isNotEmpty) {
-        fieldDefinition.type.isEnum = true;
-        fieldDefinition.type.enumSerializedAsName =
-            enumDefinitionList.first.serializedAsName;
-      }
+    if (_isEnumField(fieldDefinition, entityDefinitions)) {
+      fieldDefinition.type.isEnum = true;
     }
+  }
+
+  static bool _isEnumField(
+    SerializableEntityFieldDefinition fieldDefinition,
+    List<SerializableEntityDefinition> entityDefinitions,
+  ) {
+    var containsEnumDefinition = entityDefinitions
+        .whereType<EnumDefinition>()
+        .any((e) => e.className == fieldDefinition.type.className);
+
+    return fieldDefinition.type.url == 'protocol' && containsEnumDefinition;
   }
 
   static void _resolveObjectRelationReference(

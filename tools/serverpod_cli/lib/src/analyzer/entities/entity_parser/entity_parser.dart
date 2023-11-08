@@ -70,15 +70,15 @@ class EntityParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
-    var serializedAsName = _parseSerializedAs(documentContents);
+    var serializeAs = _parseSerializedAs(documentContents);
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
-      serializedAsName: serializedAsName,
       values: values,
+      serializeAs: serializeAs,
       documentation: enumDocumentation,
       subDirParts: protocolSource.protocolRootPathParts,
       serverOnly: serverOnly,
@@ -92,16 +92,14 @@ class EntityParser {
     return serverOnly;
   }
 
-  static bool _parseSerializedAs(YamlMap documentContents) {
-    var serializedAs = documentContents.nodes[Keyword.serializedAs]?.value;
-    if (serializedAs is! String ||
-        (serializedAs != Keyword.name && serializedAs != Keyword.index)) {
-      // If no `serializedAs` is specified, default to serializing as index.
-      // TODO: For Serverpod 2.0, change the default to `true`.
-      return false;
-    }
+  static SerializeEnumAs _parseSerializedAs(YamlMap documentContents) {
+    var serializedAs = documentContents.nodes[Keyword.serializeAs]?.value;
 
-    return serializedAs == Keyword.name;
+    return convertToEnum<SerializeEnumAs>(
+      value: serializedAs,
+      enumDefault: SerializeEnumAs.int,
+      enumValues: SerializeEnumAs.values,
+    );
   }
 
   static String? _parseTableName(YamlMap documentContents) {

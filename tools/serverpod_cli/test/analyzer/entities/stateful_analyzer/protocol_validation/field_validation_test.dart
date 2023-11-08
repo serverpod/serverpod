@@ -156,7 +156,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The "fields" property is not allowed for enum type. Valid keys are {enum, serverOnly, values}.',
+        'The "fields" property is not allowed for enum type. Valid keys are {enum, serializeAs, serverOnly, values}.',
       );
     });
   });

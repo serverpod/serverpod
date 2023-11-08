@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
@@ -11,6 +12,11 @@ class EnumYamlDefinition {
         Keyword.enumType,
         isRequired: true,
         valueRestriction: restrictions.validateClassName,
+      ),
+      ValidateNode(
+        Keyword.serializeAs,
+        valueRestriction:
+            EnumValueRestriction(enums: SerializeEnumAs.values).validate,
       ),
       ValidateNode(
         Keyword.serverOnly,

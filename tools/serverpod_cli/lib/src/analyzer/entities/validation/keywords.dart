@@ -3,6 +3,8 @@ class Keyword {
   static const String exceptionType = 'exception';
   static const String enumType = 'enum';
 
+  static const String serializeAs = 'serializeAs';
+
   static const String serverOnly = 'serverOnly';
   static const String table = 'table';
   static const String fields = 'fields';
@@ -10,8 +12,6 @@ class Keyword {
   static const String values = 'values';
 
   static const String type = 'type';
-  static const String serializedAs = 'serializedAs';
-  static const String index = 'index';
   static const String unique = 'unique';
   static const String parent = 'parent';
   static const String relation = 'relation';

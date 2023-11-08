@@ -9,10 +9,12 @@ List<String> convertIndexList(String stringifiedFields) {
 }
 
 T convertToEnum<T extends Enum>({
-  required String value,
+  required String? value,
   required T enumDefault,
   required List<T> enumValues,
 }) {
+  if (value == null) return enumDefault;
+
   return enumValues.firstWhere(
     (v) => v.name.toLowerCase() == value.toLowerCase(),
     orElse: () => enumDefault,
