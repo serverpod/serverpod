@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- Class Address as table address
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "address" (
     "id" serial PRIMARY KEY,
@@ -10,7 +10,7 @@ CREATE TABLE "address" (
 );
 
 --
--- Class Arena as table arena
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "arena" (
     "id" serial PRIMARY KEY,
@@ -18,19 +18,19 @@ CREATE TABLE "arena" (
 );
 
 --
--- Class Blocking as table blocking
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "blocking" (
     "id" serial PRIMARY KEY,
-    "blockingId" integer NOT NULL,
+    "blockedId" integer NOT NULL,
     "blockedById" integer NOT NULL
 );
 
 -- Indexes
-CREATE UNIQUE INDEX "blocking_blocked_unique_idx" ON "blocking" USING btree ("blockingId", "blockedById");
+CREATE UNIQUE INDEX "blocking_blocked_unique_idx" ON "blocking" USING btree ("blockedId", "blockedById");
 
 --
--- Class Cat as table cat
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "cat" (
     "id" serial PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE "cat" (
 );
 
 --
--- Class Citizen as table citizen
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "citizen" (
     "id" serial PRIMARY KEY,
@@ -49,7 +49,7 @@ CREATE TABLE "citizen" (
 );
 
 --
--- Class City as table city
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "city" (
     "id" serial PRIMARY KEY,
@@ -57,7 +57,7 @@ CREATE TABLE "city" (
 );
 
 --
--- Class Comment as table comment
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "comment" (
     "id" serial PRIMARY KEY,
@@ -66,7 +66,7 @@ CREATE TABLE "comment" (
 );
 
 --
--- Class Company as table company
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "company" (
     "id" serial PRIMARY KEY,
@@ -75,7 +75,7 @@ CREATE TABLE "company" (
 );
 
 --
--- Class Course as table course
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "course" (
     "id" serial PRIMARY KEY,
@@ -83,7 +83,7 @@ CREATE TABLE "course" (
 );
 
 --
--- Class Customer as table customer
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "customer" (
     "id" serial PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE "customer" (
 );
 
 --
--- Class Enrollment as table enrollment
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "enrollment" (
     "id" serial PRIMARY KEY,
@@ -103,14 +103,15 @@ CREATE TABLE "enrollment" (
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
 
 --
--- Class Member as table member
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "member" (
-    "id" serial PRIMARY KEY
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL
 );
 
 --
--- Class ObjectFieldScopes as table object_field_scopes
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_field_scopes" (
     "id" serial PRIMARY KEY,
@@ -119,7 +120,7 @@ CREATE TABLE "object_field_scopes" (
 );
 
 --
--- Class ObjectWithByteData as table object_with_bytedata
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_bytedata" (
     "id" serial PRIMARY KEY,
@@ -127,7 +128,7 @@ CREATE TABLE "object_with_bytedata" (
 );
 
 --
--- Class ObjectWithDuration as table object_with_duration
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_duration" (
     "id" serial PRIMARY KEY,
@@ -135,7 +136,7 @@ CREATE TABLE "object_with_duration" (
 );
 
 --
--- Class ObjectWithEnum as table object_with_enum
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_enum" (
     "id" serial PRIMARY KEY,
@@ -147,7 +148,7 @@ CREATE TABLE "object_with_enum" (
 );
 
 --
--- Class ObjectWithIndex as table object_with_index
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_index" (
     "id" serial PRIMARY KEY,
@@ -159,7 +160,7 @@ CREATE TABLE "object_with_index" (
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
 
 --
--- Class ObjectWithObject as table object_with_object
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_object" (
     "id" serial PRIMARY KEY,
@@ -172,7 +173,7 @@ CREATE TABLE "object_with_object" (
 );
 
 --
--- Class ObjectWithParent as table object_with_parent
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_parent" (
     "id" serial PRIMARY KEY,
@@ -180,7 +181,7 @@ CREATE TABLE "object_with_parent" (
 );
 
 --
--- Class ObjectWithSelfParent as table object_with_self_parent
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_self_parent" (
     "id" serial PRIMARY KEY,
@@ -188,7 +189,7 @@ CREATE TABLE "object_with_self_parent" (
 );
 
 --
--- Class ObjectWithUuid as table object_with_uuid
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "object_with_uuid" (
     "id" serial PRIMARY KEY,
@@ -197,7 +198,7 @@ CREATE TABLE "object_with_uuid" (
 );
 
 --
--- Class Order as table order
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "order" (
     "id" serial PRIMARY KEY,
@@ -206,7 +207,7 @@ CREATE TABLE "order" (
 );
 
 --
--- Class Organization as table organization
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "organization" (
     "id" serial PRIMARY KEY,
@@ -215,7 +216,7 @@ CREATE TABLE "organization" (
 );
 
 --
--- Class Person as table person
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "person" (
     "id" serial PRIMARY KEY,
@@ -225,7 +226,7 @@ CREATE TABLE "person" (
 );
 
 --
--- Class Player as table player
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "player" (
     "id" serial PRIMARY KEY,
@@ -234,7 +235,7 @@ CREATE TABLE "player" (
 );
 
 --
--- Class Post as table post
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "post" (
     "id" serial PRIMARY KEY,
@@ -246,7 +247,7 @@ CREATE TABLE "post" (
 CREATE UNIQUE INDEX "next_unique_idx" ON "post" USING btree ("nextId");
 
 --
--- Class RelatedUniqueData as table related_unique_data
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "related_unique_data" (
     "id" serial PRIMARY KEY,
@@ -255,7 +256,7 @@ CREATE TABLE "related_unique_data" (
 );
 
 --
--- Class SimpleData as table simple_data
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "simple_data" (
     "id" serial PRIMARY KEY,
@@ -263,7 +264,7 @@ CREATE TABLE "simple_data" (
 );
 
 --
--- Class SimpleDateTime as table simple_date_time
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "simple_date_time" (
     "id" serial PRIMARY KEY,
@@ -271,7 +272,7 @@ CREATE TABLE "simple_date_time" (
 );
 
 --
--- Class Student as table student
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "student" (
     "id" serial PRIMARY KEY,
@@ -279,7 +280,7 @@ CREATE TABLE "student" (
 );
 
 --
--- Class Team as table team
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "team" (
     "id" serial PRIMARY KEY,
@@ -288,7 +289,7 @@ CREATE TABLE "team" (
 );
 
 --
--- Class Town as table town
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "town" (
     "id" serial PRIMARY KEY,
@@ -297,7 +298,7 @@ CREATE TABLE "town" (
 );
 
 --
--- Class Types as table types
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "types" (
     "id" serial PRIMARY KEY,
@@ -313,7 +314,7 @@ CREATE TABLE "types" (
 );
 
 --
--- Class UniqueData as table unique_data
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "unique_data" (
     "id" serial PRIMARY KEY,
@@ -325,7 +326,7 @@ CREATE TABLE "unique_data" (
 CREATE UNIQUE INDEX "email_index_idx" ON "unique_data" USING btree ("email");
 
 --
--- Foreign relations for "address" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "address"
     ADD CONSTRAINT "address_fk_0"
@@ -335,11 +336,11 @@ ALTER TABLE ONLY "address"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "blocking" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "blocking"
     ADD CONSTRAINT "blocking_fk_0"
-    FOREIGN KEY("blockingId")
+    FOREIGN KEY("blockedId")
     REFERENCES "member"("id")
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
@@ -351,7 +352,7 @@ ALTER TABLE ONLY "blocking"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "cat" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "cat"
     ADD CONSTRAINT "cat_fk_0"
@@ -361,7 +362,7 @@ ALTER TABLE ONLY "cat"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "citizen" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
@@ -377,7 +378,7 @@ ALTER TABLE ONLY "citizen"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "comment" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "comment"
     ADD CONSTRAINT "comment_fk_0"
@@ -387,7 +388,7 @@ ALTER TABLE ONLY "comment"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "company" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
@@ -397,7 +398,7 @@ ALTER TABLE ONLY "company"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "enrollment" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "enrollment"
     ADD CONSTRAINT "enrollment_fk_0"
@@ -413,7 +414,7 @@ ALTER TABLE ONLY "enrollment"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "object_with_parent" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "object_with_parent"
     ADD CONSTRAINT "object_with_parent_fk_0"
@@ -423,7 +424,7 @@ ALTER TABLE ONLY "object_with_parent"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "object_with_self_parent" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "object_with_self_parent"
     ADD CONSTRAINT "object_with_self_parent_fk_0"
@@ -433,7 +434,7 @@ ALTER TABLE ONLY "object_with_self_parent"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "order" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "order"
     ADD CONSTRAINT "order_fk_0"
@@ -443,7 +444,7 @@ ALTER TABLE ONLY "order"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "organization" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "organization"
     ADD CONSTRAINT "organization_fk_0"
@@ -453,7 +454,7 @@ ALTER TABLE ONLY "organization"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "person" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_0"
@@ -469,7 +470,7 @@ ALTER TABLE ONLY "person"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "player" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "player"
     ADD CONSTRAINT "player_fk_0"
@@ -479,7 +480,7 @@ ALTER TABLE ONLY "player"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "post" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "post"
     ADD CONSTRAINT "post_fk_0"
@@ -489,7 +490,7 @@ ALTER TABLE ONLY "post"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "related_unique_data" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "related_unique_data"
     ADD CONSTRAINT "related_unique_data_fk_0"
@@ -499,7 +500,7 @@ ALTER TABLE ONLY "related_unique_data"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "team" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "team"
     ADD CONSTRAINT "team_fk_0"
@@ -509,7 +510,7 @@ ALTER TABLE ONLY "team"
     ON UPDATE NO ACTION;
 
 --
--- Foreign relations for "town" table
+-- ACTION CREATE FOREIGN KEY
 --
 ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
@@ -518,13 +519,14 @@ ALTER TABLE ONLY "town"
     ON DELETE CASCADE
     ON UPDATE NO ACTION;
 
+
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '20231108134232', 2, now())
+    VALUES ('serverpod_test', '20231108134303', 2, now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231108134232', "priority" = 2;
+    DO UPDATE SET "version" = '20231108134303', "priority" = 2;
 
 
 COMMIT;
