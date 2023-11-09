@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 class CreateMigrationCommand extends ServerpodCommand {
   static const runModes = <String>['development', 'staging', 'production'];

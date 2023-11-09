@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
-import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';

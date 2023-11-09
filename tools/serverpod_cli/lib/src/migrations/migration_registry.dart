@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_exceptions.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// The [MigrationRegistry] keeps track of which migrations have been run on
 /// the database.
