@@ -7,7 +7,7 @@ version: VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   serverpod: #--CONDITIONAL_COMMENT--#VERSION
@@ -16,7 +16,7 @@ dependencies:
     path: ../../serverpod_auth/serverpod_auth_server
   serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../../packages/serverpod_serialization/
-  http: ^0.13.5
+  http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   path: ^1.8.2
 

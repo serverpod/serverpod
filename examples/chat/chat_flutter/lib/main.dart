@@ -38,7 +38,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
 // The _SignInPage either displays a dialog for signing in or, if the user is
 // signed in, displays the _ConnectionPage.
 class _SignInPage extends StatefulWidget {
-  const _SignInPage({Key? key}) : super(key: key);
+  const _SignInPage();
 
   @override
   _SignInPageState createState() => _SignInPageState();
@@ -103,7 +103,7 @@ class _SignInPageState extends State<_SignInPage> {
 // if loading fails or if the connection to the server is broken, or the
 // main chat page.
 class _ConnectionPage extends StatefulWidget {
-  const _ConnectionPage({Key? key}) : super(key: key);
+  const _ConnectionPage();
 
   @override
   _ConnectionPageState createState() => _ConnectionPageState();

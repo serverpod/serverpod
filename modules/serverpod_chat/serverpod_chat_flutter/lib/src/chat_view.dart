@@ -24,11 +24,11 @@ class ChatView extends StatefulWidget {
 
   /// Creates a new [ChatView].
   const ChatView({
-    Key? key,
+    super.key,
     required this.controller,
     this.tileBuilder,
     this.leading,
-  }) : super(key: key);
+  });
 
   @override
   ChatViewState createState() => ChatViewState();

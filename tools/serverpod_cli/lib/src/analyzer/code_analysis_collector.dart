@@ -38,11 +38,11 @@ class SourceSpanSeverityException extends SourceSpanException {
   final List<SourceSpanTag>? tags;
 
   SourceSpanSeverityException(
-    String message,
-    SourceSpan? span, {
+    super.message,
+    super.span, {
     this.severity = SourceSpanSeverity.error,
     this.tags,
-  }) : super(message, span);
+  });
 
   @override
   String toString({Object? color}) {

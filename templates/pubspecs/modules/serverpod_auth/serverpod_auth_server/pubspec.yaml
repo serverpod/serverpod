@@ -7,7 +7,7 @@ version: VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   serverpod: #--CONDITIONAL_COMMENT--#VERSION
@@ -17,9 +17,9 @@ dependencies:
   crypto: ^3.0.2
   email_validator: ^2.1.17
   firebase_admin: ^0.2.0
-  googleapis: ^9.2.0
+  googleapis: ^11.0.0
   googleapis_auth: ^1.4.0
-  http: ^0.13.5
+  http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   jose: ^0.3.3
 

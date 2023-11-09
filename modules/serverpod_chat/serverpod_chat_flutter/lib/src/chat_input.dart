@@ -37,7 +37,7 @@ class ChatInput extends StatefulWidget {
 
   /// Creates a new [ChatInput] associated with a [controller].
   const ChatInput({
-    Key? key,
+    super.key,
     required this.controller,
     this.inputDecoration,
     this.boxDecoration,
@@ -47,7 +47,7 @@ class ChatInput extends StatefulWidget {
     this.iconSend = Icons.send,
     this.iconAttach = Icons.attach_file,
     this.enableAttachments = true,
-  }) : super(key: key);
+  });
 
   @override
   ChatInputState createState() => ChatInputState();
@@ -272,11 +272,10 @@ class _AttachmentTile extends StatelessWidget {
   final VoidCallback? onDelete;
 
   const _AttachmentTile({
-    Key? key,
     required this.fileName,
     this.loading = false,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
