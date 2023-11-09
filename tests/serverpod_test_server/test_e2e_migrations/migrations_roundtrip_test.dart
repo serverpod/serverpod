@@ -34,14 +34,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -77,14 +77,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -126,7 +126,7 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         isNot(0),
         reason: 'Should fail to create migration, exit code was 0.',
       );
@@ -159,14 +159,14 @@ void main() {
         force: true,
       );
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -205,14 +205,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -266,14 +266,14 @@ void main() {
         force: true,
       );
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -322,7 +322,7 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         isNot(0),
         reason: 'Should fail to create migration, exit code was 0.',
       );
@@ -351,7 +351,7 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         isNot(0),
         reason: 'Should fail to create migration, exit code was 0.',
       );
@@ -384,14 +384,14 @@ void main() {
         force: true,
       );
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -442,14 +442,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -512,14 +512,14 @@ void main() {
         force: true,
       );
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -579,7 +579,7 @@ void main() {
         scenario,
       );
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         isNot(0),
         reason: 'Should fail to create migration, exit code was 0.',
       );
@@ -608,14 +608,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -666,14 +666,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -724,14 +724,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
@@ -781,14 +781,14 @@ void main() {
 
       var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
-        await createMigrationExitCode,
+        createMigrationExitCode,
         0,
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
       var applyMigrationExitCode = await _runApplyMigrations();
       expect(
-        await applyMigrationExitCode,
+        applyMigrationExitCode,
         0,
         reason: 'Failed to apply migration, exit code was not 0.',
       );
