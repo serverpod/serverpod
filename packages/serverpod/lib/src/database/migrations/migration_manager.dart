@@ -5,10 +5,10 @@ import 'package:serverpod/protocol.dart';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod/src/database/migrations/migrations.dart';
 
-import '../generated/protocol.dart' as internal;
-import 'extensions.dart';
+import '../../generated/protocol.dart' as internal;
+import '../extensions.dart';
 
 final SerializationManager _serializationManager = internal.Protocol();
 

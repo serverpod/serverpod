@@ -5,7 +5,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/migration_manager.dart';
+import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
