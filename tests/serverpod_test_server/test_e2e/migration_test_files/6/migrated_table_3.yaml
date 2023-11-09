@@ -1,8 +1,0 @@
-class: MigratedTable3
-fields:
-  aDateTime: DateTime
-  parent: int, relation(parent=migrated_table)
-indexes:
-  migrated_table_3_idx:
-    fields: aDateTime
-    unique: true

@@ -1,6 +1,5 @@
 import 'package:http/http.dart' as http;
-
-import 'config.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 
 import 'package:test/test.dart';
 

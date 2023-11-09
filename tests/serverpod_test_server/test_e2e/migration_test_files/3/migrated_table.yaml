@@ -1,6 +1,0 @@
-class: MigratedTable
-table: migrated_table
-fields:
-  anInt: int
-  aString: String?
-  aStringWithoutDefault: String
