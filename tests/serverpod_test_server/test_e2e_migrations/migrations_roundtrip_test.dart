@@ -19,7 +19,7 @@ void main() {
     var scenario = 'add-table';
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -62,7 +62,8 @@ void main() {
     var scenario = 'add-multiple-tables';
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql:
+            'DROP TABLE IF EXISTS migrated_table, migrated_table_2, migrated_table_3;',
         serviceClient: serviceClient,
       );
     });
@@ -113,7 +114,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -141,7 +142,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -191,7 +192,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -248,7 +249,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -309,7 +310,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -338,7 +339,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -366,7 +367,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -427,7 +428,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -494,7 +495,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -564,7 +565,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -594,7 +595,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -651,7 +652,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -709,7 +710,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -766,7 +767,7 @@ void main() {
 
     tearDown(() async {
       await _migrationTestCleanup(
-        scenario: scenario,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
     });
@@ -817,12 +818,12 @@ void main() {
 }
 
 Future<void> _migrationTestCleanup({
-  required String scenario,
+  required String resetSql,
   required Client serviceClient,
 }) async {
   _removeAllTaggedMigrations();
   _removeMigrationTestProtocolFolder();
-  await _resetDatabase(scenario: scenario, serviceClient: serviceClient);
+  await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
   await _setDatabaseMigrationToLatest(serviceClient: serviceClient);
 }
 
@@ -968,22 +969,10 @@ INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp"
 }
 
 Future<void> _resetDatabase({
-  required String scenario,
   required Client serviceClient,
+  required String resetSql,
 }) async {
-  var teardownSql = File(path.join(
-    Directory.current.path,
-    'test_e2e_migrations',
-    'test_assets',
-    scenario,
-    'database_reset',
-    'reset.sql',
-  ));
-
-  assert(teardownSql.existsSync(), 'Expected teardown SQL file to exist.');
-
-  var sql = teardownSql.readAsStringSync();
-  await serviceClient.insights.executeSql(sql);
+  await serviceClient.insights.executeSql(resetSql);
 }
 
 enum AssetType {

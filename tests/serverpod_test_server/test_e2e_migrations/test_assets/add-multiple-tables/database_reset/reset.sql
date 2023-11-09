@@ -1,1 +1,0 @@
-DROP TABLE IF EXISTS migrated_table, migrated_table_2, migrated_table_3;
