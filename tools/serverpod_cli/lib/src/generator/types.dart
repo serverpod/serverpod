@@ -28,7 +28,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  SerializeEnumAs? serializeEnumAs;
+  EnumSerialization? serializeEnumAs;
 
   TypeDefinition({
     required this.className,
@@ -182,9 +182,9 @@ class TypeDefinition {
     // TODO: add all suported types here
     if (isEnumType) {
       switch (serializeEnumAs) {
-        case SerializeEnumAs.string:
+        case EnumSerialization.byName:
           return 'text';
-        case SerializeEnumAs.int:
+        case EnumSerialization.byIndex:
           return 'integer';
         case null:
           throw StateError(

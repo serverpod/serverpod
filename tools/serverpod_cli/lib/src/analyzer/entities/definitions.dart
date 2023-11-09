@@ -193,7 +193,7 @@ class SerializableEntityIndexDefinition {
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableEntityDefinition {
   /// The type of serialization this enum should use.
-  final SerializeEnumAs serializeAs;
+  final EnumSerialization serializeAs;
 
   /// All the values of the enum.
   /// This also contains possible documentation for them.
@@ -225,11 +225,6 @@ class ProtocolEnumValueDefinition {
 
   /// Create a new [ProtocolEnumValueDefinition].
   ProtocolEnumValueDefinition(this.name, [this.documentation]);
-}
-
-enum SerializeEnumAs {
-  string,
-  int,
 }
 
 abstract class RelationDefinition {

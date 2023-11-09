@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class TypeDefinitionBuilder {
   String _className;
@@ -9,7 +9,7 @@ class TypeDefinitionBuilder {
   String? _url;
   DartType? _dartType;
   bool _customClass;
-  SerializeEnumAs? _serializeEnumAs;
+  EnumSerialization? _serializeEnumAs;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -69,7 +69,7 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withEnumSerializeAs(SerializeEnumAs serializeEnumAs) {
+  TypeDefinitionBuilder withEnumSerializeAs(EnumSerialization serializeEnumAs) {
     _serializeEnumAs = serializeEnumAs;
     return this;
   }

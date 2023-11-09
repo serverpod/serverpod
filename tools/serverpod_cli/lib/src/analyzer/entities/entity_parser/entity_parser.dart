@@ -92,13 +92,13 @@ class EntityParser {
     return serverOnly;
   }
 
-  static SerializeEnumAs _parseSerializedAs(YamlMap documentContents) {
-    var serializedAs = documentContents.nodes[Keyword.serializeAs]?.value;
+  static EnumSerialization _parseSerializedAs(YamlMap documentContents) {
+    var serializedAs = documentContents.nodes[Keyword.serialized]?.value;
 
-    return convertToEnum<SerializeEnumAs>(
+    return convertToEnum<EnumSerialization>(
       value: serializedAs,
-      enumDefault: SerializeEnumAs.int,
-      enumValues: SerializeEnumAs.values,
+      enumDefault: EnumSerialization.byIndex,
+      enumValues: EnumSerialization.values,
     );
   }
 

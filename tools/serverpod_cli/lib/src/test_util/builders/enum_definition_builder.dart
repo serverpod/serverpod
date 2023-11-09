@@ -1,10 +1,11 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class EnumDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
-  SerializeEnumAs _serializeAs;
+  EnumSerialization _serializeAs;
   List<String> _subDirParts;
   bool _serverOnly;
 
@@ -16,7 +17,7 @@ class EnumDefinitionBuilder {
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         // TODO: For Serverpod 2.0, change the default to `true`.
-        _serializeAs = SerializeEnumAs.int,
+        _serializeAs = EnumSerialization.byIndex,
         _subDirParts = [],
         _serverOnly = false,
         _values = [
@@ -64,7 +65,7 @@ class EnumDefinitionBuilder {
     return this;
   }
 
-  EnumDefinitionBuilder withSerializeAs(SerializeEnumAs serializeAs) {
+  EnumDefinitionBuilder withSerializeAs(EnumSerialization serializeAs) {
     _serializeAs = serializeAs;
     return this;
   }
