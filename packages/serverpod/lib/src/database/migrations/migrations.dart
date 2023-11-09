@@ -10,22 +10,18 @@ class MigrationVersions {
   static const _fileNameRegistryJson = 'migration_registry.json';
 
   /// Returns all migration versions available for the module.
+  /// throws [MigrationRegistryLoadException] if the registry file is corrupt.
   static List<String> listVersions({
     Directory? directory,
     required String module,
   }) {
     directory ??= defaultMigrationsDirectory;
-    try {
-      var migrationRegistry = load(
-        migrationsDirectory: directory,
-        module: module,
-      );
+    var migrationRegistry = load(
+      migrationsDirectory: directory,
+      module: module,
+    );
 
-      return migrationRegistry?.migrations ?? [];
-    } on MigrationRegistryLoadException catch (_) {
-      // TODO: add error handling
-      return [];
-    }
+    return migrationRegistry?.migrations ?? [];
   }
 
   /// Provides a list of modules with migrations available.
@@ -60,9 +56,12 @@ class MigrationVersions {
     required Directory migrationsDirectory,
     required String module,
   }) {
-    var registryFile = File(path.join(
+    var moduleDirectory = Directory(path.join(
       migrationsDirectory.path,
       module,
+    ));
+    var registryFile = File(path.join(
+      moduleDirectory.path,
       _fileNameRegistryJson,
     ));
 
@@ -79,7 +78,7 @@ class MigrationVersions {
     } catch (e) {
       throw MigrationRegistryLoadException(
         exception: e.toString(),
-        directoryPath: migrationsDirectory.path,
+        directoryPath: moduleDirectory.path,
       );
     }
   }

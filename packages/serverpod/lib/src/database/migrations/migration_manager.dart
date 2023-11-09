@@ -6,6 +6,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart' as internal;
 import '../extensions.dart';
@@ -64,10 +65,24 @@ class MigrationManager {
     // Get available migrations
     var migrationModules = MigrationVersions.listAvailableModules();
 
+    var warnings = <String>[];
     for (var module in migrationModules) {
-      availableVersions[module] = MigrationVersions.listVersions(
-        module: module,
-      );
+      try {
+        availableVersions[module] =
+            MigrationVersions.listVersions(module: module);
+      } on MigrationRegistryLoadException catch (e) {
+        warnings.add(
+            'Failed to load migration registry from ${e.directoryPath}: ${e.toString()}');
+      }
+    }
+
+    if (warnings.isNotEmpty) {
+      stderr.writeln(
+          'WARNING: The following module migration registries could not be '
+          'loaded:');
+      for (var warning in warnings) {
+        stderr.writeln(' - $warning');
+      }
     }
   }
 
