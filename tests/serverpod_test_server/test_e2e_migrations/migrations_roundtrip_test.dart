@@ -16,7 +16,6 @@ void main() {
   );
 
   group('Given new protocol entity with table', () {
-    var scenario = 'add-table';
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -27,12 +26,21 @@ void main() {
     test(
         'when creating and applying migration then database contains new table.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tableName = 'migrated_table';
+      var tag = 'add-table';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $tableName 
+fields:
+  anInt: int
+'''
+      };
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -46,20 +54,18 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var expectedAddedTable = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(expectedAddedTable),
+        contains(tableName),
         reason: 'Could not find migration table in live table definitions.',
       );
     });
   });
 
   group('Given multiple new protocol entities with table', () {
-    var scenario = 'add-multiple-tables';
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql:
@@ -71,12 +77,37 @@ void main() {
     test(
         'when creating and applying migration then database contains new tables.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-multiple-tables';
+      var tables = [
+        'migrated_table',
+        'migrated_table_2',
+        'migrated_table_3',
+      ];
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: ${tables[0]}
+fields:
+  anInt: int
+''',
+        'migrated_table_2': '''
+class: MigratedTable2
+table: ${tables[1]} 
+fields:
+  aBool: bool
+''',
+        'migrated_table_3': '''
+class: MigratedTable3
+table: ${tables[2]} 
+fields:
+  aString: String
+'''
+      };
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -90,28 +121,18 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var expectedNewTables = [
-        'migrated_table',
-        'migrated_table_2',
-        'migrated_table_3',
-      ];
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        containsAll(expectedNewTables),
+        containsAll(tables),
         reason: 'Could not find the new tables in live table definitions.',
       );
     });
   });
 
   group('Given protocol entity with table that is removed', () {
-    var scenario = 'drop-table';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -120,12 +141,23 @@ void main() {
     });
 
     test('when creating migration then creating migration fails.', () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
+      var tag = 'drop-table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: migrated_table
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+
+      var targetStateProtocols = <String, String>{};
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
       );
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
       expect(
         createMigrationExitCode,
         isNot(0),
@@ -135,11 +167,6 @@ void main() {
   });
 
   group('Given protocol entity with table that is removed', () {
-    var scenario = 'drop-table';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -150,13 +177,22 @@ void main() {
     test(
         'when creating migration using --force and applying it then table is removed from database.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-table';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(
-        scenario,
+      var targetStateProtocols = <String, String>{};
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
         force: true,
       );
       expect(
@@ -172,24 +208,18 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var expectedRemovedTable = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        isNot(contains(expectedRemovedTable)),
+        isNot(contains(table)),
         reason: 'Could still find migration table in live table definitions.',
       );
     });
   });
 
   group('Given existing protocol entity with added nullable column', () {
-    var scenario = 'add-nullable-column';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -199,12 +229,32 @@ void main() {
 
     test('when creating and applying migration then contains new column.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-nullable-column';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var addedColumn = 'addedColumn';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $addedColumn: String?
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -218,35 +268,28 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedColumnName = 'addedColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        contains(expectedColumnName),
+        contains(addedColumn),
         reason: 'Could not find added column in migrated table columns.',
       );
     });
   });
 
   group('Given existing protocol entity with removed column', () {
-    var scenario = 'drop-column';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -257,13 +300,31 @@ void main() {
     test(
         'when creating migration using --force and applying it then table is removed from database.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-column';
+      var table = 'migrated_table';
+      var columnToRemove = 'columnToRemove';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToRemove: String
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(
-        scenario,
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
         force: true,
       );
       expect(
@@ -279,35 +340,28 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedRemovedColumn = 'columnToRemove';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        isNot(contains(expectedRemovedColumn)),
+        isNot(contains(columnToRemove)),
         reason: 'Could still find removed column in migrated table columns.',
       );
     });
   });
 
   group('Given existing protocol entity with removed column', () {
-    var scenario = 'drop-column';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -316,12 +370,32 @@ void main() {
     });
 
     test('when creating migration then creating migration fails.', () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-column';
+      var table = 'migrated_table';
+      var columnToRemove = 'columnToRemove';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToRemove: String
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         isNot(0),
@@ -331,12 +405,6 @@ void main() {
   });
 
   group('Given existing protocol entity with added non nullable column', () {
-    var scenario = 'add-non-nullable-column';
-
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -345,12 +413,32 @@ void main() {
     });
 
     test('when creating migration then creating migration fails.', () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-non-nullable-column';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var addedColumn = 'addedColumn';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $addedColumn: String
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         isNot(0),
@@ -360,11 +448,6 @@ void main() {
   });
 
   group('Given existing protocol entity with non nullable column', () {
-    var scenario = 'add-non-nullable-column';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -375,13 +458,31 @@ void main() {
     test(
         'when creating migration using --force and applying it then database contains new column.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-non-nullable-column';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(
-        scenario,
+      var addedColumn = 'addedColumn';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $addedColumn: String
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
         force: true,
       );
       expect(
@@ -397,35 +498,28 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedColumnName = 'addedColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        contains(expectedColumnName),
+        contains(addedColumn),
         reason: 'Could not find added column in migrated table columns.',
       );
     });
   });
 
   group('Given existing protocol entity with nullability added to column', () {
-    var scenario = 'add-column-nullability';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -436,12 +530,33 @@ void main() {
     test(
         'when creating and applying migration then database column is nullable.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-column-nullability';
+      var table = 'migrated_table';
+      var columnToModify = 'previouslyNonNullableColumn';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String?
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -455,29 +570,27 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedModifiedColumn = 'previouslyNonNullableColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var migratedTableColumnNames = migratedTable.columns.map((c) => c.name);
       expect(
         migratedTableColumnNames,
-        contains(expectedModifiedColumn),
+        contains(columnToModify),
         reason: 'Could not find modified column in migrated table columns.',
       );
 
-      var migratedTableColumn = migratedTable.columns
-          .firstWhere((c) => c.name == expectedModifiedColumn);
+      var migratedTableColumn =
+          migratedTable.columns.firstWhere((c) => c.name == columnToModify);
       expect(
         migratedTableColumn.isNullable,
         isTrue,
@@ -488,11 +601,6 @@ void main() {
 
   group('Given existing protocol entity with nullability removed from column',
       () {
-    var scenario = 'drop-column-nullability';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -503,13 +611,32 @@ void main() {
     test(
         'when creating migration using --force and applying it then database contains non nullable column.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-column-nullability';
+      var table = 'migrated_table';
+      var columnToModify = 'previouslyNullableColumn';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String?
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(
-        scenario,
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
         force: true,
       );
       expect(
@@ -525,29 +652,27 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedModifiedColumn = 'previouslyNullableColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var migratedTableColumnNames = migratedTable.columns.map((c) => c.name);
       expect(
         migratedTableColumnNames,
-        contains(expectedModifiedColumn),
+        contains(columnToModify),
         reason: 'Could not find modified column in migrated table columns.',
       );
 
-      var migratedTableColumn = migratedTable.columns
-          .firstWhere((c) => c.name == expectedModifiedColumn);
+      var migratedTableColumn =
+          migratedTable.columns.firstWhere((c) => c.name == columnToModify);
       expect(
         migratedTableColumn.isNullable,
         isFalse,
@@ -558,11 +683,6 @@ void main() {
 
   group('Given existing protocol entity with nullability removed from column',
       () {
-    var scenario = 'drop-column-nullability';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -571,13 +691,32 @@ void main() {
     });
 
     test('when creating migration then creating migration fails.', () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-column-nullability';
+      var table = 'migrated_table';
+      var columnToModify = 'previouslyNullableColumn';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String?
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(
-        scenario,
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+  $columnToModify: String
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
       );
       expect(
         createMigrationExitCode,
@@ -588,11 +727,6 @@ void main() {
   });
 
   group('Given protocol entity with added index', () {
-    var scenario = 'add-index';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -602,12 +736,36 @@ void main() {
 
     test('when creating and applying migration then contains new index.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-index';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var addedIndex = 'migrated_table_index';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+indexes:
+  $addedIndex:
+    fields: anInt
+    unique: false
+
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -621,35 +779,28 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedAddedIndex = 'migrated_table_index';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var tableIndexes = migratedTable.indexes.map((i) => i.indexName);
       expect(
         tableIndexes,
-        contains(expectedAddedIndex),
+        contains(addedIndex),
         reason: 'Could not find added index for migrated table.',
       );
     });
   });
 
   group('Given protocol entity with index that is removed', () {
-    var scenario = 'drop-index';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -660,12 +811,36 @@ void main() {
     test(
         'when creating and applying migration then index is removed from database.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-index';
+      var table = 'migrated_table';
+      var indexToRemove = 'migrated_table_index';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+indexes:
+  $indexToRemove:
+    fields: anInt
+    unique: false
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -679,35 +854,28 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var expectedRemovedIndex = 'migrated_table_index';
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var tableIndexes = migratedTable.indexes.map((i) => i.indexName);
       expect(
         tableIndexes,
-        isNot(contains(expectedRemovedIndex)),
+        isNot(contains(indexToRemove)),
         reason: 'Could still find removed index for migrated table.',
       );
     });
   });
 
   group('Given protocol entity with added relation', () {
-    var scenario = 'add-relation';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -718,12 +886,30 @@ void main() {
     test(
         'when creating and applying migration then database contains new relation.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'add-relation';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int, relation(parent=migrated_table)
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -737,18 +923,17 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var relations = migratedTable.foreignKeys;
       expect(
@@ -760,11 +945,6 @@ void main() {
   });
 
   group('Given protocol entity with relation that is removed', () {
-    var scenario = 'drop-relation';
-    setUp(() async {
-      await _createInitialState(scenario: scenario);
-    });
-
     tearDown(() async {
       await _migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -775,12 +955,30 @@ void main() {
     test(
         'when creating and applying migration then relation is removed from database.',
         () async {
-      _copyTestProtocolFiles(
-        scenario: scenario,
-        assetType: AssetType.targetState,
-      );
+      var tag = 'drop-relation';
+      var table = 'migrated_table';
+      var initialStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int, relation(parent=migrated_table)
+'''
+      };
+      await _createInitialState(protocols: initialStateProtocols, tag: tag);
 
-      var createMigrationExitCode = await _runCreateMigrations(scenario);
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+table: $table 
+fields:
+  anInt: int
+'''
+      };
+      var createMigrationExitCode = await _createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
       expect(
         createMigrationExitCode,
         0,
@@ -794,18 +992,17 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var tableName = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(tableName),
+        contains(table),
         reason: 'Could not find migration table in live table definitions.',
       );
 
       var migratedTable = liveDefinition.tables.firstWhere(
-        (t) => t.name == tableName,
+        (t) => t.name == table,
       );
       var relations = migratedTable.foreignKeys;
       expect(
@@ -848,44 +1045,12 @@ Future<int> _runApplyMigrations() async {
   return await applyMigrationProcess.exitCode;
 }
 
-void _copyTestProtocolFiles({
-  required String scenario,
-  required AssetType assetType,
-}) {
-  var protocolDirectory = _migrationProtocolTestDirectory();
-
-  var testAssetDirectory = Directory(path.join(
-    Directory.current.path,
-    'test_e2e_migrations',
-    'test_assets',
-    scenario,
-    assetType.name,
-  ));
-
-  _removeMigrationTestProtocolFolder();
-  _copyYamlFiles(testAssetDirectory, protocolDirectory);
-}
-
-void _copyYamlFiles(Directory src, Directory target) {
-  target.createSync(recursive: true);
-
-  for (var entity in src.listSync()) {
-    if (entity is File) {
-      var fileName = path.basename(entity.path);
-      if (!fileName.endsWith('.yaml')) {
-        continue;
-      }
-
-      var destination = path.join(target.path, fileName);
-      entity.copySync(destination);
-    }
-  }
-}
-
-Future<void> _createInitialState({required String scenario}) async {
-  _copyTestProtocolFiles(scenario: scenario, assetType: AssetType.initialState);
+Future<void> _createInitialState({
+  required Map<String, String> protocols,
+  required String tag,
+}) async {
   assert(
-    await _runCreateMigrations(scenario) == 0,
+    await _createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
     'Failed to create migration.',
   );
   assert(
@@ -894,13 +1059,29 @@ Future<void> _createInitialState({required String scenario}) async {
   );
 }
 
-Future<int> _runCreateMigrations(String scenario, {bool force = false}) async {
+Future<int> _createMigrationFromProtocols({
+  required Map<String, String> protocols,
+  required String tag,
+  bool force = false,
+}) async {
+  _removeMigrationTestProtocolFolder();
+  _migrationProtocolTestDirectory().createSync(recursive: true);
+
+  protocols.forEach((fileName, contents) {
+    var protocolFile = File(path.join(
+      _migrationProtocolTestDirectory().path,
+      '$fileName.yaml',
+    ));
+
+    protocolFile.writeAsStringSync(contents);
+  });
+
   var createMigrationProcess = await Process.start(
     'serverpod',
     [
       'create-migration',
       '--tag',
-      scenario,
+      tag,
       if (force) '--force',
     ],
     workingDirectory: Directory.current.path,

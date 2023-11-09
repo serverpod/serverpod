@@ -1,5 +1,0 @@
-class: MigratedTable
-table: migrated_table
-fields:
-  anInt: int
-  previouslyNonNullableColumn: String

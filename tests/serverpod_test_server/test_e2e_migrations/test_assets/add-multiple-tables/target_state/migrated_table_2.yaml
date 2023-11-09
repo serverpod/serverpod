@@ -1,4 +1,0 @@
-class: MigratedTable2
-table: migrated_table_2
-fields:
-  aBool: bool
