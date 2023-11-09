@@ -10,14 +10,14 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=3.7.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.2.10
-  intl: ^0.17.0
+  file_picker: ^6.0.0
+  intl: ^0.18.1
   url_launcher: ^6.1.10
   path: ^1.8.2
   serverpod_auth_client: #1.1.0
@@ -32,6 +32,6 @@ dev_dependencies:
     sdk: flutter
   serverpod_lints: #1.1.0
     path: ../../../packages/serverpod_lints
-  mocktail: ^0.3.0
+  mocktail: ^1.0.0
 
 flutter:

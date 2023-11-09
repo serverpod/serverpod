@@ -11,7 +11,7 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 /// needs, especially in your production environment.
 class DatabaseCloudStorage extends CloudStorage {
   /// Creates a new [DatabaseCloudStorage].
-  DatabaseCloudStorage(String storageId) : super(storageId);
+  DatabaseCloudStorage(super.storageId);
 
   @override
   Future<void> deleteFile(

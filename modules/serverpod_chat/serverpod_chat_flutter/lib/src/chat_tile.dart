@@ -21,11 +21,11 @@ class DefaultChatTile extends StatelessWidget {
 
   /// Creates a new [DefaultChatTile].
   DefaultChatTile({
-    Key? key,
+    super.key,
     required this.message,
     this.previous,
     required this.horizontalPadding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +199,9 @@ class _AttachmentTile extends StatefulWidget {
   final bool preview;
 
   const _AttachmentTile({
-    Key? key,
     required this.attachment,
     this.preview = false,
-  }) : super(key: key);
+  });
 
   @override
   _AttachmentTileState createState() => _AttachmentTileState();

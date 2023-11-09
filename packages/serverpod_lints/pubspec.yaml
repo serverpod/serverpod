@@ -8,9 +8,9 @@ version: 1.1.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  flutter_lints: ^2.0.1
-  lints: ^2.0.1
+  flutter_lints: ^3.0.0
+  lints: ^3.0.0
   

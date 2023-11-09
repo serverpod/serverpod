@@ -9,8 +9,8 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=3.7.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
@@ -22,13 +22,13 @@ dependencies:
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
   image: ^4.0.15
-  file_picker: ^5.2.10
+  file_picker: ^6.0.0
 
   # See https://pub.dev/packages/image_cropper for installation instructions.
   image_cropper: ^3.0.2
 
   # See https://pub.dev/packages/image_picker for installation instructions.
-  image_picker: ^0.8.7
+  image_picker: ^1.0.0
 
 
 dev_dependencies:

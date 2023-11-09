@@ -12,7 +12,7 @@ typedef constructor<T> = T Function(
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract class SerializableEntity {
+abstract mixin class SerializableEntity {
   /// Returns a serialized JSON structure of the entity, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.

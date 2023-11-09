@@ -14,4 +14,4 @@ dependencies:
       path: ../../../modules/serverpod_auth/serverpod_auth_server
 
 dev_dependencies:
-  lints: ^2.0.1
+  lints: ^3.0.0

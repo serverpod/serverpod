@@ -25,13 +25,13 @@ class SignInWithFirebaseButton extends StatelessWidget {
 
   /// Creates a new Sign in with Firebase button.
   const SignInWithFirebaseButton({
-    Key? key,
+    super.key,
     required this.caller,
     required this.authProviders,
     this.onSignedIn,
     this.onFailure,
     this.style,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

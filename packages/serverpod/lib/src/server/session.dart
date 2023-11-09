@@ -211,12 +211,9 @@ class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
   InternalSession({
-    required Server server,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    required super.server,
+    super.enableLogging = true,
+  });
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -243,17 +240,14 @@ class MethodCallSession extends Session {
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.body,
     required String path,
     required this.httpRequest,
     String? authenticationKey,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
     var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
@@ -314,15 +308,12 @@ class StreamingSession extends Session {
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -347,13 +338,10 @@ class FutureCallSession extends Session {
 
   /// Creates a new [Session] for a [FutureCall].
   FutureCallSession({
-    required Server server,
+    required super.server,
     required this.futureCallName,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    super.enableLogging = true,
+  });
 }
 
 /// Collects methods for authenticating users.
