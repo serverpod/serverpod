@@ -463,7 +463,7 @@ class ServerHealthMetricRepository {
     );
   }
 
-  Future<ServerHealthMetric?> findRow(
+  Future<ServerHealthMetric?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
@@ -471,7 +471,7 @@ class ServerHealthMetricRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ServerHealthMetric>(
+    return session.dbNext.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       transaction: transaction,
     );
@@ -513,10 +513,12 @@ class ServerHealthMetricRepository {
   Future<List<ServerHealthMetric>> update(
     _i1.Session session,
     List<ServerHealthMetric> rows, {
+    _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ServerHealthMetric>(
       rows,
+      columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
     );
   }
@@ -524,10 +526,12 @@ class ServerHealthMetricRepository {
   Future<ServerHealthMetric> updateRow(
     _i1.Session session,
     ServerHealthMetric row, {
+    _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ServerHealthMetric>(
       row,
+      columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
     );
   }

@@ -356,7 +356,7 @@ class GoogleRefreshTokenRepository {
     );
   }
 
-  Future<GoogleRefreshToken?> findRow(
+  Future<GoogleRefreshToken?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
@@ -364,7 +364,7 @@ class GoogleRefreshTokenRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<GoogleRefreshToken>(
+    return session.dbNext.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       transaction: transaction,
     );
@@ -406,10 +406,12 @@ class GoogleRefreshTokenRepository {
   Future<List<GoogleRefreshToken>> update(
     _i1.Session session,
     List<GoogleRefreshToken> rows, {
+    _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<GoogleRefreshToken>(
       rows,
+      columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
     );
   }
@@ -417,10 +419,12 @@ class GoogleRefreshTokenRepository {
   Future<GoogleRefreshToken> updateRow(
     _i1.Session session,
     GoogleRefreshToken row, {
+    _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<GoogleRefreshToken>(
       row,
+      columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
     );
   }

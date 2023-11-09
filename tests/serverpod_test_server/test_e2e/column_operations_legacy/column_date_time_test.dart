@@ -1,7 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
-
-import '../config.dart';
 
 final firstDate = DateTime.utc(1991, 5, 28);
 final secondDate = DateTime.utc(2001, 5, 28);

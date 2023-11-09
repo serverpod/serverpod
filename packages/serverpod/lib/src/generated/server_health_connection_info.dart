@@ -464,7 +464,7 @@ class ServerHealthConnectionInfoRepository {
     );
   }
 
-  Future<ServerHealthConnectionInfo?> findRow(
+  Future<ServerHealthConnectionInfo?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
@@ -472,7 +472,7 @@ class ServerHealthConnectionInfoRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ServerHealthConnectionInfo>(
+    return session.dbNext.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
@@ -514,10 +514,12 @@ class ServerHealthConnectionInfoRepository {
   Future<List<ServerHealthConnectionInfo>> update(
     _i1.Session session,
     List<ServerHealthConnectionInfo> rows, {
+    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ServerHealthConnectionInfo>(
       rows,
+      columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
   }
@@ -525,10 +527,12 @@ class ServerHealthConnectionInfoRepository {
   Future<ServerHealthConnectionInfo> updateRow(
     _i1.Session session,
     ServerHealthConnectionInfo row, {
+    _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ServerHealthConnectionInfo>(
       row,
+      columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
   }

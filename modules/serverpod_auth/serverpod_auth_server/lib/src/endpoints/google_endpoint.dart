@@ -74,7 +74,7 @@ class GoogleEndpoint extends Endpoint {
 
     if (authClient.credentials.refreshToken != null) {
       // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.db.findRow(
+      var token = await GoogleRefreshToken.db.findFirstRow(
         session,
         where: (t) => t.userId.equals(userInfo.id!),
       );

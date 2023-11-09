@@ -404,7 +404,7 @@ class TownRepository {
     );
   }
 
-  Future<Town?> findRow(
+  Future<Town?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TownTable>? where,
     int? offset,
@@ -413,7 +413,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.findRow<Town>(
+    return session.dbNext.findFirstRow<Town>(
       where: where?.call(Town.t),
       transaction: transaction,
       include: include,
@@ -458,10 +458,12 @@ class TownRepository {
   Future<List<Town>> update(
     _i1.Session session,
     List<Town> rows, {
+    _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Town>(
       rows,
+      columns: columns?.call(Town.t),
       transaction: transaction,
     );
   }
@@ -469,10 +471,12 @@ class TownRepository {
   Future<Town> updateRow(
     _i1.Session session,
     Town row, {
+    _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Town>(
       row,
+      columns: columns?.call(Town.t),
       transaction: transaction,
     );
   }

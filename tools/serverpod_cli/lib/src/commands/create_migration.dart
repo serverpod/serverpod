@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 
 class CreateMigrationCommand extends ServerpodCommand {
-  static const _runModes = <String>['development', 'staging', 'production'];
+  static const runModes = <String>['development', 'staging', 'production'];
 
   @override
   final name = 'create-migration';
@@ -40,7 +40,7 @@ class CreateMigrationCommand extends ServerpodCommand {
       'mode',
       abbr: 'm',
       defaultsTo: 'development',
-      allowed: _runModes,
+      allowed: runModes,
       help: 'Use together with --repair to specify which database to repair.',
     );
     argParser.addOption(
@@ -93,8 +93,9 @@ class CreateMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
+    var success = false;
     if (repair) {
-      await log.progress('Creating repair migration', () async {
+      success = await log.progress('Creating repair migration', () async {
         var migration = await generator.repairMigration(
           tag: tag,
           force: force,
@@ -104,7 +105,7 @@ class CreateMigrationCommand extends ServerpodCommand {
         return migration != null;
       });
     } else {
-      var success = await log.progress('Creating migration', () async {
+      success = await log.progress('Creating migration', () async {
         var migration = await generator.createMigration(
           tag: tag,
           force: force,
@@ -113,12 +114,12 @@ class CreateMigrationCommand extends ServerpodCommand {
 
         return migration != null;
       });
-      if (success) {
-        log.info(
-          'Done.',
-          type: TextLogType.success,
-        );
-      }
     }
+
+    if (!success) {
+      throw ExitException();
+    }
+
+    log.info('Done.', type: TextLogType.success);
   }
 }

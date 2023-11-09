@@ -332,7 +332,7 @@ class SimpleDataRepository {
     );
   }
 
-  Future<SimpleData?> findRow(
+  Future<SimpleData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
@@ -340,7 +340,7 @@ class SimpleDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<SimpleData>(
+    return session.dbNext.findFirstRow<SimpleData>(
       where: where?.call(SimpleData.t),
       transaction: transaction,
     );
@@ -382,10 +382,12 @@ class SimpleDataRepository {
   Future<List<SimpleData>> update(
     _i1.Session session,
     List<SimpleData> rows, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<SimpleData>(
       rows,
+      columns: columns?.call(SimpleData.t),
       transaction: transaction,
     );
   }
@@ -393,10 +395,12 @@ class SimpleDataRepository {
   Future<SimpleData> updateRow(
     _i1.Session session,
     SimpleData row, {
+    _i1.ColumnSelections<SimpleDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<SimpleData>(
       row,
+      columns: columns?.call(SimpleData.t),
       transaction: transaction,
     );
   }

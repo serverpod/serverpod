@@ -328,7 +328,7 @@ class ObjectWithByteDataRepository {
     );
   }
 
-  Future<ObjectWithByteData?> findRow(
+  Future<ObjectWithByteData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
@@ -336,7 +336,7 @@ class ObjectWithByteDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithByteData>(
+    return session.dbNext.findFirstRow<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
@@ -378,10 +378,12 @@ class ObjectWithByteDataRepository {
   Future<List<ObjectWithByteData>> update(
     _i1.Session session,
     List<ObjectWithByteData> rows, {
+    _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithByteData>(
       rows,
+      columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }
@@ -389,10 +391,12 @@ class ObjectWithByteDataRepository {
   Future<ObjectWithByteData> updateRow(
     _i1.Session session,
     ObjectWithByteData row, {
+    _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithByteData>(
       row,
+      columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
     );
   }

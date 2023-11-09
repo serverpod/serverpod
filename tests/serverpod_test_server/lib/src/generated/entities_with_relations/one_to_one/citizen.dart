@@ -513,7 +513,7 @@ class CitizenRepository {
     );
   }
 
-  Future<Citizen?> findRow(
+  Future<Citizen?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
@@ -522,7 +522,7 @@ class CitizenRepository {
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
-    return session.dbNext.findRow<Citizen>(
+    return session.dbNext.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
       transaction: transaction,
       include: include,
@@ -567,10 +567,12 @@ class CitizenRepository {
   Future<List<Citizen>> update(
     _i1.Session session,
     List<Citizen> rows, {
+    _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Citizen>(
       rows,
+      columns: columns?.call(Citizen.t),
       transaction: transaction,
     );
   }
@@ -578,10 +580,12 @@ class CitizenRepository {
   Future<Citizen> updateRow(
     _i1.Session session,
     Citizen row, {
+    _i1.ColumnSelections<CitizenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Citizen>(
       row,
+      columns: columns?.call(Citizen.t),
       transaction: transaction,
     );
   }

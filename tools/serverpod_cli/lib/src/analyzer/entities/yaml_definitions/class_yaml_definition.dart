@@ -54,7 +54,7 @@ class ClassYamlDefinition {
                   Keyword.relation,
                 },
                 alternativeUsageMessage:
-                    'Use the relation keyword instead. E.g. relation(parent=parent_table)',
+                    'Use the relation keyword instead. E.g. relation(parent=parent_table). Note that the default onDelete action changes from "Cascade" to "NoAction" when using the relation keyword.',
                 valueRestriction: restrictions.validateParentName,
               ),
               ValidateNode(
@@ -67,7 +67,6 @@ class ClassYamlDefinition {
                 nested: {
                   ValidateNode(
                     Keyword.parent,
-                    mutuallyExclusiveKeys: {Keyword.name},
                     keyRestriction: restrictions.validateParentKey,
                     valueRestriction: restrictions.validateParentName,
                   ),
@@ -97,7 +96,6 @@ class ClassYamlDefinition {
                   ),
                   ValidateNode(
                     Keyword.name,
-                    mutuallyExclusiveKeys: {Keyword.parent},
                     valueRestriction: restrictions.validateRelationName,
                   ),
                 },

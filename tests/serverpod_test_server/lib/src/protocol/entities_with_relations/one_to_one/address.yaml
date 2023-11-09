@@ -3,4 +3,4 @@ table: address
 fields:
   street: String
   inhabitantId: int?
-  inhabitant: Citizen?, relation(name=citizen_address, field=inhabitantId)
+  inhabitant: Citizen?, relation(name=citizen_address, field=inhabitantId, onDelete=Cascade)

@@ -474,7 +474,7 @@ class OrganizationRepository {
     );
   }
 
-  Future<Organization?> findRow(
+  Future<Organization?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
@@ -483,7 +483,7 @@ class OrganizationRepository {
     _i1.Transaction? transaction,
     OrganizationInclude? include,
   }) async {
-    return session.dbNext.findRow<Organization>(
+    return session.dbNext.findFirstRow<Organization>(
       where: where?.call(Organization.t),
       transaction: transaction,
       include: include,
@@ -528,10 +528,12 @@ class OrganizationRepository {
   Future<List<Organization>> update(
     _i1.Session session,
     List<Organization> rows, {
+    _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Organization>(
       rows,
+      columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }
@@ -539,10 +541,12 @@ class OrganizationRepository {
   Future<Organization> updateRow(
     _i1.Session session,
     Organization row, {
+    _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Organization>(
       row,
+      columns: columns?.call(Organization.t),
       transaction: transaction,
     );
   }

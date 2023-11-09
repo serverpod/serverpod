@@ -402,7 +402,7 @@ class CompanyRepository {
     );
   }
 
-  Future<Company?> findRow(
+  Future<Company?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
@@ -411,7 +411,7 @@ class CompanyRepository {
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
-    return session.dbNext.findRow<Company>(
+    return session.dbNext.findFirstRow<Company>(
       where: where?.call(Company.t),
       transaction: transaction,
       include: include,
@@ -456,10 +456,12 @@ class CompanyRepository {
   Future<List<Company>> update(
     _i1.Session session,
     List<Company> rows, {
+    _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Company>(
       rows,
+      columns: columns?.call(Company.t),
       transaction: transaction,
     );
   }
@@ -467,10 +469,12 @@ class CompanyRepository {
   Future<Company> updateRow(
     _i1.Session session,
     Company row, {
+    _i1.ColumnSelections<CompanyTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Company>(
       row,
+      columns: columns?.call(Company.t),
       transaction: transaction,
     );
   }

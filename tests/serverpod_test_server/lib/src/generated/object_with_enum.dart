@@ -425,7 +425,7 @@ class ObjectWithEnumRepository {
     );
   }
 
-  Future<ObjectWithEnum?> findRow(
+  Future<ObjectWithEnum?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
@@ -433,7 +433,7 @@ class ObjectWithEnumRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ObjectWithEnum>(
+    return session.dbNext.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
@@ -475,10 +475,12 @@ class ObjectWithEnumRepository {
   Future<List<ObjectWithEnum>> update(
     _i1.Session session,
     List<ObjectWithEnum> rows, {
+    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ObjectWithEnum>(
       rows,
+      columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }
@@ -486,10 +488,12 @@ class ObjectWithEnumRepository {
   Future<ObjectWithEnum> updateRow(
     _i1.Session session,
     ObjectWithEnum row, {
+    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ObjectWithEnum>(
       row,
+      columns: columns?.call(ObjectWithEnum.t),
       transaction: transaction,
     );
   }

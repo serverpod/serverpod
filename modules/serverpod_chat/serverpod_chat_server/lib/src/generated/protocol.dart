@@ -45,158 +45,162 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(tables: [
-    _i2.TableDefinition(
-      name: 'serverpod_chat_message',
-      dartName: 'ChatMessage',
-      schema: 'public',
-      module: 'serverpod_chat',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault: 'nextval(\'serverpod_chat_message_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'channel',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'message',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'time',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
-          isNullable: false,
-          dartType: 'DateTime',
-        ),
-        _i2.ColumnDefinition(
-          name: 'sender',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'removed',
-          columnType: _i2.ColumnType.boolean,
-          isNullable: false,
-          dartType: 'bool',
-        ),
-        _i2.ColumnDefinition(
-          name: 'attachments',
-          columnType: _i2.ColumnType.json,
-          isNullable: true,
-          dartType: 'List<protocol:ChatMessageAttachment>?',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_chat_message_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_chat_message_channel_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'channel',
-            )
-          ],
-          type: 'btree',
-          isUnique: false,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    _i2.TableDefinition(
-      name: 'serverpod_chat_read_message',
-      dartName: 'ChatReadMessage',
-      schema: 'public',
-      module: 'serverpod_chat',
-      columns: [
-        _i2.ColumnDefinition(
-          name: 'id',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int?',
-          columnDefault:
-              'nextval(\'serverpod_chat_read_message_id_seq\'::regclass)',
-        ),
-        _i2.ColumnDefinition(
-          name: 'channel',
-          columnType: _i2.ColumnType.text,
-          isNullable: false,
-          dartType: 'String',
-        ),
-        _i2.ColumnDefinition(
-          name: 'userId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-        _i2.ColumnDefinition(
-          name: 'lastReadMessageId',
-          columnType: _i2.ColumnType.integer,
-          isNullable: false,
-          dartType: 'int',
-        ),
-      ],
-      foreignKeys: [],
-      indexes: [
-        _i2.IndexDefinition(
-          indexName: 'serverpod_chat_read_message_pkey',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'id',
-            )
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: true,
-        ),
-        _i2.IndexDefinition(
-          indexName: 'serverpod_chat_read_message_channel_user_idx',
-          tableSpace: null,
-          elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'channel',
-            ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
-              definition: 'userId',
-            ),
-          ],
-          type: 'btree',
-          isUnique: true,
-          isPrimary: false,
-        ),
-      ],
-      managed: true,
-    ),
-    ..._i3.Protocol.targetDatabaseDefinition.tables,
-  ]);
+  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    tables: [
+      _i2.TableDefinition(
+        name: 'serverpod_chat_message',
+        dartName: 'ChatMessage',
+        schema: 'public',
+        module: 'serverpod_chat',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault:
+                'nextval(\'serverpod_chat_message_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'channel',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'message',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'time',
+            columnType: _i2.ColumnType.timestampWithoutTimeZone,
+            isNullable: false,
+            dartType: 'DateTime',
+          ),
+          _i2.ColumnDefinition(
+            name: 'sender',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'removed',
+            columnType: _i2.ColumnType.boolean,
+            isNullable: false,
+            dartType: 'bool',
+          ),
+          _i2.ColumnDefinition(
+            name: 'attachments',
+            columnType: _i2.ColumnType.json,
+            isNullable: true,
+            dartType: 'List<protocol:ChatMessageAttachment>?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'serverpod_chat_message_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'serverpod_chat_message_channel_idx',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'channel',
+              )
+            ],
+            type: 'btree',
+            isUnique: false,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
+        name: 'serverpod_chat_read_message',
+        dartName: 'ChatReadMessage',
+        schema: 'public',
+        module: 'serverpod_chat',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault:
+                'nextval(\'serverpod_chat_read_message_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'channel',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'userId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+          _i2.ColumnDefinition(
+            name: 'lastReadMessageId',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'serverpod_chat_read_message_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'serverpod_chat_read_message_channel_user_idx',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'channel',
+              ),
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'userId',
+              ),
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      ..._i3.Protocol.targetDatabaseDefinition.tables,
+    ],
+    migrationApiVersion: 1,
+  );
 
   @override
   T deserialize<T>(

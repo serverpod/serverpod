@@ -350,7 +350,7 @@ class UniqueDataRepository {
     );
   }
 
-  Future<UniqueData?> findRow(
+  Future<UniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? offset,
@@ -358,7 +358,7 @@ class UniqueDataRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<UniqueData>(
+    return session.dbNext.findFirstRow<UniqueData>(
       where: where?.call(UniqueData.t),
       transaction: transaction,
     );
@@ -400,10 +400,12 @@ class UniqueDataRepository {
   Future<List<UniqueData>> update(
     _i1.Session session,
     List<UniqueData> rows, {
+    _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<UniqueData>(
       rows,
+      columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }
@@ -411,10 +413,12 @@ class UniqueDataRepository {
   Future<UniqueData> updateRow(
     _i1.Session session,
     UniqueData row, {
+    _i1.ColumnSelections<UniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<UniqueData>(
       row,
+      columns: columns?.call(UniqueData.t),
       transaction: transaction,
     );
   }

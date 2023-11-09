@@ -409,7 +409,7 @@ class CloudStorageDirectUploadEntryRepository {
     );
   }
 
-  Future<CloudStorageDirectUploadEntry?> findRow(
+  Future<CloudStorageDirectUploadEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
@@ -417,7 +417,7 @@ class CloudStorageDirectUploadEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<CloudStorageDirectUploadEntry>(
+    return session.dbNext.findFirstRow<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
@@ -459,10 +459,12 @@ class CloudStorageDirectUploadEntryRepository {
   Future<List<CloudStorageDirectUploadEntry>> update(
     _i1.Session session,
     List<CloudStorageDirectUploadEntry> rows, {
+    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<CloudStorageDirectUploadEntry>(
       rows,
+      columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
   }
@@ -470,10 +472,12 @@ class CloudStorageDirectUploadEntryRepository {
   Future<CloudStorageDirectUploadEntry> updateRow(
     _i1.Session session,
     CloudStorageDirectUploadEntry row, {
+    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<CloudStorageDirectUploadEntry>(
       row,
+      columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
   }

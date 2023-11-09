@@ -402,7 +402,7 @@ class StudentRepository {
     );
   }
 
-  Future<Student?> findRow(
+  Future<Student?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? offset,
@@ -411,7 +411,7 @@ class StudentRepository {
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
-    return session.dbNext.findRow<Student>(
+    return session.dbNext.findFirstRow<Student>(
       where: where?.call(Student.t),
       transaction: transaction,
       include: include,
@@ -456,10 +456,12 @@ class StudentRepository {
   Future<List<Student>> update(
     _i1.Session session,
     List<Student> rows, {
+    _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Student>(
       rows,
+      columns: columns?.call(Student.t),
       transaction: transaction,
     );
   }
@@ -467,10 +469,12 @@ class StudentRepository {
   Future<Student> updateRow(
     _i1.Session session,
     Student row, {
+    _i1.ColumnSelections<StudentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Student>(
       row,
+      columns: columns?.call(Student.t),
       transaction: transaction,
     );
   }

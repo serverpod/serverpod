@@ -458,7 +458,7 @@ class PersonRepository {
     );
   }
 
-  Future<Person?> findRow(
+  Future<Person?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? offset,
@@ -467,7 +467,7 @@ class PersonRepository {
     _i1.Transaction? transaction,
     PersonInclude? include,
   }) async {
-    return session.dbNext.findRow<Person>(
+    return session.dbNext.findFirstRow<Person>(
       where: where?.call(Person.t),
       transaction: transaction,
       include: include,
@@ -512,10 +512,12 @@ class PersonRepository {
   Future<List<Person>> update(
     _i1.Session session,
     List<Person> rows, {
+    _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Person>(
       rows,
+      columns: columns?.call(Person.t),
       transaction: transaction,
     );
   }
@@ -523,10 +525,12 @@ class PersonRepository {
   Future<Person> updateRow(
     _i1.Session session,
     Person row, {
+    _i1.ColumnSelections<PersonTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Person>(
       row,
+      columns: columns?.call(Person.t),
       transaction: transaction,
     );
   }

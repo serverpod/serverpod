@@ -474,7 +474,7 @@ class TeamRepository {
     );
   }
 
-  Future<Team?> findRow(
+  Future<Team?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? offset,
@@ -483,7 +483,7 @@ class TeamRepository {
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
-    return session.dbNext.findRow<Team>(
+    return session.dbNext.findFirstRow<Team>(
       where: where?.call(Team.t),
       transaction: transaction,
       include: include,
@@ -528,10 +528,12 @@ class TeamRepository {
   Future<List<Team>> update(
     _i1.Session session,
     List<Team> rows, {
+    _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Team>(
       rows,
+      columns: columns?.call(Team.t),
       transaction: transaction,
     );
   }
@@ -539,10 +541,12 @@ class TeamRepository {
   Future<Team> updateRow(
     _i1.Session session,
     Team row, {
+    _i1.ColumnSelections<TeamTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Team>(
       row,
+      columns: columns?.call(Team.t),
       transaction: transaction,
     );
   }

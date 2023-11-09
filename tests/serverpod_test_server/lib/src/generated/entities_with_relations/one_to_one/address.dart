@@ -406,7 +406,7 @@ class AddressRepository {
     );
   }
 
-  Future<Address?> findRow(
+  Future<Address?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
@@ -415,7 +415,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.dbNext.findRow<Address>(
+    return session.dbNext.findFirstRow<Address>(
       where: where?.call(Address.t),
       transaction: transaction,
       include: include,
@@ -460,10 +460,12 @@ class AddressRepository {
   Future<List<Address>> update(
     _i1.Session session,
     List<Address> rows, {
+    _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Address>(
       rows,
+      columns: columns?.call(Address.t),
       transaction: transaction,
     );
   }
@@ -471,10 +473,12 @@ class AddressRepository {
   Future<Address> updateRow(
     _i1.Session session,
     Address row, {
+    _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Address>(
       row,
+      columns: columns?.call(Address.t),
       transaction: transaction,
     );
   }

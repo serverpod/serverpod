@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -761,7 +762,8 @@ extension on DatabaseDefinition {
             if (table.managed != null) 'managed': literalBool(table.managed!),
           }),
         ...additionalTables,
-      ])
+      ]),
+      'migrationApiVersion': literalNum(DatabaseConstants.migrationApiVersion)
     }).code;
   }
 }

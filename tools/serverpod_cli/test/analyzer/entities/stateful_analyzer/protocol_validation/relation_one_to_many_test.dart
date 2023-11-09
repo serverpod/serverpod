@@ -282,45 +282,6 @@ void main() {
   });
 
   group(
-      'Given a class with a one to many relation where the named relationship has a mismatch table reference',
-      () {
-    var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
-        '''
-        class: Employee
-        table: employee
-        fields:
-          parentId: int, relation(name=company_employees, parent=employee)
-        ''',
-      ).build(),
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
-    analyzer.validateAll();
-
-    var errors = collector.errors;
-
-    test('then an error is collected', () {
-      expect(errors, isNotEmpty);
-    });
-
-    test(
-        'then the error messages say that there is no matching relation because of invalid table reference.',
-        () {
-      expect(
-        errors.first.message,
-        'The "parent" property is mutually exclusive with the "name" property.',
-      );
-
-      expect(
-        errors.last.message,
-        'The "name" property is mutually exclusive with the "parent" property.',
-      );
-    }, skip: errors.isEmpty);
-  });
-
-  group(
       'Given a class with a one to many relation where the relationship is named with a none string value',
       () {
     var protocols = [
@@ -579,6 +540,60 @@ void main() {
           as ListRelationDefinition;
 
       expect(relation.foreignFieldName, isNot('customerId'));
+    });
+  });
+
+  group('Given a class with a one to many relation on a foreign key field', () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          companyId: int, relation(name=company_employees, parent=company)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation(name=company_employees)
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      protocols,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+    var employeeDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Employee');
+    var companyDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Company');
+
+    var errors = collector.errors;
+
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    test('then the employee relation is set', () {
+      var relation = employeeDefinition.findField('companyId')?.relation;
+
+      expect(relation?.name, 'company_employees');
+      expect(relation.runtimeType, ForeignRelationDefinition);
+    });
+
+    test('then the company relation is set', () {
+      var relation = companyDefinition.findField('employees')?.relation;
+
+      expect(relation?.name, 'company_employees');
+      expect(relation.runtimeType, ListRelationDefinition);
     });
   });
 }

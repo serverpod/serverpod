@@ -2666,8 +2666,8 @@ class Endpoints extends _i1.EndpointDispatch {
             offset: params['offset'],
           ),
         ),
-        'findRowSimpleData': _i1.MethodConnector(
-          name: 'findRowSimpleData',
+        'findFirstRowSimpleData': _i1.MethodConnector(
+          name: 'findFirstRowSimpleData',
           params: {
             'num': _i1.ParameterDescription(
               name: 'num',
@@ -2680,7 +2680,7 @@ class Endpoints extends _i1.EndpointDispatch {
             Map<String, dynamic> params,
           ) async =>
               (endpoints['basicDatabase'] as _i16.BasicDatabase)
-                  .findRowSimpleData(
+                  .findFirstRowSimpleData(
             session,
             params['num'],
           ),
@@ -3221,44 +3221,6 @@ class Endpoints extends _i1.EndpointDispatch {
           ) async =>
               (endpoints['databaseBatch'] as _i18.DatabaseBatch)
                   .batchUpdateTypes(
-            session,
-            params['value'],
-          ),
-        ),
-        'batchUpdateWithInvalidColumn': _i1.MethodConnector(
-          name: 'batchUpdateWithInvalidColumn',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<List<_i52.UniqueData>>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['databaseBatch'] as _i18.DatabaseBatch)
-                  .batchUpdateWithInvalidColumn(
-            session,
-            params['value'],
-          ),
-        ),
-        'batchUpdateNumberOnly': _i1.MethodConnector(
-          name: 'batchUpdateNumberOnly',
-          params: {
-            'value': _i1.ParameterDescription(
-              name: 'value',
-              type: _i1.getType<List<_i52.UniqueData>>(),
-              nullable: false,
-            )
-          },
-          call: (
-            _i1.Session session,
-            Map<String, dynamic> params,
-          ) async =>
-              (endpoints['databaseBatch'] as _i18.DatabaseBatch)
-                  .batchUpdateNumberOnly(
             session,
             params['value'],
           ),

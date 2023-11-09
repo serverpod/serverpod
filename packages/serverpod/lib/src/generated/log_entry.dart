@@ -563,7 +563,7 @@ class LogEntryRepository {
     );
   }
 
-  Future<LogEntry?> findRow(
+  Future<LogEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? offset,
@@ -571,7 +571,7 @@ class LogEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<LogEntry>(
+    return session.dbNext.findFirstRow<LogEntry>(
       where: where?.call(LogEntry.t),
       transaction: transaction,
     );
@@ -613,10 +613,12 @@ class LogEntryRepository {
   Future<List<LogEntry>> update(
     _i1.Session session,
     List<LogEntry> rows, {
+    _i1.ColumnSelections<LogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<LogEntry>(
       rows,
+      columns: columns?.call(LogEntry.t),
       transaction: transaction,
     );
   }
@@ -624,10 +626,12 @@ class LogEntryRepository {
   Future<LogEntry> updateRow(
     _i1.Session session,
     LogEntry row, {
+    _i1.ColumnSelections<LogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<LogEntry>(
       row,
+      columns: columns?.call(LogEntry.t),
       transaction: transaction,
     );
   }

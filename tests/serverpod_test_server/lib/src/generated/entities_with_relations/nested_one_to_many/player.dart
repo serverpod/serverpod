@@ -404,7 +404,7 @@ class PlayerRepository {
     );
   }
 
-  Future<Player?> findRow(
+  Future<Player?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     int? offset,
@@ -413,7 +413,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.dbNext.findRow<Player>(
+    return session.dbNext.findFirstRow<Player>(
       where: where?.call(Player.t),
       transaction: transaction,
       include: include,
@@ -458,10 +458,12 @@ class PlayerRepository {
   Future<List<Player>> update(
     _i1.Session session,
     List<Player> rows, {
+    _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Player>(
       rows,
+      columns: columns?.call(Player.t),
       transaction: transaction,
     );
   }
@@ -469,10 +471,12 @@ class PlayerRepository {
   Future<Player> updateRow(
     _i1.Session session,
     Player row, {
+    _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Player>(
       row,
+      columns: columns?.call(Player.t),
       transaction: transaction,
     );
   }

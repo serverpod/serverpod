@@ -2,4 +2,4 @@ class: Comment
 table: comment
 fields:
   description: String
-  order: Order?, relation(name=order_comments)
+  order: Order?, relation(name=order_comments, onDelete=Cascade)

@@ -449,7 +449,7 @@ class EnrollmentRepository {
     );
   }
 
-  Future<Enrollment?> findRow(
+  Future<Enrollment?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
     int? offset,
@@ -458,7 +458,7 @@ class EnrollmentRepository {
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
-    return session.dbNext.findRow<Enrollment>(
+    return session.dbNext.findFirstRow<Enrollment>(
       where: where?.call(Enrollment.t),
       transaction: transaction,
       include: include,
@@ -503,10 +503,12 @@ class EnrollmentRepository {
   Future<List<Enrollment>> update(
     _i1.Session session,
     List<Enrollment> rows, {
+    _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<Enrollment>(
       rows,
+      columns: columns?.call(Enrollment.t),
       transaction: transaction,
     );
   }
@@ -514,10 +516,12 @@ class EnrollmentRepository {
   Future<Enrollment> updateRow(
     _i1.Session session,
     Enrollment row, {
+    _i1.ColumnSelections<EnrollmentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<Enrollment>(
       row,
+      columns: columns?.call(Enrollment.t),
       transaction: transaction,
     );
   }

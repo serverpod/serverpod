@@ -23,7 +23,6 @@ extension DatabaseComparisons on DatabaseDefinition {
     var diff = generateDatabaseMigration(
       srcDatabase: this,
       dstDatabase: other,
-      warnings: [],
       priority: -1,
     );
     return diff.isEmpty;
@@ -486,6 +485,8 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
     var out = '';
 
     if (createTable == null) return out;
+
+    if (createTable!.foreignKeys.isEmpty) return out;
 
     out += '--\n';
     out += '-- ACTION CREATE FOREIGN KEY\n';

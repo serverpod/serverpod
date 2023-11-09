@@ -49,6 +49,7 @@ class ChatEndpoint extends Endpoint {
             ChatJoinChannelFailed(
                 channel: message.channel,
                 reason: 'User must be authenticated'));
+        return;
       }
 
       if (message.userName != null && chatSession.userInfo == null) {
@@ -222,7 +223,7 @@ class ChatEndpoint extends Endpoint {
     String channel,
     int userId,
   ) async {
-    var readMessageRow = await ChatReadMessage.db.findRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );
@@ -235,7 +236,7 @@ class ChatEndpoint extends Endpoint {
 
   Future<void> _setLastReadMessage(Session session, String channel, int userId,
       int lastReadMessageId) async {
-    var readMessageRow = await ChatReadMessage.db.findRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );

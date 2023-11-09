@@ -331,7 +331,7 @@ class ReadWriteTestEntryRepository {
     );
   }
 
-  Future<ReadWriteTestEntry?> findRow(
+  Future<ReadWriteTestEntry?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
@@ -339,7 +339,7 @@ class ReadWriteTestEntryRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<ReadWriteTestEntry>(
+    return session.dbNext.findFirstRow<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       transaction: transaction,
     );
@@ -381,10 +381,12 @@ class ReadWriteTestEntryRepository {
   Future<List<ReadWriteTestEntry>> update(
     _i1.Session session,
     List<ReadWriteTestEntry> rows, {
+    _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<ReadWriteTestEntry>(
       rows,
+      columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
     );
   }
@@ -392,10 +394,12 @@ class ReadWriteTestEntryRepository {
   Future<ReadWriteTestEntry> updateRow(
     _i1.Session session,
     ReadWriteTestEntry row, {
+    _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<ReadWriteTestEntry>(
       row,
+      columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
     );
   }

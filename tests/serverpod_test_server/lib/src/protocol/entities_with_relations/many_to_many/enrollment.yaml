@@ -1,8 +1,8 @@
 class: Enrollment
 table: enrollment
 fields:
-  student: Student?, relation(name=student_enrollments)
-  course: Course?, relation(name=course_enrollments)
+  student: Student?, relation(name=student_enrollments, onDelete=Cascade)
+  course: Course?, relation(name=course_enrollments, onDelete=Cascade)
 
 indexes:
   enrollment_index_idx:

@@ -1100,10 +1100,10 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<_i11.SimpleData?> findRowSimpleData(int num) =>
+  _i2.Future<_i11.SimpleData?> findFirstRowSimpleData(int num) =>
       caller.callServerEndpoint<_i11.SimpleData?>(
         'basicDatabase',
-        'findRowSimpleData',
+        'findFirstRowSimpleData',
         {'num': num},
       );
 
@@ -1344,22 +1344,6 @@ class EndpointDatabaseBatch extends _i1.EndpointRef {
       caller.callServerEndpoint<List<_i6.Types>>(
         'databaseBatch',
         'batchUpdateTypes',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i15.UniqueData>> batchUpdateWithInvalidColumn(
-          List<_i15.UniqueData> value) =>
-      caller.callServerEndpoint<List<_i15.UniqueData>>(
-        'databaseBatch',
-        'batchUpdateWithInvalidColumn',
-        {'value': value},
-      );
-
-  _i2.Future<List<_i15.UniqueData>> batchUpdateNumberOnly(
-          List<_i15.UniqueData> value) =>
-      caller.callServerEndpoint<List<_i15.UniqueData>>(
-        'databaseBatch',
-        'batchUpdateNumberOnly',
         {'value': value},
       );
 

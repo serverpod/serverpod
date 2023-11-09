@@ -406,7 +406,7 @@ class RelatedUniqueDataRepository {
     );
   }
 
-  Future<RelatedUniqueData?> findRow(
+  Future<RelatedUniqueData?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
@@ -415,7 +415,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findRow<RelatedUniqueData>(
+    return session.dbNext.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       transaction: transaction,
       include: include,
@@ -460,10 +460,12 @@ class RelatedUniqueDataRepository {
   Future<List<RelatedUniqueData>> update(
     _i1.Session session,
     List<RelatedUniqueData> rows, {
+    _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<RelatedUniqueData>(
       rows,
+      columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }
@@ -471,10 +473,12 @@ class RelatedUniqueDataRepository {
   Future<RelatedUniqueData> updateRow(
     _i1.Session session,
     RelatedUniqueData row, {
+    _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<RelatedUniqueData>(
       row,
+      columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
     );
   }

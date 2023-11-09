@@ -1,9 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
-
-import '../../config.dart';
 
 void main() {
   var client = Client(serverUrl);
@@ -103,80 +102,6 @@ void main() {
       expect(first?.number, firstNumber);
       expect(last?.number, lastNumber);
     });
-  });
-
-  test(
-      'Given a list of entries to update where one does not have an id then an error is thrown.',
-      () async {
-    var data = <UniqueData>[
-      UniqueData(number: 1, email: 'info@serverpod.dev'),
-      UniqueData(number: 2, email: 'dev@serverpod.dev'),
-    ];
-
-    var inserted = await client.databaseBatch.batchInsert(data);
-
-    var toUpdate = [
-      ...inserted,
-      UniqueData(number: 3, email: 'extra@serverpod.dev'),
-    ];
-
-    expect(
-      client.databaseBatch.batchUpdate(toUpdate),
-      throwsA(isA<ServerpodClientException>()),
-    );
-  });
-
-  test(
-      'Given a list of entries trying to update a column that does not exist then an error is thrown.',
-      () async {
-    var data = <UniqueData>[
-      UniqueData(number: 1, email: 'info@serverpod.dev'),
-      UniqueData(number: 2, email: 'dev@serverpod.dev'),
-    ];
-
-    var inserted = await client.databaseBatch.batchInsert(data);
-
-    expect(
-      client.databaseBatch.batchUpdateWithInvalidColumn(inserted),
-      throwsA(isA<ServerpodClientException>()),
-    );
-  });
-
-  test(
-      'Given a list of entries when batch updating only a single column then no other data is updated.',
-      () async {
-    var expectedFirstEmail = 'info@serverpod.dev';
-    var expectedLastEmail = 'dev@serverpod.dev';
-    var expectedFirstNumber = 5;
-    var expectedLastNumber = 6;
-
-    var data = <UniqueData>[
-      UniqueData(number: 1, email: expectedFirstEmail),
-      UniqueData(number: 2, email: expectedLastEmail),
-    ];
-
-    var inserted = await client.databaseBatch.batchInsert(data);
-
-    var toUpdate = <UniqueData>[
-      UniqueData(
-        id: inserted.first.id,
-        number: expectedFirstNumber,
-        email: 'new@serverpod.dev',
-      ),
-      UniqueData(
-        id: inserted.last.id,
-        number: expectedLastNumber,
-        email: 'email@serverpod.dev',
-      ),
-    ];
-
-    var updated = await client.databaseBatch.batchUpdateNumberOnly(toUpdate);
-
-    expect(updated.first.number, expectedFirstNumber);
-    expect(updated.last.number, expectedLastNumber);
-
-    expect(updated.first.email, expectedFirstEmail);
-    expect(updated.last.email, expectedLastEmail);
   });
 
   test(

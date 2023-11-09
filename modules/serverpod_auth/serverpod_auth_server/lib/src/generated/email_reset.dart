@@ -382,7 +382,7 @@ class EmailResetRepository {
     );
   }
 
-  Future<EmailReset?> findRow(
+  Future<EmailReset?> findFirstRow(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
@@ -390,7 +390,7 @@ class EmailResetRepository {
     bool orderDescending = false,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findRow<EmailReset>(
+    return session.dbNext.findFirstRow<EmailReset>(
       where: where?.call(EmailReset.t),
       transaction: transaction,
     );
@@ -432,10 +432,12 @@ class EmailResetRepository {
   Future<List<EmailReset>> update(
     _i1.Session session,
     List<EmailReset> rows, {
+    _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.update<EmailReset>(
       rows,
+      columns: columns?.call(EmailReset.t),
       transaction: transaction,
     );
   }
@@ -443,10 +445,12 @@ class EmailResetRepository {
   Future<EmailReset> updateRow(
     _i1.Session session,
     EmailReset row, {
+    _i1.ColumnSelections<EmailResetTable>? columns,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.updateRow<EmailReset>(
       row,
+      columns: columns?.call(EmailReset.t),
       transaction: transaction,
     );
   }
