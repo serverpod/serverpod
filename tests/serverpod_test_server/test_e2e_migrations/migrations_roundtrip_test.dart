@@ -46,13 +46,13 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var addedTableName = 'migrated_table';
+      var expectedAddedTable = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        contains(addedTableName),
+        contains(expectedAddedTable),
         reason: 'Could not find migration table in live table definitions.',
       );
     });
@@ -89,7 +89,7 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var addedTables = [
+      var expectedNewTables = [
         'migrated_table',
         'migrated_table_2',
         'migrated_table_3',
@@ -99,8 +99,8 @@ void main() {
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        containsAll(addedTables),
-        reason: 'Could not the new tables in live table definitions.',
+        containsAll(expectedNewTables),
+        reason: 'Could not find the new tables in live table definitions.',
       );
     });
   });
@@ -171,13 +171,13 @@ void main() {
         reason: 'Failed to apply migration, exit code was not 0.',
       );
 
-      var removedTableName = 'migrated_table';
+      var expectedRemovedTable = 'migrated_table';
       var liveDefinition =
           await serviceClient.insights.getLiveDatabaseDefinition();
       var databaseTables = liveDefinition.tables.map((t) => t.name);
       expect(
         databaseTables,
-        isNot(contains(removedTableName)),
+        isNot(contains(expectedRemovedTable)),
         reason: 'Could still find migration table in live table definitions.',
       );
     });
@@ -227,14 +227,14 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var addedColumnName = 'addedColumn';
+      var expectedColumnName = 'addedColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        contains(addedColumnName),
+        contains(expectedColumnName),
         reason: 'Could not find added column in migrated table columns.',
       );
     });
@@ -288,14 +288,14 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var removedColumn = 'columnToRemove';
+      var expectedRemovedColumn = 'columnToRemove';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        isNot(contains(removedColumn)),
+        isNot(contains(expectedRemovedColumn)),
         reason: 'Could still find removed column in migrated table columns.',
       );
     });
@@ -406,14 +406,14 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var addedColumnName = 'addedColumn';
+      var expectedColumnName = 'addedColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var databaseColumns = migratedTable.columns.map((c) => c.name);
       expect(
         databaseColumns,
-        contains(addedColumnName),
+        contains(expectedColumnName),
         reason: 'Could not find added column in migrated table columns.',
       );
     });
@@ -464,19 +464,19 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var modifiedColumnName = 'previouslyNonNullableColumn';
+      var expectedModifiedColumn = 'previouslyNonNullableColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var migratedTableColumnNames = migratedTable.columns.map((c) => c.name);
       expect(
         migratedTableColumnNames,
-        contains(modifiedColumnName),
+        contains(expectedModifiedColumn),
         reason: 'Could not find modified column in migrated table columns.',
       );
 
-      var migratedTableColumn =
-          migratedTable.columns.firstWhere((c) => c.name == modifiedColumnName);
+      var migratedTableColumn = migratedTable.columns
+          .firstWhere((c) => c.name == expectedModifiedColumn);
       expect(
         migratedTableColumn.isNullable,
         isTrue,
@@ -534,19 +534,19 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var modifiedColumnName = 'previouslyNullableColumn';
+      var expectedModifiedColumn = 'previouslyNullableColumn';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var migratedTableColumnNames = migratedTable.columns.map((c) => c.name);
       expect(
         migratedTableColumnNames,
-        contains(modifiedColumnName),
+        contains(expectedModifiedColumn),
         reason: 'Could not find modified column in migrated table columns.',
       );
 
-      var migratedTableColumn =
-          migratedTable.columns.firstWhere((c) => c.name == modifiedColumnName);
+      var migratedTableColumn = migratedTable.columns
+          .firstWhere((c) => c.name == expectedModifiedColumn);
       expect(
         migratedTableColumn.isNullable,
         isFalse,
@@ -630,14 +630,14 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var addedIndexName = 'migrated_table_index';
+      var expectedAddedIndex = 'migrated_table_index';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var tableIndexes = migratedTable.indexes.map((i) => i.indexName);
       expect(
         tableIndexes,
-        contains(addedIndexName),
+        contains(expectedAddedIndex),
         reason: 'Could not find added index for migrated table.',
       );
     });
@@ -688,14 +688,14 @@ void main() {
         reason: 'Could not find migration table in live table definitions.',
       );
 
-      var removedIndexName = 'migrated_table_index';
+      var expectedRemovedIndex = 'migrated_table_index';
       var migratedTable = liveDefinition.tables.firstWhere(
         (t) => t.name == tableName,
       );
       var tableIndexes = migratedTable.indexes.map((i) => i.indexName);
       expect(
         tableIndexes,
-        isNot(contains(removedIndexName)),
+        isNot(contains(expectedRemovedIndex)),
         reason: 'Could still find removed index for migrated table.',
       );
     });
