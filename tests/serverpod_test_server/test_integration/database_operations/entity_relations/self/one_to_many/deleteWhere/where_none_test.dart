@@ -152,7 +152,10 @@ void main() async {
         );
 
         expect(deletedCatIds, hasLength(3));
-        expect(deletedCatIds, containsAll([kittens.last.id!, kitten2.id!]));
+        expect(
+          deletedCatIds,
+          containsAll([zelda.id!, kittens.last.id!, kitten2.id!]),
+        );
       },
     );
 
