@@ -24,6 +24,34 @@ ALTER TABLE ONLY "arena"
   ADD CONSTRAINT arena_pkey PRIMARY KEY (id);
 
 --
+-- Class Blocking as table blocking
+--
+
+CREATE TABLE "blocking" (
+  "id" serial,
+  "blockedId" integer NOT NULL,
+  "blockedById" integer NOT NULL
+);
+
+ALTER TABLE ONLY "blocking"
+  ADD CONSTRAINT blocking_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX blocking_blocked_unique_idx ON "blocking" USING btree ("blockedId", "blockedById");
+
+--
+-- Class Cat as table cat
+--
+
+CREATE TABLE "cat" (
+  "id" serial,
+  "name" text NOT NULL,
+  "motherId" integer
+);
+
+ALTER TABLE ONLY "cat"
+  ADD CONSTRAINT cat_pkey PRIMARY KEY (id);
+
+--
 -- Class Citizen as table citizen
 --
 
@@ -113,6 +141,18 @@ ALTER TABLE ONLY "enrollment"
   ADD CONSTRAINT enrollment_pkey PRIMARY KEY (id);
 
 CREATE UNIQUE INDEX enrollment_index_idx ON "enrollment" USING btree ("studentId", "courseId");
+
+--
+-- Class Member as table member
+--
+
+CREATE TABLE "member" (
+  "id" serial,
+  "name" text NOT NULL
+);
+
+ALTER TABLE ONLY "member"
+  ADD CONSTRAINT member_pkey PRIMARY KEY (id);
 
 --
 -- Class ObjectFieldScopes as table object_field_scopes
@@ -302,6 +342,8 @@ CREATE TABLE "post" (
 ALTER TABLE ONLY "post"
   ADD CONSTRAINT post_pkey PRIMARY KEY (id);
 
+CREATE UNIQUE INDEX next_unique_idx ON "post" USING btree ("nextId");
+
 --
 -- Class RelatedUniqueData as table related_unique_data
 --
@@ -420,6 +462,31 @@ ALTER TABLE ONLY "address"
   ADD CONSTRAINT address_fk_0
     FOREIGN KEY("inhabitantId")
       REFERENCES citizen(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "blocking" table
+--
+
+ALTER TABLE ONLY "blocking"
+  ADD CONSTRAINT blocking_fk_0
+    FOREIGN KEY("blockedId")
+      REFERENCES member(id)
+        ON DELETE CASCADE;
+ALTER TABLE ONLY "blocking"
+  ADD CONSTRAINT blocking_fk_1
+    FOREIGN KEY("blockedById")
+      REFERENCES member(id)
+        ON DELETE CASCADE;
+
+--
+-- Foreign relations for "cat" table
+--
+
+ALTER TABLE ONLY "cat"
+  ADD CONSTRAINT cat_fk_0
+    FOREIGN KEY("motherId")
+      REFERENCES cat(id)
         ON DELETE CASCADE;
 
 --

@@ -84,7 +84,7 @@ import 'package:serverpod_test_server/src/generated/entities_with_relations/one_
     as _i62;
 import 'package:serverpod_test_server/src/generated/entities_with_relations/one_to_one/town.dart'
     as _i63;
-import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_server/src/generated/entities_with_relations/self_relation/one_to_one/post.dart'
     as _i64;
 import 'package:serverpod_test_server/src/generated/object_field_scopes.dart'
     as _i65;
