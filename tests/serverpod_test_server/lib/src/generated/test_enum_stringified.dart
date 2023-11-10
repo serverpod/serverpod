@@ -29,10 +29,6 @@ enum TestEnumStringified with _i1.SerializableEntity {
 
   @override
   String toJson() => name;
-
   @override
-  String toString() {
-    print('toString called on enum TestEnumStringified');
-    return toJson();
-  }
+  String toString() => toJson();
 }
