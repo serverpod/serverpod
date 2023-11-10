@@ -16,7 +16,6 @@ class EnumDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
-        // TODO: For Serverpod 2.0, change the default to `true`.
         _serialized = EnumSerialization.byIndex,
         _subDirParts = [],
         _serverOnly = false,
