@@ -20,11 +20,13 @@ void main() {
     'protocol',
     'example.dart',
   );
-  group('Given enum named Example when generating code', () {
+  group('Given enum named Example serialized by index when generating code',
+      () {
     var entities = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
+          .withSerialized(EnumSerialization.byIndex)
           .build()
     ];
 
@@ -59,7 +61,8 @@ void main() {
     });
   });
 
-  group('Given enum named Example when generating code', () {
+  group('Given an enum named Example serialized by name when generating code',
+      () {
     var entities = [
       EnumDefinitionBuilder()
           .withClassName('Example')

@@ -6,9 +6,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-      'Given a valid enum definition when validating then serialized is set to int.',
-      () {
+  group('Given a valid enum definition when validating', () {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
         '''
@@ -27,34 +25,17 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serialized, EnumSerialization.byIndex);
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then serialized is set to int.', () {
+      expect(definition.serialized, EnumSerialization.byIndex);
+    });
   });
 
-  test(
-      'Given a valid enum definition with serialized set to int when validating then no errors are collected',
-      () {
-    var protocols = [
-      ProtocolSourceBuilder().withYaml(
-        '''
-        enum: ExampleEnum
-        serialized: byIndex
-        values:
-          - first
-          - second
-        ''',
-      ).build()
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
-
-    analyzer.validateAll();
-
-    expect(collector.errors, isEmpty);
-  });
-
-  test(
-      'Given a valid enum definition with serialized set to int when validating then serialized is set to int.',
+  group(
+      'Given a valid enum definition with serialized set to int when validating',
       () {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
@@ -75,11 +56,17 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serialized, EnumSerialization.byIndex);
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then serialized is set to int.', () {
+      expect(definition.serialized, EnumSerialization.byIndex);
+    });
   });
 
-  test(
-      'Given a valid enum definition with serialized set to string when validating then serialized is set to string.',
+  group(
+      'Given a valid enum definition with serialized set to string when validating',
       () {
     var protocols = [
       ProtocolSourceBuilder().withYaml(
@@ -100,7 +87,13 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serialized, EnumSerialization.byName);
+    test('then no errors are collected', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then serialized is set to string.', () {
+      expect(definition.serialized, EnumSerialization.byName);
+    });
   });
 
   test(

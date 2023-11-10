@@ -99,6 +99,38 @@ void main() {
     );
 
     test(
+        'when equals compared to NULL value then output is IS NULL expression.',
+        () {
+      var comparisonExpression = column.equals(null);
+
+      expect(comparisonExpression.toString(), '$column IS NULL');
+    });
+
+    test('when equals compared to enum value then output is equals expression.',
+        () {
+      var comparisonExpression = column.equals(TestEnum.blue);
+
+      expect(comparisonExpression.toString(), "$column = 'blue'");
+    });
+
+    test(
+        'when NOT equals compared to NULL value then output is IS NOT NULL expression.',
+        () {
+      var comparisonExpression = column.notEquals(null);
+
+      expect(comparisonExpression.toString(), '$column IS NOT NULL');
+    });
+
+    test(
+        'when NOT equals compared to enum value then output is NOT equals expression.',
+        () {
+      var comparisonExpression = column.notEquals(TestEnum.blue);
+
+      expect(
+          comparisonExpression.toString(), "$column IS DISTINCT FROM 'blue'");
+    });
+
+    test(
         'when checking if expression is in value set then output is IN expression.',
         () {
       var comparisonExpression = column.inSet(<TestEnum>{
