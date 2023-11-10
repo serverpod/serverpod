@@ -9,7 +9,7 @@ class TypeDefinitionBuilder {
   String? _url;
   DartType? _dartType;
   bool _customClass;
-  EnumSerialization? _serializeEnumAs;
+  EnumSerialization? _serialized;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -69,8 +69,8 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withEnumSerializeAs(EnumSerialization serializeEnumAs) {
-    _serializeEnumAs = serializeEnumAs;
+  TypeDefinitionBuilder withEnumSerialized(EnumSerialization serialized) {
+    _serialized = serialized;
     return this;
   }
 
@@ -82,7 +82,7 @@ class TypeDefinitionBuilder {
       url: _url,
       dartType: _dartType,
       customClass: _customClass,
-      serializeEnumAs: _serializeEnumAs,
+      serializeEnumAs: _serialized,
     );
   }
 }

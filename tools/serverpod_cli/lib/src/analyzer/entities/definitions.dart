@@ -193,7 +193,7 @@ class SerializableEntityIndexDefinition {
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableEntityDefinition {
   /// The type of serialization this enum should use.
-  final EnumSerialization serializeAs;
+  final EnumSerialization serialized;
 
   /// All the values of the enum.
   /// This also contains possible documentation for them.
@@ -207,7 +207,7 @@ class EnumDefinition extends SerializableEntityDefinition {
     required super.fileName,
     required super.sourceFileName,
     required super.className,
-    required this.serializeAs,
+    required this.serialized,
     required this.values,
     required super.serverOnly,
     super.subDirParts,

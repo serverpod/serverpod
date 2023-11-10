@@ -78,7 +78,7 @@ class EntityParser {
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
       values: values,
-      serializeAs: serializeAs,
+      serialized: serializeAs,
       documentation: enumDocumentation,
       subDirParts: protocolSource.protocolRootPathParts,
       serverOnly: serverOnly,

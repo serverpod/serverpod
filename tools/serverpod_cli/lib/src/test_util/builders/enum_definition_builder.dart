@@ -5,7 +5,7 @@ class EnumDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
-  EnumSerialization _serializeAs;
+  EnumSerialization _serialized;
   List<String> _subDirParts;
   bool _serverOnly;
 
@@ -17,7 +17,7 @@ class EnumDefinitionBuilder {
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         // TODO: For Serverpod 2.0, change the default to `true`.
-        _serializeAs = EnumSerialization.byIndex,
+        _serialized = EnumSerialization.byIndex,
         _subDirParts = [],
         _serverOnly = false,
         _values = [
@@ -32,7 +32,7 @@ class EnumDefinitionBuilder {
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
-      serializeAs: _serializeAs,
+      serialized: _serialized,
       values: _values,
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
@@ -65,8 +65,8 @@ class EnumDefinitionBuilder {
     return this;
   }
 
-  EnumDefinitionBuilder withSerializeAs(EnumSerialization serializeAs) {
-    _serializeAs = serializeAs;
+  EnumDefinitionBuilder withSerialized(EnumSerialization serialized) {
+    _serialized = serialized;
     return this;
   }
 

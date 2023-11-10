@@ -27,7 +27,7 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serializeAs, EnumSerialization.byIndex);
+    expect(definition.serialized, EnumSerialization.byIndex);
   });
 
   test(
@@ -75,7 +75,7 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serializeAs, EnumSerialization.byIndex);
+    expect(definition.serialized, EnumSerialization.byIndex);
   });
 
   test(
@@ -100,7 +100,7 @@ void main() {
 
     var definition = definitions.first as EnumDefinition;
 
-    expect(definition.serializeAs, EnumSerialization.byName);
+    expect(definition.serialized, EnumSerialization.byName);
   });
 
   test(
