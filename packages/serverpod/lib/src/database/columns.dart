@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/generated/protocol.dart';
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
@@ -79,6 +78,7 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
   }
 }
 
+/// Intended for internal use only
 class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
   ColumnEnumExtended(
