@@ -1824,7 +1824,7 @@ class SerializableEntityLibraryGenerator {
     var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
     Expression serializedAs;
 
-    switch (field.type.serializeEnumAs) {
+    switch (field.type.serializeEnum) {
       case null:
       case EnumSerialization.byIndex:
         serializedAs = enumType.property('byIndex');

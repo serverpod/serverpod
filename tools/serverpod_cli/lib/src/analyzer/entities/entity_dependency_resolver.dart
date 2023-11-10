@@ -48,7 +48,7 @@ class EntityDependencyResolver {
 
     if (enumDefinitionList.isEmpty) return;
 
-    fieldDefinition.type.serializeEnumAs = enumDefinitionList.first.serialized;
+    fieldDefinition.type.serializeEnum = enumDefinitionList.first.serialized;
   }
 
   static void _resolveObjectRelationReference(

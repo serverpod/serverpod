@@ -171,7 +171,7 @@ void main() {
 
     test('then the field type is serialized as an int', () {
       expect(
-        definition.fields.first.type.serializeEnumAs,
+        definition.fields.first.type.serializeEnum,
         EnumSerialization.byIndex,
       );
     });
@@ -218,7 +218,7 @@ void main() {
 
     test('then the field type is serialized as a String', () {
       expect(
-        definition.fields.first.type.serializeEnumAs,
+        definition.fields.first.type.serializeEnum,
         EnumSerialization.byName,
       );
     });

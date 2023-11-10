@@ -82,7 +82,7 @@ class TypeDefinitionBuilder {
       url: _url,
       dartType: _dartType,
       customClass: _customClass,
-      serializeEnumAs: _serialized,
+      serializeEnum: _serialized,
     );
   }
 }

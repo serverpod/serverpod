@@ -28,7 +28,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  EnumSerialization? serializeEnumAs;
+  EnumSerialization? serializeEnum;
 
   TypeDefinition({
     required this.className,
@@ -37,7 +37,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.serializeEnumAs,
+    this.serializeEnum,
   });
 
   bool get isListType => className == 'List';
@@ -46,7 +46,7 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
-  bool get isEnumType => serializeEnumAs != null;
+  bool get isEnumType => serializeEnum != null;
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -102,7 +102,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        serializeEnumAs: serializeEnumAs,
+        serializeEnum: serializeEnum,
       );
 
   /// Generate a [TypeReference] from this definition.
@@ -180,19 +180,15 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (isEnumType) {
-      switch (serializeEnumAs) {
+    var enumSerialization = serializeEnum;
+    if (enumSerialization != null && isEnumType) {
+      switch (enumSerialization) {
         case EnumSerialization.byName:
           return 'text';
         case EnumSerialization.byIndex:
           return 'integer';
-        case null:
-          throw StateError(
-            'SerializeEnumAs must be set for enum types!',
-          );
       }
     }
-
     if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
     if (className == 'bool') return 'boolean';
@@ -368,7 +364,7 @@ class TypeDefinition {
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        serializeEnumAs: serializeEnumAs,
+        serializeEnum: serializeEnum,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
                 ? 'protocol'
