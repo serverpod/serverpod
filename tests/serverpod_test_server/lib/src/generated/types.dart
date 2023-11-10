@@ -504,18 +504,18 @@ class TypesRepository {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<Types>(
       where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -524,12 +524,17 @@ class TypesRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<Types>(
       where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

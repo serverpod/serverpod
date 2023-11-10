@@ -455,19 +455,19 @@ class OrderRepository {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<OrderTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
     return session.dbNext.find<Order>(
       where: where?.call(Order.t),
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -477,13 +477,18 @@ class OrderRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<OrderTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Order>(
       where: where?.call(Order.t),
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

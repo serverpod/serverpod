@@ -75,6 +75,7 @@ class DatabaseConnection {
     Expression? where,
     int? offset,
     Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -85,6 +86,7 @@ class DatabaseConnection {
       where: where,
       offset: offset,
       orderBy: orderBy,
+      orderByList: orderByList,
       orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
@@ -683,6 +685,13 @@ class Transaction {
 /// A function that returns an [Expression] for a [Table] to be used with where
 /// clauses.
 typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
+
+/// A function that returns a Column for a Table to be used with order by
+typedef OrderByBuilder<T extends Table> = Column Function(T);
+
+/// A function that returns a list of [Order] for a [Table] to be used with
+/// order by list.
+typedef OrderByListBuilder<T extends Table> = List<Order> Function(T);
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);

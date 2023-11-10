@@ -367,18 +367,18 @@ class EmailFailedSignInRepository {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -387,12 +387,17 @@ class EmailFailedSignInRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

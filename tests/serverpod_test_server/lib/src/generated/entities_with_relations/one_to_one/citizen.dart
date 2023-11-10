@@ -495,19 +495,19 @@ class CitizenRepository {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
     return session.dbNext.find<Citizen>(
       where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -517,13 +517,18 @@ class CitizenRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

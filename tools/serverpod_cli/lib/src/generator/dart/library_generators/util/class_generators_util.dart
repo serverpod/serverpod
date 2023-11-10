@@ -30,9 +30,49 @@ TypeReference typeWhereExpressionBuilder(
   bool serverCode, {
   nullable = true,
 }) {
+  return _typeWithTableCallback(
+    className,
+    'WhereExpressionBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
+TypeReference typeOrderByBuilder(
+  String className,
+  bool serverCode, {
+  nullable = true,
+}) {
+  return _typeWithTableCallback(
+    className,
+    'OrderByBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
+TypeReference typeOrderByListBuilder(
+  String className,
+  bool serverCode, {
+  nullable = true,
+}) {
+  return _typeWithTableCallback(
+    className,
+    'OrderByListBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
+TypeReference _typeWithTableCallback(
+  String className,
+  String typeName,
+  bool serverCode, {
+  nullable = true,
+}) {
   return TypeReference(
     (t) => t
-      ..symbol = 'WhereExpressionBuilder'
+      ..symbol = typeName
       ..types.addAll([
         refer('${className}Table'),
       ])

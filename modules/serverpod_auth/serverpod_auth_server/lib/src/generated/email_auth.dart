@@ -365,18 +365,18 @@ class EmailAuthRepository {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<EmailAuth>(
       where: where?.call(EmailAuth.t),
+      orderBy: orderBy?.call(EmailAuth.t),
+      orderByList: orderByList?.call(EmailAuth.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -385,12 +385,17 @@ class EmailAuthRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
+      orderBy: orderBy?.call(EmailAuth.t),
+      orderByList: orderByList?.call(EmailAuth.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

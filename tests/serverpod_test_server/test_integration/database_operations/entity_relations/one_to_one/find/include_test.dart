@@ -28,7 +28,7 @@ void main() async {
       var companiesFetched = await Company.db.find(
         session,
         include: Company.include(town: Town.include()),
-        orderBy: Company.t.name,
+        orderBy: (t) => t.name,
       );
 
       var companyNames = companiesFetched.map((c) => c.name);
@@ -67,7 +67,7 @@ void main() async {
         session,
         include:
             Citizen.include(company: Company.include(town: Town.include())),
-        orderBy: Citizen.t.name,
+        orderBy: (t) => t.name,
       );
 
       var citizenNames = citizensFetched.map((c) => c.name);

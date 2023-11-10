@@ -447,18 +447,18 @@ class ServerHealthMetricRepository {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -467,12 +467,17 @@ class ServerHealthMetricRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

@@ -316,18 +316,18 @@ class SimpleDataRepository {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<SimpleData>(
       where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -336,12 +336,17 @@ class SimpleDataRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<SimpleData>(
       where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

@@ -395,18 +395,18 @@ class RuntimeSettingsRepository {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -415,12 +415,17 @@ class RuntimeSettingsRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

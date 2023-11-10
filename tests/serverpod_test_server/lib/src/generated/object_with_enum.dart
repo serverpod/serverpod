@@ -409,18 +409,18 @@ class ObjectWithEnumRepository {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -429,12 +429,17 @@ class ObjectWithEnumRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

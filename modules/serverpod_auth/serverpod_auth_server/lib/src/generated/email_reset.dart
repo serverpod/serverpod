@@ -366,18 +366,18 @@ class EmailResetRepository {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<EmailReset>(
       where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -386,12 +386,17 @@ class EmailResetRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<EmailReset>(
       where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

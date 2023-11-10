@@ -312,18 +312,18 @@ class ObjectWithByteDataRepository {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -332,12 +332,17 @@ class ObjectWithByteDataRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

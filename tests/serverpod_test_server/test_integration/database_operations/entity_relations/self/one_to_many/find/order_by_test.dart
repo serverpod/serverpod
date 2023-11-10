@@ -27,9 +27,9 @@ void main() async {
       var fetchedCats = await Cat.db.find(
         session,
         // Order by number of kittens in descending order
-        orderByList: [
-          db.Order(column: Cat.t.kittens.count(), orderDescending: true),
-          db.Order(column: Cat.t.name),
+        orderByList: (t) => [
+          db.Order(column: t.kittens.count(), orderDescending: true),
+          db.Order(column: t.name),
         ],
         orderDescending: true,
       );
@@ -55,7 +55,7 @@ void main() async {
       var fetchedCats = await Cat.db.find(
         session,
         // Order by number of kittens named Smul... in descending order
-        orderBy: Cat.t.kittens.count((k) => k.name.ilike('smul%')),
+        orderBy: (t) => t.kittens.count((k) => k.name.ilike('smul%')),
         orderDescending: true,
       );
 

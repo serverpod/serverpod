@@ -148,7 +148,7 @@ void main() async {
         var fetchedCats = await Cat.db.find(
           session,
           where: (t) => (t.kittens.count((t) => t.name.ilike('kitt%')) > 1),
-          orderBy: Cat.t.kittens.count((t) => t.name.ilike('zelda%')),
+          orderBy: (t) => t.kittens.count((t) => t.name.ilike('zelda%')),
           orderDescending: true,
         );
 

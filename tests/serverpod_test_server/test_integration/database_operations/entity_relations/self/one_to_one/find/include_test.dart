@@ -28,7 +28,7 @@ void main() async {
       var postsFetched = await Post.db.find(
         session,
         include: Post.include(next: Post.include()),
-        orderBy: Post.t.id,
+        orderBy: (t) => t.id,
       );
 
       expect(postsFetched[0].next?.content, 'Hello again!');
@@ -59,7 +59,7 @@ void main() async {
       var postsFetched = await Post.db.find(
         session,
         include: Post.include(next: Post.include(next: Post.include())),
-        orderBy: Post.t.id,
+        orderBy: (t) => t.id,
       );
 
       expect(postsFetched[0].next?.next?.content, 'Hello a third time!');

@@ -33,7 +33,6 @@ class Database {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
-    bool useCache = true,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -55,6 +54,7 @@ class Database {
     Expression? where,
     int? offset,
     Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -64,6 +64,7 @@ class Database {
       where: where,
       offset: offset,
       orderBy: orderBy,
+      orderByList: orderByList,
       orderDescending: orderDescending,
       transaction: transaction,
       include: include,

@@ -384,19 +384,19 @@ class CompanyRepository {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CompanyTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
     return session.dbNext.find<Company>(
       where: where?.call(Company.t),
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -406,13 +406,18 @@ class CompanyRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CompanyTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CompanyTable>? orderByList,
     _i1.Transaction? transaction,
     CompanyInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Company>(
       where: where?.call(Company.t),
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

@@ -340,18 +340,18 @@ class GoogleRefreshTokenRepository {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -360,12 +360,17 @@ class GoogleRefreshTokenRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

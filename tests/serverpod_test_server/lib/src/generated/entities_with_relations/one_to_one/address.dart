@@ -388,19 +388,19 @@ class AddressRepository {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
     return session.dbNext.find<Address>(
       where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -410,13 +410,18 @@ class AddressRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Address>(
       where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

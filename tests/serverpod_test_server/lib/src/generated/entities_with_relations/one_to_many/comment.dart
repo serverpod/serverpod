@@ -385,19 +385,19 @@ class CommentRepository {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CommentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
     return session.dbNext.find<Comment>(
       where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -407,13 +407,18 @@ class CommentRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CommentTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Comment>(
       where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

@@ -456,19 +456,19 @@ class TeamRepository {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TeamTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
     return session.dbNext.find<Team>(
       where: where?.call(Team.t),
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -478,13 +478,18 @@ class TeamRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TeamTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<TeamTable>? orderByList,
     _i1.Transaction? transaction,
     TeamInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Team>(
       where: where?.call(Team.t),
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

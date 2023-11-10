@@ -432,19 +432,19 @@ class BlockingRepository {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
     return session.dbNext.find<Blocking>(
       where: where?.call(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -454,13 +454,18 @@ class BlockingRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<BlockingTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<BlockingTable>? orderByList,
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Blocking>(
       where: where?.call(Blocking.t),
+      orderBy: orderBy?.call(Blocking.t),
+      orderByList: orderByList?.call(Blocking.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

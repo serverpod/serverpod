@@ -123,7 +123,7 @@ void main() {
         test('that takes the orderBy column as an optional param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('Column? orderBy'),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
           );
         });
 
@@ -137,7 +137,7 @@ void main() {
         test('that takes the orderByList as an optional param', () {
           expect(
             findMethod?.parameters?.toSource(),
-            contains('orderByList'),
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
 
@@ -203,7 +203,15 @@ void main() {
           var params = findRowMethod?.parameters?.toSource();
           expect(
             params,
-            contains('Column? orderBy'),
+            contains('OrderByBuilder<ExampleTable>? orderBy'),
+          );
+        });
+
+        test('that takes the orderBy as a named optional param', () {
+          var params = findRowMethod?.parameters?.toSource();
+          expect(
+            params,
+            contains('OrderByListBuilder<ExampleTable>? orderByList'),
           );
         });
 

@@ -635,18 +635,18 @@ class SessionLogEntryRepository {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -655,12 +655,17 @@ class SessionLogEntryRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

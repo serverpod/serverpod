@@ -393,18 +393,18 @@ class EmailCreateAccountRequestRepository {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -413,12 +413,17 @@ class EmailCreateAccountRequestRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }
