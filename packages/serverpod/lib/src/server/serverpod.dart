@@ -343,26 +343,14 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      // Load runtime settings and check connection to the database.
+      // Load runtime settings and check connection to the database
       bool databaseConnectionIsUp = false;
       bool printedDatabaseConnectionError = false;
 
       while (!databaseConnectionIsUp) {
         var session = await createSession(enableLogging: false);
         try {
-          // Initialize migration manager.
-          logVerbose('Initializing migration manager.');
-          migrationManager = MigrationManager();
-          await migrationManager.initialize(session);
-
-          if (commandLineArgs.applyMigrations) {
-            logVerbose('Applying database migrations.');
-            await migrationManager.migrateToLatest(session);
-          }
-
-          logVerbose('Verifying database integrity.');
-          await migrationManager.verifyDatabaseIntegrity(session);
-
+          await session.dbNext.testConnection();
           // We successfully connected to the database.
           databaseConnectionIsUp = true;
         } catch (e, stackTrace) {
@@ -378,6 +366,30 @@ class Serverpod {
           }
 
           await Future.delayed(const Duration(seconds: 10));
+        }
+
+        if (!databaseConnectionIsUp) {
+          await session.close();
+          continue;
+        }
+
+        try {
+          // Initialize migration manager.
+          logVerbose('Initializing migration manager.');
+          migrationManager = MigrationManager();
+          await migrationManager.initialize(session);
+
+          if (commandLineArgs.applyMigrations) {
+            logVerbose('Applying database migrations.');
+            await migrationManager.migrateToLatest(session);
+          }
+
+          logVerbose('Verifying database integrity.');
+          await migrationManager.verifyDatabaseIntegrity(session);
+        } catch (e) {
+          stderr.writeln(
+            'Failed to apply database migrations. $e',
+          );
         }
 
         try {

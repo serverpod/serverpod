@@ -36,6 +36,13 @@ class DatabaseConnection {
     legacy = DatabaseConnectionLegacy(_poolManager, _logQuery);
   }
 
+  /// Tests the database connection.
+  /// Throws an exception if the connection is not working.
+  Future<bool> testConnection() async {
+    await _postgresConnection.query('SELECT 1;', timeoutInSeconds: 2);
+    return true;
+  }
+
   /// For most cases use the corresponding method in [Database] instead.
   Future<List<T>> find<T extends TableRow>(
     Session session, {

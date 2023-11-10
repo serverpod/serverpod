@@ -303,4 +303,11 @@ class Database {
       retryIf: retryIf,
     );
   }
+
+  /// Tests the database connection.
+  /// Returns true if the connection is working.
+  /// Throws an exception if the connection is not working.
+  Future<bool> testConnection() {
+    return _databaseConnection.testConnection();
+  }
 }
