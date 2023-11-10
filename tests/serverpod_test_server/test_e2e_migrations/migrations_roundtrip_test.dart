@@ -1,12 +1,8 @@
 @Timeout(Duration(minutes: 5))
 
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_key_manager.dart';
 import 'package:test/test.dart';
 
@@ -18,7 +14,7 @@ void main() {
 
   group('Given new protocol entity with table', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -38,7 +34,8 @@ fields:
 '''
       };
 
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -48,7 +45,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -68,7 +66,7 @@ fields:
 
   group('Given multiple new protocol entities with table', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql:
             'DROP TABLE IF EXISTS migrated_table, migrated_table_2, migrated_table_3;',
         serviceClient: serviceClient,
@@ -105,7 +103,8 @@ fields:
 '''
       };
 
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -115,7 +114,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -135,7 +135,7 @@ fields:
 
   group('Given protocol entity with table that is removed', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -151,10 +151,12 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = <String, String>{};
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -169,7 +171,7 @@ fields:
 
   group('Given protocol entity with table that is removed', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -188,10 +190,12 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = <String, String>{};
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
         force: true,
@@ -202,7 +206,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -222,7 +227,7 @@ fields:
 
   group('Given existing protocol entity with added nullable column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -240,7 +245,8 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -252,7 +258,8 @@ fields:
   $addedColumn: String?
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -262,7 +269,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -292,7 +300,7 @@ fields:
 
   group('Given existing protocol entity with removed column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -313,7 +321,8 @@ fields:
   $columnToRemove: String
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -323,7 +332,8 @@ fields:
   anInt: int
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
         force: true,
@@ -334,7 +344,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -364,7 +375,7 @@ fields:
 
   group('Given existing protocol entity with removed column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -383,7 +394,8 @@ fields:
   $columnToRemove: String
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -393,7 +405,8 @@ fields:
   anInt: int
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -407,7 +420,7 @@ fields:
 
   group('Given existing protocol entity with added non nullable column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -424,7 +437,8 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -436,7 +450,8 @@ fields:
   $addedColumn: String
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -450,7 +465,7 @@ fields:
 
   group('Given existing protocol entity with non nullable column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -469,7 +484,8 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -481,7 +497,8 @@ fields:
   $addedColumn: String
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
         force: true,
@@ -492,7 +509,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -522,7 +540,7 @@ fields:
 
   group('Given existing protocol entity with nullability added to column', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -543,7 +561,8 @@ fields:
   $columnToModify: String
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -554,7 +573,8 @@ fields:
   $columnToModify: String?
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -564,7 +584,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -603,7 +624,7 @@ fields:
   group('Given existing protocol entity with nullability removed from column',
       () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -624,7 +645,8 @@ fields:
   $columnToModify: String?
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -635,7 +657,8 @@ fields:
   $columnToModify: String
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
         force: true,
@@ -646,7 +669,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -685,7 +709,7 @@ fields:
   group('Given existing protocol entity with nullability removed from column',
       () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -704,7 +728,8 @@ fields:
   $columnToModify: String?
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -715,7 +740,8 @@ fields:
   $columnToModify: String
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -729,7 +755,7 @@ fields:
 
   group('Given protocol entity with added index', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -747,7 +773,8 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var addedIndex = 'migrated_table_index';
       var targetStateProtocols = {
@@ -763,7 +790,8 @@ indexes:
 
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -773,7 +801,8 @@ indexes:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -803,7 +832,7 @@ indexes:
 
   group('Given protocol entity with index that is removed', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -827,7 +856,8 @@ indexes:
     unique: false
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -838,7 +868,8 @@ fields:
 
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -848,7 +879,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -878,7 +910,7 @@ fields:
 
   group('Given protocol entity with added relation', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -897,7 +929,8 @@ fields:
   anInt: int
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -907,7 +940,8 @@ fields:
   anInt: int, relation(parent=migrated_table)
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -917,7 +951,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -947,7 +982,7 @@ fields:
 
   group('Given protocol entity with relation that is removed', () {
     tearDown(() async {
-      await _migrationTestCleanup(
+      await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
         serviceClient: serviceClient,
       );
@@ -966,7 +1001,8 @@ fields:
   anInt: int, relation(parent=migrated_table)
 '''
       };
-      await _createInitialState(protocols: initialStateProtocols, tag: tag);
+      await MigrationTestUtils.createInitialState(
+          protocols: initialStateProtocols, tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -976,7 +1012,8 @@ fields:
   anInt: int
 '''
       };
-      var createMigrationExitCode = await _createMigrationFromProtocols(
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
         protocols: targetStateProtocols,
         tag: tag,
       );
@@ -986,7 +1023,8 @@ fields:
         reason: 'Failed to create migration, exit code was not 0.',
       );
 
-      var applyMigrationExitCode = await _runApplyMigrations();
+      var applyMigrationExitCode =
+          await MigrationTestUtils.runApplyMigrations();
       expect(
         applyMigrationExitCode,
         0,
@@ -1013,160 +1051,4 @@ fields:
       );
     });
   });
-}
-
-Future<void> _migrationTestCleanup({
-  required String resetSql,
-  required Client serviceClient,
-}) async {
-  _removeAllTaggedMigrations();
-  _removeMigrationTestProtocolFolder();
-  await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
-  await _removeTaggedMigrationsFromRegistry();
-  await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
-}
-
-Future<int> _runApplyMigrations() async {
-  var applyMigrationProcess = await Process.start(
-    'dart',
-    [
-      'run',
-      'bin/main.dart',
-      '--apply-migrations',
-      '--role',
-      'maintenance',
-      '--mode',
-      'production',
-    ],
-    workingDirectory: Directory.current.path,
-  );
-
-  applyMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-  applyMigrationProcess.stdout.transform(utf8.decoder).listen(print);
-
-  return await applyMigrationProcess.exitCode;
-}
-
-Future<void> _createInitialState({
-  required Map<String, String> protocols,
-  required String tag,
-}) async {
-  assert(
-    await _createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
-    'Failed to create migration.',
-  );
-  assert(
-    await _runApplyMigrations() == 0,
-    'Failed to create migration.',
-  );
-}
-
-Future<int> _createMigrationFromProtocols({
-  required Map<String, String> protocols,
-  required String tag,
-  bool force = false,
-}) async {
-  _removeMigrationTestProtocolFolder();
-  _migrationProtocolTestDirectory().createSync(recursive: true);
-
-  protocols.forEach((fileName, contents) {
-    var protocolFile = File(path.join(
-      _migrationProtocolTestDirectory().path,
-      '$fileName.yaml',
-    ));
-
-    protocolFile.writeAsStringSync(contents);
-  });
-
-  var createMigrationProcess = await Process.start(
-    'serverpod',
-    [
-      'create-migration',
-      '--tag',
-      tag,
-      if (force) '--force',
-    ],
-    workingDirectory: Directory.current.path,
-  );
-
-  createMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-  createMigrationProcess.stdout.transform(utf8.decoder).listen(print);
-  return await createMigrationProcess.exitCode;
-}
-
-Directory _migrationProtocolTestDirectory() => Directory(path.join(
-      Directory.current.path,
-      'lib',
-      'src',
-      'protocol',
-      'migration_test_protocol_files',
-    ));
-
-Directory _migrationsProjectDirectory() => Directory(path.join(
-      Directory.current.path,
-      'migrations',
-      'serverpod_test',
-    ));
-
-void _removeAllTaggedMigrations() {
-  for (var entity in _migrationsProjectDirectory().listSync()) {
-    if (entity is Directory) {
-      if (path.basename(entity.path).contains('-')) {
-        entity.deleteSync(recursive: true);
-      }
-    }
-  }
-}
-
-void _removeMigrationTestProtocolFolder() {
-  var protocolDirectory = _migrationProtocolTestDirectory();
-  if (protocolDirectory.existsSync()) {
-    protocolDirectory.deleteSync(recursive: true);
-  }
-}
-
-Future<void> _removeTaggedMigrationsFromRegistry() async {
-  var migrationRegistry = await MigrationRegistry.load(
-    _migrationsProjectDirectory(),
-  );
-
-  var lastMigration = migrationRegistry.getLatest();
-  while (lastMigration != null && lastMigration.contains('-')) {
-    migrationRegistry.removeLast();
-    lastMigration = migrationRegistry.getLatest();
-  }
-
-  await migrationRegistry.write();
-}
-
-Future<void> _setDatabaseMigrationToLatestInRegistry({
-  required Client serviceClient,
-}) async {
-  var migrationRegistry = await MigrationRegistry.load(
-    _migrationsProjectDirectory(),
-  );
-
-  var latestMigration = migrationRegistry.getLatest();
-
-  await serviceClient.insights.executeSql('''
-INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '$latestMigration', 2, now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '$latestMigration', "priority" = 2;
-''');
-}
-
-Future<void> _resetDatabase({
-  required Client serviceClient,
-  required String resetSql,
-}) async {
-  await serviceClient.insights.executeSql(resetSql);
-}
-
-enum AssetType {
-  initialState('initial_state'),
-  targetState('target_state');
-
-  final String name;
-  const AssetType(this.name);
 }
