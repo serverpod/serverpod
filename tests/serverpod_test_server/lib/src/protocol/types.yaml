@@ -10,3 +10,4 @@ fields:
   aDuration: Duration?
   aUuid: UuidValue?
   anEnum: TestEnum?
+  aStringifiedEnum: TestEnumStringified?

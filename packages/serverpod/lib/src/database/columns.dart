@@ -56,11 +56,36 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
 /// A [Column] holding an enum.
 class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     with _NullableColumnDefaultOperations<E> {
+  final EnumSerialization _serialized;
+
+  ColumnEnum._(super.columnName, super.table, this._serialized);
+
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(super.columnName, super.table);
+  factory ColumnEnum(
+    String columnName,
+    Table table,
+    EnumSerialization serialized,
+  ) = ColumnEnumExtended<E>;
 
   @override
-  Expression _encodeValueForQuery(value) => Expression(value.index);
+  Expression _encodeValueForQuery(value) {
+    switch (_serialized) {
+      case EnumSerialization.byIndex:
+        return Expression(value.index);
+      case EnumSerialization.byName:
+        return EscapedExpression(value.name);
+    }
+  }
+}
+
+/// Intended for internal use only
+class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnEnumExtended(super.columnName, super.table, super.serialized)
+      : super._();
+
+  /// Data type for serialization of the enum.
+  EnumSerialization get serialized => _serialized;
 }
 
 /// A [Column] holding an [String].

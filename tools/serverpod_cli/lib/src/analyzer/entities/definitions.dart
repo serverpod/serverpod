@@ -1,5 +1,4 @@
 import 'package:path/path.dart' as p;
-
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -193,6 +192,9 @@ class SerializableEntityIndexDefinition {
 
 /// A representation of a yaml file in the protocol directory defining an enum.
 class EnumDefinition extends SerializableEntityDefinition {
+  /// The type of serialization this enum should use.
+  final EnumSerialization serialized;
+
   /// All the values of the enum.
   /// This also contains possible documentation for them.
   List<ProtocolEnumValueDefinition> values;
@@ -205,6 +207,7 @@ class EnumDefinition extends SerializableEntityDefinition {
     required super.fileName,
     required super.sourceFileName,
     required super.className,
+    required this.serialized,
     required this.values,
     required super.serverOnly,
     super.subDirParts,

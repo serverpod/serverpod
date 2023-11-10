@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/class_genera
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// Generates the dart libraries for [SerializableEntityDefinition]s.
 class SerializableEntityLibraryGenerator {
@@ -432,7 +433,7 @@ class SerializableEntityLibraryGenerator {
         .fold({}, (map, field) {
       Expression assignment;
 
-      if ((field.type.isEnum ||
+      if ((field.type.isEnumType ||
           noneMutableTypeNames.contains(field.type.className))) {
         assignment = refer('this').property(field.name);
       } else if (clonableTypeNames.contains(field.type.className)) {
@@ -1509,7 +1510,7 @@ class SerializableEntityLibraryGenerator {
           ..type = TypeReference((t) => t
             ..symbol = field.type.columnType
             ..url = 'package:serverpod/serverpod.dart'
-            ..types.addAll(field.type.isEnum
+            ..types.addAll(field.type.isEnumType
                 ? [
                     field.type.reference(
                       serverCode,
@@ -1795,25 +1796,52 @@ class SerializableEntityLibraryGenerator {
             (field) => field.shouldSerializeFieldForDatabase(serverCode)))
           if (!(field.name == 'id' && serverCode))
             refer(createFieldName(serverCode, field))
-                .assign(TypeReference((t) => t
-                  ..symbol = field.type.columnType
-                  ..url = 'package:serverpod/serverpod.dart'
-                  ..types.addAll(field.type.isEnum
-                      ? [
-                          field.type.reference(
-                            serverCode,
-                            nullable: false,
-                            subDirParts: classDefinition.subDirParts,
-                            config: config,
-                          )
-                        ]
-                      : [])).call([
-                  literalString(field.name),
-                  refer('this'),
-                ]))
+                .assign(field.type.isEnumType
+                    ? _buildEntityTableEnumFieldTypeReference(field)
+                    : _buildEntityTableGeneralFieldExpression(field))
                 .statement,
       ]);
     });
+  }
+
+  Expression _buildEntityTableGeneralFieldExpression(
+    SerializableEntityFieldDefinition field,
+  ) {
+    assert(!field.type.isEnumType);
+    return TypeReference((t) => t
+      ..symbol = field.type.columnType
+      ..url = 'package:serverpod/serverpod.dart'
+      ..types.addAll([])).call([
+      literalString(field.name),
+      refer('this'),
+    ]);
+  }
+
+  Expression _buildEntityTableEnumFieldTypeReference(
+    SerializableEntityFieldDefinition field,
+  ) {
+    assert(field.type.isEnumType);
+    var enumType = refer('EnumSerialization', serverpodUrl(serverCode));
+    Expression serializedAs;
+
+    switch (field.type.serializeEnum) {
+      case null:
+      case EnumSerialization.byIndex:
+        serializedAs = enumType.property('byIndex');
+        break;
+      case EnumSerialization.byName:
+        serializedAs = enumType.property('byName');
+        break;
+    }
+
+    return TypeReference((t) => t
+      ..symbol = field.type.columnType
+      ..url = 'package:serverpod/serverpod.dart'
+      ..types.addAll([])).call([
+      literalString(field.name),
+      refer('this'),
+      serializedAs,
+    ]);
   }
 
   Field _buildDeprecatedStaticTableInstance(String className) {
@@ -2073,12 +2101,10 @@ class SerializableEntityLibraryGenerator {
 
   /// Handle enums for [generateEntityLibrary]
   Library _generateEnumLibrary(EnumDefinition enumDefinition) {
-    String enumName = enumDefinition.className;
-
     var library = Library((library) {
       library.body.add(
         Enum((e) {
-          e.name = enumName;
+          e.name = enumDefinition.className;
           e.docs.addAll(enumDefinition.documentation ?? []);
           e.mixins.add(refer('SerializableEntity', serverpodUrl(serverCode)));
           e.values.addAll([
@@ -2090,35 +2116,84 @@ class SerializableEntityLibraryGenerator {
               })
           ]);
 
-          e.methods.add(Method((m) => m
-            ..static = true
-            ..returns = refer('$enumName?')
-            ..name = 'fromJson'
-            ..requiredParameters.add(Parameter((p) => p
-              ..name = 'index'
-              ..type = refer('int')))
-            ..body = (BlockBuilder()
-                  ..statements.addAll([
-                    const Code('switch(index){'),
-                    for (int i = 0; i < enumDefinition.values.length; i++)
-                      Code('case $i: return ${enumDefinition.values[i].name};'),
-                    const Code('default: return null;'),
-                    const Code('}'),
-                  ]))
-                .build()));
-
-          e.methods.add(Method(
-            (m) => m
-              ..annotations.add(refer('override'))
-              ..returns = refer('int')
-              ..name = 'toJson'
-              ..lambda = true
-              ..body = refer('index').code,
-          ));
+          switch (enumDefinition.serialized) {
+            case EnumSerialization.byIndex:
+              e.methods.addAll(enumSerializationMethodsByIndex(enumDefinition));
+              break;
+            case EnumSerialization.byName:
+              e.methods.addAll(enumSerializationMethodsByName(enumDefinition));
+              break;
+          }
         }),
       );
     });
     return library;
+  }
+
+  List<Method> enumSerializationMethodsByIndex(EnumDefinition enumDefinition) {
+    return [
+      Method((m) => m
+        ..static = true
+        ..returns = refer('${enumDefinition.className}?')
+        ..name = 'fromJson'
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'index'
+          ..type = refer('int')))
+        ..body = (BlockBuilder()
+              ..statements.addAll([
+                const Code('switch(index){'),
+                for (int i = 0; i < enumDefinition.values.length; i++)
+                  Code('case $i: return ${enumDefinition.values[i].name};'),
+                const Code('default: return null;'),
+                const Code('}'),
+              ]))
+            .build()),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('int')
+          ..name = 'toJson'
+          ..lambda = true
+          ..body = refer('index').code,
+      )
+    ];
+  }
+
+  List<Method> enumSerializationMethodsByName(EnumDefinition enumDefinition) {
+    return [
+      Method((m) => m
+        ..static = true
+        ..returns = refer('${enumDefinition.className}?')
+        ..name = 'fromJson'
+        ..requiredParameters.add(Parameter((p) => p
+          ..name = 'name'
+          ..type = refer('String')))
+        ..body = (BlockBuilder()
+              ..statements.addAll([
+                const Code('switch(name){'),
+                for (var value in enumDefinition.values)
+                  Code("case '${value.name}': return ${value.name};"),
+                const Code('default: return null;'),
+                const Code('}'),
+              ]))
+            .build()),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('String')
+          ..name = 'toJson'
+          ..lambda = true
+          ..body = refer('name').code,
+      ),
+      Method(
+        (m) => m
+          ..annotations.add(refer('override'))
+          ..returns = refer('String')
+          ..name = 'toString'
+          ..lambda = true
+          ..body = refer('toJson').call([]).code,
+      )
+    ];
   }
 
   /// Generate a temporary protocol library, that just exports the entities.

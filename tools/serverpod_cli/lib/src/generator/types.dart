@@ -1,12 +1,12 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
-import 'package:path/path.dart' as p;
 
 import '../config/config.dart';
 
@@ -28,8 +28,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  /// True if this type references a enum.
-  bool isEnum;
+  EnumSerialization? serializeEnum;
 
   TypeDefinition({
     required this.className,
@@ -38,7 +37,7 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.isEnum = false,
+    this.serializeEnum,
   });
 
   bool get isListType => className == 'List';
@@ -46,6 +45,8 @@ class TypeDefinition {
   bool get isMapType => className == 'Map';
 
   bool get isIdType => className == 'int';
+
+  bool get isEnumType => serializeEnum != null;
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -101,7 +102,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        isEnum: isEnum,
+        serializeEnum: serializeEnum,
       );
 
   /// Generate a [TypeReference] from this definition.
@@ -179,10 +180,19 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (className == 'String') return 'text';
-    if (className == 'bool') return 'boolean';
-    if (className == 'int' || isEnum) return 'integer';
+    var enumSerialization = serializeEnum;
+    if (enumSerialization != null && isEnumType) {
+      switch (enumSerialization) {
+        case EnumSerialization.byName:
+          return 'text';
+        case EnumSerialization.byIndex:
+          return 'integer';
+      }
+    }
+    if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
+    if (className == 'bool') return 'boolean';
+    if (className == 'String') return 'text';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
@@ -200,8 +210,8 @@ class TypeDefinition {
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
     // TODO: add all suported types here
+    if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
-    if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
     if (className == 'String') return 'ColumnString';
@@ -354,7 +364,7 @@ class TypeDefinition {
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        isEnum: isEnum,
+        serializeEnum: serializeEnum,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
                 ? 'protocol'

@@ -438,9 +438,10 @@ class LogEntryTable extends _i1.Table {
       'time',
       this,
     );
-    logLevel = _i1.ColumnEnum<_i2.LogLevel>(
+    logLevel = _i1.ColumnEnum(
       'logLevel',
       this,
+      _i1.EnumSerialization.byIndex,
     );
     message = _i1.ColumnString(
       'message',

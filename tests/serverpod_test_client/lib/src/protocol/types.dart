@@ -24,6 +24,7 @@ abstract class Types extends _i1.SerializableEntity {
     this.aDuration,
     this.aUuid,
     this.anEnum,
+    this.aStringifiedEnum,
   });
 
   factory Types({
@@ -37,6 +38,7 @@ abstract class Types extends _i1.SerializableEntity {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   }) = _TypesImpl;
 
   factory Types.fromJson(
@@ -62,6 +64,9 @@ abstract class Types extends _i1.SerializableEntity {
           .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
       anEnum: serializationManager
           .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
+      aStringifiedEnum:
+          serializationManager.deserialize<_i3.TestEnumStringified?>(
+              jsonSerialization['aStringifiedEnum']),
     );
   }
 
@@ -88,6 +93,8 @@ abstract class Types extends _i1.SerializableEntity {
 
   _i3.TestEnum? anEnum;
 
+  _i3.TestEnumStringified? aStringifiedEnum;
+
   Types copyWith({
     int? id,
     int? anInt,
@@ -99,6 +106,7 @@ abstract class Types extends _i1.SerializableEntity {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,6 +121,7 @@ abstract class Types extends _i1.SerializableEntity {
       'aDuration': aDuration,
       'aUuid': aUuid,
       'anEnum': anEnum,
+      'aStringifiedEnum': aStringifiedEnum,
     };
   }
 }
@@ -131,6 +140,7 @@ class _TypesImpl extends Types {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -142,6 +152,7 @@ class _TypesImpl extends Types {
           aDuration: aDuration,
           aUuid: aUuid,
           anEnum: anEnum,
+          aStringifiedEnum: aStringifiedEnum,
         );
 
   @override
@@ -156,6 +167,7 @@ class _TypesImpl extends Types {
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
     Object? anEnum = _Undefined,
+    Object? aStringifiedEnum = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -169,6 +181,9 @@ class _TypesImpl extends Types {
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
+      aStringifiedEnum: aStringifiedEnum is _i3.TestEnumStringified?
+          ? aStringifiedEnum
+          : this.aStringifiedEnum,
     );
   }
 }

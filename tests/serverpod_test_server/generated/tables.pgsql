@@ -433,7 +433,8 @@ CREATE TABLE "types" (
   "aByteData" bytea,
   "aDuration" bigint,
   "aUuid" uuid,
-  "anEnum" integer
+  "anEnum" integer,
+  "aStringifiedEnum" text
 );
 
 ALTER TABLE ONLY "types"
