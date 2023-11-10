@@ -632,14 +632,20 @@ class DatabaseConnection {
     if (column is ColumnString) return 'text';
     if (column is ColumnBool) return 'boolean';
     if (column is ColumnInt) return 'integer';
-    if (column is ColumnEnumSerializedAsName) return 'text';
-    if (column is ColumnEnumSerializedAsIndex) return 'integer';
     if (column is ColumnDouble) return 'double precision';
     if (column is ColumnDateTime) return 'timestamp without time zone';
     if (column is ColumnByteData) return 'bytea';
     if (column is ColumnDuration) return 'bigint';
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnSerializable) return 'json';
+    if (column is ColumnEnumExtended) {
+      switch (column.serialized) {
+        case EnumSerialization.byIndex:
+          return 'integer';
+        case EnumSerialization.byName:
+          return 'text';
+      }
+    }
 
     return 'json';
   }

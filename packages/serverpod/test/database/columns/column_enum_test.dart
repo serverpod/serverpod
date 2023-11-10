@@ -8,9 +8,13 @@ enum TestEnum {
 }
 
 void main() {
-  group('Given a ColumnEnum', () {
+  group('Given a ColumnEnum serialized as index', () {
     var columnName = 'color';
-    var column = ColumnEnum<TestEnum>(columnName, Table(tableName: 'test'));
+    var column = ColumnEnum<TestEnum>(
+      columnName,
+      Table(tableName: 'test'),
+      EnumSerialization.byIndex,
+    );
 
     test(
         'when toString is called then column name withing double quotes is returned.',
@@ -83,6 +87,45 @@ void main() {
         expect(comparisonExpression.toString(),
             '($column NOT IN (0, 1, 2) OR $column IS NULL)');
       });
+    });
+  });
+
+  group('Given a ColumnEnum serialized as name', () {
+    var columnName = 'color';
+    var column = ColumnEnum<TestEnum>(
+      columnName,
+      Table(tableName: 'test'),
+      EnumSerialization.byName,
+    );
+
+    test(
+        'when checking if expression is in value set then output is IN expression.',
+        () {
+      var comparisonExpression = column.inSet(<TestEnum>{
+        TestEnum.red,
+        TestEnum.blue,
+        TestEnum.green,
+      });
+
+      expect(
+        comparisonExpression.toString(),
+        "$column IN ('red', 'blue', 'green')",
+      );
+    });
+
+    test(
+        'when checking if expression is NOT in value set then output is NOT IN expression.',
+        () {
+      var comparisonExpression = column.notInSet(<TestEnum>{
+        TestEnum.red,
+        TestEnum.blue,
+        TestEnum.green,
+      });
+
+      expect(
+        comparisonExpression.toString(),
+        "($column NOT IN ('red', 'blue', 'green') OR $column IS NULL)",
+      );
     });
   });
 }

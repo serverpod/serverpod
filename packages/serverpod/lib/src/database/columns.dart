@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/protocol.dart';
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
@@ -53,32 +54,39 @@ abstract class _ValueOperatorColumn<T> extends Column<T> {
   Expression _encodeValueForQuery(T value);
 }
 
-/// A [Column] holding an enum that is serialized as the enum value name.
-class ColumnEnumSerializedAsName<E extends Enum> extends _ValueOperatorColumn<E>
+/// A [Column] holding an enum.
+class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
     with _NullableColumnDefaultOperations<E> {
+  final EnumSerialization _serialized;
+
+  ColumnEnum._(super.columnName, super.table, this._serialized);
+
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnumSerializedAsName(super.columnName, super.table);
+  factory ColumnEnum(
+    String columnName,
+    Table table,
+    EnumSerialization serialized,
+  ) = ColumnEnumExtended<E>;
 
   @override
-  Expression _encodeValueForQuery(value) => EscapedExpression(value.name);
+  Expression _encodeValueForQuery(value) {
+    switch (_serialized) {
+      case EnumSerialization.byIndex:
+        return Expression(value.index);
+      case EnumSerialization.byName:
+        return EscapedExpression(value.name);
+    }
+  }
 }
 
-/// A [Column] holding an enum that is serialized as the enum value index.
-class ColumnEnumSerializedAsIndex<E extends Enum>
-    extends _ValueOperatorColumn<E> with _NullableColumnDefaultOperations<E> {
+class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnumSerializedAsIndex(super.columnName, super.table);
+  ColumnEnumExtended(
+      String columnName, Table table, EnumSerialization serialized)
+      : super._(columnName, table, serialized);
 
-  @override
-  Expression _encodeValueForQuery(value) => Expression(value.index);
-}
-
-/// A [Column] holding an enum that is serialized as the enum value index
-/// (included for backwards compatibility).
-// TODO: For Serverpod 2.0, remove this, or make it extend ColumnEnumSerializedAsName
-class ColumnEnum<E extends Enum> extends ColumnEnumSerializedAsIndex<E> {
-  /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnum(super.columnName, super.table);
+  /// Data type for serialization of the enum.
+  EnumSerialization get serialized => _serialized;
 }
 
 /// A [Column] holding an [String].
