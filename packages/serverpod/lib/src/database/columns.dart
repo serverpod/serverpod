@@ -81,9 +81,8 @@ class ColumnEnum<E extends Enum> extends _ValueOperatorColumn<E>
 /// Intended for internal use only
 class ColumnEnumExtended<E extends Enum> extends ColumnEnum<E> {
   /// Creates a new [Column], this is typically done in generated code only.
-  ColumnEnumExtended(
-      String columnName, Table table, EnumSerialization serialized)
-      : super._(columnName, table, serialized);
+  ColumnEnumExtended(super.columnName, super.table, super.serialized)
+      : super._();
 
   /// Data type for serialization of the enum.
   EnumSerialization get serialized => _serialized;
