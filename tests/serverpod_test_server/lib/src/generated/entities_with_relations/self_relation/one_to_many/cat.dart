@@ -456,19 +456,19 @@ class CatRepository {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CatTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
     return session.dbNext.find<Cat>(
       where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -478,13 +478,18 @@ class CatRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CatTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CatTable>? orderByList,
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Cat>(
       where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

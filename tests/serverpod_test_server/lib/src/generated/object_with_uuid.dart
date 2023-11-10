@@ -336,18 +336,18 @@ class ObjectWithUuidRepository {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -356,12 +356,17 @@ class ObjectWithUuidRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

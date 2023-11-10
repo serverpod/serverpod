@@ -455,19 +455,19 @@ class CityRepository {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CityTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
     return session.dbNext.find<City>(
       where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -477,13 +477,18 @@ class CityRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CityTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
     _i1.Transaction? transaction,
     CityInclude? include,
   }) async {
     return session.dbNext.findFirstRow<City>(
       where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

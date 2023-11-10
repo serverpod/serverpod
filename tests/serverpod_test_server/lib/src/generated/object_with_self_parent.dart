@@ -310,18 +310,18 @@ class ObjectWithSelfParentRepository {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -330,12 +330,17 @@ class ObjectWithSelfParentRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

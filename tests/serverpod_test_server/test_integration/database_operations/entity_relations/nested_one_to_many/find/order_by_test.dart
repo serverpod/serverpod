@@ -46,13 +46,13 @@ void main() async {
       var arenasFetched = await Arena.db.find(
         session,
         // Order arenas by number of players in their teams and then their name.
-        orderByList: [
+        orderByList: (t) => [
           db.Order(
-            column: Arena.t.team.players.count(),
+            column: t.team.players.count(),
             orderDescending: true,
           ),
           db.Order(
-            column: Arena.t.name,
+            column: t.name,
           )
         ],
       );
@@ -97,13 +97,13 @@ void main() async {
 
       var arenasFetched = await Arena.db.find(session,
           // Fetch all arenas with teams that have any player with a name starting with a.
-          orderByList: [
+          orderByList: (t) => [
             db.Order(
-              column: Arena.t.team.players.count((p) => p.name.ilike('a%')),
+              column: t.team.players.count((p) => p.name.ilike('a%')),
               orderDescending: true,
             ),
             db.Order(
-              column: Arena.t.name,
+              column: t.name,
             )
           ]);
 

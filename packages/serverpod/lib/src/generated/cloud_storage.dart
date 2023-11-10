@@ -444,18 +444,18 @@ class CloudStorageEntryRepository {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -464,12 +464,17 @@ class CloudStorageEntryRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

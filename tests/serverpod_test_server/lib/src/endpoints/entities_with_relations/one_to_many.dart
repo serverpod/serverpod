@@ -9,7 +9,7 @@ class OneToManyEndpoint extends Endpoint {
   ) async {
     return await Customer.db.find(
       session,
-      orderBy: Customer.t.orders.count(),
+      orderBy: (t) => t.orders.count(),
       orderDescending: false,
     );
   }
@@ -21,7 +21,7 @@ class OneToManyEndpoint extends Endpoint {
     return await Customer.db.find(
       session,
       orderBy:
-          Customer.t.orders.count((o) => o.description.equals(description)),
+          (t) => t.orders.count((o) => o.description.equals(description)),
       orderDescending: false,
     );
   }

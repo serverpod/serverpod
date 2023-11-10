@@ -362,19 +362,19 @@ class ArenaRepository {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
     return session.dbNext.find<Arena>(
       where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -384,13 +384,18 @@ class ArenaRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ArenaTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ArenaTable>? orderByList,
     _i1.Transaction? transaction,
     ArenaInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Arena>(
       where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

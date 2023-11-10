@@ -433,19 +433,19 @@ class PostRepository {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<PostTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
     return session.dbNext.find<Post>(
       where: where?.call(Post.t),
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -455,13 +455,18 @@ class PostRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<PostTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Post>(
       where: where?.call(Post.t),
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

@@ -393,18 +393,18 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -413,12 +413,17 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

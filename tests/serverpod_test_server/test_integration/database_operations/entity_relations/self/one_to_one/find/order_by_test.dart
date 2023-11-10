@@ -27,7 +27,7 @@ void main() async {
 
         var postsFetched = await Post.db.find(
           session,
-          orderBy: Post.t.next.content,
+          orderBy: (t) => t.next.content,
         );
 
         expect(postsFetched[0].content, '3 Hello a third time!'); // next is 1
@@ -56,10 +56,13 @@ void main() async {
       await Post.db.attachRow.next(session, post[0], post[1]);
       await Post.db.attachRow.next(session, post[1], post[2]);
 
-      var postsFetched = await Post.db.find(session, orderByList: [
-        db.Order(column: Post.t.next.next.content),
-        db.Order(column: Post.t.content),
-      ]);
+      var postsFetched = await Post.db.find(
+        session,
+        orderByList: (t) => [
+          db.Order(column: t.next.next.content),
+          db.Order(column: t.content),
+        ],
+      );
 
       expect(postsFetched[0].content, '2 Hello world!'); // next.next is 1
       expect(postsFetched[1].content, '1 Hello again!'); // next.next is null

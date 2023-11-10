@@ -388,19 +388,19 @@ class RelatedUniqueDataRepository {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
     return session.dbNext.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -410,13 +410,18 @@ class RelatedUniqueDataRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
     return session.dbNext.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

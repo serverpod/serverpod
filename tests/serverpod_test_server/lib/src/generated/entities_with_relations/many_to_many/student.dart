@@ -384,19 +384,19 @@ class StudentRepository {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
     return session.dbNext.find<Student>(
       where: where?.call(Student.t),
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -406,13 +406,18 @@ class StudentRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
     _i1.Transaction? transaction,
     StudentInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Student>(
       where: where?.call(Student.t),
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

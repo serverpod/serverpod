@@ -311,18 +311,18 @@ class ObjectWithDurationRepository {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -331,12 +331,17 @@ class ObjectWithDurationRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

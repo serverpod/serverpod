@@ -448,18 +448,18 @@ class ServerHealthConnectionInfoRepository {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -468,12 +468,17 @@ class ServerHealthConnectionInfoRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

@@ -315,18 +315,18 @@ class ReadWriteTestEntryRepository {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -335,12 +335,17 @@ class ReadWriteTestEntryRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

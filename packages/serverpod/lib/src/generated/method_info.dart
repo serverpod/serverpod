@@ -340,18 +340,18 @@ class MethodInfoRepository {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -360,12 +360,17 @@ class MethodInfoRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

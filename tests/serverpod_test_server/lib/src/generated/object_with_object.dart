@@ -442,18 +442,18 @@ class ObjectWithObjectRepository {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
+      orderBy: orderBy?.call(ObjectWithObject.t),
+      orderByList: orderByList?.call(ObjectWithObject.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -462,12 +462,17 @@ class ObjectWithObjectRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
+      orderBy: orderBy?.call(ObjectWithObject.t),
+      orderByList: orderByList?.call(ObjectWithObject.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

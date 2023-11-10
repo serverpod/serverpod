@@ -451,19 +451,19 @@ class MemberRepository {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MemberTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<MemberTable>? orderByList,
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
     return session.dbNext.find<Member>(
       where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -473,13 +473,18 @@ class MemberRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MemberTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<MemberTable>? orderByList,
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Member>(
       where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

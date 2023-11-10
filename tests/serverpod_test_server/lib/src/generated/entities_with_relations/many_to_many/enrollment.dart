@@ -431,19 +431,19 @@ class EnrollmentRepository {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
     return session.dbNext.find<Enrollment>(
       where: where?.call(Enrollment.t),
+      orderBy: orderBy?.call(Enrollment.t),
+      orderByList: orderByList?.call(Enrollment.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -453,13 +453,18 @@ class EnrollmentRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<EnrollmentTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     EnrollmentInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Enrollment>(
       where: where?.call(Enrollment.t),
+      orderBy: orderBy?.call(Enrollment.t),
+      orderByList: orderByList?.call(Enrollment.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

@@ -346,18 +346,18 @@ class ObjectFieldScopesRepository {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -366,12 +366,17 @@ class ObjectFieldScopesRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

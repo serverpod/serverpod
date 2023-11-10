@@ -405,18 +405,18 @@ class AuthKeyRepository {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<AuthKey>(
       where: where?.call(AuthKey.t),
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -425,12 +425,17 @@ class AuthKeyRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<AuthKey>(
       where: where?.call(AuthKey.t),
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

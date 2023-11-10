@@ -184,7 +184,7 @@ class HealthCheckManager {
           (t.timestamp < startTime) &
           t.granularity.equals(srcGranularity) &
           t.serverId.equals(_pod.serverId),
-      orderBy: ServerHealthConnectionInfo.t.timestamp,
+      orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: srcGranularity == 1 ? 61 : 25,
     );
@@ -270,7 +270,7 @@ class HealthCheckManager {
           (t.timestamp < startTime) &
           t.granularity.equals(srcGranularity) &
           t.serverId.equals(_pod.serverId),
-      orderBy: ServerHealthMetric.t.timestamp,
+      orderBy: (t) => t.timestamp,
       orderDescending: true,
       limit: (srcGranularity == 1 ? 61 : 25) * numHealthChecks,
     );

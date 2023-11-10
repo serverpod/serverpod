@@ -550,18 +550,18 @@ class MessageLogEntryRepository {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -570,12 +570,17 @@ class MessageLogEntryRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

@@ -40,7 +40,7 @@ void main() async {
 
         var fetchedMembers = await Member.db.find(
           session,
-          orderBy: Member.t.blocking.count(),
+          orderBy: (t) => t.blocking.count(),
         );
 
         var memberNames = fetchedMembers.map((e) => e.name);
@@ -73,16 +73,19 @@ void main() async {
         Blocking(blockedById: member[2].id!, blockedId: member[0].id!),
       ]);
 
-      var fetchedMembers = await Member.db.find(session, orderByList: [
-        db.Order(
-          column: Member.t.blocking.count(
-            (c) => c.blockedId.equals(member[0].id!),
+      var fetchedMembers = await Member.db.find(
+        session,
+        orderByList: (t) => [
+          db.Order(
+            column: t.blocking.count(
+              (c) => c.blockedId.equals(member[0].id!),
+            ),
           ),
-        ),
-        db.Order(
-          column: Member.t.name,
-        )
-      ]);
+          db.Order(
+            column: t.name,
+          )
+        ],
+      );
 
       var memberNames = fetchedMembers.map((e) => e.name);
 

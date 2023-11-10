@@ -365,18 +365,18 @@ class UserImageRepository {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<UserImage>(
       where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -385,12 +385,17 @@ class UserImageRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<UserImage>(
       where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }
