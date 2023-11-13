@@ -100,7 +100,7 @@ class MigrationGenerator {
     );
   }
 
-  Future<DatabaseDefinition> _getSrcDatabaseDefinition(
+  Future<DatabaseDefinition> _getSourceDatabaseDefinition(
     String? latestVersion,
     int priority,
   ) async {
@@ -126,7 +126,7 @@ class MigrationGenerator {
       migrationsProjectDirectory,
     );
 
-    var srcDatabase = await _getSrcDatabaseDefinition(
+    var srcDatabase = await _getSourceDatabaseDefinition(
       migrationRegistry.getLatest(),
       priority,
     );
