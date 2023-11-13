@@ -67,12 +67,12 @@ class CreateMigrationCommand extends ServerpodCommand {
       }
     }
 
-    var projectName = await getProjectName();
-
     var config = await GeneratorConfig.load();
     if (config == null) {
-      throw ExitException();
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
+
+    var projectName = await getProjectName();
 
     int priority;
     var packageType = config.type;
