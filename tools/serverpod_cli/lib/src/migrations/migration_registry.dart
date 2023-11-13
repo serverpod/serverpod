@@ -9,9 +9,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 ///
 /// The registry is stored in the migrations directory as a JSON file.
 class MigrationRegistry {
-  /// The name of the registry file.
-  static const _fileNameRegistryJson = 'migration_registry.json';
-
   /// The registry.
   DatabaseMigrationRegistry registry;
 
@@ -55,7 +52,7 @@ class MigrationRegistry {
   Future<void> write() async {
     var registryFile = File(path.join(
       migrationsDirectory.path,
-      _fileNameRegistryJson,
+      MigrationConstants.migrationRegistryFileName,
     ));
 
     var registryData = Protocol().encodeWithType(registry);
@@ -69,7 +66,7 @@ class MigrationRegistry {
   static Future<MigrationRegistry> load(Directory migrationsDirectory) async {
     var registryFile = File(path.join(
       migrationsDirectory.path,
-      _fileNameRegistryJson,
+      MigrationConstants.migrationRegistryFileName,
     ));
 
     if (!registryFile.existsSync()) {

@@ -7,7 +7,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// Shared methods for migration versioning.
 class MigrationVersions {
   /// Provides a list of all available migration versions of a module.
-  static const _fileNameRegistryJson = 'migration_registry.json';
 
   /// Returns all migration versions available for the module.
   /// throws [MigrationRegistryLoadException] if the registry file is corrupt.
@@ -62,7 +61,7 @@ class MigrationVersions {
     ));
     var registryFile = File(path.join(
       moduleDirectory.path,
-      _fileNameRegistryJson,
+      MigrationConstants.migrationRegistryFileName,
     ));
 
     if (!registryFile.existsSync()) {
