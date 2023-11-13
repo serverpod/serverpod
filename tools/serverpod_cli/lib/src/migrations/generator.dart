@@ -221,7 +221,16 @@ class MigrationGenerator {
 
     // Get the live database definition from the server.
     var client = ConfigInfo(runMode).createServiceClient();
-    var liveDatabase = await client.insights.getLiveDatabaseDefinition();
+    DatabaseDefinition liveDatabase;
+    try {
+      liveDatabase = await client.insights.getLiveDatabaseDefinition();
+    } catch (e) {
+      log.error('Unable to fetch live database schema from server. '
+          'Make sure the server is running and is connected to the '
+          'database.');
+      log.error(e.toString());
+      return null;
+    }
 
     // Print warnings, if any exists.
     var migration = generateDatabaseMigration(
