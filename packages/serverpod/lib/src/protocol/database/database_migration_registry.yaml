@@ -1,0 +1,5 @@
+### Defines a registry over migrations for a database.
+class: DatabaseMigrationRegistry
+fields:
+  ### List of migrations for the database.
+  migrations: List<String>
