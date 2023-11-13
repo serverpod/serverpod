@@ -126,7 +126,9 @@ fields:
       );
       migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
       expect(migrationRegistry, hasLength(migrationsBefore + 3));
-      expect(migrationRegistry.getLatest(), contains(tag));
+      var migrations = migrationRegistry.registry.migrations;
+      var lastThreeMigrations = migrations.sublist(migrations.length - 3);
+      expect(lastThreeMigrations, everyElement(contains(tag)));
     });
   });
 
