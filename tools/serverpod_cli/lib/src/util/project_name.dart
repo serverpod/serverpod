@@ -1,29 +1,31 @@
 import 'dart:io';
+import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:yaml/yaml.dart';
 
-Future<String> getProjectName() async {
+Future<String?> getProjectName() async {
   var pubspecFile = File('pubspec.yaml');
   if (!await pubspecFile.exists()) {
-    throw Exception(
-      'No pubspec.yaml file found in current directory.',
-    );
+    log.error('No pubspec.yaml file found in current directory.');
+    return null;
   }
 
   var pubspec = loadYaml(await pubspecFile.readAsString());
   if (pubspec == null) {
-    throw Exception(
-      'Failed to parse pubspec.yaml file.',
-    );
+    log.error('Failed to parse pubspec.yaml file.');
+    return null;
   }
 
   String? name = pubspec['name'];
   if (name == null) {
-    throw Exception(
-      'No name found in pubspec.yaml file.',
-    );
+    log.error('No name found in pubspec.yaml file.');
+    return null;
   }
 
-  name = moduleNameFromServerPackageName(name);
-  return name;
+  try {
+    return moduleNameFromServerPackageName(name);
+  } catch (e) {
+    log.error(e.toString());
+    return null;
+  }
 }

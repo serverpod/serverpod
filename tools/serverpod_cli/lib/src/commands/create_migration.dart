@@ -73,6 +73,9 @@ class CreateMigrationCommand extends ServerpodCommand {
     }
 
     var projectName = await getProjectName();
+    if (projectName == null) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
 
     int priority;
     var packageType = config.type;
