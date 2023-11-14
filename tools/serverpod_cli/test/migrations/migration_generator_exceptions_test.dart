@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/commands/create_migration.dart';
+import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
@@ -39,7 +39,8 @@ void main() {
       test('then null is returned.', () async {
         expect(
           generator.repairMigration(
-            runMode: CreateMigrationCommand.runModes.first /* development */,
+            runMode:
+                CreateRepairMigrationCommand.runModes.first /* development */,
             force: false,
           ),
           throwsA(
@@ -82,7 +83,8 @@ void main() {
       test('then null is returned.', () async {
         expect(
           generator.repairMigration(
-            runMode: CreateMigrationCommand.runModes.first /* development */,
+            runMode:
+                CreateRepairMigrationCommand.runModes.first /* development */,
             force: false,
           ),
           throwsA(isA<MigrationVersionLoadException>()

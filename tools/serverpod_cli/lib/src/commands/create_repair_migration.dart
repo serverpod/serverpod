@@ -8,15 +8,18 @@ import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-class CreateMigrationCommand extends ServerpodCommand {
+class CreateRepairMigrationCommand extends ServerpodCommand {
+  static const runModes = <String>['development', 'staging', 'production'];
+
   @override
-  final name = 'create-migration';
+  final name = 'create-repair-migration';
 
   @override
   final description =
-      'Creates a migration from the last migration to the current state of the database.';
+      'Repairs the database by comparing the target state to what is in the '
+      'live database instead of comparing to the latest migration.';
 
-  CreateMigrationCommand() {
+  CreateRepairMigrationCommand() {
     argParser.addFlag(
       'force',
       abbr: 'f',
@@ -25,6 +28,20 @@ class CreateMigrationCommand extends ServerpodCommand {
       help:
           'Creates the migration even if there are warnings or information that '
           'may be destroyed.',
+    );
+    argParser.addOption(
+      'version',
+      abbr: 'v',
+      help: 'The target version for the repair. If not specified, the latest '
+          'migration version will be repaired.',
+    );
+    argParser.addOption(
+      'mode',
+      abbr: 'm',
+      defaultsTo: 'development',
+      allowed: runModes,
+      help: 'Used to specify which database to fetch the live database '
+          'definition from.',
     );
     argParser.addOption(
       'tag',
@@ -36,7 +53,9 @@ class CreateMigrationCommand extends ServerpodCommand {
   @override
   void run() async {
     bool force = argResults!['force'];
+    String mode = argResults!['mode'];
     String? tag = argResults!['tag'];
+    String? targetVersion = argResults!['version'];
 
     if (tag != null) {
       if (!StringValidators.isValidTagName(tag)) {
@@ -58,46 +77,53 @@ class CreateMigrationCommand extends ServerpodCommand {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    int priority;
-    var packageType = config.type;
-    switch (packageType) {
-      case PackageType.internal:
-        priority = 0;
-        break;
-      case PackageType.module:
-        priority = 1;
-        break;
-      case PackageType.server:
-        priority = 2;
-        break;
-    }
-
     var generator = MigrationGenerator(
       directory: Directory.current,
       projectName: projectName,
     );
 
-    var success = await log.progress('Creating migration', () async {
-      MigrationVersion? migration;
+    RepairTargetMigration? targetMigration;
+    if (targetVersion != null) {
+      targetMigration = RepairTargetMigration(
+        version: targetVersion,
+        moduleName: projectName,
+      );
+    }
+
+    var success = await log.progress('Creating repair migration', () async {
+      String? migrationSql;
       try {
-        migration = await generator.createMigration(
+        migrationSql = await generator.repairMigration(
           tag: tag,
           force: force,
-          priority: priority,
+          runMode: mode,
+          targetMigration: targetMigration,
         );
+      } on MigrationRepairTargetLoadException catch (e) {
+        log.error(
+          'Unable to load repair target "${e.targetName}" for module '
+          '"${e.moduleName}".',
+        );
+        log.error(e.exception);
       } on MigrationVersionLoadException catch (e) {
         log.error(
           'Unable to determine latest database definition due to a corrupted '
           'migration. Please re-create or remove the migration version and try '
-          'again. Migration version: "${e.versionName}".',
+          'again. Migration version: "${e.versionName}" for module '
+          '"${e.moduleName}".',
         );
         log.error(e.exception);
       } on MigrationRegistryLoadException catch (e) {
         log.error(
             'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
+      } on MigrationLiveDatabaseDefinitionException catch (e) {
+        log.error('Unable to fetch live database schema from server. '
+            'Make sure the server is running and is connected to the '
+            'database.');
+        log.error(e.exception);
       }
 
-      return migration != null;
+      return migrationSql != null;
     });
 
     if (!success) {
