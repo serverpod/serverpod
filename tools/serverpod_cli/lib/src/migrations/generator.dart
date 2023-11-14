@@ -176,42 +176,28 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     required String runMode,
+    RepairTargetMigration? targetMigration,
   }) async {
-    var versions = <String, String>{};
-
-    // Load the latest migration from all modules.
-    var modules = getMigrationModules();
-    var dstDefinitions = <DatabaseDefinition>[];
-    for (var module in modules) {
-      var version = await getLatestMigrationVersion(module);
-
-      if (version == null) {
-        continue;
-      }
-
-      versions[module] = version.versionName;
-      dstDefinitions.add(version.databaseDefinition);
-    }
-
-    var dstDatabase = DatabaseDefinition(
-      tables: dstDefinitions.expand((e) => e.tables).toList(),
-      migrationApiVersion: DatabaseConstants.migrationApiVersion,
+    Map<String, MigrationVersion> versions =
+        await loadMigrationVersionsFromAllModules(
+      targetMigration: targetMigration,
     );
 
-    // Get the live database definition from the server.
+    DatabaseDefinition dstDatabase =
+        createDatabaseDefinitionFromTables(versions);
+
     var client = ConfigInfo(runMode).createServiceClient();
     DatabaseDefinition liveDatabase;
     try {
       liveDatabase = await client.insights.getLiveDatabaseDefinition();
     } catch (e) {
-      log.error('Unable to fetch live database schema from server. '
-          'Make sure the server is running and is connected to the '
-          'database.');
-      log.error(e.toString());
-      return null;
+      throw MigrationLiveDatabaseDefinitionException(
+        exception: e.toString(),
+      );
+    } finally {
+      client.close();
     }
 
-    // Print warnings, if any exists.
     var migration = generateDatabaseMigration(
       srcDatabase: liveDatabase,
       dstDatabase: dstDatabase,
@@ -220,32 +206,102 @@ class MigrationGenerator {
 
     var warnings = migration.warnings;
     _printWarnings(warnings);
+
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
       return null;
     }
 
-    // Check if there are any changes.
-    var versionsChanged = false;
-    var installedModules = liveDatabase.installedModules;
-    if (installedModules == null) {
-      versionsChanged = true;
-    } else {
-      for (var module in installedModules) {
-        if (versions[module.module] != module.version) {
-          versionsChanged = true;
-        }
-      }
-    }
-    if (migration.isEmpty && !versionsChanged) {
-      log.info('-- No changes detected.');
+    bool versionsMismatch = moduleVersionMismatch(liveDatabase, versions);
+
+    if (migration.isEmpty && !versionsMismatch && !force) {
+      log.info('No changes detected.');
       return null;
     }
 
     // Output the migration.
-    var sql = migration.toPgSql(versions: versions);
+    var sql = migration.toPgSql(
+        versions: versions.map(
+            (key, value) => MapEntry<String, String>(key, value.versionName)));
     log.info(sql);
     return sql;
+  }
+
+  bool moduleVersionMismatch(
+    DatabaseDefinition liveDatabase,
+    Map<String, MigrationVersion> versions,
+  ) {
+    var installedModules = liveDatabase.installedModules;
+    if (installedModules == null) {
+      return versions.isNotEmpty;
+    }
+
+    installedModules.removeWhere((module) =>
+        module.module == MigrationConstants.repairMigrationModuleName);
+
+    if (installedModules.length != versions.length) {
+      return true;
+    }
+
+    for (var module in installedModules) {
+      if (versions[module.module]?.versionName != module.version) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  DatabaseDefinition createDatabaseDefinitionFromTables(
+      Map<String, MigrationVersion> versions) {
+    var migrationDefinitions =
+        versions.values.map((e) => e.databaseDefinition).toList();
+    var dstDatabase = DatabaseDefinition(
+      tables: migrationDefinitions.expand((e) => e.tables).toList(),
+      migrationApiVersion: DatabaseConstants.migrationApiVersion,
+    );
+    return dstDatabase;
+  }
+
+  Future<Map<String, MigrationVersion>> loadMigrationVersionsFromAllModules({
+    RepairTargetMigration? targetMigration,
+  }) async {
+    var versions = <String, MigrationVersion>{};
+    if (targetMigration != null) {
+      versions[targetMigration.moduleName] =
+          await _loadTargetRepairMigrationVersion(targetMigration);
+    }
+
+    var modules = getMigrationModules();
+    modules.removeWhere((moduleName) => versions.containsKey(moduleName));
+
+    for (var module in modules) {
+      var version = await getLatestMigrationVersion(module);
+
+      if (version == null) {
+        continue;
+      }
+
+      versions[module] = version;
+    }
+    return versions;
+  }
+
+  Future<MigrationVersion> _loadTargetRepairMigrationVersion(
+    RepairTargetMigration targetMigration,
+  ) async {
+    try {
+      return await getMigrationVersion(
+        targetMigration.version,
+        targetMigration.moduleName,
+      );
+    } on MigrationVersionLoadException catch (e) {
+      throw MigrationRepairTargetLoadException(
+        targetName: targetMigration.version,
+        moduleName: targetMigration.moduleName,
+        exception: e.toString(),
+      );
+    }
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
@@ -366,4 +422,14 @@ class MigrationVersion {
     ));
     await migrationSqlFile.writeAsString(migrationSql);
   }
+}
+
+class RepairTargetMigration {
+  RepairTargetMigration({
+    required this.moduleName,
+    required this.version,
+  });
+
+  final String moduleName;
+  final String version;
 }
