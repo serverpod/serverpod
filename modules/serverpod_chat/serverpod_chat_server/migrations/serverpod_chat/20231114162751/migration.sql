@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- Class ChatMessage as table serverpod_chat_message
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_chat_message" (
     "id" serial PRIMARY KEY,
@@ -17,7 +17,7 @@ CREATE TABLE "serverpod_chat_message" (
 CREATE INDEX "serverpod_chat_message_channel_idx" ON "serverpod_chat_message" USING btree ("channel");
 
 --
--- Class ChatReadMessage as table serverpod_chat_read_message
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_chat_read_message" (
     "id" serial PRIMARY KEY,
@@ -29,13 +29,14 @@ CREATE TABLE "serverpod_chat_read_message" (
 -- Indexes
 CREATE UNIQUE INDEX "serverpod_chat_read_message_channel_user_idx" ON "serverpod_chat_read_message" USING btree ("channel", "userId");
 
+
 --
 -- MIGRATION VERSION FOR serverpod_chat
 --
-INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_chat', '20231110163139', 1, now())
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_chat', '20231114162751', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231110163139', "priority" = 1;
+    DO UPDATE SET "version" = '20231114162751', "timestamp" = now();
 
 
 COMMIT;

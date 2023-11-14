@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- ACTION CREATE TABLE
+-- Class EmailAuth as table serverpod_email_auth
 --
 CREATE TABLE "serverpod_email_auth" (
     "id" serial PRIMARY KEY,
@@ -14,7 +14,7 @@ CREATE TABLE "serverpod_email_auth" (
 CREATE UNIQUE INDEX "serverpod_email_auth_email" ON "serverpod_email_auth" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailCreateAccountRequest as table serverpod_email_create_request
 --
 CREATE TABLE "serverpod_email_create_request" (
     "id" serial PRIMARY KEY,
@@ -28,7 +28,7 @@ CREATE TABLE "serverpod_email_create_request" (
 CREATE UNIQUE INDEX "serverpod_email_auth_create_account_request_idx" ON "serverpod_email_create_request" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailFailedSignIn as table serverpod_email_failed_sign_in
 --
 CREATE TABLE "serverpod_email_failed_sign_in" (
     "id" serial PRIMARY KEY,
@@ -42,7 +42,7 @@ CREATE INDEX "serverpod_email_failed_sign_in_email_idx" ON "serverpod_email_fail
 CREATE INDEX "serverpod_email_failed_sign_in_time_idx" ON "serverpod_email_failed_sign_in" USING btree ("time");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailReset as table serverpod_email_reset
 --
 CREATE TABLE "serverpod_email_reset" (
     "id" serial PRIMARY KEY,
@@ -55,7 +55,7 @@ CREATE TABLE "serverpod_email_reset" (
 CREATE UNIQUE INDEX "serverpod_email_reset_verification_idx" ON "serverpod_email_reset" USING btree ("verificationCode");
 
 --
--- ACTION CREATE TABLE
+-- Class GoogleRefreshToken as table serverpod_google_refresh_token
 --
 CREATE TABLE "serverpod_google_refresh_token" (
     "id" serial PRIMARY KEY,
@@ -67,7 +67,7 @@ CREATE TABLE "serverpod_google_refresh_token" (
 CREATE UNIQUE INDEX "serverpod_google_refresh_token_userId_idx" ON "serverpod_google_refresh_token" USING btree ("userId");
 
 --
--- ACTION CREATE TABLE
+-- Class UserImage as table serverpod_user_image
 --
 CREATE TABLE "serverpod_user_image" (
     "id" serial PRIMARY KEY,
@@ -80,7 +80,7 @@ CREATE TABLE "serverpod_user_image" (
 CREATE INDEX "serverpod_user_image_user_id" ON "serverpod_user_image" USING btree ("userId", "version");
 
 --
--- ACTION CREATE TABLE
+-- Class UserInfo as table serverpod_user_info
 --
 CREATE TABLE "serverpod_user_info" (
     "id" serial PRIMARY KEY,
@@ -98,14 +98,13 @@ CREATE TABLE "serverpod_user_info" (
 CREATE UNIQUE INDEX "serverpod_user_info_user_identifier" ON "serverpod_user_info" USING btree ("userIdentifier");
 CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("email");
 
-
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
-INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_auth', '20231110163126', 1, now())
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_auth', '20231114162745', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231110163126', "priority" = 1;
+    DO UPDATE SET "version" = '20231114162745', "timestamp" = now();
 
 
 COMMIT;
