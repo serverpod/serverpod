@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -42,7 +44,7 @@ import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_t
     as _i23;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
     as _i24;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/post.dart'
+import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/one_to_one/post.dart'
     as _i25;
 import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
     as _i26;

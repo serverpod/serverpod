@@ -29,9 +29,9 @@ void main() async {
       var companiesFetched = await Company.db.find(
         session,
         // Order by company town name and then company name
-        orderByList: [
-          db.Order(column: Company.t.town.name),
-          db.Order(column: Company.t.name),
+        orderByList: (t) => [
+          db.Order(column: t.town.name),
+          db.Order(column: t.name),
         ],
       );
 
@@ -77,9 +77,9 @@ void main() async {
       var citizens = await Citizen.db.find(
         session,
         // Order by citizen company town name and then citizen name
-        orderByList: [
-          db.Order(column: Citizen.t.company.town.name),
-          db.Order(column: Citizen.t.name),
+        orderByList: (t) => [
+          db.Order(column: t.company.town.name),
+          db.Order(column: t.name),
         ],
       );
 

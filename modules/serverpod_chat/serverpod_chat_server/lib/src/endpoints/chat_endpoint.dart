@@ -182,7 +182,7 @@ class ChatEndpoint extends Endpoint {
       messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel) & (t.id < lastId),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );
@@ -190,7 +190,7 @@ class ChatEndpoint extends Endpoint {
       messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );

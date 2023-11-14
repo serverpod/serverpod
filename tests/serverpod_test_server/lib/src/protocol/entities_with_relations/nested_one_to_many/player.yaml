@@ -2,4 +2,4 @@ class: Player
 table: player
 fields:
   name: String
-  team: Team?, relation(name=team_player, optional)
+  team: Team?, relation(name=team_player, optional, onDelete=SetNull)

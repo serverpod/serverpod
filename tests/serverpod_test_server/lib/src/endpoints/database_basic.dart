@@ -10,7 +10,7 @@ class BasicDatabase extends Endpoint {
   }) async {
     return SimpleData.db.find(
       session,
-      orderBy: SimpleData.t.id,
+      orderBy: (t) => t.id,
       limit: limit,
       offset: offset,
     );

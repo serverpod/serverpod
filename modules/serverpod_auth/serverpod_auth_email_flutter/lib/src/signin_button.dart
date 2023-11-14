@@ -38,8 +38,8 @@ class SignInWithEmailButton extends StatefulWidget {
     this.icon,
     this.maxPasswordLength,
     this.minPasswordLength,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   SignInWithEmailButtonState createState() => SignInWithEmailButtonState();

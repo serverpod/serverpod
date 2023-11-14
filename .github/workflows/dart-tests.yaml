@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -78,7 +78,7 @@ jobs:
     runs-on: ${{ matrix.os }} 
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
         os: [windows-latest, ubuntu-latest]
         path: ['tools/serverpod_cli', 'packages/serverpod', 'packages/serverpod_serialization', 'tests/serverpod_test_client', 'tests/serverpod_test_server']
 
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -126,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ['3.7.0', '3.10.0']
+        flutter-version: ['3.10.0', '3.13.0']
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
@@ -134,3 +134,18 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run CLI tests
         run: util/run_tests_cli
+
+  migration_e2e_tests:
+    name: Migration e2e tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter-version: ['3.7.0', '3.10.0']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Run e2e migration tests 
+        run: util/run_tests_migrations_e2e

@@ -1,0 +1,25 @@
+# Specify the Dart SDK base image version
+FROM dart:3.0 AS build
+
+# Install xz
+RUN apt-get update && apt-get install -y xz-utils
+
+# Install flutter
+ENV FLUTTER_HOME=/opt/flutter
+ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.12-stable.tar.xz"
+ENV PATH="$PATH:$FLUTTER_HOME/bin"
+
+RUN curl -o flutter.tar.xz $FLUTTER_URL \
+  && mkdir -p $FLUTTER_HOME \
+  && tar xf flutter.tar.xz -C /opt \
+  && rm flutter.tar.xz
+
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the whole serverpod repo into the container.
+COPY . .
+
+# Setup database tables and start the server.
+CMD ["tests/docker/tests_e2e_migrations/run-tests.sh"]

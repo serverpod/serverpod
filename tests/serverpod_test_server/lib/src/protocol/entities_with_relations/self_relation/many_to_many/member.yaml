@@ -1,0 +1,6 @@
+class: Member
+table: member
+fields:
+  name: String
+  blocking: List<Blocking>?, relation(name=member_blocked_by_me)
+  blockedBy: List<Blocking>?, relation(name=member_blocking_me)

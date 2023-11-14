@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -117,12 +118,12 @@ void main() {
         field == null || field.relation is! ForeignRelationDefinition;
     test('then onUpdate is set to the default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onUpdate, onUpdateDefault);
+      expect(relation.onUpdate, ForeignKeyAction.noAction);
     }, skip: noneFieldRelation);
 
     test('then onDelete is set to the default.', () {
       var relation = field?.relation as ForeignRelationDefinition;
-      expect(relation.onDelete, onDeleteDefault);
+      expect(relation.onDelete, ForeignKeyAction.noAction);
     }, skip: noneFieldRelation);
   });
 
@@ -385,4 +386,41 @@ fields:
       );
     }, skip: errors.isEmpty);
   });
+
+  group(
+    'Given a class with a field with a parent set',
+    () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+            class: Example
+            table: example
+            fields:
+              parentId: int, parent=example
+            ''',
+        ).build()
+      ];
+      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ClassDefinition;
+      var relation = definition.fields.last.relation;
+
+      test('then the onDelete is set to Cascading', () {
+        var foreignRelation = relation as ForeignRelationDefinition;
+        expect(
+          foreignRelation.onDelete.name.toString().toLowerCase(),
+          'cascade',
+        );
+      });
+
+      test('then the onUpdate is set to NoAction', () {
+        var foreignRelation = relation as ForeignRelationDefinition;
+        expect(
+          foreignRelation.onUpdate.name.toString().toLowerCase(),
+          'noaction',
+        );
+      });
+    },
+  );
 }

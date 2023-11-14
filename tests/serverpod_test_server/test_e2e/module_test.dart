@@ -1,8 +1,7 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_module_client/module.dart' as module;
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
-
-import 'config.dart';
 
 void main() {
   var client = Client(serverUrl);

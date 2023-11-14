@@ -1,0 +1,171 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:path/path.dart' as path;
+import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
+
+abstract class MigrationTestUtils {
+  static Future<void> createInitialState({
+    required Map<String, String> protocols,
+    required String tag,
+  }) async {
+    assert(
+      await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
+      'Failed to create migration.',
+    );
+    assert(
+      await runApplyMigrations() == 0,
+      'Failed to create migration.',
+    );
+  }
+
+  static Future<int> createMigrationFromProtocols({
+    required Map<String, String> protocols,
+    required String tag,
+    bool force = false,
+  }) async {
+    _removeMigrationTestProtocolFolder();
+    _migrationProtocolTestDirectory().createSync(recursive: true);
+
+    protocols.forEach((fileName, contents) {
+      var protocolFile = File(path.join(
+        _migrationProtocolTestDirectory().path,
+        '$fileName.yaml',
+      ));
+
+      protocolFile.writeAsStringSync(contents);
+    });
+
+    var createMigrationProcess = await Process.start(
+      'serverpod',
+      [
+        'create-migration',
+        '--tag',
+        tag,
+        if (force) '--force',
+      ],
+      workingDirectory: Directory.current.path,
+    );
+
+    createMigrationProcess.stderr.transform(utf8.decoder).listen(print);
+    createMigrationProcess.stdout.transform(utf8.decoder).listen(print);
+    return await createMigrationProcess.exitCode;
+  }
+
+  static Future<MigrationRegistry> loadMigrationRegistry() async {
+    return await MigrationRegistry.load(
+      _migrationsProjectDirectory(),
+    );
+  }
+
+  static Future<void> migrationTestCleanup({
+    String? resetSql,
+    required Client serviceClient,
+  }) async {
+    removeAllTaggedMigrations();
+    _removeMigrationTestProtocolFolder();
+    if (resetSql != null) {
+      await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
+    }
+    await _removeTaggedMigrationsFromRegistry();
+    await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  static void removeAllTaggedMigrations() {
+    for (var entity in _migrationsProjectDirectory().listSync()) {
+      if (entity is Directory) {
+        if (path.basename(entity.path).contains('-')) {
+          entity.deleteSync(recursive: true);
+        }
+      }
+    }
+  }
+
+  static Future<bool> removeLastMigrationFromRegistry() async {
+    var migrationRegistry = await loadMigrationRegistry();
+    var lastEntry = migrationRegistry.removeLast();
+    if (lastEntry == null) {
+      return false;
+    }
+
+    await migrationRegistry.write();
+    return true;
+  }
+
+  static Future<int> runApplyMigrations() async {
+    var applyMigrationProcess = await Process.start(
+      'dart',
+      [
+        'run',
+        'bin/main.dart',
+        '--apply-migrations',
+        '--role',
+        'maintenance',
+        '--mode',
+        'production',
+      ],
+      workingDirectory: Directory.current.path,
+    );
+
+    applyMigrationProcess.stderr.transform(utf8.decoder).listen(print);
+    applyMigrationProcess.stdout.transform(utf8.decoder).listen(print);
+
+    return await applyMigrationProcess.exitCode;
+  }
+
+  static Directory _migrationProtocolTestDirectory() => Directory(path.join(
+        Directory.current.path,
+        'lib',
+        'src',
+        'protocol',
+        'migration_test_protocol_files',
+      ));
+
+  static Directory _migrationsProjectDirectory() => Directory(path.join(
+        Directory.current.path,
+        'migrations',
+        'serverpod_test',
+      ));
+
+  static void _removeMigrationTestProtocolFolder() {
+    var protocolDirectory = _migrationProtocolTestDirectory();
+    if (protocolDirectory.existsSync()) {
+      protocolDirectory.deleteSync(recursive: true);
+    }
+  }
+
+  static Future<void> _removeTaggedMigrationsFromRegistry() async {
+    var migrationRegistry = await loadMigrationRegistry();
+
+    var lastMigration = migrationRegistry.getLatest();
+    while (lastMigration != null && lastMigration.contains('-')) {
+      migrationRegistry.removeLast();
+      lastMigration = migrationRegistry.getLatest();
+    }
+
+    await migrationRegistry.write();
+  }
+
+  static Future<void> _resetDatabase({
+    required Client serviceClient,
+    required String resetSql,
+  }) async {
+    await serviceClient.insights.executeSql(resetSql);
+  }
+
+  static Future<void> _setDatabaseMigrationToLatestInRegistry({
+    required Client serviceClient,
+  }) async {
+    var migrationRegistry = await loadMigrationRegistry();
+
+    var latestMigration = migrationRegistry.getLatest();
+
+    await serviceClient.insights.executeSql('''
+INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
+    VALUES ('serverpod_test', '$latestMigration', 2, now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '$latestMigration', "priority" = 2;
+''');
+  }
+}

@@ -11,23 +11,23 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 documentation: https://docs.serverpod.dev
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   args: ^2.4.0
   collection: ^1.17.1
   crypto: ^3.0.2
-  http: ^0.13.5
+  http: ">=0.13.0 <2.0.0"
   meta: ^1.8.0
   mustache_template: ^2.0.0
   path: ^1.8.2
   postgres: ^2.6.1
-  redis: ^3.1.0
+  redis: ^4.0.0
   retry: ^3.1.1
   synchronized: ^3.1.0
   postgres_pool: ^2.1.6
   system_resources: ^1.6.0
-  vm_service: ^11.4.0
+  vm_service: ^13.0.0
   yaml: ^3.1.1
   serverpod_shared: #1.1.0
     path: ../serverpod_shared

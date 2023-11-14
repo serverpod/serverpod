@@ -43,7 +43,7 @@ void main() async {
       var studentsFetched = await Student.db.find(
         session,
         // Fetch all students ordered by number of courses they are enrolled to.
-        orderBy: Student.t.enrollments.count(),
+        orderBy: (t) => t.enrollments.count(),
         orderDescending: true,
       );
 
@@ -87,8 +87,8 @@ void main() async {
       var studentsFetched = await Student.db.find(
         session,
         // Fetch all students ordered by the number of level 2 courses they are enrolled to.
-        orderBy: Student.t.enrollments
-            .count((e) => e.course.name.ilike('level 2:%')),
+        orderBy: (t) =>
+            t.enrollments.count((e) => e.course.name.ilike('level 2:%')),
         orderDescending: true,
       );
 

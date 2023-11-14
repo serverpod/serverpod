@@ -1,15 +1,13 @@
-import 'package:serverpod_cli/src/util/extensions.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
-import 'package:serverpod_cli/src/util/yaml_docs.dart';
-import 'package:serverpod_cli/src/generator/types.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
-
-import 'package:source_span/source_span.dart';
-import 'package:yaml/yaml.dart';
-
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/extensions.dart';
+import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/yaml_docs.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:source_span/source_span.dart';
+import 'package:yaml/yaml.dart';
 
 class EntityParser {
   static SerializableEntityDefinition? serializeClassFile(
@@ -72,6 +70,7 @@ class EntityParser {
     );
 
     var serverOnly = _parseServerOnly(documentContents);
+    var serializeAs = _parseSerializedAs(documentContents);
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
@@ -79,6 +78,7 @@ class EntityParser {
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,
       values: values,
+      serialized: serializeAs,
       documentation: enumDocumentation,
       subDirParts: protocolSource.protocolRootPathParts,
       serverOnly: serverOnly,
@@ -90,6 +90,16 @@ class EntityParser {
     if (serverOnly is! bool) return false;
 
     return serverOnly;
+  }
+
+  static EnumSerialization _parseSerializedAs(YamlMap documentContents) {
+    var serializedAs = documentContents.nodes[Keyword.serialized]?.value;
+
+    return convertToEnum<EnumSerialization>(
+      value: serializedAs,
+      enumDefault: EnumSerialization.byIndex,
+      enumValues: EnumSerialization.values,
+    );
   }
 
   static String? _parseTableName(YamlMap documentContents) {
@@ -259,6 +269,7 @@ class EntityParser {
     return _parseDatabaseAction(
       Keyword.onUpdate,
       onUpdateDefault,
+      onUpdateDefault,
       node,
     );
   }
@@ -267,6 +278,7 @@ class EntityParser {
     return _parseDatabaseAction(
       Keyword.onDelete,
       onDeleteDefault,
+      onDeleteDefaultOld,
       node,
     );
   }
@@ -274,8 +286,11 @@ class EntityParser {
   static ForeignKeyAction _parseDatabaseAction(
     String key,
     ForeignKeyAction defaultValue,
+    ForeignKeyAction oldDefaultValue,
     YamlMap node,
   ) {
+    if (node.containsKey(Keyword.parent)) return oldDefaultValue;
+
     var action = _parseRelationNode(node, key)?.value;
     if (action is! String) return defaultValue;
 

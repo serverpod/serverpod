@@ -30,12 +30,12 @@ class SignInWithEmailDialog extends StatefulWidget {
 
   /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
-    Key? key,
+    super.key,
     required this.caller,
     required this.onSignedIn,
     this.maxPasswordLength = _defaultMaxPasswordLength,
     this.minPasswordLength = _defaultMinPasswordLength,
-  }) : super(key: key);
+  });
 
   @override
   SignInWithEmailDialogState createState() => SignInWithEmailDialogState();

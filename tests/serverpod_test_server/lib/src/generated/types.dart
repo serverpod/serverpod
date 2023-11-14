@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -22,6 +24,7 @@ abstract class Types extends _i1.TableRow {
     this.aDuration,
     this.aUuid,
     this.anEnum,
+    this.aStringifiedEnum,
   }) : super(id);
 
   factory Types({
@@ -35,6 +38,7 @@ abstract class Types extends _i1.TableRow {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   }) = _TypesImpl;
 
   factory Types.fromJson(
@@ -60,6 +64,9 @@ abstract class Types extends _i1.TableRow {
           .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
       anEnum: serializationManager
           .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
+      aStringifiedEnum:
+          serializationManager.deserialize<_i3.TestEnumStringified?>(
+              jsonSerialization['aStringifiedEnum']),
     );
   }
 
@@ -85,6 +92,8 @@ abstract class Types extends _i1.TableRow {
 
   _i3.TestEnum? anEnum;
 
+  _i3.TestEnumStringified? aStringifiedEnum;
+
   @override
   _i1.Table get table => t;
 
@@ -99,6 +108,7 @@ abstract class Types extends _i1.TableRow {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,6 +123,7 @@ abstract class Types extends _i1.TableRow {
       'aDuration': aDuration,
       'aUuid': aUuid,
       'anEnum': anEnum,
+      'aStringifiedEnum': aStringifiedEnum,
     };
   }
 
@@ -130,6 +141,7 @@ abstract class Types extends _i1.TableRow {
       'aDuration': aDuration,
       'aUuid': aUuid,
       'anEnum': anEnum,
+      'aStringifiedEnum': aStringifiedEnum,
     };
   }
 
@@ -146,6 +158,7 @@ abstract class Types extends _i1.TableRow {
       'aDuration': aDuration,
       'aUuid': aUuid,
       'anEnum': anEnum,
+      'aStringifiedEnum': aStringifiedEnum,
     };
   }
 
@@ -184,6 +197,9 @@ abstract class Types extends _i1.TableRow {
         return;
       case 'anEnum':
         anEnum = value;
+        return;
+      case 'aStringifiedEnum':
+        aStringifiedEnum = value;
         return;
       default:
         throw UnimplementedError();
@@ -346,6 +362,7 @@ class _TypesImpl extends Types {
     Duration? aDuration,
     _i1.UuidValue? aUuid,
     _i3.TestEnum? anEnum,
+    _i3.TestEnumStringified? aStringifiedEnum,
   }) : super._(
           id: id,
           anInt: anInt,
@@ -357,6 +374,7 @@ class _TypesImpl extends Types {
           aDuration: aDuration,
           aUuid: aUuid,
           anEnum: anEnum,
+          aStringifiedEnum: aStringifiedEnum,
         );
 
   @override
@@ -371,6 +389,7 @@ class _TypesImpl extends Types {
     Object? aDuration = _Undefined,
     Object? aUuid = _Undefined,
     Object? anEnum = _Undefined,
+    Object? aStringifiedEnum = _Undefined,
   }) {
     return Types(
       id: id is int? ? id : this.id,
@@ -384,6 +403,9 @@ class _TypesImpl extends Types {
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
       aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
       anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
+      aStringifiedEnum: aStringifiedEnum is _i3.TestEnumStringified?
+          ? aStringifiedEnum
+          : this.aStringifiedEnum,
     );
   }
 }
@@ -422,9 +444,15 @@ class TypesTable extends _i1.Table {
       'aUuid',
       this,
     );
-    anEnum = _i1.ColumnEnum<_i3.TestEnum>(
+    anEnum = _i1.ColumnEnum(
       'anEnum',
       this,
+      _i1.EnumSerialization.byIndex,
+    );
+    aStringifiedEnum = _i1.ColumnEnum(
+      'aStringifiedEnum',
+      this,
+      _i1.EnumSerialization.byName,
     );
   }
 
@@ -446,6 +474,8 @@ class TypesTable extends _i1.Table {
 
   late final _i1.ColumnEnum<_i3.TestEnum> anEnum;
 
+  late final _i1.ColumnEnum<_i3.TestEnumStringified> aStringifiedEnum;
+
   @override
   List<_i1.Column> get columns => [
         id,
@@ -458,6 +488,7 @@ class TypesTable extends _i1.Table {
         aDuration,
         aUuid,
         anEnum,
+        aStringifiedEnum,
       ];
 }
 
@@ -502,18 +533,18 @@ class TypesRepository {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.find<Types>(
       where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
     );
   }
@@ -522,12 +553,17 @@ class TypesRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TypesTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<TypesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
     return session.dbNext.findFirstRow<Types>(
       where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
     );
   }

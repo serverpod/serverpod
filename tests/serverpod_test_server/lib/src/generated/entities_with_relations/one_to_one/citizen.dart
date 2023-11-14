@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -493,19 +495,19 @@ class CitizenRepository {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
     return session.dbNext.find<Citizen>(
       where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
       transaction: transaction,
       include: include,
     );
@@ -515,13 +517,18 @@ class CitizenRepository {
     _i1.Session session, {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
     bool orderDescending = false,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     _i1.Transaction? transaction,
     CitizenInclude? include,
   }) async {
     return session.dbNext.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      orderDescending: orderDescending,
+      offset: offset,
       transaction: transaction,
       include: include,
     );

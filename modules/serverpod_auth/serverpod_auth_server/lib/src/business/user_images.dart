@@ -68,7 +68,7 @@ class UserImages {
       session,
       where: (t) => t.userId.equals(userId),
       orderDescending: true,
-      orderBy: UserImage.t.version,
+      orderBy: (t) => t.version,
     );
 
     // Add one to the version number or create a new version 1.

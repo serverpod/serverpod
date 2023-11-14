@@ -18,7 +18,7 @@ class S3Exception implements Exception {
 }
 
 class NoPermissionsException extends S3Exception {
-  NoPermissionsException(Response response) : super(response);
+  NoPermissionsException(super.response);
 
   @override
   String get devDebugHint =>

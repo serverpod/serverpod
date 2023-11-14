@@ -118,6 +118,47 @@ void main() {
       });
     });
 
+    group('Given a class with a field with the type MyEnum', () {
+      var protocols = [
+        ProtocolSourceBuilder().withFileName('example').withYaml(
+          '''
+          class: Example
+          fields:
+            myEnum: MyEnum
+          ''',
+        ).build(),
+        ProtocolSourceBuilder().withFileName('my_enum').withYaml(
+          '''
+          enum: MyEnum
+          values:
+            - first
+            - second
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        protocols,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ClassDefinition;
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a class with that field type set to MyEnum.', () {
+        expect(definition.fields.first.type.toString(), 'protocol:MyEnum');
+      });
+
+      test('then the type is tagged as an enum', () {
+        expect(definition.fields.first.type.isEnumType, isTrue);
+      });
+    });
+
     test(
       'Given a class with a field of a Map type, then all the data types components are extracted.',
       () {

@@ -1,9 +1,11 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class EnumDefinitionBuilder {
   String _fileName;
   String _sourceFileName;
   String _className;
+  EnumSerialization _serialized;
   List<String> _subDirParts;
   bool _serverOnly;
 
@@ -14,6 +16,7 @@ class EnumDefinitionBuilder {
       : _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
+        _serialized = EnumSerialization.byIndex,
         _subDirParts = [],
         _serverOnly = false,
         _values = [
@@ -28,6 +31,7 @@ class EnumDefinitionBuilder {
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
+      serialized: _serialized,
       values: _values,
       subDirParts: _subDirParts,
       serverOnly: _serverOnly,
@@ -57,6 +61,11 @@ class EnumDefinitionBuilder {
 
   EnumDefinitionBuilder withServerOnly(bool serverOnly) {
     _serverOnly = serverOnly;
+    return this;
+  }
+
+  EnumDefinitionBuilder withSerialized(EnumSerialization serialized) {
+    _serialized = serialized;
     return this;
   }
 

@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
@@ -12,11 +13,13 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   var expectedFileName = path.join('lib', 'src', 'generated', 'example.dart');
-  group('Given enum named Example when generating code', () {
+  group('Given an enum named Example serialized by index when generating code',
+      () {
     var entities = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
+          .withSerialized(EnumSerialization.byIndex)
           .build()
     ];
 
@@ -46,6 +49,37 @@ void main() {
 
     test('then generated enum has toJson method', () {
       expect(codeMap[expectedFileName], contains('int toJson() => index;'));
+    });
+  });
+
+  group('Given an enum named Example serialized by name when generating code',
+      () {
+    var entities = [
+      EnumDefinitionBuilder()
+          .withClassName('Example')
+          .withFileName('example')
+          .withSerialized(EnumSerialization.byName)
+          .build()
+    ];
+
+    var codeMap = generator.generateSerializableEntitiesCode(
+      entities: entities,
+      config: config,
+    );
+    test('then generated enum has static fromJson method', () {
+      expect(codeMap[expectedFileName],
+          contains('static Example? fromJson(String name)'));
+    });
+
+    test('then generated enum has toJson method', () {
+      expect(codeMap[expectedFileName], contains('String toJson() => name;'));
+    });
+
+    test('then generated enum has toString method', () {
+      expect(
+        codeMap[expectedFileName],
+        contains('String toString() => toJson();'),
+      );
     });
   });
 

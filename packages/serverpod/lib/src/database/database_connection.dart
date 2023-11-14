@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:retry/retry.dart';
+
 import 'package:postgres_pool/postgres_pool.dart';
+import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_connection_legacy.dart';
 import 'package:serverpod/src/database/database_query.dart';
@@ -33,6 +34,13 @@ class DatabaseConnection {
       : _postgresConnection = _poolManager.pool {
     // ignore: deprecated_member_use_from_same_package
     legacy = DatabaseConnectionLegacy(_poolManager, _logQuery);
+  }
+
+  /// Tests the database connection.
+  /// Throws an exception if the connection is not working.
+  Future<bool> testConnection() async {
+    await _postgresConnection.query('SELECT 1;', timeoutInSeconds: 2);
+    return true;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
@@ -75,6 +83,7 @@ class DatabaseConnection {
     Expression? where,
     int? offset,
     Column? orderBy,
+    List<Order>? orderByList,
     bool orderDescending = false,
     Transaction? transaction,
     Include? include,
@@ -85,6 +94,7 @@ class DatabaseConnection {
       where: where,
       offset: offset,
       orderBy: orderBy,
+      orderByList: orderByList,
       orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
@@ -629,13 +639,20 @@ class DatabaseConnection {
     if (column is ColumnString) return 'text';
     if (column is ColumnBool) return 'boolean';
     if (column is ColumnInt) return 'integer';
-    if (column is ColumnEnum) return 'integer';
     if (column is ColumnDouble) return 'double precision';
     if (column is ColumnDateTime) return 'timestamp without time zone';
     if (column is ColumnByteData) return 'bytea';
     if (column is ColumnDuration) return 'bigint';
     if (column is ColumnUuid) return 'uuid';
     if (column is ColumnSerializable) return 'json';
+    if (column is ColumnEnumExtended) {
+      switch (column.serialized) {
+        case EnumSerialization.byIndex:
+          return 'integer';
+        case EnumSerialization.byName:
+          return 'text';
+      }
+    }
 
     return 'json';
   }
@@ -683,6 +700,13 @@ class Transaction {
 /// A function that returns an [Expression] for a [Table] to be used with where
 /// clauses.
 typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
+
+/// A function that returns a Column for a Table to be used with order by
+typedef OrderByBuilder<T extends Table> = Column Function(T);
+
+/// A function that returns a list of [Order] for a [Table] to be used with
+/// order by list.
+typedef OrderByListBuilder<T extends Table> = List<Order> Function(T);
 
 /// A function that returns a [Column] for a [Table].
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);

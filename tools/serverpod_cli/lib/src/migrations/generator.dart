@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -52,56 +53,67 @@ class MigrationGenerator {
     return names;
   }
 
-  List<String> getMigrationVersions({
-    String? module,
-  }) {
-    var migrationsDirectory = Directory(
-      path.join(
-        migrationsBaseDirectory.path,
-        module ?? projectName,
-      ),
-    );
-    if (!migrationsDirectory.existsSync()) {
-      return [];
-    }
-    var versions = <String>[];
-    var fileEntities = migrationsDirectory.listSync();
-    for (var entity in fileEntities) {
-      if (entity is Directory) {
-        versions.add(path.basename(entity.path));
-      }
-    }
-    versions.sort();
-    return versions;
-  }
-
   Future<MigrationVersion> getMigrationVersion(
-    String versionName, {
-    String? module,
-  }) async {
+    String versionName,
+    String module,
+  ) async {
     var migrationsDirectory = Directory(
       path.join(
         migrationsBaseDirectory.path,
-        module ?? projectName,
+        module,
       ),
     );
-    return await MigrationVersion.load(
-      versionName: versionName,
-      migrationsDirectory: migrationsDirectory,
-    );
+    try {
+      return await MigrationVersion.load(
+        versionName: versionName,
+        migrationsDirectory: migrationsDirectory,
+      );
+    } catch (e) {
+      throw MigrationVersionLoadException(
+        versionName: versionName,
+        moduleName: module,
+        exception: e.toString(),
+      );
+    }
   }
 
-  Future<MigrationVersion?> getLatestMigrationVersion({
-    String? module,
-  }) async {
-    var versions = getMigrationVersions(module: module);
-    if (versions.isEmpty) {
+  Future<MigrationVersion?> getLatestMigrationVersion(
+    String module,
+  ) async {
+    var migrationsDirectory = Directory(
+      path.join(
+        migrationsBaseDirectory.path,
+        module,
+      ),
+    );
+
+    var migrationRegistry = await MigrationRegistry.load(migrationsDirectory);
+
+    var latestVersion = migrationRegistry.getLatest();
+    if (latestVersion == null) {
       return null;
     }
+
     return await getMigrationVersion(
-      versions.last,
-      module: module,
+      latestVersion,
+      module,
     );
+  }
+
+  Future<DatabaseDefinition> _getSourceDatabaseDefinition(
+    String? latestVersion,
+    int priority,
+  ) async {
+    if (latestVersion == null) {
+      return DatabaseDefinition(
+        tables: [],
+        priority: priority,
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      );
+    }
+
+    var latest = await getMigrationVersion(latestVersion, projectName);
+    return latest.databaseDefinition;
   }
 
   Future<MigrationVersion?> createMigration({
@@ -110,29 +122,27 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    var versionName = createVersionName(tag);
+    var migrationRegistry = await MigrationRegistry.load(
+      migrationsProjectDirectory,
+    );
 
-    var latest = await getLatestMigrationVersion();
+    var srcDatabase = await _getSourceDatabaseDefinition(
+      migrationRegistry.getLatest(),
+      priority,
+    );
 
-    var srcDatabase = latest?.databaseDefinition ??
-        DatabaseDefinition(
-          tables: [],
-          priority: priority,
-          migrationApiVersion: DatabaseConstants.migrationApiVersion,
-        );
     var dstDatabase = await generateDatabaseDefinition(
       directory: directory,
       priority: priority,
     );
 
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: srcDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: priority,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
@@ -145,6 +155,7 @@ class MigrationGenerator {
       return null;
     }
 
+    var versionName = createVersionName(tag);
     var migrationVersion = MigrationVersion(
       migrationsDirectory: migrationsProjectDirectory,
       versionName: versionName,
@@ -154,6 +165,8 @@ class MigrationGenerator {
 
     if (write) {
       await migrationVersion.write(module: projectName);
+      migrationRegistry.add(versionName);
+      await migrationRegistry.write();
     }
 
     return migrationVersion;
@@ -164,17 +177,18 @@ class MigrationGenerator {
     required bool force,
     required String runMode,
   }) async {
-    var client = ConfigInfo(runMode).createServiceClient();
     var versions = <String, String>{};
 
     // Load the latest migration from all modules.
     var modules = getMigrationModules();
     var dstDefinitions = <DatabaseDefinition>[];
     for (var module in modules) {
-      var version = await getLatestMigrationVersion(module: module);
+      var version = await getLatestMigrationVersion(module);
+
       if (version == null) {
         continue;
       }
+
       versions[module] = version.versionName;
       dstDefinitions.add(version.databaseDefinition);
     }
@@ -185,17 +199,26 @@ class MigrationGenerator {
     );
 
     // Get the live database definition from the server.
-    var liveDatabase = await client.insights.getLiveDatabaseDefinition();
+    var client = ConfigInfo(runMode).createServiceClient();
+    DatabaseDefinition liveDatabase;
+    try {
+      liveDatabase = await client.insights.getLiveDatabaseDefinition();
+    } catch (e) {
+      log.error('Unable to fetch live database schema from server. '
+          'Make sure the server is running and is connected to the '
+          'database.');
+      log.error(e.toString());
+      return null;
+    }
 
     // Print warnings, if any exists.
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
       srcDatabase: liveDatabase,
       dstDatabase: dstDatabase,
-      warnings: warnings,
       priority: 0,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');

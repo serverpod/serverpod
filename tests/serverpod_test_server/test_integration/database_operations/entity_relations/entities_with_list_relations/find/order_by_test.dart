@@ -57,13 +57,13 @@ void main() async {
       var citiesFetched = await City.db.find(
         session,
         // Order cities by number of citizens and then the number of organizations
-        orderByList: [
+        orderByList: (t) => [
           db.Order(
-            column: City.t.citizens.count(),
+            column: t.citizens.count(),
             orderDescending: true,
           ),
           db.Order(
-            column: City.t.organizations.count(),
+            column: t.organizations.count(),
             orderDescending: true,
           )
         ],

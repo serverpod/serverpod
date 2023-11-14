@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:postgres/postgres.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
+import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
@@ -157,13 +157,13 @@ class InsightsEndpoint extends Endpoint {
     var metrics = await ServerHealthMetric.db.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
-      orderBy: ServerHealthMetric.t.timestamp,
+      orderBy: (t) => t.timestamp,
     );
 
     var connectionInfos = await ServerHealthConnectionInfo.db.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
-      orderBy: ServerHealthConnectionInfo.t.timestamp,
+      orderBy: (t) => t.timestamp,
     );
 
     return ServerHealthResult(

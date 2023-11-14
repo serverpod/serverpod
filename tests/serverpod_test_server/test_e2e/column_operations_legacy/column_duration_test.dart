@@ -1,7 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
-
-import '../config.dart';
 
 final firstDuration = const Duration(hours: 10);
 final secondDuration = const Duration(hours: 20);

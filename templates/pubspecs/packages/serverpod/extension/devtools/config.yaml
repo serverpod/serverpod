@@ -1,0 +1,7 @@
+# This file is generated. Do not modify, instead edit the files in the
+# templates/pubspecs directory.
+
+name: serverpod
+issueTracker: https://github.com/serverpod/serverpod/issues
+version: VERSION
+materialIconCodePoint: '0xf0372'

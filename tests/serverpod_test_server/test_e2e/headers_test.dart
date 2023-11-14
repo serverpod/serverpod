@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
-
-import 'config.dart';
 
 void main() {
   group('Calling the endpoint should return the expected default headers', () {

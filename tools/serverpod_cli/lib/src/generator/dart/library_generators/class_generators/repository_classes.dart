@@ -249,10 +249,7 @@ class BuildRepositoryClass {
           ..name = 'offset'
           ..named = true),
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'Column'
-            ..url = 'package:serverpod/serverpod.dart')
+          ..type = typeOrderByBuilder(className, serverCode)
           ..name = 'orderBy'
           ..named = true),
         Parameter((p) => p
@@ -261,10 +258,7 @@ class BuildRepositoryClass {
           ..defaultTo = const Code('false')
           ..named = true),
         Parameter((p) => p
-          ..type = TypeReference((t) => t
-            ..symbol = 'List'
-            ..isNullable = true
-            ..types.add(refer('Order', 'package:serverpod/serverpod.dart')))
+          ..type = typeOrderByListBuilder(className, serverCode)
           ..name = 'orderByList'
           ..named = true),
         Parameter((p) => p
@@ -290,11 +284,15 @@ class BuildRepositoryClass {
             'where': refer('where').nullSafeProperty('call').call(
               [refer(className).property('t')],
             ),
+            'orderBy': refer('orderBy').nullSafeProperty('call').call(
+              [refer(className).property('t')],
+            ),
+            'orderByList': refer('orderByList').nullSafeProperty('call').call(
+              [refer(className).property('t')],
+            ),
+            'orderDescending': refer('orderDescending'),
             'limit': refer('limit'),
             'offset': refer('offset'),
-            'orderBy': refer('orderBy'),
-            'orderByList': refer('orderByList'),
-            'orderDescending': refer('orderDescending'),
             'transaction': refer('transaction'),
             if (objectRelationFields.isNotEmpty) 'include': refer('include'),
           }, [
@@ -339,16 +337,17 @@ class BuildRepositoryClass {
           ..name = 'offset'
           ..named = true),
         Parameter((p) => p
-          ..type = TypeReference((b) => b
-            ..isNullable = true
-            ..symbol = 'Column'
-            ..url = 'package:serverpod/serverpod.dart')
+          ..type = typeOrderByBuilder(className, serverCode)
           ..name = 'orderBy'
           ..named = true),
         Parameter((p) => p
           ..type = refer('bool')
           ..name = 'orderDescending'
           ..defaultTo = const Code('false')
+          ..named = true),
+        Parameter((p) => p
+          ..type = typeOrderByListBuilder(className, serverCode)
+          ..name = 'orderByList'
           ..named = true),
         Parameter((p) => p
           ..type = TypeReference((b) => b
@@ -375,6 +374,14 @@ class BuildRepositoryClass {
               'where': refer('where').nullSafeProperty('call').call(
                 [refer(className).property('t')],
               ),
+              'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
+              'orderByList': refer('orderByList').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
+              'orderDescending': refer('orderDescending'),
+              'offset': refer('offset'),
               'transaction': refer('transaction'),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
             },

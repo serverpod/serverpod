@@ -163,7 +163,7 @@ void main() async {
 
     var organizations = await Organization.db.find(
       session,
-      orderBy: Organization.t.id,
+      orderBy: (t) => t.id,
       include: Organization.include(
         people: Person.includeList(),
       ),
@@ -673,7 +673,7 @@ void main() async {
 
     var cities = await City.db.find(
       session,
-      orderBy: City.t.id,
+      orderBy: (t) => t.id,
       include: City.include(
         citizens: Person.includeList(limit: 2, offset: 1, orderBy: Person.t.id),
       ),

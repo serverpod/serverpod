@@ -81,7 +81,7 @@ class Constant extends Expression {
   @Deprecated('Use Constant.bool or Constant.string instead.')
   Constant(dynamic value) : super(_formatValue(value));
 
-  const Constant._(dynamic value) : super(value);
+  const Constant._(super.value);
 
   /// Creates a constant [String] expression.
   factory Constant.string(String value) => Constant._(EscapedExpression(value));

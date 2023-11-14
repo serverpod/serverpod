@@ -9,8 +9,8 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=3.7.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
@@ -20,7 +20,7 @@ dependencies:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #--CONDITIONAL_COMMENT--#VERSION
     path: ../serverpod_auth_shared_flutter
-  sign_in_with_apple: ^4.3.0
+  sign_in_with_apple: ^5.0.0
 
 dev_dependencies:
   flutter_test:

@@ -5,7 +5,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
-import 'package:serverpod/src/database/migration_manager.dart';
+import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
@@ -343,72 +343,51 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      // Load runtime settings and check connection to the database.
-      bool databaseConnectionIsUp = false;
-      bool printedDatabaseConnectionError = false;
+      var session = await _connectToDatabase(enableLogging: false);
 
-      while (!databaseConnectionIsUp) {
-        var session = await createSession(enableLogging: false);
-        try {
-          // Initialize migration manager.
-          logVerbose('Initializing migration manager.');
-          migrationManager = MigrationManager();
-          await migrationManager.initialize(session);
+      try {
+        logVerbose('Initializing migration manager.');
+        migrationManager = MigrationManager();
+        await migrationManager.initialize(session);
 
-          if (commandLineArgs.applyMigrations) {
-            logVerbose('Applying database migrations.');
-            await migrationManager.migrateToLatest(session);
-          }
-
-          logVerbose('Verifying database integrity.');
-          await migrationManager.verifyDatabaseIntegrity(session);
-
-          // We successfully connected to the database.
-          databaseConnectionIsUp = true;
-        } catch (e, stackTrace) {
-          // Write connection error to stderr.
-          stderr.writeln(
-            'Failed to connect to the database. Retrying in 10 seconds. $e',
-          );
-          stderr.writeln('$stackTrace');
-          if (!printedDatabaseConnectionError) {
-            stderr.writeln('Database configuration:');
-            stderr.writeln(config.database.toString());
-            printedDatabaseConnectionError = true;
-          }
-
-          await Future.delayed(const Duration(seconds: 10));
+        if (commandLineArgs.applyMigrations) {
+          logVerbose('Applying database migrations.');
+          await migrationManager.migrateToLatest(session);
         }
 
-        try {
-          logVerbose('Loading runtime settings.');
+        logVerbose('Verifying database integrity.');
+        await migrationManager.verifyDatabaseIntegrity(session);
+      } catch (e) {
+        stderr.writeln(
+          'Failed to apply database migrations. $e',
+        );
+      }
 
-          _runtimeSettings =
-              await internal.RuntimeSettings.db.findFirstRow(session);
-        } catch (e) {
-          stderr.writeln(
-            'Failed to load runtime settings. $e',
-          );
-        }
-        try {
-          if (_runtimeSettings == null) {
-            logVerbose(
-              'Runtime settings not found, creating default settings.',
-            );
+      logVerbose('Loading runtime settings.');
+      try {
+        _runtimeSettings =
+            await internal.RuntimeSettings.db.findFirstRow(session);
+      } catch (e) {
+        stderr.writeln(
+          'Failed to load runtime settings. $e',
+        );
+      }
 
-            _runtimeSettings = await RuntimeSettings.db
-                .insertRow(session, _defaultRuntimeSettings);
-          } else {
-            logVerbose('Runtime settings loaded.');
-          }
+      if (_runtimeSettings == null) {
+        logVerbose('Runtime settings not found, creating default settings.');
+        try {
+          _runtimeSettings = await RuntimeSettings.db
+              .insertRow(session, _defaultRuntimeSettings);
         } catch (e) {
           stderr.writeln(
             'Failed to store runtime settings. $e',
           );
         }
-
-        await session.close();
+      } else {
+        logVerbose('Runtime settings loaded.');
       }
+
+      await session.close();
 
       // Setup log manager.
       _logManager = LogManager(_runtimeSettings!);
@@ -613,6 +592,33 @@ class Serverpod {
   void logVerbose(String message) {
     if (commandLineArgs.loggingMode == ServerpodLoggingMode.verbose) {
       stdout.writeln(message);
+    }
+  }
+
+  /// Establishes a connection to the database. This method will retry
+  /// connecting to the database until it succeeds.
+  Future<Session> _connectToDatabase({required bool enableLogging}) async {
+    bool printedDatabaseConnectionError = false;
+    while (true) {
+      var session = await createSession(enableLogging: enableLogging);
+      try {
+        await session.dbNext.testConnection();
+        return session;
+      } catch (e, stackTrace) {
+        // Write connection error to stderr.
+        stderr.writeln(
+          'Failed to connect to the database. Retrying in 10 seconds. $e',
+        );
+        stderr.writeln('$stackTrace');
+        if (!printedDatabaseConnectionError) {
+          stderr.writeln('Database configuration:');
+          stderr.writeln(config.database.toString());
+          printedDatabaseConnectionError = true;
+        }
+
+        await session.close();
+        await Future.delayed(const Duration(seconds: 10));
+      }
     }
   }
 }
