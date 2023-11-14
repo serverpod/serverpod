@@ -172,7 +172,7 @@ class MigrationGenerator {
     return migrationVersion;
   }
 
-  Future<String?> repairMigration({
+  Future<bool> repairMigration({
     String? tag,
     required bool force,
     required String runMode,
@@ -209,22 +209,30 @@ class MigrationGenerator {
 
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
-      return null;
+      return false;
     }
 
     bool versionsMismatch = moduleVersionMismatch(liveDatabase, versions);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
       log.info('No changes detected.');
-      return null;
+      return false;
     }
 
-    // Output the migration.
-    var sql = migration.toPgSql(
-        versions: versions.map(
-            (key, value) => MapEntry<String, String>(key, value.versionName)));
-    log.info(sql);
-    return sql;
+    var repairMigrationName = createVersionName(tag);
+
+    var moduleVersions = versions
+        .map((key, value) => MapEntry<String, String>(key, value.versionName));
+    moduleVersions[MigrationConstants.repairMigrationModuleName] =
+        repairMigrationName;
+
+    _writeRepairMigration(
+      repairMigrationName,
+      migration,
+      moduleVersions,
+    );
+
+    return true;
   }
 
   bool moduleVersionMismatch(
@@ -313,6 +321,34 @@ class MigrationGenerator {
           type: TextLogType.bullet,
         );
       }
+    }
+  }
+
+  void _writeRepairMigration(
+    String repairMigrationName,
+    DatabaseMigration migration,
+    Map<String, String> moduleVersions,
+  ) {
+    var repairMigrationSql = migration.toPgSql(versions: moduleVersions);
+
+    var repairMigrationFile = File(path.join(
+      MigrationConstants.repairMigrationDirectory(directory).path,
+      '$repairMigrationName.sql',
+    ));
+
+    var targetDirectory =
+        MigrationConstants.repairMigrationDirectory(directory);
+
+    if (targetDirectory.existsSync()) {
+      targetDirectory.deleteSync(recursive: true);
+    }
+
+    targetDirectory.createSync(recursive: true);
+
+    try {
+      repairMigrationFile.writeAsStringSync(repairMigrationSql);
+    } catch (e) {
+      throw RepairMigrationWriteException(exception: e.toString());
     }
   }
 }

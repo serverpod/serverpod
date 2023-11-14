@@ -12,8 +12,19 @@ abstract class MigrationConstants {
   /// Filename of the migration registry.
   static const migrationRegistryFileName = 'migration_registry.json';
 
+  /// Module name in database under which repair migrations are stored.
+  static const repairMigrationModuleName = '_repair';
+
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
       Directory(path.join(
-          serverRootDirectory.path, 'generated', 'migration', 'migrations'));
+          _migrationDirectory(serverRootDirectory).path, 'migrations'));
+
+  /// Directory where repair migrations are stored.
+  static Directory repairMigrationDirectory(Directory serverRootDirectory) =>
+      Directory(
+          path.join(_migrationDirectory(serverRootDirectory).path, 'repair'));
+
+  static Directory _migrationDirectory(Directory serverRootDirectory) =>
+      Directory(path.join(serverRootDirectory.path, 'generated', 'migration'));
 }

@@ -91,9 +91,8 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
     }
 
     var success = await log.progress('Creating repair migration', () async {
-      String? migrationSql;
       try {
-        migrationSql = await generator.repairMigration(
+        return await generator.repairMigration(
           tag: tag,
           force: force,
           runMode: mode,
@@ -121,9 +120,12 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
             'Make sure the server is running and is connected to the '
             'database.');
         log.error(e.exception);
+      } on RepairMigrationWriteException catch (e) {
+        log.error('Unable to write repair migration.');
+        log.error(e.exception);
       }
 
-      return migrationSql != null;
+      return false;
     });
 
     if (!success) {
