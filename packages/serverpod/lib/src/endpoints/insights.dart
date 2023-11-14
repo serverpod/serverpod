@@ -225,7 +225,7 @@ class InsightsEndpoint extends Endpoint {
     var target = await getTargetDatabaseDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations =
-        await DatabaseAnalyzer.getInstalledMigrationVersions(session.dbNext);
+        await DatabaseAnalyzer.getInstalledMigrationVersions(session);
 
     var modules = MigrationVersions.listAvailableModules();
 
