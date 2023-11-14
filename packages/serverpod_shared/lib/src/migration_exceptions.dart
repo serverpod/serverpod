@@ -31,3 +31,40 @@ class MigrationVersionLoadException implements Exception {
     required this.exception,
   });
 }
+
+/// Exception thrown when trying to load the live database definition.
+class MigrationLiveDatabaseDefinitionException implements Exception {
+  /// The exception that was thrown.
+  final String exception;
+
+  /// Creates a new [MigrationLiveDatabaseDefinitionException].
+  MigrationLiveDatabaseDefinitionException({
+    required this.exception,
+  });
+}
+
+/// Exception thrown when writing a migration fails.
+class MigrationRepairWriteException implements Exception {
+  /// The exception that was thrown.
+  final String exception;
+
+  /// Creates a new [MigrationRepairWriteException].
+  MigrationRepairWriteException({
+    required this.exception,
+  });
+}
+
+/// Exception thrown when a migration target is not found.
+class MigrationRepairTargetNotFoundException implements Exception {
+  /// The versions that were found.
+  final List<String> versionsFound;
+
+  /// The name of the target that was not found.
+  final String targetName;
+
+  /// Creates a new [MigrationRepairTargetNotFoundException].
+  MigrationRepairTargetNotFoundException({
+    required this.versionsFound,
+    required this.targetName,
+  });
+}
