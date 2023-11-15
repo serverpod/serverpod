@@ -948,6 +948,69 @@ class Protocol extends _i1.SerializationManagerServer {
         managed: true,
       ),
       _i2.TableDefinition(
+        name: 'serverpod_migrations',
+        dartName: 'DatabaseMigrationVersion',
+        schema: 'public',
+        module: 'serverpod',
+        columns: [
+          _i2.ColumnDefinition(
+            name: 'id',
+            columnType: _i2.ColumnType.integer,
+            isNullable: false,
+            dartType: 'int?',
+            columnDefault: 'nextval(\'serverpod_migrations_id_seq\'::regclass)',
+          ),
+          _i2.ColumnDefinition(
+            name: 'module',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'version',
+            columnType: _i2.ColumnType.text,
+            isNullable: false,
+            dartType: 'String',
+          ),
+          _i2.ColumnDefinition(
+            name: 'timestamp',
+            columnType: _i2.ColumnType.timestampWithoutTimeZone,
+            isNullable: true,
+            dartType: 'DateTime?',
+          ),
+        ],
+        foreignKeys: [],
+        indexes: [
+          _i2.IndexDefinition(
+            indexName: 'serverpod_migrations_pkey',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'id',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: true,
+          ),
+          _i2.IndexDefinition(
+            indexName: 'serverpod_migrations_ids',
+            tableSpace: null,
+            elements: [
+              _i2.IndexElementDefinition(
+                type: _i2.IndexElementDefinitionType.column,
+                definition: 'module',
+              )
+            ],
+            type: 'btree',
+            isUnique: true,
+            isPrimary: false,
+          ),
+        ],
+        managed: true,
+      ),
+      _i2.TableDefinition(
         name: 'serverpod_query_log',
         dartName: 'QueryLogEntry',
         schema: 'public',
@@ -2207,6 +2270,8 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.CloudStorageEntry.t;
       case _i7.CloudStorageDirectUploadEntry:
         return _i7.CloudStorageDirectUploadEntry.t;
+      case _i23.DatabaseMigrationVersion:
+        return _i23.DatabaseMigrationVersion.t;
       case _i41.FutureCallEntry:
         return _i41.FutureCallEntry.t;
       case _i42.LogEntry:
