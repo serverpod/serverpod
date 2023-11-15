@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -392,9 +393,9 @@ class MigrationVersion {
       _fileNameDefinitionJson,
     ));
     var definitionData = await definitionFile.readAsString();
-    var databaseDefinition = serializationManager.decodeWithType(
+    var databaseDefinition = serializationManager.decode<DatabaseDefinition>(
       definitionData,
-    ) as DatabaseDefinition;
+    );
 
     // Load the migration definition
     var migrationFile = File(path.join(
@@ -402,9 +403,9 @@ class MigrationVersion {
       _fileNameMigrationJson,
     ));
     var migrationData = await migrationFile.readAsString();
-    var migrationDefinition = serializationManager.decodeWithType(
+    var migrationDefinition = serializationManager.decode<DatabaseMigration>(
       migrationData,
-    ) as DatabaseMigration;
+    );
 
     return MigrationVersion(
       migrationsDirectory: migrationsDirectory,
@@ -431,16 +432,14 @@ class MigrationVersion {
     );
     await versionDir.create(recursive: true);
 
-    // Get the serialization manager
-    var serializationManager = Protocol();
-
     // Write the database definition JSON file
     var definitionFile = File(path.join(
       versionDir.path,
       _fileNameDefinitionJson,
     ));
-    var definitionData = serializationManager.encodeWithType(
+    var definitionData = SerializationManager.encode(
       databaseDefinition,
+      formatted: true,
     );
     await definitionFile.writeAsString(definitionData);
 
@@ -456,7 +455,10 @@ class MigrationVersion {
       versionDir.path,
       _fileNameMigrationJson,
     ));
-    var migrationData = serializationManager.encodeWithType(migration);
+    var migrationData = SerializationManager.encode(
+      migration,
+      formatted: true,
+    );
     await migrationFile.writeAsString(migrationData);
 
     // Write the migration definition SQL file
