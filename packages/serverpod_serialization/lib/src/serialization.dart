@@ -148,11 +148,13 @@ abstract class SerializationManager {
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
-  static String encode(Object? object) {
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation.
+  static String encode(Object? object, {bool formatted = false}) {
     // This is the only time [jsonEncode] should be used in the project.
-    return jsonEncode(
-      object,
-      toEncodable: (nonEncodable) {
+    return JsonEncoder.withIndent(
+      formatted ? '  ' : null,
+      (nonEncodable) {
         //TODO: all the "dart native" types should be listed here
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
@@ -170,13 +172,17 @@ abstract class SerializationManager {
           return (nonEncodable as dynamic)?.toJson();
         }
       },
+    ).convert(
+      object,
     );
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if th class is unknown.
-  String encodeWithType(Object object) {
-    return encode(wrapWithClassName(object));
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation.
+  String encodeWithType(Object object, {bool formatted = false}) {
+    return encode(wrapWithClassName(object), formatted: formatted);
   }
 }
 
