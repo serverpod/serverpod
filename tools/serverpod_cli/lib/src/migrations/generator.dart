@@ -298,18 +298,26 @@ class MigrationGenerator {
   Future<MigrationVersion> _loadTargetRepairMigrationVersion(
     RepairTargetMigration targetMigration,
   ) async {
-    try {
-      return await getMigrationVersion(
-        targetMigration.version,
+    var migrationsDirectory = Directory(
+      path.join(
+        migrationsBaseDirectory.path,
         targetMigration.moduleName,
-      );
-    } on MigrationVersionLoadException catch (e) {
-      throw MigrationRepairTargetLoadException(
+      ),
+    );
+
+    var registry = await MigrationRegistry.load(migrationsDirectory);
+
+    if (!registry.versions.contains(targetMigration.version)) {
+      throw MigrationRepairTargetNotFoundException(
+        versionsFound: registry.versions,
         targetName: targetMigration.version,
-        moduleName: targetMigration.moduleName,
-        exception: e.toString(),
       );
     }
+
+    return await getMigrationVersion(
+      targetMigration.version,
+      targetMigration.moduleName,
+    );
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
@@ -348,7 +356,7 @@ class MigrationGenerator {
     try {
       repairMigrationFile.writeAsStringSync(repairMigrationSql);
     } catch (e) {
-      throw RepairMigrationWriteException(exception: e.toString());
+      throw MigrationRepairWriteException(exception: e.toString());
     }
   }
 }

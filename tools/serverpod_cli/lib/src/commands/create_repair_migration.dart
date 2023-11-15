@@ -98,12 +98,14 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
           runMode: mode,
           targetMigration: targetMigration,
         );
-      } on MigrationRepairTargetLoadException catch (e) {
-        log.error(
-          'Unable to load repair target "${e.targetName}" for module '
-          '"${e.moduleName}".',
-        );
-        log.error(e.exception);
+      } on MigrationRepairTargetNotFoundException catch (e) {
+        if (e.versionsFound.isEmpty) {
+          log.error('Unable to find any migration versions.');
+        } else {
+          log.error(
+              'Unable to find the specified target migration "${e.targetName}".'
+              'Please select on of the available versions: ${e.versionsFound}.');
+        }
       } on MigrationVersionLoadException catch (e) {
         log.error(
           'Unable to determine latest database definition due to a corrupted '
@@ -120,7 +122,7 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
             'Make sure the server is running and is connected to the '
             'database.');
         log.error(e.exception);
-      } on RepairMigrationWriteException catch (e) {
+      } on MigrationRepairWriteException catch (e) {
         log.error('Unable to write repair migration.');
         log.error(e.exception);
       }
