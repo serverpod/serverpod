@@ -13,16 +13,16 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
   DatabaseMigrationVersion._({
+    this.id,
     required this.module,
     required this.version,
-    this.priority,
     this.timestamp,
   });
 
   factory DatabaseMigrationVersion({
+    int? id,
     required String module,
     required String version,
-    int? priority,
     DateTime? timestamp,
   }) = _DatabaseMigrationVersionImpl;
 
@@ -31,16 +31,20 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
     _i1.SerializationManager serializationManager,
   ) {
     return DatabaseMigrationVersion(
+      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       module:
           serializationManager.deserialize<String>(jsonSerialization['module']),
       version: serializationManager
           .deserialize<String>(jsonSerialization['version']),
-      priority:
-          serializationManager.deserialize<int?>(jsonSerialization['priority']),
       timestamp: serializationManager
           .deserialize<DateTime?>(jsonSerialization['timestamp']),
     );
   }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
 
   /// The module the migration belongs to.
   String module;
@@ -48,25 +52,21 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
   /// The version of the migration.
   String version;
 
-  /// The priority of the migration. Determines the order in which the
-  /// migrations are applied.
-  int? priority;
-
   /// The timestamp of the migration. Only set if the migration is applied.
   DateTime? timestamp;
 
   DatabaseMigrationVersion copyWith({
+    int? id,
     String? module,
     String? version,
-    int? priority,
     DateTime? timestamp,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'module': module,
       'version': version,
-      'priority': priority,
       'timestamp': timestamp,
     };
   }
@@ -76,28 +76,28 @@ class _Undefined {}
 
 class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
   _DatabaseMigrationVersionImpl({
+    int? id,
     required String module,
     required String version,
-    int? priority,
     DateTime? timestamp,
   }) : super._(
+          id: id,
           module: module,
           version: version,
-          priority: priority,
           timestamp: timestamp,
         );
 
   @override
   DatabaseMigrationVersion copyWith({
+    Object? id = _Undefined,
     String? module,
     String? version,
-    Object? priority = _Undefined,
     Object? timestamp = _Undefined,
   }) {
     return DatabaseMigrationVersion(
+      id: id is int? ? id : this.id,
       module: module ?? this.module,
       version: version ?? this.version,
-      priority: priority is int? ? priority : this.priority,
       timestamp: timestamp is DateTime? ? timestamp : this.timestamp,
     );
   }

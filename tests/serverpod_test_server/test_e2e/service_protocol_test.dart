@@ -486,16 +486,11 @@ void main() {
 
 extension on service.DatabaseDefinition {
   void matchesTarget(service.DatabaseDefinition target) {
-    // The length should be one more as the live definition contains the
-    // migrations table.
-    expect(tables, hasLength(target.tables.length + 1));
+    expect(tables, hasLength(target.tables.length));
     expect(tables.map((e) => e.name),
         containsAll(target.tables.map((e) => e.name)));
 
     for (var table in tables) {
-      if (table.name == 'serverpod_migrations') {
-        continue;
-      }
       table.matchesDefinition(
           target.tables.firstWhere((e) => e.name == table.name));
     }

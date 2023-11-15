@@ -170,6 +170,22 @@ ALTER TABLE ONLY "serverpod_method"
 CREATE UNIQUE INDEX serverpod_method_endpoint_method_idx ON "serverpod_method" USING btree ("endpoint", "method");
 
 --
+-- Class DatabaseMigrationVersion as table serverpod_migrations
+--
+
+CREATE TABLE "serverpod_migrations" (
+  "id" serial,
+  "module" text NOT NULL,
+  "version" text NOT NULL,
+  "timestamp" timestamp without time zone
+);
+
+ALTER TABLE ONLY "serverpod_migrations"
+  ADD CONSTRAINT serverpod_migrations_pkey PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX serverpod_migrations_ids ON "serverpod_migrations" USING btree ("module");
+
+--
 -- Class QueryLogEntry as table serverpod_query_log
 --
 

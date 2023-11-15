@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod/protocol.dart' as serverProtocol;
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
@@ -162,10 +163,11 @@ abstract class MigrationTestUtils {
     var latestMigration = migrationRegistry.getLatest();
 
     await serviceClient.insights.executeSql('''
-INSERT INTO "serverpod_migrations" ("module", "version", "priority", "timestamp")
-    VALUES ('serverpod_test', '$latestMigration', 2, now())
+INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
+    ("module", "version", "timestamp")
+    VALUES ('serverpod_test', '$latestMigration', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '$latestMigration', "priority" = 2;
+    DO UPDATE SET "version" = '$latestMigration';
 ''');
   }
 }

@@ -232,7 +232,6 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     out += _sqlStoreMigrationVersion(
       module: module,
       version: version,
-      priority: priority!,
     );
 
     out += '\n';
@@ -441,7 +440,6 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
       out += _sqlStoreMigrationVersion(
         module: module,
         version: version,
-        priority: priority,
       );
     }
 
@@ -569,18 +567,16 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
 String _sqlStoreMigrationVersion({
   required String module,
   required String version,
-  required int priority,
 }) {
   String out = '';
   out += '--\n';
   out += '-- MIGRATION VERSION FOR $module\n';
   out += '--\n';
   out += 'INSERT INTO "serverpod_migrations" '
-      '("module", "version", "priority", "timestamp")\n';
-  out += '    VALUES (\'$module\', \'$version\', $priority, now())\n';
+      '("module", "version", "timestamp")\n';
+  out += '    VALUES (\'$module\', \'$version\', now())\n';
   out += '    ON CONFLICT ("module")\n';
-  out += '    DO UPDATE SET "version" = \'$version\', '
-      '"priority" = $priority;\n';
+  out += '    DO UPDATE SET "version" = \'$version\', "timestamp" = now();\n';
   out += '\n';
 
   return out;

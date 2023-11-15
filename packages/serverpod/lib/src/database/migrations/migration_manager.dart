@@ -13,18 +13,6 @@ import '../extensions.dart';
 
 final SerializationManager _serializationManager = internal.Protocol();
 
-const _queryCreateMigrations =
-    'CREATE TABLE IF NOT EXISTS "serverpod_migrations" (\n'
-    '    "module" text,\n'
-    '    "version" text,\n'
-    '    "priority" integer,\n'
-    '    "timestamp" timestamp without time zone, \n'
-    '    CONSTRAINT serverdpod_migrations_idx UNIQUE("module")\n'
-    ');\n';
-
-const _queryGetMigrations =
-    'SELECT * from "serverpod_migrations" ORDER BY "priority", "module";';
-
 /// The migration manager handles migrations of the database.
 class MigrationManager {
   /// List of installed migration versions. Available after [initialize] has
@@ -38,29 +26,13 @@ class MigrationManager {
   /// Initializing the [MigrationManager] by loading the current version
   /// from the database and available migrations.
   Future<void> initialize(Session session) async {
-    await session.dbNext.unsafeQuery(_queryCreateMigrations);
-
     // Get installed versions
-    var versions = <DatabaseMigrationVersion>[];
-    var result = await session.dbNext.unsafeQuery(_queryGetMigrations);
-    for (var row in result) {
-      assert(row.length == 4);
-      String module = row[0];
-      String version = row[1];
-      int priority = row[2];
-      DateTime timestamp = row[3];
-
-      versions.add(
-        DatabaseMigrationVersion(
-          module: module,
-          version: version,
-          priority: priority,
-          timestamp: timestamp,
-        ),
-      );
-    }
     installedVersions.clear();
-    installedVersions.addAll(versions);
+    try {
+      installedVersions.addAll(await DatabaseMigrationVersion.db.find(session));
+    } catch (e) {
+      // Table might not exist and we therefore ignore and assume no versions.
+    }
 
     // Get available migrations
     var migrationModules = MigrationVersions.listAvailableModules();
