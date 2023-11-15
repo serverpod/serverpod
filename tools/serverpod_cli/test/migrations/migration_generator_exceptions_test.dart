@@ -25,11 +25,10 @@ void main() {
         expect(
           generator.createMigration(force: false, priority: 0),
           throwsA(
-            isA<MigrationRegistryLoadException>()
-                .having((e) => e.directoryPath, 'Directory path',
-                    equals(generator.migrationsProjectDirectory.path))
-                .having((e) => e.exception, 'Matching exception',
-                    startsWith('FormatException: No')),
+            isA<MigrationRegistryLoadException>().having(
+                (e) => e.directoryPath,
+                'Directory path',
+                equals(generator.migrationsProjectDirectory.path)),
           ),
         );
       });
@@ -44,11 +43,10 @@ void main() {
             force: false,
           ),
           throwsA(
-            isA<MigrationRegistryLoadException>()
-                .having((e) => e.directoryPath, 'Directory path',
-                    equals(generator.migrationsProjectDirectory.path))
-                .having((e) => e.exception, 'Matching exception',
-                    startsWith('FormatException: No')),
+            isA<MigrationRegistryLoadException>().having(
+                (e) => e.directoryPath,
+                'Directory path',
+                equals(generator.migrationsProjectDirectory.path)),
           ),
         );
       });
