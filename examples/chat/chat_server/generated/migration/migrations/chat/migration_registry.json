@@ -1,1 +1,5 @@
-{"className":"DatabaseMigrationRegistry","data":{"migrations":["20231116130443"]}}
+{
+  "migrations": [
+    "20231121103942"
+  ]
+}

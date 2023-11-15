@@ -1,0 +1,56 @@
+{
+  "name": null,
+  "tables": [
+    {
+      "name": "channel",
+      "dartName": "Channel",
+      "module": "chat",
+      "schema": "public",
+      "tableSpace": null,
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('channel_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": null,
+          "dartType": "String"
+        },
+        {
+          "name": "channel",
+          "columnType": 0,
+          "isNullable": false,
+          "columnDefault": null,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "channel_pkey",
+          "tableSpace": null,
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true,
+          "predicate": null
+        }
+      ],
+      "managed": true
+    }
+  ],
+  "priority": 2,
+  "installedModules": null,
+  "migrationApiVersion": 1
+}
