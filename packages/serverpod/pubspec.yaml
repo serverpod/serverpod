@@ -10,6 +10,13 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 documentation: https://docs.serverpod.dev
 
+topics:
+  - backend
+  - server
+  - network
+  - rest
+  - database
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
