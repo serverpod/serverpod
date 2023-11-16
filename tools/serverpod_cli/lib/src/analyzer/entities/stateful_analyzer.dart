@@ -128,7 +128,7 @@ class StatefulAnalyzer {
       var collector = CodeGenerationCollector();
       SerializableEntityAnalyzer.validateYamlDefinition(
         state.source.yaml,
-        state.source.yamlSourceUri.path,
+        state.source.yamlSourceUri,
         collector,
         state.entity,
         _entities,
