@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
@@ -50,9 +49,6 @@ class GenerateCommand extends ServerpodCommand {
         log.sourceSpanException(warning);
       }
     }
-
-    // Copy migrations from modules.
-    await copyMigrations(config);
 
     var endpointsAnalyzer = EndpointsAnalyzer(config);
 
