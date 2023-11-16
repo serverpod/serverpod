@@ -25,6 +25,70 @@ void main() {
   });
 
   group('Given a clean state', () {
+    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+
+    tearDown(() async {
+      try {
+        await Process.run(
+          'docker',
+          ['compose', 'down', '-v'],
+          workingDirectory: commandRoot,
+        );
+      } catch (e) {}
+    });
+
+    test(
+        'when creating a new project then the project is created successfully and can be booted',
+        () async {
+      var createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--db-password=postgres'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+        runInShell: true,
+      );
+
+      createProcess.stdout.transform(Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      expect(createProjectExitCode, 0);
+
+      final docker = await Process.start(
+        'docker',
+        ['compose', 'up', '--build', '--detach'],
+        workingDirectory: commandRoot,
+        runInShell: true,
+      );
+
+      docker.stdout.transform(Utf8Decoder()).listen(print);
+      docker.stderr.transform(Utf8Decoder()).listen(print);
+
+      var dockerExitCode = await docker.exitCode;
+      expect(
+        dockerExitCode,
+        0,
+        reason: 'Docker with postgres failed to start.',
+      );
+
+      var startProcess = await Process.start(
+        'dart',
+        ['bin/main.dart', '--role', 'maintenance'],
+        workingDirectory: commandRoot,
+        runInShell: true,
+      );
+
+      startProcess.stdout.transform(Utf8Decoder()).listen(print);
+      startProcess.stderr.transform(Utf8Decoder()).listen(print);
+
+      var startProjectExitCode = await startProcess.exitCode;
+      expect(startProjectExitCode, 0);
+    });
+  }, timeout: timeout);
+
+  group('Given a clean state', () {
     final (projectName, commandRootPath) = createRandomProjectName(tempPath);
     final (serverDir, flutterDir, clientDir) =
         createProjectFolderPaths(projectName);
@@ -43,7 +107,7 @@ void main() {
       setUpAll(() async {
         await Process.run(
           'serverpod',
-          ['create', projectName],
+          ['create', projectName, '-v', '--db-password=postgres'],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -53,13 +117,17 @@ void main() {
       });
 
       test('then there are no linting errors in the new project', () async {
-        final process = await Process.run(
+        final process = await Process.start(
           'dart',
           ['analyze', '--fatal-infos', '--fatal-warnings', projectName],
           workingDirectory: tempPath,
         );
 
-        expect(process.exitCode, 0, reason: 'Linting errors in new project.');
+        process.stdout.transform(Utf8Decoder()).listen(print);
+        process.stderr.transform(Utf8Decoder()).listen(print);
+
+        var exitCode = await process.exitCode;
+        expect(exitCode, 0, reason: 'Linting errors in new project.');
       });
 
       group('then the server project', () {
@@ -239,58 +307,6 @@ void main() {
 
   group('Given a clean state', () {
     final (projectName, commandRoot) = createRandomProjectName(tempPath);
-
-    tearDown(() async {
-      try {
-        await Process.run(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-        );
-      } catch (e) {}
-    });
-
-    test(
-        'when creating a new project then the project is created successfully and can be booted',
-        () async {
-      var createProcess = await Process.start(
-        'serverpod',
-        ['create', projectName, '-v'],
-        workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-        runInShell: true,
-      );
-
-      createProcess.stdout.transform(Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
-      expect(createProjectExitCode, 0);
-
-      await Process.run(
-        'docker',
-        ['compose', 'up', '--detach'],
-        workingDirectory: commandRoot,
-      );
-
-      var startProcess = await Process.start(
-        'dart',
-        ['bin/main.dart', '--role', 'maintenance'],
-        workingDirectory: commandRoot,
-      );
-
-      startProcess.stdout.transform(Utf8Decoder()).listen(print);
-      startProcess.stderr.transform(Utf8Decoder()).listen(print);
-
-      var startProjectExitCode = await startProcess.exitCode;
-      expect(startProjectExitCode, 0);
-    });
-  }, timeout: timeout);
-
-  group('Given a clean state', () {
-    final (projectName, commandRoot) = createRandomProjectName(tempPath);
     final (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
     tearDown(() async {
@@ -308,7 +324,7 @@ void main() {
         () async {
       var createProcess = await Process.start(
         'serverpod',
-        ['create', projectName, '-v'],
+        ['create', projectName, '-v', '--db-password=postgres'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
