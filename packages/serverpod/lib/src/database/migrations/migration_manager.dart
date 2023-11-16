@@ -219,7 +219,11 @@ class Migration {
   /// Loads the specified migration version from the migrations directory.
   static Future<Migration> load(String module, String version) async {
     var migrationDirectory = Directory(
-      path.join(Directory.current.path, 'migrations', module, version),
+      path.join(
+        MigrationConstants.migrationsBaseDirectory(Directory.current).path,
+        module,
+        version,
+      ),
     );
 
     // Load definition and migration SQL

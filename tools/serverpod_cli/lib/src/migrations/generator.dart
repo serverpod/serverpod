@@ -33,10 +33,10 @@ class MigrationGenerator {
   }
 
   Directory get migrationsBaseDirectory =>
-      Directory(path.join(directory.path, 'migrations'));
+      MigrationConstants.migrationsBaseDirectory(directory);
 
   Directory get migrationsProjectDirectory =>
-      Directory(path.join(directory.path, 'migrations', projectName));
+      Directory(path.join(migrationsBaseDirectory.path, projectName));
 
   List<String> getMigrationModules() {
     if (!migrationsBaseDirectory.existsSync()) {

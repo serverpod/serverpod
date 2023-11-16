@@ -125,6 +125,8 @@ abstract class MigrationTestUtils {
 
   static Directory _migrationsProjectDirectory() => Directory(path.join(
         Directory.current.path,
+        'generated',
+        'migration',
         'migrations',
         'serverpod_test',
       ));
