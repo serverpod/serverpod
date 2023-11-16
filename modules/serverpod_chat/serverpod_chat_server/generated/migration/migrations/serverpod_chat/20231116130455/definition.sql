@@ -33,9 +33,9 @@ CREATE UNIQUE INDEX "serverpod_chat_read_message_channel_user_idx" ON "serverpod
 -- MIGRATION VERSION FOR serverpod_chat
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_chat', '20231114162751', now())
+    VALUES ('serverpod_chat', '20231116130455', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231114162751', "timestamp" = now();
+    DO UPDATE SET "version" = '20231116130455', "timestamp" = now();
 
 
 COMMIT;
