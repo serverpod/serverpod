@@ -57,9 +57,9 @@ test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly
 test -f $SERVERPOD_HOME/tests/serverpod_test_server/lib/src/generated/serverOnly/server_only_enum.dart
 
 # Server migration files
-test -d cli_test/cli_test_server/migrations/serverpod
-test -d cli_test/cli_test_server/migrations/cli_test
-test -f cli_test/cli_test_server/migrations/cli_test/migration_registry.json
+test -d cli_test/cli_test_server/generated/migration/migrations/serverpod
+test -d cli_test/cli_test_server/generated/migration/migrations/cli_test
+test -f cli_test/cli_test_server/generated/migration/migrations/cli_test/migration_registry.json
 
 # Client files
 test -f cli_test/cli_test_client/pubspec.yaml
