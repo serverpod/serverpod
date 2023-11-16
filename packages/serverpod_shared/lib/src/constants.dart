@@ -14,5 +14,6 @@ abstract class MigrationConstants {
 
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(serverRootDirectory.path, 'migrations'));
+      Directory(path.join(
+          serverRootDirectory.path, 'generated', 'migration', 'migrations'));
 }
