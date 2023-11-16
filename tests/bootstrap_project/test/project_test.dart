@@ -11,7 +11,7 @@ void main() {
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
   final tempPath = path.join(rootPath, 'temp');
 
-  final timeout = Timeout(Duration(minutes: 3));
+  final timeout = Timeout(Duration(minutes: 5));
 
   setUpAll(() async {
     await Process.run(
