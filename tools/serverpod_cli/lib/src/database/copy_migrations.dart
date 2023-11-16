@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/copy_directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 Future<void> copyMigrations(GeneratorConfig config) async {
   if (config.type == PackageType.module) {
@@ -20,25 +22,9 @@ Future<void> copyMigrations(GeneratorConfig config) async {
     var packageName = modulePath.pathSegments.last;
     var moduleName = moduleNameFromServerPackageName(packageName);
 
-    var srcSegments = List<String>.from(modulePath.pathSegments)
-      ..addAll([
-        'migrations',
-        moduleName,
-      ])
-      ..toList();
-    var srcDirectory = Directory.fromUri(modulePath.replace(
-      pathSegments: srcSegments,
-    ));
+    var srcDirectory = _moduleMigrationDirectory(moduleDirectory, moduleName);
 
-    var dstSegments = List<String>.from(Directory.current.uri.pathSegments)
-      ..addAll([
-        'migrations',
-        moduleName,
-      ])
-      ..toList();
-    var dstDirectory = Directory.fromUri(Directory.current.uri.replace(
-      pathSegments: dstSegments,
-    ));
+    var dstDirectory = _moduleMigrationDirectory(Directory.current, moduleName);
 
     if (!srcDirectory.existsSync()) {
       continue;
@@ -51,3 +37,11 @@ Future<void> copyMigrations(GeneratorConfig config) async {
     copyDirectory(srcDirectory, dstDirectory);
   }
 }
+
+Directory _moduleMigrationDirectory(
+        Directory projectDirectory, String moduleName) =>
+    Directory(
+      path.join(
+          MigrationConstants.migrationsBaseDirectory(projectDirectory).path,
+          moduleName),
+    );

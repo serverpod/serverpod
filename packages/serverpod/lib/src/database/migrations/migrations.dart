@@ -45,7 +45,7 @@ class MigrationVersions {
 
   /// Gets the default migrations directory.
   static Directory get defaultMigrationsDirectory =>
-      Directory(path.join(Directory.current.path, 'migrations'));
+      MigrationConstants.migrationsBaseDirectory(Directory.current);
 
   /// Loads the registry from the migrations directory.
   /// Returns null registry if no migration registry is found.
