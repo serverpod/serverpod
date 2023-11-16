@@ -9,6 +9,7 @@ fi
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
+MIGRATION_DIR=generated/migration/migrations
 
 echo "pub get cli"
 cd $CLI_DIR
@@ -18,31 +19,31 @@ dart pub get
 
 echo "serverpod"
 cd $BASE/packages/serverpod
-rm -r migrations/serverpod
+rm -r $MIGRATION_DIR/serverpod
 dart $CLI create-migration
 
 # Examples
 
 echo "examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
-rm -r migrations/chat
+rm -r $MIGRATION_DIR/chat
 dart $CLI create-migration
 
 # Modules 
 
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
-rm -r migrations/serverpod_auth
+rm -r $MIGRATION_DIR/serverpod_auth
 dart $CLI create-migration
 
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
-rm -r migrations/serverpod_chat
+rm -r $MIGRATION_DIR/serverpod_chat
 dart $CLI create-migration
 
 # Tests
 
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-rm -r migrations/serverpod_test
+rm -r $MIGRATION_DIR/serverpod_test
 dart $CLI create-migration
