@@ -208,7 +208,13 @@ void main() {
         test('has the serverpod migrations folder', () {
           expect(
             Directory(
-              path.join(serverDir, 'migrations', 'serverpod'),
+              path.join(
+                serverDir,
+                'generated',
+                'migration',
+                'migrations',
+                'serverpod',
+              ),
             ).existsSync(),
             isTrue,
             reason: 'Server migrations folder does not exist.',
@@ -218,7 +224,13 @@ void main() {
         test('has the project migrations folder', () {
           expect(
             Directory(
-              path.join(serverDir, 'migrations', projectName),
+              path.join(
+                serverDir,
+                'generated',
+                'migration',
+                'migrations',
+                projectName,
+              ),
             ).existsSync(),
             isTrue,
             reason: 'Server migrations folder does not exist.',
@@ -229,6 +241,8 @@ void main() {
           expect(
             File(path.join(
               serverDir,
+              'generated',
+              'migration',
               'migrations',
               projectName,
               'migration_registry.json',
