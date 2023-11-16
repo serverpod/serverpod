@@ -6,6 +6,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
+import 'package:serverpod/src/database/migrations/repair_migrations.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../generated/protocol.dart' as internal;
@@ -142,6 +143,26 @@ class MigrationManager {
       throw Exception('Version $version not found for module $module.');
     }
     return versions.sublist(index + 1);
+  }
+
+  /// Applies the repair migration to the database.
+  Future<void> applyRepairMigration(Session session) async {
+    var repairMigration = RepairMigration.load(Directory.current);
+    if (repairMigration == null) {
+      return;
+    }
+
+    var appliedRepairMigration = await DatabaseMigrationVersion.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.module.equals(MigrationConstants.repairMigrationModuleName));
+
+    if (appliedRepairMigration != null &&
+        appliedRepairMigration.version == repairMigration.versionName) {
+      return;
+    }
+
+    await session.dbNext.unsafeExecute(repairMigration.sqlMigration);
   }
 
   /// Migrates all modules to the latest version.
