@@ -42,7 +42,7 @@ void main() {
         () async {
       var createProcess = await Process.start(
         'serverpod',
-        ['create', projectName, '-v', '--db-password=postgres'],
+        ['create', projectName, '-v'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -107,7 +107,7 @@ void main() {
       setUpAll(() async {
         await Process.run(
           'serverpod',
-          ['create', projectName, '-v', '--db-password=postgres'],
+          ['create', projectName, '-v'],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -324,7 +324,7 @@ void main() {
         () async {
       var createProcess = await Process.start(
         'serverpod',
-        ['create', projectName, '-v', '--db-password=postgres'],
+        ['create', projectName, '-v'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
