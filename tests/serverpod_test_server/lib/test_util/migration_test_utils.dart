@@ -9,13 +9,16 @@ import 'package:uuid/uuid.dart';
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
-    required Map<String, String> protocols,
+    required List<Map<String, String>> migrationProtocols,
     String tag = 'test',
   }) async {
-    assert(
-      await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
-      'Failed to create migration.',
-    );
+    for (var protocols in migrationProtocols) {
+      assert(
+        await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
+        'Failed to create migration.',
+      );
+    }
+
     assert(
       await runApplyMigrations() == 0,
       'Failed to create migration.',
