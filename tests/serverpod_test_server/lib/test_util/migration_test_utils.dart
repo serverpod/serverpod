@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
     required Map<String, String> protocols,
-    required String tag,
+    String tag = 'test',
   }) async {
     assert(
       await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
@@ -24,7 +24,7 @@ abstract class MigrationTestUtils {
 
   static Future<int> createMigrationFromProtocols({
     required Map<String, String> protocols,
-    required String tag,
+    String tag = 'test',
     bool force = false,
   }) async {
     _removeMigrationTestProtocolFolder();
