@@ -13,8 +13,11 @@ abstract class MigrationTestUtils {
     String tag = 'test',
   }) async {
     for (var protocols in migrationProtocols) {
+      var exitCode =
+          await createMigrationFromProtocols(protocols: protocols, tag: tag);
+
       assert(
-        await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
+        exitCode == 0,
         'Failed to create migration.',
       );
     }
@@ -50,6 +53,7 @@ abstract class MigrationTestUtils {
         '--tag',
         suffixedTag,
         if (force) '--force',
+        '--verbose',
       ],
     );
   }
@@ -113,8 +117,79 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
+        '--logging',
+        'verbose',
       ],
     );
+  }
+
+  static Future<int> runApplyRepairMigration() async {
+    return await _runProcess(
+      'dart',
+      arguments: [
+        'run',
+        'bin/main.dart',
+        '--apply-repair-migration',
+        '--role',
+        'maintenance',
+        '--mode',
+        'production',
+        '--logging',
+        'verbose',
+      ],
+    );
+  }
+
+  static Future<int> runApplyBothRepairMigrationAndMigrations() async {
+    return await _runProcess(
+      'dart',
+      arguments: [
+        'run',
+        'bin/main.dart',
+        '--apply-repair-migration',
+        '--apply-migrations',
+        '--role',
+        'maintenance',
+        '--mode',
+        'production',
+        '--logging',
+        'verbose',
+      ],
+    );
+  }
+
+  static Future<int> runCreateRepairMigration({
+    String tag = 'test',
+    bool force = false,
+    String? targetVersion,
+  }) async {
+    return await _runProcess(
+      'serverpod',
+      arguments: [
+        'create-repair-migration',
+        '--tag',
+        tag,
+        '--mode',
+        'production',
+        if (targetVersion != null) ...['--version', targetVersion],
+        if (force) '--force',
+        '--verbose',
+      ],
+    );
+  }
+
+  static File? tryLoadRepairMigrationFile() {
+    var repairMigrationDirectory = _repairMigrationDirectory();
+    if (!repairMigrationDirectory.existsSync()) {
+      return null;
+    }
+
+    var repairMigrationFiles = repairMigrationDirectory.listSync();
+    if (repairMigrationFiles.isEmpty) {
+      return null;
+    }
+
+    return repairMigrationFiles.first as File;
   }
 
   static Directory _migrationProtocolTestDirectory() => Directory(path.join(
