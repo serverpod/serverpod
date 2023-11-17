@@ -5,6 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
+import 'package:uuid/uuid.dart';
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
@@ -38,12 +39,13 @@ abstract class MigrationTestUtils {
       protocolFile.writeAsStringSync(contents);
     });
 
+    var suffixedTag = '$tag-${Uuid().v4()}';
     var createMigrationProcess = await Process.start(
       'serverpod',
       [
         'create-migration',
         '--tag',
-        tag,
+        suffixedTag,
         if (force) '--force',
       ],
       workingDirectory: Directory.current.path,
