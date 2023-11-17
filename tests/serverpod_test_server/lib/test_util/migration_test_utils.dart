@@ -65,12 +65,20 @@ abstract class MigrationTestUtils {
     required Client serviceClient,
   }) async {
     removeAllTaggedMigrations();
+    removeRepairMigration();
     _removeMigrationTestProtocolFolder();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
     await _removeTaggedMigrationsFromRegistry();
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  static void removeRepairMigration() {
+    var repairMigrationDirectory = _repairMigrationDirectory();
+    if (repairMigrationDirectory.existsSync()) {
+      repairMigrationDirectory.deleteSync(recursive: true);
+    }
   }
 
   static void removeAllTaggedMigrations() {
@@ -117,10 +125,19 @@ abstract class MigrationTestUtils {
         'migration_test_protocol_files',
       ));
 
-  static Directory _migrationsProjectDirectory() => Directory(path.join(
+  static Directory _migrationDirectory() => Directory(path.join(
         Directory.current.path,
         'generated',
         'migration',
+      ));
+
+  static Directory _repairMigrationDirectory() => Directory(path.join(
+        _migrationDirectory().path,
+        'repair',
+      ));
+
+  static Directory _migrationsProjectDirectory() => Directory(path.join(
+        _migrationDirectory().path,
         'migrations',
         'serverpod_test',
       ));
