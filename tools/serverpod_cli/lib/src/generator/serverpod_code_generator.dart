@@ -8,6 +8,7 @@ import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
+import 'package:serverpod_cli/src/generator/yaml/endpoint_description_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 
@@ -17,6 +18,7 @@ abstract class ServerpodCodeGenerator {
     const DartServerCodeGenerator(),
     const DartClientCodeGenerator(),
     const LegacyPgsqlCodeGenerator(),
+    const EndpointDescriptionGenerator(),
   ];
 
   /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all
