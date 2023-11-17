@@ -40,20 +40,15 @@ abstract class MigrationTestUtils {
     });
 
     var suffixedTag = '$tag-${Uuid().v4()}';
-    var createMigrationProcess = await Process.start(
+    return await _runProcess(
       'serverpod',
-      [
+      arguments: [
         'create-migration',
         '--tag',
         suffixedTag,
         if (force) '--force',
       ],
-      workingDirectory: Directory.current.path,
     );
-
-    createMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-    createMigrationProcess.stdout.transform(utf8.decoder).listen(print);
-    return await createMigrationProcess.exitCode;
   }
 
   static Future<MigrationRegistry> loadMigrationRegistry() async {
@@ -97,9 +92,9 @@ abstract class MigrationTestUtils {
   }
 
   static Future<int> runApplyMigrations() async {
-    var applyMigrationProcess = await Process.start(
+    return await _runProcess(
       'dart',
-      [
+      arguments: [
         'run',
         'bin/main.dart',
         '--apply-migrations',
@@ -108,13 +103,7 @@ abstract class MigrationTestUtils {
         '--mode',
         'production',
       ],
-      workingDirectory: Directory.current.path,
     );
-
-    applyMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-    applyMigrationProcess.stdout.transform(utf8.decoder).listen(print);
-
-    return await applyMigrationProcess.exitCode;
   }
 
   static Directory _migrationProtocolTestDirectory() => Directory(path.join(
@@ -173,5 +162,22 @@ INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
 ''');
+  }
+
+  static Future<int> _runProcess(
+    String command, {
+    List<String>? arguments,
+    Directory? workingDirectory,
+  }) async {
+    var process = await Process.start(
+      command,
+      arguments ?? [],
+      workingDirectory: workingDirectory?.path ?? Directory.current.path,
+    );
+
+    process.stderr.transform(utf8.decoder).listen(print);
+    process.stdout.transform(utf8.decoder).listen(print);
+
+    return await process.exitCode;
   }
 }
