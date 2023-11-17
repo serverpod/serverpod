@@ -5,7 +5,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
-void main() {
+void main() async {
   Directory.current = path.join(Directory.current.path, '..', '..');
   final rootPath = Directory.current.path;
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
@@ -27,27 +27,28 @@ void main() {
   group('Given a clean state', () {
     final (projectName, commandRoot) = createRandomProjectName(tempPath);
 
+    late Process createProcess;
+
     tearDown(() async {
-      try {
-        await Process.run(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-        );
-      } catch (e) {}
+      createProcess.kill();
+
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+      );
     });
 
     test(
         'when creating a new project then the project is created successfully and can be booted',
         () async {
-      var createProcess = await Process.start(
+      createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
-        runInShell: true,
       );
 
       createProcess.stdout.transform(Utf8Decoder()).listen(print);
@@ -60,13 +61,13 @@ void main() {
         'docker',
         ['compose', 'up', '--build', '--detach'],
         workingDirectory: commandRoot,
-        runInShell: true,
       );
 
       docker.stdout.transform(Utf8Decoder()).listen(print);
       docker.stderr.transform(Utf8Decoder()).listen(print);
 
       var dockerExitCode = await docker.exitCode;
+
       expect(
         dockerExitCode,
         0,
@@ -77,7 +78,6 @@ void main() {
         'dart',
         ['bin/main.dart', '--role', 'maintenance'],
         workingDirectory: commandRoot,
-        runInShell: true,
       );
 
       startProcess.stdout.transform(Utf8Decoder()).listen(print);
@@ -87,20 +87,17 @@ void main() {
       expect(startProjectExitCode, 0);
     });
   }, timeout: timeout);
-
   group('Given a clean state', () {
-    final (projectName, commandRootPath) = createRandomProjectName(tempPath);
+    var (projectName, commandRootPath) = createRandomProjectName(tempPath);
     final (serverDir, flutterDir, clientDir) =
         createProjectFolderPaths(projectName);
 
     tearDownAll(() async {
-      try {
-        await Process.run(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRootPath,
-        );
-      } catch (e) {}
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRootPath,
+      );
     });
 
     group('when creating a new project', () {
@@ -112,7 +109,6 @@ void main() {
           environment: {
             'SERVERPOD_HOME': rootPath,
           },
-          runInShell: true,
         );
       });
 
@@ -323,27 +319,28 @@ void main() {
     final (projectName, commandRoot) = createRandomProjectName(tempPath);
     final (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
+    late Process createProcess;
+
     tearDown(() async {
-      try {
-        await Process.run(
-          'docker',
-          ['compose', 'down', '-v'],
-          workingDirectory: commandRoot,
-        );
-      } catch (e) {}
+      print('----------------------------------------------------------');
+      createProcess.kill();
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+      );
     });
 
     test(
         'when removing generated files from a new project and running generate then the files are recreated successfully',
         () async {
-      var createProcess = await Process.start(
+      createProcess = await Process.start(
         'serverpod',
         ['create', projectName, '-v'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
-        runInShell: true,
       );
 
       createProcess.stdout.transform(Utf8Decoder()).listen(print);
@@ -363,7 +360,6 @@ void main() {
         environment: {
           'SERVERPOD_HOME': rootPath,
         },
-        runInShell: true,
       );
       expect(
         generateProcess.exitCode,
