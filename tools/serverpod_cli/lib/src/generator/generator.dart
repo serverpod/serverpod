@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 
@@ -12,6 +13,9 @@ Future<bool> performGenerate({
   String? changedFile,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  Set<CodeOutputFormat> codeOutputFormats = const {
+    CodeOutputFormat.dart,
+  },
 }) async {
   var collector = CodeGenerationCollector();
   bool success = true;
@@ -74,6 +78,16 @@ Future<bool> performGenerate({
     collector: collector,
   );
 
+  List<String>? generatedOpenAPIFiles;
+  if (codeOutputFormats.contains(CodeOutputFormat.openAPI)) {
+    log.debug('Generating openAPI schema.');
+    generatedOpenAPIFiles = await ServerpodCodeGenerator.generateOpenAPISchema(
+      protocolDefinition: protocolDefinition,
+      config: config,
+      collector: collector,
+    );
+  }
+
   if (collector.hasSeverErrors) {
     success = false;
   }
@@ -83,9 +97,10 @@ Future<bool> performGenerate({
   log.debug('Cleaning old files.');
 
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-    generatedFiles: <String>{
+    generatedFiles: {
       ...generatedEntityFiles,
-      ...generatedProtocolFiles
+      ...generatedProtocolFiles,
+      if (generatedOpenAPIFiles != null) ...generatedOpenAPIFiles,
     },
     protocolDefinition: protocolDefinition,
     config: config,

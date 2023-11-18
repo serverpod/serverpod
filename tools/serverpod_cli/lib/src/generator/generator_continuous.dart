@@ -25,12 +25,13 @@ Future<bool> performGenerateContinuously({
       newParagraph: true,
     );
     success = await log.progress(
-        'Generating code',
-        () => performGenerate(
-              changedFile: event.path,
-              config: config,
-              endpointsAnalyzer: endpointsAnalyzer,
-            ));
+      'Generating code',
+      () => performGenerate(
+        changedFile: event.path,
+        config: config,
+        endpointsAnalyzer: endpointsAnalyzer,
+      ),
+    );
     log.info('Incremental code generation complete.');
   }
 

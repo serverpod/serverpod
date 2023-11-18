@@ -11,6 +11,7 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  String _apiVersion;
 
   GeneratorConfigBuilder()
       : _name = 'example',
@@ -21,7 +22,8 @@ class GeneratorConfigBuilder {
         _serverPackageDirectoryPathParts = [],
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
         _modules = [],
-        _extraClasses = [];
+        _extraClasses = [],
+        _apiVersion = '1.0.0';
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -74,6 +76,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withOpenAPIDocumentVersion(String version) {
+    _apiVersion = version;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -85,6 +92,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      apiVersion: _apiVersion,
     );
   }
 }

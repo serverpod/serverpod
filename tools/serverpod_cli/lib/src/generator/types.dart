@@ -458,3 +458,8 @@ class TypeParseResult {
   /// Create a new [TypeParseResult].
   const TypeParseResult(this.parsedPosition, this.type);
 }
+
+enum CodeOutputFormat {
+  dart,
+  openAPI,
+}

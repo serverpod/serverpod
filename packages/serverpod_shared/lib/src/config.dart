@@ -114,6 +114,19 @@ class ServerConfig {
 
     return str;
   }
+
+  /// Get [Uri] from publicHost, port and publicScheme.
+  Uri toUri() {
+    const supportedUriSchemes = ['http', 'https'];
+    if (!supportedUriSchemes.contains(publicScheme)) {
+      throw Exception('Unsupported publicScheme $publicScheme.');
+    }
+    return Uri(
+      scheme: publicScheme,
+      host: publicHost,
+      port: publicPort,
+    );
+  }
 }
 
 /// Configuration for a Postgres database,

@@ -5,6 +5,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
+import 'package:serverpod_cli/src/generator/open_api/open_api_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/server_code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/temp_protocol_generator.dart';
 import 'package:serverpod_cli/src/generator/psql/legacy_pgsql_generator.dart';
@@ -84,6 +85,36 @@ abstract class ServerpodCodeGenerator {
       }
     }
 
+    return allFiles.keys.toList();
+  }
+
+  /// Generate openAPI Schema from [OpenAPIGenerator]
+  /// Return a generated file
+  static Future<List<String>> generateOpenAPISchema({
+    required ProtocolDefinition protocolDefinition,
+    required GeneratorConfig config,
+    required CodeGenerationCollector collector,
+  }) async {
+    collector.generatedFiles.clear();
+    OpenAPIGenerator generator = const OpenAPIGenerator();
+    Map<String, String> allFiles = generator.generateOpenAPISchema(
+      protocolDefinition: protocolDefinition,
+      config: config,
+    );
+
+    for (var file in allFiles.entries) {
+      try {
+        log.debug('Generating ${file.key}');
+        var out = File(file.key);
+        await out.create(recursive: true);
+        await out.writeAsString(file.value, flush: true);
+
+        collector.addGeneratedFile(out);
+      } catch (e, stackTrace) {
+        log.error('Fail to generate ${file.key}');
+        printInternalError(e, stackTrace);
+      }
+    }
     return allFiles.keys.toList();
   }
 

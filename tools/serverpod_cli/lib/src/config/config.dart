@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
+import 'package:super_string/super_string.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
 
@@ -34,6 +37,8 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required this.modules,
     required this.extraClasses,
+    this.apiVersion = _fallBackApiVersion,
+    this.openAPIConfig,
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
 
   /// The name of the serverpod project.
@@ -84,6 +89,14 @@ class GeneratorConfig {
   List<String> get generatedServerProtocolPathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 
+  /// The path parts of the directory, where the generated code is stored in the
+  /// server package.
+  List<String> get generatedServerOpenAPIPathParts => [
+        ...serverPackageDirectoryPathParts,
+        'generated',
+        'openapi',
+      ];
+
   /// Path parts from the server package to the dart client package.
   final List<String> _relativeDartClientPackagePathParts;
 
@@ -103,6 +116,14 @@ class GeneratorConfig {
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// Configuration for generation of OpenAPI specification.
+  final OpenAPIConfig? openAPIConfig;
+
+  /// The version of openAPI documents.
+  final String apiVersion;
+
+  static const _fallBackApiVersion = '1.0.0';
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -236,16 +257,38 @@ class GeneratorConfig {
       }
     }
 
+    Set<OpenAPIServer> servers = {};
+    OpenAPIConfig? openAPIConfig;
+    servers = _getServersFromConfigs(dir);
+    bool hasOpenAPIConfiguration = generatorConfig.containsKey('openAPIConfig');
+    var apiVersion = pubspec['version'] ?? _fallBackApiVersion;
+    if (hasOpenAPIConfiguration) {
+      try {
+        Map openAPIMap = generatorConfig['openAPIConfig'];
+        openAPIConfig = OpenAPIConfig.fromConfig(
+          openAPIMap,
+          version: apiVersion,
+          servers: servers,
+        );
+      } catch (e) {
+        log.error(
+          'There\'s an issue with the \'openAPIConfig\' section in config/generator.yaml .',
+        );
+      }
+    }
     return GeneratorConfig(
-        name: name,
-        type: type,
-        serverPackage: serverPackage,
-        dartClientPackage: dartClientPackage,
-        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
-        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-        modules: modules,
-        extraClasses: extraClasses);
+      name: name,
+      type: type,
+      serverPackage: serverPackage,
+      dartClientPackage: dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      modules: modules,
+      extraClasses: extraClasses,
+      openAPIConfig: openAPIConfig,
+      apiVersion: apiVersion,
+    );
   }
 
   @override
@@ -263,6 +306,25 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
       }
     }
     return str;
+  }
+
+  static Set<OpenAPIServer> _getServersFromConfigs(String dir) {
+    Set<OpenAPIServer> servers = {};
+    for (var runMode in ['development', 'staging', 'production']) {
+      try {
+        var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
+        var config = ServerpodConfig(runMode, 'undefined', passwords);
+        servers.add(
+          OpenAPIServer(
+            url: config.apiServer.toUri(),
+            description: '${runMode.toCamelCase()} Server',
+          ),
+        );
+      } catch (e, s) {
+        log.debug('Failed to load config/$runMode.yaml, $e\n$s');
+      }
+    }
+    return servers;
   }
 }
 
