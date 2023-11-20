@@ -355,6 +355,7 @@ void main() async {
       expect(createProjectExitCode, 0);
 
       // Delete generated files
+      await Process.run('rm', ['-f', '${serverDir}/generated/protocol.yaml']);
       await Process.run('rm', ['-f', '${serverDir}/lib/src/generated/*.dart']);
       await Process.run('rm', ['-f', '${clientDir}/lib/src/protocol/*.dart']);
 
@@ -403,6 +404,16 @@ void main() async {
           'src',
           'protocol',
           'client.dart',
+        )).existsSync(),
+        isTrue,
+        reason: 'Client protocol client file does not exist.',
+      );
+
+      expect(
+        File(path.join(
+          serverDir,
+          'generated',
+          'protocol.yaml',
         )).existsSync(),
         isTrue,
         reason: 'Client protocol client file does not exist.',
