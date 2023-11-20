@@ -152,7 +152,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = <String, String>{};
       var createMigrationExitCode =
@@ -191,7 +191,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = <String, String>{};
       var createMigrationExitCode =
@@ -246,7 +246,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -322,7 +322,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -395,7 +395,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -438,7 +438,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -485,7 +485,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var addedColumn = 'addedColumn';
       var targetStateProtocols = {
@@ -562,7 +562,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -646,7 +646,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -729,7 +729,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -774,7 +774,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var addedIndex = 'migrated_table_index';
       var targetStateProtocols = {
@@ -857,7 +857,7 @@ indexes:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -930,7 +930,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''
@@ -1002,7 +1002,7 @@ fields:
 '''
       };
       await MigrationTestUtils.createInitialState(
-          protocols: initialStateProtocols, tag: tag);
+          migrationProtocols: [initialStateProtocols], tag: tag);
 
       var targetStateProtocols = {
         'migrated_table': '''

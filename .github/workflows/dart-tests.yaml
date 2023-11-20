@@ -149,7 +149,7 @@ jobs:
 
           colima start
       - name: Run unit tests
-        run: dart test
+        run: dart test --concurrency=1
         working-directory: ${{ matrix.path }}
 
   migration_e2e_tests:

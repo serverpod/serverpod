@@ -5,6 +5,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
 import 'package:serverpod_cli/src/commands/analyze_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/create.dart';
+import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
 import 'package:serverpod_cli/src/commands/generate_pubspecs.dart';
 import 'package:serverpod_cli/src/commands/generate.dart';
 import 'package:serverpod_cli/src/commands/language_server.dart';
@@ -63,6 +64,7 @@ ServerpodCommandRunner buildCommandRunner() {
     ..addCommand(GeneratePubspecsCommand())
     ..addCommand(LanguageServerCommand())
     ..addCommand(CreateMigrationCommand())
+    ..addCommand(CreateRepairMigrationCommand())
     ..addCommand(VersionCommand());
 }
 

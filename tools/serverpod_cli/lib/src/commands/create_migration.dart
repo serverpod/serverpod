@@ -9,8 +9,6 @@ import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class CreateMigrationCommand extends ServerpodCommand {
-  static const runModes = <String>['development', 'staging', 'production'];
-
   @override
   final name = 'create-migration';
 
@@ -28,22 +26,6 @@ class CreateMigrationCommand extends ServerpodCommand {
           'Creates the migration even if there are warnings or information that '
           'may be destroyed.',
     );
-    argParser.addFlag(
-      'repair',
-      abbr: 'r',
-      negatable: false,
-      defaultsTo: false,
-      help:
-          'Repairs the database by comparing the target state to what is in the '
-          'live database instead of comparing to the latest migration.',
-    );
-    argParser.addOption(
-      'mode',
-      abbr: 'm',
-      defaultsTo: 'development',
-      allowed: runModes,
-      help: 'Use together with --repair to specify which database to repair.',
-    );
     argParser.addOption(
       'tag',
       abbr: 't',
@@ -54,8 +36,6 @@ class CreateMigrationCommand extends ServerpodCommand {
   @override
   void run() async {
     bool force = argResults!['force'];
-    bool repair = argResults!['repair'];
-    String mode = argResults!['mode'];
     String? tag = argResults!['tag'];
 
     if (tag != null) {
@@ -97,55 +77,28 @@ class CreateMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
-    var success = false;
-    if (repair) {
-      success = await log.progress('Creating repair migration', () async {
-        String? migrationSql;
-        try {
-          migrationSql = await generator.repairMigration(
-            tag: tag,
-            force: force,
-            runMode: mode,
-          );
-        } on MigrationVersionLoadException catch (e) {
-          log.error(
-            'Unable to determine latest database definition due to a corrupted '
-            'migration. Please re-create or remove the migration version and try '
-            'again. Migration version: "${e.versionName}" for module '
-            '"${e.moduleName}".',
-          );
-          log.error(e.exception);
-        } on MigrationRegistryLoadException catch (e) {
-          log.error(
-              'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
-        }
+    var success = await log.progress('Creating migration', () async {
+      MigrationVersion? migration;
+      try {
+        migration = await generator.createMigration(
+          tag: tag,
+          force: force,
+          priority: priority,
+        );
+      } on MigrationVersionLoadException catch (e) {
+        log.error(
+          'Unable to determine latest database definition due to a corrupted '
+          'migration. Please re-create or remove the migration version and try '
+          'again. Migration version: "${e.versionName}".',
+        );
+        log.error(e.exception);
+      } on MigrationRegistryLoadException catch (e) {
+        log.error(
+            'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
+      }
 
-        return migrationSql != null;
-      });
-    } else {
-      success = await log.progress('Creating migration', () async {
-        MigrationVersion? migration;
-        try {
-          migration = await generator.createMigration(
-            tag: tag,
-            force: force,
-            priority: priority,
-          );
-        } on MigrationVersionLoadException catch (e) {
-          log.error(
-            'Unable to determine latest database definition due to a corrupted '
-            'migration. Please re-create or remove the migration version and try '
-            'again. Migration version: "${e.versionName}".',
-          );
-          log.error(e.exception);
-        } on MigrationRegistryLoadException catch (e) {
-          log.error(
-              'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
-        }
-
-        return migration != null;
-      });
-    }
+      return migration != null;
+    });
 
     if (!success) {
       throw ExitException();

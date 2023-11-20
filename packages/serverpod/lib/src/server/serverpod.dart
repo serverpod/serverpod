@@ -352,9 +352,16 @@ class Serverpod {
         migrationManager = MigrationManager();
         await migrationManager.initialize(session);
 
+        if (commandLineArgs.applyRepairMigration) {
+          logVerbose('Applying database repair migration');
+          await migrationManager.applyRepairMigration(session);
+          await migrationManager.initialize(session);
+        }
+
         if (commandLineArgs.applyMigrations) {
           logVerbose('Applying database migrations.');
           await migrationManager.migrateToLatest(session);
+          await migrationManager.initialize(session);
         }
 
         logVerbose('Verifying database integrity.');
@@ -428,9 +435,11 @@ class Serverpod {
       // Start maintenance tasks. If we are running in maintenance mode, we
       // will only run the maintenance tasks once. If we are applying migrations
       // no other maintenance tasks will be run.
+      var appliedMigrations = (commandLineArgs.applyMigrations |
+          commandLineArgs.applyRepairMigration);
       if (commandLineArgs.role == ServerpodRole.monolith ||
           (commandLineArgs.role == ServerpodRole.maintenance &&
-              !commandLineArgs.applyMigrations)) {
+              !appliedMigrations)) {
         logVerbose('Starting maintenance tasks.');
 
         // Start future calls
@@ -443,7 +452,7 @@ class Serverpod {
       logVerbose('Serverpod start complete.');
 
       if (commandLineArgs.role == ServerpodRole.maintenance &&
-          commandLineArgs.applyMigrations) {
+          appliedMigrations) {
         logVerbose('Finished applying database migrations.');
         exit(_exitCode);
       }

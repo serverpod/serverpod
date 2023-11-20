@@ -45,6 +45,9 @@ class MigrationRegistry {
     return registry.migrations.last;
   }
 
+  /// Returns the list of migration versions in the registry.
+  List<String> get versions => registry.migrations;
+
   /// Returns the number of migrations in the registry.
   int get length => registry.migrations.length;
 

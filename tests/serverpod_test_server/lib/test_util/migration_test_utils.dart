@@ -9,13 +9,19 @@ import 'package:uuid/uuid.dart';
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
-    required Map<String, String> protocols,
-    required String tag,
+    required List<Map<String, String>> migrationProtocols,
+    String tag = 'test',
   }) async {
-    assert(
-      await createMigrationFromProtocols(protocols: protocols, tag: tag) == 0,
-      'Failed to create migration.',
-    );
+    for (var protocols in migrationProtocols) {
+      var exitCode =
+          await createMigrationFromProtocols(protocols: protocols, tag: tag);
+
+      assert(
+        exitCode == 0,
+        'Failed to create migration.',
+      );
+    }
+
     assert(
       await runApplyMigrations() == 0,
       'Failed to create migration.',
@@ -24,7 +30,7 @@ abstract class MigrationTestUtils {
 
   static Future<int> createMigrationFromProtocols({
     required Map<String, String> protocols,
-    required String tag,
+    String tag = 'test',
     bool force = false,
   }) async {
     _removeMigrationTestProtocolFolder();
@@ -40,20 +46,16 @@ abstract class MigrationTestUtils {
     });
 
     var suffixedTag = '$tag-${Uuid().v4()}';
-    var createMigrationProcess = await Process.start(
+    return await _runProcess(
       'serverpod',
-      [
+      arguments: [
         'create-migration',
         '--tag',
         suffixedTag,
         if (force) '--force',
+        '--verbose',
       ],
-      workingDirectory: Directory.current.path,
     );
-
-    createMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-    createMigrationProcess.stdout.transform(utf8.decoder).listen(print);
-    return await createMigrationProcess.exitCode;
   }
 
   static Future<MigrationRegistry> loadMigrationRegistry() async {
@@ -67,12 +69,20 @@ abstract class MigrationTestUtils {
     required Client serviceClient,
   }) async {
     removeAllTaggedMigrations();
+    removeRepairMigration();
     _removeMigrationTestProtocolFolder();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
     await _removeTaggedMigrationsFromRegistry();
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  static void removeRepairMigration() {
+    var repairMigrationDirectory = _repairMigrationDirectory();
+    if (repairMigrationDirectory.existsSync()) {
+      repairMigrationDirectory.deleteSync(recursive: true);
+    }
   }
 
   static void removeAllTaggedMigrations() {
@@ -97,9 +107,9 @@ abstract class MigrationTestUtils {
   }
 
   static Future<int> runApplyMigrations() async {
-    var applyMigrationProcess = await Process.start(
+    return await _runProcess(
       'dart',
-      [
+      arguments: [
         'run',
         'bin/main.dart',
         '--apply-migrations',
@@ -107,14 +117,79 @@ abstract class MigrationTestUtils {
         'maintenance',
         '--mode',
         'production',
+        '--logging',
+        'verbose',
       ],
-      workingDirectory: Directory.current.path,
     );
+  }
 
-    applyMigrationProcess.stderr.transform(utf8.decoder).listen(print);
-    applyMigrationProcess.stdout.transform(utf8.decoder).listen(print);
+  static Future<int> runApplyRepairMigration() async {
+    return await _runProcess(
+      'dart',
+      arguments: [
+        'run',
+        'bin/main.dart',
+        '--apply-repair-migration',
+        '--role',
+        'maintenance',
+        '--mode',
+        'production',
+        '--logging',
+        'verbose',
+      ],
+    );
+  }
 
-    return await applyMigrationProcess.exitCode;
+  static Future<int> runApplyBothRepairMigrationAndMigrations() async {
+    return await _runProcess(
+      'dart',
+      arguments: [
+        'run',
+        'bin/main.dart',
+        '--apply-repair-migration',
+        '--apply-migrations',
+        '--role',
+        'maintenance',
+        '--mode',
+        'production',
+        '--logging',
+        'verbose',
+      ],
+    );
+  }
+
+  static Future<int> runCreateRepairMigration({
+    String tag = 'test',
+    bool force = false,
+    String? targetVersion,
+  }) async {
+    return await _runProcess(
+      'serverpod',
+      arguments: [
+        'create-repair-migration',
+        '--tag',
+        tag,
+        '--mode',
+        'production',
+        if (targetVersion != null) ...['--version', targetVersion],
+        if (force) '--force',
+        '--verbose',
+      ],
+    );
+  }
+
+  static File? tryLoadRepairMigrationFile() {
+    var repairMigrationDirectory = _repairMigrationDirectory();
+    if (!repairMigrationDirectory.existsSync()) {
+      return null;
+    }
+
+    var repairMigrationFiles = repairMigrationDirectory.listSync();
+    if (repairMigrationFiles.isEmpty) {
+      return null;
+    }
+
+    return repairMigrationFiles.first as File;
   }
 
   static Directory _migrationProtocolTestDirectory() => Directory(path.join(
@@ -125,10 +200,19 @@ abstract class MigrationTestUtils {
         'migration_test_protocol_files',
       ));
 
-  static Directory _migrationsProjectDirectory() => Directory(path.join(
+  static Directory _migrationDirectory() => Directory(path.join(
         Directory.current.path,
         'generated',
         'migration',
+      ));
+
+  static Directory _repairMigrationDirectory() => Directory(path.join(
+        _migrationDirectory().path,
+        'repair',
+      ));
+
+  static Directory _migrationsProjectDirectory() => Directory(path.join(
+        _migrationDirectory().path,
         'migrations',
         'serverpod_test',
       ));
@@ -173,5 +257,22 @@ INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
 ''');
+  }
+
+  static Future<int> _runProcess(
+    String command, {
+    List<String>? arguments,
+    Directory? workingDirectory,
+  }) async {
+    var process = await Process.start(
+      command,
+      arguments ?? [],
+      workingDirectory: workingDirectory?.path ?? Directory.current.path,
+    );
+
+    process.stderr.transform(utf8.decoder).listen(print);
+    process.stdout.transform(utf8.decoder).listen(print);
+
+    return await process.exitCode;
   }
 }
