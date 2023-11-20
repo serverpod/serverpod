@@ -1,3 +1,5 @@
+@Timeout(Duration(minutes: 5))
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,7 +7,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
-@Timeout(Duration(minutes: 5))
 void main() async {
   Directory.current = path.join(Directory.current.path, '..', '..');
   final rootPath = Directory.current.path;
