@@ -39,7 +39,7 @@ class SerializableEntityAnalyzer {
     var yamlErrorCollector = ErrorCollector();
     YamlMap? documentContents = _loadYamlMap(
       protocolSource.yaml,
-      protocolSource.yamlSourceUri.path,
+      protocolSource.yamlSourceUri,
       yamlErrorCollector,
     );
 
@@ -92,13 +92,13 @@ class SerializableEntityAnalyzer {
   /// Validates a yaml file against an expected syntax for protocol files.
   static void validateYamlDefinition(
     String yaml,
-    String sourceFileName,
+    Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableEntityDefinition? entity,
     List<SerializableEntityDefinition>? entities,
   ) {
     var yamlErrors = ErrorCollector();
-    YamlMap? document = _loadYamlMap(yaml, sourceFileName, yamlErrors);
+    YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);
     collector.addErrors(yamlErrors.errors);
 
     if (yamlErrors.errors.isNotEmpty) return;
@@ -160,14 +160,15 @@ class SerializableEntityAnalyzer {
 
   static YamlMap? _loadYamlMap(
     String yaml,
-    String sourceFileName, [
+    Uri sourceUri, [
     ErrorCollector? collector,
   ]) {
     YamlDocument document;
     try {
+      print(sourceUri.path);
       document = loadYamlDocument(
         yaml,
-        sourceUrl: Uri.file(sourceFileName),
+        sourceUrl: sourceUri,
         errorListener: collector,
         recover: true,
       );
