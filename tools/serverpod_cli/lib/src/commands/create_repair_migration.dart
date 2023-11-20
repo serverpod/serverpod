@@ -57,14 +57,12 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
     String? tag = argResults!['tag'];
     String? targetVersion = argResults!['version'];
 
-    if (tag != null) {
-      if (!StringValidators.isValidTagName(tag)) {
-        log.error(
-          'Invalid tag name. Tag names can only contain lowercase letters, '
-          'number, and dashes.',
-        );
-        throw ExitException(ExitCodeType.commandInvokedCannotExecute);
-      }
+    if (tag != null && !StringValidators.isValidTagName(tag)) {
+      log.error(
+        'Invalid tag name. Tag names can only contain lowercase letters, '
+        'number, and dashes.',
+      );
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
     var config = await GeneratorConfig.load();
