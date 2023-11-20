@@ -27,11 +27,14 @@ class GoogleEndpoint extends Endpoint {
     String authenticationCode,
     String? redirectUri,
   ) async {
-    assert(
-        GoogleAuth.clientSecret != null, 'Google client secret is not loaded.');
+    var clientSecret = GoogleAuth.clientSecret;
+
+    if (clientSecret == null) {
+      throw StateError('The server side Google client secret is not loaded.');
+    }
 
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
-      GoogleAuth.clientSecret!,
+      clientSecret,
       authenticationCode,
       [
         'https://www.googleapis.com/auth/userinfo.profile',
