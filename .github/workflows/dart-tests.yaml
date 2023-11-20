@@ -12,6 +12,7 @@ on:
     branches:
       - main
       - dev
+
 jobs:
   dart_format:
     name: dart format
@@ -38,8 +39,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      # - name: Setup Firebase dummy file
-      #   run: mv packages/serverpod/example/example_flutter/lib/firebase_options_dummy.dart packages/serverpod/example/example_flutter/lib/firebase_options.dart
       - name: Install dependencies
         run: util/pub_get_all
       - name: Analyze
@@ -75,20 +74,26 @@ jobs:
 
   unit_tests:
     name: Unit tests
-    runs-on: ${{ matrix.os }} 
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flutter-version: ['3.10.0', '3.13.0']
         os: [windows-latest, ubuntu-latest]
-        path: ['tools/serverpod_cli', 'packages/serverpod', 'packages/serverpod_serialization', 'tests/serverpod_test_client', 'tests/serverpod_test_server']
-
+        path:
+          [
+            "tools/serverpod_cli",
+            "packages/serverpod",
+            "packages/serverpod_serialization",
+            "tests/serverpod_test_client",
+            "tests/serverpod_test_server",
+          ]
     steps:
       - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Run unit tests 
-        run: dart test 
+      - name: Run unit tests
+        run: dart test
         working-directory: ${{ matrix.path }}
 
   single_server_tests:
@@ -102,7 +107,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-
       - name: Run single server tests
         run: util/run_tests_single_server
 
@@ -117,12 +121,39 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-
       - name: Run integration tests
         run: util/run_tests_integration
 
-  cli_tests:
-    name: CLI tests
+  bootstrap_tests:
+    name: Bootstrap tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.10.0', '3.13.0']
+        os: [ubuntu-latest, "macos-latest"]
+        path: ["tests/bootstrap_project"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Setup docker (missing on MacOS)
+        if: runner.os == 'macos'
+        run: |
+          brew install docker docker-compose
+
+          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+
+          colima start
+      - name: Run unit tests
+        run: dart test
+        working-directory: ${{ matrix.path }}
+
+  migration_e2e_tests:
+    name: Migration e2e tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -132,20 +163,5 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
-      - name: Run CLI tests
-        run: util/run_tests_cli
-
-  migration_e2e_tests:
-    name: Migration e2e tests
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flutter-version: ['3.7.0', '3.10.0']
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-
-      - name: Run e2e migration tests 
+      - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e

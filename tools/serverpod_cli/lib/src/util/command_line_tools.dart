@@ -5,16 +5,13 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/logger/logger.dart';
 
-import 'windows.dart';
-
 class CommandLineTools {
   static Future<bool> dartPubGet(Directory dir) async {
     log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
 
-    var cf = _CommandFormatter('dart', ['pub', 'get']);
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: cf.command,
-      arguments: cf.args,
+      executable: 'dart',
+      arguments: ['pub', 'get'],
       workingDirectory: dir.path,
     );
 
@@ -29,10 +26,9 @@ class CommandLineTools {
   static Future<bool> flutterCreate(Directory dir) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
-    var cf = _CommandFormatter('flutter', ['create', '.']);
     var exitCode = await _runProcessWithDefaultLogger(
-      executable: cf.command,
-      arguments: cf.args,
+      executable: 'flutter',
+      arguments: ['create', '.'],
       workingDirectory: dir.path,
     );
 
@@ -45,16 +41,10 @@ class CommandLineTools {
   }
 
   static Future<bool> existsCommand(String command) async {
-    if (Platform.isWindows) {
-      var commandPath = WindowsUtil.commandPath(command);
-      return commandPath != null;
-    } else {
-      var exitCode = await _runProcessWithDefaultLogger(
-        executable: 'which',
-        arguments: [command],
-      );
-      return exitCode == 0;
-    }
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: command,
+    );
+    return exitCode == 0;
   }
 
   static Future<bool> isDockerRunning() async {
@@ -186,20 +176,6 @@ class CommandLineTools {
   }
 }
 
-class _CommandFormatter {
-  late final String command;
-  late final List<String> args;
-
-  _CommandFormatter(String command, this.args) {
-    this.command = Platform.isWindows ? '$command.bat' : command;
-  }
-
-  @override
-  String toString() {
-    return 'CMD: $command ${args.join(' ')}';
-  }
-}
-
 Future<int> _runProcessWithDefaultLogger({
   required String executable,
   String? workingDirectory,
@@ -209,6 +185,7 @@ Future<int> _runProcessWithDefaultLogger({
     executable,
     arguments ?? [],
     workingDirectory: workingDirectory,
+    runInShell: true,
   );
 
   process.stderr

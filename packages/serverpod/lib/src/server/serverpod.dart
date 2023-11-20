@@ -332,6 +332,8 @@ class Serverpod {
     logVerbose(config.toString());
   }
 
+  int _exitCode = 0;
+
   /// Starts the Serverpod and all [Server]s that it manages.
   Future<void> start() async {
     _startedTime = DateTime.now().toUtc();
@@ -358,6 +360,7 @@ class Serverpod {
         logVerbose('Verifying database integrity.');
         await migrationManager.verifyDatabaseIntegrity(session);
       } catch (e) {
+        _exitCode = 1;
         stderr.writeln(
           'Failed to apply database migrations. $e',
         );
@@ -368,6 +371,7 @@ class Serverpod {
         _runtimeSettings =
             await internal.RuntimeSettings.db.findFirstRow(session);
       } catch (e) {
+        _exitCode = 1;
         stderr.writeln(
           'Failed to load runtime settings. $e',
         );
@@ -379,6 +383,7 @@ class Serverpod {
           _runtimeSettings = await RuntimeSettings.db
               .insertRow(session, _defaultRuntimeSettings);
         } catch (e) {
+          _exitCode = 1;
           stderr.writeln(
             'Failed to store runtime settings. $e',
           );
@@ -440,9 +445,10 @@ class Serverpod {
       if (commandLineArgs.role == ServerpodRole.maintenance &&
           commandLineArgs.applyMigrations) {
         logVerbose('Finished applying database migrations.');
-        exit(0);
+        exit(_exitCode);
       }
     }, (e, stackTrace) {
+      _exitCode = 1;
       // Last resort error handling
       // TODO: Log to database?
       stderr.writeln(
@@ -471,7 +477,7 @@ class Serverpod {
   void _checkMaintenanceTasksCompletion() {
     if (_completedFutureCalls && _completedHealthChecks) {
       stdout.writeln('All maintenance tasks completed. Exiting.');
-      exit(0);
+      exit(_exitCode);
     }
   }
 
