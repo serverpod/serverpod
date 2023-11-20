@@ -106,7 +106,7 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        var result = await Process.run(
+        var process = await Process.start(
           'serverpod',
           ['create', projectName, '-v'],
           workingDirectory: tempPath,
@@ -115,7 +115,10 @@ void main() async {
           },
         );
 
-        var exitCode = await result.exitCode;
+        process.stdout.transform(Utf8Decoder()).listen(print);
+        process.stderr.transform(Utf8Decoder()).listen(print);
+
+        var exitCode = await process.exitCode;
         assert(exitCode == 0);
       });
 
