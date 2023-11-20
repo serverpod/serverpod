@@ -101,7 +101,7 @@ void main() async {
 
     group('when creating a new project', () {
       setUpAll(() async {
-        await Process.run(
+        var result = await Process.run(
           'serverpod',
           ['create', projectName, '-v'],
           workingDirectory: tempPath,
@@ -109,6 +109,9 @@ void main() async {
             'SERVERPOD_HOME': rootPath,
           },
         );
+
+        var exitCode = await result.exitCode;
+        assert(exitCode == 0);
       });
 
       test('then there are no linting errors in the new project', () async {
@@ -321,7 +324,6 @@ void main() async {
     late Process createProcess;
 
     tearDown(() async {
-      print('----------------------------------------------------------');
       createProcess.kill();
       await Process.run(
         'docker',
