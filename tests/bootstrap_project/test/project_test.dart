@@ -5,13 +5,12 @@ import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
+@Timeout(Duration(minutes: 5))
 void main() async {
   Directory.current = path.join(Directory.current.path, '..', '..');
   final rootPath = Directory.current.path;
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
   final tempPath = path.join(rootPath, 'temp');
-
-  final timeout = Timeout(Duration(minutes: 5));
 
   setUpAll(() async {
     await Process.run(
@@ -86,7 +85,7 @@ void main() async {
       var startProjectExitCode = await startProcess.exitCode;
       expect(startProjectExitCode, 0);
     });
-  }, timeout: timeout);
+  });
   group('Given a clean state', () {
     var (projectName, commandRootPath) = createRandomProjectName(tempPath);
     final (serverDir, flutterDir, clientDir) =
@@ -313,7 +312,7 @@ void main() async {
         });
       });
     });
-  }, timeout: timeout);
+  });
 
   group('Given a clean state', () {
     final (projectName, commandRoot) = createRandomProjectName(tempPath);
@@ -403,7 +402,7 @@ void main() async {
         reason: 'Client protocol client file does not exist.',
       );
     });
-  }, timeout: timeout);
+  });
 
   tearDownAll(() async {
     try {
