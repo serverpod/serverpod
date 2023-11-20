@@ -145,7 +145,7 @@ example:
   });
 
   test(
-      'Given multiple endpoints with multiple methods when generating protocol files then the protocol.yaml then all endpoints and methods are defined',
+      'Given multiple endpoints with multiple methods when generating protocol files then the protocol.yaml has all endpoints and methods defined',
       () {
     var protocolDefinition = ProtocolDefinition(
       endpoints: [
