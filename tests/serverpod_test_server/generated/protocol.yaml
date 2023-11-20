@@ -33,6 +33,96 @@ s3CloudStorage:
   - getPublicUrlForFile:
   - getDirectFilePostUrl:
   - verifyDirectFileUpload:
+columnBoolLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+columnDateTimeLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+  - greaterThan:
+  - greaterOrEqualThan:
+  - lessThan:
+  - lessOrEqualThan:
+  - between:
+  - notBetween:
+columnDoubleLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+  - greaterThan:
+  - greaterOrEqualThan:
+  - lessThan:
+  - lessOrEqualThan:
+  - between:
+  - notBetween:
+columnDurationLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+  - greaterThan:
+  - greaterOrEqualThan:
+  - lessThan:
+  - lessOrEqualThan:
+  - between:
+  - notBetween:
+columnEnumLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+columnIntLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+  - greaterThan:
+  - greaterOrEqualThan:
+  - lessThan:
+  - lessOrEqualThan:
+  - between:
+  - notBetween:
+columnStringLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
+  - like:
+  - ilike:
+columnUuidLegacy:
+  - insert:
+  - deleteAll:
+  - findAll:
+  - equals:
+  - notEquals:
+  - inSet:
+  - notInSet:
 customTypes:
   - returnCustomClass:
   - returnCustomClassNullable:
@@ -43,6 +133,18 @@ customTypes:
   - returnFreezedCustomClass:
   - returnFreezedCustomClassNullable:
 basicDatabase:
+  - findSimpleData:
+  - findFirstRowSimpleData:
+  - findByIdSimpleData:
+  - insertRowSimpleData:
+  - updateRowSimpleData:
+  - deleteRowSimpleData:
+  - deleteWhereSimpleData:
+  - countSimpleData:
+  - insertTypes:
+  - updateTypes:
+  - deleteAll:
+basicDatabaseLegacy:
   - storeTypes:
   - getTypes:
   - storeObjectWithEnum:
@@ -61,11 +163,83 @@ basicDatabase:
   - getObjectWithObject:
   - testByteDataStore:
   - testDurationStore:
+databaseBatch:
+  - batchInsert:
+  - batchInsertTypes:
+  - batchUpdate:
+  - batchUpdateTypes:
+  - batchDelete:
+  - insertRelatedUniqueData:
+  - findByEmail:
+  - findById:
+  - findAll:
+  - deleteAll:
+databaseBatchGenerated:
+  - batchInsert:
+  - batchInsertTypes:
+  - batchUpdate:
+  - batchUpdateTypes:
+  - batchDelete:
+  - insertRelatedUniqueData:
+  - findByEmail:
+  - findById:
+  - findAll:
+  - deleteAll:
+databaseListRelationMethods:
+  - insertCity:
+  - insertOrganization:
+  - insertPerson:
+  - implicitAttachRowCitizen:
+  - implicitAttachCitizens:
+  - implicitDetachRowCitizens:
+  - implicitDetachCitizens:
+  - cityFindById:
+  - explicitAttachRowPeople:
+  - explicitAttachPeople:
+  - explicitDetachRowPeople:
+  - explicitDetachPeople:
+  - organizationFindById:
+  - deleteAll:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+oneToMany:
+  - customerOrderByOrderCountAscending:
+  - customerOrderByOrderCountAscendingWhereDescriptionIs:
+  - commentInsert:
+  - orderInsert:
+  - customerInsert:
+  - deleteAll:
+relation:
+  - citizenFindWhereCompanyNameIs:
+  - citizenFindWhereCompanyTownNameIs:
+  - citizenFindOrderedByCompanyName:
+  - citizenFindOrderedByCompanyTownName:
+  - citizenDeleteWhereCompanyNameIs:
+  - citizenDeleteWhereCompanyTownNameIs:
+  - citizenCountWhereCompanyNameIs:
+  - citizenCountWhereCompanyTownNameIs:
+  - citizenFindAll:
+  - citizenFindAllWithDeepIncludes:
+  - citizenFindAllWithNamedRelationNoneOriginSide:
+  - citizenFindAllWithShallowIncludes:
+  - citizenFindByIdWithIncludes:
+  - addressFindAll:
+  - addressFindById:
+  - findAllPostsIncludingNextAndPrevious:
+  - citizenAttachCompany:
+  - citizenAttachAddress:
+  - citizenDetachAddress:
+  - addressAttachCitizen:
+  - addressDetachCitizen:
+  - companyFindAll:
+  - citizenInsert:
+  - companyInsert:
+  - townInsert:
+  - addressInsert:
+  - postInsert:
+  - deleteAll:
 exceptionTest:
-  - throwSerializableException:
   - throwNormalException:
   - throwExceptionWithData:
   - workingWithoutException:
@@ -138,6 +312,7 @@ mapParameters:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:
+  - serializeNestedModuleObject:
 namedParameters:
   - namedParametersMethod:
   - namedParametersMethodEqualInts:
@@ -158,6 +333,7 @@ simple:
   - setGlobalInt:
   - addToGlobalInt:
   - getGlobalInt:
+  - hello:
 streaming:
 streamingLogging:
 subSubDirTest:
