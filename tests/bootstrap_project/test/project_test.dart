@@ -54,7 +54,11 @@ void main() async {
       createProcess.stderr.transform(Utf8Decoder()).listen(print);
 
       var createProjectExitCode = await createProcess.exitCode;
-      expect(createProjectExitCode, 0);
+      expect(
+        createProjectExitCode,
+        0,
+        reason: 'Failed to create the serverpod project.',
+      );
 
       final docker = await Process.start(
         'docker',
