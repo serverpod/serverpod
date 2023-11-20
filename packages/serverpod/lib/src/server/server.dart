@@ -252,7 +252,9 @@ class Server {
     String? body;
     if (readBody) {
       try {
-        body = await _readBody(request);
+        body = await request.readString(
+          maxSize: serverpod.config.maxRequestSize,
+        );
       } catch (e, stackTrace) {
         stderr.writeln(
             '${DateTime.now().toUtc()} Internal server error. Failed to read body of request.');
@@ -266,7 +268,7 @@ class Server {
       body = '';
     }
 
-    var result = await _handleUriCall(uri, body!, request);
+    var result = await _handleUriCall(uri, body, request);
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
@@ -321,18 +323,6 @@ class Server {
       await request.response.close();
       return;
     }
-  }
-
-  Future<String?> _readBody(HttpRequest request) async {
-    // TODO: Find more efficient solution?
-    var len = 0;
-    var data = <int>[];
-    await for (var segment in request) {
-      len += segment.length;
-      if (len > serverpod.config.maxRequestSize) return null;
-      data += segment;
-    }
-    return const Utf8Decoder().convert(data);
   }
 
   Future<Result> _handleUriCall(

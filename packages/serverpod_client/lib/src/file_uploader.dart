@@ -87,13 +87,14 @@ class FileUploader {
   //   return Utf8Decoder().convert(data);
   // }
 
-  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
-    // TODO: Find more efficient solution?
-    var data = <int>[];
-    await for (var segment in stream) {
-      data += segment;
+  Future<Uint8List> _readStreamData(Stream<List<int>> stream) async {
+    var result = BytesBuilder();
+
+    await for (var chunk in stream) {
+      result.add(chunk);
     }
-    return data;
+
+    return result.toBytes();
   }
 }
 
