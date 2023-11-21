@@ -455,7 +455,6 @@ void main() async {
   return (serverDir, flutterDir, clientDir);
 }
 
-/// Determine if a port is unused by trying to binding it.
 Future<bool> isNetworkPortAvailable(int port) async {
   try {
     var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
