@@ -46,7 +46,7 @@ void main() async {
         () async {
       createProcess = await Process.start(
         'serverpod',
-        ['create', projectName, '-v'],
+        ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
@@ -111,7 +111,7 @@ void main() async {
       setUpAll(() async {
         var process = await Process.start(
           'serverpod',
-          ['create', projectName, '-v'],
+          ['create', projectName, '-v', '--no-analytics'],
           workingDirectory: tempPath,
           environment: {
             'SERVERPOD_HOME': rootPath,
@@ -349,7 +349,7 @@ void main() async {
         () async {
       createProcess = await Process.start(
         'serverpod',
-        ['create', projectName, '-v'],
+        ['create', projectName, '-v', '--no-analytics'],
         workingDirectory: tempPath,
         environment: {
           'SERVERPOD_HOME': rootPath,
