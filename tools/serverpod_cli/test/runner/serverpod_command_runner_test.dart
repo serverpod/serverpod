@@ -166,6 +166,43 @@ void main() {
       );
       expect(fixture.command.numberOfRuns, equals(1));
     });
+
+    test('when analytics flag is omitted', () async {
+      List<String> args = [MockCommand.commandName, '--name', 'alex'];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.command.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isTrue);
+    });
+
+    test('when analytics flag is provided', () async {
+      List<String> args = [
+        '--${GlobalFlags.analytics}',
+        MockCommand.commandName,
+        '--name',
+        'alex',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.command.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isTrue);
+    });
+
+    test('when no-analytics flag is provided', () async {
+      List<String> args = [
+        '--no-${GlobalFlags.analytics}',
+        MockCommand.commandName,
+        '--name',
+        'alex',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.command.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isFalse);
+    });
   });
   group('Logger Initialization - ', () {
     test('when no log level flag is provided', () async {

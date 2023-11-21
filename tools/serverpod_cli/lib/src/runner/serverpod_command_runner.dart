@@ -16,6 +16,8 @@ abstract class GlobalFlags {
   static const quietAbbr = 'q';
   static const verbose = 'verbose';
   static const verboseAbbr = 'v';
+  static const analytics = 'analytics';
+  static const analyticsAbbr = 'a';
 }
 
 typedef LoggerInit = void Function(LogLevel);
@@ -96,6 +98,14 @@ class ServerpodCommandRunner extends CommandRunner {
       help: 'Prints additional information useful for development. '
           'Overrides --q, --quiet.',
     );
+
+    argParser.addFlag(
+      GlobalFlags.analytics,
+      abbr: GlobalFlags.analyticsAbbr,
+      defaultsTo: true,
+      negatable: true,
+      help: 'Disables sending analytics data to Serverpod. ',
+    );
   }
 
   static ServerpodCommandRunner createCommandRunner(
@@ -129,6 +139,7 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
     _setLogLevel(topLevelResults);
+    _analytics.enabled = topLevelResults[GlobalFlags.analytics];
 
     await _onPreCommandEnvironmentCheck();
     await _preCommandPrints();
