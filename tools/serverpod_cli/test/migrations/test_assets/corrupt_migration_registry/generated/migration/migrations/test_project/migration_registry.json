@@ -1,1 +1,5 @@
-{ "this": "is", "not": "a", "valid": 1}
+{
+    "this": "is",
+    "not": "a",
+    "valid": 1
+}

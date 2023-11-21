@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -58,7 +59,7 @@ class MigrationRegistry {
       MigrationConstants.migrationRegistryFileName,
     ));
 
-    var registryData = Protocol().encodeWithType(registry);
+    var registryData = SerializationManager.encode(registry, formatted: true);
     await registryFile.writeAsString(registryData);
   }
 
@@ -82,8 +83,7 @@ class MigrationRegistry {
     var registryData = await registryFile.readAsString();
 
     try {
-      var registry =
-          Protocol().decodeWithType(registryData) as DatabaseMigrationRegistry;
+      var registry = Protocol().decode<DatabaseMigrationRegistry>(registryData);
       return MigrationRegistry(migrationsDirectory, registry);
     } catch (e) {
       throw MigrationRegistryLoadException(

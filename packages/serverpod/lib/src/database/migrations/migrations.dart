@@ -71,8 +71,7 @@ class MigrationVersions {
     var registryData = registryFile.readAsStringSync();
 
     try {
-      var registry =
-          Protocol().decodeWithType(registryData) as DatabaseMigrationRegistry;
+      var registry = Protocol().decode<DatabaseMigrationRegistry>(registryData);
       return registry;
     } catch (e) {
       throw MigrationRegistryLoadException(

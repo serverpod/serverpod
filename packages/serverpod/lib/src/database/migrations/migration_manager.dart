@@ -263,18 +263,18 @@ class Migration {
       path.join(migrationDirectory.path, 'definition.json'),
     );
     var definitionJson = await definitionJsonFile.readAsString();
-    var definition = _serializationManager.decodeWithType(
+    var definition = _serializationManager.decode<DatabaseDefinition>(
       definitionJson,
-    ) as DatabaseDefinition;
+    );
 
     // Load migration file
     var migrationJsonFile = File(
       path.join(migrationDirectory.path, 'migration.json'),
     );
     var migrationJson = await migrationJsonFile.readAsString();
-    var migration = _serializationManager.decodeWithType(
+    var migration = _serializationManager.decode<DatabaseMigration>(
       migrationJson,
-    ) as DatabaseMigration;
+    );
 
     return Migration(
       version: version,
