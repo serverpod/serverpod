@@ -165,7 +165,6 @@ class SerializableEntityAnalyzer {
   ]) {
     YamlDocument document;
     try {
-      print(sourceUri.path);
       document = loadYamlDocument(
         yaml,
         sourceUrl: sourceUri,

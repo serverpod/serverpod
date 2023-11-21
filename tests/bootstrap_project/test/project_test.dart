@@ -37,6 +37,8 @@ void main() async {
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
       );
+
+      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
@@ -102,6 +104,7 @@ void main() async {
         ['compose', 'down', '-v'],
         workingDirectory: commandRootPath,
       );
+      while (!await isNetworkPortAvailable(8090));
     });
 
     group('when creating a new project', () {
@@ -338,6 +341,7 @@ void main() async {
         ['compose', 'down', '-v'],
         workingDirectory: commandRoot,
       );
+      while (!await isNetworkPortAvailable(8090));
     });
 
     test(
@@ -449,4 +453,15 @@ void main() async {
   final clientDir = path.join(projectName, '${projectName}_client');
 
   return (serverDir, flutterDir, clientDir);
+}
+
+/// Determine if a port is unused by trying to binding it.
+Future<bool> isNetworkPortAvailable(int port) async {
+  try {
+    var socket = await ServerSocket.bind(InternetAddress.anyIPv4, port);
+    await socket.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
