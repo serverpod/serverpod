@@ -54,6 +54,7 @@ abstract class MigrationTestUtils {
         suffixedTag,
         if (force) '--force',
         '--verbose',
+        '--no-analytics',
       ],
     );
   }
@@ -174,6 +175,7 @@ abstract class MigrationTestUtils {
         if (targetVersion != null) ...['--version', targetVersion],
         if (force) '--force',
         '--verbose',
+        '--no-analytics',
       ],
     );
   }
