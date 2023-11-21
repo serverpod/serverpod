@@ -254,7 +254,7 @@ void main() async {
               'migration',
               'migrations',
               projectName,
-              'migration_registry.json',
+              'migration_registry.txt',
             )).existsSync(),
             isTrue,
             reason: 'Server migration registry does not exist.',
