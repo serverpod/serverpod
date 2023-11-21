@@ -104,7 +104,7 @@ class ServerpodCommandRunner extends CommandRunner {
       abbr: GlobalFlags.analyticsAbbr,
       defaultsTo: true,
       negatable: true,
-      help: 'Disables sending analytics data to Serverpod. ',
+      help: 'Toggles if analytics data is sent to Serverpod. ',
     );
   }
 
