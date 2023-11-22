@@ -53,3 +53,7 @@ class MigrationRepairTargetNotFoundException implements Exception {
     required this.targetName,
   });
 }
+
+/// Exception thrown when the migration failed to create a database definition
+/// from the projects entity files.
+class GenerateMigrationDatabaseDefinitionException implements Exception {}

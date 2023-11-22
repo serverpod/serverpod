@@ -5,6 +5,7 @@ import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 Future<DatabaseDefinition> generateDatabaseDefinition({
   required Directory directory,
@@ -26,7 +27,13 @@ Future<DatabaseDefinition> _generateSinglePackageDatabaseDefinition({
   }
 
   var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
-  var entityDefinitions = StatefulAnalyzer(protocols).validateAll();
+  var entityDefinitions = StatefulAnalyzer(protocols, (uri, collector) {
+    collector.printErrors();
+
+    if (collector.hasSeverErrors) {
+      throw GenerateMigrationDatabaseDefinitionException();
+    }
+  }).validateAll();
 
   var databaseDefinition = createDatabaseDefinitionFromEntities(
     entityDefinitions,
