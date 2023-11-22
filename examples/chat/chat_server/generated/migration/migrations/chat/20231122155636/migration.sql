@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- Class Channel as table channel
+-- ACTION CREATE TABLE
 --
 CREATE TABLE "channel" (
     "id" serial PRIMARY KEY,
@@ -9,13 +9,14 @@ CREATE TABLE "channel" (
     "channel" text NOT NULL
 );
 
+
 --
 -- MIGRATION VERSION FOR chat
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('chat', '20231121144054', now())
+    VALUES ('chat', '20231122155636', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231121144054', "timestamp" = now();
+    DO UPDATE SET "version" = '20231122155636', "timestamp" = now();
 
 
 COMMIT;
