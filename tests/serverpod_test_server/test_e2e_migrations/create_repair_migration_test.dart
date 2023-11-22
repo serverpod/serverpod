@@ -120,8 +120,8 @@ fields:
     test(
         'when creating repair migration towards older migration then a migration is not created.',
         () async {
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
-      var previousMigrationIndex = migrationRegistry.length - 2;
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      var previousMigrationIndex = migrationRegistry.versions.length - 2;
       var previousMigrationName =
           migrationRegistry.versions[previousMigrationIndex];
 
@@ -139,8 +139,8 @@ fields:
     test(
         'when creating repair migration towards older migration with --force then migration is created.',
         () async {
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
-      var previousMigrationIndex = migrationRegistry.length - 2;
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      var previousMigrationIndex = migrationRegistry.versions.length - 2;
       var previousMigrationName =
           migrationRegistry.versions[previousMigrationIndex];
 
@@ -204,8 +204,8 @@ indexes:
     test(
         'when creating repair migration towards older migration then a migration is created.',
         () async {
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
-      var previousMigrationIndex = migrationRegistry.length - 2;
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      var previousMigrationIndex = migrationRegistry.versions.length - 2;
       var previousMigrationName =
           migrationRegistry.versions[previousMigrationIndex];
 

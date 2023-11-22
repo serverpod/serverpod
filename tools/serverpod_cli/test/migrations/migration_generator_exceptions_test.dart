@@ -9,50 +9,6 @@ import 'package:test/test.dart';
 void main() {
   var testAssetsPath = path.join('test', 'migrations', 'test_assets');
 
-  group('Given a corrupt migration registry file', () {
-    var projectDirectory = Directory(path.join(
-      testAssetsPath,
-      'corrupt_migration_registry',
-    ));
-    var projectName = 'test_project';
-    var generator = MigrationGenerator(
-      directory: projectDirectory,
-      projectName: projectName,
-    );
-
-    group('when creating migration', () {
-      test('then migration registry load exception is thrown.', () async {
-        expect(
-          generator.createMigration(force: false, priority: 0),
-          throwsA(
-            isA<MigrationRegistryLoadException>().having(
-                (e) => e.directoryPath,
-                'Directory path',
-                equals(generator.migrationsProjectDirectory.path)),
-          ),
-        );
-      });
-    });
-
-    group('when creating repair migration', () {
-      test('then null is returned.', () async {
-        expect(
-          generator.repairMigration(
-            runMode:
-                CreateRepairMigrationCommand.runModes.first /* development */,
-            force: false,
-          ),
-          throwsA(
-            isA<MigrationRegistryLoadException>().having(
-                (e) => e.directoryPath,
-                'Directory path',
-                equals(generator.migrationsProjectDirectory.path)),
-          ),
-        );
-      });
-    });
-  });
-
   group('Given a latest version migration folder that is empty', () {
     var projectDirectory =
         Directory(path.join(testAssetsPath, 'empty_migration'));

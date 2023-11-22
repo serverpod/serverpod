@@ -43,9 +43,9 @@ class MigrationManager {
       try {
         availableVersions[module] =
             MigrationVersions.listVersions(module: module);
-      } on MigrationRegistryLoadException catch (e) {
+      } catch (e) {
         warnings.add(
-            'Failed to load migration registry from ${e.directoryPath}: ${e.toString()}');
+            'Failed to determine migration versions for $module: ${e.toString()}');
       }
     }
 

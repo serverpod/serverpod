@@ -112,9 +112,6 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
           '"${e.moduleName}".',
         );
         log.error(e.exception);
-      } on MigrationRegistryLoadException catch (e) {
-        log.error(
-            'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
       } on MigrationLiveDatabaseDefinitionException catch (e) {
         log.error('Unable to fetch live database schema from server. '
             'Make sure the server is running and is connected to the '

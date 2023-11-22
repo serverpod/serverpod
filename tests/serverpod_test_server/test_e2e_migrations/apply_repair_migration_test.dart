@@ -128,8 +128,8 @@ fields:
     test(
         'when creating and applying destructive repair migration to older migration then database matches older migration',
         () async {
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
-      var previousMigrationIndex = migrationRegistry.length - 2;
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      var previousMigrationIndex = migrationRegistry.versions.length - 2;
       var previousMigrationName =
           migrationRegistry.versions[previousMigrationIndex];
 
@@ -209,8 +209,8 @@ fields:
     test(
         'when creating and applying repair migration to older migration and applying migrations then database matches latest migration',
         () async {
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
-      var previousMigrationIndex = migrationRegistry.length - 2;
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      var previousMigrationIndex = migrationRegistry.versions.length - 2;
       var previousMigrationName =
           migrationRegistry.versions[previousMigrationIndex];
 

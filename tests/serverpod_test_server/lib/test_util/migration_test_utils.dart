@@ -59,8 +59,17 @@ abstract class MigrationTestUtils {
     );
   }
 
-  static Future<MigrationRegistry> loadMigrationRegistry() async {
-    return await MigrationRegistry.load(
+  static String readMigrationRegistryFile() {
+    var migrationRegistryFile = File(path.join(
+      _migrationsProjectDirectory().path,
+      'migration_registry.txt',
+    ));
+
+    return migrationRegistryFile.readAsStringSync();
+  }
+
+  static MigrationRegistry loadMigrationRegistry() {
+    return MigrationRegistry.load(
       _migrationsProjectDirectory(),
     );
   }
@@ -72,11 +81,17 @@ abstract class MigrationTestUtils {
     removeAllTaggedMigrations();
     removeRepairMigration();
     _removeMigrationTestProtocolFolder();
+    _recreateMigrationRegistryFile();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
-    await _removeTaggedMigrationsFromRegistry();
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  static void _recreateMigrationRegistryFile() {
+    var migrationRegistry =
+        MigrationRegistry.load(_migrationsProjectDirectory());
+    migrationRegistry.write();
   }
 
   static void removeRepairMigration() {
@@ -94,17 +109,6 @@ abstract class MigrationTestUtils {
         }
       }
     }
-  }
-
-  static Future<bool> removeLastMigrationFromRegistry() async {
-    var migrationRegistry = await loadMigrationRegistry();
-    var lastEntry = migrationRegistry.removeLast();
-    if (lastEntry == null) {
-      return false;
-    }
-
-    await migrationRegistry.write();
-    return true;
   }
 
   static Future<int> runApplyMigrations() async {
@@ -226,18 +230,6 @@ abstract class MigrationTestUtils {
     }
   }
 
-  static Future<void> _removeTaggedMigrationsFromRegistry() async {
-    var migrationRegistry = await loadMigrationRegistry();
-
-    var lastMigration = migrationRegistry.getLatest();
-    while (lastMigration != null && lastMigration.contains('-')) {
-      migrationRegistry.removeLast();
-      lastMigration = migrationRegistry.getLatest();
-    }
-
-    await migrationRegistry.write();
-  }
-
   static Future<void> _resetDatabase({
     required Client serviceClient,
     required String resetSql,
@@ -248,7 +240,7 @@ abstract class MigrationTestUtils {
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
     required Client serviceClient,
   }) async {
-    var migrationRegistry = await loadMigrationRegistry();
+    var migrationRegistry = loadMigrationRegistry();
 
     var latestMigration = migrationRegistry.getLatest();
 

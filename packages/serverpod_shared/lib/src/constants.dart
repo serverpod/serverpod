@@ -9,9 +9,6 @@ abstract class DatabaseConstants {
 
 /// Migration constants used by the serverpod framework.
 abstract class MigrationConstants {
-  /// Filename of the migration registry.
-  static const migrationRegistryFileName = 'migration_registry.json';
-
   /// Module name in database under which repair migrations are stored.
   static const repairMigrationModuleName = '_repair';
 

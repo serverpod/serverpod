@@ -88,7 +88,7 @@ class MigrationGenerator {
       ),
     );
 
-    var migrationRegistry = await MigrationRegistry.load(migrationsDirectory);
+    var migrationRegistry = MigrationRegistry.load(migrationsDirectory);
 
     var latestVersion = migrationRegistry.getLatest();
     if (latestVersion == null) {
@@ -123,7 +123,7 @@ class MigrationGenerator {
     required int priority,
     bool write = true,
   }) async {
-    var migrationRegistry = await MigrationRegistry.load(
+    var migrationRegistry = MigrationRegistry.load(
       migrationsProjectDirectory,
     );
 
@@ -306,7 +306,7 @@ class MigrationGenerator {
       ),
     );
 
-    var registry = await MigrationRegistry.load(migrationsDirectory);
+    var registry = MigrationRegistry.load(migrationsDirectory);
 
     if (!registry.versions.contains(targetMigration.version)) {
       throw MigrationRepairTargetNotFoundException(
