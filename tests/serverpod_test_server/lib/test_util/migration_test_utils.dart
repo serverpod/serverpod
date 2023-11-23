@@ -164,7 +164,6 @@ abstract class MigrationTestUtils {
   }
 
   static Future<int> runCreateRepairMigration({
-    String tag = 'test',
     bool force = false,
     String? targetVersion,
   }) async {
@@ -172,8 +171,6 @@ abstract class MigrationTestUtils {
       'serverpod',
       arguments: [
         'create-repair-migration',
-        '--tag',
-        tag,
         '--mode',
         'production',
         if (targetVersion != null) ...['--version', targetVersion],

@@ -5,7 +5,6 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
 import 'package:serverpod_cli/src/util/project_name.dart';
-import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class CreateRepairMigrationCommand extends ServerpodCommand {
@@ -43,27 +42,13 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       help: 'Used to specify which database to fetch the live database '
           'definition from.',
     );
-    argParser.addOption(
-      'tag',
-      abbr: 't',
-      help: 'Add a tag to the revision to easier identify it.',
-    );
   }
 
   @override
   void run() async {
     bool force = argResults!['force'];
     String mode = argResults!['mode'];
-    String? tag = argResults!['tag'];
     String? targetVersion = argResults!['version'];
-
-    if (tag != null && !StringValidators.isValidTagName(tag)) {
-      log.error(
-        'Invalid tag name. Tag names can only contain lowercase letters, '
-        'number, and dashes.',
-      );
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
-    }
 
     var config = await GeneratorConfig.load();
     if (config == null) {
@@ -91,7 +76,6 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
     var success = await log.progress('Creating repair migration', () async {
       try {
         return await generator.repairMigration(
-          tag: tag,
           force: force,
           runMode: mode,
           targetMigration: targetMigration,
