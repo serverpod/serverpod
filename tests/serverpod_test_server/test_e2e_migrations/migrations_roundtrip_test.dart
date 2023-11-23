@@ -1051,4 +1051,37 @@ fields:
       );
     });
   });
+
+  group('Given invalid protocol file', () {
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        serviceClient: serviceClient,
+      );
+    });
+
+    test(
+        'when creating migration then create migration exits with error and migration is not created.',
+        () async {
+      var tag = 'invalid-protocol';
+      var targetStateProtocols = {
+        'migrated_table': '''
+This is not a valid protocol file, in yaml format
+'''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+      expect(
+        createMigrationExitCode,
+        isNot(0),
+        reason: 'Should fail to create migration but exit code 0.',
+      );
+
+      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
+      expect(migrationRegistry.versions, isNot(contains(tag)));
+    });
+  });
 }

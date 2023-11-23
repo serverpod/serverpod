@@ -92,6 +92,8 @@ class CreateMigrationCommand extends ServerpodCommand {
           'again. Migration version: "${e.versionName}".',
         );
         log.error(e.exception);
+      } on GenerateMigrationDatabaseDefinitionException {
+        log.error('Unable to generate database definition for project.');
       }
 
       return migration != null;

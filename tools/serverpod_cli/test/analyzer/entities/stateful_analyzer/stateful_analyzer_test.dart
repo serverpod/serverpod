@@ -131,6 +131,37 @@ fields:
   });
 
   test(
+      'Given a protocol with multi line invalid yaml syntax when validating all then error is reported.',
+      () {
+    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var invalidSource = ProtocolSource(
+      '''
+this is not valid yaml
+and neither is this line
+''',
+      protocolUri,
+      [],
+    );
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer([invalidSource], onErrorsCollector(collector))
+        .validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(error.span, isNotNull);
+    expect(error.span!.start.line, 0);
+    expect(error.span!.start.column, 0);
+    expect(error.span!.end.line, 0);
+    expect(error.span!.end.column, 22);
+  });
+
+  test(
       'Given a protocol that was invalid on first validation, when validating the same protocol with an updated valid syntax, then the previous errors are cleared.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
