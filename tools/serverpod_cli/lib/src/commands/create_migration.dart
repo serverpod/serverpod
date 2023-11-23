@@ -94,6 +94,11 @@ class CreateMigrationCommand extends ServerpodCommand {
         log.error(e.exception);
       } on GenerateMigrationDatabaseDefinitionException {
         log.error('Unable to generate database definition for project.');
+      } on MigrationVersionAlreadyExistsException catch (e) {
+        log.error(
+          'Unable to create migration. A directory with the same name already '
+          'exists: "${e.directoryPath}".',
+        );
       }
 
       return migration != null;

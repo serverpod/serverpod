@@ -418,19 +418,26 @@ class MigrationVersion {
   Future<void> write({
     required String module,
   }) async {
+    var versionDir = Directory(
+      path.join(migrationsDirectory.path, versionName),
+    );
+
+    if (versionDir.existsSync()) {
+      throw MigrationVersionAlreadyExistsException(
+        directoryPath: versionDir.path,
+      );
+    }
+    await versionDir.create(recursive: true);
+
     // Create sql for definition and migration
     var definitionSql = databaseDefinition.toPgSql(
       module: module,
       version: versionName,
     );
+
     var migrationSql = migration.toPgSql(
       versions: {module: versionName},
     );
-
-    var versionDir = Directory(
-      path.join(migrationsDirectory.path, versionName),
-    );
-    await versionDir.create(recursive: true);
 
     // Write the database definition JSON file
     var definitionFile = File(path.join(
