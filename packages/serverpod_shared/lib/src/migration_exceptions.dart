@@ -57,3 +57,14 @@ class MigrationRepairTargetNotFoundException implements Exception {
 /// Exception thrown when the migration failed to create a database definition
 /// from the projects entity files.
 class GenerateMigrationDatabaseDefinitionException implements Exception {}
+
+/// Exception thrown when the migration directory already exists.
+class MigrationVersionAlreadyExistsException implements Exception {
+  /// The path to the directory that already exists.
+  final String directoryPath;
+
+  /// Creates a new [MigrationVersionAlreadyExistsException].
+  MigrationVersionAlreadyExistsException({
+    required this.directoryPath,
+  });
+}
