@@ -57,6 +57,7 @@ class GeneratorConfigBuilder {
   GeneratorConfigBuilder withAuthModule() {
     _modules.add(
       ModuleConfig(
+        type: PackageType.module,
         name: 'serverpod_auth',
         nickname: 'auth',
         migrationVersions: ['0000000000000000000'],

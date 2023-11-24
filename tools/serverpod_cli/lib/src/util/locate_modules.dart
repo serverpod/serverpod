@@ -25,7 +25,8 @@ Future<List<ModuleConfig>?> locateModules({
           continue;
         }
 
-        if (!packageName.endsWith(_serverSuffix)) {
+        if (!packageName.endsWith(_serverSuffix) &&
+            packageName != 'serverpod') {
           continue;
         }
         var moduleName = moduleNameFromServerPackageName(packageName);
@@ -56,13 +57,14 @@ Future<List<ModuleConfig>?> locateModules({
           moduleName: moduleName,
         );
 
-        var moduleInfo = _ModuleGeneratorConfigLite(generatorConfigFile);
+        var moduleInfo = loadConfigFile(generatorConfigFile);
 
         var manualNickname = manualModules[moduleName];
-        var nickname = manualNickname ?? moduleInfo.nickname ?? moduleName;
+        var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
 
         modules.add(
           ModuleConfig(
+            type: GeneratorConfig.getPackageType(moduleInfo),
             name: moduleName,
             nickname: nickname,
             migrationVersions: migrationVersions,
@@ -83,17 +85,9 @@ Future<List<ModuleConfig>?> locateModules({
   }
 }
 
-class _ModuleGeneratorConfigLite {
-  String? nickname;
-
-  _ModuleGeneratorConfigLite(File file) {
-    var yaml = file.readAsStringSync();
-    var map = loadYaml(yaml) as Map;
-    if (map['type'] != 'module') {
-      throw const FormatException('Not a module config');
-    }
-    nickname = map['nickname'];
-  }
+Map<dynamic, dynamic> loadConfigFile(File file) {
+  var yaml = file.readAsStringSync();
+  return loadYaml(yaml) as Map;
 }
 
 List<String> findAllMigrationVersionsSync({
