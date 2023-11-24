@@ -25,6 +25,7 @@ void main() {
   group('Test path extraction.', () {
     var serverRootDir = Directory(join(
       'test',
+      'integration'
       'util',
       'test_assets',
       'protocol_helper',
@@ -37,6 +38,7 @@ void main() {
         () {
       var protocolFile = File(join(
         'test',
+        'integration'
         'util',
         'test_assets',
         'protocol_helper',
@@ -89,6 +91,7 @@ void main() {
     group('Test yaml protocol loader.', () {
       var serverRootDir = Directory(join(
         'test',
+        'integration',
         'util',
         'test_assets',
         'protocol_helper',
@@ -105,7 +108,7 @@ void main() {
             await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
 
         expect(protocols.first.yamlSourceUri.path,
-            'test/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.yaml');
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.yaml');
       });
 
       test(

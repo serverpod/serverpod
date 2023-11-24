@@ -25,6 +25,7 @@ String _getPubDevResponse(Version version) {
 void main() {
   var testStorageFolderPath = p.join(
     'test',
+    'integration',
     'util',
     'test_assets',
     'temp_latest_cli_version',

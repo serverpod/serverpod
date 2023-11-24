@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   var testAssetsPath =
-      Directory(p.join('test', 'util', 'test_assets', 'pubspec_helpers'));
+      Directory(p.join('test', 'integration', 'util', 'test_assets', 'pubspec_helpers'));
   group('findPubspecFiles', () {
     test('.findPubspecFiles() recursively find pubspec file in test assets',
         () {

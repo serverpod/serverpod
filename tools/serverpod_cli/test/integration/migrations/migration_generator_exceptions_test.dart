@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 void main() {
   var config = GeneratorConfigBuilder().build();
 
-  var testAssetsPath = path.join('test', 'migrations', 'test_assets');
+  var testAssetsPath = path.join('test', 'integration', 'migrations', 'test_assets');
 
   group('Given a latest version migration folder that is empty', () {
     var projectDirectory =
