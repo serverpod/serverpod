@@ -15,7 +15,7 @@ fields:
 
   ### Modules installed in the database, together with their version. Only
   ### set if known.
-  installedModules: List<DatabaseMigrationVersion>?
+  installedModules: List<DatabaseMigrationVersion>
 
   ### The version of the database definition.
   migrationApiVersion: int 

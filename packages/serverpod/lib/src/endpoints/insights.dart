@@ -211,10 +211,6 @@ class InsightsEndpoint extends Endpoint {
     // Make sure that the migration manager is up-to-date.
     await session.serverpod.migrationManager.initialize(session);
 
-    // Create map of installed modules.
-    var modules = session.serverpod.migrationManager.installedVersions;
-    databaseDefinition.installedModules = modules;
-
     return databaseDefinition;
   }
 

@@ -1371,6 +1371,7 @@ class Protocol extends _i1.SerializationManagerServer {
         managed: true,
       ),
     ],
+    installedModules: [],
     migrationApiVersion: 1,
   );
 
@@ -1805,13 +1806,6 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List)
           .map((e) => deserialize<_i59.TableDefinition>(e))
           .toList() as dynamic;
-    }
-    if (t == _i1.getType<List<_i59.DatabaseMigrationVersion>?>()) {
-      return (data != null
-          ? (data as List)
-              .map((e) => deserialize<_i59.DatabaseMigrationVersion>(e))
-              .toList()
-          : null) as dynamic;
     }
     if (t == List<_i59.DatabaseMigrationVersion>) {
       return (data as List)
