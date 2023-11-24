@@ -59,6 +59,7 @@ class GeneratorConfigBuilder {
       ModuleConfig(
         name: 'serverpod_auth',
         nickname: 'auth',
+        migrationVersions: ['0000000000000000000'],
       ),
     );
     return this;
