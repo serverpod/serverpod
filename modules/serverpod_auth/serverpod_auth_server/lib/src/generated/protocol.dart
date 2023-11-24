@@ -557,13 +557,9 @@ class Protocol extends _i1.SerializationManagerServer {
     ],
     installedModules: [
       _i2.DatabaseMigrationVersion(
-        module: 'serverpod_auth',
-        version: '20231124134408',
-      ),
-      _i2.DatabaseMigrationVersion(
         module: 'serverpod',
-        version: '20231124134350',
-      ),
+        version: '20231124154734',
+      )
     ],
     migrationApiVersion: 1,
   );
