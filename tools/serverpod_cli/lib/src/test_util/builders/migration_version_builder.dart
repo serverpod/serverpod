@@ -13,7 +13,7 @@ class MigrationVersionBuilder {
     migrationApiVersion: 0,
   );
   late DatabaseDefinition _databaseDefinition;
-  Directory _migrationsDirectory = Directory.current;
+  Directory _versionDirectory = Directory.current;
 
   MigrationVersionBuilder() {
     _databaseDefinition = DatabaseDefinition(
@@ -40,7 +40,8 @@ class MigrationVersionBuilder {
     return this;
   }
 
-  /// Should include your self in the installedModules.
+  /// The installed modules in the database definition is expected to include
+  /// the main project and serverpod as a module
   MigrationVersionBuilder withDatabaseDefinition(
     DatabaseDefinition databaseDefinition,
   ) {
@@ -48,10 +49,8 @@ class MigrationVersionBuilder {
     return this;
   }
 
-  MigrationVersionBuilder withMigrationsDirectory(
-    Directory migrationsDirectory,
-  ) {
-    _migrationsDirectory = migrationsDirectory;
+  MigrationVersionBuilder withVersionDirectory(Directory versionDirectory) {
+    _versionDirectory = versionDirectory;
     return this;
   }
 
@@ -61,7 +60,7 @@ class MigrationVersionBuilder {
       versionName: _versionName,
       migration: _migration,
       databaseDefinition: _databaseDefinition,
-      migrationsDirectory: _migrationsDirectory,
+      versionDirectory: _versionDirectory,
     );
   }
 }

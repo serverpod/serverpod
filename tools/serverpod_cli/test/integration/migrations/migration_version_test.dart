@@ -29,7 +29,7 @@ void main() {
     versionDirectory.createSync();
 
     var migrationVersion = MigrationVersionBuilder()
-        .withMigrationsDirectory(tempDirectory)
+        .withVersionDirectory(tempDirectory)
         .withVersionName(versionName)
         .build();
 
