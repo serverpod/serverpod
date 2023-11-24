@@ -20,13 +20,7 @@ dart pub get
 echo "serverpod"
 cd $BASE/packages/serverpod
 rm -r $MIGRATION_DIR/serverpod
-dart $CLI create-migration --no-analytics
-
-# Examples
-
-echo "examples/chat/chat_server"
-cd $BASE/examples/chat/chat_server
-rm -r $MIGRATION_DIR/chat
+dart $CLI generate --no-analytics
 dart $CLI create-migration --no-analytics
 
 # Modules 
@@ -34,11 +28,13 @@ dart $CLI create-migration --no-analytics
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
 rm -r $MIGRATION_DIR/serverpod_auth
+dart $CLI generate --no-analytics
 dart $CLI create-migration --no-analytics
 
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
 rm -r $MIGRATION_DIR/serverpod_chat
+dart $CLI generate --no-analytics
 dart $CLI create-migration --no-analytics
 
 # Tests
@@ -46,4 +42,21 @@ dart $CLI create-migration --no-analytics
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
 rm -r $MIGRATION_DIR/serverpod_test
+dart $CLI generate --no-analytics
+dart $CLI create-migration --no-analytics
+
+
+# Examples
+
+echo "examples/chat/chat_server"
+cd $BASE/examples/chat/chat_server
+rm -r $MIGRATION_DIR/chat
+dart $CLI generate --no-analytics
+dart $CLI create-migration --no-analytics
+
+
+echo "examples/auth_example/auth_example_server"
+cd $BASE/examples/auth_example/auth_example_server
+rm -r $MIGRATION_DIR/auth_example
+dart $CLI generate --no-analytics
 dart $CLI create-migration --no-analytics
