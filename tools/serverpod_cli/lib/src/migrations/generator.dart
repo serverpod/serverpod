@@ -63,9 +63,10 @@ class MigrationGenerator {
   ) async {
     try {
       return await MigrationVersion.load(
-          moduleName: module,
-          versionName: versionName,
-          baseDir: migrationsBaseDirectory);
+        moduleName: module,
+        versionName: versionName,
+        migrationDirectory: migrationsBaseDirectory,
+      );
     } catch (e) {
       throw MigrationVersionLoadException(
         versionName: versionName,
@@ -414,10 +415,10 @@ class MigrationVersion {
   static Future<MigrationVersion> load({
     required String moduleName,
     required String versionName,
-    required Directory baseDir,
+    required Directory migrationDirectory,
   }) async {
     var versionDir = Directory(
-      path.join(baseDir.path, moduleName, versionName),
+      path.join(migrationDirectory.path, moduleName, versionName),
     );
 
     // Get the serialization manager
