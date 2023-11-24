@@ -40,9 +40,13 @@ class CommandLineTools {
     return true;
   }
 
-  static Future<bool> existsCommand(String command) async {
+  static Future<bool> existsCommand(
+    String command, [
+    List<String> arguments = const [],
+  ]) async {
     var exitCode = await _runProcessWithDefaultLogger(
       executable: command,
+      arguments: arguments,
     );
     return exitCode == 0;
   }

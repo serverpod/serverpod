@@ -14,6 +14,8 @@ RUN curl -o flutter.tar.xz $FLUTTER_URL \
   && tar xf flutter.tar.xz -C /opt \
   && rm flutter.tar.xz
 
+# Mark flutter directory as safe
+RUN git config --global --add safe.directory /opt/flutter
 
 # Set the working directory
 WORKDIR /app
