@@ -77,8 +77,11 @@ class LibraryGenerator {
             ..name = 'targetDatabaseDefinition'
             ..static = true
             ..modifier = FieldModifier.final$
-            ..assignment =
-                createDatabaseDefinitionFromEntities(entities).toCode(
+            ..assignment = createDatabaseDefinitionFromEntities(
+              entities,
+              config.name,
+              config.modulesAll,
+            ).toCode(
               config: config,
               serverCode: serverCode,
               additionalTables: [
@@ -762,6 +765,14 @@ extension on DatabaseDefinition {
             if (table.managed != null) 'managed': literalBool(table.managed!),
           }),
         ...additionalTables,
+      ]),
+      'installedModules': literalList([
+        for (var module in installedModules)
+          refer('DatabaseMigrationVersion', serverpodProtocolUrl(serverCode))
+              .call([], {
+            'module': literalString(module.module),
+            'version': literalString(module.version),
+          }),
       ]),
       'migrationApiVersion': literalNum(DatabaseConstants.migrationApiVersion)
     }).code;

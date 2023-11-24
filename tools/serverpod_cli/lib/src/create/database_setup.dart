@@ -6,8 +6,17 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
 
 class DatabaseSetup {
-  static Future<bool> createDefaultMigration(Directory dir, String name) async {
-    log.debug('Creating default migration.');
+  static Future<bool> createDefaultMigration(
+    Directory dir,
+    String name,
+  ) async {
+    log.debug('Creating initial migration.');
+
+    var config = await GeneratorConfig.load(dir.path);
+    if (config == null) {
+      log.error('Could not load config file.');
+      return false;
+    }
 
     var generator = MigrationGenerator(
       directory: dir,
@@ -18,6 +27,7 @@ class DatabaseSetup {
       tag: 'initial',
       force: true,
       priority: 0,
+      config: config,
     );
 
     return migration != null;

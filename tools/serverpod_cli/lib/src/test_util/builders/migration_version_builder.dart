@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/migrations/generator.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class MigrationVersionBuilder {
+  String _moduleName = 'example_project';
   String _versionName = '00000000000000';
   DatabaseMigration _migration = DatabaseMigration(
     actions: [],
@@ -11,11 +12,27 @@ class MigrationVersionBuilder {
     priority: 0,
     migrationApiVersion: 0,
   );
-  DatabaseDefinition _databaseDefinition = DatabaseDefinition(
-    tables: [],
-    migrationApiVersion: 0,
-  );
-  Directory _migrationsDirectory = Directory.current;
+  late DatabaseDefinition _databaseDefinition;
+  Directory _versionDirectory = Directory.current;
+
+  MigrationVersionBuilder() {
+    _databaseDefinition = DatabaseDefinition(
+      installedModules: [
+        DatabaseMigrationVersion(
+          module: 'serverpod',
+          version: '00000000000000',
+        ),
+        DatabaseMigrationVersion(module: _moduleName, version: _versionName)
+      ],
+      tables: [],
+      migrationApiVersion: 0,
+    );
+  }
+
+  MigrationVersionBuilder withModuleName(String moduleName) {
+    _moduleName = moduleName;
+    return this;
+  }
 
   MigrationVersionBuilder withVersionName(String versionName) {
     _versionName = versionName;
@@ -27,6 +44,8 @@ class MigrationVersionBuilder {
     return this;
   }
 
+  /// The installed modules in the database definition is expected to include
+  /// the main project and serverpod as a module
   MigrationVersionBuilder withDatabaseDefinition(
     DatabaseDefinition databaseDefinition,
   ) {
@@ -34,19 +53,18 @@ class MigrationVersionBuilder {
     return this;
   }
 
-  MigrationVersionBuilder withMigrationsDirectory(
-    Directory migrationsDirectory,
-  ) {
-    _migrationsDirectory = migrationsDirectory;
+  MigrationVersionBuilder withVersionDirectory(Directory versionDirectory) {
+    _versionDirectory = versionDirectory;
     return this;
   }
 
   MigrationVersion build() {
     return MigrationVersion(
+      moduleName: _moduleName,
       versionName: _versionName,
       migration: _migration,
       databaseDefinition: _databaseDefinition,
-      migrationsDirectory: _migrationsDirectory,
+      versionDirectory: _versionDirectory,
     );
   }
 }

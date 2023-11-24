@@ -16,7 +16,11 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      [entity],
+      'example',
+      [],
+    );
 
     expect(databaseDefinition.tables, hasLength(1));
     expect(databaseDefinition.tables.first.name, 'example');
@@ -42,7 +46,11 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      [entity],
+      'example',
+      [],
+    );
 
     var tablesDoNotExist = databaseDefinition.tables.isEmpty;
     test('then a foreign relation exists.', () {

@@ -29,6 +29,16 @@ class Protocol extends _i1.SerializationManagerServer {
       ..._i3.Protocol.targetDatabaseDefinition.tables,
       ..._i2.Protocol.targetDatabaseDefinition.tables,
     ],
+    installedModules: [
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod_auth',
+        version: '20231124163618',
+      ),
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod',
+        version: '20231124163600',
+      ),
+    ],
     migrationApiVersion: 1,
   );
 

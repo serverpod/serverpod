@@ -36,7 +36,11 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(entities);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      entities,
+      'example',
+      [],
+    );
     databaseDefinition.priority = 1;
 
     test('then all definitions are created.', () {
