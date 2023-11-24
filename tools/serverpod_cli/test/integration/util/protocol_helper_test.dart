@@ -26,7 +26,7 @@ void main() {
     var serverRootDir = Directory(join(
       'test',
       'integration'
-      'util',
+          'util',
       'test_assets',
       'protocol_helper',
       'has_serverpod_server_project',
@@ -39,7 +39,7 @@ void main() {
       var protocolFile = File(join(
         'test',
         'integration'
-        'util',
+            'util',
         'test_assets',
         'protocol_helper',
         'has_serverpod_server_project',

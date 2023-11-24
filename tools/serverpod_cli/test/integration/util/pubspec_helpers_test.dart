@@ -5,8 +5,8 @@ import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var testAssetsPath =
-      Directory(p.join('test', 'integration', 'util', 'test_assets', 'pubspec_helpers'));
+  var testAssetsPath = Directory(
+      p.join('test', 'integration', 'util', 'test_assets', 'pubspec_helpers'));
   group('findPubspecFiles', () {
     test('.findPubspecFiles() recursively find pubspec file in test assets',
         () {

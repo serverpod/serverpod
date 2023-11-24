@@ -7,8 +7,12 @@ import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var testAssetsPath =
-      p.join('test', 'integration', 'serverpod_packages_version_check', 'test_assets', );
+  var testAssetsPath = p.join(
+    'test',
+    'integration',
+    'serverpod_packages_version_check',
+    'test_assets',
+  );
   group('performServerpodPackagesAndCliVersionCheck', () {
     group('With empty folder', () {
       var emptyFolder = Directory(p.join(testAssetsPath, 'empty_folder'));
