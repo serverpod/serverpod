@@ -120,13 +120,12 @@ class MigrationGenerator {
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
     String? latestVersion,
     int priority,
-    List<DatabaseMigrationVersion> installedModules,
   ) async {
     if (latestVersion == null) {
       return DatabaseDefinition(
         tables: [],
         priority: priority,
-        installedModules: installedModules,
+        installedModules: [],
         migrationApiVersion: DatabaseConstants.migrationApiVersion,
       );
     }
@@ -146,28 +145,26 @@ class MigrationGenerator {
       migrationsProjectDirectory,
     );
 
-    var protocols =
-        await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
-    var entityDefinitions = StatefulAnalyzer(protocols).validateAll();
-
-    var migrationVersions = await loadMigrationVersionsFromAllModules();
-
-    var installedModules = migrationVersions.values.map((m) {
-      return DatabaseMigrationVersion(
-        module: m.moduleName,
-        version: m.versionName,
-      );
-    }).toList();
-
     var srcDatabase = await _getSourceDatabaseDefinition(
       migrationRegistry.getLatest(),
       priority,
-      installedModules,
     );
+
+    var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
+      config,
+    );
+    var entityDefinitions = StatefulAnalyzer(protocols, (uri, collector) {
+      collector.printErrors();
+
+      if (collector.hasSeverErrors) {
+        throw GenerateMigrationDatabaseDefinitionException();
+      }
+    }).validateAll();
 
     var dstDatabase = createDatabaseDefinitionFromEntities(
       entityDefinitions,
       config,
+      0,
     );
 
     var migration = generateDatabaseMigration(

@@ -6,8 +6,9 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
 DatabaseDefinition createDatabaseDefinitionFromEntities(
   List<SerializableEntityDefinition> serializableEntities,
-  GeneratorConfig config,
-) {
+  GeneratorConfig config, [
+  int? priority,
+]) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableEntities)
       if (classDefinition is ClassDefinition &&
@@ -69,6 +70,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
 
   return DatabaseDefinition(
     tables: tables,
+    priority: priority,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
     installedModules: config.modulesAll
         .where((module) => module.migrationVersions.isNotEmpty)
