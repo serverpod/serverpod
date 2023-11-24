@@ -65,7 +65,10 @@ Future<bool> performCreate(
   var portsAvailable = usedPorts.isEmpty;
 
   // Check that docker is installed
-  var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
+  var dockerConfigured = await CommandLineTools.existsCommand(
+        'docker',
+        ['--version'],
+      ) &&
       await CommandLineTools.isDockerRunning();
 
   if ((!portsAvailable || !dockerConfigured) &&

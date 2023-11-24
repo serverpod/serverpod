@@ -31,12 +31,12 @@ Future<void> _preCommandEnvironmentChecks() async {
   }
 
   // Check that required tools are installed
-  if (!await CommandLineTools.existsCommand('dart')) {
+  if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
     throw ExitException();
   }
-  if (!await CommandLineTools.existsCommand('flutter')) {
+  if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
     throw ExitException();
