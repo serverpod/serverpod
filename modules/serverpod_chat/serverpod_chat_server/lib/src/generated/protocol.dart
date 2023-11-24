@@ -202,15 +202,15 @@ class Protocol extends _i1.SerializationManagerServer {
     installedModules: [
       _i2.DatabaseMigrationVersion(
         module: 'serverpod_auth',
-        version: '20231124154752',
+        version: '20231124163618',
       ),
       _i2.DatabaseMigrationVersion(
         module: 'serverpod_chat',
-        version: '20231124154809',
+        version: '20231124163636',
       ),
       _i2.DatabaseMigrationVersion(
         module: 'serverpod',
-        version: '20231124154734',
+        version: '20231124163600',
       ),
     ],
     migrationApiVersion: 1,

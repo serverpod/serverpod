@@ -158,7 +158,7 @@ class MigrationGenerator {
       entityDefinitions,
       config.name,
       config.modulesAll,
-      0,
+      priority,
     );
 
     var migration = generateDatabaseMigration(
