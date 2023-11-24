@@ -240,7 +240,7 @@ class GeneratorConfig {
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
     var typeStr = generatorConfig['type'];
-    late PackageType type;
+    PackageType type;
     if (typeStr == 'module') {
       type = PackageType.module;
     } else if (typeStr == 'internal') {
