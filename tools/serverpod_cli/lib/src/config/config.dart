@@ -181,8 +181,8 @@ class GeneratorConfig {
     if (generatorConfig['modules'] != null) {
       Map modulesData = generatorConfig['modules'];
       for (var package in modulesData.keys) {
-        var nickname = modulesData[package]['nickname'];
-        manualModules[package] = nickname is String? ? nickname : null;
+        var nickname = modulesData[package]?['nickname'];
+        manualModules[package] = nickname is String ? nickname : null;
       }
     }
 
