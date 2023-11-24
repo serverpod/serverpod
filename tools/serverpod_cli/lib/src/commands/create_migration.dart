@@ -84,6 +84,7 @@ class CreateMigrationCommand extends ServerpodCommand {
           tag: tag,
           force: force,
           priority: priority,
+          config: config,
         );
       } on MigrationVersionLoadException catch (e) {
         log.error(

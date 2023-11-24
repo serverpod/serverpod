@@ -2,9 +2,13 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+
+  var config = GeneratorConfigBuilder().build();
+
   group('Given classes with a circular relation when generating migration', () {
     /**
      * Citizen -> Company -> Town -> Citizen
@@ -36,7 +40,7 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(entities);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(entities, config);
     databaseDefinition.priority = 1;
 
     test('then all definitions are created.', () {

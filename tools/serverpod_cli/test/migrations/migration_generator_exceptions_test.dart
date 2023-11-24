@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/create_repair_migration.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   var testAssetsPath = path.join('test', 'migrations', 'test_assets');
 
   group('Given a latest version migration folder that is empty', () {
@@ -21,7 +24,7 @@ void main() {
     group('when creating migration', () {
       test('then migration version load exception is thrown.', () async {
         expect(
-          generator.createMigration(force: false, priority: 0),
+          generator.createMigration(force: false, priority: 0, config: config),
           throwsA(isA<MigrationVersionLoadException>()
               .having((e) => e.moduleName, 'Matching module name',
                   equals(projectName))
