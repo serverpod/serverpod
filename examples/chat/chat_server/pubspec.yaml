@@ -2,7 +2,7 @@ name: chat_server
 description: Starting point for a Serverpod server.
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   serverpod:

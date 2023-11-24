@@ -5,7 +5,7 @@ description: Code shared between the test server and client
 version: 1.0.0
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   freezed_annotation: ^2.2.0
