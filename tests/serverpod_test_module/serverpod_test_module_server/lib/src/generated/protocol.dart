@@ -24,6 +24,7 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    installedModules: [],
     tables: [],
     migrationApiVersion: 1,
   );
