@@ -177,41 +177,23 @@ class GeneratorConfig {
       return null;
     }
 
-    // Load module settings
-    var modules = <ModuleConfig>[];
-    try {
-      if (generatorConfig['modules'] != null) {
-        Map modulesData = generatorConfig['modules'];
-        for (var package in modulesData.keys) {
-          modules.add(ModuleConfig._withMap(package, modulesData[package]));
-        }
+    var manualModules = <String, String?>{};
+    if (generatorConfig['modules'] != null) {
+      Map modulesData = generatorConfig['modules'];
+      for (var package in modulesData.keys) {
+        var nickname = modulesData[package]?['nickname'];
+        manualModules[package] = nickname is String ? nickname : null;
       }
-    } catch (e) {
-      throw const FormatException('Failed to load module config');
     }
 
-    // Autodetect modules.
-    var automagicModules = await locateModules(
+    var modules = await locateModules(
       directory: Directory(dir),
-      exludePackages: [serverPackage],
+      excludePackages: [serverPackage],
+      manualModules: manualModules,
     );
 
-    if (automagicModules == null) {
+    if (modules == null) {
       return null;
-    }
-
-    for (var autoModule in automagicModules) {
-      bool hasOverride = false;
-      for (var module in modules) {
-        if (module.name == autoModule.name) {
-          hasOverride = true;
-          break;
-        }
-      }
-
-      if (!hasOverride) {
-        modules.add(autoModule);
-      }
     }
 
     // Load extraClasses
@@ -237,15 +219,16 @@ class GeneratorConfig {
     }
 
     return GeneratorConfig(
-        name: name,
-        type: type,
-        serverPackage: serverPackage,
-        dartClientPackage: dartClientPackage,
-        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
-        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-        modules: modules,
-        extraClasses: extraClasses);
+      name: name,
+      type: type,
+      serverPackage: serverPackage,
+      dartClientPackage: dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      modules: modules,
+      extraClasses: extraClasses,
+    );
   }
 
   @override
@@ -280,15 +263,13 @@ class ModuleConfig {
   /// The name of the server package.
   String serverPackage;
 
-  ModuleConfig._withMap(String name, Map map)
-      : this(
-          name: name,
-          nickname: map['nickname']!,
-        );
+  /// The migration versions of the module.
+  List<String> migrationVersions;
 
   ModuleConfig({
     required this.name,
     required this.nickname,
+    required this.migrationVersions,
   })  : dartClientPackage = '${name}_client',
         serverPackage = '${name}_server';
 
@@ -301,7 +282,8 @@ class ModuleConfig {
     return '''name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
-serverPackage: $serverPackage;
+serverPackage: $serverPackage
+migrationVersions: $migrationVersions 
 ''';
   }
 }

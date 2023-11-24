@@ -11,8 +11,8 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_test_module_server/module.dart' as _i3;
-import 'package:serverpod_auth_server/module.dart' as _i4;
+import 'package:serverpod_auth_server/module.dart' as _i3;
+import 'package:serverpod_test_module_server/module.dart' as _i4;
 import 'entities_with_list_relations/city.dart' as _i5;
 import 'entities_with_list_relations/organization.dart' as _i6;
 import 'entities_with_list_relations/person.dart' as _i7;
@@ -2369,13 +2369,13 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i3.ModuleClass>) {
-      return (data as List).map((e) => deserialize<_i3.ModuleClass>(e)).toList()
+    if (t == List<_i4.ModuleClass>) {
+      return (data as List).map((e) => deserialize<_i4.ModuleClass>(e)).toList()
           as dynamic;
     }
-    if (t == Map<String, _i3.ModuleClass>) {
+    if (t == Map<String, _i4.ModuleClass>) {
       return (data as Map).map((k, v) =>
-              MapEntry(deserialize<String>(k), deserialize<_i3.ModuleClass>(v)))
+              MapEntry(deserialize<String>(k), deserialize<_i4.ModuleClass>(v)))
           as dynamic;
     }
     if (t == List<int>) {
@@ -2954,11 +2954,11 @@ class Protocol extends _i1.SerializationManagerServer {
     String? className;
     className = _i3.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_test_module.$className';
+      return 'serverpod_auth.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
     if (className != null) {
-      return 'serverpod_auth.$className';
+      return 'serverpod_test_module.$className';
     }
     if (data is _i68.CustomClass) {
       return 'CustomClass';
@@ -3118,12 +3118,12 @@ class Protocol extends _i1.SerializationManagerServer {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'].startsWith('serverpod_test_module.')) {
-      data['className'] = data['className'].substring(22);
-      return _i3.Protocol().deserializeByClassName(data);
-    }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
+      return _i3.Protocol().deserializeByClassName(data);
+    }
+    if (data['className'].startsWith('serverpod_test_module.')) {
+      data['className'] = data['className'].substring(22);
       return _i4.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {

@@ -5995,8 +5995,8 @@ class Endpoints extends _i1.EndpointDispatch {
         )
       },
     );
+    modules['serverpod_auth'] = _i67.Endpoints()..initializeEndpoints(server);
     modules['serverpod_test_module'] = _i66.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i67.Endpoints()..initializeEndpoints(server);
   }
 }
