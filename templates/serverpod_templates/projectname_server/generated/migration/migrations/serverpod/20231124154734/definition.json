@@ -1367,7 +1367,7 @@
       "managed": true
     }
   ],
-  "priority": null,
+  "priority": 0,
   "installedModules": [],
   "migrationApiVersion": 1
 }
