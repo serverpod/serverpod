@@ -106,11 +106,13 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
       .where((module) => module.type == PackageType.module)
       .where((module) => module.name != name)
       .toList();
 
+  /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
