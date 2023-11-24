@@ -111,6 +111,7 @@ List<String> findAllMigrationVersionsSync({
     var migrationVersions =
         migrationsDir.map((dir) => path.split(dir.path).last).toList();
 
+    migrationVersions.sort();
     return migrationVersions;
   } catch (e) {
     return [];
