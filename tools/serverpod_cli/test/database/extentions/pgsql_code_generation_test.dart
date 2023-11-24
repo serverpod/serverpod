@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.da
 import 'package:test/test.dart';
 
 void main() {
-
   var config = GeneratorConfigBuilder().build();
 
   group('Given classes with a circular relation when generating migration', () {
@@ -40,7 +39,8 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(entities, config);
+    var databaseDefinition =
+        createDatabaseDefinitionFromEntities(entities, config);
     databaseDefinition.priority = 1;
 
     test('then all definitions are created.', () {
