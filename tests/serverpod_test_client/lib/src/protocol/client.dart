@@ -2707,13 +2707,13 @@ class EndpointSubDirTest extends _i1.EndpointRef {
 
 class _Modules {
   _Modules(Client client) {
-    module = _i29.Caller(client);
     auth = _i3.Caller(client);
+    module = _i29.Caller(client);
   }
 
-  late final _i29.Caller module;
-
   late final _i3.Caller auth;
+
+  late final _i29.Caller module;
 }
 
 class Client extends _i1.ServerpodClient {
@@ -2898,7 +2898,7 @@ class Client extends _i1.ServerpodClient {
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
-        'module': modules.module,
         'auth': modules.auth,
+        'module': modules.module,
       };
 }

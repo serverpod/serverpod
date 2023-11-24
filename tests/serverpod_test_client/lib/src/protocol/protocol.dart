@@ -1081,10 +1081,10 @@ class Protocol extends _i1.SerializationManager {
           : null) as T;
     }
     try {
-      return _i49.Protocol().deserialize<T>(data, t);
+      return _i66.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     try {
-      return _i66.Protocol().deserialize<T>(data, t);
+      return _i49.Protocol().deserialize<T>(data, t);
     } catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -1092,13 +1092,13 @@ class Protocol extends _i1.SerializationManager {
   @override
   String? getClassNameForObject(Object data) {
     String? className;
-    className = _i49.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return 'serverpod_test_module.$className';
-    }
     className = _i66.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
+    }
+    className = _i49.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_test_module.$className';
     }
     if (data is _i64.CustomClass) {
       return 'CustomClass';
@@ -1252,13 +1252,13 @@ class Protocol extends _i1.SerializationManager {
 
   @override
   dynamic deserializeByClassName(Map<String, dynamic> data) {
-    if (data['className'].startsWith('serverpod_test_module.')) {
-      data['className'] = data['className'].substring(22);
-      return _i49.Protocol().deserializeByClassName(data);
-    }
     if (data['className'].startsWith('serverpod_auth.')) {
       data['className'] = data['className'].substring(15);
       return _i66.Protocol().deserializeByClassName(data);
+    }
+    if (data['className'].startsWith('serverpod_test_module.')) {
+      data['className'] = data['className'].substring(22);
+      return _i49.Protocol().deserializeByClassName(data);
     }
     if (data['className'] == 'CustomClass') {
       return deserialize<_i64.CustomClass>(data['data']);
