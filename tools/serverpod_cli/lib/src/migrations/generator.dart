@@ -163,7 +163,8 @@ class MigrationGenerator {
 
     var dstDatabase = createDatabaseDefinitionFromEntities(
       entityDefinitions,
-      config,
+      config.name,
+      config.modulesAll,
       0,
     );
 

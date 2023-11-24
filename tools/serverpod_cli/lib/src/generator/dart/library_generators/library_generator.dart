@@ -79,7 +79,8 @@ class LibraryGenerator {
             ..modifier = FieldModifier.final$
             ..assignment = createDatabaseDefinitionFromEntities(
               entities,
-              config,
+              config.name,
+              config.modulesAll,
             ).toCode(
               config: config,
               serverCode: serverCode,
