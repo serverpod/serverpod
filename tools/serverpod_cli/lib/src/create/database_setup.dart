@@ -16,7 +16,6 @@ class DatabaseSetup {
     if (config == null) {
       log.error('Could not load config file.');
       return false;
-
     }
 
     var generator = MigrationGenerator(
