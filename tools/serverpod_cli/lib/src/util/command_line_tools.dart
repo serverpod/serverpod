@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/logger/logger.dart';
 
 class CommandLineTools {
