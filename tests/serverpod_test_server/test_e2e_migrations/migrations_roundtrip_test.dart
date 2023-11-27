@@ -1080,7 +1080,7 @@ This is not a valid protocol file, in yaml format
         reason: 'Should fail to create migration but exit code 0.',
       );
 
-      var migrationRegistry = await MigrationTestUtils.loadMigrationRegistry();
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
       expect(migrationRegistry.versions, isNot(contains(tag)));
     });
   });
