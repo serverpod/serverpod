@@ -28,7 +28,7 @@ class MigrationGenerator {
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
-    var fmt = DateFormat('yyyyMMddHHmmss');
+    var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
     if (tag != null) {
       versionName += '-$tag';
