@@ -17,8 +17,6 @@ void main() {
         resetSql: 'DROP TABLE IF EXISTS migrated_table, migrated_table_2;',
         serviceClient: serviceClient,
       );
-
-      MigrationTestUtils.removeRepairMigration();
     });
 
     setUpAll(() async {
@@ -207,7 +205,7 @@ fields:
           ));
     });
     test(
-        'when creating and applying repair migration to older migration and applying migrations then database matches latest migration',
+        'when creating and applying repair migration targeting older migration and applying migrations then database matches latest migration',
         () async {
       var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
       var previousMigrationIndex = migrationRegistry.versions.length - 2;
