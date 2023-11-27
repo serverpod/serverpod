@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
-import 'package:uuid/uuid.dart';
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
@@ -45,18 +44,22 @@ abstract class MigrationTestUtils {
       protocolFile.writeAsStringSync(contents);
     });
 
-    var suffixedTag = '$tag-${Uuid().v4()}';
-    return await _runProcess(
+    var exitCode = await _runProcess(
       'serverpod',
       arguments: [
         'create-migration',
         '--tag',
-        suffixedTag,
+        tag,
         if (force) '--force',
         '--verbose',
         '--no-analytics',
       ],
     );
+
+    // Ensures that another migration is never created with the same millisecond.
+    await Future.delayed(Duration(milliseconds: 2));
+
+    return exitCode;
   }
 
   static String readMigrationRegistryFile() {
