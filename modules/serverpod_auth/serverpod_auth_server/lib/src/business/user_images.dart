@@ -30,9 +30,9 @@ class UserImages {
       var imageSize = AuthConfig.current.userImageSize;
       if (image.width != imageSize || image.height != imageSize) {
         image = copyResizeCropSquare(image,
-            size: imageSize, interpolation: Interpolation.cubic);
+            size: imageSize, interpolation: Interpolation.average);
       }
-      return await _encodeImage(image);
+      return _encodeImage(image);
     });
     return reEncodedImageBytes == null
         ? false

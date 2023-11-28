@@ -323,7 +323,7 @@ class ChatEndpoint extends Endpoint {
               image,
               width: width,
               height: height,
-              interpolation: Interpolation.cubic,
+              interpolation: Interpolation.average,
             );
           }
           // Convert thumbnail to jpeg
