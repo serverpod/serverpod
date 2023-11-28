@@ -286,7 +286,6 @@ class MigrationGenerator {
 
   Future<List<MigrationVersion>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
-    String? targetMigrationVersion,
     required Directory directory,
   }) async {
     var modulePaths = await locateAllModulePaths(
@@ -315,7 +314,7 @@ class MigrationGenerator {
 
       var migrationVersion = await MigrationVersion.load(
         moduleName: moduleName,
-        versionName: targetMigrationVersion ?? versionName,
+        versionName: versionName,
         migrationDirectory: MigrationConstants.migrationsBaseDirectory(
           Directory.fromUri(modulePath),
         ),
