@@ -53,13 +53,12 @@ class MigrationGenerator {
     required int priority,
     required GeneratorConfig config,
     bool write = true,
-    Directory? projectFolder,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
       migrationsProjectDirectory,
     );
 
-    var databaseDefinitionSource = await _getSourceDatabaseDefinition(
+    var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       migrationRegistry.getLatest(),
       priority,
     );
@@ -84,7 +83,7 @@ class MigrationGenerator {
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
       config.modulesAll,
-      projectFolder,
+      directory,
     );
 
     var versionName = createVersionName(tag);
@@ -93,15 +92,15 @@ class MigrationGenerator {
       version: versionName,
     );
 
-    var databaseDefinitionTarget = _mergeDatabaseDefinitions(
+    var databaseDefinitionNext = _mergeDatabaseDefinitions(
       databaseDefinitionProject,
       databaseDefinitions,
       nextMigrationVersion,
     );
 
     var migration = generateDatabaseMigration(
-      srcDatabase: databaseDefinitionSource,
-      dstDatabase: databaseDefinitionTarget,
+      databaseSource: databaseDefinitionLatest,
+      databaseTarget: databaseDefinitionNext,
       priority: priority,
     );
 
@@ -126,7 +125,7 @@ class MigrationGenerator {
       versionName: versionName,
       migration: migration,
       databaseDefinitionProject: databaseDefinitionProject,
-      databaseDefinitionFull: databaseDefinitionTarget,
+      databaseDefinitionFull: databaseDefinitionNext,
     );
 
     if (write) {
@@ -140,7 +139,7 @@ class MigrationGenerator {
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
     List<ModuleConfig> allModules,
-    Directory? projectFolder,
+    Directory projectFolder,
   ) async {
     var modules =
         allModules.where((module) => module.name != projectName).toList();
@@ -178,8 +177,8 @@ class MigrationGenerator {
     }
 
     var migration = generateDatabaseMigration(
-      srcDatabase: liveDatabase,
-      dstDatabase: dstDatabase,
+      databaseSource: liveDatabase,
+      databaseTarget: dstDatabase,
       priority: 0,
     );
 

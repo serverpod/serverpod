@@ -87,7 +87,6 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
           force: force,
           runMode: mode,
           targetMigrationVersion: targetVersion,
-          config: config,
         );
       } on MigrationRepairTargetNotFoundException catch (e) {
         if (e.versionsFound.isEmpty) {
