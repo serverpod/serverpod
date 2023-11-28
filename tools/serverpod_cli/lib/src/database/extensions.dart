@@ -21,8 +21,8 @@ extension DatabaseComparisons on DatabaseDefinition {
 
   bool like(DatabaseDefinition other) {
     var diff = generateDatabaseMigration(
-      srcDatabase: this,
-      dstDatabase: other,
+      databaseSource: this,
+      databaseTarget: other,
       priority: -1,
     );
     return diff.isEmpty;

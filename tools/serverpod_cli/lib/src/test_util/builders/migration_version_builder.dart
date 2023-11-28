@@ -13,10 +13,23 @@ class MigrationVersionBuilder {
     migrationApiVersion: 0,
   );
   late DatabaseDefinition _databaseDefinition;
+  late DatabaseDefinition _databaseDefinitionFull;
   Directory _versionDirectory = Directory.current;
 
   MigrationVersionBuilder() {
     _databaseDefinition = DatabaseDefinition(
+      installedModules: [
+        DatabaseMigrationVersion(
+          module: 'serverpod',
+          version: '00000000000000',
+        ),
+        DatabaseMigrationVersion(module: _moduleName, version: _versionName)
+      ],
+      tables: [],
+      migrationApiVersion: 0,
+    );
+
+    _databaseDefinitionFull = DatabaseDefinition(
       installedModules: [
         DatabaseMigrationVersion(
           module: 'serverpod',
@@ -63,7 +76,8 @@ class MigrationVersionBuilder {
       moduleName: _moduleName,
       versionName: _versionName,
       migration: _migration,
-      databaseDefinition: _databaseDefinition,
+      databaseDefinitionProject: _databaseDefinition,
+      databaseDefinitionFull: _databaseDefinitionFull,
       versionDirectory: _versionDirectory,
     );
   }

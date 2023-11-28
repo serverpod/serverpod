@@ -1985,15 +1985,15 @@ class Protocol extends _i1.SerializationManagerServer {
     installedModules: [
       _i2.DatabaseMigrationVersion(
         module: 'serverpod_auth',
-        version: '20231127112216381',
+        version: '20231128143829833',
       ),
       _i2.DatabaseMigrationVersion(
         module: 'serverpod',
-        version: '20231127112158767',
+        version: '20231128143811824',
       ),
       _i2.DatabaseMigrationVersion(
         module: 'serverpod_test',
-        version: '20231127112252102',
+        version: '20231128143906410',
       ),
     ],
     migrationApiVersion: 1,
