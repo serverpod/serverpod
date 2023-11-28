@@ -22,6 +22,50 @@ abstract class MigrationConstants {
       Directory(
           path.join(_migrationDirectory(serverRootDirectory).path, 'repair'));
 
+  /// File path where the database definition is stored.
+  static File databaseDefinitionSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+        'definition.sql',
+      ));
+
+  /// File path where the database definition is stored.
+  static File databaseDefinitionJSONPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+        'definition.json',
+      ));
+
+  /// File path where the database migration is stored.
+  static File databaseMigrationSQLPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+        'migration.sql',
+      ));
+
+  /// File path where the database migration is stored.
+  static File databaseMigrationJSONPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+        'migration.json',
+      ));
+
   static Directory _migrationDirectory(Directory serverRootDirectory) =>
       Directory(path.join(serverRootDirectory.path, 'generated', 'migration'));
 }
