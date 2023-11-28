@@ -16,8 +16,8 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 const _fileNameMigrationJson = 'migration.json';
+const _fileNameDefinitionProjectJson = 'definition_project.json';
 const _fileNameDefinitionJson = 'definition.json';
-const _fileNameDefinitionFullJson = 'definition_full.json';
 const _fileNameMigrationSql = 'migration.sql';
 const _fileNameDefinitionSql = 'definition.sql';
 
@@ -57,7 +57,6 @@ class MigrationGenerator {
       projectName,
       migrationRegistry.getLatest(),
       priority,
-      getFull: false,
     );
 
     var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
@@ -97,7 +96,7 @@ class MigrationGenerator {
 
     var migration = generateDatabaseMigration(
       databaseSource: databaseDefinitionLatest,
-      databaseTarget: databaseDefinitionProject,
+      databaseTarget: databaseDefinitionNext,
       priority: priority,
     );
 
@@ -219,9 +218,8 @@ class MigrationGenerator {
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
     String moduleName,
     String? migrationVersionName,
-    int priority, {
-    bool getFull = true,
-  }) async {
+    int priority,
+  ) async {
     if (migrationVersionName == null) {
       return DatabaseDefinition(
         moduleName: moduleName,
@@ -238,9 +236,7 @@ class MigrationGenerator {
       migrationDirectory: _migrationsBaseDirectory,
     );
 
-    return getFull
-        ? migrationVersion.databaseDefinitionFull
-        : migrationVersion.databaseDefinitionProject;
+    return migrationVersion.databaseDefinitionFull;
   }
 
   String? _getLatestMigrationVersion(String projectName) {
@@ -434,7 +430,7 @@ class MigrationVersion {
       // Load the database definition
       var databaseDefinitionPath = path.join(
         versionDir.path,
-        _fileNameDefinitionJson,
+        _fileNameDefinitionProjectJson,
       );
       var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
         databaseDefinitionPath,
@@ -443,7 +439,7 @@ class MigrationVersion {
 
       var databaseDefinitionFullPath = path.join(
         versionDir.path,
-        _fileNameDefinitionFullJson,
+        _fileNameDefinitionJson,
       );
       var databaseDefinitionFull =
           await _readMigrationDataFile<DatabaseDefinition>(
@@ -501,7 +497,7 @@ class MigrationVersion {
     await _versionDirectory.create(recursive: true);
 
     // Create sql for definition and migration
-    var definitionSql = databaseDefinitionProject.toPgSql(
+    var definitionSql = databaseDefinitionFull.toPgSql(
       module: module,
       version: versionName,
     );
@@ -513,7 +509,7 @@ class MigrationVersion {
     // Write the database definition JSON file
     var definitionFile = File(path.join(
       _versionDirectory.path,
-      _fileNameDefinitionJson,
+      _fileNameDefinitionProjectJson,
     ));
     var definitionData = SerializationManager.encode(
       databaseDefinitionProject,
@@ -524,7 +520,7 @@ class MigrationVersion {
     // Write the database full definition JSON file
     var definitionFullFile = File(path.join(
       _versionDirectory.path,
-      _fileNameDefinitionFullJson,
+      _fileNameDefinitionJson,
     ));
     var definitionFullData = SerializationManager.encode(
       databaseDefinitionFull,
