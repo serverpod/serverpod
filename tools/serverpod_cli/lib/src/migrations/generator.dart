@@ -39,13 +39,8 @@ class MigrationGenerator {
     return versionName;
   }
 
-  Directory get migrationsBaseDirectory =>
+  Directory get _migrationsBaseDirectory =>
       MigrationConstants.migrationsBaseDirectory(directory);
-
-  Directory get migrationsProjectDirectory => Directory(path.join(
-        migrationsBaseDirectory.path,
-        projectName,
-      ));
 
   Future<MigrationVersion?> createMigration({
     String? tag,
@@ -55,10 +50,11 @@ class MigrationGenerator {
     bool write = true,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
-      migrationsProjectDirectory,
+      _migrationsBaseDirectory,
     );
 
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
+      projectName,
       migrationRegistry.getLatest(),
       priority,
       getFull: false,
@@ -121,7 +117,7 @@ class MigrationGenerator {
     var migrationVersion = MigrationVersion(
       moduleName: projectName,
       versionDirectory: Directory(
-        path.join(migrationsProjectDirectory.path, versionName),
+        path.join(_migrationsBaseDirectory.path, versionName),
       ),
       versionName: versionName,
       migration: migration,
@@ -161,6 +157,7 @@ class MigrationGenerator {
         targetMigrationVersion ?? _getLatestMigrationVersion(projectName);
 
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
+      projectName,
       migrationVersion,
       0,
     );
@@ -220,12 +217,14 @@ class MigrationGenerator {
   }
 
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
+    String moduleName,
     String? migrationVersionName,
     int priority, {
     bool getFull = true,
   }) async {
     if (migrationVersionName == null) {
       return DatabaseDefinition(
+        moduleName: moduleName,
         tables: [],
         priority: priority,
         installedModules: [],
@@ -236,7 +235,7 @@ class MigrationGenerator {
     var migrationVersion = await MigrationVersion.load(
       moduleName: projectName,
       versionName: migrationVersionName,
-      migrationDirectory: migrationsBaseDirectory,
+      migrationDirectory: _migrationsBaseDirectory,
     );
 
     return getFull
@@ -247,7 +246,7 @@ class MigrationGenerator {
   String? _getLatestMigrationVersion(String projectName) {
     var migrationsDirectory = Directory(
       path.join(
-        migrationsBaseDirectory.path,
+        _migrationsBaseDirectory.path,
         projectName,
       ),
     );
@@ -346,6 +345,7 @@ class MigrationGenerator {
     ];
 
     return DatabaseDefinition(
+      moduleName: databaseDefinitionProject.moduleName,
       tables: tables,
       priority: databaseDefinitionProject.priority,
       installedModules: installedModules,
@@ -425,7 +425,7 @@ class MigrationVersion {
   }) async {
     try {
       var versionDir = Directory(
-        path.join(migrationDirectory.path, moduleName, versionName),
+        path.join(migrationDirectory.path, versionName),
       );
 
       // Get the serialization manager

@@ -686,6 +686,7 @@ extension on DatabaseDefinition {
     return refer('DatabaseDefinition', serverpodProtocolUrl(serverCode))
         .call([], {
       if (name != null) 'name': literalString(name!),
+      'moduleName': literalString(moduleName),
       'tables': literalList([
         for (var table in tables)
           refer('TableDefinition', serverpodProtocolUrl(serverCode)).call([], {

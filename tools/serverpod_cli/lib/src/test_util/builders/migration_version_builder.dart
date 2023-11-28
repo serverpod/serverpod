@@ -18,6 +18,7 @@ class MigrationVersionBuilder {
 
   MigrationVersionBuilder() {
     _databaseDefinition = DatabaseDefinition(
+      moduleName: _moduleName,
       installedModules: [
         DatabaseMigrationVersion(
           module: 'serverpod',
@@ -30,6 +31,7 @@ class MigrationVersionBuilder {
     );
 
     _databaseDefinitionFull = DatabaseDefinition(
+      moduleName: _moduleName,
       installedModules: [
         DatabaseMigrationVersion(
           module: 'serverpod',

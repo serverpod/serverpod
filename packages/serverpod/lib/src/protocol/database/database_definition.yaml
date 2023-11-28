@@ -5,6 +5,9 @@ fields:
   ### Null if the name is not available.
   name: String?
 
+  ### The name of the module that defines the database.
+  moduleName: String
+
   ### The tables of the database.
   tables: List<TableDefinition>
 
@@ -18,4 +21,4 @@ fields:
   installedModules: List<DatabaseMigrationVersion>
 
   ### The version of the database definition.
-  migrationApiVersion: int 
+  migrationApiVersion: int

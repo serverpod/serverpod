@@ -1,6 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/database/copy_migrations.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
@@ -15,9 +14,6 @@ Future<bool> performGenerate({
 }) async {
   var collector = CodeGenerationCollector();
   bool success = true;
-
-  log.debug('Copying migrations from modules.');
-  await copyMigrations(config);
 
   log.debug('Analyzing serializable entities in the protocol directory.');
   var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);

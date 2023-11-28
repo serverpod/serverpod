@@ -70,6 +70,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
   _sortTableDefinitions(tables);
 
   return DatabaseDefinition(
+    moduleName: moduleName,
     tables: tables,
     priority: priority,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
