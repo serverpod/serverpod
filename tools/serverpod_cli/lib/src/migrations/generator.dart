@@ -45,28 +45,6 @@ class MigrationGenerator {
   Directory get migrationsProjectDirectory =>
       Directory(path.join(migrationsBaseDirectory.path, projectName));
 
-  Future<DatabaseDefinition> _getSourceDatabaseDefinition(
-    String? migrationVersionName,
-    int priority,
-  ) async {
-    if (migrationVersionName == null) {
-      return DatabaseDefinition(
-        tables: [],
-        priority: priority,
-        installedModules: [],
-        migrationApiVersion: DatabaseConstants.migrationApiVersion,
-      );
-    }
-
-    var migrationVersion = await MigrationVersion.load(
-      moduleName: projectName,
-      versionName: migrationVersionName,
-      migrationDirectory: migrationsBaseDirectory,
-    );
-
-    return migrationVersion.databaseDefinitionFull;
-  }
-
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
@@ -105,7 +83,7 @@ class MigrationGenerator {
     var modules = config.modulesAll
         .where((module) => module.name != projectName)
         .toList();
-    var versions = await loadMigrationVersionsFromModules(
+    var versions = await _loadMigrationVersionsFromModules(
       modules,
       directory: projectFolder,
     );
@@ -224,6 +202,28 @@ class MigrationGenerator {
     return true;
   }
 
+  Future<DatabaseDefinition> _getSourceDatabaseDefinition(
+    String? migrationVersionName,
+    int priority,
+  ) async {
+    if (migrationVersionName == null) {
+      return DatabaseDefinition(
+        tables: [],
+        priority: priority,
+        installedModules: [],
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      );
+    }
+
+    var migrationVersion = await MigrationVersion.load(
+      moduleName: projectName,
+      versionName: migrationVersionName,
+      migrationDirectory: migrationsBaseDirectory,
+    );
+
+    return migrationVersion.databaseDefinitionFull;
+  }
+
   String? _getLatestMigrationVersion(String projectName) {
     var migrationsDirectory = Directory(
       path.join(
@@ -264,7 +264,7 @@ class MigrationGenerator {
     return false;
   }
 
-  Future<List<MigrationVersion>> loadMigrationVersionsFromModules(
+  Future<List<MigrationVersion>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     String? targetMigrationVersion,
     Directory? directory,
@@ -305,11 +305,6 @@ class MigrationGenerator {
     return moduleMigrationVersions;
   }
 
-  String _extractModuleNameFromPath(Uri path) {
-    var packageName = path.pathSegments.last;
-    return moduleNameFromServerPackageName(packageName);
-  }
-
   DatabaseDefinition _mergeDatabaseDefinitions(
     DatabaseDefinition databaseDefinitionProject,
     Iterable<DatabaseDefinition> databaseDefinitions,
@@ -338,23 +333,9 @@ class MigrationGenerator {
     );
   }
 
-  DatabaseDefinition createDatabaseDefinitionFromTables(
-    List<MigrationVersion> versions,
-  ) {
-    var migrationDefinitions =
-        versions.map((e) => e.databaseDefinitionProject).toList();
-
-    var installedModules = versions
-        .map((value) => DatabaseMigrationVersion(
-            module: value.moduleName, version: value.versionName))
-        .toList();
-
-    var dstDatabase = DatabaseDefinition(
-      tables: migrationDefinitions.expand((e) => e.tables).toList(),
-      migrationApiVersion: DatabaseConstants.migrationApiVersion,
-      installedModules: installedModules,
-    );
-    return dstDatabase;
+  String _extractModuleNameFromPath(Uri path) {
+    var packageName = path.pathSegments.last;
+    return moduleNameFromServerPackageName(packageName);
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
