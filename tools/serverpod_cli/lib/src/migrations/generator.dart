@@ -42,8 +42,10 @@ class MigrationGenerator {
   Directory get migrationsBaseDirectory =>
       MigrationConstants.migrationsBaseDirectory(directory);
 
-  Directory get migrationsProjectDirectory =>
-      Directory(path.join(migrationsBaseDirectory.path, projectName));
+  Directory get migrationsProjectDirectory => Directory(path.join(
+        migrationsBaseDirectory.path,
+        projectName,
+      ));
 
   Future<MigrationVersion?> createMigration({
     String? tag,
@@ -90,8 +92,10 @@ class MigrationGenerator {
     var databaseDefinitions = versions.map((e) => e.databaseDefinitionProject);
 
     var versionName = createVersionName(tag);
-    var nextMigrationVersion =
-        DatabaseMigrationVersion(module: projectName, version: versionName);
+    var nextMigrationVersion = DatabaseMigrationVersion(
+      module: projectName,
+      version: versionName,
+    );
 
     var dstDatabase = _mergeDatabaseDefinitions(
       databaseDefinitionProject,
@@ -187,11 +191,13 @@ class MigrationGenerator {
 
     var repairMigrationName = createVersionName(tag);
 
-    var moduleVersions = dstDatabase.installedModules.fold(<String, String>{},
-        (moduleVersions, element) {
-      moduleVersions.addAll({element.module: element.version});
-      return moduleVersions;
-    });
+    var moduleVersions = dstDatabase.installedModules.fold(
+      <String, String>{},
+      (moduleVersions, element) {
+        moduleVersions.addAll({element.module: element.version});
+        return moduleVersions;
+      },
+    );
 
     _writeRepairMigration(
       repairMigrationName,
@@ -269,8 +275,9 @@ class MigrationGenerator {
     String? targetMigrationVersion,
     Directory? directory,
   }) async {
-    var modulePaths =
-        await locateAllModulePaths(directory: directory ?? Directory.current);
+    var modulePaths = await locateAllModulePaths(
+      directory: directory ?? Directory.current,
+    );
 
     var selectedModules = modules.where(
       (module) => module.migrationVersions.isNotEmpty,
