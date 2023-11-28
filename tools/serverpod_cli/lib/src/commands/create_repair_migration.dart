@@ -80,21 +80,14 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
-    RepairTargetMigration? targetMigration;
-    if (targetVersion != null) {
-      targetMigration = RepairTargetMigration(
-        version: targetVersion,
-        moduleName: projectName,
-      );
-    }
-
     var success = await log.progress('Creating repair migration', () async {
       try {
         return await generator.repairMigration(
           tag: tag,
           force: force,
           runMode: mode,
-          targetMigration: targetMigration,
+          targetMigrationVersion: targetVersion,
+          config: config,
         );
       } on MigrationRepairTargetNotFoundException catch (e) {
         if (e.versionsFound.isEmpty) {
