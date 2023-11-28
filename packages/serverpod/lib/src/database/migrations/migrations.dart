@@ -10,13 +10,11 @@ class MigrationVersions {
   /// directory does not exist.
   static List<String> listVersions({
     Directory? directory,
-    required String module,
   }) {
     directory ??= defaultMigrationsDirectory;
 
     var moduleDirectory = Directory(path.join(
       directory.path,
-      module,
     ));
 
     if (!moduleDirectory.existsSync()) {
@@ -29,22 +27,6 @@ class MigrationVersions {
     migrationVersions.sort();
 
     return migrationVersions;
-  }
-
-  /// Provides a list of modules with migrations available.
-  static List<String> listAvailableModules({
-    Directory? directory,
-  }) {
-    directory ??= defaultMigrationsDirectory;
-    try {
-      var moduleDirectories = directory.listSync().whereType<Directory>();
-      var modules =
-          moduleDirectories.map((d) => path.basename(d.path)).toList();
-      modules.sort();
-      return modules;
-    } catch (e) {
-      return [];
-    }
   }
 
   /// Gets the default migrations directory.

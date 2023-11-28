@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:postgres/postgres.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
-import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
@@ -192,8 +191,7 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  Future<DatabaseDefinition> getTargetDatabaseDefinition(
-      Session session) async {
+  DatabaseDefinition getTargetDatabaseDefinition(Session session) {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
   }
 
@@ -218,31 +216,16 @@ class InsightsEndpoint extends Endpoint {
   /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
-    var target = await getTargetDatabaseDefinition(session);
+    var target = getTargetDatabaseDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
-
-    var modules = MigrationVersions.listAvailableModules();
-
-    var latestAvailableMigrations = <DatabaseMigrationVersion>[];
-
-    for (var module in modules) {
-      var version =
-          Serverpod.instance.migrationManager.getLatestVersion(module);
-      latestAvailableMigrations.add(
-        DatabaseMigrationVersion(
-          module: module,
-          version: version,
-        ),
-      );
-    }
 
     return DatabaseDefinitions(
       target: target,
       live: live,
       installedMigrations: installedMigrations,
-      latestAvailableMigrations: latestAvailableMigrations,
+      latestAvailableMigrations: target.installedModules,
     );
   }
 
