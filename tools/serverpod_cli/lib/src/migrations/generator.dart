@@ -61,6 +61,7 @@ class MigrationGenerator {
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       migrationRegistry.getLatest(),
       priority,
+      getFull: false,
     );
 
     var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
@@ -100,7 +101,7 @@ class MigrationGenerator {
 
     var migration = generateDatabaseMigration(
       databaseSource: databaseDefinitionLatest,
-      databaseTarget: databaseDefinitionNext,
+      databaseTarget: databaseDefinitionProject,
       priority: priority,
     );
 
@@ -220,8 +221,9 @@ class MigrationGenerator {
 
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
     String? migrationVersionName,
-    int priority,
-  ) async {
+    int priority, {
+    bool getFull = true,
+  }) async {
     if (migrationVersionName == null) {
       return DatabaseDefinition(
         tables: [],
@@ -237,7 +239,9 @@ class MigrationGenerator {
       migrationDirectory: migrationsBaseDirectory,
     );
 
-    return migrationVersion.databaseDefinitionFull;
+    return getFull
+        ? migrationVersion.databaseDefinitionFull
+        : migrationVersion.databaseDefinitionProject;
   }
 
   String? _getLatestMigrationVersion(String projectName) {
@@ -283,10 +287,10 @@ class MigrationGenerator {
   Future<List<MigrationVersion>> _loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     String? targetMigrationVersion,
-    Directory? directory,
+    required Directory directory,
   }) async {
     var modulePaths = await locateAllModulePaths(
-      directory: directory ?? Directory.current,
+      directory: directory,
     );
 
     var selectedModules = modules.where(
