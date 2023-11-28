@@ -25,20 +25,12 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(
+    moduleName: 'auth_example',
     tables: [
       ..._i3.Protocol.targetDatabaseDefinition.tables,
       ..._i2.Protocol.targetDatabaseDefinition.tables,
     ],
-    installedModules: [
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod_auth',
-        version: '20231128143829833',
-      ),
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod',
-        version: '20231128143811824',
-      ),
-    ],
+    installedModules: [],
     migrationApiVersion: 1,
   );
 
