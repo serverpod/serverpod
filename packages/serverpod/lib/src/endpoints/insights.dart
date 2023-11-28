@@ -191,7 +191,7 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  DatabaseDefinition getTargetDatabaseDefinition(Session session) {
+  Future<DatabaseDefinition> getTargetDatabaseDefinition(Session session) async {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
   }
 
@@ -216,7 +216,7 @@ class InsightsEndpoint extends Endpoint {
   /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
-    var target = getTargetDatabaseDefinition(session);
+    var target = await getTargetDatabaseDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
