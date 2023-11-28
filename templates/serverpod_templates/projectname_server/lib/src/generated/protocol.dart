@@ -28,7 +28,7 @@ class Protocol extends _i1.SerializationManagerServer {
     installedModules: [
       _i2.DatabaseMigrationVersion(
         module: 'serverpod',
-        version: '20231128092457121',
+        version: '20231128143811824',
       )
     ],
     migrationApiVersion: 1,
