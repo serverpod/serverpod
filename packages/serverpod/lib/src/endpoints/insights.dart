@@ -191,7 +191,8 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  Future<DatabaseDefinition> getTargetDatabaseDefinition(Session session) async {
+  Future<DatabaseDefinition> getTargetDatabaseDefinition(
+      Session session) async {
     return session.serverpod.serializationManager.getTargetDatabaseDefinition();
   }
 
