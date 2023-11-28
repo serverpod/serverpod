@@ -28,6 +28,7 @@ class DatabaseSetup {
       force: true,
       priority: 0,
       config: config,
+      projectFolder: dir,
     );
 
     return migration != null;

@@ -71,8 +71,9 @@ class MigrationGenerator {
     String? tag,
     required bool force,
     required int priority,
-    bool write = true,
     required GeneratorConfig config,
+    bool write = true,
+    Directory? projectFolder,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
       migrationsProjectDirectory,
@@ -104,7 +105,10 @@ class MigrationGenerator {
     var modules = config.modulesAll
         .where((module) => module.name != projectName)
         .toList();
-    var versions = await loadMigrationVersionsFromModules(modules);
+    var versions = await loadMigrationVersionsFromModules(
+      modules,
+      directory: projectFolder,
+    );
     var databaseDefinitions = versions.map((e) => e.databaseDefinitionProject);
 
     var versionName = createVersionName(tag);
@@ -263,8 +267,10 @@ class MigrationGenerator {
   Future<List<MigrationVersion>> loadMigrationVersionsFromModules(
     List<ModuleConfig> modules, {
     String? targetMigrationVersion,
+    Directory? directory,
   }) async {
-    var modulePaths = await locateAllModulePaths(directory: Directory.current);
+    var modulePaths =
+        await locateAllModulePaths(directory: directory ?? Directory.current);
 
     var selectedModules = modules.where(
       (module) => module.migrationVersions.isNotEmpty,
