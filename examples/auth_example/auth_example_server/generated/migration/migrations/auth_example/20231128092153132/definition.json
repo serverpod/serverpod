@@ -1,0 +1,20 @@
+{
+  "name": null,
+  "tables": [],
+  "priority": 2,
+  "installedModules": [
+    {
+      "id": null,
+      "module": "serverpod_auth",
+      "version": "20231128092044039",
+      "timestamp": null
+    },
+    {
+      "id": null,
+      "module": "serverpod",
+      "version": "20231128092026142",
+      "timestamp": null
+    }
+  ],
+  "migrationApiVersion": 1
+}
