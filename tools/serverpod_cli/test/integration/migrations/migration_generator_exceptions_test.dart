@@ -44,7 +44,6 @@ void main() {
             runMode:
                 CreateRepairMigrationCommand.runModes.first /* development */,
             force: false,
-            config: config,
           ),
           throwsA(isA<MigrationVersionLoadException>()
               .having((e) => e.moduleName, 'Matching module name',

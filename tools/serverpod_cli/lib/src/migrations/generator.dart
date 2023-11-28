@@ -59,7 +59,7 @@ class MigrationGenerator {
       migrationsProjectDirectory,
     );
 
-    var srcDatabase = await _getSourceDatabaseDefinition(
+    var databaseDefinitionSource = await _getSourceDatabaseDefinition(
       migrationRegistry.getLatest(),
       priority,
     );
@@ -82,14 +82,10 @@ class MigrationGenerator {
       priority,
     );
 
-    var modules = config.modulesAll
-        .where((module) => module.name != projectName)
-        .toList();
-    var versions = await _loadMigrationVersionsFromModules(
-      modules,
-      directory: projectFolder,
+    var databaseDefinitions = await _loadModuleDatabaseDefinitions(
+      config.modulesAll,
+      projectFolder,
     );
-    var databaseDefinitions = versions.map((e) => e.databaseDefinitionProject);
 
     var versionName = createVersionName(tag);
     var nextMigrationVersion = DatabaseMigrationVersion(
@@ -97,15 +93,15 @@ class MigrationGenerator {
       version: versionName,
     );
 
-    var dstDatabase = _mergeDatabaseDefinitions(
+    var databaseDefinitionTarget = _mergeDatabaseDefinitions(
       databaseDefinitionProject,
       databaseDefinitions,
       nextMigrationVersion,
     );
 
     var migration = generateDatabaseMigration(
-      srcDatabase: srcDatabase,
-      dstDatabase: dstDatabase,
+      srcDatabase: databaseDefinitionSource,
+      dstDatabase: databaseDefinitionTarget,
       priority: priority,
     );
 
@@ -130,7 +126,7 @@ class MigrationGenerator {
       versionName: versionName,
       migration: migration,
       databaseDefinitionProject: databaseDefinitionProject,
-      databaseDefinitionFull: dstDatabase,
+      databaseDefinitionFull: databaseDefinitionTarget,
     );
 
     if (write) {
@@ -142,17 +138,30 @@ class MigrationGenerator {
     return migrationVersion;
   }
 
+  Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
+    List<ModuleConfig> allModules,
+    Directory? projectFolder,
+  ) async {
+    var modules =
+        allModules.where((module) => module.name != projectName).toList();
+    var versions = await _loadMigrationVersionsFromModules(
+      modules,
+      directory: projectFolder,
+    );
+    return versions.map((e) => e.databaseDefinitionProject);
+  }
+
   Future<bool> repairMigration({
     String? tag,
     required bool force,
     required String runMode,
-    required GeneratorConfig config,
     String? targetMigrationVersion,
   }) async {
-    var latestMigrationVersion = _getLatestMigrationVersion(projectName);
+    var migrationVersion =
+        targetMigrationVersion ?? _getLatestMigrationVersion(projectName);
 
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
-      targetMigrationVersion ?? latestMigrationVersion,
+      migrationVersion,
       0,
     );
 
@@ -198,6 +207,8 @@ class MigrationGenerator {
         return moduleVersions;
       },
     );
+    moduleVersions[MigrationConstants.repairMigrationModuleName] =
+        repairMigrationName;
 
     _writeRepairMigration(
       repairMigrationName,
