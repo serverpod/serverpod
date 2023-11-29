@@ -12,6 +12,14 @@ abstract class MigrationConstants {
   /// Module name in database under which repair migrations are stored.
   static const repairMigrationModuleName = '_repair';
 
+  /// Directory where migration versions are stored.
+  static Directory migrationVersionDirectory(
+          Directory serverRootDirectory, String version) =>
+      Directory(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+      ));
+
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
       Directory(path.join(
@@ -28,8 +36,7 @@ abstract class MigrationConstants {
     String version,
   ) =>
       File(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
+        migrationVersionDirectory(serverRootDirectory, version).path,
         'definition.sql',
       ));
 
@@ -39,8 +46,7 @@ abstract class MigrationConstants {
     String version,
   ) =>
       File(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
+        migrationVersionDirectory(serverRootDirectory, version).path,
         'definition.json',
       ));
 
@@ -50,8 +56,7 @@ abstract class MigrationConstants {
     String version,
   ) =>
       File(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
+        migrationVersionDirectory(serverRootDirectory, version).path,
         'definition_project.json',
       ));
 
@@ -61,8 +66,7 @@ abstract class MigrationConstants {
     String version,
   ) =>
       File(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
+        migrationVersionDirectory(serverRootDirectory, version).path,
         'migration.sql',
       ));
 
@@ -72,8 +76,7 @@ abstract class MigrationConstants {
     String version,
   ) =>
       File(path.join(
-        migrationsBaseDirectory(serverRootDirectory).path,
-        version,
+        migrationVersionDirectory(serverRootDirectory, version).path,
         'migration.json',
       ));
 

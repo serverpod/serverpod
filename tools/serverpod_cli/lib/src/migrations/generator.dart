@@ -467,12 +467,17 @@ class MigrationVersion {
   }
 
   Future<void> write() async {
-    if (_projectDirectory.existsSync()) {
+    var migrationDirectory = MigrationConstants.migrationVersionDirectory(
+      _projectDirectory,
+      versionName,
+    );
+
+    if (migrationDirectory.existsSync()) {
       throw MigrationVersionAlreadyExistsException(
-        directoryPath: _projectDirectory.path,
+        directoryPath: migrationDirectory.path,
       );
     }
-    await _projectDirectory.create(recursive: true);
+    await migrationDirectory.create(recursive: true);
 
     // Create sql for definition and migration
     var definitionSql = databaseDefinitionFull.toPgSql(
