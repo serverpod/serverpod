@@ -412,6 +412,7 @@ class MigrationVersion {
         projectDirectory,
         versionName,
       );
+
       var databaseDefinitionProject =
           await _readMigrationDataFile<DatabaseDefinition>(
         databaseDefinitionProjectPath,
