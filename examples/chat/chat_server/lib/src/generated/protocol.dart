@@ -77,7 +77,24 @@ class Protocol extends _i1.SerializationManagerServer {
       ..._i4.Protocol.targetDatabaseDefinition.tables,
       ..._i2.Protocol.targetDatabaseDefinition.tables,
     ],
-    installedModules: [],
+    installedModules: [
+      _i2.DatabaseMigrationVersion(
+        module: 'chat',
+        version: '20231129111637710',
+      ),
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod_auth',
+        version: '20231129111545566',
+      ),
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod_chat',
+        version: '20231129111603078',
+      ),
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod',
+        version: '20231129111528000',
+      ),
+    ],
     migrationApiVersion: 1,
   );
 

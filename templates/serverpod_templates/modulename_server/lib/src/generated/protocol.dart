@@ -26,7 +26,12 @@ class Protocol extends _i1.SerializationManagerServer {
   static final targetDatabaseDefinition = _i2.DatabaseDefinition(
     moduleName: 'modulename',
     tables: [],
-    installedModules: [],
+    installedModules: [
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod',
+        version: '20231129111528000',
+      )
+    ],
     migrationApiVersion: 1,
   );
 

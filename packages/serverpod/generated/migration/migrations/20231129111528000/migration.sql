@@ -1,4 +1,5 @@
 BEGIN;
+SAVEPOINT table_setup
 
 --
 -- ACTION CREATE TABLE
@@ -251,13 +252,14 @@ ALTER TABLE ONLY "serverpod_query_log"
     ON UPDATE NO ACTION;
 
 
+RELEASE SAVEPOINT table_setup;
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20231128172204817', now())
+    VALUES ('serverpod', '20231129111528000', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231128172204817', "timestamp" = now();
+    DO UPDATE SET "version" = '20231129111528000', "timestamp" = now();
 
 
 COMMIT;
