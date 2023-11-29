@@ -206,6 +206,10 @@ class Protocol extends _i1.SerializationManagerServer {
         version: '20231129132438453',
       ),
       _i2.DatabaseMigrationVersion(
+        module: 'serverpod_chat',
+        version: '20231129132456320',
+      ),
+      _i2.DatabaseMigrationVersion(
         module: 'serverpod',
         version: '20231129132420396',
       ),

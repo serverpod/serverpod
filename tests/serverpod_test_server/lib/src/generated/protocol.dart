@@ -1992,6 +1992,10 @@ class Protocol extends _i1.SerializationManagerServer {
         module: 'serverpod',
         version: '20231129132420396',
       ),
+      _i2.DatabaseMigrationVersion(
+        module: 'serverpod_test',
+        version: '20231129132515176',
+      ),
     ],
     migrationApiVersion: 1,
   );
