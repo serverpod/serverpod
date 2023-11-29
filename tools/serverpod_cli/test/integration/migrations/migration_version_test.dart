@@ -34,7 +34,7 @@ void main() {
         .build();
 
     expect(
-      () => migrationVersion.write(module: 'test_module'),
+      () => migrationVersion.write(),
       throwsA(isA<MigrationVersionAlreadyExistsException>()),
     );
   });

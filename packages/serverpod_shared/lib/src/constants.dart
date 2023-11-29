@@ -44,6 +44,17 @@ abstract class MigrationConstants {
         'definition.json',
       ));
 
+  /// File path where the database definition is stored.
+  static File databaseDefinitionProjectJSONPath(
+    Directory serverRootDirectory,
+    String version,
+  ) =>
+      File(path.join(
+        migrationsBaseDirectory(serverRootDirectory).path,
+        version,
+        'definition_project.json',
+      ));
+
   /// File path where the database migration is stored.
   static File databaseMigrationSQLPath(
     Directory serverRootDirectory,

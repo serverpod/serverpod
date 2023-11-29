@@ -80,7 +80,7 @@ class MigrationVersionBuilder {
       migration: _migration,
       databaseDefinitionProject: _databaseDefinition,
       databaseDefinitionFull: _databaseDefinitionFull,
-      versionDirectory: _versionDirectory,
+      projectDirectory: _versionDirectory,
     );
   }
 }

@@ -95,10 +95,7 @@ List<String> findAllMigrationVersionsSync({
   required String moduleName,
 }) {
   try {
-    var migrationRoot = Directory(path.join(
-      MigrationConstants.migrationsBaseDirectory(directory).path,
-      moduleName,
-    ));
+    var migrationRoot = MigrationConstants.migrationsBaseDirectory(directory);
 
     var migrationsDir = migrationRoot.listSync().whereType<Directory>();
 
