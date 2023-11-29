@@ -60,3 +60,5 @@ cd $BASE/examples/auth_example/auth_example_server
 rm -r $MIGRATION_DIR
 dart $CLI generate --no-analytics
 dart $CLI create-migration --no-analytics
+
+
