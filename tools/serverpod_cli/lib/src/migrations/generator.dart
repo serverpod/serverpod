@@ -33,9 +33,6 @@ class MigrationGenerator {
     return versionName;
   }
 
-  Directory get _migrationsBaseDirectory =>
-      MigrationConstants.migrationsBaseDirectory(directory);
-
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
@@ -44,7 +41,7 @@ class MigrationGenerator {
     bool write = true,
   }) async {
     var migrationRegistry = MigrationRegistry.load(
-      _migrationsBaseDirectory,
+      MigrationConstants.migrationsBaseDirectory(directory),
     );
 
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
@@ -109,9 +106,7 @@ class MigrationGenerator {
 
     var migrationVersion = MigrationVersion(
       moduleName: projectName,
-      projectDirectory: Directory(
-        path.join(_migrationsBaseDirectory.path, versionName),
-      ),
+      projectDirectory: directory,
       versionName: versionName,
       migration: migration,
       databaseDefinitionProject: databaseDefinitionProject,
@@ -235,7 +230,9 @@ class MigrationGenerator {
   }
 
   String? _getLatestMigrationVersion() {
-    var migrationRegistry = MigrationRegistry.load(_migrationsBaseDirectory);
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
     return migrationRegistry.getLatest();
   }
 
