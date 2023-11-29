@@ -24,12 +24,15 @@ void main() {
     var versionName = '00000000000000';
     var versionDirectory = Directory(path.join(
       tempDirectory.path,
+      'generated',
+      'migration',
+      'migrations',
       versionName,
     ));
-    versionDirectory.createSync();
+    versionDirectory.createSync(recursive: true);
 
     var migrationVersion = MigrationVersionBuilder()
-        .withVersionDirectory(tempDirectory)
+        .withProjectDirectory(tempDirectory)
         .withVersionName(versionName)
         .build();
 
