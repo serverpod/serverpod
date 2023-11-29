@@ -15,12 +15,6 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-const _fileNameMigrationJson = 'migration.json';
-const _fileNameDefinitionProjectJson = 'definition_project.json';
-const _fileNameDefinitionJson = 'definition.json';
-const _fileNameMigrationSql = 'migration.sql';
-const _fileNameDefinitionSql = 'definition.sql';
-
 class MigrationGenerator {
   MigrationGenerator({
     required this.directory,
@@ -154,7 +148,7 @@ class MigrationGenerator {
     String? targetMigrationVersion,
   }) async {
     var migrationVersion =
-        targetMigrationVersion ?? _getLatestMigrationVersion(projectName);
+        targetMigrationVersion ?? _getLatestMigrationVersion();
 
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
       projectName,
@@ -240,16 +234,8 @@ class MigrationGenerator {
     return migrationVersion.databaseDefinitionFull;
   }
 
-  String? _getLatestMigrationVersion(String projectName) {
-    var migrationsDirectory = Directory(
-      path.join(
-        _migrationsBaseDirectory.path,
-        projectName,
-      ),
-    );
-
-    var migrationRegistry = MigrationRegistry.load(migrationsDirectory);
-
+  String? _getLatestMigrationVersion() {
+    var migrationRegistry = MigrationRegistry.load(_migrationsBaseDirectory);
     return migrationRegistry.getLatest();
   }
 
