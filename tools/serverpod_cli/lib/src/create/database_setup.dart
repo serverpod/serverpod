@@ -24,9 +24,7 @@ class DatabaseSetup {
     );
 
     var migration = await generator.createMigration(
-      tag: 'initial',
-      force: true,
-      priority: 0,
+      force: false,
       config: config,
     );
 

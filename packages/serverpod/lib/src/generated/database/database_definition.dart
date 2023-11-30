@@ -17,7 +17,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     this.name,
     required this.moduleName,
     required this.tables,
-    this.priority,
     required this.installedModules,
     required this.migrationApiVersion,
   });
@@ -26,7 +25,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    int? priority,
     required List<_i2.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
@@ -42,8 +40,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
           .deserialize<String>(jsonSerialization['moduleName']),
       tables: serializationManager
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
-      priority:
-          serializationManager.deserialize<int?>(jsonSerialization['priority']),
       installedModules:
           serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>>(
               jsonSerialization['installedModules']),
@@ -62,11 +58,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   /// The tables of the database.
   List<_i2.TableDefinition> tables;
 
-  /// The priority of this database definition. Determines the order in which
-  /// the database definitions are applied. Only valid if the definition
-  /// defines a single module.
-  int? priority;
-
   /// Modules installed in the database, together with their version. Only
   /// set if known.
   List<_i2.DatabaseMigrationVersion> installedModules;
@@ -78,7 +69,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     String? name,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   });
@@ -88,7 +78,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
       'name': name,
       'moduleName': moduleName,
       'tables': tables,
-      'priority': priority,
       'installedModules': installedModules,
       'migrationApiVersion': migrationApiVersion,
     };
@@ -100,7 +89,6 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
       'name': name,
       'moduleName': moduleName,
       'tables': tables,
-      'priority': priority,
       'installedModules': installedModules,
       'migrationApiVersion': migrationApiVersion,
     };
@@ -114,14 +102,12 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     String? name,
     required String moduleName,
     required List<_i2.TableDefinition> tables,
-    int? priority,
     required List<_i2.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
           name: name,
           moduleName: moduleName,
           tables: tables,
-          priority: priority,
           installedModules: installedModules,
           migrationApiVersion: migrationApiVersion,
         );
@@ -131,7 +117,6 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     Object? name = _Undefined,
     String? moduleName,
     List<_i2.TableDefinition>? tables,
-    Object? priority = _Undefined,
     List<_i2.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   }) {
@@ -139,7 +124,6 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
       name: name is String? ? name : this.name,
       moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.clone(),
-      priority: priority is int? ? priority : this.priority,
       installedModules: installedModules ?? this.installedModules.clone(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );

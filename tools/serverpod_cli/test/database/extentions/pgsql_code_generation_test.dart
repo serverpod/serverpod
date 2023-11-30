@@ -41,7 +41,6 @@ void main() {
       'example',
       [],
     );
-    databaseDefinition.priority = 1;
 
     test('then all definitions are created.', () {
       expect(databaseDefinition.tables, hasLength(3));

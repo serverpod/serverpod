@@ -25,7 +25,7 @@ void main() {
     group('when creating migration', () {
       test('then migration version load exception is thrown.', () async {
         expect(
-          generator.createMigration(force: false, priority: 0, config: config),
+          generator.createMigration(force: false, config: config),
           throwsA(isA<MigrationVersionLoadException>()
               .having((e) => e.moduleName, 'Matching module name',
                   equals(projectName))
