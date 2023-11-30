@@ -36,7 +36,6 @@ class MigrationGenerator {
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
-    required int priority,
     required GeneratorConfig config,
     bool write = true,
   }) async {
@@ -47,7 +46,6 @@ class MigrationGenerator {
     var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
       projectName,
       migrationRegistry.getLatest(),
-      priority,
     );
 
     var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
@@ -65,7 +63,6 @@ class MigrationGenerator {
       entityDefinitions,
       config.name,
       config.modulesAll,
-      priority,
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
@@ -88,7 +85,6 @@ class MigrationGenerator {
     var migration = generateDatabaseMigration(
       databaseSource: databaseDefinitionLatest,
       databaseTarget: databaseDefinitionNext,
-      priority: priority,
     );
 
     var warnings = migration.warnings;
@@ -164,7 +160,6 @@ class MigrationGenerator {
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
       projectName,
       migrationVersion,
-      0,
     );
 
     var client = ConfigInfo(runMode).createServiceClient();
@@ -182,7 +177,6 @@ class MigrationGenerator {
     var migration = generateDatabaseMigration(
       databaseSource: liveDatabase,
       databaseTarget: dstDatabase,
-      priority: 0,
     );
 
     var warnings = migration.warnings;
@@ -240,13 +234,11 @@ class MigrationGenerator {
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
     String moduleName,
     String? migrationVersionName,
-    int priority,
   ) async {
     if (migrationVersionName == null) {
       return DatabaseDefinition(
         moduleName: moduleName,
         tables: [],
-        priority: priority,
         installedModules: [],
         migrationApiVersion: DatabaseConstants.migrationApiVersion,
       );
@@ -358,7 +350,6 @@ class MigrationGenerator {
     return DatabaseDefinition(
       moduleName: databaseDefinitionProject.moduleName,
       tables: tables,
-      priority: databaseDefinitionProject.priority,
       installedModules: installedModules,
       migrationApiVersion: databaseDefinitionProject.migrationApiVersion,
     );
@@ -433,7 +424,6 @@ class MigrationVersion {
   final DatabaseMigration migration;
   final DatabaseDefinition databaseDefinitionProject;
   final DatabaseDefinition databaseDefinitionFull;
-  int get priority => migration.priority;
 
   static Future<MigrationVersion> load({
     required String moduleName,

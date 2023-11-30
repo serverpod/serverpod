@@ -59,20 +59,6 @@ class CreateMigrationCommand extends ServerpodCommand {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    int priority;
-    var packageType = config.type;
-    switch (packageType) {
-      case PackageType.internal:
-        priority = 0;
-        break;
-      case PackageType.module:
-        priority = 1;
-        break;
-      case PackageType.server:
-        priority = 2;
-        break;
-    }
-
     var generator = MigrationGenerator(
       directory: Directory.current,
       projectName: projectName,
@@ -84,7 +70,6 @@ class CreateMigrationCommand extends ServerpodCommand {
         migration = await generator.createMigration(
           tag: tag,
           force: force,
-          priority: priority,
           config: config,
         );
       } on MigrationVersionLoadException catch (e) {

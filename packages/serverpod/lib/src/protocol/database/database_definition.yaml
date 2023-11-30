@@ -11,11 +11,6 @@ fields:
   ### The tables of the database.
   tables: List<TableDefinition>
 
-  ### The priority of this database definition. Determines the order in which
-  ### the database definitions are applied. Only valid if the definition
-  ### defines a single module.
-  priority: int?
-
   ### Modules installed in the database, together with their version. Only
   ### set if known.
   installedModules: List<DatabaseMigrationVersion>
