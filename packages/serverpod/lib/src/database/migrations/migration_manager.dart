@@ -156,14 +156,8 @@ class MigrationManager {
 
     var moduleName = session.serverpod.serializationManager.getModuleName();
 
-    print(
-        'isVersionInstalled: ${isVersionInstalled(moduleName, latestVersion)}');
-
     if (!isVersionInstalled(moduleName, latestVersion)) {
       var installedVersion = getInstalledVersion(moduleName);
-
-      print('latestVersion: $latestVersion');
-      print('installedVersion: $installedVersion');
 
       await _migrateToLatestModule(
         session,
@@ -181,27 +175,22 @@ class MigrationManager {
   }) async {
     var sqlToExecute = await _loadMigrationSQL(fromVersion, latestVersion);
 
-    print(sqlToExecute);
-
-    for (var sql in sqlToExecute) {
+    for (var code in sqlToExecute) {
       try {
-        print(sql);
-
-        await session.dbNext.unsafeExecute(sql);
+        await session.dbNext.unsafeExecute(code.sql);
       } catch (e) {
-        // TODO fix version print
-        stderr.writeln('Failed to apply migration $latestVersion.');
+        stderr.writeln('Failed to apply migration ${code.version}.');
         stderr.writeln('$e');
         rethrow;
       }
     }
   }
 
-  Future<List<String>> _loadMigrationSQL(
+  Future<List<({String version, String sql})>> _loadMigrationSQL(
     String? fromVersion,
     String latestVersion,
   ) async {
-    var sqlToExecute = <String>[];
+    var sqlToExecute = <({String version, String sql})>[];
 
     if (fromVersion == null) {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
@@ -210,13 +199,9 @@ class MigrationManager {
       );
       var sqlDefinition = await definitionSqlFile.readAsString();
 
-      sqlToExecute.add(sqlDefinition);
+      sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
       var newerVersions = _getVersionsToApply(fromVersion);
-
-      print('availableVersions: $availableVersions');
-
-      print(newerVersions);
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
@@ -225,7 +210,7 @@ class MigrationManager {
         );
         var sqlMigration = await migrationSqlFile.readAsString();
 
-        sqlToExecute.add(sqlMigration);
+        sqlToExecute.add((version: version, sql: sqlMigration));
       }
     }
 

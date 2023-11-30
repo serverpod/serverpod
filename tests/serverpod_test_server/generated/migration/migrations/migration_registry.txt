@@ -5,5 +5,3 @@
 ### the conflict by removing and recreating the conflicting migration.
 
 20231130122145694
-20231130125720730-add-index
-20231130125728344-add-index
