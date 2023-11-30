@@ -1,0 +1,53 @@
+{
+  "actions": [
+    {
+      "type": 0,
+      "deleteTable": null,
+      "alterTable": null,
+      "createTable": {
+        "name": "migrated_table",
+        "dartName": "MigratedTable",
+        "module": "serverpod_test",
+        "schema": "public",
+        "tableSpace": null,
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('migrated_table_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "anInt",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": null,
+            "dartType": "int"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "migrated_table_pkey",
+            "tableSpace": null,
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true,
+            "predicate": null
+          }
+        ],
+        "managed": true
+      }
+    }
+  ],
+  "warnings": [],
+  "priority": 2,
+  "migrationApiVersion": 1
+}

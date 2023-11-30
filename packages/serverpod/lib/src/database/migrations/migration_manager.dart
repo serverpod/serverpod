@@ -120,7 +120,7 @@ class MigrationManager {
   }
 
   /// Lists all versions newer than the given version for the given module.
-  List<String> getVersionsToApply(String fromVersion) {
+  List<String> _getVersionsToApply(String fromVersion) {
     if (availableVersions.isEmpty) return [];
 
     var index = availableVersions.indexOf(fromVersion);
@@ -156,12 +156,18 @@ class MigrationManager {
 
     var moduleName = session.serverpod.serializationManager.getModuleName();
 
+    print(
+        'isVersionInstalled: ${isVersionInstalled(moduleName, latestVersion)}');
+
     if (!isVersionInstalled(moduleName, latestVersion)) {
       var installedVersion = getInstalledVersion(moduleName);
 
+      print('latestVersion: $latestVersion');
+      print('installedVersion: $installedVersion');
+
       await _migrateToLatestModule(
         session,
-        toVersion: latestVersion,
+        latestVersion: latestVersion,
         fromVersion: installedVersion,
       );
     }
@@ -170,16 +176,21 @@ class MigrationManager {
   /// Migration a single module to the latest version.
   Future<void> _migrateToLatestModule(
     Session session, {
-    required String toVersion,
+    required String latestVersion,
     String? fromVersion,
   }) async {
-    var sqlToExecute = await _loadMigrationSQL(fromVersion, toVersion);
+    var sqlToExecute = await _loadMigrationSQL(fromVersion, latestVersion);
+
+    print(sqlToExecute);
 
     for (var sql in sqlToExecute) {
       try {
+        print(sql);
+
         await session.dbNext.unsafeExecute(sql);
       } catch (e) {
-        stderr.writeln('Failed to apply migration $toVersion.');
+        // TODO fix version print
+        stderr.writeln('Failed to apply migration $latestVersion.');
         stderr.writeln('$e');
         rethrow;
       }
@@ -188,20 +199,24 @@ class MigrationManager {
 
   Future<List<String>> _loadMigrationSQL(
     String? fromVersion,
-    String toVersion,
+    String latestVersion,
   ) async {
     var sqlToExecute = <String>[];
 
     if (fromVersion == null) {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
         Directory.current,
-        toVersion,
+        latestVersion,
       );
       var sqlDefinition = await definitionSqlFile.readAsString();
 
       sqlToExecute.add(sqlDefinition);
     } else {
-      var newerVersions = getVersionsToApply(toVersion);
+      var newerVersions = _getVersionsToApply(fromVersion);
+
+      print('availableVersions: $availableVersions');
+
+      print(newerVersions);
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(

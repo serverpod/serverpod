@@ -14,11 +14,13 @@ abstract class ObjectWithParent extends _i1.TableRow {
   ObjectWithParent._({
     int? id,
     required this.other,
+    this.more,
   }) : super(id);
 
   factory ObjectWithParent({
     int? id,
     required int other,
+    int? more,
   }) = _ObjectWithParentImpl;
 
   factory ObjectWithParent.fromJson(
@@ -28,6 +30,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
     return ObjectWithParent(
       id: serializationManager.deserialize<int?>(jsonSerialization['id']),
       other: serializationManager.deserialize<int>(jsonSerialization['other']),
+      more: serializationManager.deserialize<int?>(jsonSerialization['more']),
     );
   }
 
@@ -37,18 +40,22 @@ abstract class ObjectWithParent extends _i1.TableRow {
 
   int other;
 
+  int? more;
+
   @override
   _i1.Table get table => t;
 
   ObjectWithParent copyWith({
     int? id,
     int? other,
+    int? more,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'other': other,
+      'more': more,
     };
   }
 
@@ -58,6 +65,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
     return {
       'id': id,
       'other': other,
+      'more': more,
     };
   }
 
@@ -66,6 +74,7 @@ abstract class ObjectWithParent extends _i1.TableRow {
     return {
       'id': id,
       'other': other,
+      'more': more,
     };
   }
 
@@ -80,6 +89,9 @@ abstract class ObjectWithParent extends _i1.TableRow {
         return;
       case 'other':
         other = value;
+        return;
+      case 'more':
+        more = value;
         return;
       default:
         throw UnimplementedError();
@@ -234,19 +246,23 @@ class _ObjectWithParentImpl extends ObjectWithParent {
   _ObjectWithParentImpl({
     int? id,
     required int other,
+    int? more,
   }) : super._(
           id: id,
           other: other,
+          more: more,
         );
 
   @override
   ObjectWithParent copyWith({
     Object? id = _Undefined,
     int? other,
+    Object? more = _Undefined,
   }) {
     return ObjectWithParent(
       id: id is int? ? id : this.id,
       other: other ?? this.other,
+      more: more is int? ? more : this.more,
     );
   }
 }
@@ -258,14 +274,21 @@ class ObjectWithParentTable extends _i1.Table {
       'other',
       this,
     );
+    more = _i1.ColumnInt(
+      'more',
+      this,
+    );
   }
 
   late final _i1.ColumnInt other;
+
+  late final _i1.ColumnInt more;
 
   @override
   List<_i1.Column> get columns => [
         id,
         other,
+        more,
       ];
 }
 

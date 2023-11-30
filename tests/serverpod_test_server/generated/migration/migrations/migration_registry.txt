@@ -4,4 +4,6 @@
 ### manually. If a collision is detected in this file when doing a code merge, resolve
 ### the conflict by removing and recreating the conflicting migration.
 
-20231129132515176
+20231130122145694
+20231130125720730-add-index
+20231130125728344-add-index
