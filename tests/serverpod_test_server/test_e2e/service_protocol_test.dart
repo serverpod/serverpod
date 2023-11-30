@@ -315,13 +315,13 @@ void main() {
   group('Database', () {
     group('target definition', () {
       test('sanity checks', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
-        expect(definition.tables.map((e) => e.name),
+        expect(tableDefinitions.map((e) => e.name),
             contains('object_field_scopes'));
-        var table = definition.tables
-            .firstWhere((e) => e.name == 'object_field_scopes');
+        var table =
+            tableDefinitions.firstWhere((e) => e.name == 'object_field_scopes');
         expect(table.schema, 'public');
         expect(table.tableSpace, null);
         expect(table.columns, hasLength(3));
@@ -331,11 +331,11 @@ void main() {
         expect(table.foreignKeys, hasLength(0));
         expect(table.indexes, hasLength(1));
 
-        expect(definition.tables.every((t) => t.indexes.isNotEmpty), true);
+        expect(tableDefinitions.every((t) => t.indexes.isNotEmpty), true);
       });
       test('contains selected tables', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
         const expectedTables = [
           'object_field_scopes',
@@ -348,16 +348,15 @@ void main() {
         ];
 
         for (var expectedTable in expectedTables) {
-          expect(
-              definition.tables.where((table) => table.name == expectedTable),
+          expect(tableDefinitions.where((table) => table.name == expectedTable),
               hasLength(1));
         }
       });
       test('columns only contains database fields', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
-        var columns = definition.tables
+        var columns = tableDefinitions
             .firstWhere((table) => table.name == 'object_field_scopes')
             .columns
             .map((c) => c.name)
@@ -367,10 +366,10 @@ void main() {
       });
 
       test('foreign keys', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
-        var table = definition.tables
+        var table = tableDefinitions
             .firstWhere((table) => table.name == 'object_with_parent');
 
         expect(table.foreignKeys, hasLength(1));
@@ -389,10 +388,10 @@ void main() {
       });
 
       test('indexes', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
-        var table = definition.tables
+        var table = tableDefinitions
             .firstWhere((table) => table.name == 'object_with_index');
 
         expect(table.indexes, hasLength(2));
@@ -423,10 +422,10 @@ void main() {
       });
 
       test('validate dart types', () async {
-        var definition =
-            await serviceClient.insights.getTargetDatabaseDefinition();
+        var tableDefinitions =
+            await serviceClient.insights.getTargetTableDefinition();
 
-        var columns = definition.tables
+        var columns = tableDefinitions
             .firstWhere((table) => table.name == 'object_with_object')
             .columns
             .map((c) => c.dartType)
@@ -445,7 +444,7 @@ void main() {
               'List<protocol:SimpleData?>?',
             ]));
 
-        var columnsWithScopes = definition.tables
+        var columnsWithScopes = tableDefinitions
             .firstWhere((table) => table.name == 'object_field_scopes')
             .columns
             .map((c) => c.dartType)
@@ -458,7 +457,7 @@ void main() {
 
     group('live definition', () {
       test('matches target', () async {
-        var target = await serviceClient.insights.getTargetDatabaseDefinition();
+        var target = await serviceClient.insights.getTargetTableDefinition();
         var live = await serviceClient.insights.getLiveDatabaseDefinition();
 
         live.matchesTarget(target);
@@ -485,14 +484,14 @@ void main() {
 }
 
 extension on service.DatabaseDefinition {
-  void matchesTarget(service.DatabaseDefinition target) {
-    expect(tables, hasLength(target.tables.length));
+  void matchesTarget(List<service.TableDefinition> targetTables) {
+    expect(tables, hasLength(targetTables.length));
     expect(tables.map((e) => e.name),
-        containsAll(target.tables.map((e) => e.name)));
+        containsAll(targetTables.map((e) => e.name)));
 
     for (var table in tables) {
       table.matchesDefinition(
-          target.tables.firstWhere((e) => e.name == table.name));
+          targetTables.firstWhere((e) => e.name == table.name));
     }
   }
 }

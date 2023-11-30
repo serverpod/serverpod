@@ -9,7 +9,7 @@ insights:
   - checkHealth:
   - getHealthData:
   - hotReload:
-  - getTargetDatabaseDefinition:
+  - getTargetTableDefinition:
   - getLiveDatabaseDefinition:
   - getDatabaseDefinitions:
   - fetchDatabaseBulkData:

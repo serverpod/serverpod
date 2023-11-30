@@ -57,10 +57,10 @@ class MigrationManager {
     var warnings = <String>[];
 
     var liveDatabase = await DatabaseAnalyzer.analyze(session.dbNext);
-    var targetDatabase =
-        session.serverpod.serializationManager.getTargetDatabaseDefinition();
+    var targetTables =
+        session.serverpod.serializationManager.getTargetTableDefinitions();
 
-    for (var table in targetDatabase.tables) {
+    for (var table in targetTables) {
       var liveTable = liveDatabase.findTableNamed(table.name);
       if (liveTable == null) {
         warnings.add('Table "${table.name}" is missing.');
@@ -154,11 +154,11 @@ class MigrationManager {
   Future<void> migrateToLatest(Session session) async {
     var latestVersion = getLatestVersion();
 
-    var targetDefinition =
-        session.serverpod.serializationManager.getTargetDatabaseDefinition();
+    var moduleName =
+        session.serverpod.serializationManager.getModuleName();
 
-    if (!isVersionInstalled(targetDefinition.moduleName, latestVersion)) {
-      var installedVersion = getInstalledVersion(targetDefinition.moduleName);
+    if (!isVersionInstalled(moduleName, latestVersion)) {
+      var installedVersion = getInstalledVersion(moduleName);
 
       await _migrateToLatestModule(
         session,
