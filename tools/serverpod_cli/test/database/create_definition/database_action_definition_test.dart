@@ -99,10 +99,7 @@ void main() {
       // definition creator ?! But code generator crashes without it.
       databaseDefinition.priority = 1;
 
-      var sql = databaseDefinition.toPgSql(
-        version: 'version',
-        module: 'mock',
-      );
+      var sql = databaseDefinition.toPgSql([]);
 
       test('then on delete is set to set null.', () {
         expect(sql.contains('ON DELETE SET NULL'), isTrue);

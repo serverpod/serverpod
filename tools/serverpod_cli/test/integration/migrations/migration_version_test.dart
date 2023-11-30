@@ -37,7 +37,7 @@ void main() {
         .build();
 
     expect(
-      () => migrationVersion.write(),
+      () => migrationVersion.write([], []),
       throwsA(isA<MigrationVersionAlreadyExistsException>()),
     );
   });
