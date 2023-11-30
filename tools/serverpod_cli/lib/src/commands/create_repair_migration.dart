@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -80,9 +81,10 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
-    var success = await log.progress('Creating repair migration', () async {
+    File? repairMigration;
+    await log.progress('Creating repair migration', () async {
       try {
-        return await generator.repairMigration(
+        repairMigration = await generator.repairMigration(
           tag: tag,
           force: force,
           runMode: mode,
@@ -114,13 +116,21 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
         log.error(e.exception);
       }
 
-      return false;
+      return repairMigration != null;
     });
 
-    if (!success) {
+    var repairMigrationPath = repairMigration?.path;
+    if (repairMigration == null || repairMigrationPath == null) {
       throw ExitException();
     }
 
+    log.info(
+      'Repair migration created: ${path.relative(
+        repairMigrationPath,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
     log.info('Done.', type: TextLogType.success);
   }
 }

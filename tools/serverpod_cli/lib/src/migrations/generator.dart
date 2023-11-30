@@ -144,7 +144,15 @@ class MigrationGenerator {
     return versions.map((e) => e.databaseDefinitionProject);
   }
 
-  Future<bool> repairMigration({
+  /// Creates a repair migration that will bring the database up to date with
+  /// the targeted migration version.
+  ///
+  /// If [targetMigrationVersion] is not specified, the latest migration version
+  /// will be used.
+  ///
+  /// Returns the repair migration file, or null if no migration was
+  /// created.
+  Future<File?> repairMigration({
     String? tag,
     required bool force,
     required String runMode,
@@ -182,14 +190,14 @@ class MigrationGenerator {
 
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
-      return false;
+      return null;
     }
 
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
       log.info('No changes detected.');
-      return false;
+      return null;
     }
 
     var repairMigrationName = createVersionName(tag);
@@ -207,14 +215,12 @@ class MigrationGenerator {
       installedModules,
     );
 
-    _writeRepairMigration(
+    return _writeRepairMigration(
       repairMigrationName,
       migration,
       installedModules,
       removedModules,
     );
-
-    return true;
   }
 
   List<DatabaseMigrationVersion> _removedModulesDiff(
@@ -375,7 +381,7 @@ class MigrationGenerator {
     }
   }
 
-  void _writeRepairMigration(
+  File _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
     List<DatabaseMigrationVersion> installedModules,
@@ -405,20 +411,22 @@ class MigrationGenerator {
     } catch (e) {
       throw MigrationRepairWriteException(exception: e.toString());
     }
+
+    return repairMigrationFile;
   }
 }
 
 class MigrationVersion {
   MigrationVersion({
     required this.moduleName,
-    required Directory projectDirectory,
+    required this.projectDirectory,
     required this.versionName,
     required this.migration,
     required this.databaseDefinitionProject,
     required this.databaseDefinitionFull,
-  }) : _projectDirectory = projectDirectory;
+  });
 
-  final Directory _projectDirectory;
+  final Directory projectDirectory;
 
   final String moduleName;
   final String versionName;
@@ -502,7 +510,7 @@ class MigrationVersion {
     required List<DatabaseMigrationVersion> removedModules,
   }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
 
@@ -525,7 +533,7 @@ class MigrationVersion {
 
     // Write the database definition JSON file
     var definitionFile = MigrationConstants.databaseDefinitionProjectJSONPath(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
     var definitionData = SerializationManager.encode(
@@ -536,7 +544,7 @@ class MigrationVersion {
 
     // Write the database full definition JSON file
     var definitionFullFile = MigrationConstants.databaseDefinitionJSONPath(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
     var definitionFullData = SerializationManager.encode(
@@ -547,14 +555,14 @@ class MigrationVersion {
 
     // Write the database definition SQL file
     var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
     await definitionSqlFile.writeAsString(definitionSql);
 
     // Write the migration definition JSON file
     var migrationFile = MigrationConstants.databaseMigrationJSONPath(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
     var migrationData = SerializationManager.encode(
@@ -565,7 +573,7 @@ class MigrationVersion {
 
     // Write the migration definition SQL file
     var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
-      _projectDirectory,
+      projectDirectory,
       versionName,
     );
     await migrationSqlFile.writeAsString(migrationSql);
