@@ -114,7 +114,15 @@ class MigrationGenerator {
     );
 
     if (write) {
-      await migrationVersion.write();
+      var removedModules = _removedModulesDiff(
+        databaseDefinitionLatest.installedModules,
+        databaseDefinitionNext.installedModules,
+      );
+
+      await migrationVersion.write(
+        databaseDefinitionNext.installedModules,
+        removedModules,
+      );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
     }
@@ -186,23 +194,41 @@ class MigrationGenerator {
 
     var repairMigrationName = createVersionName(tag);
 
-    var moduleVersions = dstDatabase.installedModules.fold(
-      <String, String>{},
-      (moduleVersions, element) {
-        moduleVersions.addAll({element.module: element.version});
-        return moduleVersions;
-      },
+    var installedModules = [
+      ...dstDatabase.installedModules,
+      DatabaseMigrationVersion(
+        module: MigrationConstants.repairMigrationModuleName,
+        version: repairMigrationName,
+      )
+    ];
+
+    List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
+      liveDatabase.installedModules,
+      installedModules,
     );
-    moduleVersions[MigrationConstants.repairMigrationModuleName] =
-        repairMigrationName;
 
     _writeRepairMigration(
       repairMigrationName,
       migration,
-      moduleVersions,
+      installedModules,
+      removedModules,
     );
 
     return true;
+  }
+
+  List<DatabaseMigrationVersion> _removedModulesDiff(
+    List<DatabaseMigrationVersion> preInstalledModules,
+    List<DatabaseMigrationVersion> postInstalledModules,
+  ) {
+    var removedModules = preInstalledModules
+        .where(
+          (module) => !postInstalledModules.any(
+            (installedModule) => installedModule.module == module.module,
+          ),
+        )
+        .toList();
+    return removedModules;
   }
 
   Future<DatabaseDefinition> _getSourceDatabaseDefinition(
@@ -352,9 +378,13 @@ class MigrationGenerator {
   void _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
-    Map<String, String> moduleVersions,
+    List<DatabaseMigrationVersion> installedModules,
+    List<DatabaseMigrationVersion> removedModules,
   ) {
-    var repairMigrationSql = migration.toPgSql(versions: moduleVersions);
+    var repairMigrationSql = migration.toPgSql(
+      installedModules: installedModules,
+      removedModules: removedModules,
+    );
 
     var repairMigrationFile = File(path.join(
       MigrationConstants.repairMigrationDirectory(directory).path,
@@ -467,7 +497,10 @@ class MigrationVersion {
     return content;
   }
 
-  Future<void> write() async {
+  Future<void> write(
+    List<DatabaseMigrationVersion> installedModules,
+    List<DatabaseMigrationVersion> removedModules,
+  ) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       _projectDirectory,
       versionName,
@@ -481,13 +514,11 @@ class MigrationVersion {
     await migrationDirectory.create(recursive: true);
 
     // Create sql for definition and migration
-    var definitionSql = databaseDefinitionFull.toPgSql(
-      module: moduleName,
-      version: versionName,
-    );
+    var definitionSql = databaseDefinitionFull.toPgSql(installedModules);
 
     var migrationSql = migration.toPgSql(
-      versions: {moduleName: versionName},
+      installedModules: installedModules,
+      removedModules: removedModules,
     );
 
     // Write the database definition JSON file
