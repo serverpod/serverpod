@@ -199,12 +199,7 @@ class MigrationManager {
 
       sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
-      print(fromVersion);
-
       var newerVersions = _getVersionsToApply(fromVersion);
-
-      print(availableVersions);
-      print(newerVersions);
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
