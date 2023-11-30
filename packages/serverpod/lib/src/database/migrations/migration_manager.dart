@@ -154,8 +154,7 @@ class MigrationManager {
   Future<void> migrateToLatest(Session session) async {
     var latestVersion = getLatestVersion();
 
-    var moduleName =
-        session.serverpod.serializationManager.getModuleName();
+    var moduleName = session.serverpod.serializationManager.getModuleName();
 
     if (!isVersionInstalled(moduleName, latestVersion)) {
       var installedVersion = getInstalledVersion(moduleName);
