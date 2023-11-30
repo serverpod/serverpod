@@ -23,7 +23,6 @@ class MigrationManager {
   /// Initializing the [MigrationManager] by loading the current version
   /// from the database and available migrations.
   Future<void> initialize(Session session) async {
-    // Get installed versions
     installedVersions.clear();
     try {
       installedVersions.addAll(await DatabaseMigrationVersion.db.find(session));
@@ -31,8 +30,7 @@ class MigrationManager {
       // Table might not exist and we therefore ignore and assume no versions.
     }
 
-    // Get available migrations
-
+    availableVersions.clear();
     var warnings = <String>[];
     try {
       availableVersions.addAll(MigrationVersions.listVersions());
@@ -201,7 +199,12 @@ class MigrationManager {
 
       sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
+      print(fromVersion);
+
       var newerVersions = _getVersionsToApply(fromVersion);
+
+      print(availableVersions);
+      print(newerVersions);
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
