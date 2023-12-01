@@ -1368,18 +1368,17 @@
       "managed": true
     }
   ],
-  "priority": 1,
   "installedModules": [
     {
       "id": null,
       "module": "serverpod_test_module",
-      "version": "20231201133152213",
+      "version": "20231201161519013",
       "timestamp": null
     },
     {
       "id": null,
       "module": "serverpod",
-      "version": "20231201133132589",
+      "version": "20231201161457947",
       "timestamp": null
     }
   ],

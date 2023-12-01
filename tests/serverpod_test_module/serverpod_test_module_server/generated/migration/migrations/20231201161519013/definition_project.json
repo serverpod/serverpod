@@ -2,12 +2,11 @@
   "name": null,
   "moduleName": "serverpod_test_module",
   "tables": [],
-  "priority": 1,
   "installedModules": [
     {
       "id": null,
       "module": "serverpod",
-      "version": "20231201133132589",
+      "version": "20231201161457947",
       "timestamp": null
     }
   ],
