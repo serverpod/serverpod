@@ -33,6 +33,7 @@ class Database {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool viewTable = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -44,6 +45,7 @@ class Database {
       orderBy: orderBy,
       orderByList: orderByList,
       orderDescending: orderDescending,
+      viewTable: viewTable,
       transaction: transaction,
       include: include,
     );
@@ -56,6 +58,7 @@ class Database {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool viewTable = false,
     Transaction? transaction,
     Include? include,
   }) async {

@@ -16,6 +16,7 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
+  String? _viewName;
   List<_FieldBuilder> _fields;
   List<SerializableEntityIndexDefinition>? _indexes;
   List<String>? _documentation;
@@ -53,6 +54,7 @@ class ClassDefinitionBuilder {
       tableName: _tableName,
       indexes: _indexes,
       documentation: _documentation,
+      viewName: _viewName,
     );
   }
 
@@ -250,6 +252,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withIsException(bool isException) {
     _isException = isException;
+    return this;
+  }
+
+  ClassDefinitionBuilder withViewName(String viewName) {
+    _viewName = viewName;
     return this;
   }
 }

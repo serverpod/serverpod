@@ -24,6 +24,24 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.table,
         valueRestriction: restrictions.validateTableName,
+        mutuallyExclusiveKeys: {
+          Keyword.view,
+          Keyword.query,
+        },
+      ),
+      ValidateNode(
+        Keyword.view,
+        valueRestriction: restrictions.validateView,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
+      ),
+      ValidateNode(
+        Keyword.query,
+        valueRestriction: restrictions.validateViewQuery,
+        mutuallyExclusiveKeys: {
+          Keyword.table,
+        },
       ),
       ValidateNode(
         Keyword.serverOnly,

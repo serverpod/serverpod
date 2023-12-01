@@ -3,10 +3,10 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Generates all the [ProtocolDefinition] based
 /// dart libraries (basically the content of a standalone dart file).
@@ -253,7 +253,8 @@ class LibraryGenerator {
                   const Code('switch(t){'),
                   for (var classInfo in entities)
                     if (classInfo is ClassDefinition &&
-                        classInfo.tableName != null)
+                        (classInfo.tableName != null ||
+                            classInfo.viewName != null))
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
                           'return ${a(refer(classInfo.className, classInfo.fileRef()))}.t;'),
@@ -760,6 +761,8 @@ extension on DatabaseDefinition {
                 }),
             ]),
             if (table.managed != null) 'managed': literalBool(table.managed!),
+            if (table.viewTable != null)
+              'viewTable': literalBool(table.viewTable!),
           }),
         ...additionalTables,
       ]),

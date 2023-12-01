@@ -1,8 +1,8 @@
-import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/protocol_definition.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
 
 /// A [CodeGenerator], that generates pgsql code.
 class LegacyPgsqlCodeGenerator extends CodeGenerator {
@@ -23,22 +23,31 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
   }
 
   String _generate(List<SerializableEntityDefinition> entities) {
-    var tableInfoList = entities.toList();
-    tableInfoList.removeWhere(
-      (element) => (element is! ClassDefinition) || element.tableName == null,
-    );
+    var tableInfoList = entities
+        .whereType<ClassDefinition>()
+        .where((element) => element.tableName != null)
+        .toList();
+
+    var viewInfoList = entities
+        .whereType<ClassDefinition>()
+        .where((element) => element.viewName != null)
+        .toList();
+
     _sortClassInfos(tableInfoList.cast());
 
     var tableCreation = '';
     var foreignRelations = '';
+    var viewCreation = '';
     for (var tableInfo in tableInfoList) {
-      if (tableInfo is ClassDefinition && tableInfo.tableName != null) {
-        tableCreation += _generateTables(tableInfo);
-        foreignRelations += _generateForeignKeys(tableInfo);
-      }
+      tableCreation += _generateTables(tableInfo);
+      foreignRelations += _generateForeignKeys(tableInfo);
     }
 
-    return tableCreation + foreignRelations;
+    for (var viewInfo in viewInfoList) {
+      viewCreation += _generateView(viewInfo);
+    }
+
+    return tableCreation + foreignRelations + viewCreation;
   }
 
   void _sortClassInfos(List<ClassDefinition> tableInfos) {
@@ -123,6 +132,23 @@ class LegacyPgsqlCodeGenerator extends CodeGenerator {
     }
 
     out += '\n';
+    return out;
+  }
+
+  String _generateView(ClassDefinition classInfo) {
+    var out = '';
+
+    // Header
+    out += '--\n';
+    out += '-- Class ${classInfo.className} as table ${classInfo.viewName}\n';
+    out += '--\n';
+    out += '\n';
+
+    // Create View Definition
+    out += 'CREATE VIEW "${classInfo.viewName}" \n';
+    out += ' AS ${classInfo.query} ';
+    out += '\n';
+
     return out;
   }
 

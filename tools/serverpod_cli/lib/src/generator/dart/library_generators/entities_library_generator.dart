@@ -34,6 +34,8 @@ class SerializableEntityLibraryGenerator {
   /// Handle ordinary classes for [generateEntityLibrary].
   Library _generateClassLibrary(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
+    String? viewName = classDefinition.viewName;
+
     var className = classDefinition.className;
     var fields = classDefinition.fields;
 
@@ -49,6 +51,7 @@ class SerializableEntityLibraryGenerator {
             className,
             classDefinition,
             tableName,
+            viewName,
             fields,
           ),
           // We need to generate the implementation class for the copyWith method
@@ -65,11 +68,12 @@ class SerializableEntityLibraryGenerator {
             _buildEntityImplicitClass(className, classDefinition),
         ]);
 
-        if (serverCode && tableName != null) {
+        if (serverCode && (tableName != null || viewName != null)) {
           libraryBuilder.body.addAll([
             _buildEntityTableClass(
               className,
               tableName,
+              viewName,
               fields,
               classDefinition,
             ),
@@ -125,6 +129,7 @@ class SerializableEntityLibraryGenerator {
     String className,
     ClassDefinition classDefinition,
     String? tableName,
+    String? viewName,
     List<SerializableEntityFieldDefinition> fields,
   ) {
     var relationFields = fields.where((field) =>
@@ -141,7 +146,7 @@ class SerializableEntityLibraryGenerator {
             .add(refer('SerializableException', serverpodUrl(serverCode)));
       }
 
-      if (serverCode && tableName != null) {
+      if (serverCode && (tableName != null || viewName != null)) {
         classBuilder.extend =
             refer('TableRow', 'package:serverpod/serverpod.dart');
 
@@ -185,7 +190,7 @@ class SerializableEntityLibraryGenerator {
 
       // Serialization for database and everything
       if (serverCode) {
-        if (tableName != null) {
+        if (tableName != null || viewName != null) {
           classBuilder.methods
               .add(_buildEntityClassToJsonForDatabaseMethod(fields));
         }
@@ -195,7 +200,7 @@ class SerializableEntityLibraryGenerator {
         if (tableName != null) {
           classBuilder.methods.addAll([
             _buildEntityClassSetColumnMethod(fields),
-            _buildEntityClassFindMethod(className, relationFields),
+            _buildEntityClassFindMethod(className, relationFields, false),
             _buildEntityClassFindSingleRowMethod(
               className,
               relationFields,
@@ -214,6 +219,12 @@ class SerializableEntityLibraryGenerator {
             _buildEntityClassIncludeListMethod(
               className,
             ),
+          ]);
+        } else if (viewName != null) {
+          classBuilder.methods.addAll([
+            _buildEntityClassSetColumnMethod(fields),
+            _buildEntityClassFindMethod(className, relationFields, true),
+            _buildEntityClassCountMethod(className),
           ]);
         }
       }
@@ -1019,9 +1030,9 @@ class SerializableEntityLibraryGenerator {
   }
 
   Method _buildEntityClassFindMethod(
-    String className,
-    Iterable<SerializableEntityFieldDefinition> objectRelationFields,
-  ) {
+      String className,
+      Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+      bool viewTable) {
     return Method((m) => m
       ..annotations.addAll([
         refer("Deprecated('Will be removed in 2.0.0. Use: db.find instead.')")
@@ -1121,6 +1132,7 @@ class SerializableEntityLibraryGenerator {
             'useCache': refer('useCache'),
             'transaction': refer('transaction'),
             if (objectRelationFields.isNotEmpty) 'include': refer('include'),
+            if (viewTable) 'viewTable': literalBool(viewTable),
           }, [
             refer(className)
           ])
@@ -1402,15 +1414,18 @@ class SerializableEntityLibraryGenerator {
 
   Class _buildEntityTableClass(
       String className,
-      String tableName,
+      String? tableName,
+      String? viewName,
       List<SerializableEntityFieldDefinition> fields,
       ClassDefinition classDefinition) {
     return Class((c) {
       c.name = '${className}Table';
-      c.extend = refer('Table', serverpodUrl(serverCode));
 
-      c.constructors.add(_buildEntityTableClassConstructor(
-          tableName, fields, classDefinition));
+      if (tableName != null || viewName != null) {
+        c.extend = refer('Table', serverpodUrl(serverCode));
+        c.constructors.add(_buildEntityTableClassConstructor(
+            tableName, viewName, fields, classDefinition));
+      }
 
       c.fields.addAll(
         _buildEntityTableClassFields(fields, classDefinition.subDirParts),
@@ -1776,20 +1791,27 @@ class SerializableEntityLibraryGenerator {
   }
 
   Constructor _buildEntityTableClassConstructor(
-      String tableName,
+      String? tableName,
+      String? viewName,
       List<SerializableEntityFieldDefinition> fields,
       ClassDefinition classDefinition) {
     return Constructor((constructorBuilder) {
-      constructorBuilder.optionalParameters.add(
-        Parameter(
-          (p) => p
-            ..name = 'tableRelation'
-            ..toSuper = true
-            ..named = true,
-        ),
-      );
-      constructorBuilder.initializers.add(refer('super')
-          .call([], {'tableName': literalString(tableName)}).code);
+      if (tableName != null) {
+        constructorBuilder.optionalParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'tableRelation'
+              ..toSuper = true
+              ..named = true,
+          ),
+        );
+
+        constructorBuilder.initializers.add(refer('super')
+            .call([], {'tableName': literalString(tableName)}).code);
+      } else if (viewName != null) {
+        constructorBuilder.initializers.add(refer('super')
+            .call([], {'tableName': literalString(viewName)}).code);
+      }
 
       constructorBuilder.body = Block.of([
         for (var field in fields.where(

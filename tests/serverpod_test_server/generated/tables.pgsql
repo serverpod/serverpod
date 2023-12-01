@@ -645,3 +645,9 @@ ALTER TABLE ONLY "town"
       REFERENCES citizen(id)
         ON DELETE CASCADE;
 
+--
+-- Class CitizenEmploymentView as table citizen_employment_view
+--
+
+CREATE VIEW "citizen_employment_view" 
+ AS select c.id as "citizenId", c.name, a.street as "homeAddress", c2."name" as "currentCompany", t."name" "companyLocation" from citizen c join address a on a."inhabitantId" = c.id join company c2 ON c."companyId" = c2.id join town t on c2."townId" = t.id 

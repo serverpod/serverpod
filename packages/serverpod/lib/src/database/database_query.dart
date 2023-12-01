@@ -26,11 +26,15 @@ class SelectQueryBuilder {
   bool _joinOneLevelManyRelationWhereExpressions = false;
   bool _wrapWhereInNot = false;
   TableRelation? _countTableRelation;
+  final bool _viewTable;
 
   /// Creates a new [SelectQueryBuilder].
   /// Throws an [ArgumentError] if the table has no columns.
-  SelectQueryBuilder({required Table table})
-      : _table = table,
+  SelectQueryBuilder({
+    required table,
+    bool viewTable = false,
+  })  : _table = table,
+        _viewTable = viewTable,
         _fields = table.columns {
     if (_fields.isEmpty) {
       throw ArgumentError.value(
@@ -43,12 +47,15 @@ class SelectQueryBuilder {
 
   /// Builds the SQL query.
   String build() {
-    _validateTableReferences(
-      _table.tableName,
-      orderBy: _orderBy,
-      where: _where,
-      countTableRelation: _countTableRelation,
-    );
+    if (!_viewTable) {
+      _validateTableReferences(
+        _table.tableName,
+        orderBy: _orderBy,
+        where: _where,
+        countTableRelation: _countTableRelation,
+      );
+    }
+
     var selectColumns = [..._fields, ..._gatherIncludeColumns(_include)];
 
     var subQueries = _SubQueries.gatherSubQueries(
@@ -61,16 +68,19 @@ class SelectQueryBuilder {
       countTableRelation: _countTableRelation,
     );
 
-    var join = _buildJoinQuery(
-      where: _where,
-      manyRelationWhereAddition: _manyRelationWhereAddition,
-      having: _having,
-      orderBy: _orderBy,
-      include: _include,
-      subQueries: subQueries,
-      countTableRelation: _countTableRelation,
-      joinOneLevelManyRelations: _joinOneLevelManyRelationWhereExpressions,
-    );
+    String? join;
+    if (!_viewTable) {
+      join = _buildJoinQuery(
+        where: _where,
+        manyRelationWhereAddition: _manyRelationWhereAddition,
+        having: _having,
+        orderBy: _orderBy,
+        include: _include,
+        subQueries: subQueries,
+        countTableRelation: _countTableRelation,
+        joinOneLevelManyRelations: _joinOneLevelManyRelationWhereExpressions,
+      );
+    }
 
     var groupBy = _buildGroupByQuery(
       selectColumns,

@@ -301,7 +301,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.',
+          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, view, query, serverOnly, fields, indexes}.',
         );
       },
     );
@@ -372,4 +372,202 @@ void main() {
       },
     );
   });
+
+  group(
+    'view property test',
+    () {
+      test(
+          'Given a class with a view defined, then the viewName is set in the definition.',
+          () {
+        var protocols = [
+          ProtocolSourceBuilder().withYaml(
+            '''
+          class: ExampleView
+          view: exampleView
+          fields:
+            name: String
+          ''',
+          ).build()
+        ];
+
+        var collector = CodeGenerationCollector();
+        var entities = StatefulAnalyzer(protocols, onErrorsCollector(collector))
+            .validateAll();
+
+        var entity = entities.first as ClassDefinition;
+        expect(entity.viewName, 'exampleView');
+      });
+
+      test(
+        'Given a class with a view name in a none snake_case_format, then collect an error that snake_case must be used.',
+        () {
+          var protocols = [
+            ProtocolSourceBuilder().withYaml(
+              '''
+            class: Example
+            view: exampleView
+            fields:
+              name: String
+            ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(protocols, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error but none was generated.',
+          );
+
+          var error = collector.errors.first;
+
+          expect(
+            error.message,
+            'The "view" property must be a snake_case_string.',
+          );
+        },
+      );
+
+      test(
+        'Given a class with a view name is not a string, then collect an error',
+        () {
+          var protocols = [
+            ProtocolSourceBuilder().withYaml(
+              '''
+            class: Example
+            view: 1
+            fields:
+              name: String
+            ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(protocols, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error but none was generated.',
+          );
+
+          var error = collector.errors.first;
+          expect(
+            error.message,
+            'The "view" property must be a snake_case_string.',
+          );
+        },
+      );
+
+      test(
+        'Given an exception with a view defined, then collect an error',
+        () {
+          var protocols = [
+            ProtocolSourceBuilder().withYaml(
+              '''
+            exception: Example
+            view: example
+            fields:
+              name: String
+            ''',
+            ).build()
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(protocols, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error but none was generated.',
+          );
+
+          var error = collector.errors.first;
+          expect(
+            error.message,
+            'The "view" property is not allowed for exception type. Valid keys are {exception, serverOnly, fields}.',
+          );
+        },
+      );
+
+      test(
+        'Given two classes with the same view name defined, then collect an error',
+        () {
+          var protocols = [
+            ProtocolSourceBuilder().withYaml(
+              '''
+            class: Example
+            view: view_example
+            query: SELECT * FROM example
+            fields:
+              name: String
+            ''',
+            ).build(),
+            ProtocolSourceBuilder().withFileName('example2').withYaml(
+              '''
+            class: Example2
+            view: view_example
+            query: SELECT * FROM example2
+            fields:
+              name: String
+            ''',
+            ).build(),
+          ];
+
+          var collector = CodeGenerationCollector();
+          StatefulAnalyzer(protocols, onErrorsCollector(collector))
+              .validateAll();
+
+          expect(
+            collector.errors,
+            isNotEmpty,
+            reason: 'Expected an error but none was generated.',
+          );
+
+          var error = collector.errors.first;
+          expect(
+            error.message,
+            'The view name "view_example" is already in use by the class "Example2".',
+          );
+        },
+      );
+    },
+  );
+
+  test(
+    'Given view with not valid query, then collect an error',
+    () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+            class: Example
+            view: view_example
+            query: random string
+            fields:
+              name: String
+            ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "query" property must be a valid View SQL query.',
+      );
+    },
+  );
 }

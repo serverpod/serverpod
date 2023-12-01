@@ -21,3 +21,5 @@ fields:
   ### Indicates if the table should be managed by Serverpod.
   ### Null, if this is unknown.
   managed: bool?
+  ### Indicates if the table is view object.
+  viewTable: bool?

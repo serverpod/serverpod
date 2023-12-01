@@ -7,6 +7,7 @@ class Keyword {
 
   static const String serverOnly = 'serverOnly';
   static const String table = 'table';
+  static const String view = 'view';
   static const String fields = 'fields';
   static const String indexes = 'indexes';
   static const String values = 'values';
@@ -24,6 +25,7 @@ class Keyword {
   static const String optional = 'optional';
   static const String scope = 'scope';
   static const String persist = 'persist';
+  static const String query = 'query';
 
   /// Special keyword to allow keys to be any string.
   static const String any = '#any';

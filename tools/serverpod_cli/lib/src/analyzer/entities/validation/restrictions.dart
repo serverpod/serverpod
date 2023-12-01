@@ -1,11 +1,10 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
+import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
-
-import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 
 import 'entity_relations.dart';
 
@@ -192,6 +191,66 @@ class Restrictions {
           span,
         )
       ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateView(
+    String parentNodeName,
+    dynamic viewName,
+    SourceSpan? span,
+  ) {
+    if (viewName is! String) {
+      return [
+        SourceSpanSeverityException(
+            'The "view" property must be a snake_case_string.', span)
+      ];
+    }
+
+    if (!StringValidators.isValidTableName(viewName)) {
+      return [
+        SourceSpanSeverityException(
+          'The "view" property must be a snake_case_string.',
+          span,
+        )
+      ];
+    }
+
+    var definition = documentDefinition;
+    if (definition is ClassDefinition && definition.query == null) {
+      return [
+        SourceSpanSeverityException(
+          'The "query" property must be defined in the class to set a parent on a field.',
+          span,
+        )
+      ];
+    }
+
+    var relationships = entityRelations;
+    if (relationships != null) {
+      Map<String?, int> frequencyMap = {};
+      for (var entity in relationships.entities) {
+        if (entity is! ClassDefinition) {
+          continue;
+        }
+
+        var viewName = entity.viewName;
+        if (viewName == null) {
+          continue;
+        }
+
+        frequencyMap[viewName] = (frequencyMap[viewName] ?? 0) + 1;
+
+        if (frequencyMap[viewName]! > 1) {
+          return [
+            SourceSpanSeverityException(
+              'The view name "$viewName" is already in use by the class "${entity.className}".',
+              span,
+            )
+          ];
+        }
+      }
     }
 
     return [];
@@ -394,6 +453,39 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateViewQuery(
+    String parentNodeName,
+    dynamic query,
+    SourceSpan? span,
+  ) {
+    if (query is! String) {
+      return [SourceSpanSeverityException('The "query" must be String.', span)];
+    }
+
+    if (query.isEmpty) {
+      return [
+        SourceSpanSeverityException(
+          'The "query" cannot be empty.',
+          span,
+        )
+      ];
+    }
+
+    // Check basic query if contains "SELECT" and "FROM" clauses
+    var selectPattern = RegExp(r'\bselect\b', caseSensitive: false);
+    var fromPattern = RegExp(r'\bfrom\b', caseSensitive: false);
+    if (!selectPattern.hasMatch(query) || !fromPattern.hasMatch(query)) {
+      return [
+        SourceSpanSeverityException(
+          'The "query" property must be a valid View SQL query.',
           span,
         )
       ];

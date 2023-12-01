@@ -37,6 +37,13 @@ class ClassDefinition extends SerializableEntityDefinition {
   /// database.
   final String? tableName;
 
+  /// If set, the name of the view, this class should be stored in, in the
+  /// database.
+  final String? viewName;
+
+  /// Query to create the view.
+  final String? query;
+
   /// The fields of this class / exception.
   List<SerializableEntityFieldDefinition> fields;
 
@@ -61,6 +68,8 @@ class ClassDefinition extends SerializableEntityDefinition {
     required super.serverOnly,
     required this.isException,
     this.tableName,
+    this.viewName,
+    this.query,
     this.indexes,
     super.subDirParts,
     this.documentation,

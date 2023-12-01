@@ -7,9 +7,10 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Map<String, Map<String, dynamic>> rawRow,
   Map<String, Map<int, List<dynamic>>> resolvedListRelations, {
   Include? include,
+  bool viewTable = false,
 }) {
   // Resolve this object.
-  var rawTableRow = rawRow[table.tableName];
+  var rawTableRow = viewTable ? rawRow[''] : rawRow[table.tableName];
   if (rawTableRow == null) return null;
 
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
