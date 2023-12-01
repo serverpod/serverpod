@@ -40,6 +40,24 @@ class CommandLineTools {
     return true;
   }
 
+  static Future<bool> serverpodGenerate(Directory dir) async {
+    log.debug('Running `serverpod generate` in ${dir.path}',
+        newParagraph: true);
+
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'serverpod',
+      arguments: ['generate'],
+      workingDirectory: dir.path,
+    );
+
+    if (exitCode != 0) {
+      log.error('Failed to run `serverpod generate` in ${dir.path}');
+      return false;
+    }
+
+    return true;
+  }
+
   static Future<bool> existsCommand(
     String command, [
     List<String> arguments = const [],

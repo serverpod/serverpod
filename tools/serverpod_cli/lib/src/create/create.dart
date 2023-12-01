@@ -184,6 +184,12 @@ Future<bool> performCreate(
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
 
+    success &= await log.progress('Generating serverpod files.', () {
+      return CommandLineTools.serverpodGenerate(
+        serverpodDirs.serverDir,
+      );
+    });
+
     if (dockerConfigured) {
       await log.progress('Creating default database migration.', () {
         return DatabaseSetup.createDefaultMigration(
@@ -205,6 +211,12 @@ Future<bool> performCreate(
               _copyModuleTemplates(serverpodDirs, name: name);
               return true;
             }));
+
+    success &= await log.progress('Generating serverpod files.', () {
+      return CommandLineTools.serverpodGenerate(
+        serverpodDirs.serverDir,
+      );
+    });
   }
 
   if (success || force) {
