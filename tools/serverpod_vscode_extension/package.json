@@ -1,15 +1,34 @@
 {
-  "name": "serverpod_vscode_extension",
+  "name": "serverpod",
   "displayName": "Serverpod",
+  "publisher": "serverpod",
   "description": "",
+  "icon": "/assets/icon.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.75.0"
   },
-  "categories": [],
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
   "activationEvents": [
     "onLanguage:yaml"
   ],
+  "pricing": "Free",
+  "homepage": "https://serverpod.dev",
+  "bugs": {
+    "url": "https://github.com/serverpod/serverpod/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serverpod/serverpod.git"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
