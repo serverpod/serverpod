@@ -2,4 +2,3 @@ class: ObjectWithParent
 table: object_with_parent
 fields:
   other: int, relation(parent=object_field_scopes)
-  more: int?

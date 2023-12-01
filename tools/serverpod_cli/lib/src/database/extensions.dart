@@ -198,7 +198,7 @@ extension TableDiffComparisons on TableMigration {
 //
 
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql(List<DatabaseMigrationVersion> installedModules) {
+  String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
     String out = '';
 
     var tableCreation = '';
@@ -448,13 +448,7 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
 
     if (removedModules.isNotEmpty) {
       out += '\n';
-    }
-
-    for (var module in removedModules) {
-      out += _sqlRemoveMigrationVersion(
-        module: module.module,
-        version: module.version,
-      );
+      out += _sqlRemoveMigrationVersion(removedModules);
     }
 
     out += '\n';
@@ -596,16 +590,14 @@ String _sqlStoreMigrationVersion({
   return out;
 }
 
-String _sqlRemoveMigrationVersion({
-  required String module,
-  required String version,
-}) {
+String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
+  var moduleNames = modules.map((e) => "'${e.module}'").toList().join(', ');
   String out = '';
   out += '--\n';
-  out += '-- MIGRATION VERSION FOR $module\n';
+  out += '-- MIGRATION VERSION FOR $moduleNames\n';
   out += '--\n';
   out += 'DELETE FROM "serverpod_migrations"';
-  out += 'WHERE "module" = \'$module\' AND "version" = \'$version\';\n';
+  out += 'WHERE "module" IN ($moduleNames);';
   out += '\n';
 
   return out;

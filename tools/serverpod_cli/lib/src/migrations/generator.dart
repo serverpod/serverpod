@@ -120,8 +120,8 @@ class MigrationGenerator {
       );
 
       await migrationVersion.write(
-        databaseDefinitionNext.installedModules,
-        removedModules,
+        installedModules: databaseDefinitionNext.installedModules,
+        removedModules: removedModules,
       );
       migrationRegistry.add(versionName);
       await migrationRegistry.write();
@@ -497,10 +497,10 @@ class MigrationVersion {
     return content;
   }
 
-  Future<void> write(
-    List<DatabaseMigrationVersion> installedModules,
-    List<DatabaseMigrationVersion> removedModules,
-  ) async {
+  Future<void> write({
+    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersion> removedModules,
+  }) async {
     var migrationDirectory = MigrationConstants.migrationVersionDirectory(
       _projectDirectory,
       versionName,
@@ -514,7 +514,9 @@ class MigrationVersion {
     await migrationDirectory.create(recursive: true);
 
     // Create sql for definition and migration
-    var definitionSql = databaseDefinitionFull.toPgSql(installedModules);
+    var definitionSql = databaseDefinitionFull.toPgSql(
+      installedModules: installedModules,
+    );
 
     var migrationSql = migration.toPgSql(
       installedModules: installedModules,

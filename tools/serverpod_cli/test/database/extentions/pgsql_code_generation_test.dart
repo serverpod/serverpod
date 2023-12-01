@@ -48,7 +48,7 @@ void main() {
     });
 
     group('then pgsql file for migration', () {
-      var pgsqlFile = databaseDefinition.toPgSql([]);
+      var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
       test(
           'has foreign key creation for citizen after company table is created.',
           () {

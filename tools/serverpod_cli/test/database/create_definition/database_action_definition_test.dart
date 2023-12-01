@@ -102,7 +102,7 @@ void main() {
       var module = 'test-module';
       var version = 'version';
 
-      var sql = databaseDefinition.toPgSql([
+      var sql = databaseDefinition.toPgSql(installedModules: [
         DatabaseMigrationVersion(
           module: module,
           version: version,

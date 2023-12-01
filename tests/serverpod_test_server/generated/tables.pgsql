@@ -245,8 +245,7 @@ ALTER TABLE ONLY "object_with_object"
 
 CREATE TABLE "object_with_parent" (
   "id" serial,
-  "other" integer NOT NULL,
-  "more" integer
+  "other" integer NOT NULL
 );
 
 ALTER TABLE ONLY "object_with_parent"
