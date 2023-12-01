@@ -17,6 +17,7 @@ class DatabaseAnalyzer {
     var installedModules = await _getInstalledMigrationVersions(database);
 
     return DatabaseDefinition(
+      moduleName: Protocol().getModuleName(),
       name: name,
       tables: await Future.wait((await database.unsafeQuery(
 // Get list of all tables and the schema they are in.

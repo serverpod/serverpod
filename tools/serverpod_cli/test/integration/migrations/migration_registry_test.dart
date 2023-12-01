@@ -16,7 +16,6 @@ void main() {
         Directory(path.join(testAssetsPath, 'multiple_migrations'));
     var moduleMigrationsDirectory = Directory(path.join(
       MigrationConstants.migrationsBaseDirectory(projectDirectory).path,
-      'test_project',
     ));
     test(
         'when loading migration registry then migrations are listed in alphabetical sorting order',

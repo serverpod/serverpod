@@ -223,7 +223,6 @@ abstract class MigrationTestUtils {
   static Directory _migrationsProjectDirectory() => Directory(path.join(
         _migrationDirectory().path,
         'migrations',
-        'serverpod_test',
       ));
 
   static void _removeMigrationTestProtocolFolder() {

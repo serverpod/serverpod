@@ -147,11 +147,11 @@ class DatabaseBulkData {
     Database database,
     String table,
   ) async {
-    var databaseDefinition =
-        Serverpod.instance.serializationManager.getTargetDatabaseDefinition();
+    var tableDefinitions =
+        Serverpod.instance.serializationManager.getTargetTableDefinitions();
 
     var tableDefinition =
-        databaseDefinition.tables.firstWhereOrNull((e) => e.name == table);
+        tableDefinitions.firstWhereOrNull((e) => e.name == table);
 
     return tableDefinition;
   }

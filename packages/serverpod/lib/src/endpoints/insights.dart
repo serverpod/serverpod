@@ -7,6 +7,7 @@ import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
@@ -192,9 +193,9 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  Future<DatabaseDefinition> getTargetDatabaseDefinition(
+  Future<List<TableDefinition>> getTargetTableDefinition(
       Session session) async {
-    return session.serverpod.serializationManager.getTargetDatabaseDefinition();
+    return session.serverpod.serializationManager.getTargetTableDefinitions();
   }
 
   /// Returns the structure of the live database by
@@ -203,7 +204,7 @@ class InsightsEndpoint extends Endpoint {
   /// This information can be used for database migration.
   ///
   /// See also:
-  /// - [getTargetDatabaseDefinition]
+  /// - [getTargetTableDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
     // Get database definition of the live database.
     var databaseDefinition = await DatabaseAnalyzer.analyze(session.dbNext);
@@ -215,32 +216,33 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Returns the target and live database definitions. See
-  /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
+  /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
   Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
-    var target = await getTargetDatabaseDefinition(session);
+    var targetTables = await getTargetTableDefinition(session);
     var live = await getLiveDatabaseDefinition(session);
     var installedMigrations =
         await DatabaseAnalyzer.getInstalledMigrationVersions(session);
 
-    var modules = MigrationVersions.listAvailableModules();
+    var versions = MigrationVersions.listVersions();
 
     var latestAvailableMigrations = <DatabaseMigrationVersion>[];
-
-    for (var module in modules) {
-      var version =
-          Serverpod.instance.migrationManager.getLatestVersion(module);
-      latestAvailableMigrations.add(
-        DatabaseMigrationVersion(
-          module: module,
-          version: version,
-        ),
+    if (versions.isNotEmpty) {
+      var version = versions.last;
+      var file = MigrationConstants.databaseDefinitionJSONPath(
+        Directory.current,
+        version,
       );
+      var data = await file.readAsString();
+      var databaseDefinition = session.serverpod.serializationManager
+          .decode<DatabaseDefinition>(data);
+
+      latestAvailableMigrations = databaseDefinition.installedModules;
     }
 
     return DatabaseDefinitions(
-      target: target,
-      live: live,
+      target: targetTables,
+      live: live.tables,
       installedMigrations: installedMigrations,
       latestAvailableMigrations: latestAvailableMigrations,
     );

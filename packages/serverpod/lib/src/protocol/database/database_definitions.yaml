@@ -3,10 +3,10 @@
 class: DatabaseDefinitions
 fields:
   ### The target database definition.
-  target: DatabaseDefinition
+  target: List<TableDefinition>
 
   ### A definition of the database as it is currently.
-  live: DatabaseDefinition
+  live: List<TableDefinition>
 
   ### The migrations that are installed in the database.
   installedMigrations: List<DatabaseMigrationVersion>

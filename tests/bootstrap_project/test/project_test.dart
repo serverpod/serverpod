@@ -214,22 +214,6 @@ void main() async {
           );
         });
 
-        test('has the serverpod migrations folder', () {
-          expect(
-            Directory(
-              path.join(
-                serverDir,
-                'generated',
-                'migration',
-                'migrations',
-                'serverpod',
-              ),
-            ).existsSync(),
-            isTrue,
-            reason: 'Server migrations folder does not exist.',
-          );
-        });
-
         test('has the project migrations folder', () {
           expect(
             Directory(
@@ -238,7 +222,6 @@ void main() async {
                 'generated',
                 'migration',
                 'migrations',
-                projectName,
               ),
             ).existsSync(),
             isTrue,
@@ -253,7 +236,6 @@ void main() async {
               'generated',
               'migration',
               'migrations',
-              projectName,
               'migration_registry.txt',
             )).existsSync(),
             isTrue,

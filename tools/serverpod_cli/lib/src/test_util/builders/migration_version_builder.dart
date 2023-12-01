@@ -14,10 +14,11 @@ class MigrationVersionBuilder {
   );
   late DatabaseDefinition _databaseDefinition;
   late DatabaseDefinition _databaseDefinitionFull;
-  Directory _versionDirectory = Directory.current;
+  Directory _projectDirectory = Directory.current;
 
   MigrationVersionBuilder() {
     _databaseDefinition = DatabaseDefinition(
+      moduleName: _moduleName,
       installedModules: [
         DatabaseMigrationVersion(
           module: 'serverpod',
@@ -30,6 +31,7 @@ class MigrationVersionBuilder {
     );
 
     _databaseDefinitionFull = DatabaseDefinition(
+      moduleName: _moduleName,
       installedModules: [
         DatabaseMigrationVersion(
           module: 'serverpod',
@@ -66,8 +68,8 @@ class MigrationVersionBuilder {
     return this;
   }
 
-  MigrationVersionBuilder withVersionDirectory(Directory versionDirectory) {
-    _versionDirectory = versionDirectory;
+  MigrationVersionBuilder withProjectDirectory(Directory projectDirectory) {
+    _projectDirectory = projectDirectory;
     return this;
   }
 
@@ -78,7 +80,7 @@ class MigrationVersionBuilder {
       migration: _migration,
       databaseDefinitionProject: _databaseDefinition,
       databaseDefinitionFull: _databaseDefinitionFull,
-      versionDirectory: _versionDirectory,
+      projectDirectory: _projectDirectory,
     );
   }
 }

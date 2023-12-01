@@ -26,76 +26,55 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
-    tables: [
-      _i2.TableDefinition(
-        name: 'channel',
-        dartName: 'Channel',
-        schema: 'public',
-        module: 'chat',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'name',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'channel',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'channel_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          )
-        ],
-        managed: true,
-      ),
-      ..._i3.Protocol.targetDatabaseDefinition.tables,
-      ..._i4.Protocol.targetDatabaseDefinition.tables,
-      ..._i2.Protocol.targetDatabaseDefinition.tables,
-    ],
-    installedModules: [
-      _i2.DatabaseMigrationVersion(
-        module: 'chat',
-        version: '20231128143921588',
-      ),
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod_auth',
-        version: '20231128143829833',
-      ),
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod_chat',
-        version: '20231128143847317',
-      ),
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod',
-        version: '20231128143811824',
-      ),
-    ],
-    migrationApiVersion: 1,
-  );
+  static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'channel',
+      dartName: 'Channel',
+      schema: 'public',
+      module: 'chat',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'channel',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'channel_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        )
+      ],
+      managed: true,
+    ),
+    ..._i3.Protocol.targetTableDefinitions,
+    ..._i4.Protocol.targetTableDefinitions,
+    ..._i2.Protocol.targetTableDefinitions,
+  ];
 
   @override
   T deserialize<T>(
@@ -189,6 +168,9 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  _i2.DatabaseDefinition getTargetDatabaseDefinition() =>
-      targetDatabaseDefinition;
+  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
+
+  @override
+  String getModuleName() => 'chat';
 }

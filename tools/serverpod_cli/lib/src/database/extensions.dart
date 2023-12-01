@@ -198,10 +198,7 @@ extension TableDiffComparisons on TableMigration {
 //
 
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql({
-    required String version,
-    required String module,
-  }) {
+  String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
     String out = '';
 
     var tableCreation = '';
@@ -229,10 +226,16 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Create foreign relations
     out += foreignRelations;
 
-    out += _sqlStoreMigrationVersion(
-      module: module,
-      version: version,
-    );
+    if (installedModules.isNotEmpty) {
+      out += '\n';
+    }
+
+    for (var module in installedModules) {
+      out += _sqlStoreMigrationVersion(
+        module: module.module,
+        version: module.version,
+      );
+    }
 
     out += '\n';
     out += 'COMMIT;\n';
@@ -414,7 +417,8 @@ extension on ForeignKeyAction {
 
 extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required Map<String, String> versions,
+    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersion> removedModules,
   }) {
     var out = '';
 
@@ -431,16 +435,20 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Append all foreign key operations at the end
     out += foreignKeyActions;
 
-    if (versions.isNotEmpty) {
+    if (installedModules.isNotEmpty) {
       out += '\n';
     }
 
-    for (var module in versions.keys) {
-      var version = versions[module]!;
+    for (var module in installedModules) {
       out += _sqlStoreMigrationVersion(
-        module: module,
-        version: version,
+        module: module.module,
+        version: module.version,
       );
+    }
+
+    if (removedModules.isNotEmpty) {
+      out += '\n';
+      out += _sqlRemoveMigrationVersion(removedModules);
     }
 
     out += '\n';
@@ -577,6 +585,19 @@ String _sqlStoreMigrationVersion({
   out += '    VALUES (\'$module\', \'$version\', now())\n';
   out += '    ON CONFLICT ("module")\n';
   out += '    DO UPDATE SET "version" = \'$version\', "timestamp" = now();\n';
+  out += '\n';
+
+  return out;
+}
+
+String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
+  var moduleNames = modules.map((e) => "'${e.module}'").toList().join(', ');
+  String out = '';
+  out += '--\n';
+  out += '-- MIGRATION VERSION FOR $moduleNames\n';
+  out += '--\n';
+  out += 'DELETE FROM "serverpod_migrations"';
+  out += 'WHERE "module" IN ($moduleNames);';
   out += '\n';
 
   return out;

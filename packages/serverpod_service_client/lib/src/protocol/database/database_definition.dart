@@ -15,6 +15,7 @@ import '../protocol.dart' as _i2;
 abstract class DatabaseDefinition extends _i1.SerializableEntity {
   DatabaseDefinition._({
     this.name,
+    required this.moduleName,
     required this.tables,
     this.priority,
     required this.installedModules,
@@ -23,6 +24,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
 
   factory DatabaseDefinition({
     String? name,
+    required String moduleName,
     required List<_i2.TableDefinition> tables,
     int? priority,
     required List<_i2.DatabaseMigrationVersion> installedModules,
@@ -36,6 +38,8 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     return DatabaseDefinition(
       name:
           serializationManager.deserialize<String?>(jsonSerialization['name']),
+      moduleName: serializationManager
+          .deserialize<String>(jsonSerialization['moduleName']),
       tables: serializationManager
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
       priority:
@@ -51,6 +55,9 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   /// The name of the database.
   /// Null if the name is not available.
   String? name;
+
+  /// The name of the module that defines the database.
+  String moduleName;
 
   /// The tables of the database.
   List<_i2.TableDefinition> tables;
@@ -69,6 +76,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
 
   DatabaseDefinition copyWith({
     String? name,
+    String? moduleName,
     List<_i2.TableDefinition>? tables,
     int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
@@ -78,6 +86,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'moduleName': moduleName,
       'tables': tables,
       'priority': priority,
       'installedModules': installedModules,
@@ -91,12 +100,14 @@ class _Undefined {}
 class _DatabaseDefinitionImpl extends DatabaseDefinition {
   _DatabaseDefinitionImpl({
     String? name,
+    required String moduleName,
     required List<_i2.TableDefinition> tables,
     int? priority,
     required List<_i2.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
           name: name,
+          moduleName: moduleName,
           tables: tables,
           priority: priority,
           installedModules: installedModules,
@@ -106,6 +117,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,
+    String? moduleName,
     List<_i2.TableDefinition>? tables,
     Object? priority = _Undefined,
     List<_i2.DatabaseMigrationVersion>? installedModules,
@@ -113,6 +125,7 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
   }) {
     return DatabaseDefinition(
       name: name is String? ? name : this.name,
+      moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.clone(),
       priority: priority is int? ? priority : this.priority,
       installedModules: installedModules ?? this.installedModules.clone(),

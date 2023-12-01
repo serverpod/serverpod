@@ -23,16 +23,7 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
-    tables: [],
-    installedModules: [
-      _i2.DatabaseMigrationVersion(
-        module: 'serverpod',
-        version: '20231128143811824',
-      )
-    ],
-    migrationApiVersion: 1,
-  );
+  static final List<_i2.TableDefinition> targetTableDefinitions = [];
 
   @override
   T deserialize<T>(
@@ -83,6 +74,9 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  _i2.DatabaseDefinition getTargetDatabaseDefinition() =>
-      targetDatabaseDefinition;
+  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
+
+  @override
+  String getModuleName() => 'modulename';
 }

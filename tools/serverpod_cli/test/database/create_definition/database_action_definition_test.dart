@@ -99,10 +99,15 @@ void main() {
       // definition creator ?! But code generator crashes without it.
       databaseDefinition.priority = 1;
 
-      var sql = databaseDefinition.toPgSql(
-        version: 'version',
-        module: 'mock',
-      );
+      var module = 'test-module';
+      var version = 'version';
+
+      var sql = databaseDefinition.toPgSql(installedModules: [
+        DatabaseMigrationVersion(
+          module: module,
+          version: version,
+        )
+      ]);
 
       test('then on delete is set to set null.', () {
         expect(sql.contains('ON DELETE SET NULL'), isTrue);
@@ -110,6 +115,21 @@ void main() {
 
       test('then on update is set to set null.', () {
         expect(sql.contains('ON UPDATE SET NULL'), isTrue);
+      });
+
+      test('then migration version insert is added.', () {
+        expect(
+          sql,
+          contains(
+              'INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")'),
+        );
+        expect(sql, contains('VALUES (\'$module\', \'$version\', now())'));
+        expect(sql, contains('ON CONFLICT ("module")'));
+        expect(
+          sql,
+          contains(
+              'DO UPDATE SET "version" = \'$version\', "timestamp" = now();'),
+        );
       });
     });
   });
