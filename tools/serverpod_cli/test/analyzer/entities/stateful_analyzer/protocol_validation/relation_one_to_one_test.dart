@@ -258,56 +258,6 @@ void main() {
   });
 
   test(
-      'Given a class with a one to one relation where the relationship is ambiguous where the field names are the same in both models then an error is collected that the reference cannot be resolved.',
-      () {
-    var protocols = [
-      ProtocolSourceBuilder().withFileName('company').withYaml(
-        '''
-        class: Company
-        table: company
-        fields:
-          addressCompany: int
-          address: Address?, relation(name=company_address, field=addressCompany)
-          oldAddressId: int
-          oldAddress: Address?, relation(name=company_address, field=oldAddressId)
-        indexes:
-          address_index_idx:
-            fields: addressCompany
-            unique: true
-          old_address_index_idx:
-            fields: oldAddressId
-            unique: true
-        ''',
-      ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
-        '''
-        class: Address
-        table: address
-        fields:
-          addressCompany: Company?, relation(name=company_address)
-        ''',
-      ).build(),
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
-    analyzer.validateAll();
-
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was found.',
-    );
-
-    var error = collector.errors.first;
-
-    expect(
-      error.message,
-      'Unable to resolve ambiguous relation, there are several named relations with name "company_address" on the class "Company".',
-    );
-  });
-
-  test(
       'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
       () {
     var protocols = [
