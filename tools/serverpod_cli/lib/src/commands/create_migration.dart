@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -77,8 +78,8 @@ class CreateMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
-    var success = await log.progress('Creating migration', () async {
-      MigrationVersion? migration;
+    MigrationVersion? migration;
+    await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
           tag: tag,
@@ -105,10 +106,24 @@ class CreateMigrationCommand extends ServerpodCommand {
       return migration != null;
     });
 
-    if (!success) {
+    var projectDirectory = migration?.projectDirectory;
+    var migrationName = migration?.versionName;
+    if (migration == null ||
+        projectDirectory == null ||
+        migrationName == null) {
       throw ExitException();
     }
 
+    log.info(
+      'Migration created: ${path.relative(
+        MigrationConstants.migrationVersionDirectory(
+          projectDirectory,
+          migrationName,
+        ).path,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
     log.info('Done.', type: TextLogType.success);
   }
 }
