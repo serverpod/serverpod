@@ -16,7 +16,12 @@ For example if there is an image subfolder under your extension project workspac
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You need the serverpod CLI installed in your path for this extension to work. Run the following command in your terminal to install it:
+
+`dart pub global activate serverpod_cli`
+
+Note: The serverpod CLI requires both [dart and flutter](https://docs.flutter.dev/get-started/install.) to be installed.
+
 
 ## Extension Settings
 
