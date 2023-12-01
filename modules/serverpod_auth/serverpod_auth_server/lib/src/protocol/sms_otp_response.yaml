@@ -1,0 +1,11 @@
+### Information about SMS OTP response.
+class: SmsOtpResponse
+fields:
+  ### True if the authentication was successful.
+  success: bool
+
+  hash: String?
+
+  ### Reason for a failed authentication attempt, only set if the authentication
+  ### failed.
+  failReason: AuthenticationFailReason?

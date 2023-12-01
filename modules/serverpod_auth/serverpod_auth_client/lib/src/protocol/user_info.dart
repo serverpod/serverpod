@@ -22,6 +22,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
     required this.userName,
     this.fullName,
     this.email,
+    this.phoneNumber,
     required this.created,
     this.imageUrl,
     required this.scopeNames,
@@ -34,6 +35,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
     required String userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     required DateTime created,
     String? imageUrl,
     required List<String> scopeNames,
@@ -54,6 +56,8 @@ abstract class UserInfo extends _i1.SerializableEntity {
           .deserialize<String?>(jsonSerialization['fullName']),
       email:
           serializationManager.deserialize<String?>(jsonSerialization['email']),
+      phoneNumber: serializationManager
+          .deserialize<String?>(jsonSerialization['phoneNumber']),
       created: serializationManager
           .deserialize<DateTime>(jsonSerialization['created']),
       imageUrl: serializationManager
@@ -83,6 +87,9 @@ abstract class UserInfo extends _i1.SerializableEntity {
   /// The email of the user.
   String? email;
 
+  /// The phone number of the user.
+  String? phoneNumber;
+
   /// The time when this user was created.
   DateTime created;
 
@@ -101,6 +108,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
     String? userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     DateTime? created,
     String? imageUrl,
     List<String>? scopeNames,
@@ -114,6 +122,7 @@ abstract class UserInfo extends _i1.SerializableEntity {
       'userName': userName,
       'fullName': fullName,
       'email': email,
+      'phoneNumber': phoneNumber,
       'created': created,
       'imageUrl': imageUrl,
       'scopeNames': scopeNames,
@@ -131,6 +140,7 @@ class _UserInfoImpl extends UserInfo {
     required String userName,
     String? fullName,
     String? email,
+    String? phoneNumber,
     required DateTime created,
     String? imageUrl,
     required List<String> scopeNames,
@@ -141,6 +151,7 @@ class _UserInfoImpl extends UserInfo {
           userName: userName,
           fullName: fullName,
           email: email,
+          phoneNumber: phoneNumber,
           created: created,
           imageUrl: imageUrl,
           scopeNames: scopeNames,
@@ -154,6 +165,7 @@ class _UserInfoImpl extends UserInfo {
     String? userName,
     Object? fullName = _Undefined,
     Object? email = _Undefined,
+    Object? phoneNumber = _Undefined,
     DateTime? created,
     Object? imageUrl = _Undefined,
     List<String>? scopeNames,
@@ -165,6 +177,7 @@ class _UserInfoImpl extends UserInfo {
       userName: userName ?? this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
+      phoneNumber: phoneNumber is String? ? phoneNumber : this.phoneNumber,
       created: created ?? this.created,
       imageUrl: imageUrl is String? ? imageUrl : this.imageUrl,
       scopeNames: scopeNames ?? this.scopeNames.clone(),
