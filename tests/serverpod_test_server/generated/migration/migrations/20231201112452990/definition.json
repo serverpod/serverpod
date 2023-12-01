@@ -1094,13 +1094,6 @@
           "isNullable": false,
           "columnDefault": null,
           "dartType": "int"
-        },
-        {
-          "name": "more",
-          "columnType": 2,
-          "isNullable": true,
-          "columnDefault": null,
-          "dartType": "int?"
         }
       ],
       "foreignKeys": [
@@ -3990,19 +3983,19 @@
     {
       "id": null,
       "module": "serverpod_test",
-      "version": "20231130122145694",
+      "version": "20231201112452990",
       "timestamp": null
     },
     {
       "id": null,
       "module": "serverpod_auth",
-      "version": "20231130122108191",
+      "version": "20231201112411302",
       "timestamp": null
     },
     {
       "id": null,
       "module": "serverpod",
-      "version": "20231130122049046",
+      "version": "20231201112348092",
       "timestamp": null
     }
   ],

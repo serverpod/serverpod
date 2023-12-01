@@ -1,33 +1,13 @@
 BEGIN;
 
 --
--- Class ChatMessage as table serverpod_chat_message
+-- Class Channel as table channel
 --
-CREATE TABLE "serverpod_chat_message" (
+CREATE TABLE "channel" (
     "id" serial PRIMARY KEY,
-    "channel" text NOT NULL,
-    "message" text NOT NULL,
-    "time" timestamp without time zone NOT NULL,
-    "sender" integer NOT NULL,
-    "removed" boolean NOT NULL,
-    "attachments" json
+    "name" text NOT NULL,
+    "channel" text NOT NULL
 );
-
--- Indexes
-CREATE INDEX "serverpod_chat_message_channel_idx" ON "serverpod_chat_message" USING btree ("channel");
-
---
--- Class ChatReadMessage as table serverpod_chat_read_message
---
-CREATE TABLE "serverpod_chat_read_message" (
-    "id" serial PRIMARY KEY,
-    "channel" text NOT NULL,
-    "userId" integer NOT NULL,
-    "lastReadMessageId" integer NOT NULL
-);
-
--- Indexes
-CREATE UNIQUE INDEX "serverpod_chat_read_message_channel_user_idx" ON "serverpod_chat_read_message" USING btree ("channel", "userId");
 
 --
 -- Class EmailAuth as table serverpod_email_auth
@@ -126,6 +106,35 @@ CREATE TABLE "serverpod_user_info" (
 -- Indexes
 CREATE UNIQUE INDEX "serverpod_user_info_user_identifier" ON "serverpod_user_info" USING btree ("userIdentifier");
 CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("email");
+
+--
+-- Class ChatMessage as table serverpod_chat_message
+--
+CREATE TABLE "serverpod_chat_message" (
+    "id" serial PRIMARY KEY,
+    "channel" text NOT NULL,
+    "message" text NOT NULL,
+    "time" timestamp without time zone NOT NULL,
+    "sender" integer NOT NULL,
+    "removed" boolean NOT NULL,
+    "attachments" json
+);
+
+-- Indexes
+CREATE INDEX "serverpod_chat_message_channel_idx" ON "serverpod_chat_message" USING btree ("channel");
+
+--
+-- Class ChatReadMessage as table serverpod_chat_read_message
+--
+CREATE TABLE "serverpod_chat_read_message" (
+    "id" serial PRIMARY KEY,
+    "channel" text NOT NULL,
+    "userId" integer NOT NULL,
+    "lastReadMessageId" integer NOT NULL
+);
+
+-- Indexes
+CREATE UNIQUE INDEX "serverpod_chat_read_message_channel_user_idx" ON "serverpod_chat_read_message" USING btree ("channel", "userId");
 
 --
 -- Class AuthKey as table serverpod_auth_key
@@ -379,28 +388,36 @@ ALTER TABLE ONLY "serverpod_query_log"
 
 
 --
--- MIGRATION VERSION FOR serverpod_chat
+-- MIGRATION VERSION FOR chat
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_chat', '20231130122126432', now())
+    VALUES ('chat', '20231201112509135', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122126432', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112509135', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20231130122108191', now())
+    VALUES ('serverpod_auth', '20231201112411302', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122108191', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112411302', "timestamp" = now();
+
+--
+-- MIGRATION VERSION FOR serverpod_chat
+--
+INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
+    VALUES ('serverpod_chat', '20231201112432644', now())
+    ON CONFLICT ("module")
+    DO UPDATE SET "version" = '20231201112432644', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20231130122049046', now())
+    VALUES ('serverpod', '20231201112348092', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122049046', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112348092', "timestamp" = now();
 
 
 COMMIT;

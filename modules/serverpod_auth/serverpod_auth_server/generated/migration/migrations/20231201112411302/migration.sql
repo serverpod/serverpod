@@ -350,28 +350,20 @@ ALTER TABLE ONLY "serverpod_query_log"
 
 
 --
--- MIGRATION VERSION FOR auth_example
---
-INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('auth_example', '20231130122216754', now())
-    ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122216754', "timestamp" = now();
-
---
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20231130122108191', now())
+    VALUES ('serverpod_auth', '20231201112411302', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122108191', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112411302', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20231130122049046', now())
+    VALUES ('serverpod', '20231201112348092', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122049046', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112348092', "timestamp" = now();
 
 
 COMMIT;

@@ -1,7 +1,7 @@
 BEGIN;
 
 --
--- ACTION CREATE TABLE
+-- Class Address as table address
 --
 CREATE TABLE "address" (
     "id" serial PRIMARY KEY,
@@ -10,7 +10,7 @@ CREATE TABLE "address" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Arena as table arena
 --
 CREATE TABLE "arena" (
     "id" serial PRIMARY KEY,
@@ -18,7 +18,7 @@ CREATE TABLE "arena" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Blocking as table blocking
 --
 CREATE TABLE "blocking" (
     "id" serial PRIMARY KEY,
@@ -30,7 +30,7 @@ CREATE TABLE "blocking" (
 CREATE UNIQUE INDEX "blocking_blocked_unique_idx" ON "blocking" USING btree ("blockedId", "blockedById");
 
 --
--- ACTION CREATE TABLE
+-- Class Cat as table cat
 --
 CREATE TABLE "cat" (
     "id" serial PRIMARY KEY,
@@ -39,7 +39,7 @@ CREATE TABLE "cat" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Citizen as table citizen
 --
 CREATE TABLE "citizen" (
     "id" serial PRIMARY KEY,
@@ -49,7 +49,7 @@ CREATE TABLE "citizen" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class City as table city
 --
 CREATE TABLE "city" (
     "id" serial PRIMARY KEY,
@@ -57,7 +57,7 @@ CREATE TABLE "city" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Comment as table comment
 --
 CREATE TABLE "comment" (
     "id" serial PRIMARY KEY,
@@ -66,7 +66,7 @@ CREATE TABLE "comment" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Company as table company
 --
 CREATE TABLE "company" (
     "id" serial PRIMARY KEY,
@@ -75,7 +75,7 @@ CREATE TABLE "company" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Course as table course
 --
 CREATE TABLE "course" (
     "id" serial PRIMARY KEY,
@@ -83,7 +83,7 @@ CREATE TABLE "course" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Customer as table customer
 --
 CREATE TABLE "customer" (
     "id" serial PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE "customer" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Enrollment as table enrollment
 --
 CREATE TABLE "enrollment" (
     "id" serial PRIMARY KEY,
@@ -103,7 +103,7 @@ CREATE TABLE "enrollment" (
 CREATE UNIQUE INDEX "enrollment_index_idx" ON "enrollment" USING btree ("studentId", "courseId");
 
 --
--- ACTION CREATE TABLE
+-- Class Member as table member
 --
 CREATE TABLE "member" (
     "id" serial PRIMARY KEY,
@@ -111,7 +111,7 @@ CREATE TABLE "member" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectFieldScopes as table object_field_scopes
 --
 CREATE TABLE "object_field_scopes" (
     "id" serial PRIMARY KEY,
@@ -120,7 +120,7 @@ CREATE TABLE "object_field_scopes" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithByteData as table object_with_bytedata
 --
 CREATE TABLE "object_with_bytedata" (
     "id" serial PRIMARY KEY,
@@ -128,7 +128,7 @@ CREATE TABLE "object_with_bytedata" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithDuration as table object_with_duration
 --
 CREATE TABLE "object_with_duration" (
     "id" serial PRIMARY KEY,
@@ -136,7 +136,7 @@ CREATE TABLE "object_with_duration" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithEnum as table object_with_enum
 --
 CREATE TABLE "object_with_enum" (
     "id" serial PRIMARY KEY,
@@ -148,7 +148,7 @@ CREATE TABLE "object_with_enum" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithIndex as table object_with_index
 --
 CREATE TABLE "object_with_index" (
     "id" serial PRIMARY KEY,
@@ -160,7 +160,7 @@ CREATE TABLE "object_with_index" (
 CREATE INDEX "object_with_index_test_index" ON "object_with_index" USING brin ("indexed", "indexed2");
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithObject as table object_with_object
 --
 CREATE TABLE "object_with_object" (
     "id" serial PRIMARY KEY,
@@ -173,16 +173,15 @@ CREATE TABLE "object_with_object" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithParent as table object_with_parent
 --
 CREATE TABLE "object_with_parent" (
     "id" serial PRIMARY KEY,
-    "other" integer NOT NULL,
-    "more" integer
+    "other" integer NOT NULL
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithSelfParent as table object_with_self_parent
 --
 CREATE TABLE "object_with_self_parent" (
     "id" serial PRIMARY KEY,
@@ -190,7 +189,7 @@ CREATE TABLE "object_with_self_parent" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class ObjectWithUuid as table object_with_uuid
 --
 CREATE TABLE "object_with_uuid" (
     "id" serial PRIMARY KEY,
@@ -199,7 +198,7 @@ CREATE TABLE "object_with_uuid" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Order as table order
 --
 CREATE TABLE "order" (
     "id" serial PRIMARY KEY,
@@ -208,7 +207,7 @@ CREATE TABLE "order" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Organization as table organization
 --
 CREATE TABLE "organization" (
     "id" serial PRIMARY KEY,
@@ -217,7 +216,7 @@ CREATE TABLE "organization" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Person as table person
 --
 CREATE TABLE "person" (
     "id" serial PRIMARY KEY,
@@ -227,7 +226,7 @@ CREATE TABLE "person" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Player as table player
 --
 CREATE TABLE "player" (
     "id" serial PRIMARY KEY,
@@ -236,7 +235,7 @@ CREATE TABLE "player" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Post as table post
 --
 CREATE TABLE "post" (
     "id" serial PRIMARY KEY,
@@ -248,7 +247,7 @@ CREATE TABLE "post" (
 CREATE UNIQUE INDEX "next_unique_idx" ON "post" USING btree ("nextId");
 
 --
--- ACTION CREATE TABLE
+-- Class RelatedUniqueData as table related_unique_data
 --
 CREATE TABLE "related_unique_data" (
     "id" serial PRIMARY KEY,
@@ -257,7 +256,7 @@ CREATE TABLE "related_unique_data" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class SimpleData as table simple_data
 --
 CREATE TABLE "simple_data" (
     "id" serial PRIMARY KEY,
@@ -265,7 +264,7 @@ CREATE TABLE "simple_data" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class SimpleDateTime as table simple_date_time
 --
 CREATE TABLE "simple_date_time" (
     "id" serial PRIMARY KEY,
@@ -273,7 +272,7 @@ CREATE TABLE "simple_date_time" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Student as table student
 --
 CREATE TABLE "student" (
     "id" serial PRIMARY KEY,
@@ -281,7 +280,7 @@ CREATE TABLE "student" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Team as table team
 --
 CREATE TABLE "team" (
     "id" serial PRIMARY KEY,
@@ -290,7 +289,7 @@ CREATE TABLE "team" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Town as table town
 --
 CREATE TABLE "town" (
     "id" serial PRIMARY KEY,
@@ -299,7 +298,7 @@ CREATE TABLE "town" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class Types as table types
 --
 CREATE TABLE "types" (
     "id" serial PRIMARY KEY,
@@ -316,7 +315,7 @@ CREATE TABLE "types" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class UniqueData as table unique_data
 --
 CREATE TABLE "unique_data" (
     "id" serial PRIMARY KEY,
@@ -328,7 +327,7 @@ CREATE TABLE "unique_data" (
 CREATE UNIQUE INDEX "email_index_idx" ON "unique_data" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailAuth as table serverpod_email_auth
 --
 CREATE TABLE "serverpod_email_auth" (
     "id" serial PRIMARY KEY,
@@ -341,7 +340,7 @@ CREATE TABLE "serverpod_email_auth" (
 CREATE UNIQUE INDEX "serverpod_email_auth_email" ON "serverpod_email_auth" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailCreateAccountRequest as table serverpod_email_create_request
 --
 CREATE TABLE "serverpod_email_create_request" (
     "id" serial PRIMARY KEY,
@@ -355,7 +354,7 @@ CREATE TABLE "serverpod_email_create_request" (
 CREATE UNIQUE INDEX "serverpod_email_auth_create_account_request_idx" ON "serverpod_email_create_request" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailFailedSignIn as table serverpod_email_failed_sign_in
 --
 CREATE TABLE "serverpod_email_failed_sign_in" (
     "id" serial PRIMARY KEY,
@@ -369,7 +368,7 @@ CREATE INDEX "serverpod_email_failed_sign_in_email_idx" ON "serverpod_email_fail
 CREATE INDEX "serverpod_email_failed_sign_in_time_idx" ON "serverpod_email_failed_sign_in" USING btree ("time");
 
 --
--- ACTION CREATE TABLE
+-- Class EmailReset as table serverpod_email_reset
 --
 CREATE TABLE "serverpod_email_reset" (
     "id" serial PRIMARY KEY,
@@ -382,7 +381,7 @@ CREATE TABLE "serverpod_email_reset" (
 CREATE UNIQUE INDEX "serverpod_email_reset_verification_idx" ON "serverpod_email_reset" USING btree ("verificationCode");
 
 --
--- ACTION CREATE TABLE
+-- Class GoogleRefreshToken as table serverpod_google_refresh_token
 --
 CREATE TABLE "serverpod_google_refresh_token" (
     "id" serial PRIMARY KEY,
@@ -394,7 +393,7 @@ CREATE TABLE "serverpod_google_refresh_token" (
 CREATE UNIQUE INDEX "serverpod_google_refresh_token_userId_idx" ON "serverpod_google_refresh_token" USING btree ("userId");
 
 --
--- ACTION CREATE TABLE
+-- Class UserImage as table serverpod_user_image
 --
 CREATE TABLE "serverpod_user_image" (
     "id" serial PRIMARY KEY,
@@ -407,7 +406,7 @@ CREATE TABLE "serverpod_user_image" (
 CREATE INDEX "serverpod_user_image_user_id" ON "serverpod_user_image" USING btree ("userId", "version");
 
 --
--- ACTION CREATE TABLE
+-- Class UserInfo as table serverpod_user_info
 --
 CREATE TABLE "serverpod_user_info" (
     "id" serial PRIMARY KEY,
@@ -426,7 +425,7 @@ CREATE UNIQUE INDEX "serverpod_user_info_user_identifier" ON "serverpod_user_inf
 CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("email");
 
 --
--- ACTION CREATE TABLE
+-- Class AuthKey as table serverpod_auth_key
 --
 CREATE TABLE "serverpod_auth_key" (
     "id" serial PRIMARY KEY,
@@ -440,7 +439,7 @@ CREATE TABLE "serverpod_auth_key" (
 CREATE INDEX "serverpod_auth_key_userId_idx" ON "serverpod_auth_key" USING btree ("userId");
 
 --
--- ACTION CREATE TABLE
+-- Class CloudStorageEntry as table serverpod_cloud_storage
 --
 CREATE TABLE "serverpod_cloud_storage" (
     "id" serial PRIMARY KEY,
@@ -457,7 +456,7 @@ CREATE UNIQUE INDEX "serverpod_cloud_storage_path_idx" ON "serverpod_cloud_stora
 CREATE INDEX "serverpod_cloud_storage_expiration" ON "serverpod_cloud_storage" USING btree ("expiration");
 
 --
--- ACTION CREATE TABLE
+-- Class CloudStorageDirectUploadEntry as table serverpod_cloud_storage_direct_upload
 --
 CREATE TABLE "serverpod_cloud_storage_direct_upload" (
     "id" serial PRIMARY KEY,
@@ -471,7 +470,7 @@ CREATE TABLE "serverpod_cloud_storage_direct_upload" (
 CREATE UNIQUE INDEX "serverpod_cloud_storage_direct_upload_storage_path" ON "serverpod_cloud_storage_direct_upload" USING btree ("storageId", "path");
 
 --
--- ACTION CREATE TABLE
+-- Class FutureCallEntry as table serverpod_future_call
 --
 CREATE TABLE "serverpod_future_call" (
     "id" serial PRIMARY KEY,
@@ -488,7 +487,7 @@ CREATE INDEX "serverpod_future_call_serverId_idx" ON "serverpod_future_call" USI
 CREATE INDEX "serverpod_future_call_identifier_idx" ON "serverpod_future_call" USING btree ("identifier");
 
 --
--- ACTION CREATE TABLE
+-- Class ServerHealthConnectionInfo as table serverpod_health_connection_info
 --
 CREATE TABLE "serverpod_health_connection_info" (
     "id" serial PRIMARY KEY,
@@ -504,7 +503,7 @@ CREATE TABLE "serverpod_health_connection_info" (
 CREATE UNIQUE INDEX "serverpod_health_connection_info_timestamp_idx" ON "serverpod_health_connection_info" USING btree ("timestamp", "serverId", "granularity");
 
 --
--- ACTION CREATE TABLE
+-- Class ServerHealthMetric as table serverpod_health_metric
 --
 CREATE TABLE "serverpod_health_metric" (
     "id" serial PRIMARY KEY,
@@ -520,7 +519,7 @@ CREATE TABLE "serverpod_health_metric" (
 CREATE UNIQUE INDEX "serverpod_health_metric_timestamp_idx" ON "serverpod_health_metric" USING btree ("timestamp", "serverId", "name", "granularity");
 
 --
--- ACTION CREATE TABLE
+-- Class LogEntry as table serverpod_log
 --
 CREATE TABLE "serverpod_log" (
     "id" serial PRIMARY KEY,
@@ -540,7 +539,7 @@ CREATE TABLE "serverpod_log" (
 CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("sessionLogId");
 
 --
--- ACTION CREATE TABLE
+-- Class MessageLogEntry as table serverpod_message_log
 --
 CREATE TABLE "serverpod_message_log" (
     "id" serial PRIMARY KEY,
@@ -557,7 +556,7 @@ CREATE TABLE "serverpod_message_log" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class MethodInfo as table serverpod_method
 --
 CREATE TABLE "serverpod_method" (
     "id" serial PRIMARY KEY,
@@ -569,7 +568,7 @@ CREATE TABLE "serverpod_method" (
 CREATE UNIQUE INDEX "serverpod_method_endpoint_method_idx" ON "serverpod_method" USING btree ("endpoint", "method");
 
 --
--- ACTION CREATE TABLE
+-- Class DatabaseMigrationVersion as table serverpod_migrations
 --
 CREATE TABLE "serverpod_migrations" (
     "id" serial PRIMARY KEY,
@@ -582,7 +581,7 @@ CREATE TABLE "serverpod_migrations" (
 CREATE UNIQUE INDEX "serverpod_migrations_ids" ON "serverpod_migrations" USING btree ("module");
 
 --
--- ACTION CREATE TABLE
+-- Class QueryLogEntry as table serverpod_query_log
 --
 CREATE TABLE "serverpod_query_log" (
     "id" serial PRIMARY KEY,
@@ -602,7 +601,7 @@ CREATE TABLE "serverpod_query_log" (
 CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USING btree ("sessionLogId");
 
 --
--- ACTION CREATE TABLE
+-- Class ReadWriteTestEntry as table serverpod_readwrite_test
 --
 CREATE TABLE "serverpod_readwrite_test" (
     "id" serial PRIMARY KEY,
@@ -610,7 +609,7 @@ CREATE TABLE "serverpod_readwrite_test" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class RuntimeSettings as table serverpod_runtime_settings
 --
 CREATE TABLE "serverpod_runtime_settings" (
     "id" serial PRIMARY KEY,
@@ -621,7 +620,7 @@ CREATE TABLE "serverpod_runtime_settings" (
 );
 
 --
--- ACTION CREATE TABLE
+-- Class SessionLogEntry as table serverpod_session_log
 --
 CREATE TABLE "serverpod_session_log" (
     "id" serial PRIMARY KEY,
@@ -646,7 +645,7 @@ CREATE INDEX "serverpod_session_log_touched_idx" ON "serverpod_session_log" USIN
 CREATE INDEX "serverpod_session_log_isopen_idx" ON "serverpod_session_log" USING btree ("isOpen");
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "address" table
 --
 ALTER TABLE ONLY "address"
     ADD CONSTRAINT "address_fk_0"
@@ -656,7 +655,7 @@ ALTER TABLE ONLY "address"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "blocking" table
 --
 ALTER TABLE ONLY "blocking"
     ADD CONSTRAINT "blocking_fk_0"
@@ -672,7 +671,7 @@ ALTER TABLE ONLY "blocking"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "cat" table
 --
 ALTER TABLE ONLY "cat"
     ADD CONSTRAINT "cat_fk_0"
@@ -682,7 +681,7 @@ ALTER TABLE ONLY "cat"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "citizen" table
 --
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
@@ -698,7 +697,7 @@ ALTER TABLE ONLY "citizen"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "comment" table
 --
 ALTER TABLE ONLY "comment"
     ADD CONSTRAINT "comment_fk_0"
@@ -708,7 +707,7 @@ ALTER TABLE ONLY "comment"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "company" table
 --
 ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
@@ -718,7 +717,7 @@ ALTER TABLE ONLY "company"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "enrollment" table
 --
 ALTER TABLE ONLY "enrollment"
     ADD CONSTRAINT "enrollment_fk_0"
@@ -734,7 +733,7 @@ ALTER TABLE ONLY "enrollment"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "object_with_parent" table
 --
 ALTER TABLE ONLY "object_with_parent"
     ADD CONSTRAINT "object_with_parent_fk_0"
@@ -744,7 +743,7 @@ ALTER TABLE ONLY "object_with_parent"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "object_with_self_parent" table
 --
 ALTER TABLE ONLY "object_with_self_parent"
     ADD CONSTRAINT "object_with_self_parent_fk_0"
@@ -754,7 +753,7 @@ ALTER TABLE ONLY "object_with_self_parent"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "order" table
 --
 ALTER TABLE ONLY "order"
     ADD CONSTRAINT "order_fk_0"
@@ -764,7 +763,7 @@ ALTER TABLE ONLY "order"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "organization" table
 --
 ALTER TABLE ONLY "organization"
     ADD CONSTRAINT "organization_fk_0"
@@ -774,7 +773,7 @@ ALTER TABLE ONLY "organization"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "person" table
 --
 ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_0"
@@ -790,7 +789,7 @@ ALTER TABLE ONLY "person"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "player" table
 --
 ALTER TABLE ONLY "player"
     ADD CONSTRAINT "player_fk_0"
@@ -800,7 +799,7 @@ ALTER TABLE ONLY "player"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "post" table
 --
 ALTER TABLE ONLY "post"
     ADD CONSTRAINT "post_fk_0"
@@ -810,7 +809,7 @@ ALTER TABLE ONLY "post"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "related_unique_data" table
 --
 ALTER TABLE ONLY "related_unique_data"
     ADD CONSTRAINT "related_unique_data_fk_0"
@@ -820,7 +819,7 @@ ALTER TABLE ONLY "related_unique_data"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "team" table
 --
 ALTER TABLE ONLY "team"
     ADD CONSTRAINT "team_fk_0"
@@ -830,7 +829,7 @@ ALTER TABLE ONLY "team"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "town" table
 --
 ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
@@ -840,7 +839,7 @@ ALTER TABLE ONLY "town"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "serverpod_log" table
 --
 ALTER TABLE ONLY "serverpod_log"
     ADD CONSTRAINT "serverpod_log_fk_0"
@@ -850,7 +849,7 @@ ALTER TABLE ONLY "serverpod_log"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "serverpod_message_log" table
 --
 ALTER TABLE ONLY "serverpod_message_log"
     ADD CONSTRAINT "serverpod_message_log_fk_0"
@@ -860,7 +859,7 @@ ALTER TABLE ONLY "serverpod_message_log"
     ON UPDATE NO ACTION;
 
 --
--- ACTION CREATE FOREIGN KEY
+-- Foreign relations for "serverpod_query_log" table
 --
 ALTER TABLE ONLY "serverpod_query_log"
     ADD CONSTRAINT "serverpod_query_log_fk_0"
@@ -874,25 +873,25 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20231130122145694', now())
+    VALUES ('serverpod_test', '20231201112452990', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122145694', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112452990', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_auth', '20231130122108191', now())
+    VALUES ('serverpod_auth', '20231201112411302', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122108191', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112411302', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod', '20231130122049046', now())
+    VALUES ('serverpod', '20231201112348092', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20231130122049046', "timestamp" = now();
+    DO UPDATE SET "version" = '20231201112348092', "timestamp" = now();
 
 
 COMMIT;

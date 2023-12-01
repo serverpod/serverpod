@@ -1186,13 +1186,6 @@
             "isNullable": false,
             "columnDefault": null,
             "dartType": "int"
-          },
-          {
-            "name": "more",
-            "columnType": 2,
-            "isNullable": true,
-            "columnDefault": null,
-            "dartType": "int?"
           }
         ],
         "foreignKeys": [
