@@ -513,7 +513,60 @@ class Restrictions {
       ];
     }
 
+    if (_isOneToOneObjectRelation(field, classDefinition) &&
+        !_hasUniqueFieldIndex(foreignKeyField, classDefinition)) {
+      return [
+        SourceSpanSeverityException(
+          'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+          span,
+        )
+      ];
+    }
+
     return [];
+  }
+
+  bool _isOneToOneObjectRelation(
+    SerializableEntityFieldDefinition? field,
+    ClassDefinition classDefinition,
+  ) {
+    if (field == null) return false;
+
+    var isLocalFieldForeignKeyOrigin =
+        field.relation?.isForeignKeyOrigin == true;
+
+    if (!isLocalFieldForeignKeyOrigin) {
+      return false;
+    }
+
+    if (field.type.isListType) return false;
+
+    var foreignFields = entityRelations?.findNamedForeignRelationFields(
+      classDefinition,
+      field,
+    );
+    if (foreignFields == null || foreignFields.isEmpty) return false;
+    if (foreignFields.any((element) => element.type.isListType)) return false;
+
+    return true;
+  }
+
+  bool _hasUniqueFieldIndex(
+    SerializableEntityFieldDefinition field,
+    ClassDefinition classDefinition,
+  ) {
+    var indexes = classDefinition.indexes;
+    if (indexes == null) return false;
+
+    var fieldIndexes =
+        indexes.where((index) => index.fields.contains(field.name)).toList();
+
+    if (fieldIndexes.isEmpty) return false;
+
+    var fieldIndexesWithUnique =
+        fieldIndexes.where((index) => index.unique).toList();
+
+    return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
 
   List<SourceSpanSeverityException> validateRelationInterdependencies(

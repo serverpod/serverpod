@@ -398,4 +398,141 @@ fields:
       expect(span?.end.column, 70 + 'parentId'.length);
     }, skip: errors.isEmpty);
   });
+
+  group(
+      'Given a class with a named object relation on both sides with foreign key field without unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a unique index on the field.',
+        () {
+      expect(
+        errors.first.message,
+        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+      );
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object relation on both sides with foreign key field in not unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a unique index on the field.',
+        () {
+      expect(
+        errors.first.message,
+        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+      );
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object relation on both sides with foreign key field in unique index with multiple fields',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId, name
+            unique: true
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a unique index on the field.',
+        () {
+      expect(
+        errors.first.message,
+        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+      );
+    }, skip: errors.isEmpty);
+  });
 }
