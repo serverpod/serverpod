@@ -239,10 +239,6 @@ void _logStartInstructions(name) {
       newParagraph: true,
     );
     log.info(
-      '.\\setup-tables.cmd',
-      type: TextLogType.command,
-    );
-    log.info(
       'docker compose up --build --detach',
       type: TextLogType.command,
     );
