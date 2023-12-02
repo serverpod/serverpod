@@ -23,7 +23,6 @@ extension DatabaseComparisons on DatabaseDefinition {
     var diff = generateDatabaseMigration(
       databaseSource: this,
       databaseTarget: other,
-      priority: -1,
     );
     return diff.isEmpty;
   }

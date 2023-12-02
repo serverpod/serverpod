@@ -9,7 +9,6 @@ class MigrationVersionBuilder {
   DatabaseMigration _migration = DatabaseMigration(
     actions: [],
     warnings: [],
-    priority: 0,
     migrationApiVersion: 0,
   );
   late DatabaseDefinition _databaseDefinition;
