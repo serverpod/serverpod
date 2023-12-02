@@ -18,6 +18,10 @@ void main() {
           previous: Post?, relation(name=next_previous_post)
           nextId: int?
           next: Post?, relation(name=next_previous_post, field=nextId)
+        indexes:
+          next_index_idx:
+            fields: nextId
+            unique: true
         ''',
       ).build(),
     ];
@@ -26,16 +30,16 @@ void main() {
     var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
-    var postDefinition = definitions.first as ClassDefinition;
-
     var errors = collector.errors;
 
     test('then no errors are collected.', () {
       expect(errors, isEmpty);
     });
 
+    var postDefinition = definitions.firstOrNull as ClassDefinition?;
+
     group('then the successor field relation', () {
-      var field = postDefinition.findField('next');
+      var field = postDefinition?.findField('next');
       var relation = field?.relation;
 
       test('name is null.', () {
@@ -69,10 +73,10 @@ void main() {
 
         expect(relation.foreignFieldName, 'id');
       });
-    });
+    }, skip: errors.isNotEmpty);
 
     group('then the predecessor field relation', () {
-      var field = postDefinition.findField('previous');
+      var field = postDefinition?.findField('previous');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -97,7 +101,7 @@ void main() {
         relation as ObjectRelationDefinition;
 
         expect(relation.fieldName, 'id');
-      });
+      }, skip: definitions.isEmpty);
 
       test(
           'has the foreign key field set to manually defined foreign key on the other side.',
@@ -106,10 +110,10 @@ void main() {
 
         expect(relation.foreignFieldName, 'nextId');
       });
-    });
+    }, skip: errors.isNotEmpty);
 
     group('then the successorId field relation', () {
-      var field = postDefinition.findField('nextId');
+      var field = postDefinition?.findField('nextId');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -135,7 +139,7 @@ void main() {
 
         expect(relation.foreignFieldName, 'id');
       });
-    });
+    }, skip: errors.isNotEmpty);
   });
 
   group(
@@ -151,6 +155,10 @@ void main() {
           successorId: int?
           successor: User?, relation(name=user_predecessor, field=successorId)
           predecessor: User?, relation(name=user_predecessor)
+        indexes:
+          successor_index_idx:
+            fields: successorId
+            unique: true
         ''',
       ).build(),
     ];
@@ -159,16 +167,16 @@ void main() {
     var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
-    var userDefinition = definitions.first as ClassDefinition;
-
     var errors = collector.errors;
 
     test('then no errors are collected.', () {
       expect(errors, isEmpty);
     });
 
+    var userDefinition = definitions.firstOrNull as ClassDefinition?;
+
     group('then the successor field relation', () {
-      var field = userDefinition.findField('successor');
+      var field = userDefinition?.findField('successor');
       var relation = field?.relation;
 
       test('name is null', () {
@@ -202,10 +210,10 @@ void main() {
 
         expect(relation.foreignFieldName, 'id');
       });
-    });
+    }, skip: errors.isNotEmpty);
 
     group('then the predecessor field relation', () {
-      var field = userDefinition.findField('predecessor');
+      var field = userDefinition?.findField('predecessor');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -239,10 +247,10 @@ void main() {
 
         expect(relation.foreignFieldName, 'successorId');
       });
-    });
+    }, skip: errors.isNotEmpty);
 
     group('then the successorId field relation', () {
-      var field = userDefinition.findField('successorId');
+      var field = userDefinition?.findField('successorId');
       var relation = field?.relation;
 
       test('name is defined', () {
@@ -268,7 +276,7 @@ void main() {
 
         expect(relation.foreignFieldName, 'id');
       });
-    });
+    }, skip: errors.isNotEmpty);
   });
 
   group(

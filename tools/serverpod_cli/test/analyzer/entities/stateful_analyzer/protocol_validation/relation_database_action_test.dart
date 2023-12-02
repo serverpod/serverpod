@@ -200,6 +200,10 @@ table: user
 fields:
   addressId: int
   address: Address?, relation(name=user_address, field=addressId)
+indexes:
+  address_index_idx:
+    fields: addressId
+    unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -260,6 +264,10 @@ table: user
 fields:
   addressId: int
   address: Address?, relation(name=user_address, field=addressId)
+indexes:
+  address_index_idx:
+    fields: addressId
+    unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(

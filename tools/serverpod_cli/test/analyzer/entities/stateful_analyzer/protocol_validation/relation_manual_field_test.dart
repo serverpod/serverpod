@@ -16,6 +16,10 @@ void main() {
         fields:
           myParentId: int
           parent: ExampleParent?, relation(field=myParentId)
+        indexes:
+          my_parent_index_idx:
+            fields: myParentId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('example_parent').withYaml(
@@ -298,6 +302,11 @@ fields:
         fields:
           parentId: int?
           parent: ExampleParent?, relation(name=example_parent, field=parentId)
+        indexes:
+          parent_index_idx:
+            fields: parentId
+            unique: true
+        
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('example_parent').withYaml(

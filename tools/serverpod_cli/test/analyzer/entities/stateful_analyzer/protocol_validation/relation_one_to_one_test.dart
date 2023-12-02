@@ -16,6 +16,10 @@ void main() {
         fields:
           addressId: int
           address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -216,6 +220,13 @@ void main() {
           address: Address?, relation(name=company_address, field=addressId)
           oldAddressId: int
           oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
+          old_address_index_idx:
+            fields: oldAddressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -259,6 +270,13 @@ void main() {
           address: Address?, relation(name=company_address, field=addressCompany)
           oldAddressId: int
           oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+        indexes:
+          address_index_idx:
+            fields: addressCompany
+            unique: true
+          old_address_index_idx:
+            fields: oldAddressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -300,6 +318,10 @@ void main() {
         fields:
           addressId: int
           address: Address?, relation(name=company_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -309,6 +331,10 @@ void main() {
         fields:
           addressCompanyId: int
           addressCompany: Company?, relation(name=company_address, field=addressCompanyId)
+        indexes:
+          address_company_index_idx:
+            fields: addressCompanyId
+            unique: true
         ''',
       ).build(),
     ];
@@ -343,7 +369,12 @@ void main() {
         class: User
         table: user
         fields:
-          address: Address?, relation(name=user_address)
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
