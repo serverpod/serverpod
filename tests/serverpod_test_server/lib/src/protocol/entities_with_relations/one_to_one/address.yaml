@@ -4,3 +4,7 @@ fields:
   street: String
   inhabitantId: int?
   inhabitant: Citizen?, relation(name=citizen_address, field=inhabitantId, onDelete=Cascade)
+indexes:
+  inhabitant_index_idx:
+    fields: inhabitantId
+    unique: true
