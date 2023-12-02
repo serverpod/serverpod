@@ -63,6 +63,20 @@
             "isUnique": true,
             "isPrimary": true,
             "predicate": null
+          },
+          {
+            "indexName": "inhabitant_index_idx",
+            "tableSpace": null,
+            "elements": [
+              {
+                "type": 0,
+                "definition": "inhabitantId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false,
+            "predicate": null
           }
         ],
         "managed": true
@@ -1980,6 +1994,20 @@
             "type": "btree",
             "isUnique": true,
             "isPrimary": true,
+            "predicate": null
+          },
+          {
+            "indexName": "arena_index_idx",
+            "tableSpace": null,
+            "elements": [
+              {
+                "type": 0,
+                "definition": "arenaId"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": false,
             "predicate": null
           }
         ],

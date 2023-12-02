@@ -61,6 +61,20 @@
           "isUnique": true,
           "isPrimary": true,
           "predicate": null
+        },
+        {
+          "indexName": "inhabitant_index_idx",
+          "tableSpace": null,
+          "elements": [
+            {
+              "type": 0,
+              "definition": "inhabitantId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false,
+          "predicate": null
         }
       ],
       "managed": true
@@ -1828,6 +1842,20 @@
           "type": "btree",
           "isUnique": true,
           "isPrimary": true,
+          "predicate": null
+        },
+        {
+          "indexName": "arena_index_idx",
+          "tableSpace": null,
+          "elements": [
+            {
+              "type": 0,
+              "definition": "arenaId"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": false,
           "predicate": null
         }
       ],
@@ -3982,19 +4010,25 @@
     {
       "id": null,
       "module": "serverpod_test",
-      "version": "20231201112821617",
+      "version": "20231202120948541",
       "timestamp": null
     },
     {
       "id": null,
       "module": "serverpod_auth",
-      "version": "20231201112742518",
+      "version": "20231202120936381",
       "timestamp": null
     },
     {
       "id": null,
       "module": "serverpod",
-      "version": "20231201112723288",
+      "version": "20231202120932276",
+      "timestamp": null
+    },
+    {
+      "id": null,
+      "module": "serverpod_test_module",
+      "version": "20231202120944481",
       "timestamp": null
     }
   ],
