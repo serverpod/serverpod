@@ -2,36 +2,20 @@
 
 [Serverpod](https://serverpod.dev) is a next-generation app and web server, built for the Flutter community. It allows you to write your server-side code in Dart, automatically generate your APIs, and hook up your database with minimal effort. Serverpod is open-source, and you can host your server anywhere.
 
-## Features
+## Key features
 
-TODO: write a feature list, and include some animation before we publish it as an extension...
+Syntax highlighting in protocol files,
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+![Syntax highlighting](assets/images/syntax-highlighting.png)
 
-For example if there is an image subfolder under your extension project workspace:
+Real-time diagnostics show errors in protocol files as you type.
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![Diagnostics](assets/images/diagnostics.gif)
 
 ## Requirements
 
-You need the serverpod CLI installed in your path for this extension to work. Run the following command in your terminal to install it:
+You need the Serverpod (^1.2.0) CLI installed in your path for this extension to work. Run the following command in your terminal to install it:
 
 `dart pub global activate serverpod_cli`
 
-Note: The serverpod CLI requires both [dart and flutter](https://docs.flutter.dev/get-started/install.) to be installed.
-
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
----
+Note: The Serverpod CLI requires both [Dart and Flutter](https://docs.flutter.dev/get-started/install.) to be installed.
