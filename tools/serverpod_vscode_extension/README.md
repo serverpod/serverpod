@@ -10,9 +10,7 @@ Syntax highlighting in protocol files.
 
 Real-time diagnostics show errors in protocol files as you type.
 
-<video>
-  <source src="assets/videos/diagnostics.mov" type="video/mp4">
-</video>
+![Diagnostics](assets/videos/diagnostics.mov)
 
 ## Requirements
 
