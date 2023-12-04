@@ -6,7 +6,7 @@
 
 Syntax highlighting in protocol files,
 
-![Syntax highlighting](assets/images/syntax-highlighting.png)
+![Syntax highlighting](assets/images/syntax-highlighting2.png)
 
 Real-time diagnostics show errors in protocol files as you type.
 
