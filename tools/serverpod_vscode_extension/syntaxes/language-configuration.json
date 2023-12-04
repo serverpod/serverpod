@@ -1,6 +1,10 @@
 {
   "comments": {
-    "lineComment": "#"
+    "lineComment": "#",
+    "docComment": [
+      "###",
+      "###"
+    ]
   },
   "brackets": [
     [
