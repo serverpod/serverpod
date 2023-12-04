@@ -19,7 +19,10 @@ import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(String path) {
-  return p.basenameWithoutExtension(path);
+  for (var ext in protocolFileExtensions) {
+    path = p.split(path).last.replaceAll(ext, '');
+  }
+  return path;
 }
 
 /// Used to analyze a singe yaml protocol file.
