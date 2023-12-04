@@ -45,7 +45,7 @@ class MigrationRepairTargetNotFoundException implements Exception {
   final List<String> versionsFound;
 
   /// The name of the target that was not found.
-  final String targetName;
+  final String? targetName;
 
   /// Creates a new [MigrationRepairTargetNotFoundException].
   MigrationRepairTargetNotFoundException({
