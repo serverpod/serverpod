@@ -211,18 +211,18 @@ abstract class ObjectWithParent extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectWithParentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithParentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithParentTable>? orderByList,
     ObjectWithParentInclude? include,
   }) {
     return ObjectWithParentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectWithParent.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectWithParent.t),
       include: include,
     );
   }

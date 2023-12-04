@@ -257,18 +257,18 @@ abstract class Team extends _i1.TableRow {
     _i1.WhereExpressionBuilder<TeamTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<TeamTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<TeamTable>? orderByList,
     TeamInclude? include,
   }) {
     return TeamIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Team.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Team.t),
       include: include,
     );
   }

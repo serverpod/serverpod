@@ -213,18 +213,18 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
   }) {
     return ObjectWithByteDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectWithByteData.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectWithByteData.t),
       include: include,
     );
   }

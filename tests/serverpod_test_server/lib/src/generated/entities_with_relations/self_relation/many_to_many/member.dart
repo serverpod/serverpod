@@ -244,18 +244,18 @@ abstract class Member extends _i1.TableRow {
     _i1.WhereExpressionBuilder<MemberTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<MemberTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<MemberTable>? orderByList,
     MemberInclude? include,
   }) {
     return MemberIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Member.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Member.t),
       include: include,
     );
   }

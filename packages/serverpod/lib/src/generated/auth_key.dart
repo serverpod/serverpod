@@ -265,18 +265,18 @@ abstract class AuthKey extends _i1.TableRow {
     _i1.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
   }) {
     return AuthKeyIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(AuthKey.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(AuthKey.t),
       include: include,
     );
   }

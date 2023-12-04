@@ -317,18 +317,18 @@ abstract class UserInfo extends _i1.TableRow {
     _i1.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<UserInfoTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
     UserInfoInclude? include,
   }) {
     return UserInfoIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(UserInfo.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(UserInfo.t),
       include: include,
     );
   }

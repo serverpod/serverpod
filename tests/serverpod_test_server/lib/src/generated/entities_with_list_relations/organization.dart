@@ -257,18 +257,18 @@ abstract class Organization extends _i1.TableRow {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<OrganizationTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
   }) {
     return OrganizationIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Organization.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Organization.t),
       include: include,
     );
   }

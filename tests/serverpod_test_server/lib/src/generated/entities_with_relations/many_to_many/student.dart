@@ -229,18 +229,18 @@ abstract class Student extends _i1.TableRow {
     _i1.WhereExpressionBuilder<StudentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<StudentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<StudentTable>? orderByList,
     StudentInclude? include,
   }) {
     return StudentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Student.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Student.t),
       include: include,
     );
   }

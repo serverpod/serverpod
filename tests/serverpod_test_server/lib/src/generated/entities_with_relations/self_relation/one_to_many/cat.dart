@@ -257,18 +257,18 @@ abstract class Cat extends _i1.TableRow {
     _i1.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CatTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
   }) {
     return CatIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Cat.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Cat.t),
       include: include,
     );
   }

@@ -249,18 +249,18 @@ abstract class Person extends _i1.TableRow {
     _i1.WhereExpressionBuilder<PersonTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<PersonTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
   }) {
     return PersonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Person.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Person.t),
       include: include,
     );
   }

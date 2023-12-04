@@ -242,18 +242,18 @@ abstract class Company extends _i1.TableRow {
     _i1.WhereExpressionBuilder<CompanyTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CompanyTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CompanyTable>? orderByList,
     CompanyInclude? include,
   }) {
     return CompanyIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Company.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Company.t),
       include: include,
     );
   }
