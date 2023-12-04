@@ -18,4 +18,4 @@ You need the Serverpod (^1.2.0) CLI installed in your path for this extension to
 
 `dart pub global activate serverpod_cli`
 
-Note: The Serverpod CLI requires both [Dart and Flutter](https://docs.flutter.dev/get-started/install.) to be installed.
+Note: The Serverpod CLI requires both [Dart and Flutter](https://docs.flutter.dev/get-started/install) to be installed.
