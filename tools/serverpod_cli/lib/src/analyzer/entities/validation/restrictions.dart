@@ -513,7 +513,50 @@ class Restrictions {
       ];
     }
 
+    var isLocalFieldForeignKeyOrigin =
+        field?.relation?.isForeignKeyOrigin == true;
+
+    if (isLocalFieldForeignKeyOrigin &&
+        _isOneToOneObjectRelation(field, classDefinition) &&
+        !_hasUniqueFieldIndex(foreignKeyField)) {
+      return [
+        SourceSpanSeverityException(
+          'The field "${foreignKeyField.name}" does not have a unique index which is required to be used in a one-to-one relation.',
+          span,
+        )
+      ];
+    }
+
     return [];
+  }
+
+  bool _isOneToOneObjectRelation(
+    SerializableEntityFieldDefinition? field,
+    ClassDefinition classDefinition,
+  ) {
+    if (field == null) return false;
+
+    if (field.type.isListType) return false;
+
+    var foreignFields = entityRelations?.findNamedForeignRelationFields(
+      classDefinition,
+      field,
+    );
+
+    if (foreignFields == null || foreignFields.isEmpty) return false;
+    if (foreignFields.any((element) => element.type.isListType)) return false;
+
+    return true;
+  }
+
+  bool _hasUniqueFieldIndex(
+    SerializableEntityFieldDefinition? field,
+  ) {
+    if (field == null) return false;
+
+    var fieldIndexesWithUnique = field.indexes.where((index) => index.unique);
+
+    return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
 
   List<SourceSpanSeverityException> validateRelationInterdependencies(
@@ -822,6 +865,19 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          span,
+        )
+      ];
+    }
+
+    var isLocalFieldForeignKeyOrigin =
+        field.relation?.isForeignKeyOrigin == true;
+    if (!isLocalFieldForeignKeyOrigin &&
+        _isOneToOneObjectRelation(field, classDefinition) &&
+        !_hasUniqueFieldIndex(foreignFields.first)) {
+      return [
+        SourceSpanSeverityException(
+          'The referenced field "${foreignFields.first.name}" does not have a unique index which is required to be used in a one-to-one relation.',
           span,
         )
       ];

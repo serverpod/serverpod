@@ -339,13 +339,13 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      expect(index!.name, 'example_index');
+      var index = definition.indexes.first;
+      expect(index.name, 'example_index');
     },
   );
 
-  test(
-    'Given a class with an index with a defined field, then the definition contains the fields of the index.',
+  group(
+    'Given a class with an index with a defined field',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -364,17 +364,31 @@ void main() {
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      var field = index?.fields.first;
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
 
-      expect(field, 'name');
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      test('then the index definition contains the fields of the index.', () {
+        var index = definition?.indexes.first;
+        var field = index?.fields.first;
+        expect(field, 'name');
+      }, skip: errors.isNotEmpty);
+
+      test('then the field definition contains index.', () {
+        var field =
+            definition?.fields.firstWhere((field) => field.name == 'name');
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, 'example_index');
+      }, skip: errors.isNotEmpty);
     },
   );
 
-  test(
-    'Given a class with an index with two defined fields, then the definition contains the fields of the index.',
+  group(
+    'Given a class with an index with two defined fields',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -394,14 +408,42 @@ void main() {
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      var field1 = index?.fields.first;
-      var field2 = index?.fields.last;
+      var errors = collector.errors;
+      test('then no errors are collected.', () {
+        expect(errors, isEmpty);
+      });
 
-      expect(field1, 'name');
-      expect(field2, 'foo');
+      var definition = definitions.firstOrNull as ClassDefinition?;
+      test('then index definition contains the first field.', () {
+        var index = definition?.indexes.first;
+        var indexFields = index?.fields;
+
+        expect(indexFields, contains('name'));
+      });
+
+      test('then index definition contains the second field.', () {
+        var index = definition?.indexes.first;
+        var indexFields = index?.fields;
+
+        expect(indexFields, contains('foo'));
+      });
+
+      test('then first field definition contains index.', () {
+        var field =
+            definition?.fields.firstWhere((field) => field.name == 'name');
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, 'example_index');
+      });
+
+      test('then second field definition contains index.', () {
+        var field =
+            definition?.fields.firstWhere((field) => field.name == 'foo');
+        var index = field?.indexes.firstOrNull;
+
+        expect(index?.name, 'example_index');
+      });
     },
   );
 
@@ -430,11 +472,11 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index1 = definition.indexes?.first;
-      var index2 = definition.indexes?.last;
+      var index1 = definition.indexes.first;
+      var index2 = definition.indexes.last;
 
-      expect(index1!.name, 'example_index');
-      expect(index2!.name, 'example_index2');
+      expect(index1.name, 'example_index');
+      expect(index2.name, 'example_index2');
     },
   );
 
@@ -492,8 +534,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, false);
+    var index = definition.indexes.first;
+    expect(index.unique, false);
   });
 
   test(
@@ -519,8 +561,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, false);
+    var index = definition.indexes.first;
+    expect(index.unique, false);
   });
 
   test(
@@ -546,8 +588,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, true);
+    var index = definition.indexes.first;
+    expect(index.unique, true);
   });
 
   test(
@@ -670,9 +712,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        var index = definition.indexes?.first;
+        var index = definition.indexes.first;
 
-        expect(index?.type, indexType);
+        expect(index.type, indexType);
       });
     }
 
@@ -699,9 +741,9 @@ void main() {
 
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
+      var index = definition.indexes.first;
 
-      expect(index?.type, 'btree');
+      expect(index.type, 'btree');
     });
 
     test(

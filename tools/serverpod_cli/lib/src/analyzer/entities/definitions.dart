@@ -44,7 +44,7 @@ class ClassDefinition extends SerializableEntityDefinition {
   /// this class.
   ///
   /// The index over the primary key `id` is not part of this list.
-  final List<SerializableEntityIndexDefinition>? indexes;
+  final List<SerializableEntityIndexDefinition> indexes;
 
   /// The documentation of this class, line by line.
   final List<String>? documentation;
@@ -61,7 +61,7 @@ class ClassDefinition extends SerializableEntityDefinition {
     required super.serverOnly,
     required this.isException,
     this.tableName,
-    this.indexes,
+    this.indexes = const [],
     super.subDirParts,
     this.documentation,
   });
@@ -105,6 +105,9 @@ class SerializableEntityFieldDefinition {
 
   /// The documentation of this field, line by line.
   final List<String>? documentation;
+
+  /// Indexes that this field is part of.
+  List<SerializableEntityIndexDefinition> indexes = [];
 
   /// Create a new [SerializableEntityFieldDefinition].
   SerializableEntityFieldDefinition({
