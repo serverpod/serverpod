@@ -58,7 +58,6 @@ class EntityRelations {
     for (var entity in entities) {
       if (entity is ClassDefinition) {
         var indexes = entity.indexes;
-        if (indexes == null) continue;
 
         for (var index in indexes) {
           indexNames.update(

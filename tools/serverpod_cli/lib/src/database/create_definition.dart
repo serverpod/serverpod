@@ -45,8 +45,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
               isUnique: true,
               isPrimary: true,
             ),
-            for (var index in classDefinition.indexes ??
-                <SerializableEntityIndexDefinition>[])
+            for (var index in classDefinition.indexes)
               IndexDefinition(
                 indexName: index.name,
                 elements: [

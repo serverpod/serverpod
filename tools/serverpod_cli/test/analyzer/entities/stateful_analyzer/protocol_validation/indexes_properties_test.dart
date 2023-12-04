@@ -339,8 +339,8 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      expect(index!.name, 'example_index');
+      var index = definition.indexes.first;
+      expect(index.name, 'example_index');
     },
   );
 
@@ -366,8 +366,8 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      var field = index?.fields.first;
+      var index = definition.indexes.first;
+      var field = index.fields.first;
 
       expect(field, 'name');
     },
@@ -396,9 +396,9 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
-      var field1 = index?.fields.first;
-      var field2 = index?.fields.last;
+      var index = definition.indexes.first;
+      var field1 = index.fields.first;
+      var field2 = index.fields.last;
 
       expect(field1, 'name');
       expect(field2, 'foo');
@@ -430,11 +430,11 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      var index1 = definition.indexes?.first;
-      var index2 = definition.indexes?.last;
+      var index1 = definition.indexes.first;
+      var index2 = definition.indexes.last;
 
-      expect(index1!.name, 'example_index');
-      expect(index2!.name, 'example_index2');
+      expect(index1.name, 'example_index');
+      expect(index2.name, 'example_index2');
     },
   );
 
@@ -492,8 +492,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, false);
+    var index = definition.indexes.first;
+    expect(index.unique, false);
   });
 
   test(
@@ -519,8 +519,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, false);
+    var index = definition.indexes.first;
+    expect(index.unique, false);
   });
 
   test(
@@ -546,8 +546,8 @@ void main() {
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
-    var index = definition.indexes?.first;
-    expect(index!.unique, true);
+    var index = definition.indexes.first;
+    expect(index.unique, true);
   });
 
   test(
@@ -670,9 +670,9 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        var index = definition.indexes?.first;
+        var index = definition.indexes.first;
 
-        expect(index?.type, indexType);
+        expect(index.type, indexType);
       });
     }
 
@@ -699,9 +699,9 @@ void main() {
 
       var definition = definitions.first as ClassDefinition;
 
-      var index = definition.indexes?.first;
+      var index = definition.indexes.first;
 
-      expect(index?.type, 'btree');
+      expect(index.type, 'btree');
     });
 
     test(
