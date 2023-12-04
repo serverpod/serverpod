@@ -80,16 +80,18 @@ class SerializableEntityLibraryGenerator {
             _buildDeprecatedStaticTableInstance(
               className,
             ),
-            _buildEntityIncludeClass(
-              className,
-              fields,
-              classDefinition,
-            ),
-            _buildEntityIncludeListClass(
-              className,
-              fields,
-              classDefinition,
-            ),
+            if (tableName != null)
+              _buildEntityIncludeClass(
+                className,
+                fields,
+                classDefinition,
+              ),
+            if (tableName != null)
+              _buildEntityIncludeListClass(
+                className,
+                fields,
+                classDefinition,
+              ),
             buildRepository.buildEntityRepositoryClass(
               className,
               fields,

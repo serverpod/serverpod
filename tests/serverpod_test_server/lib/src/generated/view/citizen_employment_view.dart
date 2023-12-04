@@ -251,36 +251,6 @@ class CitizenEmploymentViewTable extends _i1.Table {
 CitizenEmploymentViewTable tCitizenEmploymentView =
     CitizenEmploymentViewTable();
 
-class CitizenEmploymentViewInclude extends _i1.IncludeObject {
-  CitizenEmploymentViewInclude._();
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
-
-  @override
-  _i1.Table get table => CitizenEmploymentView.t;
-}
-
-class CitizenEmploymentViewIncludeList extends _i1.IncludeList {
-  CitizenEmploymentViewIncludeList._({
-    _i1.WhereExpressionBuilder<CitizenEmploymentViewTable>? where,
-    super.limit,
-    super.offset,
-    super.orderBy,
-    super.orderDescending,
-    super.orderByList,
-    super.include,
-  }) {
-    super.where = where?.call(CitizenEmploymentView.t);
-  }
-
-  @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
-
-  @override
-  _i1.Table get table => CitizenEmploymentView.t;
-}
-
 class CitizenEmploymentViewRepository {
   const CitizenEmploymentViewRepository._();
 
