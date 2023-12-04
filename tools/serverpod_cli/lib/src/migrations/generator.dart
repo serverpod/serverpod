@@ -157,6 +157,8 @@ class MigrationGenerator {
     var migrationVersion =
         targetMigrationVersion ?? _getLatestMigrationVersion();
 
+    _validateRepairMigrationVersion(migrationVersion);
+
     DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
       projectName,
       migrationVersion,
@@ -215,6 +217,20 @@ class MigrationGenerator {
       installedModules,
       removedModules,
     );
+  }
+
+  void _validateRepairMigrationVersion(String? migrationVersion) {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+
+    if (migrationVersion == null ||
+        !migrationRegistry.versions.contains(migrationVersion)) {
+      throw MigrationRepairTargetNotFoundException(
+        targetName: migrationVersion,
+        versionsFound: migrationRegistry.versions,
+      );
+    }
   }
 
   List<DatabaseMigrationVersion> _removedModulesDiff(
