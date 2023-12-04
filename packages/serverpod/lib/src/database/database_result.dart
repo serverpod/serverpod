@@ -9,6 +9,9 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Include? include,
   bool viewTable = false,
 }) {
+  assert(!viewTable || (viewTable && rawRow.containsKey('')),
+      'Invalid rawRow for viewTable=true');
+
   // Resolve this object.
   var rawTableRow = viewTable ? rawRow[''] : rawRow[table.tableName];
   if (rawTableRow == null) return null;
