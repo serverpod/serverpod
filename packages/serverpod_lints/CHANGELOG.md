@@ -1,3 +1,6 @@
+## 1.2.0-rc.1
+- Preview of 1.2.0
+
 ## 1.1.0
 - feat: Lightweight run mode and support for serverless platforms.
 - feat: Support for Google Cloud Platform deployments, including Terraform module.
