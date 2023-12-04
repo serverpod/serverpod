@@ -1,14 +1,14 @@
 {
   "name": "serverpod",
   "displayName": "Serverpod",
-  "publisher": "serverpod",
-  "description": "",
-  "icon": "/assets/icon.png",
+  "publisher": "Serverpod",
+  "description": "Serverpod for VS code, manage your projects and get code feedback in real time.",
+  "icon": "assets/icons/icon.png",
   "galleryBanner": {
-    "color": "#C80000",
+    "color": "#020E24",
     "theme": "dark"
   },
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -17,7 +17,8 @@
     "Linters"
   ],
   "activationEvents": [
-    "onLanguage:yaml"
+    "onLanguage:yaml",
+    "activationEvents:serverpod"
   ],
   "pricing": "Free",
   "homepage": "https://serverpod.dev",
@@ -35,13 +36,19 @@
       {
         "id": "serverpod",
         "aliases": [
-          "Serverpod Protocol",
-          "SP"
+          "Serverpod yaml",
+          "Spy"
         ],
         "extensions": [
-          ".sp.yaml"
+          ".spy.yaml",
+          ".spy.yml",
+          ".spy"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/language-configuration.json",
+        "icon": {
+          "light": "./assets/icons/icon.png",
+          "dark": "./assets/icons/icon.png"
+        }
       }
     ],
     "grammars": [
