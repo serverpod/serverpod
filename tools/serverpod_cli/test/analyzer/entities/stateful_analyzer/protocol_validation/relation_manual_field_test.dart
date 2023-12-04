@@ -446,7 +446,7 @@ fields:
         () {
       expect(
         errors.first.message,
-        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+        'The field "addressId" does not have a unique index which is required to be used in a one-to-one relation.',
       );
     }, skip: errors.isEmpty);
   });
@@ -492,7 +492,7 @@ fields:
         () {
       expect(
         errors.first.message,
-        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+        'The field "addressId" does not have a unique index which is required to be used in a one-to-one relation.',
       );
     }, skip: errors.isEmpty);
   });
@@ -540,7 +540,7 @@ fields:
         () {
       expect(
         errors.first.message,
-        'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+        'The field "addressId" does not have a unique index which is required to be used in a one-to-one relation.',
       );
     }, skip: errors.isEmpty);
   });

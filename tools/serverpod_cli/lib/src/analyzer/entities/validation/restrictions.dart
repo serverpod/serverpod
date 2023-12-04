@@ -513,11 +513,15 @@ class Restrictions {
       ];
     }
 
-    if (_isOneToOneObjectRelation(field, classDefinition) &&
-        !_hasUniqueFieldIndex(foreignKeyField, classDefinition)) {
+    var isLocalFieldForeignKeyOrigin =
+        field?.relation?.isForeignKeyOrigin == true;
+
+    if (isLocalFieldForeignKeyOrigin &&
+        _isOneToOneObjectRelation(field, classDefinition) &&
+        !_hasUniqueFieldIndex(foreignKeyField)) {
       return [
         SourceSpanSeverityException(
-          'The field referenced does not have a unique index which is required to be used in a one-to-one relation.',
+          'The field "${foreignKeyField.name}" does not have a unique index which is required to be used in a one-to-one relation.',
           span,
         )
       ];
@@ -532,19 +536,13 @@ class Restrictions {
   ) {
     if (field == null) return false;
 
-    var isLocalFieldForeignKeyOrigin =
-        field.relation?.isForeignKeyOrigin == true;
-
-    if (!isLocalFieldForeignKeyOrigin) {
-      return false;
-    }
-
     if (field.type.isListType) return false;
 
     var foreignFields = entityRelations?.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
+
     if (foreignFields == null || foreignFields.isEmpty) return false;
     if (foreignFields.any((element) => element.type.isListType)) return false;
 
@@ -552,19 +550,12 @@ class Restrictions {
   }
 
   bool _hasUniqueFieldIndex(
-    SerializableEntityFieldDefinition field,
-    ClassDefinition classDefinition,
+    SerializableEntityFieldDefinition? field,
   ) {
-    var indexes = classDefinition.indexes;
-    if (indexes == null) return false;
-
-    var fieldIndexes =
-        indexes.where((index) => index.fields.contains(field.name)).toList();
-
-    if (fieldIndexes.isEmpty) return false;
+    if (field == null) return false;
 
     var fieldIndexesWithUnique =
-        fieldIndexes.where((index) => index.unique).toList();
+        field.indexes.where((index) => index.unique).toList();
 
     return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
@@ -875,6 +866,19 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          span,
+        )
+      ];
+    }
+
+    var isLocalFieldForeignKeyOrigin =
+        field.relation?.isForeignKeyOrigin == true;
+    if (!isLocalFieldForeignKeyOrigin &&
+        _isOneToOneObjectRelation(field, classDefinition) &&
+        !_hasUniqueFieldIndex(foreignFields.first)) {
+      return [
+        SourceSpanSeverityException(
+          'The referenced field "${foreignFields.first.name}" does not have a unique index which is required to be used in a one-to-one relation.',
           span,
         )
       ];

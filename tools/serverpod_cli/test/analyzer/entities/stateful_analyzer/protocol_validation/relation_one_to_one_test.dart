@@ -355,4 +355,85 @@ void main() {
       );
     }, skip: errors.isEmpty);
   });
+
+  group(
+      'Given a class with a named object relation to a foreign id relation field that has unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          userId: int, relation(parent=user, name=user_address)
+        indexes:
+          user_id_index_idx:
+            fields: userId
+            unique: true
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then no error is collected.', () {
+      expect(errors, isEmpty);
+    });
+  });
+
+  group(
+      'Given a class with a named object relation to a foreign id relation field that does not have unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          userId: int, relation(parent=user, name=user_address)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a unique index on the foreign field.',
+        () {
+      expect(
+        errors.first.message,
+        'The referenced field "userId" does not have a unique index which is required to be used in a one-to-one relation.',
+      );
+    }, skip: errors.isEmpty);
+  });
 }
