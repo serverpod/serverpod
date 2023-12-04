@@ -106,6 +106,9 @@ class SerializableEntityFieldDefinition {
   /// The documentation of this field, line by line.
   final List<String>? documentation;
 
+  /// Indexes that this field is part of.
+  List<SerializableEntityIndexDefinition> indexes = [];
+
   /// Create a new [SerializableEntityFieldDefinition].
   SerializableEntityFieldDefinition({
     required this.name,
