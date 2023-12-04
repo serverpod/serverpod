@@ -554,8 +554,7 @@ class Restrictions {
   ) {
     if (field == null) return false;
 
-    var fieldIndexesWithUnique =
-        field.indexes.where((index) => index.unique).toList();
+    var fieldIndexesWithUnique = field.indexes.where((index) => index.unique);
 
     return fieldIndexesWithUnique.any((index) => index.fields.length == 1);
   }
