@@ -269,18 +269,18 @@ abstract class FutureCallEntry extends _i1.TableRow {
     _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
   }) {
     return FutureCallEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(FutureCallEntry.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
     );
   }

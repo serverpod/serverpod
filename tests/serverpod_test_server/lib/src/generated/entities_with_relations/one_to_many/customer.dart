@@ -229,18 +229,18 @@ abstract class Customer extends _i1.TableRow {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CustomerTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
     return CustomerIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Customer.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Customer.t),
       include: include,
     );
   }
