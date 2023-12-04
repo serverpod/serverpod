@@ -141,7 +141,7 @@ class StatefulAnalyzer {
       }
 
       _onErrorsChangedNotifier?.call(
-        Uri.file(state.source.yamlSourceUri.path),
+        state.source.yamlSourceUri,
         collector,
       );
     }
