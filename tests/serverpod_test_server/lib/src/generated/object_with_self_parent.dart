@@ -211,18 +211,18 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithSelfParentTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     ObjectWithSelfParentInclude? include,
   }) {
     return ObjectWithSelfParentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectWithSelfParent.t),
       include: include,
     );
   }

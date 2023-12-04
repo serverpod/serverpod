@@ -232,18 +232,18 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
   }) {
     return ObjectFieldScopesIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
       include: include,
     );
   }

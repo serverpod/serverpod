@@ -286,18 +286,18 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
   }) {
     return ServerHealthConnectionInfoIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       include: include,
     );
   }

@@ -242,18 +242,18 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
     _i1.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
   }) {
     return DatabaseMigrationVersionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       include: include,
     );
   }

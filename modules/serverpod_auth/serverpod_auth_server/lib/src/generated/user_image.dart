@@ -241,18 +241,18 @@ abstract class UserImage extends _i1.TableRow {
     _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
     UserImageInclude? include,
   }) {
     return UserImageIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(UserImage.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(UserImage.t),
       include: include,
     );
   }

@@ -258,18 +258,18 @@ abstract class RuntimeSettings extends _i1.TableRow {
     _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
     return RuntimeSettingsIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(RuntimeSettings.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
     );
   }

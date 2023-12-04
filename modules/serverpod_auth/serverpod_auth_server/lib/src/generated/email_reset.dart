@@ -242,18 +242,18 @@ abstract class EmailReset extends _i1.TableRow {
     _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
   }) {
     return EmailResetIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(EmailReset.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(EmailReset.t),
       include: include,
     );
   }

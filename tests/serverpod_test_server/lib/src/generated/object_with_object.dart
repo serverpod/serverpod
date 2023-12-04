@@ -280,18 +280,18 @@ abstract class ObjectWithObject extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
   }) {
     return ObjectWithObjectIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectWithObject.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectWithObject.t),
       include: include,
     );
   }

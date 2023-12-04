@@ -227,18 +227,18 @@ abstract class Channel extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ChannelTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ChannelTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ChannelTable>? orderByList,
     ChannelInclude? include,
   }) {
     return ChannelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Channel.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Channel.t),
       include: include,
     );
   }

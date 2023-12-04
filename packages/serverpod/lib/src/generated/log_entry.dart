@@ -340,18 +340,18 @@ abstract class LogEntry extends _i1.TableRow {
     _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<LogEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
   }) {
     return LogEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(LogEntry.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(LogEntry.t),
       include: include,
     );
   }

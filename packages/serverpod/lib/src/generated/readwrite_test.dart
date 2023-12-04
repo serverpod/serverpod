@@ -215,18 +215,18 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
   }) {
     return ReadWriteTestEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
       include: include,
     );
   }
