@@ -4,9 +4,9 @@
 
 ## Key features
 
-Syntax highlighting in protocol files,
+Syntax highlighting in protocol files.
 
-![Syntax highlighting](assets/images/syntax-highlighting2.png)
+![Syntax highlighting](assets/images/syntax-highlighting.png)
 
 Real-time diagnostics show errors in protocol files as you type.
 
