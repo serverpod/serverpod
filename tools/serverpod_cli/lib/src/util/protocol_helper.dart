@@ -11,6 +11,14 @@ class ProtocolSource {
   ProtocolSource(this.yaml, this.yamlSourceUri, this.protocolRootPathParts);
 }
 
+const protocolFileExtensions = [
+  '.yaml',
+  '.yml',
+  '.spy',
+  '.spy.yaml',
+  '.spy.yml',
+];
+
 class ProtocolHelper {
   static Future<List<ProtocolSource>> loadProjectYamlProtocolsFromDisk(
     GeneratorConfig config,
@@ -22,9 +30,8 @@ class ProtocolHelper {
     // are in the same order. Move this logic to the code generator instead.
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
-    var files = sourceFileList
-        .where((entity) => entity is File && entity.path.endsWith('.yaml'))
-        .cast<File>();
+    var files = sourceFileList.whereType<File>().where(
+        (file) => protocolFileExtensions.any((ext) => file.path.endsWith(ext)));
 
     List<ProtocolSource> sources = [];
     for (var entity in files) {

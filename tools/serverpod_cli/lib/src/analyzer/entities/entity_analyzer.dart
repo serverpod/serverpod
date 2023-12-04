@@ -10,7 +10,6 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
-import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
@@ -18,8 +17,13 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 
-String _transformFileNameWithoutPathOrExtension(String path) {
-  return p.basenameWithoutExtension(path);
+String _transformFileNameWithoutPathOrExtension(Uri path) {
+  var fileName = path.pathSegments.last;
+
+  for (var ext in protocolFileExtensions) {
+    fileName = fileName.replaceAll(ext, '');
+  }
+  return fileName;
 }
 
 /// Used to analyze a singe yaml protocol file.
@@ -35,7 +39,7 @@ class SerializableEntityAnalyzer {
     ProtocolSource protocolSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
-      protocolSource.yamlSourceUri.path,
+      protocolSource.yamlSourceUri,
     );
     var yamlErrorCollector = ErrorCollector();
     YamlMap? documentContents = _loadYamlMap(
