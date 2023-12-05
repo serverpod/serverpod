@@ -15,13 +15,13 @@ enum DatabaseMigrationActionType with _i1.SerializableEntity {
   deleteTable,
   alterTable;
 
-  static DatabaseMigrationActionType? fromJson(int index) {
-    switch (index) {
-      case 0:
+  static DatabaseMigrationActionType? fromJson(String name) {
+    switch (name) {
+      case 'createTable':
         return createTable;
-      case 1:
+      case 'deleteTable':
         return deleteTable;
-      case 2:
+      case 'alterTable':
         return alterTable;
       default:
         return null;
@@ -29,5 +29,7 @@ enum DatabaseMigrationActionType with _i1.SerializableEntity {
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
+  @override
+  String toString() => toJson();
 }
