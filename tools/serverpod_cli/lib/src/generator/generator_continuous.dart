@@ -17,21 +17,42 @@ Future<bool> performGenerateContinuously({
       DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
   var watcherEndpoints =
       DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
-  var success = true;
+
+  var success = await _performSafeGenerate(
+      config: config, endpointsAnalyzer: endpointsAnalyzer);
+
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
     log.info(
       'File changed: $event',
       newParagraph: true,
     );
+    success = await _performSafeGenerate(
+        config: config, endpointsAnalyzer: endpointsAnalyzer);
+  }
+
+  return success;
+}
+
+Future<bool> _performSafeGenerate({
+  required GeneratorConfig config,
+  required EndpointsAnalyzer endpointsAnalyzer,
+}) async {
+  var success = false;
+  try {
     success = await log.progress(
         'Generating code',
         () => performGenerate(
-              changedFile: event.path,
               config: config,
               endpointsAnalyzer: endpointsAnalyzer,
             ));
     log.info('Incremental code generation complete.');
+  } catch (e) {
+    if (e is Error) {
+      log.error(e.toString(), stackTrace: e.stackTrace);
+    } else {
+      log.error(e.toString());
+    }
   }
 
   return success;

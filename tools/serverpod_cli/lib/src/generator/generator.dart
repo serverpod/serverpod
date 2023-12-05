@@ -8,7 +8,6 @@ import 'package:serverpod_cli/src/util/protocol_helper.dart';
 /// Analyze the server package and generate the code.
 Future<bool> performGenerate({
   bool dartFormat = true,
-  String? changedFile,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
 }) async {
