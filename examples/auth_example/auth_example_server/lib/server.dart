@@ -85,7 +85,7 @@ void run(List<String> args) async {
         ..from = Address(gmailEmail)
         ..recipients.add(userInfo.email!)
         ..subject = 'Password reset link for Serverpod'
-        ..html = 'Here is your password reset code: $validationCode>';
+        ..html = 'Here is your password reset code: $validationCode';
 
       // Send the email message.
       try {
