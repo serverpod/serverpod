@@ -35,6 +35,22 @@ class EndpointAdmin extends _i1.EndpointRef {
         'getUserInfo',
         {'userId': userId},
       );
+
+  /// Marks a user as blocked so that they can't log in, and invalidates their
+  /// auth key so that they can't keep calling endpoints through their current
+  /// session.
+  _i2.Future<void> blockUser(int userId) => caller.callServerEndpoint<void>(
+        'serverpod_auth.admin',
+        'blockUser',
+        {'userId': userId},
+      );
+
+  /// Unblocks a user so that they can log in again.
+  _i2.Future<void> unblockUser(int userId) => caller.callServerEndpoint<void>(
+        'serverpod_auth.admin',
+        'unblockUser',
+        {'userId': userId},
+      );
 }
 
 /// Endpoint for handling Sign in with Apple.

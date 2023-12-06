@@ -1,5 +1,7 @@
 admin:
   - getUserInfo:
+  - blockUser:
+  - unblockUser:
 apple:
   - authenticate:
 email:
