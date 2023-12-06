@@ -119,11 +119,6 @@ abstract class EndpointDispatch {
 
       var result = await method.call(session, paramMap);
 
-      // Print session info
-      // var authenticatedUserId = connector.endpoint.requireLogin ? await session.auth.authenticatedUserId : null;
-
-      await session.close();
-
       return ResultSuccess(
         result,
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
@@ -139,6 +134,8 @@ abstract class EndpointDispatch {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
           e.toString(), stackTrace, sessionLogId ?? 0);
+    } finally {
+      await session.close();
     }
   }
 
