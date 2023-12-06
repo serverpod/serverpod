@@ -1,10 +1,11 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
-import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/generator/generator_continuous.dart';
+import 'package:serverpod_cli/src/generator/generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/serverpod_packages_version_check/serverpod_packages_version_check.dart';
@@ -50,7 +51,9 @@ class GenerateCommand extends ServerpodCommand {
       }
     }
 
-    var endpointsAnalyzer = EndpointsAnalyzer(config);
+    var endpointDirectory =
+        Directory(path.joinAll(config.endpointsSourcePathParts));
+    var endpointsAnalyzer = EndpointsAnalyzer(endpointDirectory);
 
     bool success = true;
     if (watch) {
