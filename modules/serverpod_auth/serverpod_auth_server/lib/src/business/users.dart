@@ -149,7 +149,7 @@ class Users {
       throw 'userId $userId already unblocked';
     }
     userInfo.blocked = false;
-    await session.db.update(userInfo);
+    await session.dbNext.updateRow(userInfo);
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user info
