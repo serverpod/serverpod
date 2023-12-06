@@ -53,6 +53,7 @@ class MyHomePageState extends State<MyHomePage> {
     try {
       final result = await client.example.hello(_textEditingController.text);
       setState(() {
+        _errorMessage = null;
         _resultMessage = result;
       });
     } catch (e) {
