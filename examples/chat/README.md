@@ -14,7 +14,7 @@ Use these credentials in order for the server to connect to the database:
 host: localhost
 user: postgres
 database: chat
-password: database_password
+password: postgres_password
 ```
 
 Then apply the database migrations to the database by running the following command from the `chat_server` directory:
