@@ -129,6 +129,7 @@ abstract class EndpointDispatch {
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
       );
     } on SerializableException catch (exception) {
+      await session.close();
       return ExceptionResult(entity: exception);
     } on Exception catch (e, stackTrace) {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
