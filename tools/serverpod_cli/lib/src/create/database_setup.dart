@@ -30,27 +30,23 @@ class DatabaseSetup {
         force: false,
         config: config,
       );
-    } on MigrationVersionLoadException catch (e) {
-      log.error(
-        'Unable to determine latest database definition due to a corrupted '
-        'migration. Please re-create or remove the migration version and try '
-        'again. Migration version: "${e.versionName}".',
-      );
-      log.error(e.exception);
+    } on MigrationVersionLoadException {
+      // Ignore known error since the user can create the migration manually
+      // and get better error messages then.
     } on GenerateMigrationDatabaseDefinitionException {
-      log.error('Unable to generate database definition for project.');
-    } on MigrationVersionAlreadyExistsException catch (e) {
-      log.error(
-        'Unable to create migration. A directory with the same name already '
-        'exists: "${e.directoryPath}".',
-      );
+      // Ignore known error since the user can create the migration manually
+      // and get better error messages then.
+    } on MigrationVersionAlreadyExistsException {
+      // Ignore known error since the user can create the migration manually
+      // and get better error messages then.
     }
 
     if (migration == null) {
-      log.warning(
+      log.error(
         'An error occurred while creating the initial migration. You might '
         'not be set up correctly for the created project. Please see the '
-        'documentation for how to create and apply a migration manually.',
+        'documentation for how to create and apply a migration manually: '
+        '${ServerpodUrlConstants.serverpodDocumentation}',
       );
       return false;
     }
