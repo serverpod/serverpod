@@ -171,9 +171,8 @@ class EntityParser {
     if (typeValue is! String) return [];
 
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
-    var typeResult = parseAndAnalyzeType(
-      typeValue.replaceAll(' ', ''),
-      sourceSpan: typeNode.span,
+    var typeResult = parseType(
+      typeValue,
     );
 
     var scope = _parseClassFieldScope(node);
@@ -191,7 +190,7 @@ class EntityParser {
         relation: relation,
         shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
         scope: scope,
-        type: typeResult.type,
+        type: typeResult,
         documentation: fieldDocumentation,
       )
     ];
@@ -206,7 +205,7 @@ class EntityParser {
 
   static RelationDefinition? _parseRelation(
     String fieldName,
-    TypeParseResult typeResult,
+    TypeDefinition typeResult,
     YamlMap node,
   ) {
     if (!_isRelation(node)) return null;
@@ -221,12 +220,12 @@ class EntityParser {
 
     var optionalRelation = _isOptionalRelation(node);
 
-    if (typeResult.type.isListType) {
+    if (typeResult.isListType) {
       return UnresolvedListRelationDefinition(
         name: relationName,
         nullableRelation: optionalRelation,
       );
-    } else if (typeResult.type.isIdType && parentTable != null) {
+    } else if (typeResult.isIdType && parentTable != null) {
       return ForeignRelationDefinition(
         name: relationName,
         parentTable: parentTable,
@@ -234,7 +233,7 @@ class EntityParser {
         onUpdate: onUpdate,
         onDelete: onDelete,
       );
-    } else if (!typeResult.type.isIdType) {
+    } else if (!typeResult.isIdType) {
       return UnresolvedObjectRelationDefinition(
         name: relationName,
         fieldName: relationFieldName,

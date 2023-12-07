@@ -4,9 +4,9 @@ import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:source_span/source_span.dart';
 
 import '../config/config.dart';
 
@@ -388,66 +388,43 @@ class TypeDefinition {
 /// the position will point at the ','.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
 /// [TypeDefinition.customClass].
-TypeParseResult parseAndAnalyzeType(
+TypeDefinition parseType(
   String input, {
   bool analyzingExtraClasses = false,
-  required SourceSpan sourceSpan,
 }) {
-  String classname = '';
-  for (var i = 0; i < input.length; i++) {
-    switch (input[i]) {
-      case '<':
-        var generics = <TypeDefinition>[];
-        while (true) {
-          i++;
-          var result = parseAndAnalyzeType(
-            input.substring(i),
-            sourceSpan: sourceSpan.subspan(i),
-          );
-          generics.add(result.type);
-          i += result.parsedPosition;
-          if (input[i] == '>') {
-            var nullable = (i + 1 < input.length) && input[i + 1] == '?';
-            return TypeParseResult(
-                i + 1,
-                TypeDefinition.mixedUrlAndClassName(
-                  mixed: classname,
-                  nullable: nullable,
-                  generics: generics,
-                ));
-          } else if (i >= input.length - 1) {
-            throw SourceSpanException('Invalid Type', sourceSpan);
-          }
-        }
-      case '>':
-      case ',':
-        return TypeParseResult(
-            i,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname,
-                nullable: false,
-                customClass: analyzingExtraClasses));
-      case '?':
-        return TypeParseResult(
-            i + 1,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname,
-                nullable: true,
-                customClass: analyzingExtraClasses));
-      default:
-        classname += input[i];
-        break;
-    }
+  var start = input.indexOf('<');
+  var end = input.lastIndexOf('>');
+
+  var generics = <TypeDefinition>[];
+  if (start != -1 && end != -1) {
+    var internalTypes = input.substring(start + 1, end);
+
+    var genericsInputs = splitIgnoringBrackets(internalTypes);
+
+    generics = genericsInputs.map((generic) => parseType(generic)).toList();
   }
-  return TypeParseResult(
-      input.length - 1,
-      TypeDefinition.mixedUrlAndClassName(
-          mixed: classname,
-          nullable: false,
-          customClass: analyzingExtraClasses));
+
+  bool isNullable = input[input.length - 1] == '?';
+  int terminatedAt = _findLastClassToken(start, input, isNullable);
+
+  String className = input.substring(0, terminatedAt);
+
+  return TypeDefinition.mixedUrlAndClassName(
+    mixed: className,
+    nullable: isNullable,
+    generics: generics,
+    customClass: analyzingExtraClasses,
+  );
 }
 
-/// The result when running [parseAndAnalyzeType].
+int _findLastClassToken(int start, String input, bool isNullable) {
+  if (start != -1) return start;
+  if (isNullable) return input.length - 1;
+
+  return input.length;
+}
+
+/// The result when running [parseType].
 class TypeParseResult {
   /// The position of the next unparsed character.
   final int parsedPosition;

@@ -19,6 +19,9 @@ void main() {
       'List<String?>?',
       'List<List<Map<String,int>>>',
       'Map<String,String>',
+      'Map<String,List<int>>',
+      'Map<String,Map<String,int>>',
+      'Map<String,Map<String,List<List<Map<String,int>>>>>',
     ];
 
     for (var datatype in datatypes) {
