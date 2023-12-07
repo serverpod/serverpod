@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/constants.dart';
-import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -96,7 +95,7 @@ Future<bool> performCreate(
         'also install and configure Postgres and Redis manually and run this '
         'command with the -f flag added.';
     var strIssueDockerVolume =
-        'A docker volume with the name "${SetupConstants.dockerVolumeName(name)}" already exists. '
+        'A docker volume with the nameg "${SetupConstants.dockerVolumeName(name)}" already exists. '
         'Create a project with a different name or remove the volume before running the create command again.';
 
     log.error(strIssue);
