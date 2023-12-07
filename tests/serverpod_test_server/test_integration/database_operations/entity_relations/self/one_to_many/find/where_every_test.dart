@@ -81,7 +81,7 @@ void main() async {
 
         var catNames = fetchedCats.map((e) => e.name);
         expect(catNames, hasLength(2));
-        expect(catNames, ['Zelda', 'Smulan']);
+        expect(catNames, containsAll(['Zelda', 'Smulan']));
       },
     );
 
