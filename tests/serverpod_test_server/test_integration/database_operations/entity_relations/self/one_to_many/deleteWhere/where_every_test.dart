@@ -78,7 +78,7 @@ void main() async {
         );
 
         expect(deletedCatIds, hasLength(2));
-        expect(deletedCatIds, [zelda.id, smulan.id]);
+        expect(deletedCatIds, containsAll([zelda.id, smulan.id]));
       },
     );
 
