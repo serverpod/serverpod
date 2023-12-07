@@ -32,11 +32,15 @@ class Client extends _i1.ServerpodClient {
     String host, {
     _i3.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
+    Duration? streamingConnectionTimeout,
+    Duration? connectionTimeout,
   }) : super(
           host,
           _i4.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
+          streamingConnectionTimeout: streamingConnectionTimeout,
+          connectionTimeout: connectionTimeout,
         ) {
     example = EndpointExample(this);
   }
