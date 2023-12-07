@@ -345,7 +345,13 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      var session = await _connectToDatabase(enableLogging: false);
+      int? maxAttempts =
+          commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
+
+      var session = await _connectToDatabase(
+        enableLogging: false,
+        maxAttempts: maxAttempts,
+      );
 
       try {
         logVerbose('Initializing migration manager.');
@@ -612,9 +618,12 @@ class Serverpod {
 
   /// Establishes a connection to the database. This method will retry
   /// connecting to the database until it succeeds.
-  Future<Session> _connectToDatabase({required bool enableLogging}) async {
+  Future<Session> _connectToDatabase(
+      {required bool enableLogging, int? maxAttempts}) async {
     bool printedDatabaseConnectionError = false;
+    int attempts = 0;
     while (true) {
+      attempts++;
       var session = await createSession(enableLogging: enableLogging);
       try {
         await session.dbNext.testConnection();
@@ -632,6 +641,13 @@ class Serverpod {
         }
 
         await session.close();
+
+        if (maxAttempts != null && attempts >= maxAttempts) {
+          throw TimeoutException(
+            'Failed to connect to the database after $maxAttempts attempts.',
+          );
+        }
+
         await Future.delayed(const Duration(seconds: 10));
       }
     }
