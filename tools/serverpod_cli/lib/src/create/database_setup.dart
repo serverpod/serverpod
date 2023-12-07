@@ -4,6 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/create/port_checker.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 class DatabaseSetup {
   static Future<bool> createDefaultMigration(
@@ -23,12 +24,38 @@ class DatabaseSetup {
       projectName: name,
     );
 
-    var migration = await generator.createMigration(
-      force: false,
-      config: config,
-    );
+    MigrationVersion? migration;
+    try {
+      migration = await generator.createMigration(
+        force: false,
+        config: config,
+      );
+    } on MigrationVersionLoadException catch (e) {
+      log.error(
+        'Unable to determine latest database definition due to a corrupted '
+        'migration. Please re-create or remove the migration version and try '
+        'again. Migration version: "${e.versionName}".',
+      );
+      log.error(e.exception);
+    } on GenerateMigrationDatabaseDefinitionException {
+      log.error('Unable to generate database definition for project.');
+    } on MigrationVersionAlreadyExistsException catch (e) {
+      log.error(
+        'Unable to create migration. A directory with the same name already '
+        'exists: "${e.directoryPath}".',
+      );
+    }
 
-    return migration != null;
+    if (migration == null) {
+      log.warning(
+        'An error occurred while creating the initial migration. You might '
+        'not be set up correctly for the created project. Please see the '
+        'documentation for how to create and apply a migration manually.',
+      );
+      return false;
+    }
+
+    return true;
   }
 
   static Future<bool> applyDefaultMigration(Directory dir) async {
