@@ -2721,13 +2721,15 @@ class Client extends _i1.ServerpodClient {
     String host, {
     _i31.SecurityContext? context,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
-    Duration? timeout,
+    Duration? streamingConnectionTimeout,
+    Duration? connectionTimeout,
   }) : super(
           host,
           _i32.Protocol(),
           context: context,
           authenticationKeyManager: authenticationKeyManager,
-          timeout: timeout,
+          streamingConnectionTimeout: streamingConnectionTimeout,
+          connectionTimeout: connectionTimeout,
         ) {
     asyncTasks = EndpointAsyncTasks(this);
     authentication = EndpointAuthentication(this);
