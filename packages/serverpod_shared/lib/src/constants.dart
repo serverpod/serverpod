@@ -83,3 +83,9 @@ abstract class MigrationConstants {
   static Directory _migrationDirectory(Directory serverRootDirectory) =>
       Directory(path.join(serverRootDirectory.path, 'generated', 'migration'));
 }
+
+/// Serverpod URL constants used by the serverpod framework.
+abstract class ServerpodUrlConstants {
+  /// URL to the serverpod documentation.
+  static const String serverpodDocumentation = 'https://docs.serverpod.dev';
+}

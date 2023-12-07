@@ -185,14 +185,15 @@ Future<bool> performCreate(
     });
 
     if (dockerConfigured) {
-      await log.progress('Creating default database migration.', () {
+      success &= await log.progress('Creating default database migration.', () {
         return DatabaseSetup.createDefaultMigration(
           serverpodDirs.serverDir,
           name,
         );
       });
 
-      await log.progress('Downloading and configuring Docker image.', () {
+      success &=
+          await log.progress('Downloading and configuring Docker image.', () {
         return DatabaseSetup.applyDefaultMigration(
           serverpodDirs.serverDir,
         );
