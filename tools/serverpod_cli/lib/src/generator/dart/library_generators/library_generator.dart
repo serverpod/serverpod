@@ -616,7 +616,14 @@ class LibraryGenerator {
                         ..url = serverpodUrl(false)
                         ..isNullable = true)),
                     Parameter((p) => p
-                      ..name = 'timeout'
+                      ..name = 'streamingConnectionTimeout'
+                      ..named = true
+                      ..type = TypeReference((t) => t
+                        ..symbol = 'Duration'
+                        ..url = 'dart:core'
+                        ..isNullable = true)),
+                    Parameter((p) => p
+                      ..name = 'connectionTimeout'
                       ..named = true
                       ..type = TypeReference((t) => t
                         ..symbol = 'Duration'
@@ -630,7 +637,9 @@ class LibraryGenerator {
                     'context': refer('context'),
                     'authenticationKeyManager':
                         refer('authenticationKeyManager'),
-                    'timeout': refer('timeout'),
+                    'streamingConnectionTimeout':
+                        refer('streamingConnectionTimeout'),
+                    'connectionTimeout': refer('connectionTimeout'),
                   }).code);
               } else {
                 c
