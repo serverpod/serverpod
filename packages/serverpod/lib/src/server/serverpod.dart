@@ -348,10 +348,20 @@ class Serverpod {
       int? maxAttempts =
           commandLineArgs.role == ServerpodRole.maintenance ? 6 : null;
 
-      var session = await _connectToDatabase(
-        enableLogging: false,
-        maxAttempts: maxAttempts,
-      );
+      Session session;
+
+      try {
+        session = await _connectToDatabase(
+          enableLogging: false,
+          maxAttempts: maxAttempts,
+        );
+      } catch (e) {
+        _exitCode = 1;
+        stderr.writeln(
+          'Failed to connect to the database. $e',
+        );
+        exit(_exitCode);
+      }
 
       try {
         logVerbose('Initializing migration manager.');
