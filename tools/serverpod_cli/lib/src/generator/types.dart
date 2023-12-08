@@ -392,22 +392,24 @@ TypeDefinition parseType(
   String input, {
   bool analyzingExtraClasses = false,
 }) {
-  var start = input.indexOf('<');
-  var end = input.lastIndexOf('>');
+  var trimmedInput = input.trim();
+
+  var start = trimmedInput.indexOf('<');
+  var end = trimmedInput.lastIndexOf('>');
 
   var generics = <TypeDefinition>[];
   if (start != -1 && end != -1) {
-    var internalTypes = input.substring(start + 1, end);
+    var internalTypes = trimmedInput.substring(start + 1, end);
 
     var genericsInputs = splitIgnoringBrackets(internalTypes);
 
     generics = genericsInputs.map((generic) => parseType(generic)).toList();
   }
 
-  bool isNullable = input[input.length - 1] == '?';
-  int terminatedAt = _findLastClassToken(start, input, isNullable);
+  bool isNullable = trimmedInput[trimmedInput.length - 1] == '?';
+  int terminatedAt = _findLastClassToken(start, trimmedInput, isNullable);
 
-  String className = input.substring(0, terminatedAt);
+  String className = trimmedInput.substring(0, terminatedAt).trim();
 
   return TypeDefinition.mixedUrlAndClassName(
     mixed: className,
