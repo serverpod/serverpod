@@ -380,12 +380,7 @@ class TypeDefinition {
   }
 }
 
-/// Analyze the type at the start of [input].
-/// [input] must not contain spaces.
-/// Returns a [_TypeResult] containing the type,
-/// as well as the position of the last parsed character.
-/// So when calling with "List<List<String?>?>,database",
-/// the position will point at the ','.
+/// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
 /// [TypeDefinition.customClass].
 TypeDefinition parseType(
