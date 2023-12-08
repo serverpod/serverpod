@@ -1,5 +1,7 @@
 import 'package:super_string/super_string.dart';
 
+/// Splits a string on the separator token unless the token is inside
+/// brackets or angle brackets, ( ) and < >.
 List<String> splitIgnoringBrackets(
   String input, {
   String separator = ',',
