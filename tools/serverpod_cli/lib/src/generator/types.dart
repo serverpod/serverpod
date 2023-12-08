@@ -423,15 +423,3 @@ int _findLastClassToken(int start, String input, bool isNullable) {
 
   return input.length;
 }
-
-/// The result when running [parseType].
-class TypeParseResult {
-  /// The position of the next unparsed character.
-  final int parsedPosition;
-
-  /// The type that was parsed.
-  final TypeDefinition type;
-
-  /// Create a new [TypeParseResult].
-  const TypeParseResult(this.parsedPosition, this.type);
-}
