@@ -95,7 +95,7 @@ Future<bool> performCreate(
         'also install and configure Postgres and Redis manually and run this '
         'command with the -f flag added.';
     var strIssueDockerVolume =
-        'A docker volume with the nameg "${SetupConstants.dockerVolumeName(name)}" already exists. '
+        'A docker volume with the name "${SetupConstants.dockerVolumeName(name)}" already exists. '
         'Create a project with a different name or remove the volume before running the create command again.';
 
     log.error(strIssue);
