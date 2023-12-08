@@ -132,7 +132,7 @@ fields:
   );
 
   test(
-    'Given a class with a field with an empty string entry at the end, then collect an error that locates the empty string in the comma separated string.',
+    'Given a class with a field with an empty string entry at the end, then no errors was generated.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -150,16 +150,8 @@ fields:
 
       expect(
         collector.errors,
-        isNotEmpty,
-        reason: 'Expected an error but none was generated.',
+        isEmpty,
       );
-
-      var error = collector.errors.last;
-      expect(error.span, isNotNull);
-      expect(error.span!.start.line, 3);
-      expect(error.span!.start.column, 24);
-      expect(error.span!.end.line, 3);
-      expect(error.span!.end.column, 24);
     },
   );
 

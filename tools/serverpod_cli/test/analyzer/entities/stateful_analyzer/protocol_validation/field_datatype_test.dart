@@ -19,6 +19,9 @@ void main() {
       'List<String?>?',
       'List<List<Map<String,int>>>',
       'Map<String,String>',
+      'Map<String,List<int>>',
+      'Map<String,Map<String,int>>',
+      'Map<String,Map<String,List<List<Map<String,int>>>>>',
     ];
 
     for (var datatype in datatypes) {
@@ -160,6 +163,56 @@ void main() {
     });
 
     test(
+        'Given a class with a field of a Map type with a lot of whitespace, then all the data types components are extracted.',
+        () {
+      var protocols = [
+        ProtocolSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            customField: Map<  String  , CustomClass  ? > ?   
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        protocols,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+      var definition = definitions.first as ClassDefinition;
+
+      expect(
+        definition.fields.first.type.className,
+        'Map',
+        reason: 'Expected the field to be of type Map, but it was not.',
+      );
+
+      expect(definition.fields.first.type.nullable, isTrue,
+          reason: 'Expected the Map to be nullable but it was not.');
+
+      expect(
+        definition.fields.first.type.generics.first.className,
+        'String',
+        reason: 'Expected the first generic type to be String, but it was not.',
+      );
+
+      expect(
+        definition.fields.first.type.generics.last.className,
+        'CustomClass',
+        reason:
+            'Expected the last generic type to be CustomClass, but it was not.',
+      );
+
+      expect(
+        definition.fields.first.type.generics.last.nullable,
+        isTrue,
+        reason: 'Expected the CustomClass to be nullable but it was not.',
+      );
+    });
+
+    test(
       'Given a class with a field of a Map type, then all the data types components are extracted.',
       () {
         var protocols = [
@@ -210,6 +263,8 @@ void main() {
       'invalid-type',
       'Map<String, invalid-type>',
       'List<invalid-type>',
+      'Map<String, List<invalid-type>>',
+      'List<List<invalid-type>>',
     ];
 
     for (var datatype in invalidDatatypes) {
