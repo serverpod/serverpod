@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
+import 'package:serverpod_cli/src/util/constants.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -71,7 +72,11 @@ Future<bool> performCreate(
       ) &&
       await CommandLineTools.isDockerRunning();
 
-  if ((!portsAvailable || !dockerConfigured) &&
+  var isDockerVolumeAvailable = await CommandLineTools.isDockerVolumeAvailable(
+    name,
+  );
+
+  if ((!portsAvailable || !dockerConfigured || !isDockerVolumeAvailable) &&
       template == ServerpodTemplateType.server &&
       !force) {
     var strIssue =
@@ -89,6 +94,9 @@ Future<bool> performCreate(
         'Docker Desktop from https://www.docker.com/get-started but you can '
         'also install and configure Postgres and Redis manually and run this '
         'command with the -f flag added.';
+    var strIssueDockerVolume =
+        'A docker volume with the name "${SetupConstants.dockerVolumeName(name)}" already exists. '
+        'Create a project with a different name or remove the volume before running the create command again.';
 
     log.error(strIssue);
 
@@ -115,6 +123,14 @@ Future<bool> performCreate(
         newParagraph: true,
       );
     }
+
+    if (!isDockerVolumeAvailable) {
+      log.error(
+        strIssueDockerVolume,
+        newParagraph: true,
+      );
+    }
+
     return false;
   }
 
