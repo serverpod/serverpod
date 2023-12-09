@@ -13,7 +13,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
 	const serverOptions: ServerOptions = {
 		command: 'serverpod',
-		args: ['language-server', '--quiet'],
+		args: ['language-server'],
 		options: {},
 		transport: TransportKind.stdio
 	};
@@ -22,7 +22,9 @@ export function activate(context: ExtensionContext) {
 		revealOutputChannelOn: RevealOutputChannelOn.Info,
 		documentSelector: [
 			{ scheme: 'file', language: 'yaml', pattern: '**/protocol/**/*.yaml' },
-			{ scheme: 'file', pattern: '**/*.sp.yaml' },
+			{ scheme: 'file', pattern: '**/*.spy.yaml' },
+			{ scheme: 'file', pattern: '**/*.spy.yml' },
+			{ scheme: 'file', pattern: '**/*.spy' },
 		],
 	};
 

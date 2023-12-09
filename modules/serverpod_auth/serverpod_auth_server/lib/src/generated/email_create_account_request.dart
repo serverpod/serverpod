@@ -256,18 +256,18 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     EmailCreateAccountRequestInclude? include,
   }) {
     return EmailCreateAccountRequestIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       include: include,
     );
   }

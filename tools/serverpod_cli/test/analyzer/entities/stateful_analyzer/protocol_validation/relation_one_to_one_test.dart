@@ -16,6 +16,10 @@ void main() {
         fields:
           addressId: int
           address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -216,6 +220,13 @@ void main() {
           address: Address?, relation(name=company_address, field=addressId)
           oldAddressId: int
           oldAddress: Address?, relation(name=company_address, field=oldAddressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
+          old_address_index_idx:
+            fields: oldAddressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -224,49 +235,6 @@ void main() {
         table: address
         fields:
           company: Company?, relation(name=company_address)
-        ''',
-      ).build(),
-    ];
-
-    var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
-    analyzer.validateAll();
-
-    expect(
-      collector.errors,
-      isNotEmpty,
-      reason: 'Expected an error but none was found.',
-    );
-
-    var error = collector.errors.first;
-
-    expect(
-      error.message,
-      'Unable to resolve ambiguous relation, there are several named relations with name "company_address" on the class "Company".',
-    );
-  });
-
-  test(
-      'Given a class with a one to one relation where the relationship is ambiguous where the field names are the same in both models then an error is collected that the reference cannot be resolved.',
-      () {
-    var protocols = [
-      ProtocolSourceBuilder().withFileName('company').withYaml(
-        '''
-        class: Company
-        table: company
-        fields:
-          addressCompany: int
-          address: Address?, relation(name=company_address, field=addressCompany)
-          oldAddressId: int
-          oldAddress: Address?, relation(name=company_address, field=oldAddressId)
-        ''',
-      ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
-        '''
-        class: Address
-        table: address
-        fields:
-          addressCompany: Company?, relation(name=company_address)
         ''',
       ).build(),
     ];
@@ -300,6 +268,10 @@ void main() {
         fields:
           addressId: int
           address: Address?, relation(name=company_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -309,6 +281,10 @@ void main() {
         fields:
           addressCompanyId: int
           addressCompany: Company?, relation(name=company_address, field=addressCompanyId)
+        indexes:
+          address_company_index_idx:
+            fields: addressCompanyId
+            unique: true
         ''',
       ).build(),
     ];
@@ -343,7 +319,12 @@ void main() {
         class: User
         table: user
         fields:
-          address: Address?, relation(name=user_address)
+          addressId: int
+          address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
         ''',
       ).build(),
       ProtocolSourceBuilder().withFileName('address').withYaml(
@@ -371,6 +352,87 @@ void main() {
       expect(
         errors.first.message,
         'There is no named relation with name "user_address" on the class "Address".',
+      );
+    }, skip: errors.isEmpty);
+  });
+
+  group(
+      'Given a class with a named object relation to a foreign id relation field that has unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          userId: int, relation(parent=user, name=user_address)
+        indexes:
+          user_id_index_idx:
+            fields: userId
+            unique: true
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then no error is collected.', () {
+      expect(errors, isEmpty);
+    });
+  });
+
+  group(
+      'Given a class with a named object relation to a foreign id relation field that does not have unique index',
+      () {
+    var protocols = [
+      ProtocolSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: user
+        fields:
+          name: String
+          address: Address?, relation(name=user_address)
+        ''',
+      ).build(),
+      ProtocolSourceBuilder().withFileName('address').withYaml(
+        '''
+        class: Address
+        table: address
+        fields:
+          userId: int, relation(parent=user, name=user_address)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then an error is collected.', () {
+      expect(errors, isNotEmpty);
+    });
+
+    test(
+        'then the error messages says that there must be a unique index on the foreign field.',
+        () {
+      expect(
+        errors.first.message,
+        'The referenced field "userId" does not have a unique index which is required to be used in a one-to-one relation.',
       );
     }, skip: errors.isEmpty);
   });

@@ -65,7 +65,10 @@ Future<bool> performCreate(
   var portsAvailable = usedPorts.isEmpty;
 
   // Check that docker is installed
-  var dockerConfigured = await CommandLineTools.existsCommand('docker') &&
+  var dockerConfigured = await CommandLineTools.existsCommand(
+        'docker',
+        ['--version'],
+      ) &&
       await CommandLineTools.isDockerRunning();
 
   if ((!portsAvailable || !dockerConfigured) &&
@@ -234,10 +237,6 @@ void _logStartInstructions(name) {
       'cd .\\${p.join(name, '${name}_server')}\\',
       type: TextLogType.command,
       newParagraph: true,
-    );
-    log.info(
-      '.\\setup-tables.cmd',
-      type: TextLogType.command,
     );
     log.info(
       'docker compose up --build --detach',

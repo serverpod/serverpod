@@ -604,10 +604,7 @@ class SerializableEntityLibraryGenerator {
             (p) => p
               ..name = 'orderBy'
               ..named = true
-              ..type = refer(
-                'Column?',
-                serverpodUrl(serverCode),
-              ),
+              ..type = typeOrderByBuilder(className, serverCode),
           ),
           Parameter(
             (p) => p
@@ -616,20 +613,12 @@ class SerializableEntityLibraryGenerator {
               ..defaultTo = const Code('false')
               ..type = refer('bool'),
           ),
-          Parameter((p) => p
-            ..name = 'orderByList'
-            ..named = true
-            ..type = TypeReference(
-              (t) => t
-                ..symbol = 'List'
-                ..types.addAll([
-                  refer(
-                    'Order',
-                    serverpodUrl(serverCode),
-                  ),
-                ])
-                ..isNullable = true,
-            )),
+          Parameter(
+            (p) => p
+              ..name = 'orderByList'
+              ..named = true
+              ..type = typeOrderByListBuilder(className, serverCode),
+          ),
           Parameter((p) => p
             ..name = 'include'
             ..named = true
@@ -641,9 +630,13 @@ class SerializableEntityLibraryGenerator {
               'where': refer('where'),
               'limit': refer('limit'),
               'offset': refer('offset'),
-              'orderBy': refer('orderBy'),
+              'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
               'orderDescending': refer('orderDescending'),
-              'orderByList': refer('orderByList'),
+              'orderByList': refer('orderByList').nullSafeProperty('call').call(
+                [refer(className).property('t')],
+              ),
               'include': refer('include'),
             })
             .returned

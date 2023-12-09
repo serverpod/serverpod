@@ -228,18 +228,18 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
     _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
   }) {
     return GoogleRefreshTokenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
       include: include,
     );
   }

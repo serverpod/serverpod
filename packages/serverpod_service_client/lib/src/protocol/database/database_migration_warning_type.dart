@@ -16,15 +16,15 @@ enum DatabaseMigrationWarningType with _i1.SerializableEntity {
   notNullAdded,
   uniqueIndexCreated;
 
-  static DatabaseMigrationWarningType? fromJson(int index) {
-    switch (index) {
-      case 0:
+  static DatabaseMigrationWarningType? fromJson(String name) {
+    switch (name) {
+      case 'tableDropped':
         return tableDropped;
-      case 1:
+      case 'columnDropped':
         return columnDropped;
-      case 2:
+      case 'notNullAdded':
         return notNullAdded;
-      case 3:
+      case 'uniqueIndexCreated':
         return uniqueIndexCreated;
       default:
         return null;
@@ -32,5 +32,7 @@ enum DatabaseMigrationWarningType with _i1.SerializableEntity {
   }
 
   @override
-  int toJson() => index;
+  String toJson() => name;
+  @override
+  String toString() => toJson();
 }

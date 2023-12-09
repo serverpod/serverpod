@@ -7,9 +7,9 @@ import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
 import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
-import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
@@ -17,8 +17,13 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
 
-String _transformFileNameWithoutPathOrExtension(String path) {
-  return p.basenameWithoutExtension(path);
+String _transformFileNameWithoutPathOrExtension(Uri path) {
+  var fileName = path.pathSegments.last;
+
+  for (var ext in protocolFileExtensions) {
+    fileName = fileName.replaceAll(ext, '');
+  }
+  return fileName;
 }
 
 /// Used to analyze a singe yaml protocol file.
@@ -34,7 +39,7 @@ class SerializableEntityAnalyzer {
     ProtocolSource protocolSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
-      protocolSource.yamlSourceUri.path,
+      protocolSource.yamlSourceUri,
     );
     var yamlErrorCollector = ErrorCollector();
     YamlMap? documentContents = _loadYamlMap(
@@ -105,10 +110,16 @@ class SerializableEntityAnalyzer {
 
     var documentContents = document;
     if (documentContents is! YamlMap) {
-      collector.addError(SourceSpanSeverityException(
-        'The top level object in the class yaml file must be a Map.',
-        documentContents?.span,
-      ));
+      var firstLine = yaml.split('\n').first;
+      collector.addError(
+        SourceSpanSeverityException(
+            'The top level object in the class yaml file must be a Map.',
+            SourceSpan(
+              SourceLocation(0, sourceUrl: sourceUri),
+              SourceLocation(firstLine.length, sourceUrl: sourceUri),
+              firstLine,
+            )),
+      );
       return;
     }
 

@@ -241,18 +241,18 @@ abstract class EmailAuth extends _i1.TableRow {
     _i1.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     EmailAuthInclude? include,
   }) {
     return EmailAuthIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(EmailAuth.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(EmailAuth.t),
       include: include,
     );
   }

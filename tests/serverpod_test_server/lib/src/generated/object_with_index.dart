@@ -225,18 +225,18 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     ObjectWithIndexInclude? include,
   }) {
     return ObjectWithIndexIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(ObjectWithIndex.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(ObjectWithIndex.t),
       include: include,
     );
   }

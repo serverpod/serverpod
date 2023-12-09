@@ -1,28 +1,54 @@
 {
-  "name": "serverpod_vscode_extension",
-  "displayName": "Serverpod",
-  "description": "",
-  "version": "0.0.1",
+  "name": "serverpod-vscode",
+  "displayName": "Serverpod VSCode",
+  "publisher": "Serverpod",
+  "description": "Serverpod for VS code, manage your projects and get code feedback in real time.",
+  "icon": "assets/icons/icon.png",
+  "galleryBanner": {
+    "color": "#020E24",
+    "theme": "dark"
+  },
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.75.0"
   },
-  "categories": [],
-  "activationEvents": [
-    "onLanguage:yaml"
+  "categories": [
+    "Programming Languages",
+    "Linters"
   ],
+  "activationEvents": [
+    "onLanguage:yaml",
+    "activationEvents:serverpod"
+  ],
+  "pricing": "Free",
+  "homepage": "https://serverpod.dev",
+  "bugs": {
+    "url": "https://github.com/serverpod/serverpod/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serverpod/serverpod.git"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
       {
         "id": "serverpod",
         "aliases": [
-          "Serverpod Protocol",
-          "SP"
+          "Serverpod yaml",
+          "Spy"
         ],
         "extensions": [
-          ".sp.yaml"
+          ".spy.yaml",
+          ".spy.yml",
+          ".spy"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/language-configuration.json",
+        "icon": {
+          "light": "./assets/icons/icon.png",
+          "dark": "./assets/icons/icon.png"
+        }
       }
     ],
     "grammars": [
@@ -31,29 +57,14 @@
         "scopeName": "source.serverpod",
         "path": "./syntaxes/serverpod.tmLanguage.json"
       }
-    ],
-    "configuration": {
-      "type": "object",
-      "title": "Example configuration",
-      "properties": {
-        "serverpodLanguageServer.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "verbose",
-          "description": "Traces the communication between VS Code and the language server."
-        }
-      }
-    }
+    ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
@@ -69,6 +80,7 @@
     "@typescript-eslint/eslint-plugin": "^5.59.8",
     "@typescript-eslint/parser": "^5.59.8",
     "@vscode/test-electron": "^2.3.2",
+    "esbuild": "^0.19.8",
     "eslint": "^8.41.0",
     "glob": "^8.1.0",
     "mocha": "^10.2.0",

@@ -1,7 +1,0 @@
-class: Team
-table: team
-fields:
-  name: String
-  arenaId: int?
-  arena: Arena?, relation(name=arena_team, field=arenaId, onDelete=SetNull)
-  players: List<Player>?, relation(name=team_player)

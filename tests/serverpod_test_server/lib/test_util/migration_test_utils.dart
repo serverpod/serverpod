@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
-import 'package:uuid/uuid.dart';
 
 abstract class MigrationTestUtils {
   static Future<void> createInitialState({
@@ -45,22 +44,35 @@ abstract class MigrationTestUtils {
       protocolFile.writeAsStringSync(contents);
     });
 
-    var suffixedTag = '$tag-${Uuid().v4()}';
-    return await _runProcess(
+    var exitCode = await _runProcess(
       'serverpod',
       arguments: [
         'create-migration',
         '--tag',
-        suffixedTag,
+        tag,
         if (force) '--force',
         '--verbose',
         '--no-analytics',
       ],
     );
+
+    // Ensures that another migration is never created with the same millisecond.
+    await Future.delayed(Duration(milliseconds: 2));
+
+    return exitCode;
   }
 
-  static Future<MigrationRegistry> loadMigrationRegistry() async {
-    return await MigrationRegistry.load(
+  static String readMigrationRegistryFile() {
+    var migrationRegistryFile = File(path.join(
+      _migrationsProjectDirectory().path,
+      'migration_registry.txt',
+    ));
+
+    return migrationRegistryFile.readAsStringSync();
+  }
+
+  static MigrationRegistry loadMigrationRegistry() {
+    return MigrationRegistry.load(
       _migrationsProjectDirectory(),
     );
   }
@@ -72,11 +84,17 @@ abstract class MigrationTestUtils {
     removeAllTaggedMigrations();
     removeRepairMigration();
     _removeMigrationTestProtocolFolder();
+    _recreateMigrationRegistryFile();
     if (resetSql != null) {
       await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
     }
-    await _removeTaggedMigrationsFromRegistry();
     await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+  }
+
+  static void _recreateMigrationRegistryFile() {
+    var migrationRegistry =
+        MigrationRegistry.load(_migrationsProjectDirectory());
+    migrationRegistry.write();
   }
 
   static void removeRepairMigration() {
@@ -94,17 +112,6 @@ abstract class MigrationTestUtils {
         }
       }
     }
-  }
-
-  static Future<bool> removeLastMigrationFromRegistry() async {
-    var migrationRegistry = await loadMigrationRegistry();
-    var lastEntry = migrationRegistry.removeLast();
-    if (lastEntry == null) {
-      return false;
-    }
-
-    await migrationRegistry.write();
-    return true;
   }
 
   static Future<int> runApplyMigrations() async {
@@ -216,7 +223,6 @@ abstract class MigrationTestUtils {
   static Directory _migrationsProjectDirectory() => Directory(path.join(
         _migrationDirectory().path,
         'migrations',
-        'serverpod_test',
       ));
 
   static void _removeMigrationTestProtocolFolder() {
@@ -224,18 +230,6 @@ abstract class MigrationTestUtils {
     if (protocolDirectory.existsSync()) {
       protocolDirectory.deleteSync(recursive: true);
     }
-  }
-
-  static Future<void> _removeTaggedMigrationsFromRegistry() async {
-    var migrationRegistry = await loadMigrationRegistry();
-
-    var lastMigration = migrationRegistry.getLatest();
-    while (lastMigration != null && lastMigration.contains('-')) {
-      migrationRegistry.removeLast();
-      lastMigration = migrationRegistry.getLatest();
-    }
-
-    await migrationRegistry.write();
   }
 
   static Future<void> _resetDatabase({
@@ -248,7 +242,7 @@ abstract class MigrationTestUtils {
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
     required Client serviceClient,
   }) async {
-    var migrationRegistry = await loadMigrationRegistry();
+    var migrationRegistry = loadMigrationRegistry();
 
     var latestMigration = migrationRegistry.getLatest();
 

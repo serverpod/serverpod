@@ -16,7 +16,11 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      [entity],
+      'example',
+      [],
+    );
 
     expect(databaseDefinition.tables, hasLength(1));
     expect(databaseDefinition.tables.first.name, 'example');
@@ -58,7 +62,11 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      [entity],
+      'example',
+      [],
+    );
 
     var tablesDoNotExist = databaseDefinition.tables.isEmpty;
     test('then a foreign relation exists.', () {
@@ -103,14 +111,15 @@ void main() {
     }, skip: tablesDoNotExist);
 
     group('when generating sql code', () {
-      // TODO: fix this, not sure what this does or why it is not set in the
-      // definition creator ?! But code generator crashes without it.
-      databaseDefinition.priority = 1;
+      var module = 'test-module';
+      var version = 'version';
 
-      var sql = databaseDefinition.toPgSql(
-        version: 'version',
-        module: 'mock',
-      );
+      var sql = databaseDefinition.toPgSql(installedModules: [
+        DatabaseMigrationVersion(
+          module: module,
+          version: version,
+        )
+      ]);
 
       test('then on delete is set to set null.', () {
         expect(sql.contains('ON DELETE SET NULL'), isTrue);
@@ -118,6 +127,21 @@ void main() {
 
       test('then on update is set to set null.', () {
         expect(sql.contains('ON UPDATE SET NULL'), isTrue);
+      });
+
+      test('then migration version insert is added.', () {
+        expect(
+          sql,
+          contains(
+              'INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")'),
+        );
+        expect(sql, contains('VALUES (\'$module\', \'$version\', now())'));
+        expect(sql, contains('ON CONFLICT ("module")'));
+        expect(
+          sql,
+          contains(
+              'DO UPDATE SET "version" = \'$version\', "timestamp" = now();'),
+        );
       });
     });
   });

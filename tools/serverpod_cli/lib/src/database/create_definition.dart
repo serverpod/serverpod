@@ -1,10 +1,14 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
 DatabaseDefinition createDatabaseDefinitionFromEntities(
-    List<SerializableEntityDefinition> serializableEntities) {
+  List<SerializableEntityDefinition> serializableEntities,
+  String moduleName,
+  List<ModuleConfig> allModules,
+) {
   var tables = <TableDefinition>[
     for (var classDefinition in serializableEntities)
       if (classDefinition is ClassDefinition &&
@@ -12,6 +16,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
               classDefinition.viewName != null))
         TableDefinition(
           name: _getName(classDefinition),
+          module: moduleName,
           dartName: classDefinition.className,
           schema: 'public',
           columns: [
@@ -41,8 +46,18 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
   _sortTableDefinitions(tables);
 
   return DatabaseDefinition(
+    moduleName: moduleName,
     tables: tables,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
+    installedModules:
+        allModules.where((module) => module.migrationVersions.isNotEmpty).map(
+      (module) {
+        return DatabaseMigrationVersion(
+          module: module.name,
+          version: module.migrationVersions.last,
+        );
+      },
+    ).toList(),
   );
 }
 
@@ -76,8 +91,7 @@ List<IndexDefinition> _createIndexDefinition(ClassDefinition classDefinition) {
       isUnique: true,
       isPrimary: true,
     ),
-    for (var index
-        in classDefinition.indexes ?? <SerializableEntityIndexDefinition>[])
+    for (var index in classDefinition.indexes)
       IndexDefinition(
         indexName: index.name,
         elements: [

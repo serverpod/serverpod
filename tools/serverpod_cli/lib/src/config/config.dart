@@ -32,9 +32,11 @@ class GeneratorConfig {
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
     required List<String> relativeDartClientPackagePathParts,
-    required this.modules,
+    required List<ModuleConfig> modules,
     required this.extraClasses,
-  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+  })  : _relativeDartClientPackagePathParts =
+            relativeDartClientPackagePathParts,
+        _modules = modules;
 
   /// The name of the serverpod project.
   ///
@@ -98,11 +100,20 @@ class GeneratorConfig {
       [...clientPackagePathParts, 'lib', 'src', 'protocol'];
 
   /// All the modules defined in the config.
-  final List<ModuleConfig> modules;
+  final List<ModuleConfig> _modules;
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
+
+  /// All the modules defined in the config (of type module).
+  List<ModuleConfig> get modules => _modules
+      .where((module) => module.type == PackageType.module)
+      .where((module) => module.name != name)
+      .toList();
+
+  /// All the modules including my self and internal modules.
+  List<ModuleConfig> get modulesAll => _modules;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
   static Future<GeneratorConfig?> load([String dir = '']) async {
@@ -138,15 +149,12 @@ class GeneratorConfig {
       return null;
     }
 
-    var typeStr = generatorConfig!['type'];
-    late PackageType type;
-    if (typeStr == 'module') {
-      type = PackageType.module;
-    } else if (typeStr == 'internal') {
-      type = PackageType.internal;
-    } else {
-      type = PackageType.server;
+    if (generatorConfig == null) {
+      throw const FormatException(
+          'Failed to load config/generator.yaml. Is this a Serverpod project?');
     }
+
+    PackageType type = getPackageType(generatorConfig);
 
     if (generatorConfig['client_package_path'] == null) {
       throw const FormatException(
@@ -177,41 +185,22 @@ class GeneratorConfig {
       return null;
     }
 
-    // Load module settings
-    var modules = <ModuleConfig>[];
-    try {
-      if (generatorConfig['modules'] != null) {
-        Map modulesData = generatorConfig['modules'];
-        for (var package in modulesData.keys) {
-          modules.add(ModuleConfig._withMap(package, modulesData[package]));
-        }
+    var manualModules = <String, String?>{};
+    if (generatorConfig['modules'] != null) {
+      Map modulesData = generatorConfig['modules'];
+      for (var package in modulesData.keys) {
+        var nickname = modulesData[package]?['nickname'];
+        manualModules[package] = nickname is String ? nickname : null;
       }
-    } catch (e) {
-      throw const FormatException('Failed to load module config');
     }
 
-    // Autodetect modules.
-    var automagicModules = await locateModules(
+    var modules = await locateModules(
       directory: Directory(dir),
-      exludePackages: [serverPackage],
+      manualModules: manualModules,
     );
 
-    if (automagicModules == null) {
+    if (modules == null) {
       return null;
-    }
-
-    for (var autoModule in automagicModules) {
-      bool hasOverride = false;
-      for (var module in modules) {
-        if (module.name == autoModule.name) {
-          hasOverride = true;
-          break;
-        }
-      }
-
-      if (!hasOverride) {
-        modules.add(autoModule);
-      }
     }
 
     // Load extraClasses
@@ -237,15 +226,29 @@ class GeneratorConfig {
     }
 
     return GeneratorConfig(
-        name: name,
-        type: type,
-        serverPackage: serverPackage,
-        dartClientPackage: dartClientPackage,
-        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
-        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-        modules: modules,
-        extraClasses: extraClasses);
+      name: name,
+      type: type,
+      serverPackage: serverPackage,
+      dartClientPackage: dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      modules: modules,
+      extraClasses: extraClasses,
+    );
+  }
+
+  static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
+    var typeStr = generatorConfig['type'];
+    PackageType type;
+    if (typeStr == 'module') {
+      type = PackageType.module;
+    } else if (typeStr == 'internal') {
+      type = PackageType.internal;
+    } else {
+      type = PackageType.server;
+    }
+    return type;
   }
 
   @override
@@ -268,6 +271,8 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
 
 /// Describes the configuration of a Serverpod module a package depends on.
 class ModuleConfig {
+  PackageType type;
+
   /// The user defined nickname of the module.
   String nickname;
 
@@ -280,15 +285,14 @@ class ModuleConfig {
   /// The name of the server package.
   String serverPackage;
 
-  ModuleConfig._withMap(String name, Map map)
-      : this(
-          name: name,
-          nickname: map['nickname']!,
-        );
+  /// The migration versions of the module.
+  List<String> migrationVersions;
 
   ModuleConfig({
+    required this.type,
     required this.name,
     required this.nickname,
+    required this.migrationVersions,
   })  : dartClientPackage = '${name}_client',
         serverPackage = '${name}_server';
 
@@ -298,10 +302,12 @@ class ModuleConfig {
 
   @override
   String toString() {
-    return '''name: $name
+    return '''type: $type
+name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
-serverPackage: $serverPackage;
+serverPackage: $serverPackage
+migrationVersions: $migrationVersions 
 ''';
   }
 }

@@ -18,7 +18,7 @@ class ClassDefinitionBuilder {
   String? _tableName;
   String? _viewName;
   List<_FieldBuilder> _fields;
-  List<SerializableEntityIndexDefinition>? _indexes;
+  List<SerializableEntityIndexDefinition> _indexes;
   List<String>? _documentation;
 
   ClassDefinitionBuilder()
@@ -28,7 +28,8 @@ class ClassDefinitionBuilder {
         _fields = [],
         _subDirParts = [],
         _serverOnly = false,
-        _isException = false;
+        _isException = false,
+        _indexes = [];
 
   ClassDefinition build() {
     if (_tableName != null) {
@@ -239,7 +240,7 @@ class ClassDefinitionBuilder {
   }
 
   ClassDefinitionBuilder withIndexes(
-    List<SerializableEntityIndexDefinition>? indexes,
+    List<SerializableEntityIndexDefinition> indexes,
   ) {
     _indexes = indexes;
     return this;

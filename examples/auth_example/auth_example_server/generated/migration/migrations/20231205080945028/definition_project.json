@@ -1,0 +1,20 @@
+{
+  "name": null,
+  "moduleName": "auth_example",
+  "tables": [],
+  "installedModules": [
+    {
+      "id": null,
+      "module": "serverpod_auth",
+      "version": "20231205080924753",
+      "timestamp": null
+    },
+    {
+      "id": null,
+      "module": "serverpod",
+      "version": "20231205080920260",
+      "timestamp": null
+    }
+  ],
+  "migrationApiVersion": 1
+}

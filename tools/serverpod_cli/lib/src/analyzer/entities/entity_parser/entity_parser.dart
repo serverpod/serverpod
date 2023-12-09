@@ -390,12 +390,12 @@ class EntityParser {
     return null;
   }
 
-  static List<SerializableEntityIndexDefinition>? _parseIndexes(
+  static List<SerializableEntityIndexDefinition> _parseIndexes(
     YamlMap documentContents,
     List<SerializableEntityFieldDefinition> fields,
   ) {
     var indexesNode = documentContents.nodes[Keyword.indexes];
-    if (indexesNode is! YamlMap) return null;
+    if (indexesNode is! YamlMap) return [];
 
     var indexes = indexesNode.nodes.entries.map((node) {
       var keyScalar = node.key;

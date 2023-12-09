@@ -1,0 +1,6 @@
+enum: DatabaseMigrationActionType
+serialized: byName
+values:
+  - createTable
+  - deleteTable
+  - alterTable

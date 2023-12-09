@@ -258,18 +258,18 @@ abstract class Post extends _i1.TableRow {
     _i1.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<PostTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
   }) {
     return PostIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Post.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Post.t),
       include: include,
     );
   }

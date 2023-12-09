@@ -15,17 +15,17 @@ import '../protocol.dart' as _i2;
 abstract class DatabaseDefinition extends _i1.SerializableEntity {
   DatabaseDefinition._({
     this.name,
+    required this.moduleName,
     required this.tables,
-    this.priority,
-    this.installedModules,
+    required this.installedModules,
     required this.migrationApiVersion,
   });
 
   factory DatabaseDefinition({
     String? name,
+    required String moduleName,
     required List<_i2.TableDefinition> tables,
-    int? priority,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    required List<_i2.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
@@ -36,12 +36,12 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     return DatabaseDefinition(
       name:
           serializationManager.deserialize<String?>(jsonSerialization['name']),
+      moduleName: serializationManager
+          .deserialize<String>(jsonSerialization['moduleName']),
       tables: serializationManager
           .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
-      priority:
-          serializationManager.deserialize<int?>(jsonSerialization['priority']),
       installedModules:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>?>(
+          serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>>(
               jsonSerialization['installedModules']),
       migrationApiVersion: serializationManager
           .deserialize<int>(jsonSerialization['migrationApiVersion']),
@@ -52,25 +52,23 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   /// Null if the name is not available.
   String? name;
 
+  /// The name of the module that defines the database.
+  String moduleName;
+
   /// The tables of the database.
   List<_i2.TableDefinition> tables;
 
-  /// The priority of this database definition. Determines the order in which
-  /// the database definitions are applied. Only valid if the definition
-  /// defines a single module.
-  int? priority;
-
   /// Modules installed in the database, together with their version. Only
   /// set if known.
-  List<_i2.DatabaseMigrationVersion>? installedModules;
+  List<_i2.DatabaseMigrationVersion> installedModules;
 
   /// The version of the database definition.
   int migrationApiVersion;
 
   DatabaseDefinition copyWith({
     String? name,
+    String? moduleName,
     List<_i2.TableDefinition>? tables,
-    int? priority,
     List<_i2.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   });
@@ -78,8 +76,8 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'moduleName': moduleName,
       'tables': tables,
-      'priority': priority,
       'installedModules': installedModules,
       'migrationApiVersion': migrationApiVersion,
     };
@@ -91,14 +89,14 @@ class _Undefined {}
 class _DatabaseDefinitionImpl extends DatabaseDefinition {
   _DatabaseDefinitionImpl({
     String? name,
+    required String moduleName,
     required List<_i2.TableDefinition> tables,
-    int? priority,
-    List<_i2.DatabaseMigrationVersion>? installedModules,
+    required List<_i2.DatabaseMigrationVersion> installedModules,
     required int migrationApiVersion,
   }) : super._(
           name: name,
+          moduleName: moduleName,
           tables: tables,
-          priority: priority,
           installedModules: installedModules,
           migrationApiVersion: migrationApiVersion,
         );
@@ -106,18 +104,16 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
   @override
   DatabaseDefinition copyWith({
     Object? name = _Undefined,
+    String? moduleName,
     List<_i2.TableDefinition>? tables,
-    Object? priority = _Undefined,
-    Object? installedModules = _Undefined,
+    List<_i2.DatabaseMigrationVersion>? installedModules,
     int? migrationApiVersion,
   }) {
     return DatabaseDefinition(
       name: name is String? ? name : this.name,
+      moduleName: moduleName ?? this.moduleName,
       tables: tables ?? this.tables.clone(),
-      priority: priority is int? ? priority : this.priority,
-      installedModules: installedModules is List<_i2.DatabaseMigrationVersion>?
-          ? installedModules
-          : this.installedModules?.clone(),
+      installedModules: installedModules ?? this.installedModules.clone(),
       migrationApiVersion: migrationApiVersion ?? this.migrationApiVersion,
     );
   }

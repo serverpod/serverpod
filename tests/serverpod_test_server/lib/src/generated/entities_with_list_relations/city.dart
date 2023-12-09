@@ -244,18 +244,18 @@ abstract class City extends _i1.TableRow {
     _i1.WhereExpressionBuilder<CityTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CityTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
   }) {
     return CityIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(City.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(City.t),
       include: include,
     );
   }

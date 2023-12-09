@@ -258,18 +258,18 @@ abstract class Order extends _i1.TableRow {
     _i1.WhereExpressionBuilder<OrderTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<OrderTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
   }) {
     return OrderIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Order.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Order.t),
       include: include,
     );
   }

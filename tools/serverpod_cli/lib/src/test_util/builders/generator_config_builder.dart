@@ -1,6 +1,9 @@
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 
+const _defaultName = 'example';
+const _defaultType = PackageType.server;
+
 class GeneratorConfigBuilder {
   String _name;
   PackageType _type;
@@ -13,14 +16,27 @@ class GeneratorConfigBuilder {
   List<TypeDefinition> _extraClasses;
 
   GeneratorConfigBuilder()
-      : _name = 'example',
-        _type = PackageType.server,
+      : _name = _defaultName,
+        _type = _defaultType,
         _serverPackage = 'example_server',
         _dartClientPackage = 'example_client',
         _dartClientDependsOnServiceClient = false,
         _serverPackageDirectoryPathParts = [],
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
-        _modules = [],
+        _modules = [
+          ModuleConfig(
+            type: PackageType.internal,
+            name: 'serverpod',
+            nickname: 'serverpod',
+            migrationVersions: ['0000000000000000000'],
+          ),
+          ModuleConfig(
+            type: _defaultType,
+            name: _defaultName,
+            nickname: _defaultName,
+            migrationVersions: ['0000000000000000000'],
+          ),
+        ],
         _extraClasses = [];
 
   GeneratorConfigBuilder withName(String name) {
@@ -57,8 +73,10 @@ class GeneratorConfigBuilder {
   GeneratorConfigBuilder withAuthModule() {
     _modules.add(
       ModuleConfig(
+        type: PackageType.module,
         name: 'serverpod_auth',
         nickname: 'auth',
+        migrationVersions: ['0000000000000000000'],
       ),
     );
     return this;

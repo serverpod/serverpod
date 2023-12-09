@@ -76,7 +76,8 @@ Future<UserInfo?> signInWithGoogle(
     if (!serverResponse.success) {
       if (kDebugMode) {
         print(
-          'serverpod_auth_google: Failed to authenticate with Serverpod backend. Aborting.',
+          'serverpod_auth_google: Failed to authenticate with Serverpod backend: '
+          '${serverResponse.failReason ?? 'reason unknown'}. Aborting.',
         );
       }
       return null;

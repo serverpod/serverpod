@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -80,21 +81,14 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       projectName: projectName,
     );
 
-    RepairTargetMigration? targetMigration;
-    if (targetVersion != null) {
-      targetMigration = RepairTargetMigration(
-        version: targetVersion,
-        moduleName: projectName,
-      );
-    }
-
-    var success = await log.progress('Creating repair migration', () async {
+    File? repairMigration;
+    await log.progress('Creating repair migration', () async {
       try {
-        return await generator.repairMigration(
+        repairMigration = await generator.repairMigration(
           tag: tag,
           force: force,
           runMode: mode,
-          targetMigration: targetMigration,
+          targetMigrationVersion: targetVersion,
         );
       } on MigrationRepairTargetNotFoundException catch (e) {
         if (e.versionsFound.isEmpty) {
@@ -112,9 +106,6 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
           '"${e.moduleName}".',
         );
         log.error(e.exception);
-      } on MigrationRegistryLoadException catch (e) {
-        log.error(
-            'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
       } on MigrationLiveDatabaseDefinitionException catch (e) {
         log.error('Unable to fetch live database schema from server. '
             'Make sure the server is running and is connected to the '
@@ -125,13 +116,21 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
         log.error(e.exception);
       }
 
-      return false;
+      return repairMigration != null;
     });
 
-    if (!success) {
+    var repairMigrationPath = repairMigration?.path;
+    if (repairMigration == null || repairMigrationPath == null) {
       throw ExitException();
     }
 
+    log.info(
+      'Repair migration created: ${path.relative(
+        repairMigrationPath,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
     log.info('Done.', type: TextLogType.success);
   }
 }

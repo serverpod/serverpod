@@ -187,15 +187,15 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['insights'] as _i2.InsightsEndpoint)
                   .hotReload(session),
         ),
-        'getTargetDatabaseDefinition': _i1.MethodConnector(
-          name: 'getTargetDatabaseDefinition',
+        'getTargetTableDefinition': _i1.MethodConnector(
+          name: 'getTargetTableDefinition',
           params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .getTargetDatabaseDefinition(session),
+                  .getTargetTableDefinition(session),
         ),
         'getLiveDatabaseDefinition': _i1.MethodConnector(
           name: 'getLiveDatabaseDefinition',

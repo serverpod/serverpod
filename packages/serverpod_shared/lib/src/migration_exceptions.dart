@@ -1,18 +1,3 @@
-/// Exception thrown when loading the migration registry fails.
-class MigrationRegistryLoadException implements Exception {
-  /// The path to the directory where the migration registry was expected to be.
-  final String directoryPath;
-
-  /// The exception that was thrown.
-  final String exception;
-
-  /// Creates a new [MigrationRegistryLoadException].
-  MigrationRegistryLoadException({
-    required this.directoryPath,
-    required this.exception,
-  });
-}
-
 /// Exception thrown when loading a migration version fails.
 class MigrationVersionLoadException implements Exception {
   /// The name of the version that failed to load.
@@ -60,11 +45,26 @@ class MigrationRepairTargetNotFoundException implements Exception {
   final List<String> versionsFound;
 
   /// The name of the target that was not found.
-  final String targetName;
+  final String? targetName;
 
   /// Creates a new [MigrationRepairTargetNotFoundException].
   MigrationRepairTargetNotFoundException({
     required this.versionsFound,
     required this.targetName,
+  });
+}
+
+/// Exception thrown when the migration failed to create a database definition
+/// from the projects entity files.
+class GenerateMigrationDatabaseDefinitionException implements Exception {}
+
+/// Exception thrown when the migration directory already exists.
+class MigrationVersionAlreadyExistsException implements Exception {
+  /// The path to the directory that already exists.
+  final String directoryPath;
+
+  /// Creates a new [MigrationVersionAlreadyExistsException].
+  MigrationVersionAlreadyExistsException({
+    required this.directoryPath,
   });
 }

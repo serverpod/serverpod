@@ -304,7 +304,7 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy: Person.t.id,
+          orderBy: (t) => t.id,
           include: Person.include(
             organization: Organization.include(),
           ),
@@ -374,7 +374,7 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy: Person.t.id,
+          orderBy: (t) => t.id,
           include: Person.include(
             organization: Organization.include(
               people: Person.includeList(),
@@ -476,7 +476,7 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy: Person.t.name,
+          orderBy: (t) => t.name,
           limit: 10,
         ),
       ),
@@ -511,7 +511,7 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy: Person.t.name,
+          orderBy: (t) => t.name,
           orderDescending: true,
         ),
       ),
@@ -546,16 +546,15 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderByList: [
-            pod.Order(
-              column: Person.t.name,
-            ),
-            pod.Order(
-              column: Person.t.id,
-              orderDescending: true,
-            ),
-          ],
-        ),
+            orderByList: (t) => [
+                  pod.Order(
+                    column: t.name,
+                  ),
+                  pod.Order(
+                    column: t.id,
+                    orderDescending: true,
+                  ),
+                ]),
       ),
     );
 
@@ -618,7 +617,7 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy: Person.t.id,
+          orderBy: (t) => t.id,
           limit: 2,
           offset: 1,
         ),
@@ -675,7 +674,7 @@ void main() async {
       session,
       orderBy: (t) => t.id,
       include: City.include(
-        citizens: Person.includeList(limit: 2, offset: 1, orderBy: Person.t.id),
+        citizens: Person.includeList(limit: 2, offset: 1, orderBy: (t) => t.id),
       ),
     );
 
@@ -736,8 +735,9 @@ void main() async {
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(
-          orderBy:
-              Person.t.organization.people.count((p) => p.name.ilike('A%')),
+          orderBy: (t) => t.organization.people.count(
+            (p) => p.name.ilike('A%'),
+          ),
           orderDescending: true,
           limit: 2,
           include: Person.include(

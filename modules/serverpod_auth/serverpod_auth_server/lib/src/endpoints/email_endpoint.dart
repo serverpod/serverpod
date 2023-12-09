@@ -63,6 +63,11 @@ class EmailEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
+    } else if (userInfo.blocked) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.blocked,
+      );
     }
 
     session.log(' - user found', level: LogLevel.debug);

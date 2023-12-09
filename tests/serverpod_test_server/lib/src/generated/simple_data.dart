@@ -215,18 +215,18 @@ abstract class SimpleData extends _i1.TableRow {
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
   }) {
     return SimpleDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(SimpleData.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(SimpleData.t),
       include: include,
     );
   }

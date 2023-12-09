@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
@@ -58,32 +59,18 @@ class CreateMigrationCommand extends ServerpodCommand {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    int priority;
-    var packageType = config.type;
-    switch (packageType) {
-      case PackageType.internal:
-        priority = 0;
-        break;
-      case PackageType.module:
-        priority = 1;
-        break;
-      case PackageType.server:
-        priority = 2;
-        break;
-    }
-
     var generator = MigrationGenerator(
       directory: Directory.current,
       projectName: projectName,
     );
 
-    var success = await log.progress('Creating migration', () async {
-      MigrationVersion? migration;
+    MigrationVersion? migration;
+    await log.progress('Creating migration', () async {
       try {
         migration = await generator.createMigration(
           tag: tag,
           force: force,
-          priority: priority,
+          config: config,
         );
       } on MigrationVersionLoadException catch (e) {
         log.error(
@@ -92,18 +79,36 @@ class CreateMigrationCommand extends ServerpodCommand {
           'again. Migration version: "${e.versionName}".',
         );
         log.error(e.exception);
-      } on MigrationRegistryLoadException catch (e) {
+      } on GenerateMigrationDatabaseDefinitionException {
+        log.error('Unable to generate database definition for project.');
+      } on MigrationVersionAlreadyExistsException catch (e) {
         log.error(
-            'Unable to load migration registry from ${e.directoryPath}: ${e.exception}');
+          'Unable to create migration. A directory with the same name already '
+          'exists: "${e.directoryPath}".',
+        );
       }
 
       return migration != null;
     });
 
-    if (!success) {
+    var projectDirectory = migration?.projectDirectory;
+    var migrationName = migration?.versionName;
+    if (migration == null ||
+        projectDirectory == null ||
+        migrationName == null) {
       throw ExitException();
     }
 
+    log.info(
+      'Migration created: ${path.relative(
+        MigrationConstants.migrationVersionDirectory(
+          projectDirectory,
+          migrationName,
+        ).path,
+        from: Directory.current.path,
+      )}',
+      type: TextLogType.bullet,
+    );
     log.info('Done.', type: TextLogType.success);
   }
 }

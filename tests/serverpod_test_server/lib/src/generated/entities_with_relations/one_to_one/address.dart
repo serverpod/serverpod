@@ -243,18 +243,18 @@ abstract class Address extends _i1.TableRow {
     _i1.WhereExpressionBuilder<AddressTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<AddressTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
   }) {
     return AddressIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Address.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Address.t),
       include: include,
     );
   }

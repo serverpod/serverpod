@@ -3,21 +3,20 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'extensions.dart';
 
 DatabaseMigration generateDatabaseMigration({
-  required DatabaseDefinition srcDatabase,
-  required DatabaseDefinition dstDatabase,
-  required int priority,
+  required DatabaseDefinition databaseSource,
+  required DatabaseDefinition databaseTarget,
 }) {
   var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
   // Find deleted tables
   var deleteTables = <String>[];
-  for (var srcTable in srcDatabase.tables) {
+  for (var srcTable in databaseSource.tables) {
     if (srcTable.name == 'serverpod_migrations') {
       continue;
     }
 
-    if (!dstDatabase.containsTableNamed(srcTable.name)) {
+    if (!databaseTarget.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }
   }
@@ -40,8 +39,8 @@ DatabaseMigration generateDatabaseMigration({
   }
 
   // Find added or modified tables
-  for (var dstTable in dstDatabase.tables) {
-    var srcTable = srcDatabase.findTableNamed(dstTable.name);
+  for (var dstTable in databaseTarget.tables) {
+    var srcTable = databaseSource.findTableNamed(dstTable.name);
     if (srcTable == null) {
       // Added table
       actions.add(
@@ -85,7 +84,6 @@ DatabaseMigration generateDatabaseMigration({
   return DatabaseMigration(
     actions: actions,
     warnings: warnings,
-    priority: priority,
     migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 }

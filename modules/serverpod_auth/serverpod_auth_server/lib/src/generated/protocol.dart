@@ -47,523 +47,519 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static final Protocol _instance = Protocol._();
 
-  static final targetDatabaseDefinition = _i2.DatabaseDefinition(
-    tables: [
-      _i2.TableDefinition(
-        name: 'serverpod_email_auth',
-        dartName: 'EmailAuth',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault: 'nextval(\'serverpod_email_auth_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userId',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int',
-          ),
-          _i2.ColumnDefinition(
-            name: 'email',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'hash',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_auth_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_auth_email',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'email',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_email_create_request',
-        dartName: 'EmailCreateAccountRequest',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault:
-                'nextval(\'serverpod_email_create_request_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userName',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'email',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'hash',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'verificationCode',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_create_request_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_auth_create_account_request_idx',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'email',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_email_failed_sign_in',
-        dartName: 'EmailFailedSignIn',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault:
-                'nextval(\'serverpod_email_failed_sign_in_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'email',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'time',
-            columnType: _i2.ColumnType.timestampWithoutTimeZone,
-            isNullable: false,
-            dartType: 'DateTime',
-          ),
-          _i2.ColumnDefinition(
-            name: 'ipAddress',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_failed_sign_in_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_failed_sign_in_email_idx',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'email',
-              )
-            ],
-            type: 'btree',
-            isUnique: false,
-            isPrimary: false,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_failed_sign_in_time_idx',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'time',
-              )
-            ],
-            type: 'btree',
-            isUnique: false,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_email_reset',
-        dartName: 'EmailReset',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault:
-                'nextval(\'serverpod_email_reset_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userId',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int',
-          ),
-          _i2.ColumnDefinition(
-            name: 'verificationCode',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'expiration',
-            columnType: _i2.ColumnType.timestampWithoutTimeZone,
-            isNullable: false,
-            dartType: 'DateTime',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_reset_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_email_reset_verification_idx',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'verificationCode',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_google_refresh_token',
-        dartName: 'GoogleRefreshToken',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault:
-                'nextval(\'serverpod_google_refresh_token_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userId',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int',
-          ),
-          _i2.ColumnDefinition(
-            name: 'refreshToken',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_google_refresh_token_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_google_refresh_token_userId_idx',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'userId',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_user_image',
-        dartName: 'UserImage',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault: 'nextval(\'serverpod_user_image_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userId',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int',
-          ),
-          _i2.ColumnDefinition(
-            name: 'version',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int',
-          ),
-          _i2.ColumnDefinition(
-            name: 'url',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_user_image_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_user_image_user_id',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'userId',
-              ),
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'version',
-              ),
-            ],
-            type: 'btree',
-            isUnique: false,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-      _i2.TableDefinition(
-        name: 'serverpod_user_info',
-        dartName: 'UserInfo',
-        schema: 'public',
-        module: 'serverpod_auth',
-        columns: [
-          _i2.ColumnDefinition(
-            name: 'id',
-            columnType: _i2.ColumnType.integer,
-            isNullable: false,
-            dartType: 'int?',
-            columnDefault: 'nextval(\'serverpod_user_info_id_seq\'::regclass)',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userIdentifier',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'userName',
-            columnType: _i2.ColumnType.text,
-            isNullable: false,
-            dartType: 'String',
-          ),
-          _i2.ColumnDefinition(
-            name: 'fullName',
-            columnType: _i2.ColumnType.text,
-            isNullable: true,
-            dartType: 'String?',
-          ),
-          _i2.ColumnDefinition(
-            name: 'email',
-            columnType: _i2.ColumnType.text,
-            isNullable: true,
-            dartType: 'String?',
-          ),
-          _i2.ColumnDefinition(
-            name: 'created',
-            columnType: _i2.ColumnType.timestampWithoutTimeZone,
-            isNullable: false,
-            dartType: 'DateTime',
-          ),
-          _i2.ColumnDefinition(
-            name: 'imageUrl',
-            columnType: _i2.ColumnType.text,
-            isNullable: true,
-            dartType: 'String?',
-          ),
-          _i2.ColumnDefinition(
-            name: 'scopeNames',
-            columnType: _i2.ColumnType.json,
-            isNullable: false,
-            dartType: 'List<String>',
-          ),
-          _i2.ColumnDefinition(
-            name: 'blocked',
-            columnType: _i2.ColumnType.boolean,
-            isNullable: false,
-            dartType: 'bool',
-          ),
-        ],
-        foreignKeys: [],
-        indexes: [
-          _i2.IndexDefinition(
-            indexName: 'serverpod_user_info_pkey',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'id',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: true,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_user_info_user_identifier',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'userIdentifier',
-              )
-            ],
-            type: 'btree',
-            isUnique: true,
-            isPrimary: false,
-          ),
-          _i2.IndexDefinition(
-            indexName: 'serverpod_user_info_email',
-            tableSpace: null,
-            elements: [
-              _i2.IndexElementDefinition(
-                type: _i2.IndexElementDefinitionType.column,
-                definition: 'email',
-              )
-            ],
-            type: 'btree',
-            isUnique: false,
-            isPrimary: false,
-          ),
-        ],
-        managed: true,
-        viewTable: false,
-      ),
-    ],
-    migrationApiVersion: 1,
-  );
+  static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'serverpod_email_auth',
+      dartName: 'EmailAuth',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_email_auth_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_auth_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_auth_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_email_create_request',
+      dartName: 'EmailCreateAccountRequest',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_email_create_request_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'hash',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_create_request_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_auth_create_account_request_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_email_failed_sign_in',
+      dartName: 'EmailFailedSignIn',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_email_failed_sign_in_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'time',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'ipAddress',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_failed_sign_in_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_failed_sign_in_email_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_failed_sign_in_time_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'time',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_email_reset',
+      dartName: 'EmailReset',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_email_reset_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'verificationCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiration',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_reset_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_email_reset_verification_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'verificationCode',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_google_refresh_token',
+      dartName: 'GoogleRefreshToken',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault:
+              'nextval(\'serverpod_google_refresh_token_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'refreshToken',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_google_refresh_token_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_google_refresh_token_userId_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_user_image',
+      dartName: 'UserImage',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_user_image_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'version',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'url',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_image_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_image_user_id',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'version',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+    _i2.TableDefinition(
+      name: 'serverpod_user_info',
+      dartName: 'UserInfo',
+      schema: 'public',
+      module: 'serverpod_auth',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.integer,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'serverpod_user_info_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userIdentifier',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userName',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fullName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'email',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'created',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'imageUrl',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'scopeNames',
+          columnType: _i2.ColumnType.json,
+          isNullable: false,
+          dartType: 'List<String>',
+        ),
+        _i2.ColumnDefinition(
+          name: 'blocked',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_user_identifier',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userIdentifier',
+            )
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'serverpod_user_info_email',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'email',
+            )
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+      viewTable: false,
+    ),
+  ];
 
   @override
   T deserialize<T>(
@@ -791,6 +787,9 @@ class Protocol extends _i1.SerializationManagerServer {
   }
 
   @override
-  _i2.DatabaseDefinition getTargetDatabaseDefinition() =>
-      targetDatabaseDefinition;
+  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+      targetTableDefinitions;
+
+  @override
+  String getModuleName() => 'serverpod_auth';
 }

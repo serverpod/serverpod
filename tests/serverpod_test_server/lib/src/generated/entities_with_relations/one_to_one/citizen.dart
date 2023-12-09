@@ -281,18 +281,18 @@ abstract class Citizen extends _i1.TableRow {
     _i1.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<CitizenTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
     return CitizenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(Citizen.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(Citizen.t),
       include: include,
     );
   }

@@ -36,16 +36,18 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(entities);
-    databaseDefinition.priority = 1;
+    var databaseDefinition = createDatabaseDefinitionFromEntities(
+      entities,
+      'example',
+      [],
+    );
 
     test('then all definitions are created.', () {
       expect(databaseDefinition.tables, hasLength(3));
     });
 
     group('then pgsql file for migration', () {
-      var pgsqlFile =
-          databaseDefinition.toPgSql(version: '1.0,0', module: 'test_module');
+      var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
       test(
           'has foreign key creation for citizen after company table is created.',
           () {

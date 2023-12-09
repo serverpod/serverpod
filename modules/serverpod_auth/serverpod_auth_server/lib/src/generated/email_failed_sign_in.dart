@@ -243,18 +243,18 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
     _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
   }) {
     return EmailFailedSignInIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
       include: include,
     );
   }

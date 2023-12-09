@@ -12,6 +12,7 @@ class EntityDependencyResolver {
   ) {
     entityDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       for (var fieldDefinition in classDefinition.fields) {
+        _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveProtocolReference(fieldDefinition, entityDefinitions);
         _resolveEnumType(fieldDefinition, entityDefinitions);
         _resolveObjectRelationReference(
@@ -26,6 +27,20 @@ class EntityDependencyResolver {
         );
       }
     });
+  }
+
+  static void _resolveFieldIndexes(
+    SerializableEntityFieldDefinition fieldDefinition,
+    ClassDefinition classDefinition,
+  ) {
+    var indexes = classDefinition.indexes;
+    if (indexes.isEmpty) return;
+
+    var indexesContainingField = indexes
+        .where((index) => index.fields.contains(fieldDefinition.name))
+        .toList();
+
+    fieldDefinition.indexes = indexesContainingField;
   }
 
   static TypeDefinition _resolveProtocolReference(

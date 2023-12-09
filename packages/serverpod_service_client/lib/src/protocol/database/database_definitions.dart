@@ -22,8 +22,8 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   });
 
   factory DatabaseDefinitions({
-    required _i2.DatabaseDefinition target,
-    required _i2.DatabaseDefinition live,
+    required List<_i2.TableDefinition> target,
+    required List<_i2.TableDefinition> live,
     required List<_i2.DatabaseMigrationVersion> installedMigrations,
     required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
   }) = _DatabaseDefinitionsImpl;
@@ -34,9 +34,9 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   ) {
     return DatabaseDefinitions(
       target: serializationManager
-          .deserialize<_i2.DatabaseDefinition>(jsonSerialization['target']),
+          .deserialize<List<_i2.TableDefinition>>(jsonSerialization['target']),
       live: serializationManager
-          .deserialize<_i2.DatabaseDefinition>(jsonSerialization['live']),
+          .deserialize<List<_i2.TableDefinition>>(jsonSerialization['live']),
       installedMigrations:
           serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>>(
               jsonSerialization['installedMigrations']),
@@ -47,10 +47,10 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   }
 
   /// The target database definition.
-  _i2.DatabaseDefinition target;
+  List<_i2.TableDefinition> target;
 
   /// A definition of the database as it is currently.
-  _i2.DatabaseDefinition live;
+  List<_i2.TableDefinition> live;
 
   /// The migrations that are installed in the database.
   List<_i2.DatabaseMigrationVersion> installedMigrations;
@@ -59,8 +59,8 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   List<_i2.DatabaseMigrationVersion> latestAvailableMigrations;
 
   DatabaseDefinitions copyWith({
-    _i2.DatabaseDefinition? target,
-    _i2.DatabaseDefinition? live,
+    List<_i2.TableDefinition>? target,
+    List<_i2.TableDefinition>? live,
     List<_i2.DatabaseMigrationVersion>? installedMigrations,
     List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
   });
@@ -77,8 +77,8 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
 
 class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
   _DatabaseDefinitionsImpl({
-    required _i2.DatabaseDefinition target,
-    required _i2.DatabaseDefinition live,
+    required List<_i2.TableDefinition> target,
+    required List<_i2.TableDefinition> live,
     required List<_i2.DatabaseMigrationVersion> installedMigrations,
     required List<_i2.DatabaseMigrationVersion> latestAvailableMigrations,
   }) : super._(
@@ -90,14 +90,14 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
 
   @override
   DatabaseDefinitions copyWith({
-    _i2.DatabaseDefinition? target,
-    _i2.DatabaseDefinition? live,
+    List<_i2.TableDefinition>? target,
+    List<_i2.TableDefinition>? live,
     List<_i2.DatabaseMigrationVersion>? installedMigrations,
     List<_i2.DatabaseMigrationVersion>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
-      target: target ?? this.target.copyWith(),
-      live: live ?? this.live.copyWith(),
+      target: target ?? this.target.clone(),
+      live: live ?? this.live.clone(),
       installedMigrations:
           installedMigrations ?? this.installedMigrations.clone(),
       latestAvailableMigrations:

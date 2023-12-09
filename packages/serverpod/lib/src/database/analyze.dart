@@ -11,10 +11,14 @@ import '../util/column_type_extension.dart';
 class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
   static Future<DatabaseDefinition> analyze(Database database) async {
+    var currentDb = await database.unsafeQuery('SELECT current_database();');
+
+    var name = currentDb.first.first;
+    var installedModules = await _getInstalledMigrationVersions(database);
+
     return DatabaseDefinition(
-      name: (await database.unsafeQuery('SELECT current_database();'))
-          .first
-          .first,
+      moduleName: Protocol().getModuleName(),
+      name: name,
       tables: await Future.wait((await database.unsafeQuery(
 // Get list of all tables and the schema they are in.
           '''
@@ -162,7 +166,21 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
         );
       })),
       migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      installedModules: installedModules,
     );
+  }
+
+  /// Retrieves a list of installed database migrations.
+  static Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
+    Database database,
+  ) async {
+    try {
+      return database.find<DatabaseMigrationVersion>();
+    } catch (e) {
+      // Ignore if the table does not exist.
+      stderr.writeln('Failed to get installed migrations: $e');
+      return [];
+    }
   }
 
   /// Retrieves a list of installed database migrations.

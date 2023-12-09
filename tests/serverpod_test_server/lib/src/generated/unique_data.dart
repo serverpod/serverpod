@@ -225,18 +225,18 @@ abstract class UniqueData extends _i1.TableRow {
     _i1.WhereExpressionBuilder<UniqueDataTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
+    _i1.OrderByBuilder<UniqueDataTable>? orderBy,
     bool orderDescending = false,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByListBuilder<UniqueDataTable>? orderByList,
     UniqueDataInclude? include,
   }) {
     return UniqueDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
+      orderBy: orderBy?.call(UniqueData.t),
       orderDescending: orderDescending,
-      orderByList: orderByList,
+      orderByList: orderByList?.call(UniqueData.t),
       include: include,
     );
   }
