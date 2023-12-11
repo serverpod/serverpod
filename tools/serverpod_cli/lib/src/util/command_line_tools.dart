@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/constants.dart';
 
 class CommandLineTools {
   static Future<bool> dartPubGet(Directory dir) async {
@@ -56,6 +57,18 @@ class CommandLineTools {
       arguments: ['info'],
     );
     return exitCode == 0;
+  }
+
+  static Future<bool> isDockerVolumeAvailable(String projectName) async {
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'docker',
+      arguments: [
+        'volume',
+        'inspect',
+        SetupConstants.dockerVolumeName(projectName),
+      ],
+    );
+    return exitCode != 0;
   }
 
   static Future<bool> startDockerContainer(Directory dir) async {

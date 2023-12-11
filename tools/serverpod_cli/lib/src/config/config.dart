@@ -209,11 +209,10 @@ class GeneratorConfig {
       try {
         for (var extraClassConfig in generatorConfig['extraClasses']) {
           extraClasses.add(
-            parseAndAnalyzeType(
+            parseType(
               extraClassConfig,
               analyzingExtraClasses: true,
-              sourceSpan: generatorConfig['extraClasses'].span,
-            ).type,
+            ),
           );
         }
       } on SourceSpanException catch (_) {

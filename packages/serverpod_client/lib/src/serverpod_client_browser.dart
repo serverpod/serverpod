@@ -21,9 +21,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
   ServerpodClient(
     super.host,
     super.serializationManager, {
-    dynamic context,
+    super.context,
     super.authenticationKeyManager,
     super.logFailedCalls,
+    super.streamingConnectionTimeout,
+    super.connectionTimeout,
   }) {
     _httpClient = http.Client();
   }
@@ -43,10 +45,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
           formatArgs(args, await authenticationKeyManager?.get(), method);
       var url = Uri.parse('$host$endpoint');
 
-      var response = await _httpClient.post(
-        url,
-        body: body,
-      );
+      var response = await _httpClient
+          .post(
+            url,
+            body: body,
+          )
+          .timeout(connectionTimeout);
 
       data = response.body;
 

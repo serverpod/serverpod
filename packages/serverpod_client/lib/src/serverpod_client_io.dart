@@ -24,12 +24,15 @@ abstract class ServerpodClient extends ServerpodClientShared {
     dynamic context,
     super.authenticationKeyManager,
     super.logFailedCalls,
+    super.streamingConnectionTimeout,
+    super.connectionTimeout,
   }) {
     assert(context == null || context is SecurityContext);
 
     // Setup client
     _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = const Duration(seconds: 20);
+    _httpClient.connectionTimeout = connectionTimeout;
+
     // TODO: Generate working certificates
     _httpClient.badCertificateCallback =
         ((X509Certificate cert, String host, int port) {
@@ -69,7 +72,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       await request.flush();
 
-      var response = await request.close(); // done instead of close() ?
+      var response = await request.close().timeout(connectionTimeout);
+
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {

@@ -33,6 +33,20 @@ class MigrationGenerator {
     return versionName;
   }
 
+  /// Creates a new migration version.
+  /// If [tag] is specified, the migration will be tagged with the given name.
+  /// If [force] is true, the migration will be created even if there are
+  /// warnings.
+  /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// Returns the migration version, or null if no migration was created.
+  ///
+  /// Throws [MigrationVersionLoadException] if the a migration version
+  /// could not be loaded.
+  /// Throws [GenerateMigrationDatabaseDefinitionException] if the database
+  /// definition could not be created from project entities.
+  /// Throws [MigrationVersionAlreadyExistsException] if the migration version
+  /// already exists.
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,

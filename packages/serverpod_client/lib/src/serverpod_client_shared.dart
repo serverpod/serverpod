@@ -94,6 +94,9 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// received within the timeout duration the socket will be closed.
   final Duration streamingConnectionTimeout;
 
+  /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
+  Duration connectionTimeout;
+
   bool _firstMessageReceived = false;
 
   ConnectivityMonitor? _connectivityMonitor;
@@ -121,10 +124,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.host,
     this.serializationManager, {
     dynamic context,
-    this.authenticationKeyManager,
+    required this.authenticationKeyManager,
     this.logFailedCalls = true,
-    this.streamingConnectionTimeout = const Duration(seconds: 5),
-  }) {
+    required Duration? streamingConnectionTimeout,
+    required Duration? connectionTimeout,
+  })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
+        streamingConnectionTimeout =
+            streamingConnectionTimeout ?? const Duration(seconds: 5) {
     assert(host.endsWith('/'),
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
