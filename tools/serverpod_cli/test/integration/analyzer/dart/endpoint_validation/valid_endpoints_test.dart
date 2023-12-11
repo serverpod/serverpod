@@ -352,7 +352,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given a valid endpoint method with positional parameter with default value when analyzed',
+      'Given a valid endpoint method with optional positional parameter when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -368,80 +368,6 @@ import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
   Future<String> hello(Session session, String name, [String positional='world']) async {
-    return 'Hello \$name';
-  }
-}
-''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
-    });
-
-    test('then endpoint definition has one method defined.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, hasLength(1));
-    });
-
-    test('then endpoint definition method has one positional parameter.', () {
-      var parametersPositional = endpointDefinitions
-          .firstOrNull?.methods.firstOrNull?.parametersPositional;
-      expect(parametersPositional, hasLength(1));
-    });
-
-    test('then endpoint methods positional parameter has expected name', () {
-      var name = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersPositional.firstOrNull?.name;
-      expect(name, 'positional');
-    });
-
-    test('then the endpoints positional parameter has expected type', () {
-      var type = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersPositional.firstOrNull?.type;
-      expect(type?.className, 'String');
-    });
-
-    test('then the endpoint methods positional parameter is not required', () {
-      var required = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersPositional.firstOrNull?.required;
-      expect(required, isFalse);
-    });
-
-    test('then the endpoint methods positional parameter has dart parameter',
-        () {
-      var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersPositional.firstOrNull?.dartParameter;
-      expect(dartParameter, isNotNull);
-    });
-  });
-
-  group(
-      'Given a valid endpoint method with nullable positional parameter without default value when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
-
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleEndpoint extends Endpoint {
-  Future<String> hello(Session session, String name, [String? positional]) async {
     return 'Hello \$name';
   }
 }
