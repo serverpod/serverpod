@@ -27,9 +27,7 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group(
-      'Given an endpoint file with incomplete endpoint class defined when analyzed',
-      () {
+  group('Given an endpoint file with nothing defined when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -39,32 +37,27 @@ void main() {
     setUpAll(() async {
       var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
-      // Class is missing closing brackets
+      // Empty file
       endpointFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
+    test('then no parsing errors are reported.', () {
+      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
 
-    test('then endpoint definition is still created.', () {
-      expect(endpointDefinitions, isNotEmpty);
+    test('then no endpoint definition are created.', () {
+      expect(endpointDefinitions, isEmpty);
     });
   });
 
-  group(
-      'Given an endpoint file with incomplete endpoint method defined when analyzed',
-      () {
+  group('Given multiple valid endpoint files when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -72,55 +65,26 @@ class ExampleEndpoint extends Endpoint {
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
     setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      // Class and method are missing closing brackets
-      // Method is missing return statement
-      endpointFile.writeAsStringSync('''
+      var firstEndpointFile =
+          File(path.join(testDirectory.path, 'endpoint_one.dart'));
+      firstEndpointFile.createSync(recursive: true);
+      firstEndpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
-class ExampleEndpoint extends Endpoint {
+class ExampleEndpointOne extends Endpoint {
   Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
 ''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
-    });
-
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then endpoint definition is still created.', () {
-      expect(endpointDefinitions, isNotEmpty);
-    });
-
-    test('then endpoint method definition is still created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isNotEmpty);
-    });
-  });
-
-  group(
-      'Given an endpoint method that returns a Future with multiple defined types',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
-
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
+      var secondEndpointFile =
+          File(path.join(testDirectory.path, 'endpoint_two.dart'));
+      secondEndpointFile.createSync(recursive: true);
+      secondEndpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
 
-class ExampleEndpoint extends Endpoint {
-  Future<String, int> hello(Session session, String name) async {
+class ExampleEndpointTwo extends Endpoint {
+  Future<String> hello(Session session, String name) async {
     return 'Hello \$name';
   }
 }
@@ -129,28 +93,59 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
+    test('then no parsing errors are reported.', () {
+      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
-    test('then validation error informs that return type must be future', () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Future must have a type defined. E.g. Future<String>.',
-      );
+    test('then two endpoint definitions are created.', () {
+      expect(endpointDefinitions, hasLength(2));
+    });
+  });
+
+  group('Given a valid endpoint stored in a subdirectory when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile =
+          File(path.join(testDirectory.path, 'subdirectory', 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no parsing errors are reported.', () {
+      expect(analyzer.getErrors(), completion(isEmpty));
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
     });
 
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    test('then endpoint definition has expected subDirParts.', () {
+      var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
+      expect(subDirParts, hasLength(1));
+      expect(subDirParts?.first, 'subdirectory');
     });
   });
 }
