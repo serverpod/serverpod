@@ -27,7 +27,7 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given endpoint file with nothing defined when analyzed', () {
+  group('Given an endpoint file with nothing defined when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -58,7 +58,7 @@ void main() {
   });
 
   group(
-      'Given endpoint file with incomplete endpoint class defined when analyzed',
+      'Given an endpoint file with incomplete endpoint class defined when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -93,7 +93,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given endpoint file with incomplete endpoint method defined when analyzed',
+      'Given an endpoint file with incomplete endpoint method defined when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =

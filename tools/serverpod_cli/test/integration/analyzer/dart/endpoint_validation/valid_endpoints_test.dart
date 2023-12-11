@@ -27,7 +27,7 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given valid endpoint file when analyzed', () {
+  group('Given a valid endpoint file when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -171,7 +171,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint with documentation when analyzed', () {
+  group('Given a valid endpoint with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -213,7 +213,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint method with documentation when analyzed', () {
+  group('Given a valid endpoint method with documentation when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -256,7 +256,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint stored in a subdirectory when analyzed', () {
+  group('Given a valid endpoint stored in a subdirectory when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -299,7 +299,8 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint with multiple methods defined when analyzed', () {
+  group('Given a valid endpoint with multiple methods defined when analyzed',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -351,7 +352,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given valid endpoint method with positional parameter with default value when analyzed',
+      'Given a valid endpoint method with positional parameter with default value when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -425,7 +426,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given valid endpoint method with nullable positional parameter without default value when analyzed',
+      'Given a valid endpoint method with nullable positional parameter without default value when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -498,7 +499,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint method with named parameter with default value',
+  group('Given a valid endpoint method with named parameter with default value',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -571,7 +572,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given valid endpoint method with nullable named parameter when analyzed',
+      'Given a valid endpoint method with nullable named parameter when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -644,7 +645,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given valid endpoint method with required named parameter when analyzed',
+      'Given a valid endpoint method with required named parameter when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -716,7 +717,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given valid endpoint with private method when analyzed', () {
+  group('Given a valid endpoint with private method when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));

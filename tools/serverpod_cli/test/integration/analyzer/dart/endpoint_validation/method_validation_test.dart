@@ -28,7 +28,7 @@ void main() {
   });
 
   group(
-      'Given valid endpoint with excluded method name (overriden method from Endpoint class)',
+      'Given an endpoint with excluded method name (overriden method from Endpoint class)',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -71,7 +71,7 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given endpoint method without Session param when analyzed', () {
+  group('Given an endpoint method without Session param when analyzed', () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -112,7 +112,8 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given endpoint method that does not return Future when analyzed', () {
+  group('Given an endpoint method that does not return Future when analyzed',
+      () {
     var collector = CodeGenerationCollector();
     var testDirectory =
         Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
@@ -161,7 +162,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given endpoint method that returns a Future missing defined type when analyzed',
+      'Given an endpoint method that returns a Future missing defined type when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -260,7 +261,8 @@ class ExampleEndpoint extends Endpoint {
     });
   });
 
-  group('Given endpoint method that returns a Future null type when analyzed',
+  group(
+      'Given an endpoint method that returns a Future null type when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -303,7 +305,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given endpoint method that returns a Future with a non existing class when analyzed',
+      'Given an endpoint method that returns a Future with a non existing class when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
@@ -353,7 +355,7 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given endpoint method that returns a Future with dynamic type when analyzed',
+      'Given an endpoint method that returns a Future with dynamic type when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =

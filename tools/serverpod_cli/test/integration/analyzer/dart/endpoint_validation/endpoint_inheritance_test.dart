@@ -27,7 +27,7 @@ void main() {
     testProjectDirectory.deleteSync(recursive: true);
   });
 
-  group('Given dart class that does not inherit from Endpoint when analyzed',
+  group('Given a dart class that does not inherit from Endpoint when analyzed',
       () {
     var collector = CodeGenerationCollector();
     var testDirectory =
