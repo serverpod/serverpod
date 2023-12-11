@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
 import 'package:source_span/source_span.dart';
 import 'package:path/path.dart' as p;
 
@@ -122,31 +122,14 @@ class EndpointsAnalyzer {
                 // Skip overridden methods from the Endpoint class
                 if (_excludedMethodNameSet.contains(method.name)) continue;
 
-                var paramDefs = <ParameterDefinition>[];
-                var paramPositionalDefs = <ParameterDefinition>[];
-                var paramNamedDefs = <ParameterDefinition>[];
-                var parameters = method.parameters;
-                for (var param in parameters) {
-                  var paramDef = ParameterDefinition(
-                    name: param.name,
-                    required: param.isRequiredPositional ||
-                        param.isRequiredNamed ||
-                        (param.isNamed &&
-                            param.type.nullabilitySuffix ==
-                                NullabilitySuffix.none),
-                    type: TypeDefinition.fromDartType(param.type),
-                  );
+                var parameters =
+                    ParameterAnalyzer.analyze(method.parameters, collector);
 
-                  if (param.isRequiredPositional) {
-                    paramDefs.add(paramDef);
-                  } else if (param.isOptionalPositional) {
-                    paramPositionalDefs.add(paramDef);
-                  } else if (param.isNamed) {
-                    paramNamedDefs.add(paramDef);
-                  }
+                if (parameters == null) {
+                  continue;
                 }
 
-                if (_isEndpointMethod(paramDefs) &&
+                if (_isEndpointMethod(parameters.required) &&
                     _isValidReturnType(
                       dartType: method.returnType,
                       dartElement: method,
@@ -155,9 +138,10 @@ class EndpointsAnalyzer {
                   var methodDef = MethodDefinition(
                     name: method.name,
                     documentationComment: method.documentationComment,
-                    parameters: paramDefs.sublist(1), // Skip session parameter
-                    parametersNamed: paramNamedDefs,
-                    parametersPositional: paramPositionalDefs,
+                    parameters: parameters.required
+                        .sublist(1), // Skip session parameter,
+                    parametersNamed: parameters.named,
+                    parametersPositional: parameters.positional,
                     returnType: TypeDefinition.fromDartType(method.returnType),
                   );
                   methodDefs.add(methodDef);
