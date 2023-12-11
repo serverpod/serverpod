@@ -117,6 +117,8 @@ class ExampleEndpoint extends Endpoint {
         var returnType =
             endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
         expect(returnType?.className, 'Future');
+        expect(returnType?.generics, hasLength(1));
+        expect(returnType?.generics.firstOrNull?.className, 'String');
       });
 
       test('does not have session as parameter', () {
