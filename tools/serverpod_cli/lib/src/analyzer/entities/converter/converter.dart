@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -97,10 +98,7 @@ List<String> _extractStringifiedNodes(String? input) {
   if (input == null) return [];
 
   // Split on comma, but not if the comma is inside < > or ( )
-  return input
-      .split(RegExp(r',(?![^(]*\))(?![^<]*>)'))
-      .map((e) => e.trim())
-      .toList();
+  return splitIgnoringBrackets(input);
 }
 
 Iterable<Map<YamlScalar, YamlNode>> _extractKeyValuePairs(
