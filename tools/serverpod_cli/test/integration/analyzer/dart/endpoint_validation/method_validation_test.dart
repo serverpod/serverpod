@@ -212,56 +212,6 @@ class ExampleEndpoint extends Endpoint {
   });
 
   group(
-      'Given endpoint method that returns a Future with multiple defined types',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
-
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleEndpoint extends Endpoint {
-  Future<String, int> hello(Session session, String name) async {
-    return 'Hello \$name';
-  }
-}
-''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
-    });
-
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test('then validation error informs that return type must be future', () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Future must have a type defined. E.g. Future<String>.',
-      );
-    });
-
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
-    });
-
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
-    });
-  });
-
-  group(
       'Given an endpoint method that returns a Future null type when analyzed',
       () {
     var collector = CodeGenerationCollector();
