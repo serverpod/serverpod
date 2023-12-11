@@ -63,7 +63,7 @@ class ExampleEndpoint extends Endpoint {
     });
 
     group('then endpoint definition', () {
-      test('has correct name.', () {
+      test('has expected name.', () {
         var name = endpointDefinitions.firstOrNull?.name;
         expect(name, 'example');
       });
@@ -74,7 +74,7 @@ class ExampleEndpoint extends Endpoint {
         expect(documentation, isNull);
       });
 
-      test('has correct class name.', () {
+      test('has expected class name.', () {
         var className = endpointDefinitions.firstOrNull?.className;
         expect(className, 'ExampleEndpoint');
       });
@@ -84,7 +84,7 @@ class ExampleEndpoint extends Endpoint {
         expect(methods, hasLength(1));
       });
 
-      test('has correct filePath.', () {
+      test('has expected filePath.', () {
         var filePath = endpointDefinitions.firstOrNull?.filePath;
         expect(
             filePath,
@@ -95,14 +95,14 @@ class ExampleEndpoint extends Endpoint {
             ));
       });
 
-      test('has correct subDirParts.', () {
+      test('has expected subDirParts.', () {
         var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
         expect(subDirParts, isEmpty);
       });
     });
 
     group('then endpoint method definition', () {
-      test('has correct name.', () {
+      test('has expected name.', () {
         var name = endpointDefinitions.firstOrNull?.methods.firstOrNull?.name;
         expect(name, 'hello');
       });
@@ -113,7 +113,7 @@ class ExampleEndpoint extends Endpoint {
         expect(documentation, isNull);
       });
 
-      test('has correct return type.', () {
+      test('has expected return type.', () {
         var returnType =
             endpointDefinitions.firstOrNull?.methods.firstOrNull?.returnType;
         expect(returnType?.className, 'Future');
@@ -125,19 +125,19 @@ class ExampleEndpoint extends Endpoint {
         expect(parameters, isNot(contains('session')));
       });
 
-      test('has correct number of mandatory parameters.', () {
+      test('has expected number of mandatory parameters.', () {
         var parameters =
             endpointDefinitions.firstOrNull?.methods.firstOrNull?.parameters;
         expect(parameters, hasLength(1));
       });
 
-      test('has correct number of positional parameters.', () {
+      test('has no positional parameters.', () {
         var parametersPositional = endpointDefinitions
             .firstOrNull?.methods.firstOrNull?.parametersPositional;
         expect(parametersPositional, isEmpty);
       });
 
-      test('has correct number of named parameters.', () {
+      test('has no named parameters.', () {
         var parametersNamed = endpointDefinitions
             .firstOrNull?.methods.firstOrNull?.parametersNamed;
         expect(parametersNamed, isEmpty);
@@ -145,13 +145,13 @@ class ExampleEndpoint extends Endpoint {
     });
 
     group('then endpoint method parameter', () {
-      test('has correct name.', () {
+      test('has expected name.', () {
         var name = endpointDefinitions
             .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.name;
         expect(name, 'name');
       });
 
-      test('has correct type.', () {
+      test('has expected type.', () {
         var type = endpointDefinitions
             .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.type;
         expect(type?.className, 'String');
@@ -207,7 +207,7 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition has correct documentation.', () {
+    test('then endpoint definition has expected documentation.', () {
       var documentation = endpointDefinitions.firstOrNull?.documentationComment;
       expect(documentation, '/// This is an example endpoint.');
     });
@@ -249,7 +249,7 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition method has correct documentation.', () {
+    test('then endpoint definition method has expected documentation.', () {
       var documentation = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.documentationComment;
       expect(documentation, '/// This is a method comment.');
@@ -292,7 +292,7 @@ class ExampleEndpoint extends Endpoint {
       expect(endpointDefinitions, hasLength(1));
     });
 
-    test('then endpoint definition has correct subDirParts.', () {
+    test('then endpoint definition has expected subDirParts.', () {
       var subDirParts = endpointDefinitions.firstOrNull?.subDirParts;
       expect(subDirParts, hasLength(1));
       expect(subDirParts?.first, 'subdirectory');
@@ -344,7 +344,7 @@ class ExampleEndpoint extends Endpoint {
       expect(methods, hasLength(2));
     });
 
-    test('then endpoint definition has correct method names.', () {
+    test('then endpoint definition has expected method names.', () {
       var methods = endpointDefinitions.firstOrNull?.methods;
       expect(methods?.firstOrNull?.name, 'hello');
       expect(methods?.lastOrNull?.name, 'world');
@@ -399,13 +399,13 @@ class ExampleEndpoint extends Endpoint {
       expect(parametersPositional, hasLength(1));
     });
 
-    test('then endpoint methods positional parameter has correct name', () {
+    test('then endpoint methods positional parameter has expected name', () {
       var name = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersPositional.firstOrNull?.name;
       expect(name, 'positional');
     });
 
-    test('then the endpoints positional parameter has correct type', () {
+    test('then the endpoints positional parameter has expected type', () {
       var type = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersPositional.firstOrNull?.type;
       expect(type?.className, 'String');
@@ -473,13 +473,13 @@ class ExampleEndpoint extends Endpoint {
       expect(parametersPositional, hasLength(1));
     });
 
-    test('then endpoint methods positional parameter has correct name', () {
+    test('then endpoint methods positional parameter has expected name', () {
       var name = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersPositional.firstOrNull?.name;
       expect(name, 'positional');
     });
 
-    test('then the endpoints positional parameter has correct type', () {
+    test('then the endpoints positional parameter has expected type', () {
       var type = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersPositional.firstOrNull?.type;
       expect(type?.className, 'String');
@@ -546,13 +546,13 @@ class ExampleEndpoint extends Endpoint {
       expect(parametersNamed, hasLength(1));
     });
 
-    test('then endpoint methods positional parameter has correct name', () {
+    test('then endpoint methods positional parameter has expected name', () {
       var name = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.name;
       expect(name, 'named');
     });
 
-    test('then the endpoints positional parameter has correct type', () {
+    test('then the endpoints positional parameter has expected type', () {
       var type = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.type;
       expect(type?.className, 'String');
@@ -619,13 +619,13 @@ class ExampleEndpoint extends Endpoint {
       expect(parametersNamed, hasLength(1));
     });
 
-    test('then endpoint methods positional parameter has correct name', () {
+    test('then endpoint methods positional parameter has expected name', () {
       var name = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.name;
       expect(name, 'named');
     });
 
-    test('then the endpoints positional parameter has correct type', () {
+    test('then the endpoints positional parameter has expected type', () {
       var type = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.type;
       expect(type?.className, 'String');
@@ -692,13 +692,13 @@ class ExampleEndpoint extends Endpoint {
       expect(parametersNamed, hasLength(1));
     });
 
-    test('then endpoint methods positional parameter has correct name', () {
+    test('then endpoint methods positional parameter has expected name', () {
       var name = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.name;
       expect(name, 'named');
     });
 
-    test('then the endpoints positional parameter has correct type', () {
+    test('then the endpoints positional parameter has expected type', () {
       var type = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.parametersNamed.firstOrNull?.type;
       expect(type?.className, 'String');
