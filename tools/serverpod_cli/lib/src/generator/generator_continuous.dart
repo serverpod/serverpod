@@ -28,7 +28,10 @@ Future<bool> performGenerateContinuously({
       newParagraph: true,
     );
     success = await _performSafeGenerate(
-        config: config, endpointsAnalyzer: endpointsAnalyzer);
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+      changedFilePath: event.path,
+    );
   }
 
   return success;
@@ -37,6 +40,7 @@ Future<bool> performGenerateContinuously({
 Future<bool> _performSafeGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  String? changedFilePath,
 }) async {
   var success = false;
   try {
@@ -45,6 +49,7 @@ Future<bool> _performSafeGenerate({
         () => performGenerate(
               config: config,
               endpointsAnalyzer: endpointsAnalyzer,
+              changedFilePath: changedFilePath,
             ));
     log.info('Incremental code generation complete.');
   } catch (e) {
