@@ -25,19 +25,16 @@ const _excludedMethodNameSet = {
 
 /// Analyzes dart files for the protocol specification.
 class EndpointsAnalyzer {
-  late final Directory endpointDirectory;
-  late final AnalysisContextCollection collection;
+  final AnalysisContextCollection collection;
 
-  /// Create a new [EndpointsAnalyzer], analyzing all dart files in the
-  /// [endpointDirectory].
-  // TODO: Make ProtocolDartFileAnalyzer testable
-  EndpointsAnalyzer(GeneratorConfig config) {
-    endpointDirectory = Directory(p.joinAll(config.endpointsSourcePathParts));
-    collection = AnalysisContextCollection(
-      includedPaths: [endpointDirectory.absolute.path],
-      resourceProvider: PhysicalResourceProvider.INSTANCE,
-    );
-  }
+  /// Create a new [EndpointsAnalyzer], containing a
+  /// [AnalysisContextCollection] that analyzes all dart files in the
+  /// provided [endpointDirectory].
+  EndpointsAnalyzer(Directory endpointDirectory)
+      : collection = AnalysisContextCollection(
+          includedPaths: [endpointDirectory.absolute.path],
+          resourceProvider: PhysicalResourceProvider.INSTANCE,
+        );
 
   /// Get all errors in the analyzed files.
   Future<List<String>> getErrors() async {
@@ -62,7 +59,7 @@ class EndpointsAnalyzer {
     return errorMessages;
   }
 
-  /// Analyze all files in the [endpointDirectory].
+  /// Analyze all files in the [AnalysisContextCollection].
   /// Use [changedFiles] to mark files, that need reloading.
   Future<List<EndpointDefinition>> analyze({
     required CodeAnalysisCollector collector,
