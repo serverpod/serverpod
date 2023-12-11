@@ -135,7 +135,6 @@ class EndpointsAnalyzer {
                             param.type.nullabilitySuffix ==
                                 NullabilitySuffix.none),
                     type: TypeDefinition.fromDartType(param.type),
-                    dartParameter: param,
                   );
 
                   if (param.isRequiredPositional) {

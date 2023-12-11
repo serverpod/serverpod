@@ -176,12 +176,6 @@ class ExampleEndpoint extends Endpoint {
             .firstOrNull?.methods.firstOrNull?.parameters.firstOrNull?.required;
         expect(required, isTrue);
       });
-
-      test('has dart parameter.', () {
-        var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-            ?.parameters.firstOrNull?.dartParameter;
-        expect(dartParameter, isNotNull);
-      });
     });
   });
 
@@ -250,12 +244,6 @@ class ExampleEndpoint extends Endpoint {
           ?.parametersNamed.firstOrNull?.required;
       expect(required, isTrue);
     });
-
-    test('then the endpoint methods named parameter has dart parameter', () {
-      var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersNamed.firstOrNull?.dartParameter;
-      expect(dartParameter, isNotNull);
-    });
   });
 
   group(
@@ -323,12 +311,6 @@ class ExampleEndpoint extends Endpoint {
           ?.parametersNamed.firstOrNull?.required;
       expect(required, isFalse);
     });
-
-    test('then the endpoint methods named parameter has dart parameter', () {
-      var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersNamed.firstOrNull?.dartParameter;
-      expect(dartParameter, isNotNull);
-    });
   });
 
   group('Given a valid endpoint method with named parameter with default value',
@@ -394,12 +376,6 @@ class ExampleEndpoint extends Endpoint {
       var required = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersNamed.firstOrNull?.required;
       expect(required, isTrue);
-    });
-
-    test('then the endpoint methods named parameter has dart parameter', () {
-      var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersNamed.firstOrNull?.dartParameter;
-      expect(dartParameter, isNotNull);
     });
   });
 
@@ -467,13 +443,6 @@ class ExampleEndpoint extends Endpoint {
       var required = endpointDefinitions.firstOrNull?.methods.firstOrNull
           ?.parametersPositional.firstOrNull?.required;
       expect(required, isFalse);
-    });
-
-    test('then the endpoint methods positional parameter has dart parameter',
-        () {
-      var dartParameter = endpointDefinitions.firstOrNull?.methods.firstOrNull
-          ?.parametersPositional.firstOrNull?.dartParameter;
-      expect(dartParameter, isNotNull);
     });
   });
 }
