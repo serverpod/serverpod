@@ -44,8 +44,8 @@ import 'package:serverpod/serverpod.dart';
 class ExampleEndpoint {
   Future<String> hello(Session session, String name) async {
     return 'Hello, \$name!';
-    }
   }
+}
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
