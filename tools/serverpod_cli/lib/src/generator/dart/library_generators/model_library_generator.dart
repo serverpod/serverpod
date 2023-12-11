@@ -20,14 +20,12 @@ class SerializableModelLibraryGenerator {
 
   /// Generate the file for a model.
   Library generateModelLibrary(SerializableModelDefinition modelDefinition) {
-    if (modelDefinition is ClassDefinition) {
-      return _generateClassLibrary(modelDefinition);
+    switch (modelDefinition) {
+      case ClassDefinition():
+        return _generateClassLibrary(modelDefinition);
+      case EnumDefinition():
+        return _generateEnumLibrary(modelDefinition);
     }
-    if (modelDefinition is EnumDefinition) {
-      return _generateEnumLibrary(modelDefinition);
-    }
-
-    throw Exception('Unsupported model type.');
   }
 
   /// Handle ordinary classes for [generateModelLibrary].

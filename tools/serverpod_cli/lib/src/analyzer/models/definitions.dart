@@ -4,7 +4,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
-abstract class SerializableModelDefinition {
+sealed class SerializableModelDefinition {
   final String fileName;
   final String sourceFileName;
   final String className;
