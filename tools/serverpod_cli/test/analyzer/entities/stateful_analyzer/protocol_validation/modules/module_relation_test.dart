@@ -8,7 +8,10 @@ import 'package:test/test.dart';
 void main() {
   group('Given a class referencing a module class with a relation.', () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user_info').withYaml(
+      ProtocolSourceBuilder()
+          .withModuleAlias('auth')
+          .withFileName('user_info')
+          .withYaml(
         '''
         class: UserInfo
         table: serverpod_user_info
