@@ -1,8 +1,10 @@
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
 class ModelSourceBuilder {
+  late String moduleAlias;
   late String yaml;
-  late Uri yamlSourceUri;
+  late String yamlSourcePath;
+  Uri? yamlSourceUri;
   late List<String> protocolRootPathParts;
 
   ModelSourceBuilder() {
@@ -11,12 +13,18 @@ class ModelSourceBuilder {
     fields:
       name: String
     ''');
-    yamlSourceUri = Uri(path: 'lib/src/model/example.yaml');
+    yamlSourcePath = 'lib/src/model/example.yaml';
     protocolRootPathParts = [];
+    moduleAlias = 'protocol';
+  }
+
+  ModelSourceBuilder withModuleAlias(String moduleAlias) {
+    this.moduleAlias = moduleAlias;
+    return this;
   }
 
   ModelSourceBuilder withFileName(String fileName) {
-    yamlSourceUri = Uri(path: 'lib/src/model/$fileName.yaml');
+    yamlSourcePath = 'lib/src/model/$fileName.yaml';
     return this;
   }
 
@@ -37,6 +45,12 @@ class ModelSourceBuilder {
   }
 
   ModelSource build() {
-    return ModelSource(yaml, yamlSourceUri, protocolRootPathParts);
+    var yamlSourceUri = Uri(path: 'module/$moduleAlias/$yamlSourcePath');
+    return ModelSource(
+      moduleAlias,
+      yaml,
+      this.yamlSourceUri ?? yamlSourceUri,
+      protocolRootPathParts,
+    );
   }
 }

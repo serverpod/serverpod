@@ -5,6 +5,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 /// An abstract representation of a yaml file in the
 /// protocol directory.
 sealed class SerializableModelDefinition {
+  final String moduleAlias;
   final String fileName;
   final String sourceFileName;
   final String className;
@@ -12,6 +13,7 @@ sealed class SerializableModelDefinition {
   final bool serverOnly;
 
   SerializableModelDefinition({
+    required this.moduleAlias,
     required this.fileName,
     required this.sourceFileName,
     required this.className,
@@ -54,6 +56,7 @@ class ClassDefinition extends SerializableModelDefinition {
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
+    required super.moduleAlias,
     required super.fileName,
     required super.sourceFileName,
     required super.className,
@@ -207,6 +210,7 @@ class EnumDefinition extends SerializableModelDefinition {
 
   /// Create a new [EnumDefinition].
   EnumDefinition({
+    required super.moduleAlias,
     required super.fileName,
     required super.sourceFileName,
     required super.className,

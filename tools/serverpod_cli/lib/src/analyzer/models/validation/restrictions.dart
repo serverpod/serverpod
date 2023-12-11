@@ -143,7 +143,9 @@ class Restrictions {
       ];
     }
 
-    var classesByName = modelRelations?.classNames[className];
+    var classesByName = modelRelations?.classNames[className]?.where(
+        (model) => model.moduleAlias == documentDefinition?.moduleAlias);
+
     if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanSeverityException(

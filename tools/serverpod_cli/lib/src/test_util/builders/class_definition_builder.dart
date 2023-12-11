@@ -9,6 +9,7 @@ import 'serializable_entity_field_definition_builder.dart';
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
 class ClassDefinitionBuilder {
+  String _moduleAlias;
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -21,7 +22,8 @@ class ClassDefinitionBuilder {
   List<String>? _documentation;
 
   ClassDefinitionBuilder()
-      : _fileName = 'example',
+      : _moduleAlias = 'protocol',
+        _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         _fields = [],
@@ -44,6 +46,7 @@ class ClassDefinitionBuilder {
     }
 
     return ClassDefinition(
+      moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,

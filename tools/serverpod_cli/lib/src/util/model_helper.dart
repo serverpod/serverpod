@@ -3,11 +3,17 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart';
 
 class ModelSource {
+  String moduleAlias;
   String yaml;
   Uri yamlSourceUri;
   List<String> protocolRootPathParts;
 
-  ModelSource(this.yaml, this.yamlSourceUri, this.protocolRootPathParts);
+  ModelSource(
+    this.moduleAlias,
+    this.yaml,
+    this.yamlSourceUri,
+    this.protocolRootPathParts,
+  );
 }
 
 const modelFileExtensions = [
@@ -50,6 +56,7 @@ class ModelHelper {
       var yaml = await model.readAsString();
 
       sources.add(ModelSource(
+        'protocol', // TODO set module alias from constant
         yaml,
         model.uri,
         extractPathFromModelRoot(config, model.uri),

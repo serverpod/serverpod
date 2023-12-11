@@ -79,6 +79,7 @@ Future<void> runLanguageServer() async {
 
     project.analyzer.addYamlModel(
       ModelSource(
+        'protocol', // TODO set module alias from constant
         params.textDocument.text,
         params.textDocument.uri,
         ModelHelper.extractPathFromModelRoot(

@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 
@@ -20,15 +20,13 @@ void main() {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
     var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var yamlSource = ModelSource(
+    var yamlSource = ModelSourceBuilder().withYamlSourceUri(modelUri).withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      modelUri,
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
     statefulAnalyzer.addYamlModel(yamlSource);
     statefulAnalyzer.removeYamlModel(modelUri);
 
@@ -69,16 +67,13 @@ fields:
   test(
       'Given a valid model class as the initial state, when validating all, then the class is serialized.',
       () {
-    var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var yamlSource = ModelSource(
+    var yamlSource = ModelSourceBuilder().withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      modelUri,
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     var statefulAnalyzer = StatefulAnalyzer([yamlSource]);
 
@@ -91,16 +86,13 @@ fields:
   test(
       'Given a valid model class and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var yamlSource = ModelSource(
+    var yamlSource = ModelSourceBuilder().withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      modelUri,
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     var wasCalled = false;
     var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
@@ -114,12 +106,7 @@ fields:
   test(
       'Given a model with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var yamlSource = ModelSource(
-      '''''',
-      modelUri,
-      [],
-    );
+    var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
     var wasCalled = false;
     var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
@@ -133,15 +120,12 @@ fields:
   test(
       'Given a model with multi line invalid yaml syntax when validating all then error is reported.',
       () {
-    var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var invalidSource = ModelSource(
+    var invalidSource = ModelSourceBuilder().withYaml(
       '''
 this is not valid yaml
 and neither is this line
 ''',
-      modelUri,
-      [],
-    );
+    ).build();
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer([invalidSource], onErrorsCollector(collector))
@@ -165,25 +149,22 @@ and neither is this line
       'Given a model that was invalid on first validation, when validating the same model with an updated valid syntax, then the previous errors are cleared.',
       () {
     var modelUri = Uri(path: 'lib/src/model/example.yaml');
-    var invalidSource = ModelSource(
+    var invalidSource =
+        ModelSourceBuilder().withYamlSourceUri(modelUri).withYaml(
       '''
-class: 
-fields:
-  name: String
-''',
-      modelUri,
-      [],
-    );
+      class: 
+      fields:
+        name: String
+      ''',
+    ).build();
 
-    var validSource = ModelSource(
+    var validSource = ModelSourceBuilder().withYamlSourceUri(modelUri).withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      modelUri,
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     CodeGenerationCollector? reportedErrors;
     var statefulAnalyzer = StatefulAnalyzer([invalidSource], (uri, errors) {
@@ -204,25 +185,21 @@ fields:
   test(
       'Given two yaml models with the same class name, when validating all, then an error is reported.',
       () {
-    var yamlSource1 = ModelSource(
+    var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example1.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
-    var yamlSource2 = ModelSource(
+    var yamlSource2 = ModelSourceBuilder().withFileName('example2').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example2.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     CodeGenerationCollector? reportedErrors;
 
@@ -240,25 +217,21 @@ fields:
   test(
       'Given two yaml models with the same class name, when removing and revalidating, then the previous error is cleared.',
       () {
-    var yamlSource1 = ModelSource(
+    var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example1.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
-    var yamlSource2 = ModelSource(
+    var yamlSource2 = ModelSourceBuilder().withFileName('example2').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example2.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     CodeGenerationCollector? reportedErrors;
     var statefulAnalyzer =
@@ -282,25 +255,21 @@ fields:
   test(
       'Given an initial validation with one valid model, when adding a second model with the same class and revalidating, then an error is reported.',
       () {
-    var yamlSource1 = ModelSource(
+    var yamlSource1 = ModelSourceBuilder().withFileName('example1').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example1.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
-    var yamlSource2 = ModelSource(
+    var yamlSource2 = ModelSourceBuilder().withFileName('example2').withYaml(
       '''
-class: Example
-fields:
-  name: String
-''',
-      Uri(path: 'lib/src/model/example2.yaml'),
-      [],
-    );
+      class: Example
+      fields:
+        name: String
+      ''',
+    ).build();
 
     CodeGenerationCollector? reportedErrors;
     var statefulAnalyzer = StatefulAnalyzer([yamlSource1], (uri, errors) {
