@@ -6,7 +6,6 @@ import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Generates all the [ProtocolDefinition] based
 /// dart libraries (basically the content of a standalone dart file).

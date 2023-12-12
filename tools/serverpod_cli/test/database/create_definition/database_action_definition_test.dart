@@ -25,22 +25,6 @@ void main() {
     expect(databaseDefinition.tables, hasLength(1));
     expect(databaseDefinition.tables.first.name, 'example');
   });
-
-  test(
-      'Given a class definition with a view, then generate a view with that name.',
-      () {
-    var field = FieldDefinitionBuilder().withPrimaryKey().build();
-    var entity = ClassDefinitionBuilder()
-        .withTableName('example')
-        .withField(field)
-        .build();
-
-    var databaseDefinition = createDatabaseDefinitionFromEntities([entity]);
-
-    expect(databaseDefinition.tables, hasLength(1));
-    expect(databaseDefinition.tables.first.name, 'example');
-  });
-
   group(
       'Given a class definition with a foreign relation with onDelete and onUpdate set to "SetNull"',
       () {
