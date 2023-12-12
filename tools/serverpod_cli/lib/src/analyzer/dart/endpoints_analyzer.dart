@@ -77,20 +77,6 @@ class EndpointsAnalyzer {
           continue;
         }
 
-        // Get the subdirectory of the filePath by removing the first elements
-        // of the root path and the file path as long as they match.
-        var rootPathParts = p.split(context.contextRoot.root.path);
-        var fileDirPathParts = p.split(p.dirname(filePath));
-        while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
-          if (rootPathParts.first == fileDirPathParts.first) {
-            rootPathParts.removeAt(0);
-            fileDirPathParts.removeAt(0);
-          } else {
-            break;
-          }
-        }
-        var subdirectory = fileDirPathParts;
-
         var library = await context.currentSession.getResolvedLibrary(filePath);
         library as ResolvedLibraryResult;
         var element = library.element;
@@ -137,7 +123,7 @@ class EndpointsAnalyzer {
             methodDefs,
             collector,
             filePath,
-            subdirectory,
+            context.contextRoot.root.path,
           );
 
           if (endpointDefinition == null) {

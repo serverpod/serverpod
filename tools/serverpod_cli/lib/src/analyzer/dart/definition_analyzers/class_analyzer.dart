@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
@@ -8,11 +9,12 @@ abstract class ClassAnalyzer {
     List<MethodDefinition> methodDefinitions,
     CodeAnalysisCollector collector,
     String filePath,
-    List<String> subDirectoryParts,
+    String rootPath,
   ) {
     var className = element.name;
     var endpointName = _formatEndpointName(className);
     var classDocumentationComment = element.documentationComment;
+    var subDirectoryParts = _getSubdirectoryParts(filePath, rootPath);
     var endpointDef = EndpointDefinition(
       name: endpointName,
       documentationComment: classDocumentationComment,
@@ -41,5 +43,22 @@ abstract class ClassAnalyzer {
     }
 
     return endpointName;
+  }
+
+  static List<String> _getSubdirectoryParts(String filePath, String rootPath) {
+    // Get the subdirectory of the filePath by removing the first elements
+    // of the root path and the file path as long as they match.
+    var rootPathParts = path.split(rootPath);
+    var fileDirPathParts = path.split(path.dirname(filePath));
+    while (rootPathParts.isNotEmpty && fileDirPathParts.isNotEmpty) {
+      if (rootPathParts.first == fileDirPathParts.first) {
+        rootPathParts.removeAt(0);
+        fileDirPathParts.removeAt(0);
+      } else {
+        break;
+      }
+    }
+
+    return fileDirPathParts;
   }
 }
