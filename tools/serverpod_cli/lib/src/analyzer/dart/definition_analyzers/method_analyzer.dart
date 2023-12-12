@@ -52,11 +52,6 @@ abstract class MethodAnalyzer {
     return true;
   }
 
-  static bool _missingSessionParameter(List<ParameterElement> parameters) {
-    if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
-  }
-
   static bool _hasValidReturnType({
     required DartType dartType,
     required Element dartElement,
@@ -109,6 +104,11 @@ abstract class MethodAnalyzer {
     }
 
     return true;
+  }
+
+  static bool _missingSessionParameter(List<ParameterElement> parameters) {
+    if (parameters.isEmpty) return true;
+    return parameters.first.type.element?.displayName != 'Session';
   }
 }
 

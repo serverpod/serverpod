@@ -3,18 +3,6 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
-class Parameters {
-  final List<ParameterDefinition> required;
-  final List<ParameterDefinition> positional;
-  final List<ParameterDefinition> named;
-
-  Parameters({
-    required this.required,
-    required this.positional,
-    required this.named,
-  });
-}
-
 abstract class ParameterAnalyzer {
   static Parameters? analyze(
     List<ParameterElement> parameters,
@@ -63,4 +51,16 @@ abstract class ParameterAnalyzer {
 
     return false;
   }
+}
+
+class Parameters {
+  final List<ParameterDefinition> required;
+  final List<ParameterDefinition> positional;
+  final List<ParameterDefinition> named;
+
+  Parameters({
+    required this.required,
+    required this.positional,
+    required this.named,
+  });
 }

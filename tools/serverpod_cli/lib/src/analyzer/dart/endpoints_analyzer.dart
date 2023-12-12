@@ -5,12 +5,12 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
-import 'package:path/path.dart' as p;
 
 import 'definitions.dart';
 
@@ -26,29 +26,6 @@ class EndpointsAnalyzer {
           includedPaths: [endpointDirectory.absolute.path],
           resourceProvider: PhysicalResourceProvider.INSTANCE,
         );
-
-  /// Get all errors in the analyzed files.
-  Future<List<String>> getErrors() async {
-    var errorMessages = <String>[];
-
-    for (var context in collection.contexts) {
-      var analyzedFiles = context.contextRoot.analyzedFiles();
-      for (var filePath in analyzedFiles) {
-        var errors = await context.currentSession.getErrors(filePath);
-        if (errors is ErrorsResult) {
-          for (var error in errors.errors) {
-            if (error.severity == Severity.error) {
-              // TODO: Figure out how to include line number
-              errorMessages.add(
-                '${error.problemMessage.filePath} Error: ${error.message}',
-              );
-            }
-          }
-        }
-      }
-    }
-    return errorMessages;
-  }
 
   /// Analyze all files in the [AnalysisContextCollection].
   /// Use [changedFiles] to mark files, that need reloading.
@@ -83,6 +60,29 @@ class EndpointsAnalyzer {
     }
 
     return endpointDefs;
+  }
+
+  /// Get all errors in the analyzed files.
+  Future<List<String>> getErrors() async {
+    var errorMessages = <String>[];
+
+    for (var context in collection.contexts) {
+      var analyzedFiles = context.contextRoot.analyzedFiles();
+      for (var filePath in analyzedFiles) {
+        var errors = await context.currentSession.getErrors(filePath);
+        if (errors is ErrorsResult) {
+          for (var error in errors.errors) {
+            if (error.severity == Severity.error) {
+              // TODO: Figure out how to include line number
+              errorMessages.add(
+                '${error.problemMessage.filePath} Error: ${error.message}',
+              );
+            }
+          }
+        }
+      }
+    }
+    return errorMessages;
   }
 
   List<EndpointDefinition> _analyzeLibrary(
