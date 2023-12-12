@@ -1,4 +1,5 @@
 # Chat example
+
 This example showcases Serverpod's chat and auth modules. It demonstrates how to build a basic chat application with multiple chat channels.
 
 To run the example on your local machine, make sure you have Serverpod installed on your system. Then start the Docker containers associated with the project.
@@ -37,3 +38,17 @@ flutter run -d chrome
 ```
 
 If you want to run the example on a platform other than Chrome, you will need to run `flutter create .` to create projects for the different platforms.
+
+If you run the app in an Android emulator, change the address to `10.0.2.2` as this is the IP address of the host machine. To access the server from a different device on the same network (such as a physical phone) replace localhost with the local ip address. You can find the local ip by running `ifconfig` (Linux/MacOS) or `ipconfig` (Windows).
+
+Make sure to also update the publicHost in the development config to make sure the server always serves the client with the correct path to assets etc.
+
+```yaml
+# auth_example_server/config/development.yaml
+apiServer:
+  port: 8080
+  publicHost: localhost # Change this line
+  publicPort: 8080
+  publicScheme: http
+...
+```
