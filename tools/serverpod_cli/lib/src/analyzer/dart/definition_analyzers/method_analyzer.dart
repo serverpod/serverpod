@@ -21,11 +21,13 @@ abstract class MethodAnalyzer {
     Parameters parameters,
     CodeAnalysisCollector collector,
   ) {
-    if (!_hasValidReturnType(
+    var returnTypeWarning = validateReturnType(
       dartType: method.returnType,
       dartElement: method,
-      collector: collector,
-    )) {
+    );
+
+    if (returnTypeWarning != null) {
+      collector.addError(returnTypeWarning);
       return null;
     }
 
@@ -52,58 +54,52 @@ abstract class MethodAnalyzer {
     return true;
   }
 
-  static bool _hasValidReturnType({
+  static SourceSpanSeverityException? validateReturnType({
     required DartType dartType,
     required Element dartElement,
-    required CodeAnalysisCollector collector,
   }) {
     if (!dartType.isDartAsyncFuture) {
-      collector.addError(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         'Return type must be a Future.',
         dartElement.span,
-      ));
-      return false;
+      );
     }
 
     if (dartType is! InterfaceType) {
-      collector.addError(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         'This type is not supported as return type.',
         dartElement.span,
-      ));
-      return false;
+      );
     }
 
     var typeArguments = dartType.typeArguments;
     if (typeArguments.length != 1) {
-      collector.addError(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
-      ));
-      return false;
+      );
     }
     var innerType = typeArguments[0];
 
     if (innerType is VoidType) {
-      return true;
+      return null;
     }
 
     if (innerType is InvalidType) {
-      collector.addError(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         'Future has an invalid return type.',
         dartElement.span,
-      ));
-      return false;
+      );
     }
 
     if (innerType is DynamicType) {
-      collector.addError(SourceSpanSeverityException(
+      return SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
         dartElement.span,
-      ));
-      return false;
+      );
     }
 
-    return true;
+    return null;
   }
 
   static bool _missingSessionParameter(List<ParameterElement> parameters) {
