@@ -62,67 +62,79 @@ class EndpointsAnalyzer {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
-      for (var filePath in analyzedFiles) {
-        if (!filePath.endsWith('.dart')) {
+      var analyzedDartFiles =
+          analyzedFiles.where((path) => path.endsWith('.dart'));
+
+      for (var filePath in analyzedDartFiles) {
+        var library = await context.currentSession.getResolvedLibrary(filePath);
+        if (library is! ResolvedLibraryResult) {
           continue;
         }
 
-        var library = await context.currentSession.getResolvedLibrary(filePath);
-        library as ResolvedLibraryResult;
-        var element = library.element;
-        var topElements = element.topLevelElements;
-
-        for (var element in topElements) {
-          if (element is! ClassElement) {
-            continue;
-          }
-
-          if (!ClassAnalyzer.isEndpointClass(element)) {
-            continue;
-          }
-
-          var methodDefs = <MethodDefinition>[];
-          var methods = element.methods;
-          for (var method in methods) {
-            if (!MethodAnalyzer.isEndpointMethod(method)) {
-              continue;
-            }
-
-            var parameters =
-                ParameterAnalyzer.analyze(method.parameters, collector);
-
-            if (parameters == null) {
-              continue;
-            }
-
-            var methodDefinition = MethodAnalyzer.analyze(
-              method,
-              parameters,
-              collector,
-            );
-
-            if (methodDefinition == null) {
-              continue;
-            }
-
-            methodDefs.add(methodDefinition);
-          }
-
-          var endpointDefinition = ClassAnalyzer.analyze(
-            element,
-            methodDefs,
+        endpointDefs.addAll(
+          _analyzeLibrary(
+            library,
             collector,
             filePath,
             context.contextRoot.root.path,
-          );
-
-          if (endpointDefinition == null) {
-            continue;
-          }
-
-          endpointDefs.add(endpointDefinition);
-        }
+          ),
+        );
       }
+    }
+
+    return endpointDefs;
+  }
+
+  List<EndpointDefinition> _analyzeLibrary(
+    ResolvedLibraryResult library,
+    CodeAnalysisCollector collector,
+    String filePath,
+    String rootPath,
+  ) {
+    var topElements = library.element.topLevelElements;
+    var classElements = topElements.whereType<ClassElement>();
+    var endpointClasses = classElements.where(ClassAnalyzer.isEndpointClass);
+
+    var endpointDefs = <EndpointDefinition>[];
+    for (var element in endpointClasses) {
+      var endpointMethods =
+          element.methods.where(MethodAnalyzer.isEndpointMethod);
+
+      var methodDefs = <MethodDefinition>[];
+      for (var method in endpointMethods) {
+        var parameters =
+            ParameterAnalyzer.analyze(method.parameters, collector);
+
+        if (parameters == null) {
+          continue;
+        }
+
+        var methodDefinition = MethodAnalyzer.analyze(
+          method,
+          parameters,
+          collector,
+        );
+
+        if (methodDefinition == null) {
+          continue;
+        }
+
+        methodDefs.add(methodDefinition);
+      }
+
+      var endpointDefinition = ClassAnalyzer.analyze(
+        element,
+        methodDefs,
+        collector,
+        filePath,
+        rootPath,
+      );
+
+      if (endpointDefinition == null) {
+        continue;
+      }
+
+      endpointDefs.add(endpointDefinition);
     }
 
     return endpointDefs;
