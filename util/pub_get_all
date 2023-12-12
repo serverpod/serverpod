@@ -86,6 +86,10 @@ echo "\n### bootstrap_project"
 cd $BASE/tests/bootstrap_project
 dart pub upgrade
 
+echo "\n### serverpod_cli_e2e_test"
+cd $BASE/tools/serverpod_cli/test_e2e
+dart pub upgrade
+
 # Templates
 
 echo "\n### projectname_server"
