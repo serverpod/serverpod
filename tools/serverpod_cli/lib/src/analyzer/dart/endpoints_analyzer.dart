@@ -56,19 +56,9 @@ class EndpointsAnalyzer {
     required CodeAnalysisCollector collector,
     Set<String>? changedFiles,
   }) async {
-    if (changedFiles != null) {
-      // Make sure that the analyzer is up-to-date with recent changes.
-      for (var context in collection.contexts) {
-        for (var changedFile in changedFiles) {
-          var file = File(changedFile);
-          context.changeFile(p.normalize(file.absolute.path));
-        }
-        await context.applyPendingFileChanges();
-      }
-    }
+    await _refreshContextForFiles(changedFiles);
 
     var endpointDefs = <EndpointDefinition>[];
-
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
@@ -136,5 +126,17 @@ class EndpointsAnalyzer {
     }
 
     return endpointDefs;
+  }
+
+  Future<void> _refreshContextForFiles(Set<String>? changedFiles) async {
+    if (changedFiles == null) return;
+
+    for (var context in collection.contexts) {
+      for (var changedFile in changedFiles) {
+        var file = File(changedFile);
+        context.changeFile(p.normalize(file.absolute.path));
+      }
+      await context.applyPendingFileChanges();
+    }
   }
 }
