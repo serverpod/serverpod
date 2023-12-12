@@ -39,8 +39,9 @@ class EndpointsAnalyzer {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles().toList();
       analyzedFiles.sort();
-      var analyzedDartFiles =
-          analyzedFiles.where((path) => path.endsWith('.dart'));
+      var analyzedDartFiles = analyzedFiles
+          .where((path) => path.endsWith('.dart'))
+          .where((path) => !path.endsWith('_test.dart'));
 
       for (var filePath in analyzedDartFiles) {
         var library = await context.currentSession.getResolvedLibrary(filePath);
