@@ -7,6 +7,7 @@ import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/method_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
 import 'package:path/path.dart' as p;
@@ -96,68 +97,58 @@ class EndpointsAnalyzer {
         var topElements = element.topLevelElements;
 
         for (var element in topElements) {
-          if (element is ClassElement) {
-            var className = element.name;
-            var superclassName = element.supertype!.element.name;
-            var endpointName = _formatEndpointName(className);
-
-            if (superclassName == 'Endpoint') {
-              var classDocumentationComment = element.documentationComment;
-
-              var methodDefs = <MethodDefinition>[];
-              var methods = element.methods;
-              for (var method in methods) {
-                if (!MethodAnalyzer.isEndpointMethod(method)) {
-                  continue;
-                }
-
-                var parameters =
-                    ParameterAnalyzer.analyze(method.parameters, collector);
-
-                if (parameters == null) {
-                  continue;
-                }
-
-                var methodDefinition = MethodAnalyzer.analyze(
-                  method,
-                  parameters,
-                  collector,
-                );
-
-                if (methodDefinition == null) {
-                  continue;
-                }
-
-                methodDefs.add(methodDefinition);
-              }
-
-              var endpointDef = EndpointDefinition(
-                name: endpointName,
-                documentationComment: classDocumentationComment,
-                className: className,
-                methods: methodDefs,
-                filePath: filePath,
-                subDirParts: subdirectory,
-              );
-              endpointDefs.add(endpointDef);
-            }
+          if (element is! ClassElement) {
+            continue;
           }
+
+          if (!ClassAnalyzer.isEndpointClass(element)) {
+            continue;
+          }
+
+          var methodDefs = <MethodDefinition>[];
+          var methods = element.methods;
+          for (var method in methods) {
+            if (!MethodAnalyzer.isEndpointMethod(method)) {
+              continue;
+            }
+
+            var parameters =
+                ParameterAnalyzer.analyze(method.parameters, collector);
+
+            if (parameters == null) {
+              continue;
+            }
+
+            var methodDefinition = MethodAnalyzer.analyze(
+              method,
+              parameters,
+              collector,
+            );
+
+            if (methodDefinition == null) {
+              continue;
+            }
+
+            methodDefs.add(methodDefinition);
+          }
+
+          var endpointDefinition = ClassAnalyzer.analyze(
+            element,
+            methodDefs,
+            collector,
+            filePath,
+            subdirectory,
+          );
+
+          if (endpointDefinition == null) {
+            continue;
+          }
+
+          endpointDefs.add(endpointDefinition);
         }
       }
     }
 
     return endpointDefs;
-  }
-
-  String _formatEndpointName(String className) {
-    const removeEnding = 'Endpoint';
-
-    var endpointName = '${className[0].toLowerCase()}${className.substring(1)}';
-    if (endpointName.endsWith(removeEnding)) {
-      endpointName =
-          endpointName.substring(0, endpointName.length - removeEnding.length);
-    }
-
-    return endpointName;
   }
 }
