@@ -26,7 +26,7 @@ jobs:
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1.3
         with:
-          sdk: 3
+          sdk: 3.0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
