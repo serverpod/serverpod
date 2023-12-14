@@ -604,8 +604,7 @@ class LibraryGenerator {
                     Parameter((p) => p
                       ..name = 'securityContext'
                       ..named = false
-                      ..type = TypeReference((t) => t
-                        ..symbol = 'dynamic')),
+                      ..type = TypeReference((t) => t..symbol = 'dynamic')),
                     Parameter((p) => p
                       ..name = 'authenticationKeyManager'
                       ..named = true
