@@ -148,4 +148,44 @@ class ExampleEndpoint extends Endpoint {
       expect(subDirParts?.first, 'subdirectory');
     });
   });
+
+  group(
+      'Given a valid endpoint file with name ending with _test.dart when analyzed',
+      () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile =
+          File(path.join(testDirectory.path, 'endpoint_test.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no parsing errors are reported.', () {
+      expect(analyzer.getErrors(), completion(isEmpty));
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then no endpoint definition is created.', () {
+      expect(endpointDefinitions, isEmpty);
+    });
+  });
 }
