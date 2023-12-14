@@ -496,4 +496,45 @@ class ExampleEndpoint extends Endpoint {
       expect(documentation, '/// This is a method comment.');
     });
   });
+
+  group('Given an endpoint method with a void return type', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<void> hello(Session session) async {
+    print('Hello world');
+    return;
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no parsing errors are reported.', () {
+      expect(analyzer.getErrors(), completion(isEmpty));
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint method definition is created.', () {
+      expect(endpointDefinitions.firstOrNull?.methods, hasLength(1));
+    });
+  });
 }
