@@ -42,6 +42,27 @@ void main() async {
     late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream? generateStreamSearch;
+    setUp(() async {
+      // Create project
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod project.',
+      );
+    });
+
     tearDown(() async {
       createProcess.kill();
       generateWatch?.kill();
@@ -57,26 +78,6 @@ void main() async {
     });
 
     test('then entity files are generated and updated as expected.', () async {
-      // Create project
-      createProcess = await Process.start(
-        'serverpod',
-        ['create', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
-      expect(
-        createProjectExitCode,
-        0,
-        reason: 'Failed to create the serverpod project.',
-      );
-
       // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
@@ -197,6 +198,27 @@ fields:
     late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream? generateStreamSearch;
+    setUp(() async {
+      // Create project
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod project.',
+      );
+    });
+
     tearDown(() async {
       createProcess.kill();
       generateWatch?.kill();
@@ -212,26 +234,6 @@ fields:
     });
     test('then endpoint dispatcher is generated and updated as expected.',
         () async {
-      // Create project
-      createProcess = await Process.start(
-        'serverpod',
-        ['create', projectName, '-v', '--no-analytics'],
-        workingDirectory: tempPath,
-        environment: {
-          'SERVERPOD_HOME': rootPath,
-        },
-      );
-
-      createProcess.stdout.transform(const Utf8Decoder()).listen(print);
-      createProcess.stderr.transform(const Utf8Decoder()).listen(print);
-
-      var createProjectExitCode = await createProcess.exitCode;
-      expect(
-        createProjectExitCode,
-        0,
-        reason: 'Failed to create the serverpod project.',
-      );
-
       // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
@@ -359,20 +361,7 @@ class TestEndpoint extends Endpoint {
     late Process createProcess;
     Process? generateWatch;
     KeywordSearchInStream? generateStreamSearch;
-    tearDown(() async {
-      createProcess.kill();
-      generateWatch?.kill();
-      generateStreamSearch?.close();
-
-      await Process.run(
-        'docker',
-        ['compose', 'down', '-v'],
-        workingDirectory: commandRoot,
-      );
-
-      while (!await isNetworkPortAvailable(8090)) {}
-    });
-    test('then client endpoint dispatcher is updated as expected.', () async {
+    setUp(() async {
       // Create project
       createProcess = await Process.start(
         'serverpod',
@@ -387,12 +376,26 @@ class TestEndpoint extends Endpoint {
       createProcess.stderr.transform(const Utf8Decoder()).listen(print);
 
       var createProjectExitCode = await createProcess.exitCode;
-      expect(
-        createProjectExitCode,
-        0,
-        reason: 'Failed to create the serverpod project.',
+      assert(
+        createProjectExitCode == 0,
+        'Failed to create the serverpod project.',
+      );
+    });
+
+    tearDown(() async {
+      createProcess.kill();
+      generateWatch?.kill();
+      generateStreamSearch?.close();
+
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
       );
 
+      while (!await isNetworkPortAvailable(8090)) {}
+    });
+    test('then client endpoint dispatcher is updated as expected.', () async {
       // Add endpoint file
       var endpointFile = File(createEndpointFilePath(
         tempPath,
