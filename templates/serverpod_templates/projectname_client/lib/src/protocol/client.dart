@@ -10,8 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'dart:io' as _i3;
-import 'protocol.dart' as _i4;
+import 'protocol.dart' as _i3;
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -30,14 +29,14 @@ class EndpointExample extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i3.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i4.Protocol(),
-          context: context,
+          _i3.Protocol(),
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,

@@ -13,8 +13,7 @@ import 'dart:async' as _i2;
 import 'package:chat_client/src/protocol/channel.dart' as _i3;
 import 'package:serverpod_auth_client/module.dart' as _i4;
 import 'package:serverpod_chat_client/module.dart' as _i5;
-import 'dart:io' as _i6;
-import 'protocol.dart' as _i7;
+import 'protocol.dart' as _i6;
 
 /// {@category Endpoint}
 class EndpointChannels extends _i1.EndpointRef {
@@ -45,14 +44,14 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i6.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i7.Protocol(),
-          context: context,
+          _i6.Protocol(),
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,

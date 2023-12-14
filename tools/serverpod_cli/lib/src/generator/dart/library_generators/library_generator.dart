@@ -602,12 +602,10 @@ class LibraryGenerator {
                     ..name = 'host'))
                   ..optionalParameters.addAll([
                     Parameter((p) => p
-                      ..name = 'context'
-                      ..named = true
+                      ..name = 'securityContext'
+                      ..named = false
                       ..type = TypeReference((t) => t
-                        ..symbol = 'SecurityContext'
-                        ..url = 'dart:io'
-                        ..isNullable = true)),
+                        ..symbol = 'dynamic')),
                     Parameter((p) => p
                       ..name = 'authenticationKeyManager'
                       ..named = true
@@ -634,7 +632,7 @@ class LibraryGenerator {
                     refer('host'),
                     refer('Protocol', 'protocol.dart').call([])
                   ], {
-                    'context': refer('context'),
+                    'securityContext': refer('securityContext'),
                     'authenticationKeyManager':
                         refer('authenticationKeyManager'),
                     'streamingConnectionTimeout':

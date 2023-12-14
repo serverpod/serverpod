@@ -31,8 +31,7 @@ import 'package:serverpod_service_client/src/protocol/database/filter/filter.dar
     as _i12;
 import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
     as _i13;
-import 'dart:io' as _i14;
-import 'protocol.dart' as _i15;
+import 'protocol.dart' as _i14;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
@@ -235,14 +234,14 @@ class EndpointInsights extends _i1.EndpointRef {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i14.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i15.Protocol(),
-          context: context,
+          _i14.Protocol(),
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,

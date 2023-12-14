@@ -21,16 +21,17 @@ abstract class ServerpodClient extends ServerpodClientShared {
   ServerpodClient(
     super.host,
     super.serializationManager, {
-    dynamic context,
+    dynamic securityContext,
     super.authenticationKeyManager,
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
   }) {
-    assert(context == null || context is SecurityContext);
+    assert(securityContext == null || securityContext is SecurityContext,
+        'Context must be of type SecurityContext');
 
     // Setup client
-    _httpClient = HttpClient(context: context);
+    _httpClient = HttpClient(context: securityContext);
     _httpClient.connectionTimeout = connectionTimeout;
 
     // TODO: Generate working certificates
