@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/method_analyzer.dart';
@@ -49,6 +49,22 @@ class EndpointsAnalyzer {
           continue;
         }
 
+        var maybeDartErrors =
+            await _getErrorsForFile(context.currentSession, filePath);
+        if (maybeDartErrors.isNotEmpty) {
+          collector.addError(
+            SourceSpanSeverityException(
+              'Endpoint analysis skipped due to invalid Dart syntax. Please '
+              'review and correct the syntax errors.'
+              '\nFile: $filePath',
+              null,
+              severity: SourceSpanSeverity.error,
+            ),
+          );
+
+          continue;
+        }
+
         endpointDefs.addAll(
           _analyzeLibrary(
             library,
@@ -70,19 +86,29 @@ class EndpointsAnalyzer {
     for (var context in collection.contexts) {
       var analyzedFiles = context.contextRoot.analyzedFiles();
       for (var filePath in analyzedFiles) {
-        var errors = await context.currentSession.getErrors(filePath);
-        if (errors is ErrorsResult) {
-          for (var error in errors.errors) {
-            if (error.severity == Severity.error) {
-              // TODO: Figure out how to include line number
-              errorMessages.add(
-                '${error.problemMessage.filePath} Error: ${error.message}',
-              );
-            }
-          }
-        }
+        var fileErrors =
+            await _getErrorsForFile(context.currentSession, filePath);
+        errorMessages.addAll(fileErrors);
       }
     }
+    return errorMessages;
+  }
+
+  Future<List<String>> _getErrorsForFile(
+    AnalysisSession session,
+    String filePath,
+  ) async {
+    var errorMessages = <String>[];
+
+    var errors = await session.getErrors(filePath);
+    if (errors is ErrorsResult) {
+      errors.errors
+          .where((error) => error.severity == Severity.error)
+          .forEach((error) => errorMessages.add(
+                '${error.problemMessage.filePath} Error: ${error.message}',
+              ));
+    }
+
     return errorMessages;
   }
 

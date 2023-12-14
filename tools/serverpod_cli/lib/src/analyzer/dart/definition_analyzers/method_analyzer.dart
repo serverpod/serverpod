@@ -85,13 +85,6 @@ abstract class MethodAnalyzer {
       return null;
     }
 
-    if (innerType is InvalidType) {
-      return SourceSpanSeverityException(
-        'Future has an invalid return type.',
-        dartElement.span,
-      );
-    }
-
     if (innerType is DynamicType) {
       return SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
