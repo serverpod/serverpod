@@ -4,7 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:source_span/source_span.dart';
+import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -98,24 +98,5 @@ abstract class MethodAnalyzer {
   static bool _missingSessionParameter(List<ParameterElement> parameters) {
     if (parameters.isEmpty) return true;
     return parameters.first.type.element?.displayName != 'Session';
-  }
-}
-
-extension _DartElementSourceSpan on Element {
-  SourceSpan? get span {
-    var sourceData = source?.contents.data;
-    var sourceUri = source?.uri;
-    var offset = nameOffset;
-    var length = nameLength;
-
-    if (sourceData != null && offset != 0 && length != -1) {
-      var sourceFile = SourceFile.fromString(
-        sourceData,
-        url: sourceUri,
-      );
-      return sourceFile.span(offset, offset + length);
-    } else {
-      return null;
-    }
   }
 }
