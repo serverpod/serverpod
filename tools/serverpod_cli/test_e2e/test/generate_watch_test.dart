@@ -34,7 +34,7 @@ void main() async {
     Directory(tempPath).deleteSync(recursive: true);
   });
 
-  group('Given protocol file that is changed when generate watch is active',
+  group('Given a protocol file that is changed when generate watch is active',
       () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
@@ -77,7 +77,8 @@ void main() async {
       while (!await isNetworkPortAvailable(8090)) {}
     });
 
-    test('then entity files are generated and updated as expected.', () async {
+    test('then the entity files are generated and updated as expected.',
+        () async {
       // Start generate watch
       generateWatch = await Process.start(
         'serverpod',
@@ -190,7 +191,7 @@ fields:
     });
   });
 
-  group('Given endpoint file that is changed when generate watch is active',
+  group('Given an endpoint file that is changed when generate watch is active',
       () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
     var (serverDir, _, _) = createProjectFolderPaths(projectName);
@@ -353,7 +354,7 @@ class TestEndpoint extends Endpoint {
   });
 
   group(
-      'Given a and serializable entity used in an endpoint that is moved to a subfolder when generate watch is active',
+      'Given a serializable entity used in an endpoint that is moved to a subfolder when generate watch is active',
       () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
