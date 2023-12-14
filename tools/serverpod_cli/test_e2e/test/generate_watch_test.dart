@@ -188,6 +188,23 @@ fields:
         contains('int age'),
         reason: 'Entity file did not contain the added field.',
       );
+
+      // Remove protocol file
+      protocolFile.deleteSync();
+      await expectLater(
+        generateStreamSearch?.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate file is removed
+      entityFiles = entityDirectory.listSync();
+      expect(
+        entityFiles.map((e) => path.basename(e.path)),
+        isNot(contains(entityFileName)),
+        reason: 'Entity file still exists found.',
+      );
     });
   });
 
@@ -349,6 +366,25 @@ class TestEndpoint extends Endpoint {
         contains('newTestEndpointMethod'),
         reason:
             'Endpoint dispatcher file did not contain the new endpoint method.',
+      );
+
+      // Remove endpoint file
+      endpointFile.deleteSync();
+
+      await expectLater(
+        generateStreamSearch?.keywordFound,
+        completion(isTrue),
+        reason:
+            'Incremental code generation did not complete before timeout was reached.',
+      );
+
+      // Validate that endpoint is removed from endpoint dispatcher
+      endpointDispatcherFileContents =
+          endpointDispatcherFile.readAsStringSync();
+      expect(
+        endpointDispatcherFileContents,
+        isNot(contains('TestEndpoint')),
+        reason: 'Endpoint dispatcher still contained removed endpoint.',
       );
     });
   });
