@@ -40,8 +40,8 @@ class FirebaseEndpoint extends Endpoint {
       var email = claims.email?.toLowerCase();
       var userIdentifier = token.claims.subject;
       var fullName = token.claims.name;
-      var userName = token.claims.nickname ?? email?.split('@')[0];
-      userName ??= fullName;
+      var userName = token.claims.nickname ?? email?.split('@').firstOrNull;
+      userName ??= fullName ?? '';
 
       session.log('Got email: $email', level: LogLevel.debug);
       session.log('Got userIdentifier: $userIdentifier', level: LogLevel.debug);
@@ -54,7 +54,7 @@ class FirebaseEndpoint extends Endpoint {
       if (userInfo == null) {
         userInfo = UserInfo(
           userIdentifier: userIdentifier,
-          userName: userName ?? '',
+          userName: userName,
           fullName: fullName,
           email: email,
           created: DateTime.now().toUtc(),
