@@ -79,7 +79,11 @@ class TypeDefinition {
     var url = type.element?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
-    var className = type is! VoidType ? type.element!.displayName : 'void';
+    var className = type is! VoidType ? type.element?.displayName : 'void';
+
+    if (className == null) {
+      throw ArgumentError('Failed to determine class name from type $type');
+    }
 
     return TypeDefinition(
       className: className,
