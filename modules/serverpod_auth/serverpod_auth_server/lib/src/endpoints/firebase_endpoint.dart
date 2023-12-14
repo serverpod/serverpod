@@ -85,7 +85,8 @@ class FirebaseEndpoint extends Endpoint {
         userInfo: userInfo,
       );
     } catch (e) {
-      session.log('Authentication failed with exception.', exception: e, level: LogLevel.error);
+      session.log('Authentication failed with exception.',
+          exception: e, level: LogLevel.error);
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
