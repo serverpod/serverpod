@@ -37,29 +37,24 @@ class FirebaseEndpoint extends Endpoint {
       session.log('Verified idToken', level: LogLevel.debug);
       var claims = token.claims;
 
-      // Verify that we at a minimum got the email address.
-      if (claims.email == null) {
-        return AuthenticationResponse(
-          success: false,
-          failReason: AuthenticationFailReason.invalidCredentials,
-        );
-      }
-
-      var email = claims.email!.toLowerCase();
+      var email = claims.email?.toLowerCase();
       var userIdentifier = token.claims.subject;
-      var userName = token.claims.nickname ?? email.split('@')[0];
       var fullName = token.claims.name;
+      var userName = token.claims.nickname ?? email?.split('@')[0];
+      userName ??= fullName;
 
       session.log('Got email: $email', level: LogLevel.debug);
-      session.log('Got userIdentifier: $email', level: LogLevel.debug);
+      session.log('Got userIdentifier: $userIdentifier', level: LogLevel.debug);
 
       UserInfo? userInfo;
-      userInfo = await Users.findUserByEmail(session, email);
+      if (email != null) {
+        userInfo = await Users.findUserByEmail(session, email);
+      }
       userInfo ??= await Users.findUserByIdentifier(session, userIdentifier);
       if (userInfo == null) {
         userInfo = UserInfo(
           userIdentifier: userIdentifier,
-          userName: userName,
+          userName: userName ?? '',
           fullName: fullName,
           email: email,
           created: DateTime.now().toUtc(),
@@ -90,6 +85,7 @@ class FirebaseEndpoint extends Endpoint {
         userInfo: userInfo,
       );
     } catch (e) {
+      session.log('Authentication failed with exception.', exception: e, level: LogLevel.error);
       return AuthenticationResponse(
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
