@@ -165,3 +165,31 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
       - name: Run e2e migration tests
         run: util/run_tests_migrations_e2e
+
+  cli_e2e_tests:
+    name: CLI e2e tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.10.0', '3.13.0']
+        os: [ubuntu-latest, "macos-latest"]
+        path: ["tools/serverpod_cli/test_e2e"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+      - name: Setup docker (missing on MacOS)
+        if: runner.os == 'macos'
+        run: |
+          brew install docker docker-compose
+
+          # Link the Docker Compose v2 plugin so it's understood by the docker CLI
+          mkdir -p ~/.docker/cli-plugins
+          ln -sfn /usr/local/opt/docker-compose/bin/docker-compose ~/.docker/cli-plugins/docker-compose
+
+          colima start
+      - name: Run unit tests
+        run: dart test --concurrency=1
+        working-directory: ${{ matrix.path }}

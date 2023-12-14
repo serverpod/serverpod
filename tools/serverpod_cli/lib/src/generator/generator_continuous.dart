@@ -19,7 +19,11 @@ Future<bool> performGenerateContinuously({
       DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
 
   var success = await _performSafeGenerate(
-      config: config, endpointsAnalyzer: endpointsAnalyzer);
+    config: config,
+    endpointsAnalyzer: endpointsAnalyzer,
+    completionMessage:
+        'Initial code generation complete. Listening for changes.',
+  );
 
   await for (WatchEvent event
       in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
@@ -28,7 +32,11 @@ Future<bool> performGenerateContinuously({
       newParagraph: true,
     );
     success = await _performSafeGenerate(
-        config: config, endpointsAnalyzer: endpointsAnalyzer);
+      config: config,
+      endpointsAnalyzer: endpointsAnalyzer,
+      changedFilePath: event.path,
+      completionMessage: 'Incremental code generation complete.',
+    );
   }
 
   return success;
@@ -37,6 +45,8 @@ Future<bool> performGenerateContinuously({
 Future<bool> _performSafeGenerate({
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  String? changedFilePath,
+  required String completionMessage,
 }) async {
   var success = false;
   try {
@@ -45,8 +55,9 @@ Future<bool> _performSafeGenerate({
         () => performGenerate(
               config: config,
               endpointsAnalyzer: endpointsAnalyzer,
+              changedFilePath: changedFilePath,
             ));
-    log.info('Incremental code generation complete.');
+    log.info(completionMessage);
   } catch (e) {
     if (e is Error) {
       log.error(e.toString(), stackTrace: e.stackTrace);
