@@ -2,8 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
 
@@ -16,7 +16,7 @@ const _excludedMethodNameSet = {
   'getUserObject',
 };
 
-abstract class MethodAnalyzer {
+abstract class EndpointMethodAnalyzer {
   /// Parses an [MethodElement] into a [MethodDefinition].
   /// Assumes that the [MethodElement] is a valid endpoint method.
   static MethodDefinition parse(
@@ -43,7 +43,7 @@ abstract class MethodAnalyzer {
     MethodElement methodElement,
     String filePath,
   ) {
-    return '${ClassAnalyzer.elementNamespace(
+    return '${EndpointClassAnalyzer.elementNamespace(
       classElement,
       filePath,
     )}_${methodElement.name}';

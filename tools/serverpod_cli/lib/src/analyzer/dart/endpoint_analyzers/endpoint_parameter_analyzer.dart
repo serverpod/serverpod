@@ -4,7 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
-abstract class ParameterAnalyzer {
+abstract class EndpointParameterAnalyzer {
   /// Parses a [ParameterElement] into a [ParameterDefinition].
   /// Assumes that the [ParameterElement] is a valid endpoint parameter.
   static Parameters parse(

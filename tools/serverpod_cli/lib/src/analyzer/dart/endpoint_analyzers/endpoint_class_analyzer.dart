@@ -3,7 +3,7 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
-abstract class ClassAnalyzer {
+abstract class EndpointClassAnalyzer {
   /// Parses an [ClassElement] into a [EndpointDefinition].
   /// Assumes that the [ClassElement] is a valid endpoint class.
   static EndpointDefinition parse(

@@ -8,9 +8,9 @@ import 'package:analyzer/diagnostic/diagnostic.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/method_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_method_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 
 import 'definitions.dart';
 
@@ -126,31 +126,31 @@ class EndpointsAnalyzer {
     var topElements = library.element.topLevelElements;
     var classElements = topElements.whereType<ClassElement>();
     var endpointClasses = classElements
-        .where(ClassAnalyzer.isEndpointClass)
+        .where(EndpointClassAnalyzer.isEndpointClass)
         .where((element) => !validationErrors.containsKey(
-              ClassAnalyzer.elementNamespace(element, filePath),
+              EndpointClassAnalyzer.elementNamespace(element, filePath),
             ));
 
     var endpointDefs = <EndpointDefinition>[];
     for (var classElement in endpointClasses) {
       var endpointMethods = classElement.methods
-          .where(MethodAnalyzer.isEndpointMethod)
+          .where(EndpointMethodAnalyzer.isEndpointMethod)
           .where((methodElement) => !validationErrors.containsKey(
-                MethodAnalyzer.elementNamespace(
+                EndpointMethodAnalyzer.elementNamespace(
                     classElement, methodElement, filePath),
               ));
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
-        var parameters = ParameterAnalyzer.parse(method.parameters);
+        var parameters = EndpointParameterAnalyzer.parse(method.parameters);
 
-        methodDefs.add(MethodAnalyzer.parse(
+        methodDefs.add(EndpointMethodAnalyzer.parse(
           method,
           parameters,
         ));
       }
 
-      var endpointDefinition = ClassAnalyzer.parse(
+      var endpointDefinition = EndpointClassAnalyzer.parse(
         classElement,
         methodDefs,
         filePath,
@@ -181,25 +181,26 @@ class EndpointsAnalyzer {
   ) {
     var topElements = library.element.topLevelElements;
     var classElements = topElements.whereType<ClassElement>();
-    var endpointClasses = classElements.where(ClassAnalyzer.isEndpointClass);
+    var endpointClasses =
+        classElements.where(EndpointClassAnalyzer.isEndpointClass);
 
     var validationErrors = <String, List<SourceSpanSeverityException>>{};
     for (var classElement in endpointClasses) {
-      var errors = ClassAnalyzer.validate(classElement);
+      var errors = EndpointClassAnalyzer.validate(classElement);
       if (errors.isNotEmpty) {
-        validationErrors[ClassAnalyzer.elementNamespace(
+        validationErrors[EndpointClassAnalyzer.elementNamespace(
           classElement,
           filePath,
         )] = errors;
       }
 
       var endpointMethods =
-          classElement.methods.where(MethodAnalyzer.isEndpointMethod);
+          classElement.methods.where(EndpointMethodAnalyzer.isEndpointMethod);
       for (var method in endpointMethods) {
-        errors = MethodAnalyzer.validate(method);
-        errors.addAll(ParameterAnalyzer.validate(method.parameters));
+        errors = EndpointMethodAnalyzer.validate(method);
+        errors.addAll(EndpointParameterAnalyzer.validate(method.parameters));
         if (errors.isNotEmpty) {
-          validationErrors[MethodAnalyzer.elementNamespace(
+          validationErrors[EndpointMethodAnalyzer.elementNamespace(
             classElement,
             method,
             filePath,
