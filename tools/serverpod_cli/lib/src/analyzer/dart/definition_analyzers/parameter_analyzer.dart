@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
 abstract class ParameterAnalyzer {
@@ -33,6 +34,12 @@ abstract class ParameterAnalyzer {
       positional: positionalParameters,
       named: namedParameters,
     );
+  }
+
+  static List<SourceSpanSeverityException> validate(
+    List<ParameterElement> parameter,
+  ) {
+    return [];
   }
 
   static bool _isRequired(ParameterElement parameter) {

@@ -65,12 +65,16 @@ class EndpointsAnalyzer {
           continue;
         }
 
+        var validationErrors = _validateLibrary(library, filePath);
+        collector.addErrors(validationErrors.values.expand((e) => e).toList());
+
         endpointDefs.addAll(
-          _analyzeLibrary(
+          _parseLibrary(
             library,
             collector,
             filePath,
             context.contextRoot.root.path,
+            validationErrors,
           ),
         );
       }
@@ -112,20 +116,29 @@ class EndpointsAnalyzer {
     return errorMessages;
   }
 
-  List<EndpointDefinition> _analyzeLibrary(
+  List<EndpointDefinition> _parseLibrary(
     ResolvedLibraryResult library,
     CodeAnalysisCollector collector,
     String filePath,
     String rootPath,
+    Map<String, List<SourceSpanSeverityException>> validationErrors,
   ) {
     var topElements = library.element.topLevelElements;
     var classElements = topElements.whereType<ClassElement>();
-    var endpointClasses = classElements.where(ClassAnalyzer.isEndpointClass);
+    var endpointClasses = classElements
+        .where(ClassAnalyzer.isEndpointClass)
+        .where((element) => !validationErrors.containsKey(
+              ClassAnalyzer.elementNamespace(element, filePath),
+            ));
 
     var endpointDefs = <EndpointDefinition>[];
-    for (var element in endpointClasses) {
-      var endpointMethods =
-          element.methods.where(MethodAnalyzer.isEndpointMethod);
+    for (var classElement in endpointClasses) {
+      var endpointMethods = classElement.methods
+          .where(MethodAnalyzer.isEndpointMethod)
+          .where((methodElement) => !validationErrors.containsKey(
+                MethodAnalyzer.elementNamespace(
+                    classElement, methodElement, filePath),
+              ));
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
@@ -150,7 +163,7 @@ class EndpointsAnalyzer {
       }
 
       var endpointDefinition = ClassAnalyzer.analyze(
-        element,
+        classElement,
         methodDefs,
         collector,
         filePath,
@@ -177,5 +190,41 @@ class EndpointsAnalyzer {
       }
       await context.applyPendingFileChanges();
     }
+  }
+
+  Map<String, List<SourceSpanSeverityException>> _validateLibrary(
+    ResolvedLibraryResult library,
+    String filePath,
+  ) {
+    var topElements = library.element.topLevelElements;
+    var classElements = topElements.whereType<ClassElement>();
+    var endpointClasses = classElements.where(ClassAnalyzer.isEndpointClass);
+
+    var validationErrors = <String, List<SourceSpanSeverityException>>{};
+    for (var classElement in endpointClasses) {
+      var errors = ClassAnalyzer.validate(classElement);
+      if (errors.isNotEmpty) {
+        validationErrors[ClassAnalyzer.elementNamespace(
+          classElement,
+          filePath,
+        )] = errors;
+      }
+
+      var endpointMethods =
+          classElement.methods.where(MethodAnalyzer.isEndpointMethod);
+      for (var method in endpointMethods) {
+        errors = MethodAnalyzer.validate(method);
+        errors.addAll(ParameterAnalyzer.validate(method.parameters));
+        if (errors.isNotEmpty) {
+          validationErrors[MethodAnalyzer.elementNamespace(
+            classElement,
+            method,
+            filePath,
+          )] = errors;
+        }
+      }
+    }
+
+    return validationErrors;
   }
 }

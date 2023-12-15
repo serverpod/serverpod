@@ -1,6 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
 abstract class ClassAnalyzer {
@@ -27,10 +27,20 @@ abstract class ClassAnalyzer {
     return endpointDef;
   }
 
+  static String elementNamespace(ClassElement element, String filePath) {
+    return '{$filePath}_${element.name}';
+  }
+
   static bool isEndpointClass(ClassElement element) {
     if (element.supertype?.element.name != 'Endpoint') return false;
 
     return true;
+  }
+
+  static List<SourceSpanSeverityException> validate(
+    ClassElement classElement,
+  ) {
+    return [];
   }
 
   static String _formatEndpointName(String className) {

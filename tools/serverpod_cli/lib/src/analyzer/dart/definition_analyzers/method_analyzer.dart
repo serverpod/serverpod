@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
@@ -21,7 +22,7 @@ abstract class MethodAnalyzer {
     Parameters parameters,
     CodeAnalysisCollector collector,
   ) {
-    var returnTypeWarning = validateReturnType(
+    var returnTypeWarning = _validateReturnType(
       dartType: method.returnType,
       dartElement: method,
     );
@@ -44,6 +45,17 @@ abstract class MethodAnalyzer {
     return definition;
   }
 
+  static String elementNamespace(
+    ClassElement classElement,
+    MethodElement methodElement,
+    String filePath,
+  ) {
+    return '${ClassAnalyzer.elementNamespace(
+      classElement,
+      filePath,
+    )}_${methodElement.name}';
+  }
+
   static bool isEndpointMethod(MethodElement method) {
     if (method.isPrivate) return false;
 
@@ -54,7 +66,16 @@ abstract class MethodAnalyzer {
     return true;
   }
 
-  static SourceSpanSeverityException? validateReturnType({
+  static List<SourceSpanSeverityException> validate(MethodElement method) {
+    return [];
+  }
+
+  static bool _missingSessionParameter(List<ParameterElement> parameters) {
+    if (parameters.isEmpty) return true;
+    return parameters.first.type.element?.displayName != 'Session';
+  }
+
+  static SourceSpanSeverityException? _validateReturnType({
     required DartType dartType,
     required Element dartElement,
   }) {
@@ -93,10 +114,5 @@ abstract class MethodAnalyzer {
     }
 
     return null;
-  }
-
-  static bool _missingSessionParameter(List<ParameterElement> parameters) {
-    if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
   }
 }
