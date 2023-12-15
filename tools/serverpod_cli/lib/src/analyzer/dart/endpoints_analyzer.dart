@@ -69,21 +69,6 @@ class EndpointsAnalyzer {
     return endpointDefs;
   }
 
-  /// Get all errors in the analyzed files.
-  Future<List<String>> getErrors() async {
-    var errorMessages = <String>[];
-
-    for (var context in collection.contexts) {
-      var analyzedFiles = context.contextRoot.analyzedFiles();
-      for (var filePath in analyzedFiles) {
-        var fileErrors =
-            await _getErrorsForFile(context.currentSession, filePath);
-        errorMessages.addAll(fileErrors);
-      }
-    }
-    return errorMessages;
-  }
-
   Future<List<String>> _getErrorsForFile(
     AnalysisSession session,
     String filePath,

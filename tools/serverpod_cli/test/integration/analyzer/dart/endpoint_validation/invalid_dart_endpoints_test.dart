@@ -51,10 +51,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
-    });
-
     test('then validation error for invalid Dart syntax is reported.', () {
       expect(collector.errors, hasLength(1));
       expect(
@@ -93,10 +89,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
     });
 
     test('then validation error for invalid Dart syntax is reported.', () {
@@ -138,10 +130,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
     });
 
     test('then validation error for invalid Dart syntax is reported.', () {
@@ -191,10 +179,6 @@ class ExampleEndpointValid extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
     });
 
     test('then validation error for invalid Dart syntax is reported.', () {

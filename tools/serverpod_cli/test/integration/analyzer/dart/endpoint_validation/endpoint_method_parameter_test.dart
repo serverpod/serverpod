@@ -52,10 +52,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -116,10 +112,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
@@ -204,10 +196,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -269,10 +257,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
@@ -337,10 +321,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -402,10 +382,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
