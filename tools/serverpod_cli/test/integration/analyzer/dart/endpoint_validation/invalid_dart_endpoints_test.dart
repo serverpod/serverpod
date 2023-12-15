@@ -44,21 +44,26 @@ void main() {
 import 'package:serverpod/serverpod.dart';
 
 class ExampleEndpoint extends Endpoint {
+
+
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
+    test('then validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        contains(
+          'Endpoint analysis skipped due to invalid Dart syntax. Please '
+          'review and correct the syntax errors.',
+        ),
+      );
     });
 
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then endpoint definition is still created.', () {
-      expect(endpointDefinitions, isNotEmpty);
+    test('then endpoint definition is not created.', () {
+      expect(endpointDefinitions, isEmpty);
     });
   });
 
@@ -86,21 +91,19 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
+    test('then validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        contains(
+          'Endpoint analysis skipped due to invalid Dart syntax. Please '
+          'review and correct the syntax errors.',
+        ),
+      );
     });
 
-    test('then no validation errors are reported.', () {
-      expect(collector.errors, isEmpty);
-    });
-
-    test('then endpoint definition is still created.', () {
-      expect(endpointDefinitions, isNotEmpty);
-    });
-
-    test('then endpoint method definition is still created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isNotEmpty);
+    test('then endpoint definition is not created.', () {
+      expect(endpointDefinitions, isEmpty);
     });
   });
 
@@ -129,28 +132,68 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
-    });
-
-    test('then a validation errors is reported.', () {
+    test('then validation error for invalid Dart syntax is reported.', () {
       expect(collector.errors, hasLength(1));
-    });
-
-    test('then validation error informs that return type must be future', () {
       expect(
         collector.errors.firstOrNull?.message,
-        'Future must have a type defined. E.g. Future<String>.',
+        contains(
+          'Endpoint analysis skipped due to invalid Dart syntax. Please '
+          'review and correct the syntax errors.',
+        ),
       );
     });
 
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
+    test('then endpoint definition is not created.', () {
+      expect(endpointDefinitions, isEmpty);
+    });
+  });
+
+  group('Given a valid and an invalid endpoint file when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var firstEndpointFile =
+          File(path.join(testDirectory.path, 'invalid_endpoint.dart'));
+      firstEndpointFile.createSync(recursive: true);
+      firstEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpointInvalid extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+''');
+      var secondEndpointFile =
+          File(path.join(testDirectory.path, 'valid_endpoint.dart'));
+      secondEndpointFile.createSync(recursive: true);
+      secondEndpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpointValid extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
+    test('then validation error for invalid Dart syntax is reported.', () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        contains(
+          'Endpoint analysis skipped due to invalid Dart syntax. Please '
+          'review and correct the syntax errors.',
+        ),
+      );
+    });
+
+    test('then one endpoint definitions is created.', () {
+      expect(endpointDefinitions, hasLength(1));
     });
   });
 }

@@ -1,12 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 
-abstract class ParameterAnalyzer {
-  static Parameters? analyze(
+abstract class EndpointParameterAnalyzer {
+  /// Parses a [ParameterElement] into a [ParameterDefinition].
+  /// Assumes that the [ParameterElement] is a valid endpoint parameter.
+  static Parameters parse(
     List<ParameterElement> parameters,
-    CodeAnalysisCollector collector,
   ) {
     var requiredParameters = <ParameterDefinition>[];
     var positionalParameters = <ParameterDefinition>[];
@@ -33,6 +36,24 @@ abstract class ParameterAnalyzer {
       positional: positionalParameters,
       named: namedParameters,
     );
+  }
+
+  /// Validates a list of [ParameterElement] and returns a list of errors.
+  static List<SourceSpanSeverityException> validate(
+    List<ParameterElement> parameters,
+  ) {
+    List<SourceSpanSeverityException> errors = [];
+    for (var parameter in parameters) {
+      try {
+        TypeDefinition.fromDartType(parameter.type);
+      } on FromDartTypeClassNameException catch (e) {
+        errors.add(SourceSpanSeverityException(
+          'The type "${e.type}" is not a supported endpoint parameter type.',
+          parameter.span,
+        ));
+      }
+    }
+    return errors;
   }
 
   static bool _isRequired(ParameterElement parameter) {

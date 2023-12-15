@@ -1,10 +1,11 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/dart/definition_analyzers/parameter_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
-import 'package:source_span/source_span.dart';
+import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -15,22 +16,13 @@ const _excludedMethodNameSet = {
   'getUserObject',
 };
 
-abstract class MethodAnalyzer {
-  static MethodDefinition? analyze(
+abstract class EndpointMethodAnalyzer {
+  /// Parses an [MethodElement] into a [MethodDefinition].
+  /// Assumes that the [MethodElement] is a valid endpoint method.
+  static MethodDefinition parse(
     MethodElement method,
     Parameters parameters,
-    CodeAnalysisCollector collector,
   ) {
-    var returnTypeWarning = validateReturnType(
-      dartType: method.returnType,
-      dartElement: method,
-    );
-
-    if (returnTypeWarning != null) {
-      collector.addError(returnTypeWarning);
-      return null;
-    }
-
     var definition = MethodDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
@@ -44,6 +36,21 @@ abstract class MethodAnalyzer {
     return definition;
   }
 
+  /// Creates a namespace for the [MethodElement] based on the [ClassElement]
+  /// and the [filePath].
+  static String elementNamespace(
+    ClassElement classElement,
+    MethodElement methodElement,
+    String filePath,
+  ) {
+    return '${EndpointClassAnalyzer.elementNamespace(
+      classElement,
+      filePath,
+    )}_${methodElement.name}';
+  }
+
+  /// Returns true if the [MethodElement] is an endpoint method that should
+  /// be validated and parsed.
   static bool isEndpointMethod(MethodElement method) {
     if (method.isPrivate) return false;
 
@@ -54,7 +61,25 @@ abstract class MethodAnalyzer {
     return true;
   }
 
-  static SourceSpanSeverityException? validateReturnType({
+  /// Validates the [MethodElement] and returns a list of
+  /// [SourceSpanSeverityException].
+  static List<SourceSpanSeverityException> validate(MethodElement method) {
+    List<SourceSpanSeverityException?> errors = [
+      _validateReturnType(
+        dartType: method.returnType,
+        dartElement: method,
+      )
+    ];
+
+    return errors.whereType<SourceSpanSeverityException>().toList();
+  }
+
+  static bool _missingSessionParameter(List<ParameterElement> parameters) {
+    if (parameters.isEmpty) return true;
+    return parameters.first.type.element?.displayName != 'Session';
+  }
+
+  static SourceSpanSeverityException? _validateReturnType({
     required DartType dartType,
     required Element dartElement,
   }) {
@@ -79,17 +104,11 @@ abstract class MethodAnalyzer {
         dartElement.span,
       );
     }
+
     var innerType = typeArguments[0];
 
     if (innerType is VoidType) {
       return null;
-    }
-
-    if (innerType is InvalidType) {
-      return SourceSpanSeverityException(
-        'Future has an invalid return type.',
-        dartElement.span,
-      );
     }
 
     if (innerType is DynamicType) {
@@ -99,30 +118,15 @@ abstract class MethodAnalyzer {
       );
     }
 
-    return null;
-  }
-
-  static bool _missingSessionParameter(List<ParameterElement> parameters) {
-    if (parameters.isEmpty) return true;
-    return parameters.first.type.element?.displayName != 'Session';
-  }
-}
-
-extension _DartElementSourceSpan on Element {
-  SourceSpan? get span {
-    var sourceData = source?.contents.data;
-    var sourceUri = source?.uri;
-    var offset = nameOffset;
-    var length = nameLength;
-
-    if (sourceData != null && offset != 0 && length != -1) {
-      var sourceFile = SourceFile.fromString(
-        sourceData,
-        url: sourceUri,
+    try {
+      TypeDefinition.fromDartType(innerType);
+    } on FromDartTypeClassNameException catch (e) {
+      return SourceSpanSeverityException(
+        'The type "${e.type}" is not a supported endpoint return type.',
+        dartElement.span,
       );
-      return sourceFile.span(offset, offset + length);
-    } else {
-      return null;
     }
+
+    return null;
   }
 }
