@@ -36,48 +36,34 @@ class EndpointsAnalyzer {
     await _refreshContextForFiles(changedFiles);
 
     var endpointDefs = <EndpointDefinition>[];
-    for (var context in collection.contexts) {
-      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
-      analyzedFiles.sort();
-      var analyzedDartFiles = analyzedFiles
-          .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
-
-      for (var filePath in analyzedDartFiles) {
-        var library = await context.currentSession.getResolvedLibrary(filePath);
-        if (library is! ResolvedLibraryResult) {
-          continue;
-        }
-
-        var maybeDartErrors =
-            await _getErrorsForFile(context.currentSession, filePath);
-        if (maybeDartErrors.isNotEmpty) {
-          collector.addError(
-            SourceSpanSeverityException(
-              'Endpoint analysis skipped due to invalid Dart syntax. Please '
-              'review and correct the syntax errors.'
-              '\nFile: $filePath',
-              null,
-              severity: SourceSpanSeverity.error,
-            ),
-          );
-
-          continue;
-        }
-
-        var validationErrors = _validateLibrary(library, filePath);
-        collector.addErrors(validationErrors.values.expand((e) => e).toList());
-
-        endpointDefs.addAll(
-          _parseLibrary(
-            library,
-            collector,
-            filePath,
-            context.contextRoot.root.path,
-            validationErrors,
+    await for (var (library, filePath, rootPath) in _libraries) {
+      var maybeDartErrors = await _getErrorsForFile(library.session, filePath);
+      if (maybeDartErrors.isNotEmpty) {
+        collector.addError(
+          SourceSpanSeverityException(
+            'Endpoint analysis skipped due to invalid Dart syntax. Please '
+            'review and correct the syntax errors.'
+            '\nFile: $filePath',
+            null,
+            severity: SourceSpanSeverity.error,
           ),
         );
+
+        continue;
       }
+
+      var validationErrors = _validateLibrary(library, filePath);
+      collector.addErrors(validationErrors.values.expand((e) => e).toList());
+
+      endpointDefs.addAll(
+        _parseLibrary(
+          library,
+          collector,
+          filePath,
+          rootPath,
+          validationErrors,
+        ),
+      );
     }
 
     return endpointDefs;
@@ -210,5 +196,21 @@ class EndpointsAnalyzer {
     }
 
     return validationErrors;
+  }
+
+  Stream<(ResolvedLibraryResult, String, String)> get _libraries async* {
+    for (var context in collection.contexts) {
+      var analyzedFiles = context.contextRoot.analyzedFiles().toList();
+      analyzedFiles.sort();
+      var analyzedDartFiles = analyzedFiles
+          .where((path) => path.endsWith('.dart'))
+          .where((path) => !path.endsWith('_test.dart'));
+      for (var filePath in analyzedDartFiles) {
+        var library = await context.currentSession.getResolvedLibrary(filePath);
+        if (library is ResolvedLibraryResult) {
+          yield (library, filePath, context.contextRoot.root.path);
+        }
+      }
+    }
   }
 }
