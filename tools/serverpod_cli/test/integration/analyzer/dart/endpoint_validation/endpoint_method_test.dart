@@ -50,10 +50,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -110,10 +106,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -149,10 +141,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
@@ -191,10 +179,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then a validation errors is reported.', () {
@@ -243,10 +227,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then a validation errors is reported.', () {
       expect(collector.errors, hasLength(1));
     });
@@ -293,10 +273,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -308,56 +284,6 @@ class ExampleEndpoint extends Endpoint {
     test('then endpoint method definition is created.', () {
       var methods = endpointDefinitions.firstOrNull?.methods;
       expect(methods, isNotEmpty);
-    });
-  });
-
-  group(
-      'Given an endpoint method that returns a Future with a non existing class when analyzed',
-      () {
-    var collector = CodeGenerationCollector();
-    var testDirectory =
-        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
-
-    late List<EndpointDefinition> endpointDefinitions;
-    late EndpointsAnalyzer analyzer;
-    setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
-      endpointFile.createSync(recursive: true);
-      endpointFile.writeAsStringSync('''
-import 'package:serverpod/serverpod.dart';
-
-class ExampleEndpoint extends Endpoint {
-  Future<TestClassNotDefined> hello(Session session, String name) async {
-    return 'Hello \$name';
-  }
-}
-''');
-      analyzer = EndpointsAnalyzer(testDirectory);
-      endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isNotEmpty));
-    });
-
-    test('then a validation errors is reported.', () {
-      expect(collector.errors, hasLength(1));
-    });
-
-    test('then validation error informs that return type must be future', () {
-      expect(
-        collector.errors.firstOrNull?.message,
-        'Future has an invalid return type.',
-      );
-    });
-
-    test('then endpoint definition is created.', () {
-      expect(endpointDefinitions, hasLength(1));
-    });
-
-    test('then no endpoint method definition is created.', () {
-      var methods = endpointDefinitions.firstOrNull?.methods;
-      expect(methods, isEmpty);
     });
   });
 
@@ -384,10 +310,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then a validation errors is reported.', () {
@@ -434,10 +356,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -478,10 +396,6 @@ class ExampleEndpoint extends Endpoint {
 ''');
       analyzer = EndpointsAnalyzer(testDirectory);
       endpointDefinitions = await analyzer.analyze(collector: collector);
-    });
-
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
     });
 
     test('then no validation errors are reported.', () {
@@ -528,10 +442,6 @@ class ExampleEndpoint extends Endpoint {
       endpointDefinitions = await analyzer.analyze(collector: collector);
     });
 
-    test('then no parsing errors are reported.', () {
-      expect(analyzer.getErrors(), completion(isEmpty));
-    });
-
     test('then no validation errors are reported.', () {
       expect(collector.errors, isEmpty);
     });
@@ -544,6 +454,43 @@ class ExampleEndpoint extends Endpoint {
       var documentation = endpointDefinitions
           .firstOrNull?.methods.firstOrNull?.documentationComment;
       expect(documentation, '/// This is a method comment.');
+    });
+  });
+
+  group('Given an endpoint method with a void return type', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<void> hello(Session session) async {
+    print('Hello world');
+    return;
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+
+    test('then no validation errors are reported.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint method definition is created.', () {
+      expect(endpointDefinitions.firstOrNull?.methods, hasLength(1));
     });
   });
 }

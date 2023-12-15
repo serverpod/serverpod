@@ -1,12 +1,14 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
-abstract class ParameterAnalyzer {
-  static Parameters? analyze(
+abstract class EndpointParameterAnalyzer {
+  /// Parses a [ParameterElement] into a [ParameterDefinition].
+  /// Assumes that the [ParameterElement] is a valid endpoint parameter.
+  static Parameters parse(
     List<ParameterElement> parameters,
-    CodeAnalysisCollector collector,
   ) {
     var requiredParameters = <ParameterDefinition>[];
     var positionalParameters = <ParameterDefinition>[];
@@ -33,6 +35,13 @@ abstract class ParameterAnalyzer {
       positional: positionalParameters,
       named: namedParameters,
     );
+  }
+
+  /// Validates a list of [ParameterElement] and returns a list of errors.
+  static List<SourceSpanSeverityException> validate(
+    List<ParameterElement> parameter,
+  ) {
+    return [];
   }
 
   static bool _isRequired(ParameterElement parameter) {
