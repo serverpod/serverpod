@@ -4,10 +4,11 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
 abstract class ClassAnalyzer {
-  static EndpointDefinition? analyze(
+  /// Parses an [ClassElement] into a [EndpointDefinition].
+  /// Assumes that the [ClassElement] is a valid endpoint class.
+  static EndpointDefinition parse(
     ClassElement element,
     List<MethodDefinition> methodDefinitions,
-    CodeAnalysisCollector collector,
     String filePath,
     String rootPath,
   ) {
@@ -15,7 +16,8 @@ abstract class ClassAnalyzer {
     var endpointName = _formatEndpointName(className);
     var classDocumentationComment = element.documentationComment;
     var subDirectoryParts = _getSubdirectoryParts(filePath, rootPath);
-    var endpointDef = EndpointDefinition(
+
+    return EndpointDefinition(
       name: endpointName,
       documentationComment: classDocumentationComment,
       className: className,
@@ -23,20 +25,22 @@ abstract class ClassAnalyzer {
       filePath: filePath,
       subDirParts: subDirectoryParts,
     );
-
-    return endpointDef;
   }
 
+  /// Creates a namespace for the [ClassElement] based on the [filePath].
   static String elementNamespace(ClassElement element, String filePath) {
     return '{$filePath}_${element.name}';
   }
 
+  /// Returns true if the [ClassElement] is an endpoint class that should
+  /// be validated and parsed.
   static bool isEndpointClass(ClassElement element) {
     if (element.supertype?.element.name != 'Endpoint') return false;
 
     return true;
   }
 
+  /// Validates the [ClassElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     ClassElement classElement,
   ) {

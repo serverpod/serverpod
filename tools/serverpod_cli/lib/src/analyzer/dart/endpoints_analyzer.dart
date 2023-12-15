@@ -142,37 +142,20 @@ class EndpointsAnalyzer {
 
       var methodDefs = <MethodDefinition>[];
       for (var method in endpointMethods) {
-        var parameters =
-            ParameterAnalyzer.analyze(method.parameters, collector);
+        var parameters = ParameterAnalyzer.parse(method.parameters);
 
-        if (parameters == null) {
-          continue;
-        }
-
-        var methodDefinition = MethodAnalyzer.analyze(
+        methodDefs.add(MethodAnalyzer.parse(
           method,
           parameters,
-          collector,
-        );
-
-        if (methodDefinition == null) {
-          continue;
-        }
-
-        methodDefs.add(methodDefinition);
+        ));
       }
 
-      var endpointDefinition = ClassAnalyzer.analyze(
+      var endpointDefinition = ClassAnalyzer.parse(
         classElement,
         methodDefs,
-        collector,
         filePath,
         rootPath,
       );
-
-      if (endpointDefinition == null) {
-        continue;
-      }
 
       endpointDefs.add(endpointDefinition);
     }

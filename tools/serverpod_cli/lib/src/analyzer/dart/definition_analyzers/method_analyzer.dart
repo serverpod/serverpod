@@ -17,21 +17,12 @@ const _excludedMethodNameSet = {
 };
 
 abstract class MethodAnalyzer {
-  static MethodDefinition? analyze(
+  /// Parses an [MethodElement] into a [MethodDefinition].
+  /// Assumes that the [MethodElement] is a valid endpoint method.
+  static MethodDefinition parse(
     MethodElement method,
     Parameters parameters,
-    CodeAnalysisCollector collector,
   ) {
-    var returnTypeWarning = _validateReturnType(
-      dartType: method.returnType,
-      dartElement: method,
-    );
-
-    if (returnTypeWarning != null) {
-      collector.addError(returnTypeWarning);
-      return null;
-    }
-
     var definition = MethodDefinition(
       name: method.name,
       documentationComment: method.documentationComment,
@@ -45,6 +36,8 @@ abstract class MethodAnalyzer {
     return definition;
   }
 
+  /// Creates a namespace for the [MethodElement] based on the [ClassElement]
+  /// and the [filePath].
   static String elementNamespace(
     ClassElement classElement,
     MethodElement methodElement,
@@ -56,6 +49,8 @@ abstract class MethodAnalyzer {
     )}_${methodElement.name}';
   }
 
+  /// Returns true if the [MethodElement] is an endpoint method that should
+  /// be validated and parsed.
   static bool isEndpointMethod(MethodElement method) {
     if (method.isPrivate) return false;
 
@@ -66,8 +61,17 @@ abstract class MethodAnalyzer {
     return true;
   }
 
+  /// Validates the [MethodElement] and returns a list of
+  /// [SourceSpanSeverityException].
   static List<SourceSpanSeverityException> validate(MethodElement method) {
-    return [];
+    List<SourceSpanSeverityException?> errors = [
+      _validateReturnType(
+        dartType: method.returnType,
+        dartElement: method,
+      )
+    ];
+
+    return errors.whereType<SourceSpanSeverityException>().toList();
   }
 
   static bool _missingSessionParameter(List<ParameterElement> parameters) {

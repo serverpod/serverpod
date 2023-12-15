@@ -5,9 +5,10 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 
 abstract class ParameterAnalyzer {
-  static Parameters? analyze(
+  /// Parses a [ParameterElement] into a [ParameterDefinition].
+  /// Assumes that the [ParameterElement] is a valid endpoint parameter.
+  static Parameters parse(
     List<ParameterElement> parameters,
-    CodeAnalysisCollector collector,
   ) {
     var requiredParameters = <ParameterDefinition>[];
     var positionalParameters = <ParameterDefinition>[];
@@ -36,6 +37,7 @@ abstract class ParameterAnalyzer {
     );
   }
 
+  /// Validates a list of [ParameterElement] and returns a list of errors.
   static List<SourceSpanSeverityException> validate(
     List<ParameterElement> parameter,
   ) {
