@@ -421,4 +421,48 @@ class ExampleEndpoint extends Endpoint {
       expect(required, isFalse);
     });
   });
+
+  group('Given an endpoint method with a function parameter when analyzed', () {
+    var collector = CodeGenerationCollector();
+    var testDirectory =
+        Directory(path.join(testProjectDirectory.path, const Uuid().v4()));
+
+    late List<EndpointDefinition> endpointDefinitions;
+    late EndpointsAnalyzer analyzer;
+    setUpAll(() async {
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile.createSync(recursive: true);
+      endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+typedef TestFunctionBuilder = String Function();
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, TestFunctionBuilder functionParam) async {
+    return functionParam();
+  }
+}
+''');
+      analyzer = EndpointsAnalyzer(testDirectory);
+      endpointDefinitions = await analyzer.analyze(collector: collector);
+    });
+    test(
+        'then a validation error is reported that informs the type is not supported.',
+        () {
+      expect(collector.errors, hasLength(1));
+      expect(
+        collector.errors.firstOrNull?.message,
+        'The type "String Function()" is not a supported endpoint parameter type.',
+      );
+    });
+
+    test('then endpoint definition is created.', () {
+      expect(endpointDefinitions, hasLength(1));
+    });
+
+    test('then endpoint definition method is not defined.', () {
+      var methods = endpointDefinitions.firstOrNull?.methods;
+      expect(methods, isEmpty);
+    });
+  });
 }

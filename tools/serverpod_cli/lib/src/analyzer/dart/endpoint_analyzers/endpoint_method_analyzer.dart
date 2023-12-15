@@ -1,11 +1,11 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_class_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_parameter_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/dart/element_extensions.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
 
 const _excludedMethodNameSet = {
   'streamOpened',
@@ -104,6 +104,7 @@ abstract class EndpointMethodAnalyzer {
         dartElement.span,
       );
     }
+
     var innerType = typeArguments[0];
 
     if (innerType is VoidType) {
@@ -113,6 +114,15 @@ abstract class EndpointMethodAnalyzer {
     if (innerType is DynamicType) {
       return SourceSpanSeverityException(
         'Future must have a type defined. E.g. Future<String>.',
+        dartElement.span,
+      );
+    }
+
+    try {
+      TypeDefinition.fromDartType(innerType);
+    } on FromDartTypeClassNameException catch (e) {
+      return SourceSpanSeverityException(
+        'The type "${e.type}" is not a supported endpoint return type.',
         dartElement.span,
       );
     }

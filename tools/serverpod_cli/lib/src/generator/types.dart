@@ -72,6 +72,8 @@ class TypeDefinition {
   }
 
   /// Creates an [TypeDefinition] from a given [DartType].
+  /// throws [FromDartTypeClassNameException] if the class name could not be
+  /// determined.
   factory TypeDefinition.fromDartType(DartType type) {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
@@ -82,7 +84,7 @@ class TypeDefinition {
     var className = type is! VoidType ? type.element?.displayName : 'void';
 
     if (className == null) {
-      throw ArgumentError('Failed to determine class name from type $type');
+      throw FromDartTypeClassNameException(type);
     }
 
     return TypeDefinition(
@@ -423,4 +425,15 @@ int _findLastClassToken(int start, String input, bool isNullable) {
   if (isNullable) return input.length - 1;
 
   return input.length;
+}
+
+class FromDartTypeClassNameException implements Exception {
+  final DartType type;
+
+  FromDartTypeClassNameException(this.type);
+
+  @override
+  String toString() {
+    return 'Failed to determine class name from type $type';
+  }
 }
