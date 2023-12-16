@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Create the target [DatabaseDefinition] based on the [serializableEntities].
 DatabaseDefinition createDatabaseDefinitionFromEntities(
@@ -12,10 +12,11 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
   var tables = <TableDefinition>[
     for (var classDefinition in serializableEntities)
       if (classDefinition is ClassDefinition &&
-          classDefinition.tableName != null)
+          (classDefinition.tableName != null ||
+              classDefinition.viewName != null))
         TableDefinition(
+          name: _getName(classDefinition),
           module: moduleName,
-          name: classDefinition.tableName!,
           dartName: classDefinition.className,
           schema: 'public',
           columns: [
@@ -34,33 +35,10 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                 )
           ],
           foreignKeys: _createForeignKeys(classDefinition),
-          indexes: [
-            IndexDefinition(
-              indexName: '${classDefinition.tableName!}_pkey',
-              elements: [
-                IndexElementDefinition(
-                    definition: 'id', type: IndexElementDefinitionType.column)
-              ],
-              type: 'btree',
-              isUnique: true,
-              isPrimary: true,
-            ),
-            for (var index in classDefinition.indexes)
-              IndexDefinition(
-                indexName: index.name,
-                elements: [
-                  for (var field in index.fields)
-                    IndexElementDefinition(
-                        type: IndexElementDefinitionType.column,
-                        definition: field)
-                ],
-                type: index.type,
-                isUnique: index.unique,
-                isPrimary: false,
-              ),
-          ],
+          indexes: _createIndexDefinition(classDefinition),
           //TODO: Add an option in the class specification for this.
           managed: true,
+          viewTable: _isViewTable(classDefinition),
         ),
   ];
 
@@ -81,6 +59,51 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
       },
     ).toList(),
   );
+}
+
+bool _isViewTable(ClassDefinition classDefinition) {
+  if (classDefinition.viewName != null) {
+    return true;
+  }
+  return false;
+}
+
+String _getName(ClassDefinition classDefinition) {
+  if (classDefinition.viewName != null) {
+    return classDefinition.viewName!;
+  }
+  return classDefinition.tableName!;
+}
+
+List<IndexDefinition> _createIndexDefinition(ClassDefinition classDefinition) {
+  if (classDefinition.viewName != null) {
+    return [];
+  }
+
+  return [
+    IndexDefinition(
+      indexName: '${classDefinition.tableName!}_pkey',
+      elements: [
+        IndexElementDefinition(
+            definition: 'id', type: IndexElementDefinitionType.column)
+      ],
+      type: 'btree',
+      isUnique: true,
+      isPrimary: true,
+    ),
+    for (var index in classDefinition.indexes)
+      IndexDefinition(
+        indexName: index.name,
+        elements: [
+          for (var field in index.fields)
+            IndexElementDefinition(
+                type: IndexElementDefinitionType.column, definition: field)
+        ],
+        type: index.type,
+        isUnique: index.unique,
+        isPrimary: false,
+      ),
+  ];
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {

@@ -23,6 +23,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     required this.foreignKeys,
     required this.indexes,
     this.managed,
+    this.viewTable,
   });
 
   factory TableDefinition({
@@ -35,6 +36,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     required List<_i2.ForeignKeyDefinition> foreignKeys,
     required List<_i2.IndexDefinition> indexes,
     bool? managed,
+    bool? viewTable,
   }) = _TableDefinitionImpl;
 
   factory TableDefinition.fromJson(
@@ -60,6 +62,8 @@ abstract class TableDefinition extends _i1.SerializableEntity {
           .deserialize<List<_i2.IndexDefinition>>(jsonSerialization['indexes']),
       managed:
           serializationManager.deserialize<bool?>(jsonSerialization['managed']),
+      viewTable: serializationManager
+          .deserialize<bool?>(jsonSerialization['viewTable']),
     );
   }
 
@@ -92,6 +96,9 @@ abstract class TableDefinition extends _i1.SerializableEntity {
   /// Null, if this is unknown.
   bool? managed;
 
+  /// Indicates if the table is view object.
+  bool? viewTable;
+
   TableDefinition copyWith({
     String? name,
     String? dartName,
@@ -102,6 +109,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     List<_i2.ForeignKeyDefinition>? foreignKeys,
     List<_i2.IndexDefinition>? indexes,
     bool? managed,
+    bool? viewTable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,6 +123,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       'foreignKeys': foreignKeys,
       'indexes': indexes,
       'managed': managed,
+      'viewTable': viewTable,
     };
   }
 }
@@ -132,6 +141,7 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i2.ForeignKeyDefinition> foreignKeys,
     required List<_i2.IndexDefinition> indexes,
     bool? managed,
+    bool? viewTable,
   }) : super._(
           name: name,
           dartName: dartName,
@@ -142,6 +152,7 @@ class _TableDefinitionImpl extends TableDefinition {
           foreignKeys: foreignKeys,
           indexes: indexes,
           managed: managed,
+          viewTable: viewTable,
         );
 
   @override
@@ -155,6 +166,7 @@ class _TableDefinitionImpl extends TableDefinition {
     List<_i2.ForeignKeyDefinition>? foreignKeys,
     List<_i2.IndexDefinition>? indexes,
     Object? managed = _Undefined,
+    Object? viewTable = _Undefined,
   }) {
     return TableDefinition(
       name: name ?? this.name,
@@ -166,6 +178,7 @@ class _TableDefinitionImpl extends TableDefinition {
       foreignKeys: foreignKeys ?? this.foreignKeys.clone(),
       indexes: indexes ?? this.indexes.clone(),
       managed: managed is bool? ? managed : this.managed,
+      viewTable: viewTable is bool? ? viewTable : this.viewTable,
     );
   }
 }

@@ -260,7 +260,8 @@ class LibraryGenerator {
                   const Code('switch(t){'),
                   for (var classInfo in entities)
                     if (classInfo is ClassDefinition &&
-                        classInfo.tableName != null)
+                        (classInfo.tableName != null ||
+                            classInfo.viewName != null))
                       Code.scope((a) =>
                           'case ${a(refer(classInfo.className, classInfo.fileRef()))}:'
                           'return ${a(refer(classInfo.className, classInfo.fileRef()))}.t;'),
@@ -789,6 +790,8 @@ extension on DatabaseDefinition {
               }),
           ]),
           if (table.managed != null) 'managed': literalBool(table.managed!),
+          if (table.viewTable != null)
+            'viewTable': literalBool(table.viewTable!),
         }),
       ...additionalTables,
     ]).code;

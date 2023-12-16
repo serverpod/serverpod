@@ -110,6 +110,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_create_request',
@@ -180,6 +181,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_failed_sign_in',
@@ -257,6 +259,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_email_reset',
@@ -320,6 +323,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_google_refresh_token',
@@ -378,6 +382,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_image',
@@ -445,6 +450,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_user_info',
@@ -551,6 +557,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
   ];
 

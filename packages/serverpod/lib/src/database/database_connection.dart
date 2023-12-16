@@ -52,13 +52,17 @@ class DatabaseConnection {
     Column? orderBy,
     bool orderDescending = false,
     List<Order>? orderByList,
+    bool viewTable = false,
     Include? include,
     Transaction? transaction,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
     orderByList = _resolveOrderBy(orderByList, orderBy, orderDescending);
 
-    var query = SelectQueryBuilder(table: table)
+    var query = SelectQueryBuilder(
+      table: table,
+      viewTable: viewTable,
+    )
         .withSelectFields(table.columns)
         .withWhere(where)
         .withOrderBy(orderByList)
@@ -74,6 +78,7 @@ class DatabaseConnection {
       timeoutInSeconds: 60,
       transaction: transaction,
       include: include,
+      viewTable: viewTable,
     );
   }
 
@@ -85,6 +90,7 @@ class DatabaseConnection {
     Column? orderBy,
     List<Order>? orderByList,
     bool orderDescending = false,
+    bool viewTable = false,
     Transaction? transaction,
     Include? include,
   }) async {
@@ -99,6 +105,7 @@ class DatabaseConnection {
       limit: 1,
       transaction: transaction,
       include: include,
+      viewTable: viewTable,
     );
 
     if (rows.isEmpty) return null;
@@ -418,6 +425,7 @@ class DatabaseConnection {
     int? timeoutInSeconds,
     Transaction? transaction,
     Include? include,
+    bool viewTable = false,
   }) async {
     var result = await mappedResultsQuery(
       session,
@@ -439,6 +447,7 @@ class DatabaseConnection {
               rawRow,
               resolvedListRelations,
               include: include,
+              viewTable: viewTable,
             ))
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
         .toList();

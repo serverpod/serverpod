@@ -126,6 +126,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     _i2.TableDefinition(
       name: 'serverpod_chat_read_message',
@@ -194,6 +195,7 @@ class Protocol extends _i1.SerializationManagerServer {
         ),
       ],
       managed: true,
+      viewTable: false,
     ),
     ..._i3.Protocol.targetTableDefinitions,
   ];

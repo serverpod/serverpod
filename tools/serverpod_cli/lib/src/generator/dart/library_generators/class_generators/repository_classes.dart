@@ -32,50 +32,56 @@ class BuildRepositoryClass {
         }))
         ..fields.addAll([
           if (hasAttachOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'attach'
-                ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}AttachRepository._()');
-            }),
+            _buildRepositoryField(
+                className, 'attach', '${className}AttachRepository._()'),
           if (hasAttachRowOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'attachRow'
-                ..modifier = FieldModifier.final$
-                ..assignment =
-                    Code('const ${className}AttachRowRepository._()');
-            }),
+            _buildRepositoryField(
+                className, 'attachRow', '${className}AttachRowRepository._()'),
           if (hasDetachOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'detach'
-                ..modifier = FieldModifier.final$
-                ..assignment = Code('const ${className}DetachRepository._()');
-            }),
+            _buildRepositoryField(
+                className, 'detach', '${className}DetachRepository._()'),
           if (hasDetachRowOperations(fields))
-            Field((fieldBuilder) {
-              fieldBuilder
-                ..name = 'detachRow'
-                ..modifier = FieldModifier.final$
-                ..assignment =
-                    Code('const ${className}DetachRowRepository._()');
-            }),
+            _buildRepositoryField(
+                className, 'detachRow', '${className}DetachRowRepository._()'),
         ])
         ..methods.addAll([
-          _buildFindMethod(className, relationFields),
-          _buildFindFirstRow(className, relationFields),
-          _buildFindByIdMethod(className, relationFields),
-          _buildInsertMethod(className),
-          _buildInsertRowMethod(className),
-          _buildUpdateMethod(className),
-          _buildUpdateRowMethod(className),
-          _buildDeleteMethod(className),
-          _buildDeleteRowMethod(className),
-          _buildDeleteWhereMethod(className),
+          _buildFindMethod(className, relationFields, classDefinition),
+          _buildFindFirstRow(className, relationFields, classDefinition),
+          if (!_isViewTable(classDefinition))
+            ..._buildCrudMethods(
+              className,
+              relationFields,
+            ),
           _buildCountMethod(className),
         ]);
     });
+  }
+
+  Field _buildRepositoryField(
+      String className, String fieldName, String assignment) {
+    return Field((fieldBuilder) {
+      fieldBuilder
+        ..name = fieldName
+        ..modifier = FieldModifier.final$
+        ..assignment =
+            Code('const $className${fieldName.pascalCase}Repository._()');
+    });
+  }
+
+  List<Method> _buildCrudMethods(
+    String className,
+    Iterable<SerializableEntityFieldDefinition> relationFields,
+  ) {
+    return [
+      _buildFindByIdMethod(className, relationFields),
+      _buildInsertMethod(className),
+      _buildInsertRowMethod(className),
+      _buildUpdateMethod(className),
+      _buildUpdateRowMethod(className),
+      _buildDeleteMethod(className),
+      _buildDeleteRowMethod(className),
+      _buildDeleteWhereMethod(className),
+    ];
   }
 
   Class buildEntityAttachRepositoryClass(
@@ -206,8 +212,15 @@ class BuildRepositoryClass {
     return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 
-  Method _buildFindMethod(String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+  bool _isViewTable(ClassDefinition classDefinition) {
+    return classDefinition.viewName != null;
+  }
+
+  Method _buildFindMethod(
+    String className,
+    Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+    ClassDefinition classDefinition,
+  ) {
     return Method((m) => m
       ..name = 'find'
       ..returns = TypeReference(
@@ -295,6 +308,7 @@ class BuildRepositoryClass {
             'offset': refer('offset'),
             'transaction': refer('transaction'),
             if (objectRelationFields.isNotEmpty) 'include': refer('include'),
+            if (_isViewTable(classDefinition)) 'viewTable': literalBool(true),
           }, [
             refer(className)
           ])
@@ -305,6 +319,7 @@ class BuildRepositoryClass {
   Method _buildFindFirstRow(
     String className,
     Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+    ClassDefinition classDefinition,
   ) {
     return Method((m) => m
       ..name = 'findFirstRow'
@@ -384,6 +399,7 @@ class BuildRepositoryClass {
               'offset': refer('offset'),
               'transaction': refer('transaction'),
               if (objectRelationFields.isNotEmpty) 'include': refer('include'),
+              if (_isViewTable(classDefinition)) 'viewTable': literalBool(true),
             },
             [refer(className)],
           )

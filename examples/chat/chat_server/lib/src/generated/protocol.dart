@@ -70,6 +70,7 @@ class Protocol extends _i1.SerializationManagerServer {
         )
       ],
       managed: true,
+      viewTable: false,
     ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,

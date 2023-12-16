@@ -34,6 +34,8 @@ class EntityParser {
     if (className is! String) return null;
 
     var tableName = _parseTableName(documentContents);
+    var viewName = _parseViewName(documentContents);
+    var queryView = _parseQueryName(documentContents);
     var serverOnly = _parseServerOnly(documentContents);
     var fields = _parseClassFields(
       documentContents,
@@ -46,6 +48,8 @@ class EntityParser {
       className: className,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
+      viewName: viewName,
+      query: queryView,
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
@@ -107,6 +111,20 @@ class EntityParser {
     if (tableName is! String) return null;
 
     return tableName;
+  }
+
+  static String? _parseViewName(YamlMap documentContents) {
+    var viewName = documentContents.nodes[Keyword.view]?.value;
+    if (viewName is! String) return null;
+
+    return viewName;
+  }
+
+  static String? _parseQueryName(YamlMap documentContents) {
+    var viewName = documentContents.nodes[Keyword.query]?.value;
+    if (viewName is! String) return null;
+
+    return viewName;
   }
 
   static List<SerializableEntityFieldDefinition> _parseClassFields(
