@@ -15,7 +15,7 @@ Future<bool> performGenerate({
   var collector = CodeGenerationCollector();
   bool success = true;
 
-  log.debug('Analyzing serializable entities in the protocol directory.');
+  log.debug('Analyzing serializable models in the protocol directory.');
   var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
   var analyzer = StatefulAnalyzer(protocols, (uri, collector) {
@@ -26,13 +26,13 @@ Future<bool> performGenerate({
     }
   });
 
-  var entities = analyzer.validateAll();
+  var models = analyzer.validateAll();
 
-  log.debug('Generating files for serializable entities.');
+  log.debug('Generating files for serializable models.');
 
   var generatedEntityFiles =
-      await ServerpodCodeGenerator.generateSerializableEntities(
-    entities: entities,
+      await ServerpodCodeGenerator.generateSerializableModels(
+    models: models,
     config: config,
     collector: collector,
   );
@@ -65,7 +65,7 @@ Future<bool> performGenerate({
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
-    models: entities,
+    models: models,
   );
 
   var generatedProtocolFiles =

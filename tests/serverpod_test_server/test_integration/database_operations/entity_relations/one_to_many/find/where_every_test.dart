@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with one to many relation', () {
+  group('Given models with one to many relation', () {
     tearDown(() async {
       await Order.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
       await Customer.db
@@ -14,7 +14,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered by every many relation then result is as expected',
+        'when fetching models filtered by every many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -42,7 +42,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on every many relation in combination with other filter then result is as expected.',
+        'when fetching models filtered on every many relation in combination with other filter then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -73,7 +73,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on combined filtered every many relation then result is as expected.',
+        'when fetching models filtered on combined filtered every many relation then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -103,7 +103,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on multiple every many relation then result is as expected.',
+        'when fetching models filtered on multiple every many relation then result is as expected.',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -139,7 +139,7 @@ void main() async {
     });
   });
 
-  group('Given entities with nested one to many relation', () {
+  group('Given models with nested one to many relation', () {
     tearDown(() async {
       await Comment.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
@@ -149,7 +149,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on nested every many relation then result is as expected',
+        'when fetching models filtered on nested every many relation then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),
@@ -201,7 +201,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities filtered on nested every many relation in combination with separate filter then result is as expected',
+        'when fetching models filtered on nested every many relation in combination with separate filter then result is as expected',
         () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Alex'),

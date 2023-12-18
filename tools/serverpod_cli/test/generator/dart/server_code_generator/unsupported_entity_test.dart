@@ -18,7 +18,7 @@ class UnsupportedEntity extends SerializableModelDefinition {
 void main() {
   test('Given unsupported entity when generating code then exception is thrown',
       () {
-    var entities = [
+    var models = [
       UnsupportedEntity(
           fileName: 'example',
           sourceFileName: 'example',
@@ -27,8 +27,8 @@ void main() {
     ];
 
     expect(
-      () => generator.generateSerializableEntitiesCode(
-        models: entities,
+      () => generator.generateSerializableModelsCode(
+        models: models,
         config: config,
       ),
       throwsA(const TypeMatcher<Exception>().having((e) => e.toString(),

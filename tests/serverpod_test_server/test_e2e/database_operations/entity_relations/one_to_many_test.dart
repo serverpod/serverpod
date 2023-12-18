@@ -56,7 +56,7 @@ void main() async {
 
   group('Select queries - ', () {
     group(
-        'Given entities with many relations ordered on number of many relations',
+        'Given models with many relations ordered on number of many relations',
         () {
       late List<Customer> customersOrderedByOrders;
 
@@ -75,7 +75,7 @@ void main() async {
     });
 
     group(
-        'Given entities with many relations ordered on number of many relations with specific property',
+        'Given models with many relations ordered on number of many relations with specific property',
         () {
       late List<Customer> customersOrderedByOrders;
 

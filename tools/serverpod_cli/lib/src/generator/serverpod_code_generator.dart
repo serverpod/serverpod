@@ -19,20 +19,20 @@ abstract class ServerpodCodeGenerator {
     const EndpointDescriptionGenerator(),
   ];
 
-  /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all
+  /// Generate from [CodeGenerator.generateSerializableModelsCode] for all
   /// [CodeGenerator]s and save the files.
   ///
   /// Returns a list of generated files.
-  static Future<List<String>> generateSerializableEntities({
-    required List<SerializableModelDefinition> entities,
+  static Future<List<String>> generateSerializableModels({
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {
     collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
-        ...generator.generateSerializableEntitiesCode(
-          models: entities,
+        ...generator.generateSerializableModelsCode(
+          models: models,
           config: config,
         )
     };

@@ -22,7 +22,7 @@ void main() {
   test(
       'Given a class with no fields that should persist but is scoped too none then no implicit class is generated.',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -30,8 +30,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -47,7 +47,7 @@ void main() {
   });
   group('Given a class with a field that should persist but is scoped too none',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -62,8 +62,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -152,7 +152,7 @@ void main() {
   group(
       'Given a class with two fields that should persist but is scoped too none',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -172,8 +172,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

@@ -6,13 +6,13 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with one to one relation', () {
+  group('Given models with one to one relation', () {
     tearDown(() async {
       await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching entities including relation then result includes relation data.',
+        'when fetching models including relation then result includes relation data.',
         () async {
       var post = await Post.db.insert(
         session,
@@ -37,13 +37,13 @@ void main() async {
     });
   });
 
-  group('Given entities with nested one to one relations', () {
+  group('Given models with nested one to one relations', () {
     tearDown(() async {
       await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching entities including nested relation then result includes nested relation data.',
+        'when fetching models including nested relation then result includes nested relation data.',
         () async {
       var post = await Post.db.insert(
         session,

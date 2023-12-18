@@ -85,7 +85,7 @@ class SerializableModelAnalyzer {
     }
   }
 
-  /// Resolves dependencies between entities, this method mutates the input.
+  /// Resolves dependencies between models, this method mutates the input.
   static void resolveModelDependencies(
     List<SerializableModelDefinition> modelDefinitions,
   ) {
@@ -100,7 +100,7 @@ class SerializableModelAnalyzer {
     Uri sourceUri,
     CodeAnalysisCollector collector,
     SerializableModelDefinition? entity,
-    List<SerializableModelDefinition>? entities,
+    List<SerializableModelDefinition>? models,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);
@@ -138,7 +138,7 @@ class SerializableModelAnalyzer {
       documentDefinition: entity,
       // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
-      entityRelations: entities != null ? ModelRelations(entities) : null,
+      entityRelations: models != null ? ModelRelations(models) : null,
     );
 
     Set<ValidateNode> documentStructure;

@@ -25,7 +25,7 @@ void main() {
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
@@ -50,7 +50,7 @@ void main() {
     ];
 
     var protocolDefinition =
-        ProtocolDefinition(endpoints: [], models: entities);
+        ProtocolDefinition(endpoints: [], models: models);
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,

@@ -44,7 +44,7 @@ class MigrationGenerator {
   /// Throws [MigrationVersionLoadException] if the a migration version
   /// could not be loaded.
   /// Throws [GenerateMigrationDatabaseDefinitionException] if the database
-  /// definition could not be created from project entities.
+  /// definition could not be created from project models.
   /// Throws [MigrationVersionAlreadyExistsException] if the migration version
   /// already exists.
   Future<MigrationVersion?> createMigration({
@@ -73,7 +73,7 @@ class MigrationGenerator {
       }
     }).validateAll();
 
-    var databaseDefinitionProject = createDatabaseDefinitionFromEntities(
+    var databaseDefinitionProject = createDatabaseDefinitionFromModels(
       entityDefinitions,
       config.name,
       config.modulesAll,

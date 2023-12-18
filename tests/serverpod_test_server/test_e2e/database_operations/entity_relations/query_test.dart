@@ -50,7 +50,7 @@ Future<void> _createTestDatabase(Client client) async {
 void main() async {
   var client = Client(serverUrl);
 
-  group('Given entities with relations when filtering on relation attributes',
+  group('Given models with relations when filtering on relation attributes',
       () {
     late List<Citizen> citizensWithCompanyServerpod;
     setUpAll(() async {
@@ -63,13 +63,13 @@ void main() async {
 
     tearDownAll(() async => await client.relation.deleteAll());
 
-    test('then expected entities are returned.', () {
+    test('then expected models are returned.', () {
       var citizenNames = citizensWithCompanyServerpod.map((e) => e.name);
       expect(citizenNames, ['Alex', 'Isak']);
     });
   });
 
-  group('Given entities with relations when ordering on relation attributes',
+  group('Given models with relations when ordering on relation attributes',
       () {
     late List<Citizen> citizensOrderedByCompanyName;
     setUpAll(() async {
@@ -80,14 +80,14 @@ void main() async {
 
     tearDownAll(() async => await client.relation.deleteAll());
 
-    test('then entities returned are in expected order.', () {
+    test('then models returned are in expected order.', () {
       var citizenNames = citizensOrderedByCompanyName.map((e) => e.name);
       expect(citizenNames, ['Theo', 'Haris', 'Alex', 'Isak', 'Lina', 'Joanna']);
     });
   });
 
   group(
-      'Given entities with relations when ordering on nested relation attributes',
+      'Given models with relations when ordering on nested relation attributes',
       () {
     late List<Citizen> citizensOrderedByCompanyTownName;
     setUpAll(() async {
@@ -98,14 +98,14 @@ void main() async {
 
     tearDownAll(() async => await client.relation.deleteAll());
 
-    test('then entities returned are in expected order.', () {
+    test('then models returned are in expected order.', () {
       var citizenNames = citizensOrderedByCompanyTownName.map((e) => e.name);
       expect(citizenNames, ['Lina', 'Joanna', 'Alex', 'Isak', 'Theo', 'Haris']);
     });
   });
 
   group(
-      'Given entities with nested relations when filtering on nested relation attributes',
+      'Given models with nested relations when filtering on nested relation attributes',
       () {
     late List<Citizen> citizensWithCompanyTownStockholm;
     setUpAll(() async {
@@ -118,19 +118,19 @@ void main() async {
 
     tearDownAll(() async => await client.relation.deleteAll());
 
-    test('then expected entities are returned.', () {
+    test('then expected models are returned.', () {
       var citizenNames = citizensWithCompanyTownStockholm.map((e) => e.name);
       expect(citizenNames, ['Alex', 'Isak', 'Theo', 'Haris']);
     });
   });
 
-  group('Given entities with relation when deleting on relation attributes',
+  group('Given models with relation when deleting on relation attributes',
       () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
 
-    test('then expected number of entities are removed.', () async {
+    test('then expected number of models are removed.', () async {
       var removedRows = await client.relation.citizenDeleteWhereCompanyNameIs(
         companyName: 'Serverpod',
       );
@@ -139,13 +139,13 @@ void main() async {
   });
 
   group(
-      'Given entities with nested relation when deleting on nested relation attributes',
+      'Given models with nested relation when deleting on nested relation attributes',
       () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
 
-    test('then expected number of entities are removed.', () async {
+    test('then expected number of models are removed.', () async {
       var removedRows =
           await client.relation.citizenDeleteWhereCompanyTownNameIs(
         townName: 'Stockholm',
@@ -155,40 +155,40 @@ void main() async {
     });
   });
 
-  group('Given entities with relation when counting on relation attributes',
+  group('Given models with relation when counting on relation attributes',
       () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
 
-    test('then expected number of entities are found.', () async {
-      var entitiesFound = await client.relation.citizenCountWhereCompanyNameIs(
+    test('then expected number of models are found.', () async {
+      var modelsFound = await client.relation.citizenCountWhereCompanyNameIs(
         companyName: 'Serverpod',
       );
 
-      expect(entitiesFound, 2);
+      expect(modelsFound, 2);
     });
   });
 
   group(
-      'Given entities with nested relation when counting on nested relation attributes',
+      'Given models with nested relation when counting on nested relation attributes',
       () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
 
-    test('then expected number of entities are found.', () async {
-      var entitiesFound =
+    test('then expected number of models are found.', () async {
+      var modelsFound =
           await client.relation.citizenCountWhereCompanyTownNameIs(
         townName: 'Stockholm',
       );
 
-      expect(entitiesFound, 4);
+      expect(modelsFound, 4);
     });
   });
 
   group(
-      'Given entities with nested relations when fetching citizens with deep includes.',
+      'Given models with nested relations when fetching citizens with deep includes.',
       () {
     late List<Citizen> citizensWithDeepIncludes;
     setUpAll(() async {
@@ -246,7 +246,7 @@ void main() async {
   });
 
   group(
-      'Given entities with nested relations when fetching all citizens without includes',
+      'Given models with nested relations when fetching all citizens without includes',
       () {
     late List<Citizen> citizensWithoutIncludes;
     setUpAll(() async {
@@ -290,7 +290,7 @@ void main() async {
   });
 
   group(
-      'Given entities with nested relations when fetching all citizens with shallow includes',
+      'Given models with nested relations when fetching all citizens with shallow includes',
       () {
     late List<Citizen> citizensWithShallowIncludes;
     setUpAll(() async {
@@ -346,7 +346,7 @@ void main() async {
     });
   });
 
-  group('Given entities with relations when finding by id with includes', () {
+  group('Given models with relations when finding by id with includes', () {
     late List<Citizen>? allCitizens;
     setUpAll(() async {
       await _createTestDatabase(client);
@@ -371,7 +371,7 @@ void main() async {
   });
 
   group(
-      'Given entities with a named relation when fetching from the none origin side',
+      'Given models with a named relation when fetching from the none origin side',
       () {
     late List<Citizen> citizensIncludingAddress;
     setUpAll(() async {
@@ -400,7 +400,7 @@ void main() async {
   });
 
   group(
-      'Given entities with a named relation when fetching from the foreign key origin side',
+      'Given models with a named relation when fetching from the foreign key origin side',
       () {
     late List<Address> addresses;
     setUpAll(() async {
@@ -423,7 +423,7 @@ void main() async {
     });
   });
 
-  group('Given entities with a named self relation', () {
+  group('Given models with a named self relation', () {
     late List<Post> posts;
     setUpAll(() async {
       await _createTestDatabase(client);

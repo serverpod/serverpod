@@ -16,7 +16,7 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(
+    var databaseDefinition = createDatabaseDefinitionFromModels(
       [entity],
       'example',
       [],
@@ -46,7 +46,7 @@ void main() {
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(
+    var databaseDefinition = createDatabaseDefinitionFromModels(
       [entity],
       'example',
       [],

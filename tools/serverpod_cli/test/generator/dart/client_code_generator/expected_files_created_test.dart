@@ -12,15 +12,15 @@ const generator = DartClientCodeGenerator();
 
 void main() {
   group('Given a single class when generating the code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -41,15 +41,15 @@ void main() {
   });
 
   group('Given a single enum when generating the code', () {
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -70,7 +70,7 @@ void main() {
   });
 
   group('Given a multiple classes when generating the code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -89,8 +89,8 @@ void main() {
           .build(),
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -152,7 +152,7 @@ void main() {
   test(
       'Given a server-side only class when generating the code then the client-side file is NOT created',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -160,8 +160,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -184,7 +184,7 @@ void main() {
   test(
       'Given a server-side only enum when generating the code then the client-side file is NOT created',
       () {
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -192,8 +192,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

@@ -3,14 +3,14 @@ import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-/// Create the target [DatabaseDefinition] based on the [serializableEntities].
-DatabaseDefinition createDatabaseDefinitionFromEntities(
-  List<SerializableModelDefinition> serializableEntities,
+/// Create the target [DatabaseDefinition] based on the [serializableModel].
+DatabaseDefinition createDatabaseDefinitionFromModels(
+  List<SerializableModelDefinition> serializableModels,
   String moduleName,
   List<ModuleConfig> allModules,
 ) {
   var tables = <TableDefinition>[
-    for (var classDefinition in serializableEntities)
+    for (var classDefinition in serializableModels)
       if (classDefinition is ClassDefinition &&
           classDefinition.tableName != null)
         TableDefinition(

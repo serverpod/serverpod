@@ -27,8 +27,8 @@ class StatefulAnalyzer {
     _onErrorsChangedNotifier = onErrorsChangedNotifier;
   }
 
-  /// Returns all valid entities in the state.
-  List<SerializableModelDefinition> get _validEntities =>
+  /// Returns all valid models in the state.
+  List<SerializableModelDefinition> get _validModels =>
       _modelStates.values
           .where((state) => state.errors.isEmpty)
           .map((state) => state.entity)
@@ -67,7 +67,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> validateAll() {
     _updateAllModels();
     _validateAllModels();
-    return _validEntities;
+    return _validModels;
   }
 
   /// Runs the validation on a single model. The model must exist in the
@@ -87,7 +87,7 @@ class StatefulAnalyzer {
 
     // This can be optimized to only validate the files we know have related errors.
     _validateAllModels();
-    return _validEntities;
+    return _validModels;
   }
 
   void _updateAllModels() {

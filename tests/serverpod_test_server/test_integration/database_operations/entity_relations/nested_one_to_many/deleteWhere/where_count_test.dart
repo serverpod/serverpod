@@ -7,7 +7,7 @@ void main() async {
   var session = await IntegrationTestServer().session();
 
   group(
-      'Given entities with one to many relation nested in a one to one relation',
+      'Given models with one to many relation nested in a one to one relation',
       () {
     tearDown(() async {
       await Player.db
@@ -17,7 +17,7 @@ void main() async {
     });
 
     test(
-        'when deleting entities filtered on nested many relation count then result is as expected.',
+        'when deleting models filtered on nested many relation count then result is as expected.',
         () async {
       var players = await Player.db.insert(session, [
         Player(name: 'Alex'),
@@ -54,7 +54,7 @@ void main() async {
     });
 
     test(
-        'when deleting entities filtered on filtered nested many relation count then result is as expected.',
+        'when deleting models filtered on filtered nested many relation count then result is as expected.',
         () async {
       var players = await Player.db.insert(session, [
         Player(name: 'Alex'),

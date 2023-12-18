@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with many to many relation', () {
+  group('Given models with many to many relation', () {
     tearDown(() async {
       await Enrollment.db
           .deleteWhere(session, where: (_) => Constant.bool(true));
@@ -15,7 +15,7 @@ void main() async {
     });
 
     test(
-        'when counting entities filtered by none many relation then result is as expected',
+        'when counting models filtered by none many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -44,7 +44,7 @@ void main() async {
     });
 
     test(
-        'when counting entities filtered by filtered none many relation then result is as expected',
+        'when counting models filtered by filtered none many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -82,7 +82,7 @@ void main() async {
     });
 
     test(
-        'when counting entities filtered by none many relation in combination with other filter then result is as expected',
+        'when counting models filtered by none many relation in combination with other filter then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -111,7 +111,7 @@ void main() async {
     });
 
     test(
-        'when counting entities filtered by multiple filtered none many relation then result is as expected',
+        'when counting models filtered by multiple filtered none many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),

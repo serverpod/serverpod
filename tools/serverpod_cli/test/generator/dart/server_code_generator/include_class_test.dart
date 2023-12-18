@@ -19,15 +19,15 @@ void main() {
   var tableName = 'example_table';
 
   group('Given a class with table name when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
@@ -56,7 +56,7 @@ void main() {
   group(
       'Given a class with table name and object relation field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -65,8 +65,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -202,7 +202,7 @@ void main() {
   group(
       'Given a class with table name and object relation field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -215,8 +215,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

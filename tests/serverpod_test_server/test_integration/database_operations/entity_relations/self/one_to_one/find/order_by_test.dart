@@ -6,13 +6,13 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with one to one relation', () {
+  group('Given models with one to one relation', () {
     tearDown(() async {
       await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-      'when fetching entities ordered by relation attributes then result is as expected.',
+      'when fetching models ordered by relation attributes then result is as expected.',
       () async {
         var post = await Post.db.insert(
           session,
@@ -37,13 +37,13 @@ void main() async {
     );
   });
 
-  group('Given entities with nested one to one relations', () {
+  group('Given models with nested one to one relations', () {
     tearDown(() async {
       await Post.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching entities ordered by nested relation attributes then result is as expected.',
+        'when fetching models ordered by nested relation attributes then result is as expected.',
         () async {
       var post = await Post.db.insert(
         session,

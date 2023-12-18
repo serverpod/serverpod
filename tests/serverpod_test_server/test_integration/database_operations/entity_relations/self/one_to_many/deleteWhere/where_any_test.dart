@@ -6,13 +6,13 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with one to many relation', () {
+  group('Given models with one to many relation', () {
     tearDown(() async {
       await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-      'when deleting entities filtered by any many relation then result is as expected.',
+      'when deleting models filtered by any many relation then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -33,7 +33,7 @@ void main() async {
     );
 
     test(
-      'when deleting entities filtered by filtered any many relation then result is as expected',
+      'when deleting models filtered by filtered any many relation then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -55,7 +55,7 @@ void main() async {
     );
 
     test(
-        'when deleting entities filtered on any many relation in combination with other filter then result is as expected.',
+        'when deleting models filtered on any many relation in combination with other filter then result is as expected.',
         () async {
       var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
       var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -77,7 +77,7 @@ void main() async {
     });
 
     test(
-      'when deleting entities filtered on OR filtered any many relation then result is as expected.',
+      'when deleting models filtered on OR filtered any many relation then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -102,7 +102,7 @@ void main() async {
     );
 
     test(
-      'when deleting entities filtered on multiple filtered any many relation then result is as expected.',
+      'when deleting models filtered on multiple filtered any many relation then result is as expected.',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -126,13 +126,13 @@ void main() async {
     );
   });
 
-  group('Given entities with nested one to many relation', () {
+  group('Given models with nested one to many relation', () {
     tearDown(() async {
       await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-      'when deleting entities filtered on nested any many relation then result is as expected',
+      'when deleting models filtered on nested any many relation then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -160,7 +160,7 @@ void main() async {
     );
 
     test(
-      'when deleting entities filtered on filtered nested any many relation then result is as expected',
+      'when deleting models filtered on filtered nested any many relation then result is as expected',
       () async {
         var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
         var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

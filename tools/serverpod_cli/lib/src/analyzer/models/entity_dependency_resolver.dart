@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
-  /// Resolves dependencies between entities, this method mutates the input.
+  /// Resolves dependencies between models, this method mutates the input.
   static void resolveModelDependencies(
     List<SerializableModelDefinition> entityDefinitions,
   ) {

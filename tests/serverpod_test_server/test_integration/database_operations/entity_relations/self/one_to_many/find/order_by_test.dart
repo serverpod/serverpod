@@ -6,13 +6,13 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with one to many relation', () {
+  group('Given models with one to many relation', () {
     tearDown(() async {
       await Cat.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
 
     test(
-        'when fetching entities ordered on count of many relation then result is as expected.',
+        'when fetching models ordered on count of many relation then result is as expected.',
         () async {
       var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
       var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));
@@ -42,7 +42,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities ordered on count of filtered many relation then result is as expected.',
+        'when fetching models ordered on count of filtered many relation then result is as expected.',
         () async {
       var zelda = await Cat.db.insertRow(session, Cat(name: 'Zelda'));
       var smulan = await Cat.db.insertRow(session, Cat(name: 'Smulan'));

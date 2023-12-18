@@ -20,15 +20,15 @@ void main() {
       path.join('lib', 'src', 'generated', '$testClassFileName.dart');
   var tableName = 'example_table';
   group('Given a class with table name when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -109,7 +109,7 @@ void main() {
   group(
       'Given a class with table name and persistent field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -125,8 +125,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -169,7 +169,7 @@ void main() {
   group(
       'Given a class with table name and NON persistent field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -185,8 +185,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -231,7 +231,7 @@ void main() {
   group(
       'Given a class with table name and object relation field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -240,8 +240,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -271,7 +271,7 @@ void main() {
   group(
       'Given a class with table name and persistent field with scope none when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -287,8 +287,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -340,7 +340,7 @@ void main() {
   group(
       'Given a class with table name and object relation field when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -349,8 +349,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -390,7 +390,7 @@ void main() {
       () {
     var relationFieldName = 'employees';
     var objectRelationType = 'Citizen';
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -400,8 +400,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

@@ -19,15 +19,15 @@ void main() {
   var tableName = 'example_table';
 
   group('Given a class with table name when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

@@ -3,7 +3,7 @@ import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Given entities with deep nested relations', () {
+  group('Given models with deep nested relations', () {
     group('when building expression with deep nested relations', () {
       Expression expression =
           Citizen.t.oldCompany.town.mayor.name.equals('Alex') &

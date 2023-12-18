@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 
-/// A collection of all parsed entities, and their potential collisions.
+/// A collection of all parsed models, and their potential collisions.
 class ModelRelations {
   final List<SerializableModelDefinition> models;
   late final Map<String, List<SerializableModelDefinition>> classNames;

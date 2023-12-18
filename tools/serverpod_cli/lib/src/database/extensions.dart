@@ -2,9 +2,8 @@ import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 //
-// Comparisons of database entities
+// Comparisons of database models
 //
-
 extension DatabaseComparisons on DatabaseDefinition {
   bool containsTableNamed(String tableName) {
     return (findTableNamed(tableName) != null);

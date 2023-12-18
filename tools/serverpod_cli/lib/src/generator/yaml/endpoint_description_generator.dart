@@ -6,7 +6,7 @@ class EndpointDescriptionGenerator extends CodeGenerator {
   const EndpointDescriptionGenerator();
 
   @override
-  Map<String, String> generateSerializableEntitiesCode({
+  Map<String, String> generateSerializableModelsCode({
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {

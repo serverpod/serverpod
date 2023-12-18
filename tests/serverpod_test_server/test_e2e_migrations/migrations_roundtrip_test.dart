@@ -64,7 +64,7 @@ fields:
     });
   });
 
-  group('Given multiple new protocol entities with table', () {
+  group('Given multiple new protocol models with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql:

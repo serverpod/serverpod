@@ -71,7 +71,7 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  /// [SerializationManager] used to serialize [SerializableEntities], both
+  /// [SerializationManager] used to serialize [SerializableModel], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
   final SerializationManagerServer serializationManager;
