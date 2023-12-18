@@ -1,6 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:super_string/super_string.dart';

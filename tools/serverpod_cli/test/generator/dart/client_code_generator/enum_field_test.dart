@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/enum_definition_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';

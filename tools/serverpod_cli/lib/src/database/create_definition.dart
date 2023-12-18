@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:super_string/super_string.dart';
 

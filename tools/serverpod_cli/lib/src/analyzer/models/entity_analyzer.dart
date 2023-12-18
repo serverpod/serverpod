@@ -1,11 +1,11 @@
-import 'package:serverpod_cli/src/analyzer/entities/entity_dependency_resolver.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/entity_relations.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/model_validator.dart';
-import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_definition.dart';
-import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
-import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/analyzer/models/entity_dependency_resolver.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/model_validator.dart';
+import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/class_yaml_definition.dart';
+import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/enum_yaml_definition.dart';
+import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/exception_yaml_definition.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
@@ -13,9 +13,9 @@ import 'package:yaml/src/error_listener.dart';
 import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/entity_parser/entity_parser.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/entity_parser/entity_parser.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(Uri path) {
   var fileName = path.pathSegments.last;

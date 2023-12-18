@@ -44,7 +44,7 @@ void main() {
       () async {
         var result =
             await client.moduleSerialization.serializeNestedModuleObject();
-        expect(result.entity.data, equals(42));
+        expect(result.model.data, equals(42));
         expect(result.list[0].data, equals(42));
         expect(result.map['foo']?.data, equals(42));
       },

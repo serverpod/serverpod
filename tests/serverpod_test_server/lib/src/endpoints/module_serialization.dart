@@ -38,7 +38,7 @@ class ModuleSerializationEndpoint extends Endpoint {
     );
 
     return ModuleDatatype(
-      entity: internalModuleClass,
+      model: internalModuleClass,
       list: [internalModuleClass],
       map: {'foo': internalModuleClass},
     );

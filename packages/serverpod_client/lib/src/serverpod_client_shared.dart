@@ -152,16 +152,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     String endpoint = data['endpoint'];
     Map<String, dynamic> objectData = data['object'];
-    var entity = serializationManager.deserializeByClassName(objectData);
-    if (entity == null) {
-      throw const ServerpodClientException('serializable entity is null', 0);
+    var model = serializationManager.deserializeByClassName(objectData);
+    if (model == null) {
+      throw const ServerpodClientException('serializable model is null', 0);
     }
 
     var endpointRef = _consolidatedEndpointRefLookup[endpoint];
     if (endpointRef == null) {
       throw ServerpodClientException('Endpoint $endpoint was not found', 0);
     }
-    endpointRef._streamController.sink.add(entity);
+    endpointRef._streamController.sink.add(model);
   }
 
   /// Sends a message to the servers WebSocket stream. Typically, this method

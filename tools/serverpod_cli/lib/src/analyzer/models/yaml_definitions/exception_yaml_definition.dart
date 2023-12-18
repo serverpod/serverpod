@@ -1,6 +1,6 @@
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 
 class ExceptionYamlDefinition {
   late Set<ValidateNode> documentStructure;

@@ -1,5 +1,5 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';

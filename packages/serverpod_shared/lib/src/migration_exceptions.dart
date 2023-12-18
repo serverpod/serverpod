@@ -55,7 +55,7 @@ class MigrationRepairTargetNotFoundException implements Exception {
 }
 
 /// Exception thrown when the migration failed to create a database definition
-/// from the projects entity files.
+/// from the projects model files.
 class GenerateMigrationDatabaseDefinitionException implements Exception {}
 
 /// Exception thrown when the migration directory already exists.

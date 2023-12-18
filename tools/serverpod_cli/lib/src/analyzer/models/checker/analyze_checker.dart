@@ -1,5 +1,5 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:yaml/yaml.dart';
 
 class AnalyzeChecker {

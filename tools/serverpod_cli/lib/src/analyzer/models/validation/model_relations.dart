@@ -1,5 +1,5 @@
-import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 
 /// A collection of all parsed entities, and their potential collisions.
 class ModelRelations {

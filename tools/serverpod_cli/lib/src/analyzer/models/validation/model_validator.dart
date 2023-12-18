@@ -1,10 +1,10 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
+import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 
 /// Validates that only one top level model type is defined.
 List<SourceSpanSeverityException> validateTopLevelModelType(

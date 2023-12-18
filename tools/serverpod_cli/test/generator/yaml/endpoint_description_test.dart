@@ -20,7 +20,7 @@ void main() {
       () {
     var protocolDefinition = const ProtocolDefinition(
       endpoints: [],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(
@@ -42,7 +42,7 @@ void main() {
             .withName('example')
             .withMethods([]).build()
       ],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(
@@ -67,7 +67,7 @@ void main() {
             .withName('example2')
             .withMethods([]).build()
       ],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(
@@ -96,7 +96,7 @@ example2:
           MethodDefinitionBuilder().withName('method').build(),
         ]).build(),
       ],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(
@@ -126,7 +126,7 @@ example:
           MethodDefinitionBuilder().withName('method2').build(),
         ]).build(),
       ],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(
@@ -167,7 +167,7 @@ example:
           MethodDefinitionBuilder().withName('method').build(),
         ]).build(),
       ],
-      entities: [],
+      models: [],
     );
 
     var codeMap = generator.generateProtocolCode(

@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';

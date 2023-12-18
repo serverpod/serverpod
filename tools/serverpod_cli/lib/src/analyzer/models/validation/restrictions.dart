@@ -1,13 +1,13 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 
-import 'entity_relations.dart';
+import 'model_relations.dart';
 
 const _globallyRestrictedKeywords = [
   'toJson',

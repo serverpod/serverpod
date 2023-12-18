@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
@@ -65,7 +65,7 @@ Future<bool> performGenerate({
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
-    entities: entities,
+    models: entities,
   );
 
   var generatedProtocolFiles =

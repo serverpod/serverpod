@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:lsp_server/lsp_server.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';

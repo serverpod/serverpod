@@ -50,7 +50,7 @@ void main() {
     ];
 
     var protocolDefinition =
-        ProtocolDefinition(endpoints: [], entities: entities);
+        ProtocolDefinition(endpoints: [], models: entities);
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,

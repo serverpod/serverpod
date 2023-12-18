@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';

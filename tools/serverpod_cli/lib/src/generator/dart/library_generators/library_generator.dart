@@ -27,7 +27,7 @@ class LibraryGenerator {
 
     library.name = 'protocol';
 
-    var entities = protocolDefinition.entities
+    var entities = protocolDefinition.models
         .where((entity) => serverCode || !entity.serverOnly)
         .toList();
 

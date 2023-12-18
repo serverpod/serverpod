@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 

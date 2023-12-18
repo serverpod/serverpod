@@ -1,6 +1,6 @@
-import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';

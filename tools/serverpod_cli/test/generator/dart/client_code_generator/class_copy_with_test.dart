@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/client_code_generator.dart';
 import 'package:serverpod_cli/src/test_util/builders/serializable_entity_field_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
