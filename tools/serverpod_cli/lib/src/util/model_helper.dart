@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart';
 
