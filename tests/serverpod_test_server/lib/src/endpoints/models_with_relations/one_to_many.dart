@@ -1,7 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 // Required because this collides with our Order definitions
-import '/src/generated/entities_with_relations/one_to_many/order.dart' as o;
+import '/src/generated/models_with_relations/one_to_many/order.dart' as o;
 
 class OneToManyEndpoint extends Endpoint {
   Future<List<Customer>> customerOrderByOrderCountAscending(

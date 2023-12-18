@@ -10,28 +10,27 @@
 library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'entities_with_list_relations/city.dart' as _i2;
-import 'entities_with_list_relations/organization.dart' as _i3;
-import 'entities_with_list_relations/person.dart' as _i4;
-import 'entities_with_relations/many_to_many/course.dart' as _i5;
-import 'entities_with_relations/many_to_many/enrollment.dart' as _i6;
-import 'entities_with_relations/many_to_many/student.dart' as _i7;
-import 'entities_with_relations/nested_one_to_many/arena.dart' as _i8;
-import 'entities_with_relations/nested_one_to_many/player.dart' as _i9;
-import 'entities_with_relations/nested_one_to_many/team.dart' as _i10;
-import 'entities_with_relations/one_to_many/comment.dart' as _i11;
-import 'entities_with_relations/one_to_many/customer.dart' as _i12;
-import 'entities_with_relations/one_to_many/order.dart' as _i13;
-import 'entities_with_relations/one_to_one/address.dart' as _i14;
-import 'entities_with_relations/one_to_one/citizen.dart' as _i15;
-import 'entities_with_relations/one_to_one/company.dart' as _i16;
-import 'entities_with_relations/one_to_one/town.dart' as _i17;
-import 'entities_with_relations/self_relation/many_to_many/blocking.dart'
-    as _i18;
-import 'entities_with_relations/self_relation/many_to_many/member.dart' as _i19;
-import 'entities_with_relations/self_relation/one_to_many/cat.dart' as _i20;
-import 'entities_with_relations/self_relation/one_to_one/post.dart' as _i21;
-import 'exception_with_data.dart' as _i22;
+import 'exception_with_data.dart' as _i2;
+import 'models_with_list_relations/city.dart' as _i3;
+import 'models_with_list_relations/organization.dart' as _i4;
+import 'models_with_list_relations/person.dart' as _i5;
+import 'models_with_relations/many_to_many/course.dart' as _i6;
+import 'models_with_relations/many_to_many/enrollment.dart' as _i7;
+import 'models_with_relations/many_to_many/student.dart' as _i8;
+import 'models_with_relations/nested_one_to_many/arena.dart' as _i9;
+import 'models_with_relations/nested_one_to_many/player.dart' as _i10;
+import 'models_with_relations/nested_one_to_many/team.dart' as _i11;
+import 'models_with_relations/one_to_many/comment.dart' as _i12;
+import 'models_with_relations/one_to_many/customer.dart' as _i13;
+import 'models_with_relations/one_to_many/order.dart' as _i14;
+import 'models_with_relations/one_to_one/address.dart' as _i15;
+import 'models_with_relations/one_to_one/citizen.dart' as _i16;
+import 'models_with_relations/one_to_one/company.dart' as _i17;
+import 'models_with_relations/one_to_one/town.dart' as _i18;
+import 'models_with_relations/self_relation/many_to_many/blocking.dart' as _i19;
+import 'models_with_relations/self_relation/many_to_many/member.dart' as _i20;
+import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i21;
+import 'models_with_relations/self_relation/one_to_one/post.dart' as _i22;
 import 'module_datatype.dart' as _i23;
 import 'nullability.dart' as _i24;
 import 'object_field_scopes.dart' as _i25;
@@ -65,46 +64,46 @@ import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i52;
 import 'package:uuid/uuid.dart' as _i53;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i54;
 import 'package:serverpod_test_client/src/protocol/unique_data.dart' as _i55;
-import 'package:serverpod_test_client/src/protocol/entities_with_list_relations/person.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_list_relations/person.dart'
     as _i56;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/customer.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_one/citizen.dart'
     as _i57;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/comment.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_one/address.dart'
     as _i58;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_many/order.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/self_relation/one_to_one/post.dart'
     as _i59;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/citizen.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_one/company.dart'
     as _i60;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/address.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/customer.dart'
     as _i61;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/self_relation/one_to_one/post.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/comment.dart'
     as _i62;
-import 'package:serverpod_test_client/src/protocol/entities_with_relations/one_to_one/company.dart'
+import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/order.dart'
     as _i63;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i64;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i65;
 import 'package:serverpod_auth_client/module.dart' as _i66;
-export 'entities_with_list_relations/city.dart';
-export 'entities_with_list_relations/organization.dart';
-export 'entities_with_list_relations/person.dart';
-export 'entities_with_relations/many_to_many/course.dart';
-export 'entities_with_relations/many_to_many/enrollment.dart';
-export 'entities_with_relations/many_to_many/student.dart';
-export 'entities_with_relations/nested_one_to_many/arena.dart';
-export 'entities_with_relations/nested_one_to_many/player.dart';
-export 'entities_with_relations/nested_one_to_many/team.dart';
-export 'entities_with_relations/one_to_many/comment.dart';
-export 'entities_with_relations/one_to_many/customer.dart';
-export 'entities_with_relations/one_to_many/order.dart';
-export 'entities_with_relations/one_to_one/address.dart';
-export 'entities_with_relations/one_to_one/citizen.dart';
-export 'entities_with_relations/one_to_one/company.dart';
-export 'entities_with_relations/one_to_one/town.dart';
-export 'entities_with_relations/self_relation/many_to_many/blocking.dart';
-export 'entities_with_relations/self_relation/many_to_many/member.dart';
-export 'entities_with_relations/self_relation/one_to_many/cat.dart';
-export 'entities_with_relations/self_relation/one_to_one/post.dart';
 export 'exception_with_data.dart';
+export 'models_with_list_relations/city.dart';
+export 'models_with_list_relations/organization.dart';
+export 'models_with_list_relations/person.dart';
+export 'models_with_relations/many_to_many/course.dart';
+export 'models_with_relations/many_to_many/enrollment.dart';
+export 'models_with_relations/many_to_many/student.dart';
+export 'models_with_relations/nested_one_to_many/arena.dart';
+export 'models_with_relations/nested_one_to_many/player.dart';
+export 'models_with_relations/nested_one_to_many/team.dart';
+export 'models_with_relations/one_to_many/comment.dart';
+export 'models_with_relations/one_to_many/customer.dart';
+export 'models_with_relations/one_to_many/order.dart';
+export 'models_with_relations/one_to_one/address.dart';
+export 'models_with_relations/one_to_one/citizen.dart';
+export 'models_with_relations/one_to_one/company.dart';
+export 'models_with_relations/one_to_one/town.dart';
+export 'models_with_relations/self_relation/many_to_many/blocking.dart';
+export 'models_with_relations/self_relation/many_to_many/member.dart';
+export 'models_with_relations/self_relation/one_to_many/cat.dart';
+export 'models_with_relations/self_relation/one_to_one/post.dart';
 export 'module_datatype.dart';
 export 'nullability.dart';
 export 'object_field_scopes.dart';
@@ -150,68 +149,68 @@ class Protocol extends _i1.SerializationManager {
     if (customConstructors.containsKey(t)) {
       return customConstructors[t]!(data, this) as T;
     }
-    if (t == _i2.City) {
-      return _i2.City.fromJson(data, this) as T;
+    if (t == _i2.ExceptionWithData) {
+      return _i2.ExceptionWithData.fromJson(data, this) as T;
     }
-    if (t == _i3.Organization) {
-      return _i3.Organization.fromJson(data, this) as T;
+    if (t == _i3.City) {
+      return _i3.City.fromJson(data, this) as T;
     }
-    if (t == _i4.Person) {
-      return _i4.Person.fromJson(data, this) as T;
+    if (t == _i4.Organization) {
+      return _i4.Organization.fromJson(data, this) as T;
     }
-    if (t == _i5.Course) {
-      return _i5.Course.fromJson(data, this) as T;
+    if (t == _i5.Person) {
+      return _i5.Person.fromJson(data, this) as T;
     }
-    if (t == _i6.Enrollment) {
-      return _i6.Enrollment.fromJson(data, this) as T;
+    if (t == _i6.Course) {
+      return _i6.Course.fromJson(data, this) as T;
     }
-    if (t == _i7.Student) {
-      return _i7.Student.fromJson(data, this) as T;
+    if (t == _i7.Enrollment) {
+      return _i7.Enrollment.fromJson(data, this) as T;
     }
-    if (t == _i8.Arena) {
-      return _i8.Arena.fromJson(data, this) as T;
+    if (t == _i8.Student) {
+      return _i8.Student.fromJson(data, this) as T;
     }
-    if (t == _i9.Player) {
-      return _i9.Player.fromJson(data, this) as T;
+    if (t == _i9.Arena) {
+      return _i9.Arena.fromJson(data, this) as T;
     }
-    if (t == _i10.Team) {
-      return _i10.Team.fromJson(data, this) as T;
+    if (t == _i10.Player) {
+      return _i10.Player.fromJson(data, this) as T;
     }
-    if (t == _i11.Comment) {
-      return _i11.Comment.fromJson(data, this) as T;
+    if (t == _i11.Team) {
+      return _i11.Team.fromJson(data, this) as T;
     }
-    if (t == _i12.Customer) {
-      return _i12.Customer.fromJson(data, this) as T;
+    if (t == _i12.Comment) {
+      return _i12.Comment.fromJson(data, this) as T;
     }
-    if (t == _i13.Order) {
-      return _i13.Order.fromJson(data, this) as T;
+    if (t == _i13.Customer) {
+      return _i13.Customer.fromJson(data, this) as T;
     }
-    if (t == _i14.Address) {
-      return _i14.Address.fromJson(data, this) as T;
+    if (t == _i14.Order) {
+      return _i14.Order.fromJson(data, this) as T;
     }
-    if (t == _i15.Citizen) {
-      return _i15.Citizen.fromJson(data, this) as T;
+    if (t == _i15.Address) {
+      return _i15.Address.fromJson(data, this) as T;
     }
-    if (t == _i16.Company) {
-      return _i16.Company.fromJson(data, this) as T;
+    if (t == _i16.Citizen) {
+      return _i16.Citizen.fromJson(data, this) as T;
     }
-    if (t == _i17.Town) {
-      return _i17.Town.fromJson(data, this) as T;
+    if (t == _i17.Company) {
+      return _i17.Company.fromJson(data, this) as T;
     }
-    if (t == _i18.Blocking) {
-      return _i18.Blocking.fromJson(data, this) as T;
+    if (t == _i18.Town) {
+      return _i18.Town.fromJson(data, this) as T;
     }
-    if (t == _i19.Member) {
-      return _i19.Member.fromJson(data, this) as T;
+    if (t == _i19.Blocking) {
+      return _i19.Blocking.fromJson(data, this) as T;
     }
-    if (t == _i20.Cat) {
-      return _i20.Cat.fromJson(data, this) as T;
+    if (t == _i20.Member) {
+      return _i20.Member.fromJson(data, this) as T;
     }
-    if (t == _i21.Post) {
-      return _i21.Post.fromJson(data, this) as T;
+    if (t == _i21.Cat) {
+      return _i21.Cat.fromJson(data, this) as T;
     }
-    if (t == _i22.ExceptionWithData) {
-      return _i22.ExceptionWithData.fromJson(data, this) as T;
+    if (t == _i22.Post) {
+      return _i22.Post.fromJson(data, this) as T;
     }
     if (t == _i23.ModuleDatatype) {
       return _i23.ModuleDatatype.fromJson(data, this) as T;
@@ -288,69 +287,69 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i47.UniqueData) {
       return _i47.UniqueData.fromJson(data, this) as T;
     }
-    if (t == _i1.getType<_i2.City?>()) {
-      return (data != null ? _i2.City.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i3.Organization?>()) {
-      return (data != null ? _i3.Organization.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i4.Person?>()) {
-      return (data != null ? _i4.Person.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i5.Course?>()) {
-      return (data != null ? _i5.Course.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i6.Enrollment?>()) {
-      return (data != null ? _i6.Enrollment.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i7.Student?>()) {
-      return (data != null ? _i7.Student.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i8.Arena?>()) {
-      return (data != null ? _i8.Arena.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i9.Player?>()) {
-      return (data != null ? _i9.Player.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i10.Team?>()) {
-      return (data != null ? _i10.Team.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i11.Comment?>()) {
-      return (data != null ? _i11.Comment.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i12.Customer?>()) {
-      return (data != null ? _i12.Customer.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i13.Order?>()) {
-      return (data != null ? _i13.Order.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i14.Address?>()) {
-      return (data != null ? _i14.Address.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i15.Citizen?>()) {
-      return (data != null ? _i15.Citizen.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i16.Company?>()) {
-      return (data != null ? _i16.Company.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i17.Town?>()) {
-      return (data != null ? _i17.Town.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i18.Blocking?>()) {
-      return (data != null ? _i18.Blocking.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i19.Member?>()) {
-      return (data != null ? _i19.Member.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i20.Cat?>()) {
-      return (data != null ? _i20.Cat.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i21.Post?>()) {
-      return (data != null ? _i21.Post.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i22.ExceptionWithData?>()) {
-      return (data != null ? _i22.ExceptionWithData.fromJson(data, this) : null)
+    if (t == _i1.getType<_i2.ExceptionWithData?>()) {
+      return (data != null ? _i2.ExceptionWithData.fromJson(data, this) : null)
           as T;
+    }
+    if (t == _i1.getType<_i3.City?>()) {
+      return (data != null ? _i3.City.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i4.Organization?>()) {
+      return (data != null ? _i4.Organization.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i5.Person?>()) {
+      return (data != null ? _i5.Person.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i6.Course?>()) {
+      return (data != null ? _i6.Course.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i7.Enrollment?>()) {
+      return (data != null ? _i7.Enrollment.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i8.Student?>()) {
+      return (data != null ? _i8.Student.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i9.Arena?>()) {
+      return (data != null ? _i9.Arena.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i10.Player?>()) {
+      return (data != null ? _i10.Player.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i11.Team?>()) {
+      return (data != null ? _i11.Team.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i12.Comment?>()) {
+      return (data != null ? _i12.Comment.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i13.Customer?>()) {
+      return (data != null ? _i13.Customer.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i14.Order?>()) {
+      return (data != null ? _i14.Order.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i15.Address?>()) {
+      return (data != null ? _i15.Address.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i16.Citizen?>()) {
+      return (data != null ? _i16.Citizen.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i17.Company?>()) {
+      return (data != null ? _i17.Company.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i18.Town?>()) {
+      return (data != null ? _i18.Town.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i19.Blocking?>()) {
+      return (data != null ? _i19.Blocking.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i20.Member?>()) {
+      return (data != null ? _i20.Member.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i21.Cat?>()) {
+      return (data != null ? _i21.Cat.fromJson(data, this) : null) as T;
+    }
+    if (t == _i1.getType<_i22.Post?>()) {
+      return (data != null ? _i22.Post.fromJson(data, this) : null) as T;
     }
     if (t == _i1.getType<_i23.ModuleDatatype?>()) {
       return (data != null ? _i23.ModuleDatatype.fromJson(data, this) : null)
@@ -451,6 +450,10 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i47.UniqueData?>()) {
       return (data != null ? _i47.UniqueData.fromJson(data, this) : null) as T;
     }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList()
+          as dynamic;
+    }
     if (t == _i1.getType<List<_i48.Person>?>()) {
       return (data != null
           ? (data as List).map((e) => deserialize<_i48.Person>(e)).toList()
@@ -507,10 +510,6 @@ class Protocol extends _i1.SerializationManager {
       return (data != null
           ? (data as List).map((e) => deserialize<_i48.Cat>(e)).toList()
           : null) as dynamic;
-    }
-    if (t == List<String>) {
-      return (data as List).map((e) => deserialize<String>(e)).toList()
-          as dynamic;
     }
     if (t == List<_i49.ModuleClass>) {
       return (data as List)
@@ -783,32 +782,20 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i56.Person>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i57.Customer>) {
-      return (data as List).map((e) => deserialize<_i57.Customer>(e)).toList()
+    if (t == List<_i57.Citizen>) {
+      return (data as List).map((e) => deserialize<_i57.Citizen>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i58.Comment>) {
-      return (data as List).map((e) => deserialize<_i58.Comment>(e)).toList()
+    if (t == List<_i58.Address>) {
+      return (data as List).map((e) => deserialize<_i58.Address>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i59.Order>) {
-      return (data as List).map((e) => deserialize<_i59.Order>(e)).toList()
+    if (t == List<_i59.Post>) {
+      return (data as List).map((e) => deserialize<_i59.Post>(e)).toList()
           as dynamic;
     }
-    if (t == List<_i60.Citizen>) {
-      return (data as List).map((e) => deserialize<_i60.Citizen>(e)).toList()
-          as dynamic;
-    }
-    if (t == List<_i61.Address>) {
-      return (data as List).map((e) => deserialize<_i61.Address>(e)).toList()
-          as dynamic;
-    }
-    if (t == List<_i62.Post>) {
-      return (data as List).map((e) => deserialize<_i62.Post>(e)).toList()
-          as dynamic;
-    }
-    if (t == List<_i63.Company>) {
-      return (data as List).map((e) => deserialize<_i63.Company>(e)).toList()
+    if (t == List<_i60.Company>) {
+      return (data as List).map((e) => deserialize<_i60.Company>(e)).toList()
           as dynamic;
     }
     if (t == List<List<int>>) {
@@ -1058,6 +1045,18 @@ class Protocol extends _i1.SerializationManager {
               MapEntry(deserialize<String>(k), deserialize<Duration?>(v)))
           as dynamic;
     }
+    if (t == List<_i61.Customer>) {
+      return (data as List).map((e) => deserialize<_i61.Customer>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i62.Comment>) {
+      return (data as List).map((e) => deserialize<_i62.Comment>(e)).toList()
+          as dynamic;
+    }
+    if (t == List<_i63.Order>) {
+      return (data as List).map((e) => deserialize<_i63.Order>(e)).toList()
+          as dynamic;
+    }
     if (t == _i64.CustomClass) {
       return _i64.CustomClass.fromJson(data, this) as T;
     }
@@ -1109,68 +1108,68 @@ class Protocol extends _i1.SerializationManager {
     if (data is _i65.FreezedCustomClass) {
       return 'FreezedCustomClass';
     }
-    if (data is _i2.City) {
+    if (data is _i2.ExceptionWithData) {
+      return 'ExceptionWithData';
+    }
+    if (data is _i3.City) {
       return 'City';
     }
-    if (data is _i3.Organization) {
+    if (data is _i4.Organization) {
       return 'Organization';
     }
-    if (data is _i4.Person) {
+    if (data is _i5.Person) {
       return 'Person';
     }
-    if (data is _i5.Course) {
+    if (data is _i6.Course) {
       return 'Course';
     }
-    if (data is _i6.Enrollment) {
+    if (data is _i7.Enrollment) {
       return 'Enrollment';
     }
-    if (data is _i7.Student) {
+    if (data is _i8.Student) {
       return 'Student';
     }
-    if (data is _i8.Arena) {
+    if (data is _i9.Arena) {
       return 'Arena';
     }
-    if (data is _i9.Player) {
+    if (data is _i10.Player) {
       return 'Player';
     }
-    if (data is _i10.Team) {
+    if (data is _i11.Team) {
       return 'Team';
     }
-    if (data is _i11.Comment) {
+    if (data is _i12.Comment) {
       return 'Comment';
     }
-    if (data is _i12.Customer) {
+    if (data is _i13.Customer) {
       return 'Customer';
     }
-    if (data is _i13.Order) {
+    if (data is _i14.Order) {
       return 'Order';
     }
-    if (data is _i14.Address) {
+    if (data is _i15.Address) {
       return 'Address';
     }
-    if (data is _i15.Citizen) {
+    if (data is _i16.Citizen) {
       return 'Citizen';
     }
-    if (data is _i16.Company) {
+    if (data is _i17.Company) {
       return 'Company';
     }
-    if (data is _i17.Town) {
+    if (data is _i18.Town) {
       return 'Town';
     }
-    if (data is _i18.Blocking) {
+    if (data is _i19.Blocking) {
       return 'Blocking';
     }
-    if (data is _i19.Member) {
+    if (data is _i20.Member) {
       return 'Member';
     }
-    if (data is _i20.Cat) {
+    if (data is _i21.Cat) {
       return 'Cat';
     }
-    if (data is _i21.Post) {
+    if (data is _i22.Post) {
       return 'Post';
-    }
-    if (data is _i22.ExceptionWithData) {
-      return 'ExceptionWithData';
     }
     if (data is _i23.ModuleDatatype) {
       return 'ModuleDatatype';
@@ -1269,68 +1268,68 @@ class Protocol extends _i1.SerializationManager {
     if (data['className'] == 'FreezedCustomClass') {
       return deserialize<_i65.FreezedCustomClass>(data['data']);
     }
+    if (data['className'] == 'ExceptionWithData') {
+      return deserialize<_i2.ExceptionWithData>(data['data']);
+    }
     if (data['className'] == 'City') {
-      return deserialize<_i2.City>(data['data']);
+      return deserialize<_i3.City>(data['data']);
     }
     if (data['className'] == 'Organization') {
-      return deserialize<_i3.Organization>(data['data']);
+      return deserialize<_i4.Organization>(data['data']);
     }
     if (data['className'] == 'Person') {
-      return deserialize<_i4.Person>(data['data']);
+      return deserialize<_i5.Person>(data['data']);
     }
     if (data['className'] == 'Course') {
-      return deserialize<_i5.Course>(data['data']);
+      return deserialize<_i6.Course>(data['data']);
     }
     if (data['className'] == 'Enrollment') {
-      return deserialize<_i6.Enrollment>(data['data']);
+      return deserialize<_i7.Enrollment>(data['data']);
     }
     if (data['className'] == 'Student') {
-      return deserialize<_i7.Student>(data['data']);
+      return deserialize<_i8.Student>(data['data']);
     }
     if (data['className'] == 'Arena') {
-      return deserialize<_i8.Arena>(data['data']);
+      return deserialize<_i9.Arena>(data['data']);
     }
     if (data['className'] == 'Player') {
-      return deserialize<_i9.Player>(data['data']);
+      return deserialize<_i10.Player>(data['data']);
     }
     if (data['className'] == 'Team') {
-      return deserialize<_i10.Team>(data['data']);
+      return deserialize<_i11.Team>(data['data']);
     }
     if (data['className'] == 'Comment') {
-      return deserialize<_i11.Comment>(data['data']);
+      return deserialize<_i12.Comment>(data['data']);
     }
     if (data['className'] == 'Customer') {
-      return deserialize<_i12.Customer>(data['data']);
+      return deserialize<_i13.Customer>(data['data']);
     }
     if (data['className'] == 'Order') {
-      return deserialize<_i13.Order>(data['data']);
+      return deserialize<_i14.Order>(data['data']);
     }
     if (data['className'] == 'Address') {
-      return deserialize<_i14.Address>(data['data']);
+      return deserialize<_i15.Address>(data['data']);
     }
     if (data['className'] == 'Citizen') {
-      return deserialize<_i15.Citizen>(data['data']);
+      return deserialize<_i16.Citizen>(data['data']);
     }
     if (data['className'] == 'Company') {
-      return deserialize<_i16.Company>(data['data']);
+      return deserialize<_i17.Company>(data['data']);
     }
     if (data['className'] == 'Town') {
-      return deserialize<_i17.Town>(data['data']);
+      return deserialize<_i18.Town>(data['data']);
     }
     if (data['className'] == 'Blocking') {
-      return deserialize<_i18.Blocking>(data['data']);
+      return deserialize<_i19.Blocking>(data['data']);
     }
     if (data['className'] == 'Member') {
-      return deserialize<_i19.Member>(data['data']);
+      return deserialize<_i20.Member>(data['data']);
     }
     if (data['className'] == 'Cat') {
-      return deserialize<_i20.Cat>(data['data']);
+      return deserialize<_i21.Cat>(data['data']);
     }
     if (data['className'] == 'Post') {
-      return deserialize<_i21.Post>(data['data']);
-    }
-    if (data['className'] == 'ExceptionWithData') {
-      return deserialize<_i22.ExceptionWithData>(data['data']);
+      return deserialize<_i22.Post>(data['data']);
     }
     if (data['className'] == 'ModuleDatatype') {
       return deserialize<_i23.ModuleDatatype>(data['data']);
