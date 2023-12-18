@@ -22,19 +22,17 @@ class ModelHelper {
   static Future<List<ModelSource>> loadProjectYamlModelsFromDisk(
     GeneratorConfig config,
   ) async {
-    var protocolSourceDir = Directory(joinAll(config.protocolSourcePathParts));
-
     List<FileSystemEntity> protocolSourceFileList = [];
-
     try {
+      var protocolSourceDir =
+          Directory(joinAll(config.protocolSourcePathParts));
       protocolSourceFileList =
           await protocolSourceDir.list(recursive: true).toList();
     } on PathNotFoundException catch (_) {}
 
     List<FileSystemEntity> modelSourceFileList = [];
-
-    var modelSourceDir = Directory(joinAll(config.modelSourcePathParts));
     try {
+      var modelSourceDir = Directory(joinAll(config.modelSourcePathParts));
       modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
     } on PathNotFoundException catch (_) {}
 
