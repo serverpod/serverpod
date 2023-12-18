@@ -34,8 +34,7 @@ void main() async {
     Directory(tempPath).deleteSync(recursive: true);
   });
 
-  group('Given a protocol file that is changed when generate watch is active',
-      () {
+  group('Given a model file that is changed when generate watch is active', () {
     var (projectName, commandRoot) = createRandomProjectName(tempPath);
     var (serverDir, _, clientDir) = createProjectFolderPaths(projectName);
 
@@ -112,7 +111,7 @@ void main() async {
       // ready to receive file changes after the initial generation.
       await Future.delayed(const Duration(seconds: 1));
 
-      // Add protocol file
+      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -160,7 +159,7 @@ fields:
         reason: 'Entity file did not contain expected class.',
       );
 
-      // Update protocol file
+      // Update model file
       protocolFile.writeAsStringSync('''
 class: TestEntity
 fields:
@@ -189,7 +188,7 @@ fields:
         reason: 'Entity file did not contain the added field.',
       );
 
-      // Remove protocol file
+      // Remove model file
       protocolFile.deleteSync();
       await expectLater(
         generateStreamSearch?.keywordFound,
@@ -451,7 +450,7 @@ class TestEndpoint extends Endpoint {
 }
 ''', flush: true);
 
-      // Add protocol file
+      // Add model file
       var protocolFileName = 'test_entity';
       var protocolFile = File(createProtocolFilePath(
         tempPath,
@@ -528,9 +527,9 @@ fields:
             'Could not find import for entity file in client endpoint dispatcher.',
       );
 
-      // Move protocol file to subfolder
+      // Move model file to subfolder
       var subFolderName = 'subfolder';
-      Directory(createProtocolDirectoryPath(tempPath, serverDir, subFolderName))
+      Directory(createModelDirectoryPath(tempPath, serverDir, subFolderName))
           .createSync(
         recursive: true,
       );
@@ -585,16 +584,18 @@ String createClientModelDirectoryPath(
   return path.join(tmpFolder, clientDir, 'lib', 'src', 'protocol');
 }
 
-String createProtocolDirectoryPath(
+String createModelDirectoryPath(
   String tmpFolder,
   String serverDir,
   String? subFolder,
 ) {
+  var basePath = [tmpFolder, serverDir, 'lib', 'src', 'model'];
+
   if (subFolder == null) {
-    return path.join(tmpFolder, serverDir, 'lib', 'src', 'protocol');
+    return path.joinAll(basePath);
   }
 
-  return path.join(tmpFolder, serverDir, 'lib', 'src', 'protocol', subFolder);
+  return path.joinAll([...basePath, subFolder]);
 }
 
 String createProtocolFilePath(
@@ -604,7 +605,7 @@ String createProtocolFilePath(
   String? subFolder,
 }) {
   return path.join(
-    createProtocolDirectoryPath(tmpFolder, serverDir, subFolder),
+    createModelDirectoryPath(tmpFolder, serverDir, subFolder),
     '$fileName.spy.yaml',
   );
 }
