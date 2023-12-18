@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:async/async.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
@@ -13,10 +15,7 @@ Future<bool> performGenerateContinuously({
 }) async {
   log.debug('Starting up continuous generator');
 
-  var watcherClasses =
-      DirectoryWatcher(p.joinAll(config.protocolSourcePathParts));
-  var watcherEndpoints =
-      DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts));
+  var watchers = _setupAllWatchedDirectories(config);
 
   var success = await _performSafeGenerate(
     config: config,
@@ -25,8 +24,7 @@ Future<bool> performGenerateContinuously({
         'Initial code generation complete. Listening for changes.',
   );
 
-  await for (WatchEvent event
-      in StreamGroup.merge([watcherClasses.events, watcherEndpoints.events])) {
+  await for (WatchEvent event in watchers) {
     log.info(
       'File changed: $event',
       newParagraph: true,
@@ -40,6 +38,33 @@ Future<bool> performGenerateContinuously({
   }
 
   return success;
+}
+
+Stream<WatchEvent> _setupAllWatchedDirectories(GeneratorConfig config) {
+  var watchers = <DirectoryWatcher>[];
+
+  var protocolPath = p.joinAll(config.protocolSourcePathParts);
+  var modelPath = p.joinAll(config.modelSourcePathParts);
+  var endpointPath = p.joinAll(config.endpointsSourcePathParts);
+
+  if (_directoryPathExists(protocolPath)) {
+    watchers.add(DirectoryWatcher(p.joinAll(config.protocolSourcePathParts)));
+  }
+
+  if (_directoryPathExists(modelPath)) {
+    watchers.add(DirectoryWatcher(p.joinAll(config.modelSourcePathParts)));
+  }
+
+  if (_directoryPathExists(endpointPath)) {
+    watchers.add(DirectoryWatcher(p.joinAll(config.endpointsSourcePathParts)));
+  }
+
+  return StreamGroup.merge(watchers.map((w) => w.events));
+}
+
+bool _directoryPathExists(String path) {
+  var directory = Directory(path);
+  return directory.existsSync();
 }
 
 Future<bool> _performSafeGenerate({
