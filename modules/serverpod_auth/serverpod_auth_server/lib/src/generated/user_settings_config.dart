@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// User settings.
-abstract class UserSettingsConfig extends _i1.SerializableEntity {
+abstract class UserSettingsConfig extends _i1.SerializableModel {
   UserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,

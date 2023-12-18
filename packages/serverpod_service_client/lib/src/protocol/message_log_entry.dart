@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-abstract class MessageLogEntry extends _i1.SerializableEntity {
+abstract class MessageLogEntry extends _i1.SerializableModel {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,

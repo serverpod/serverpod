@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-abstract class EmailFailedSignIn extends _i1.SerializableEntity {
+abstract class EmailFailedSignIn extends _i1.SerializableModel {
   EmailFailedSignIn._({
     this.id,
     required this.email,

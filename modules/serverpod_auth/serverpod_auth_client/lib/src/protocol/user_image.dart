@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a user image.
-abstract class UserImage extends _i1.SerializableEntity {
+abstract class UserImage extends _i1.SerializableModel {
   UserImage._({
     this.id,
     required this.userId,

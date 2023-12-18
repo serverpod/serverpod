@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Provides a response to an authentication attempt.
-abstract class AuthenticationResponse extends _i1.SerializableEntity {
+abstract class AuthenticationResponse extends _i1.SerializableModel {
   AuthenticationResponse._({
     required this.success,
     this.key,

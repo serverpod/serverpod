@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A message indicating an attempt to join a channel.
-abstract class ChatJoinChannel extends _i1.SerializableEntity {
+abstract class ChatJoinChannel extends _i1.SerializableModel {
   ChatJoinChannel._({
     required this.channel,
     this.userName,

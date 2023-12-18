@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Represents a version of a database migration.
-abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
+abstract class DatabaseMigrationVersion extends _i1.SerializableModel {
   DatabaseMigrationVersion._({
     this.id,
     required this.module,

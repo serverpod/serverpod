@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel extends _i1.SerializableEntity {
+abstract class Channel extends _i1.SerializableModel {
   Channel._({
     this.id,
     required this.name,

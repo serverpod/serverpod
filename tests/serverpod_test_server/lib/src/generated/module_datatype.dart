@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_module_server/module.dart' as _i2;
 
-abstract class ModuleDatatype extends _i1.SerializableEntity {
+abstract class ModuleDatatype extends _i1.SerializableModel {
   ModuleDatatype._({
     required this.entity,
     required this.list,

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Describes how to react if the row a foreign key refers to changes / is deleted.
-enum ForeignKeyAction with _i1.SerializableEntity {
+enum ForeignKeyAction with _i1.SerializableModel {
   /// [setNull] specifies that the appropriate values
   /// of a row referencing an other one should be set to
   /// null on update or deletion.

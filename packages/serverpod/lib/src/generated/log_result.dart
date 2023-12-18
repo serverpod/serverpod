@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// A list of log entries, used to return logging data.
-abstract class LogResult extends _i1.SerializableEntity {
+abstract class LogResult extends _i1.SerializableModel {
   LogResult._({required this.entries});
 
   factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;

@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// An attachement to a chat message. Typically an image or a file.
-abstract class ChatMessageAttachment extends _i1.SerializableEntity {
+abstract class ChatMessageAttachment extends _i1.SerializableModel {
   ChatMessageAttachment._({
     required this.fileName,
     required this.url,

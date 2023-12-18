@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
+abstract class DatabaseMigrationAction extends _i1.SerializableModel {
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,

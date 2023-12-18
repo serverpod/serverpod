@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// An entry in the distributed cache.
-abstract class DistributedCacheEntry extends _i1.SerializableEntity {
+abstract class DistributedCacheEntry extends _i1.SerializableModel {
   DistributedCacheEntry._({required this.data});
 
   factory DistributedCacheEntry({required String data}) =

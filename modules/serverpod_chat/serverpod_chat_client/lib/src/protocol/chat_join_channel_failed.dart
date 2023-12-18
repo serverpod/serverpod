@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Message being sent if a user failed to join a channel.
-abstract class ChatJoinChannelFailed extends _i1.SerializableEntity {
+abstract class ChatJoinChannelFailed extends _i1.SerializableModel {
   ChatJoinChannelFailed._({
     required this.channel,
     required this.reason,

@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Indicates that a user wants to leave a channel.
-abstract class ChatLeaveChannel extends _i1.SerializableEntity {
+abstract class ChatLeaveChannel extends _i1.SerializableModel {
   ChatLeaveChannel._({required this.channel});
 
   factory ChatLeaveChannel({required String channel}) = _ChatLeaveChannelImpl;

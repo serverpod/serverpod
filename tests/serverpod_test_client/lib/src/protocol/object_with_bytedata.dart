@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
-abstract class ObjectWithByteData extends _i1.SerializableEntity {
+abstract class ObjectWithByteData extends _i1.SerializableModel {
   ObjectWithByteData._({
     this.id,
     required this.byteData,

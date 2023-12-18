@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class NotServerOnlyClass extends _i1.SerializableEntity {
+abstract class NotServerOnlyClass extends _i1.SerializableModel {
   NotServerOnlyClass._({required this.foo});
 
   factory NotServerOnlyClass({required String foo}) = _NotServerOnlyClassImpl;

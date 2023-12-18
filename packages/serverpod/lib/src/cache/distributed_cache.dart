@@ -10,7 +10,7 @@
 // import 'cache.dart';
 // import 'local_cache.dart';
 //
-// /// The [DistributedCache] provides a mean to cache [SerializableEntity]s
+// /// The [DistributedCache] provides a mean to cache [SerializableModel]s
 // /// across multiple clustered servers. When accessing an entity it will either
 // /// be in a cache local to the server, or on another server. If it resides in
 // /// another server it will be retrieved through an access call to that server.
@@ -52,7 +52,7 @@
 //   }
 //
 //   @override
-//   Future<void> put(String key, SerializableEntity object,
+//   Future<void> put(String key, SerializableModel object,
 //       {Duration? lifetime, String? group}) async {
 //     var client = _clientFromKey(key);
 //
@@ -74,7 +74,7 @@
 //   }
 //
 //   @override
-//   Future<SerializableEntity?> get(String key) async {
+//   Future<SerializableModel?> get(String key) async {
 //     var client = _clientFromKey(key);
 //
 //     if (client == null) {

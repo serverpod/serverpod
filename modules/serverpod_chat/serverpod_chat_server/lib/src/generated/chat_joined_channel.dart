@@ -13,7 +13,7 @@ import 'protocol.dart' as _i2;
 import 'package:serverpod_auth_server/module.dart' as _i3;
 
 /// A message passed to a user when it joins a channel.
-abstract class ChatJoinedChannel extends _i1.SerializableEntity {
+abstract class ChatJoinedChannel extends _i1.SerializableModel {
   ChatJoinedChannel._({
     required this.channel,
     required this.initialMessageChunk,

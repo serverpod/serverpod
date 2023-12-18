@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Runtime settings of the server.
-abstract class RuntimeSettings extends _i1.SerializableEntity {
+abstract class RuntimeSettings extends _i1.SerializableModel {
   RuntimeSettings._({
     this.id,
     required this.logSettings,
