@@ -66,7 +66,7 @@ void main() {
 
     group('', () {
       test('then the relation field has the global scope.', () {
-        expect(parentId?.scope, EntityFieldScopeDefinition.all);
+        expect(parentId?.scope, ModelFieldScopeDefinition.all);
       });
 
       test('then the relation field should be persisted.', () {

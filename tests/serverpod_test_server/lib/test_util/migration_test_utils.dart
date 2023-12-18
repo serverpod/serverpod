@@ -105,10 +105,10 @@ abstract class MigrationTestUtils {
   }
 
   static void removeAllTaggedMigrations() {
-    for (var entity in _migrationsProjectDirectory().listSync()) {
-      if (entity is Directory) {
-        if (path.basename(entity.path).contains('-')) {
-          entity.deleteSync(recursive: true);
+    for (var model in _migrationsProjectDirectory().listSync()) {
+      if (model is Directory) {
+        if (path.basename(model.path).contains('-')) {
+          model.deleteSync(recursive: true);
         }
       }
     }

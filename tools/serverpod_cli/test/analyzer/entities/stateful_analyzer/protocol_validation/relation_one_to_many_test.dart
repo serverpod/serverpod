@@ -175,7 +175,7 @@ void main() {
           '_companyEmployeesCompanyId',
         );
 
-        expect(field?.scope, EntityFieldScopeDefinition.none);
+        expect(field?.scope, ModelFieldScopeDefinition.none);
       });
 
       test(

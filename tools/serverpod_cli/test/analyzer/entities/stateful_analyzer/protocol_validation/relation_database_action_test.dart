@@ -32,13 +32,13 @@ void main() {
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var entity = definitions.first as ClassDefinition;
+      var model = definitions.first as ClassDefinition;
 
       test('then no errors are detected.', () {
         expect(collector.errors, isEmpty);
       });
 
-      var field = entity.findField('exampleId');
+      var field = model.findField('exampleId');
 
       var noneFieldRelation =
           field == null || field.relation is! ForeignRelationDefinition;
@@ -71,13 +71,13 @@ void main() {
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var entity = definitions.first as ClassDefinition;
+      var model = definitions.first as ClassDefinition;
 
       test('then no errors are detected.', () {
         expect(collector.errors, isEmpty);
       });
 
-      var field = entity.findField('exampleId');
+      var field = model.findField('exampleId');
 
       var noneFieldRelation =
           field == null || field.relation is! ForeignRelationDefinition;
@@ -106,13 +106,13 @@ void main() {
     var collector = CodeGenerationCollector();
     var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
-    var entity = definitions.first as ClassDefinition;
+    var model = definitions.first as ClassDefinition;
 
     test('then no errors are detected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    var field = entity.findField('exampleId');
+    var field = model.findField('exampleId');
 
     var noneFieldRelation =
         field == null || field.relation is! ForeignRelationDefinition;

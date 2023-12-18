@@ -22,7 +22,7 @@ void main() {
   );
   group('Given enum named Example serialized by index when generating code',
       () {
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -30,8 +30,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -63,7 +63,7 @@ void main() {
 
   group('Given an enum named Example serialized by name when generating code',
       () {
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -71,8 +71,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
     test('then generated enum has static fromJson method', () {
@@ -97,15 +97,15 @@ void main() {
       '// This is an example documentation',
       '// This is another example'
     ];
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withFileName('example')
           .withDocumentation(documentation)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -118,7 +118,7 @@ void main() {
 
   group('Given enum with two values with documentation when generating code',
       () {
-    var entities = [
+    var models = [
       EnumDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -130,8 +130,8 @@ void main() {
       ]).build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

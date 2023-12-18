@@ -79,7 +79,7 @@ const _globallyRestrictedKeywords = [
   'static'
 ];
 
-const _databaseEntityReservedFieldNames = [
+const _databaseModelReservedFieldNames = [
   'count',
   'insert',
   'update',
@@ -101,13 +101,13 @@ class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
-  ModelRelations? entityRelations;
+  ModelRelations? modelRelations;
 
   Restrictions({
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
-    this.entityRelations,
+    this.modelRelations,
   });
 
   List<SourceSpanSeverityException> validateClassName(
@@ -143,7 +143,7 @@ class Restrictions {
       ];
     }
 
-    var classesByName = entityRelations?.classNames[className];
+    var classesByName = modelRelations?.classNames[className];
     if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanSeverityException(
@@ -177,7 +177,7 @@ class Restrictions {
       ];
     }
 
-    var relationships = entityRelations;
+    var relationships = modelRelations;
     if (relationships == null) return [];
 
     if (!relationships.isTableNameUnique(documentDefinition, tableName)) {
@@ -278,7 +278,7 @@ class Restrictions {
         )
       ];
     }
-    var relationships = entityRelations;
+    var relationships = modelRelations;
     if (relationships == null) return [];
     if (!relationships.isIndexNameUnique(documentDefinition, indexName)) {
       var collision = relationships.findByIndexName(
@@ -333,7 +333,7 @@ class Restrictions {
 
     if (def is ClassDefinition &&
         def.tableName != null &&
-        _databaseEntityReservedFieldNames.contains(fieldName)) {
+        _databaseModelReservedFieldNames.contains(fieldName)) {
       return [
         SourceSpanSeverityException(
           'The field name "$fieldName" is reserved and cannot be used.',
@@ -384,7 +384,7 @@ class Restrictions {
       ];
     }
 
-    var foreignFields = entityRelations?.findNamedForeignRelationFields(
+    var foreignFields = modelRelations?.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
@@ -494,7 +494,7 @@ class Restrictions {
     }
 
     var parentClasses =
-        entityRelations?.tableNames[foreignKeyRelation.parentTable];
+        modelRelations?.tableNames[foreignKeyRelation.parentTable];
 
     if (parentClasses == null || parentClasses.isEmpty) return [];
 
@@ -538,7 +538,7 @@ class Restrictions {
 
     if (field.type.isListType) return false;
 
-    var foreignFields = entityRelations?.findNamedForeignRelationFields(
+    var foreignFields = modelRelations?.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
@@ -610,7 +610,7 @@ class Restrictions {
       ];
     }
 
-    var relations = entityRelations;
+    var relations = modelRelations;
     if (relations != null && !relations.tableNames.containsKey(content)) {
       return [
         SourceSpanSeverityException(
@@ -659,12 +659,12 @@ class Restrictions {
       ));
     }
 
-    var localEntityRelations = entityRelations;
-    if (localEntityRelations == null) return errors;
+    var localModelRelations = modelRelations;
+    if (localModelRelations == null) return errors;
 
-    String? parsedType = localEntityRelations.extractReferenceClassName(field);
+    String? parsedType = localModelRelations.extractReferenceClassName(field);
 
-    var referenceClassExists = localEntityRelations.classNameExists(parsedType);
+    var referenceClassExists = localModelRelations.classNameExists(parsedType);
     if (!referenceClassExists) {
       errors.add(SourceSpanSeverityException(
         'The class "$parsedType" was not found in any protocol.',
@@ -673,7 +673,7 @@ class Restrictions {
       return errors;
     }
 
-    var referenceClass = localEntityRelations.findByClassName(parsedType);
+    var referenceClass = localModelRelations.findByClassName(parsedType);
 
     if (referenceClass is! ClassDefinition) {
       errors.add(SourceSpanSeverityException(
@@ -820,18 +820,18 @@ class Restrictions {
       ];
     }
 
-    var localEntityRelations = entityRelations;
-    if (localEntityRelations == null) return [];
+    var localModelRelations = modelRelations;
+    if (localModelRelations == null) return [];
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    var foreignFields = localEntityRelations.findNamedForeignRelationFields(
+    var foreignFields = localModelRelations.findNamedForeignRelationFields(
       classDefinition,
       field,
     );
 
-    var foreignClassName = localEntityRelations.extractReferenceClassName(
+    var foreignClassName = localModelRelations.extractReferenceClassName(
       field,
     );
     if (foreignFields.isEmpty) {

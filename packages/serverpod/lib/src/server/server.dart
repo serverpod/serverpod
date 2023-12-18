@@ -298,7 +298,7 @@ class Server {
       request.response.headers.contentType = ContentType.json;
       request.response.statusCode = HttpStatus.internalServerError;
 
-      var serializedModel = serializationManager.encodeWithType(result.entity);
+      var serializedModel = serializationManager.encodeWithType(result.model);
       request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {

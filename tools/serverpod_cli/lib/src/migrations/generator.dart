@@ -62,10 +62,10 @@ class MigrationGenerator {
       migrationRegistry.getLatest(),
     );
 
-    var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
       config,
     );
-    var entityDefinitions = StatefulAnalyzer(protocols, (uri, collector) {
+    var modelDefinitions = StatefulAnalyzer(models, (uri, collector) {
       collector.printErrors();
 
       if (collector.hasSeverErrors) {
@@ -74,7 +74,7 @@ class MigrationGenerator {
     }).validateAll();
 
     var databaseDefinitionProject = createDatabaseDefinitionFromModels(
-      entityDefinitions,
+      modelDefinitions,
       config.name,
       config.modulesAll,
     );

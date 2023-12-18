@@ -29,7 +29,7 @@ void main() {
   group(
       'Given a class named $testClassName with two primitive vars when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -38,8 +38,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -165,20 +165,20 @@ void main() {
   group(
       'Given a class named $testClassName with a var with none scope when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
               .withName('noneName')
               .withTypeDefinition('String')
-              .withScope(EntityFieldScopeDefinition.none)
+              .withScope(ModelFieldScopeDefinition.none)
               .build())
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -235,20 +235,20 @@ void main() {
   group(
       'Given a class named $testClassName with a var with serverOnly scope when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(FieldDefinitionBuilder()
               .withName('serverOnlyName')
               .withTypeDefinition('String')
-              .withScope(EntityFieldScopeDefinition.serverOnly)
+              .withScope(ModelFieldScopeDefinition.serverOnly)
               .build())
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -314,7 +314,7 @@ void main() {
   });
 
   group('Given a class named $testClassName with a list of strings', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -325,8 +325,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -351,7 +351,7 @@ void main() {
   });
 
   group('Given a class named $testClassName with a map of strings', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -363,8 +363,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -388,7 +388,7 @@ void main() {
   });
 
   group('Given a class named $testClassName with a ByteData field', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -399,8 +399,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -424,7 +424,7 @@ void main() {
   });
 
   group('Given a class named $testClassName with a nested object', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -435,8 +435,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      models: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

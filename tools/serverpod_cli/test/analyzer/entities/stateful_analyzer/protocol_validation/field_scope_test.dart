@@ -64,7 +64,7 @@ void main() {
     );
 
     test(
-      'Given a class with a field with a negated api keyword, then the generated entity should be persisted.',
+      'Given a class with a field with a negated api keyword, then the generated model should be persisted.',
       () {
         var protocols = [
           ProtocolSourceBuilder().withYaml(
@@ -88,7 +88,7 @@ void main() {
     );
 
     test(
-      'Given a class with a field with a negated database keyword, then the generated entity has the scope all.',
+      'Given a class with a field with a negated database keyword, then the generated model has the scope all.',
       () {
         var protocols = [
           ProtocolSourceBuilder().withYaml(
@@ -106,7 +106,7 @@ void main() {
 
         expect(
           definition.fields.last.scope,
-          EntityFieldScopeDefinition.all,
+          ModelFieldScopeDefinition.all,
         );
       },
     );
@@ -186,10 +186,10 @@ void main() {
           expect(error.severity, SourceSpanSeverity.info);
         }, skip: collector.errors.isEmpty);
 
-        test('then the generated entity has the serverOnly scope.', () {
+        test('then the generated model has the serverOnly scope.', () {
           expect(
             definition.fields.last.scope,
-            EntityFieldScopeDefinition.serverOnly,
+            ModelFieldScopeDefinition.serverOnly,
           );
         });
       },
@@ -229,7 +229,7 @@ void main() {
           expect(error.severity, SourceSpanSeverity.info);
         }, skip: collector.errors.isEmpty);
 
-        test('then the generated entity should not be persisted.', () {
+        test('then the generated model should not be persisted.', () {
           expect(
             definition.fields.last.shouldPersist,
             isFalse,
@@ -323,7 +323,7 @@ void main() {
   });
 
   test(
-    'Given a class with a field with no scope set, then the generated entity has the all scope.',
+    'Given a class with a field with no scope set, then the generated model has the all scope.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -342,7 +342,7 @@ void main() {
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
-      expect(definition.fields.last.scope, EntityFieldScopeDefinition.all);
+      expect(definition.fields.last.scope, ModelFieldScopeDefinition.all);
     },
   );
 
@@ -371,22 +371,22 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      test('then the generated entity has the scope.', () {
+      test('then the generated model has the scope.', () {
         expect(
           definition.fields[0].scope,
-          EntityFieldScopeDefinition.serverOnly,
+          ModelFieldScopeDefinition.serverOnly,
         );
       });
 
-      test('then the generated entity has the scope.', () {
+      test('then the generated model has the scope.', () {
         expect(
           definition.fields[1].scope,
-          EntityFieldScopeDefinition.all,
+          ModelFieldScopeDefinition.all,
         );
       });
 
-      test('then the generated entity has the scope.', () {
-        expect(definition.fields[2].scope, EntityFieldScopeDefinition.none);
+      test('then the generated model has the scope.', () {
+        expect(definition.fields[2].scope, ModelFieldScopeDefinition.none);
       });
     },
   );

@@ -9,7 +9,7 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
-class EntityParser {
+class ModelParser {
   static SerializableModelDefinition? serializeClassFile(
     String documentTypeName,
     ModelSource protocolSource,
@@ -118,7 +118,7 @@ class EntityParser {
     if (fieldsNode is! YamlMap) return [];
 
     var fields = fieldsNode.nodes.entries.expand((fieldNode) {
-      return _parseEntityFieldDefinition(
+      return _parseModelFieldDefinition(
         fieldNode,
         docsExtractor,
       );
@@ -129,7 +129,7 @@ class EntityParser {
         SerializableModelFieldDefinition(
           name: 'id',
           type: TypeDefinition.int.asNullable,
-          scope: EntityFieldScopeDefinition.all,
+          scope: ModelFieldScopeDefinition.all,
           shouldPersist: true,
           documentation: [
             '/// The database id, set if the object has been inserted into the',
@@ -144,7 +144,7 @@ class EntityParser {
     return fields;
   }
 
-  static List<SerializableModelFieldDefinition> _parseEntityFieldDefinition(
+  static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
   ) {
@@ -344,20 +344,20 @@ class EntityParser {
     return _parseBooleanKey(relation, Keyword.optional);
   }
 
-  static EntityFieldScopeDefinition _parseClassFieldScope(
+  static ModelFieldScopeDefinition _parseClassFieldScope(
     YamlMap documentContents,
   ) {
     var database = _parseBooleanKey(documentContents, Keyword.database);
-    if (database) return EntityFieldScopeDefinition.serverOnly;
+    if (database) return ModelFieldScopeDefinition.serverOnly;
 
     var scope = documentContents.nodes[Keyword.scope]?.value;
 
-    if (scope is! String) return EntityFieldScopeDefinition.all;
+    if (scope is! String) return ModelFieldScopeDefinition.all;
 
     return convertToEnum(
       value: scope,
-      enumDefault: EntityFieldScopeDefinition.all,
-      enumValues: EntityFieldScopeDefinition.values,
+      enumDefault: ModelFieldScopeDefinition.all,
+      enumValues: ModelFieldScopeDefinition.values,
     );
   }
 

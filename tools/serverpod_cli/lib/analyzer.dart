@@ -14,7 +14,7 @@ export 'src/analyzer/models/definitions.dart'
         SerializableModelDefinition,
         ClassDefinition,
         SerializableModelFieldDefinition,
-        EntityFieldScopeDefinition,
+        ModelFieldScopeDefinition,
         SerializableModelIndexDefinition,
         EnumDefinition;
 export 'src/database/migration.dart';

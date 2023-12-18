@@ -34,13 +34,13 @@ class ModelHelper {
         (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
 
     List<ModelSource> sources = [];
-    for (var entity in files) {
-      var yaml = await entity.readAsString();
+    for (var model in files) {
+      var yaml = await model.readAsString();
 
       sources.add(ModelSource(
         yaml,
-        entity.uri,
-        extractPathFromModelRoot(config, entity.uri),
+        model.uri,
+        extractPathFromModelRoot(config, model.uri),
       ));
     }
 

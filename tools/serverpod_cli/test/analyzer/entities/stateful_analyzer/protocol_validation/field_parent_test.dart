@@ -32,7 +32,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a parent, then the generated entity has a parentTable property set to the parent table name.',
+    'Given a class with a field with a parent, then the generated model has a parentTable property set to the parent table name.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -56,7 +56,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with a parent with whitespace in the syntax, then the generated entity has a parentTable property set to the parent table name.',
+    'Given a class with a field with a parent with whitespace in the syntax, then the generated model has a parentTable property set to the parent table name.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(

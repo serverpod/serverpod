@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given a class with a field with no persist set but has a table, then the generated entity should be persisted.',
+    'Given a class with a field with no persist set but has a table, then the generated model should be persisted.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -50,7 +50,7 @@ void main() {
 
       var definition = definitions.first as ClassDefinition;
 
-      test('then the generated entity should be persisted', () {
+      test('then the generated model should be persisted', () {
         expect(
           definition.fields.last.shouldPersist,
           isTrue,
@@ -60,7 +60,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist set to true, then the generated entity should be persisted.',
+    'Given a class with a field with persist set to true, then the generated model should be persisted.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -87,7 +87,7 @@ void main() {
   );
 
   test(
-    'Given a class with a field with persist set to false, then the generated entity should not be persisted.',
+    'Given a class with a field with persist set to false, then the generated model should not be persisted.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(
@@ -137,7 +137,7 @@ void main() {
         expect(collector.errors, isEmpty);
       });
 
-      test('then the generated entity should not be persisted.', () {
+      test('then the generated model should not be persisted.', () {
         expect(
           definition.fields.last.shouldPersist,
           isFalse,

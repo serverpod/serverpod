@@ -34,7 +34,7 @@ List<SourceSpanSeverityException> validateTopLevelModelType(
       .skip(1)
       .map(
         (e) => SourceSpanSeverityException(
-            'Multiple entity types ($formattedKeys) found for a single entity. Only one type per entity allowed.',
+            'Multiple model types ($formattedKeys) found for a single model. Only one type per model allowed.',
             documentContents.key(e.key.toString())?.span),
       )
       .toList();
@@ -44,7 +44,7 @@ List<SourceSpanSeverityException> validateTopLevelModelType(
 
 /// Recursively validates a yaml document against a set of [ValidateNode]s.
 /// The [documentType] represents the parent key of the [documentContents],
-/// in the initial processing this is expected to be the top level entity type
+/// in the initial processing this is expected to be the top level model type
 /// we are checking. E.g. 'class', 'enum', 'exception', etc.
 void validateYamlModel(
   String documentType,

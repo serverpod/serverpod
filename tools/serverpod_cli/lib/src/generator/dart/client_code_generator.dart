@@ -10,7 +10,7 @@ class DartClientCodeGenerator extends CodeGenerator {
   const DartClientCodeGenerator();
 
   @override
-  Map<String, String> generateSerializableEntitiesCode({
+  Map<String, String> generateSerializableModelsCode({
     required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {

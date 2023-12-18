@@ -30,7 +30,7 @@ Future<bool> performGenerate({
 
   log.debug('Generating files for serializable models.');
 
-  var generatedEntityFiles =
+  var generatedModelFiles =
       await ServerpodCodeGenerator.generateSerializableModels(
     models: models,
     config: config,
@@ -45,7 +45,7 @@ Future<bool> performGenerate({
 
   log.debug('Analyzing the endpoints.');
 
-  var changedFiles = generatedEntityFiles.toSet();
+  var changedFiles = generatedModelFiles.toSet();
   if (changedFilePath != null) {
     changedFiles.add(changedFilePath);
   }
@@ -85,7 +85,7 @@ Future<bool> performGenerate({
 
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
     generatedFiles: <String>{
-      ...generatedEntityFiles,
+      ...generatedModelFiles,
       ...generatedProtocolFiles
     },
     protocolDefinition: protocolDefinition,

@@ -31,7 +31,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> get _validModels =>
       _modelStates.values
           .where((state) => state.errors.isEmpty)
-          .map((state) => state.entity)
+          .map((state) => state.model)
           .whereType<SerializableModelDefinition>()
           .toList();
 
@@ -57,7 +57,7 @@ class StatefulAnalyzer {
   void removeYamlModel(Uri modelUri) {
     _modelStates.remove(modelUri.path);
     _models.removeWhere(
-      (entity) => entity.sourceFileName == modelUri.path,
+      (model) => model.sourceFileName == modelUri.path,
     );
   }
 
@@ -79,8 +79,8 @@ class StatefulAnalyzer {
 
     state.source.yaml = yaml;
 
-    var doc = SerializableModelAnalyzer.extractEntityDefinition(state.source);
-    state.entity = doc;
+    var doc = SerializableModelAnalyzer.extractModelDefinition(state.source);
+    state.model = doc;
     if (doc != null) {
       _upsertModel(doc, uri);
     }
@@ -92,14 +92,14 @@ class StatefulAnalyzer {
 
   void _updateAllModels() {
     for (var state in _modelStates.values) {
-      var entity = SerializableModelAnalyzer.extractEntityDefinition(
+      var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
       );
-      state.entity = entity;
+      state.model = model;
     }
 
     _models = _modelStates.values
-        .map((state) => state.entity)
+        .map((state) => state.model)
         .whereType<SerializableModelDefinition>()
         .toList();
 
@@ -107,19 +107,19 @@ class StatefulAnalyzer {
   }
 
   void _upsertModel(
-    SerializableModelDefinition entity,
+    SerializableModelDefinition model,
     Uri uri,
   ) {
     var index = _models.indexWhere(
       (element) => element.sourceFileName == uri.path,
     );
     if (index == -1) {
-      _models.add(entity);
+      _models.add(model);
     } else {
-      _models[index] = entity;
+      _models[index] = model;
     }
 
-    // Can be optimized to only resolve the entity we know has changed.
+    // Can be optimized to only resolve the model we know has changed.
     SerializableModelAnalyzer.resolveModelDependencies(_models);
   }
 
@@ -130,7 +130,7 @@ class StatefulAnalyzer {
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,
-        state.entity,
+        state.model,
         _models,
       );
 
@@ -151,7 +151,7 @@ class StatefulAnalyzer {
 class _ModelState {
   ModelSource source;
   List<SourceSpanException> errors = [];
-  SerializableModelDefinition? entity;
+  SerializableModelDefinition? model;
 
   _ModelState({
     required this.source,

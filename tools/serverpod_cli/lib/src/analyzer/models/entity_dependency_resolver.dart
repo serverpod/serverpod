@@ -8,22 +8,22 @@ import 'package:super_string/super_string.dart';
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
   static void resolveModelDependencies(
-    List<SerializableModelDefinition> entityDefinitions,
+    List<SerializableModelDefinition> modelDefinitions,
   ) {
-    entityDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
+    modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       for (var fieldDefinition in classDefinition.fields) {
         _resolveFieldIndexes(fieldDefinition, classDefinition);
-        _resolveProtocolReference(fieldDefinition, entityDefinitions);
-        _resolveEnumType(fieldDefinition, entityDefinitions);
+        _resolveProtocolReference(fieldDefinition, modelDefinitions);
+        _resolveEnumType(fieldDefinition, modelDefinitions);
         _resolveObjectRelationReference(
           classDefinition,
           fieldDefinition,
-          entityDefinitions,
+          modelDefinitions,
         );
         _resolveListRelationReference(
           classDefinition,
           fieldDefinition,
-          entityDefinitions,
+          modelDefinitions,
         );
       }
     });
@@ -45,18 +45,18 @@ class ModelDependencyResolver {
 
   static TypeDefinition _resolveProtocolReference(
       SerializableModelFieldDefinition fieldDefinition,
-      List<SerializableModelDefinition> entityDefinitions) {
+      List<SerializableModelDefinition> modelDefinitions) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
-      entityDefinitions,
+      modelDefinitions,
     );
   }
 
   static void _resolveEnumType(
       SerializableModelFieldDefinition fieldDefinition,
-      List<SerializableModelDefinition> entityDefinitions) {
+      List<SerializableModelDefinition> modelDefinitions) {
     if (fieldDefinition.type.url != 'protocol') return;
 
-    var enumDefinitionList = entityDefinitions
+    var enumDefinitionList = modelDefinitions
         .whereType<EnumDefinition>()
         .where((e) => e.className == fieldDefinition.type.className)
         .toList();
@@ -69,15 +69,15 @@ class ModelDependencyResolver {
   static void _resolveObjectRelationReference(
     ClassDefinition classDefinition,
     SerializableModelFieldDefinition fieldDefinition,
-    List<SerializableModelDefinition> entityDefinitions,
+    List<SerializableModelDefinition> modelDefinitions,
   ) {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
-    var referenceClass = entityDefinitions
+    var referenceClass = modelDefinitions
         .cast<SerializableModelDefinition?>()
         .firstWhere(
-            (entity) => entity?.className == fieldDefinition.type.className,
+            (model) => model?.className == fieldDefinition.type.className,
             orElse: () => null);
 
     if (referenceClass is! ClassDefinition) return;
@@ -259,7 +259,7 @@ class ModelDependencyResolver {
   static void _resolveListRelationReference(
     ClassDefinition classDefinition,
     SerializableModelFieldDefinition fieldDefinition,
-    List<SerializableModelDefinition> entityDefinitions,
+    List<SerializableModelDefinition> modelDefinitions,
   ) {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedListRelationDefinition) {
@@ -270,8 +270,8 @@ class ModelDependencyResolver {
     var referenceClassName = type.generics.first.className;
 
     var referenceClass =
-        entityDefinitions.cast<SerializableModelDefinition?>().firstWhere(
-              (entity) => entity?.className == referenceClassName,
+        modelDefinitions.cast<SerializableModelDefinition?>().firstWhere(
+              (model) => model?.className == referenceClassName,
               orElse: () => null,
             );
 
@@ -290,7 +290,7 @@ class ModelDependencyResolver {
         SerializableModelFieldDefinition(
           name: foreignFieldName,
           type: TypeDefinition.int.asNullable,
-          scope: EntityFieldScopeDefinition.none,
+          scope: ModelFieldScopeDefinition.none,
           shouldPersist: true,
           relation: ForeignRelationDefinition(
             name: autoRelationName,

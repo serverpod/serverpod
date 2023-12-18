@@ -280,9 +280,9 @@ void main() {
     },
   );
 
-  group('Given a protocol without any defined entity type', () {
+  group('Given a protocol without any defined model type', () {
     test(
-      'Then return a human readable error message informing the user that the entity type is missing.',
+      'Then return a human readable error message informing the user that the model type is missing.',
       () {
         var protocols = [
           ProtocolSourceBuilder().withYaml(
@@ -337,7 +337,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'Multiple entity types ("class", "exception") found for a single entity. Only one type per entity allowed.',
+        'Multiple model types ("class", "exception") found for a single model. Only one type per model allowed.',
       );
     });
 
@@ -385,7 +385,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'Multiple entity types ("exception", "enum") found for a single entity. Only one type per entity allowed.',
+        'Multiple model types ("exception", "enum") found for a single model. Only one type per model allowed.',
       );
     });
   });
@@ -416,7 +416,7 @@ fields:
       var error = collector.errors.first;
       expect(
         error.message,
-        'Multiple entity types ("class", "exception", "enum") found for a single entity. Only one type per entity allowed.',
+        'Multiple model types ("class", "exception", "enum") found for a single model. Only one type per model allowed.',
       );
     });
 

@@ -34,8 +34,8 @@ class SerializableModelAnalyzer {
     Keyword.enumType,
   };
 
-  /// Best effort attempt to extract an entity definition from a yaml file.
-  static SerializableModelDefinition? extractEntityDefinition(
+  /// Best effort attempt to extract an model definition from a yaml file.
+  static SerializableModelDefinition? extractModelDefinition(
     ModelSource modelSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
@@ -58,7 +58,7 @@ class SerializableModelAnalyzer {
 
     switch (definitionType) {
       case Keyword.classType:
-        return EntityParser.serializeClassFile(
+        return ModelParser.serializeClassFile(
           Keyword.classType,
           modelSource,
           outFileName,
@@ -66,7 +66,7 @@ class SerializableModelAnalyzer {
           docsExtractor,
         );
       case Keyword.exceptionType:
-        return EntityParser.serializeClassFile(
+        return ModelParser.serializeClassFile(
           Keyword.exceptionType,
           modelSource,
           outFileName,
@@ -74,7 +74,7 @@ class SerializableModelAnalyzer {
           docsExtractor,
         );
       case Keyword.enumType:
-        return EntityParser.serializeEnumFile(
+        return ModelParser.serializeEnumFile(
           modelSource,
           outFileName,
           documentContents,
@@ -99,7 +99,7 @@ class SerializableModelAnalyzer {
     String yaml,
     Uri sourceUri,
     CodeAnalysisCollector collector,
-    SerializableModelDefinition? entity,
+    SerializableModelDefinition? model,
     List<SerializableModelDefinition>? models,
   ) {
     var yamlErrors = ErrorCollector();
@@ -135,10 +135,10 @@ class SerializableModelAnalyzer {
     var restrictions = Restrictions(
       documentType: definitionType,
       documentContents: documentContents,
-      documentDefinition: entity,
+      documentDefinition: model,
       // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
-      entityRelations: models != null ? ModelRelations(models) : null,
+      modelRelations: models != null ? ModelRelations(models) : null,
     );
 
     Set<ValidateNode> documentStructure;

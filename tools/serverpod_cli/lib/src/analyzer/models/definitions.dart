@@ -86,8 +86,8 @@ class SerializableModelFieldDefinition {
   /// in a certain context.
   ///
   /// See also:
-  /// - [EntityFieldScopeDefinition]
-  final EntityFieldScopeDefinition scope;
+  /// - [ModelFieldScopeDefinition]
+  final ModelFieldScopeDefinition scope;
 
   final bool shouldPersist;
 
@@ -126,8 +126,8 @@ class SerializableModelFieldDefinition {
   /// - [shouldSerializeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldIncludeField(bool serverCode) {
-    return scope == EntityFieldScopeDefinition.all ||
-        (serverCode && scope == EntityFieldScopeDefinition.serverOnly);
+    return scope == ModelFieldScopeDefinition.all ||
+        (serverCode && scope == ModelFieldScopeDefinition.serverOnly);
   }
 
   /// Returns true, if this field should be added to the serialization.
@@ -137,7 +137,7 @@ class SerializableModelFieldDefinition {
   /// - [shouldIncludeField]
   /// - [shouldSerializeFieldForDatabase]
   bool shouldSerializeField(bool serverCode) {
-    return scope == EntityFieldScopeDefinition.all;
+    return scope == ModelFieldScopeDefinition.all;
   }
 
   /// Returns true, if this field should be added to the serialization for the
@@ -157,12 +157,12 @@ class SerializableModelFieldDefinition {
   bool hiddenSerializableField(bool serverCode) {
     return serverCode &&
         shouldPersist &&
-        scope == EntityFieldScopeDefinition.none;
+        scope == ModelFieldScopeDefinition.none;
   }
 }
 
 /// The scope of a field.
-enum EntityFieldScopeDefinition {
+enum ModelFieldScopeDefinition {
   all,
   serverOnly,
   none,

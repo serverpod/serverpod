@@ -20,9 +20,9 @@ void main() {
         ).build()
       ];
 
-      var entities = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(protocols).validateAll();
 
-      expect(entities.first.serverOnly, isTrue);
+      expect(models.first.serverOnly, isTrue);
     });
 
     test(
@@ -39,9 +39,9 @@ void main() {
         ).build()
       ];
 
-      var entities = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(protocols).validateAll();
 
-      expect(entities.first.serverOnly, isFalse);
+      expect(models.first.serverOnly, isFalse);
     });
 
     test(
@@ -57,9 +57,9 @@ void main() {
         ).build()
       ];
 
-      var entities = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(protocols).validateAll();
 
-      expect(entities.first.serverOnly, isFalse);
+      expect(models.first.serverOnly, isFalse);
     });
 
     test(
@@ -133,11 +133,11 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var entities = StatefulAnalyzer(protocols, onErrorsCollector(collector))
+      var models = StatefulAnalyzer(protocols, onErrorsCollector(collector))
           .validateAll();
 
-      var entity = entities.first as ClassDefinition;
-      expect(entity.tableName, 'example');
+      var model = models.first as ClassDefinition;
+      expect(model.tableName, 'example');
     });
 
     test(

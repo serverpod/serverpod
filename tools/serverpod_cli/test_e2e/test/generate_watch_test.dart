@@ -136,7 +136,7 @@ fields:
       // Validate that entity file is generated
       var entityFileName = '$protocolFileName.dart';
       var entityDirectory =
-          Directory(createClientEntityDirectoryPath(tempPath, clientDir));
+          Directory(createClientModelDirectoryPath(tempPath, clientDir));
       var entityFiles = entityDirectory.listSync();
       expect(
         entityFiles.map((e) => path.basename(e.path)),
@@ -501,7 +501,7 @@ fields:
       // Validate both are present
       var entityFileName = '$protocolFileName.dart';
       var entityDirectory =
-          Directory(createClientEntityDirectoryPath(tempPath, clientDir));
+          Directory(createClientModelDirectoryPath(tempPath, clientDir));
       var entityFiles = entityDirectory.listSync();
       expect(
         entityFiles.map((e) => path.basename(e.path)),
@@ -578,7 +578,7 @@ fields:
   return (serverDir, flutterDir, clientDir);
 }
 
-String createClientEntityDirectoryPath(
+String createClientModelDirectoryPath(
   String tmpFolder,
   String clientDir,
 ) {

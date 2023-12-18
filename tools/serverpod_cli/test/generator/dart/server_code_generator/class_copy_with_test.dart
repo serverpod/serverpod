@@ -167,7 +167,7 @@ void main() {
           .withField(FieldDefinitionBuilder()
               .withName('noneName')
               .withTypeDefinition('String')
-              .withScope(EntityFieldScopeDefinition.none)
+              .withScope(ModelFieldScopeDefinition.none)
               .build())
           .build()
     ];
@@ -248,7 +248,7 @@ void main() {
           .withField(FieldDefinitionBuilder()
               .withName('serverOnlyName')
               .withTypeDefinition('String')
-              .withScope(EntityFieldScopeDefinition.serverOnly)
+              .withScope(ModelFieldScopeDefinition.serverOnly)
               .build())
           .build()
     ];

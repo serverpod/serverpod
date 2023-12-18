@@ -290,7 +290,7 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.all)
+                .withScope(ModelFieldScopeDefinition.all)
                 .withShouldPersist(false)
                 .build(),
           )
@@ -334,7 +334,7 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.serverOnly)
+                .withScope(ModelFieldScopeDefinition.serverOnly)
                 .withShouldPersist(false)
                 .build(),
           )
@@ -379,7 +379,7 @@ void main() {
             SerializableModelFieldDefinition(
                 name: 'title',
                 type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.none,
+                scope: ModelFieldScopeDefinition.none,
                 shouldPersist: false),
           )
           .build()

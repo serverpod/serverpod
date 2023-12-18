@@ -32,7 +32,7 @@ void main() {
   );
 
   test(
-    'Given a class with a table defined, then add an id field to the generated entity.',
+    'Given a class with a table defined, then add an id field to the generated model.',
     () {
       var protocols = [
         ProtocolSourceBuilder().withYaml(

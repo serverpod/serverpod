@@ -118,7 +118,7 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.all)
+                .withScope(ModelFieldScopeDefinition.all)
                 .withShouldPersist(true)
                 .build(),
           )
@@ -178,7 +178,7 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.all)
+                .withScope(ModelFieldScopeDefinition.all)
                 .withShouldPersist(false)
                 .build(),
           )
@@ -280,7 +280,7 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('_fieldName')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.none)
+                .withScope(ModelFieldScopeDefinition.none)
                 .withShouldPersist(true)
                 .build(),
           )
