@@ -2,7 +2,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -10,7 +10,7 @@ void main() {
     'Given an enum without a values property, then collect an error that the values property is required.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           ''',
@@ -35,7 +35,7 @@ void main() {
     'Given an enum with an empty values property, then collect an error that values must be defined.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           values:
@@ -61,7 +61,7 @@ void main() {
     'Given an enum with the values property defined as a map, then collect an error that values must be a list.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           values:
@@ -89,7 +89,7 @@ void main() {
     'Given an enum with the values with none string values, then collect an error that values must be a list of strings.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         enum: ExampleEnum
         values:
@@ -117,7 +117,7 @@ void main() {
     'Given an enum with an invalid enum string structure, then collect an error that the string must follow the required syntax.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           values:
@@ -144,7 +144,7 @@ void main() {
     'Given an enum with two duplicated entries, then collect an error that the enum values must be unique.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           values:
@@ -175,7 +175,7 @@ void main() {
     'Given a value with multiple uppercase chars after a lowercase, no errors is given.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
           values:
@@ -197,7 +197,7 @@ void main() {
 
   test('Given a value with a single uppercase char, no errors is given.', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         values:
@@ -219,7 +219,7 @@ void main() {
   test('Given a value with snake_case value, an error of info level is given.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         values:
@@ -246,7 +246,7 @@ void main() {
   test('Given a value with PascalCase value, an error of info level is given.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         values:
@@ -273,7 +273,7 @@ void main() {
   test('Given a value with UPPERCASE value, an error of info level is given.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml('''
+      ModelSourceBuilder().withYaml('''
 enum: ExampleEnum
 values:
   - UPPERCASE
@@ -299,7 +299,7 @@ values:
       'Given a valid enum with two values, then the enum definition should contain two values.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         values:

@@ -1,14 +1,14 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Given a valid enum definition when validating', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         values:
@@ -38,7 +38,7 @@ void main() {
       'Given a valid enum definition with serialized set to int when validating',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         serialized: byIndex
@@ -69,7 +69,7 @@ void main() {
       'Given a valid enum definition with serialized set to string when validating',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         serialized: byName
@@ -100,7 +100,7 @@ void main() {
       'Given a valid enum definition with serialized set to an invalid value when validating then collect an error that the serialized value is invalid.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
         serialized: Invalid
@@ -127,14 +127,14 @@ void main() {
       'Given a class with a field with the type ExampleEnum serialized as an int',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('example').withYaml(
+      ModelSourceBuilder().withFileName('example').withYaml(
         '''
         class: Example
         fields:
           myEnum: ExampleEnum
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_enum').withYaml(
+      ModelSourceBuilder().withFileName('example_enum').withYaml(
         '''
         enum: ExampleEnum
         serialized: byIndex
@@ -174,14 +174,14 @@ void main() {
       'Given a class with a field with the type ExampleEnum serialized as a String',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('example').withYaml(
+      ModelSourceBuilder().withFileName('example').withYaml(
         '''
         class: Example
         fields:
           myEnum: ExampleEnum
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_enum').withYaml(
+      ModelSourceBuilder().withFileName('example_enum').withYaml(
         '''
         enum: ExampleEnum
         serialized: byName

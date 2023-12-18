@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -27,7 +27,7 @@ void main() {
     for (var datatype in datatypes) {
       group('Given a class with a field with the type $datatype', () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -58,7 +58,7 @@ void main() {
 
     group('Given a class with a field with a module type', () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -89,7 +89,7 @@ void main() {
 
     group('Given a class with a field with the type ByteData', () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -123,14 +123,14 @@ void main() {
 
     group('Given a class with a field with the type MyEnum', () {
       var protocols = [
-        ProtocolSourceBuilder().withFileName('example').withYaml(
+        ModelSourceBuilder().withFileName('example').withYaml(
           '''
           class: Example
           fields:
             myEnum: MyEnum
           ''',
         ).build(),
-        ProtocolSourceBuilder().withFileName('my_enum').withYaml(
+        ModelSourceBuilder().withFileName('my_enum').withYaml(
           '''
           enum: MyEnum
           values:
@@ -166,7 +166,7 @@ void main() {
         'Given a class with a field of a Map type with a lot of whitespace, then all the data types components are extracted.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -216,7 +216,7 @@ void main() {
       'Given a class with a field of a Map type, then all the data types components are extracted.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
           class: Example
           fields:
@@ -272,7 +272,7 @@ void main() {
           'Given a class with a field with only $datatype as the type, then collect an error that it is an invalid type.',
           () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -307,7 +307,7 @@ void main() {
         'Given a class with a field without a datatype defined, then collect an error that defining a datatype is required.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:

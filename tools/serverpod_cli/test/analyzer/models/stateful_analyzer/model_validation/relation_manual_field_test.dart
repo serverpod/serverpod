@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
       'Given a class with a relation with a defined field name that holds the relation',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -22,7 +22,7 @@ void main() {
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+      ModelSourceBuilder().withFileName('example_parent').withYaml(
         '''
         class: ExampleParent
         table: example_parent
@@ -65,7 +65,7 @@ void main() {
   group('Given a class with a relation pointing to a field that does not exist',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 table: example
@@ -107,7 +107,7 @@ fields:
 
   group('Given a class with a List relation with a field pointer defined', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 table: example
@@ -116,7 +116,7 @@ fields:
   child: List<ExampleChild>?, relation(field=myChildId)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_child').withYaml(
+      ModelSourceBuilder().withFileName('example_child').withYaml(
         '''
 class: ExampleChild
 table: example_child
@@ -161,7 +161,7 @@ fields:
 
   group('Given a class with an id relation with a field pointer defined', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 table: example
@@ -170,7 +170,7 @@ fields:
   exampleChildId: int, relation(parent=example_child, field=otherId)
           ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_child').withYaml(
+      ModelSourceBuilder().withFileName('example_child').withYaml(
         '''
 class: ExampleChild
 table: example_child
@@ -211,7 +211,7 @@ fields:
       'Given a class with a relation pointing to a field with a mismatching type to the reference',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 table: example
@@ -253,7 +253,7 @@ fields:
       'Given a class with a relation pointing to a field that is set to not persist',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 table: example
@@ -295,7 +295,7 @@ fields:
       'Given two classes with a named relation with a defined field name that holds the relation',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -309,7 +309,7 @@ fields:
         
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+      ModelSourceBuilder().withFileName('example_parent').withYaml(
         '''
         class: ExampleParent
         table: example_parent
@@ -360,7 +360,7 @@ fields:
       'Given a class with a relation pointing to a field that already has a relation',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -369,7 +369,7 @@ fields:
           parent: ExampleParent?, relation(name=example_parent, field=parentId)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+      ModelSourceBuilder().withFileName('example_parent').withYaml(
         '''
         class: ExampleParent
         table: example_parent
@@ -412,7 +412,7 @@ fields:
       'Given a class with a named object relation on both sides with foreign key field without unique index',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -421,7 +421,7 @@ fields:
           address: Address?, relation(name=user_address, field=addressId)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -455,7 +455,7 @@ fields:
       'Given a class with a named object relation on both sides with foreign key field in not unique index',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -467,7 +467,7 @@ fields:
             fields: addressId
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -501,7 +501,7 @@ fields:
       'Given a class with a named object relation on both sides with foreign key field in unique index with multiple fields',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -515,7 +515,7 @@ fields:
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address

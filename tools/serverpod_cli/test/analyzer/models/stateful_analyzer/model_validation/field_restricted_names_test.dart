@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -108,7 +108,7 @@ void main() {
         var collector = CodeGenerationCollector();
 
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -142,7 +142,7 @@ void main() {
         var collector = CodeGenerationCollector();
 
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -178,7 +178,7 @@ void main() {
         var collector = CodeGenerationCollector();
 
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -212,7 +212,7 @@ void main() {
         var collector = CodeGenerationCollector();
 
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             exception: Example
             fields:
@@ -246,7 +246,7 @@ void main() {
         var collector = CodeGenerationCollector();
 
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             enum: Example
             values:

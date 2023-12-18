@@ -14,7 +14,7 @@ import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/entity_parser/entity_parser.dart';
+import 'package:serverpod_cli/src/analyzer/models/model_parser/model_parser.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 
 String _transformFileNameWithoutPathOrExtension(Uri path) {

@@ -9,9 +9,9 @@ void main() {
       () {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
-    var entities = statefulAnalyzer.validateAll();
+    var models = statefulAnalyzer.validateAll();
 
-    expect(entities, []);
+    expect(models, []);
   });
 
   test(
@@ -32,9 +32,9 @@ fields:
     statefulAnalyzer.addYamlModel(yamlSource);
     statefulAnalyzer.removeYamlModel(protocolUri);
 
-    var entities = statefulAnalyzer.validateAll();
+    var models = statefulAnalyzer.validateAll();
 
-    expect(entities, []);
+    expect(models, []);
   });
 
   test(
@@ -45,9 +45,9 @@ fields:
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
     statefulAnalyzer.removeYamlModel(protocolUri);
 
-    var entities = statefulAnalyzer.validateAll();
+    var models = statefulAnalyzer.validateAll();
 
-    expect(entities, []);
+    expect(models, []);
   });
 
   test(
@@ -62,9 +62,9 @@ fields:
   name: String
 ''';
 
-    var entities = statefulAnalyzer.validateModel(yaml, protocolUri);
+    var models = statefulAnalyzer.validateModel(yaml, protocolUri);
 
-    expect(entities, []);
+    expect(models, []);
   });
   test(
       'Given a valid protocol class as the initial state, when validating all, then the class is serialized.',
@@ -82,10 +82,10 @@ fields:
 
     var statefulAnalyzer = StatefulAnalyzer([yamlSource]);
 
-    var entities = statefulAnalyzer.validateAll();
+    var models = statefulAnalyzer.validateAll();
 
-    expect(entities.length, 1);
-    expect(entities.first.className, 'Example');
+    expect(models.length, 1);
+    expect(models.first.className, 'Example');
   });
 
   test(

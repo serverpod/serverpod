@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('post').withYaml(
+      ModelSourceBuilder().withFileName('post').withYaml(
         '''
         class: Post
         table: post
@@ -146,7 +146,7 @@ void main() {
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -283,7 +283,7 @@ void main() {
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user

@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
       'Given a class with a named object relation on both sides with a field references',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -22,7 +22,7 @@ void main() {
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -164,7 +164,7 @@ void main() {
       'Given a class with a named object relation on both sides without a field references',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -172,7 +172,7 @@ void main() {
           address: Address?, relation(name=user_address)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -211,7 +211,7 @@ void main() {
       'Given a class with a one to one relation where the relationship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -229,7 +229,7 @@ void main() {
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -261,7 +261,7 @@ void main() {
       'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -274,7 +274,7 @@ void main() {
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -314,7 +314,7 @@ void main() {
       'Given a class with a one to one relation where the relationship is only named on one side',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -327,7 +327,7 @@ void main() {
             unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -360,7 +360,7 @@ void main() {
       'Given a class with a named object relation to a foreign id relation field that has unique index',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -369,7 +369,7 @@ void main() {
           address: Address?, relation(name=user_address)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -398,7 +398,7 @@ void main() {
       'Given a class with a named object relation to a foreign id relation field that does not have unique index',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -407,7 +407,7 @@ void main() {
           address: Address?, relation(name=user_address)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
