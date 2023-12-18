@@ -9,7 +9,7 @@ void main() {
     test(
         'Given a class without the fields key, then collect an error that the fields key is required',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -17,7 +17,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -32,7 +32,7 @@ void main() {
     test(
         'Given an exception without the fields key, then collect an error that the fields key is required',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           exception: Example
@@ -40,7 +40,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -55,7 +55,7 @@ void main() {
     test(
         'Given a class with the fields key defined but without any field, then collect an error that at least one field has to be added.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -64,7 +64,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -82,7 +82,7 @@ void main() {
     test(
         'Given an exception with the fields key defined but without any field, then collect an error that at least one field has to be added.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           exception: Example
@@ -91,7 +91,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -109,7 +109,7 @@ void main() {
     test(
         'Given an class with the fields key defined as a primitive datatype instead of a Map, then collect an error that at least one field has to be added.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -118,7 +118,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -136,7 +136,7 @@ void main() {
     test(
         'Given an enum with the fields key defined, then collect an error that fields are not allowed.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           enum: Example
@@ -145,7 +145,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -165,7 +165,7 @@ void main() {
     test(
       'Given a class with a field key that is not a string, then collect an error that field keys have to be of the type string.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -175,7 +175,7 @@ void main() {
           ).build()
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -191,7 +191,7 @@ void main() {
     test(
       'Given a class with a field key that is not a valid dart variable name style, collect an error that the keys needs to follow the dart convention.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -201,7 +201,7 @@ void main() {
           ).build()
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -220,7 +220,7 @@ void main() {
     test(
       'Given a class with a field key that is in UPPERCASE format, collect an info that the keys needs to follow the dart convention.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -230,7 +230,7 @@ void main() {
           ).build()
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -249,7 +249,7 @@ void main() {
     test(
       'Given a class with a field key that is in PascalCase format, collect an info that the keys needs to follow the dart convention.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -259,7 +259,7 @@ void main() {
           ).build()
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -278,7 +278,7 @@ void main() {
     test(
       'Given a class with a field key that is in snake_case format, collect an info that the keys needs to follow the dart convention.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -288,7 +288,7 @@ void main() {
           ).build()
         ];
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(collector.errors, isNotEmpty,
             reason: 'Expected an error but none was generated.');
@@ -304,7 +304,7 @@ void main() {
     test(
       'Given a class with a valid field key, then an entity with that field is generated.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -315,7 +315,7 @@ void main() {
         ];
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
@@ -329,7 +329,7 @@ void main() {
   test(
     'Given a class with a duplicated field name, then an error is collected.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -342,7 +342,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();

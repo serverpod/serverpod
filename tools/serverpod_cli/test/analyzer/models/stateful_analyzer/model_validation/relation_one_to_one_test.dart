@@ -8,7 +8,7 @@ void main() {
   group(
       'Given a class with a named object relation on both sides with a field references',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -33,7 +33,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var userDefinition = definitions.first as ClassDefinition;
@@ -163,7 +163,7 @@ void main() {
   group(
       'Given a class with a named object relation on both sides without a field references',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -183,7 +183,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -210,7 +210,7 @@ void main() {
   test(
       'Given a class with a one to one relation where the relationship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
@@ -240,7 +240,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -260,7 +260,7 @@ void main() {
   test(
       'Given a class with a one to one relation where the id column is manually defined on both sides of the relation, then give an error that the field only can be defined on one side.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
@@ -290,7 +290,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -313,7 +313,7 @@ void main() {
   group(
       'Given a class with a one to one relation where the relationship is only named on one side',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -338,7 +338,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -359,7 +359,7 @@ void main() {
   group(
       'Given a class with a named object relation to a foreign id relation field that has unique index',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -384,7 +384,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -397,7 +397,7 @@ void main() {
   group(
       'Given a class with a named object relation to a foreign id relation field that does not have unique index',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -418,7 +418,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;

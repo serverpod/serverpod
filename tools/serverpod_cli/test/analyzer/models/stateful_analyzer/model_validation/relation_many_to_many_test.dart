@@ -7,7 +7,7 @@ void main() {
   test(
       'Given a class with an implicit many to many relation then an error is collected that it is not supported.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('post').withYaml(
         '''
         class: Post
@@ -30,7 +30,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     analyzer.validateAll();

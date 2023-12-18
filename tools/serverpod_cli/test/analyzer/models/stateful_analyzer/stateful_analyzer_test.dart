@@ -15,22 +15,22 @@ void main() {
   });
 
   test(
-      'When we add and remove a protocol, then an empty list is returned when validating all files.',
+      'When we add and remove a model, then an empty list is returned when validating all files.',
       () {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yamlSource = ModelSource(
       '''
 class: Example
 fields:
   name: String
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
     statefulAnalyzer.addYamlModel(yamlSource);
-    statefulAnalyzer.removeYamlModel(protocolUri);
+    statefulAnalyzer.removeYamlModel(modelUri);
 
     var models = statefulAnalyzer.validateAll();
 
@@ -38,12 +38,12 @@ fields:
   });
 
   test(
-      'Given an empty state, when removing a protocol that does not exist and validating all, then an empty list is returned',
+      'Given an empty state, when removing a model that does not exist and validating all, then an empty list is returned',
       () {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    statefulAnalyzer.removeYamlModel(protocolUri);
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
+    statefulAnalyzer.removeYamlModel(modelUri);
 
     var models = statefulAnalyzer.validateAll();
 
@@ -51,32 +51,32 @@ fields:
   });
 
   test(
-      'Given an empty state, when validating a single protocol, then an empty list is returned',
+      'Given an empty state, when validating a single model, then an empty list is returned',
       () {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yaml = '''
 class: Example
 fields:
   name: String
 ''';
 
-    var models = statefulAnalyzer.validateModel(yaml, protocolUri);
+    var models = statefulAnalyzer.validateModel(yaml, modelUri);
 
     expect(models, []);
   });
   test(
-      'Given a valid protocol class as the initial state, when validating all, then the class is serialized.',
+      'Given a valid model class as the initial state, when validating all, then the class is serialized.',
       () {
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yamlSource = ModelSource(
       '''
 class: Example
 fields:
   name: String
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -89,16 +89,16 @@ fields:
   });
 
   test(
-      'Given a valid protocol class and an error callback is registered, when validating all, then the callback is triggered.',
+      'Given a valid model class and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yamlSource = ModelSource(
       '''
 class: Example
 fields:
   name: String
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -112,12 +112,12 @@ fields:
   });
 
   test(
-      'Given a protocol with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
+      'Given a model with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
       () {
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yamlSource = ModelSource(
       '''''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -131,15 +131,15 @@ fields:
   });
 
   test(
-      'Given a protocol with multi line invalid yaml syntax when validating all then error is reported.',
+      'Given a model with multi line invalid yaml syntax when validating all then error is reported.',
       () {
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var invalidSource = ModelSource(
       '''
 this is not valid yaml
 and neither is this line
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -162,16 +162,16 @@ and neither is this line
   });
 
   test(
-      'Given a protocol that was invalid on first validation, when validating the same protocol with an updated valid syntax, then the previous errors are cleared.',
+      'Given a model that was invalid on first validation, when validating the same model with an updated valid syntax, then the previous errors are cleared.',
       () {
-    var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
+    var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var invalidSource = ModelSource(
       '''
 class: 
 fields:
   name: String
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -181,7 +181,7 @@ class: Example
 fields:
   name: String
 ''',
-      protocolUri,
+      modelUri,
       [],
     );
 
@@ -195,14 +195,14 @@ fields:
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
 
-    statefulAnalyzer.validateModel(validSource.yaml, protocolUri);
+    statefulAnalyzer.validateModel(validSource.yaml, modelUri);
 
     expect(reportedErrors?.errors, hasLength(0),
         reason: 'Expected the error to be cleared.');
   });
 
   test(
-      'Given two yaml protocols with the same class name, when validating all, then an error is reported.',
+      'Given two yaml models with the same class name, when validating all, then an error is reported.',
       () {
     var yamlSource1 = ModelSource(
       '''
@@ -210,7 +210,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example1.yaml'),
+      Uri(path: 'lib/src/model/example1.yaml'),
       [],
     );
 
@@ -220,7 +220,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example2.yaml'),
+      Uri(path: 'lib/src/model/example2.yaml'),
       [],
     );
 
@@ -238,7 +238,7 @@ fields:
   });
 
   test(
-      'Given two yaml protocols with the same class name, when removing and revalidating, then the previous error is cleared.',
+      'Given two yaml models with the same class name, when removing and revalidating, then the previous error is cleared.',
       () {
     var yamlSource1 = ModelSource(
       '''
@@ -246,7 +246,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example1.yaml'),
+      Uri(path: 'lib/src/model/example1.yaml'),
       [],
     );
 
@@ -256,7 +256,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example2.yaml'),
+      Uri(path: 'lib/src/model/example2.yaml'),
       [],
     );
 
@@ -280,7 +280,7 @@ fields:
   });
 
   test(
-      'Given an initial validation with one valid protocol, when adding a second protocol with the same class and revalidating, then an error is reported.',
+      'Given an initial validation with one valid model, when adding a second model with the same class and revalidating, then an error is reported.',
       () {
     var yamlSource1 = ModelSource(
       '''
@@ -288,7 +288,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example1.yaml'),
+      Uri(path: 'lib/src/model/example1.yaml'),
       [],
     );
 
@@ -298,7 +298,7 @@ class: Example
 fields:
   name: String
 ''',
-      Uri(path: 'lib/src/protocol/example2.yaml'),
+      Uri(path: 'lib/src/model/example2.yaml'),
       [],
     );
 

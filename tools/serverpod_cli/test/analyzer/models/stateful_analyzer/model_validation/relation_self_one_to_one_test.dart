@@ -8,7 +8,7 @@ void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared first',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('post').withYaml(
         '''
         class: Post
@@ -27,7 +27,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var errors = collector.errors;
@@ -145,7 +145,7 @@ void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -164,7 +164,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var errors = collector.errors;
@@ -282,7 +282,7 @@ void main() {
   group(
       'Given a class with a named object self relation on both sides with a field references where the side without the foreign key is declared last',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -296,7 +296,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var userDefinition = definitions.first as ClassDefinition;

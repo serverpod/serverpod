@@ -5,9 +5,9 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given two protocols with the same class name, then an error is collected that there is a collision in the class names.',
+      'Given two models with the same class name, then an error is collected that there is a collision in the class names.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -25,7 +25,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -43,7 +43,7 @@ void main() {
   test(
       'Given a single valid protocol, then there is no error collected for the class name.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -54,7 +54,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,

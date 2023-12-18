@@ -7,7 +7,7 @@ void main() {
   test(
     'Given a class with a class documentation comment then an model with the class documentation set is generated.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           ### This is a comment.
@@ -18,7 +18,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -29,7 +29,7 @@ void main() {
   test(
     'Given a class with a multiline class documentation comment then an model with the class documentation set is generated.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           ### This is a...
@@ -41,7 +41,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -55,7 +55,7 @@ void main() {
   test(
     'Given a class with a normal class comment, then the model that is generated has no documentation set.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           # This is a normal comment.
@@ -66,7 +66,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -77,7 +77,7 @@ void main() {
   test(
     'Given a class with a field documentation comment then the model that is generated has the documentation set for that specific field.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -88,7 +88,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -102,7 +102,7 @@ void main() {
   test(
     'Given a class with a multiline field documentation comment then the model that is generated has the documentation set for that specific field.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -114,7 +114,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -126,7 +126,7 @@ void main() {
   test(
     'Given a class with multiple fields but only one has a documentation comment then the model that is generated has the documentation set for that specific field.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -139,7 +139,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -154,7 +154,7 @@ void main() {
   test(
     'Given a class with a field with a normal comment, then the model that is generated has no documentation set.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -165,7 +165,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -176,7 +176,7 @@ void main() {
   test(
     'Given an enum with a multiline class documentation comment then an model with the class documentation set is generated.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           ### This is a...
@@ -188,7 +188,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as EnumDefinition;
 
@@ -202,7 +202,7 @@ void main() {
   test(
     'Given an enum with a multiline value documentation comment then the model that is generated has the documentation set for that specific field.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: Example
@@ -214,7 +214,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as EnumDefinition;
 

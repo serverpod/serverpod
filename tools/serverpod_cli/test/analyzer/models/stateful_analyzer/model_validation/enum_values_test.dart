@@ -9,7 +9,7 @@ void main() {
   test(
     'Given an enum without a values property, then collect an error that the values property is required.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -18,7 +18,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -34,7 +34,7 @@ void main() {
   test(
     'Given an enum with an empty values property, then collect an error that values must be defined.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -44,7 +44,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -60,7 +60,7 @@ void main() {
   test(
     'Given an enum with the values property defined as a map, then collect an error that values must be a list.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -72,7 +72,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -88,7 +88,7 @@ void main() {
   test(
     'Given an enum with the values with none string values, then collect an error that values must be a list of strings.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         enum: ExampleEnum
@@ -100,7 +100,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -116,7 +116,7 @@ void main() {
   test(
     'Given an enum with an invalid enum string structure, then collect an error that the string must follow the required syntax.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -127,7 +127,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -143,7 +143,7 @@ void main() {
   test(
     'Given an enum with two duplicated entries, then collect an error that the enum values must be unique.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -155,7 +155,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -174,7 +174,7 @@ void main() {
   test(
     'Given a value with multiple uppercase chars after a lowercase, no errors is given.',
     () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           enum: ExampleEnum
@@ -185,7 +185,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -196,7 +196,7 @@ void main() {
   );
 
   test('Given a value with a single uppercase char, no errors is given.', () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -207,7 +207,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -218,7 +218,7 @@ void main() {
 
   test('Given a value with snake_case value, an error of info level is given.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -229,7 +229,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -245,7 +245,7 @@ void main() {
 
   test('Given a value with PascalCase value, an error of info level is given.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -256,7 +256,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -272,7 +272,7 @@ void main() {
 
   test('Given a value with UPPERCASE value, an error of info level is given.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml('''
 enum: ExampleEnum
 values:
@@ -281,7 +281,7 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -298,7 +298,7 @@ values:
   test(
       'Given a valid enum with two values, then the enum definition should contain two values.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -310,7 +310,7 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 

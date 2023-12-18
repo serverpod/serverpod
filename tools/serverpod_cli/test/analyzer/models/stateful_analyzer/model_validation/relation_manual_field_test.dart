@@ -8,7 +8,7 @@ void main() {
   group(
       'Given a class with a relation with a defined field name that holds the relation',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -33,7 +33,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var exampleClass = definitions.first as ClassDefinition;
@@ -64,7 +64,7 @@ void main() {
 
   group('Given a class with a relation pointing to a field that does not exist',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -77,7 +77,7 @@ fields:
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -106,7 +106,7 @@ fields:
   });
 
   group('Given a class with a List relation with a field pointer defined', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -129,7 +129,7 @@ fields:
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -160,7 +160,7 @@ fields:
   });
 
   group('Given a class with an id relation with a field pointer defined', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -181,7 +181,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -210,7 +210,7 @@ fields:
   group(
       'Given a class with a relation pointing to a field with a mismatching type to the reference',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -223,7 +223,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -252,7 +252,7 @@ fields:
   group(
       'Given a class with a relation pointing to a field that is set to not persist',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -265,7 +265,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
     var errors = collector.errors;
 
     test('then an error was collected.', () {
@@ -294,7 +294,7 @@ fields:
   group(
       'Given two classes with a named relation with a defined field name that holds the relation',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -321,7 +321,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var exampleClass = definitions.first as ClassDefinition;
@@ -359,7 +359,7 @@ fields:
   group(
       'Given a class with a relation pointing to a field that already has a relation',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -381,7 +381,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     var errors = collector.errors;
 
@@ -411,7 +411,7 @@ fields:
   group(
       'Given a class with a named object relation on both sides with foreign key field without unique index',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -432,7 +432,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -454,7 +454,7 @@ fields:
   group(
       'Given a class with a named object relation on both sides with foreign key field in not unique index',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -478,7 +478,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -500,7 +500,7 @@ fields:
   group(
       'Given a class with a named object relation on both sides with foreign key field in unique index with multiple fields',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -526,7 +526,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;

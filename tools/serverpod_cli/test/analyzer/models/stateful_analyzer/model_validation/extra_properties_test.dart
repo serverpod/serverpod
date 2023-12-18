@@ -9,7 +9,7 @@ void main() {
     test(
         'Given a class defined to serverOnly, then the serverOnly property is set to true.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -20,7 +20,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(modelSources).validateAll();
 
       expect(models.first.serverOnly, isTrue);
     });
@@ -28,7 +28,7 @@ void main() {
     test(
         'Given a class explicitly setting serverOnly to false, then the serverOnly property is set to false.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -39,7 +39,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(modelSources).validateAll();
 
       expect(models.first.serverOnly, isFalse);
     });
@@ -47,7 +47,7 @@ void main() {
     test(
         'Given a class without the serverOnly property, then the default "false" value is used.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -57,7 +57,7 @@ void main() {
         ).build()
       ];
 
-      var models = StatefulAnalyzer(protocols).validateAll();
+      var models = StatefulAnalyzer(modelSources).validateAll();
 
       expect(models.first.serverOnly, isFalse);
     });
@@ -65,7 +65,7 @@ void main() {
     test(
         'Given a class with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -77,7 +77,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -92,7 +92,7 @@ void main() {
     test(
         'Given an exception with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           exception: Example
@@ -104,7 +104,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -121,7 +121,7 @@ void main() {
     test(
         'Given a class with a table defined, then the tableName is set in the definition.',
         () {
-      var protocols = [
+      var modelSources = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -133,7 +133,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var models = StatefulAnalyzer(protocols, onErrorsCollector(collector))
+      var models = StatefulAnalyzer(modelSources, onErrorsCollector(collector))
           .validateAll();
 
       var model = models.first as ClassDefinition;
@@ -143,7 +143,7 @@ void main() {
     test(
       'Given a class with a table name in a none snake_case_format, then collect an error that snake_case must be used.',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -155,7 +155,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -175,7 +175,7 @@ void main() {
     test(
       'Given a class with a table name is not a string, then collect an error',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -187,7 +187,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -206,7 +206,7 @@ void main() {
     test(
       'Given an exception with a table defined, then collect an error',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             exception: Example
@@ -218,7 +218,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -237,7 +237,7 @@ void main() {
     test(
       'Given two classes with the same table name defined, then collect an error',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -257,7 +257,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -278,7 +278,7 @@ void main() {
     test(
       'Given a class with an invalid property, then collect an error that such a property is not allowed.',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -290,7 +290,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -309,7 +309,7 @@ void main() {
     test(
       'Given an exception with indexes defined, then collect an error that indexes cannot be used together with exceptions.',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             exception: ExampleException
@@ -324,7 +324,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -343,7 +343,7 @@ void main() {
     test(
       'Given an enum with a table defined, then collect an error that table cannot be used together with enums.',
       () {
-        var protocols = [
+        var modelSources = [
           ModelSourceBuilder().withYaml(
             '''
             enum: Example
@@ -356,7 +356,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,

@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Given a class with a null value as name, then collect an error', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class:
@@ -16,7 +16,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -31,7 +31,7 @@ void main() {
   test(
       'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         exception: PascalCASEString
@@ -42,7 +42,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -54,7 +54,7 @@ void main() {
   test(
       'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         exception: PascalCASEString
@@ -64,7 +64,7 @@ void main() {
       ).build()
     ];
 
-    StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+    StatefulAnalyzer analyzer = StatefulAnalyzer(models);
 
     var definitions = analyzer.validateAll();
     expect(definitions.first.className, 'PascalCASEString');
@@ -73,7 +73,7 @@ void main() {
   test(
       'Given a camelCase class name, then give an error indicating that PascalCase is required.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: exampleClass
@@ -84,7 +84,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -102,7 +102,7 @@ void main() {
   test(
     'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           exception: example_class
@@ -113,7 +113,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -132,7 +132,7 @@ void main() {
   test(
     'Given an enum name with a leading number, then give an error indicating that PascalCase is required.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           enum: 1ExampleType
@@ -144,7 +144,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -163,7 +163,7 @@ void main() {
   test(
     'Given a class name with reserved value List, then give an error that the class name is reserved.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: List
@@ -174,7 +174,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -193,7 +193,7 @@ void main() {
   test(
     'Given a class name with reserved value Map, then give an error that the class name is reserved.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Map
@@ -204,7 +204,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -223,7 +223,7 @@ void main() {
   test(
     'Given a class name with reserved value String, then give an error that the class name is reserved.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: String
@@ -234,7 +234,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -253,7 +253,7 @@ void main() {
   test(
     'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: DateTime
@@ -264,7 +264,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -280,11 +280,11 @@ void main() {
     },
   );
 
-  group('Given a protocol without any defined model type', () {
+  group('Given a model without any defined model type', () {
     test(
       'Then return a human readable error message informing the user that the model type is missing.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             invalid: Type
@@ -295,7 +295,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -312,8 +312,8 @@ void main() {
     );
   });
 
-  group('Given a protocol with class and exception type defined.', () {
-    var protocols = [
+  group('Given a model with class and exception type defined.', () {
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -326,7 +326,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     test('Then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -342,7 +342,7 @@ fields:
     });
 
     test('Then the second type is highlighted.', () {
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -360,8 +360,8 @@ fields:
     });
   });
 
-  group('Given a protocol with exception and enum type defined', () {
-    var protocols = [
+  group('Given a model with exception and enum type defined', () {
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         exception: ExampleException
@@ -374,7 +374,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -390,8 +390,8 @@ fields:
     });
   });
 
-  group('Given a protocol with three different types defined.', () {
-    var protocols = [
+  group('Given a model with three different types defined.', () {
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
 class: Example
@@ -405,7 +405,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     test('then return a human readable error message when analyzing.', () {
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,
@@ -421,7 +421,7 @@ fields:
     });
 
     test('then the second and third type is highlighted.', () {
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       expect(
         collector.errors,

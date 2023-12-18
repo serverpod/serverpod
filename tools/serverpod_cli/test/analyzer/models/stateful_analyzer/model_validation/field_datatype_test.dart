@@ -26,7 +26,7 @@ void main() {
 
     for (var datatype in datatypes) {
       group('Given a class with a field with the type $datatype', () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -38,7 +38,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
@@ -57,7 +57,7 @@ void main() {
     }
 
     group('Given a class with a field with a module type', () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -69,7 +69,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       var definitions = analyzer.validateAll();
@@ -88,7 +88,7 @@ void main() {
     });
 
     group('Given a class with a field with the type ByteData', () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -100,7 +100,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       var definitions = analyzer.validateAll();
@@ -122,7 +122,7 @@ void main() {
     });
 
     group('Given a class with a field with the type MyEnum', () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
           '''
           class: Example
@@ -142,7 +142,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       var definitions = analyzer.validateAll();
@@ -154,7 +154,7 @@ void main() {
       });
 
       test('then a class with that field type set to MyEnum.', () {
-        expect(definition.fields.first.type.toString(), 'protocol:MyEnum');
+        expect(definition.fields.first.type.toString(), 'model:MyEnum');
       });
 
       test('then the type is tagged as an enum', () {
@@ -165,7 +165,7 @@ void main() {
     test(
         'Given a class with a field of a Map type with a lot of whitespace, then all the data types components are extracted.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -177,7 +177,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       var definitions = analyzer.validateAll();
@@ -215,7 +215,7 @@ void main() {
     test(
       'Given a class with a field of a Map type, then all the data types components are extracted.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
           class: Example
@@ -227,7 +227,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
@@ -271,7 +271,7 @@ void main() {
       test(
           'Given a class with a field with only $datatype as the type, then collect an error that it is an invalid type.',
           () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -283,7 +283,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();
@@ -306,7 +306,7 @@ void main() {
     test(
         'Given a class with a field without a datatype defined, then collect an error that defining a datatype is required.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -318,7 +318,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();

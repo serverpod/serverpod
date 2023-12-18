@@ -8,7 +8,7 @@ void main() {
   test(
     'Given a class with the index property defined but without any index, then collect an error that at least one index has to be added.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -21,7 +21,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -41,7 +41,7 @@ void main() {
   test(
     'Given a class with an index that does not define the fields keyword, then collect an error that fields are required.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -55,7 +55,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -75,7 +75,7 @@ void main() {
   test(
       'Given a class with an index key that is not a string, then collect an error that the index name has to be defined as a string.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -90,7 +90,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -109,7 +109,7 @@ void main() {
   test(
     'Given a class with an index key that is not a string in snake_case_format, then collect an error that the index name is using an invalid format.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -124,7 +124,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -144,7 +144,7 @@ void main() {
   test(
     'Given a class with an index without any fields, then collect an error that at least one field has to be added.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -159,7 +159,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -179,7 +179,7 @@ void main() {
   test(
     'Given a class with an index with a field that does not exist, then collect an error that the field is missing in the class.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -194,7 +194,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -214,7 +214,7 @@ void main() {
   test(
     'Given a class with an index with two duplicated fields, then collect an error that duplicated fields are not allowed.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -229,7 +229,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -249,7 +249,7 @@ void main() {
   test(
     'Given a class with an index with a field that has an api scope, then collect an error that the field is missing in the class.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -265,7 +265,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -285,7 +285,7 @@ void main() {
   test(
     'Given a class with an index with two fields where the second is null, then collect an error that the field must be defined.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -300,7 +300,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -320,7 +320,7 @@ void main() {
   test(
     'Given a class with an index with a defined field, then the definition contains the index.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -335,7 +335,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -347,7 +347,7 @@ void main() {
   group(
     'Given a class with an index with a defined field',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -362,7 +362,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
@@ -390,7 +390,7 @@ void main() {
   group(
     'Given a class with an index with two defined fields',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -406,7 +406,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var errors = collector.errors;
@@ -450,7 +450,7 @@ void main() {
   test(
     'Given a class with two indexes, then the definition contains both the index names.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -468,7 +468,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -483,7 +483,7 @@ void main() {
   test(
       'Given a class with an index with a unique key that is not a bool, then collect an error that the unique key has to be defined as a bool.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -499,7 +499,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -515,7 +515,7 @@ void main() {
   test(
       'Given a class with an index with an undefined unique key, then return a definition where unique is set to false.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -530,7 +530,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
@@ -541,7 +541,7 @@ void main() {
   test(
       'Given a class with an index with a unique key set to false, then return a definition where unique is set to false.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
       class: Example
@@ -557,7 +557,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
@@ -568,7 +568,7 @@ void main() {
   test(
       'Given a class with an index with a unique key set to true, then return a definition where unique is set to true.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -584,7 +584,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var definition = definitions.first as ClassDefinition;
 
@@ -595,7 +595,7 @@ void main() {
   test(
       'Given a class with an index with an invalid key, then collect an error indicating that the key is invalid.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -611,7 +611,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -631,7 +631,7 @@ void main() {
     test(
         'Given two classes with the same index name defined, then collect an error notifying that the index name is already in use.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -657,7 +657,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -669,7 +669,7 @@ void main() {
       var error = collector.errors.first;
       expect(
         error.message,
-        'The index name "example_index" is already used by the protocol class "ExampleCollision".',
+        'The index name "example_index" is already used by the model class "ExampleCollision".',
       );
     });
   });
@@ -688,7 +688,7 @@ void main() {
       test(
           'Given a class with an index type explicitly set to $indexType, then use that type',
           () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -705,7 +705,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         var analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
@@ -721,7 +721,7 @@ void main() {
     test(
         'Given a class with an index without a type set, then default to type btree',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -736,7 +736,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
@@ -749,7 +749,7 @@ void main() {
     test(
         'Given a class with an index type explicitly set to an invalid type, then collect an error that only the defined index types can be used.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -765,7 +765,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -784,7 +784,7 @@ void main() {
     test(
         'Given a class with an index with an invalid type, then collect an error indicating that the type is invalid.',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -800,7 +800,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(

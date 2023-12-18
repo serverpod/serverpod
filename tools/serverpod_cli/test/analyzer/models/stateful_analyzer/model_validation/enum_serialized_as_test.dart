@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a valid enum definition when validating', () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -19,7 +19,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -37,7 +37,7 @@ void main() {
   group(
       'Given a valid enum definition with serialized set to int when validating',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -50,7 +50,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -68,7 +68,7 @@ void main() {
   group(
       'Given a valid enum definition with serialized set to string when validating',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -81,7 +81,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
@@ -99,7 +99,7 @@ void main() {
   test(
       'Given a valid enum definition with serialized set to an invalid value when validating then collect an error that the serialized value is invalid.',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
         enum: ExampleEnum
@@ -112,7 +112,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
 
     analyzer.validateAll();
 
@@ -126,7 +126,7 @@ void main() {
   group(
       'Given a class with a field with the type ExampleEnum serialized as an int',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withFileName('example').withYaml(
         '''
         class: Example
@@ -147,7 +147,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      modelSources,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -173,7 +173,7 @@ void main() {
   group(
       'Given a class with a field with the type ExampleEnum serialized as a String',
       () {
-    var protocols = [
+    var modelSources = [
       ModelSourceBuilder().withFileName('example').withYaml(
         '''
         class: Example
@@ -194,7 +194,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      modelSources,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();

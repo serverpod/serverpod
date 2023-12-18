@@ -8,7 +8,7 @@ void main() {
   test(
     'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -20,7 +20,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
       var error = collector.errors.first;
 
@@ -34,7 +34,7 @@ void main() {
   test(
     'Given a class with a table defined, then add an id field to the generated model.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -46,7 +46,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
@@ -60,7 +60,7 @@ void main() {
   test(
     'Given a class without a table defined, then no id field is added.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -71,7 +71,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;

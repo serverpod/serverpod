@@ -107,7 +107,7 @@ void main() {
           () {
         var collector = CodeGenerationCollector();
 
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -119,7 +119,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();
@@ -141,7 +141,7 @@ void main() {
           () {
         var collector = CodeGenerationCollector();
 
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -153,7 +153,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();
@@ -177,7 +177,7 @@ void main() {
           () {
         var collector = CodeGenerationCollector();
 
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -188,7 +188,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();
@@ -211,7 +211,7 @@ void main() {
           () {
         var collector = CodeGenerationCollector();
 
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             exception: Example
@@ -222,7 +222,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();
@@ -245,7 +245,7 @@ void main() {
           () {
         var collector = CodeGenerationCollector();
 
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             enum: Example
@@ -256,7 +256,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         analyzer.validateAll();

@@ -10,7 +10,7 @@ void main() {
     test(
       'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -21,7 +21,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -38,7 +38,7 @@ void main() {
     test(
       'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -49,7 +49,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -66,7 +66,7 @@ void main() {
     test(
       'Given a class with a field with a negated api keyword, then the generated model should be persisted.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -76,7 +76,7 @@ void main() {
           ).build(),
         ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+        StatefulAnalyzer analyzer = StatefulAnalyzer(models);
         var definitions = analyzer.validateAll();
         var definition = definitions.first as ClassDefinition;
 
@@ -90,7 +90,7 @@ void main() {
     test(
       'Given a class with a field with a negated database keyword, then the generated model has the scope all.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -100,7 +100,7 @@ void main() {
           ).build(),
         ];
 
-        StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+        StatefulAnalyzer analyzer = StatefulAnalyzer(models);
         var definitions = analyzer.validateAll();
         var definition = definitions.first as ClassDefinition;
 
@@ -114,7 +114,7 @@ void main() {
     test(
       'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -125,7 +125,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -153,7 +153,7 @@ void main() {
     group(
       'Given a class with a field with the scope set to database',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -166,7 +166,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         var analyzer = StatefulAnalyzer(
-          protocols,
+          models,
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
@@ -198,7 +198,7 @@ void main() {
     group(
       'Given a class with a field with the scope set to api',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -211,7 +211,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer =
-            StatefulAnalyzer(protocols, onErrorsCollector(collector));
+            StatefulAnalyzer(models, onErrorsCollector(collector));
         var definitions = analyzer.validateAll();
         var definition = definitions.first as ClassDefinition;
 
@@ -241,7 +241,7 @@ void main() {
     test(
       'Given a class with a field with database set to an invalid value, then collect an error that the value must be a bool.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -252,7 +252,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(collector.errors.length, greaterThan(0));
 
@@ -265,7 +265,7 @@ void main() {
     test(
       'Given a class with a field with api set to an invalid value, then collect an error that the value must be a bool.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -276,7 +276,7 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(collector.errors.length, greaterThan(0));
 
@@ -289,7 +289,7 @@ void main() {
     test(
       'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
       () {
-        var protocols = [
+        var models = [
           ModelSourceBuilder().withYaml(
             '''
             class: Example
@@ -302,7 +302,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
 
-        StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
         expect(
           collector.errors,
@@ -325,7 +325,7 @@ void main() {
   test(
     'Given a class with a field with no scope set, then the generated model has the all scope.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -338,7 +338,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer =
-          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+          StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -349,7 +349,7 @@ void main() {
   group(
     'Given a class with a field with the scope set',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -363,7 +363,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer =
-          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+          StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -394,7 +394,7 @@ void main() {
   test(
       'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -406,7 +406,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -424,7 +424,7 @@ void main() {
   test(
     'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -436,7 +436,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer =
-          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+          StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(
@@ -455,7 +455,7 @@ void main() {
   test(
     'Given a class with a field with both the scope and database keywords, then collect an error that only one of them is allowed.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -467,7 +467,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer =
-          StatefulAnalyzer(protocols, onErrorsCollector(collector));
+          StatefulAnalyzer(models, onErrorsCollector(collector));
       analyzer.validateAll();
 
       expect(collector.errors, hasLength(greaterThan(1)));
@@ -489,7 +489,7 @@ void main() {
   test(
     'Given a class with a field with both the scope and api keywords, then collect an error that only one of them is allowed.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -501,7 +501,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();

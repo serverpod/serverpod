@@ -18,7 +18,7 @@ void main() {
     group(
         'Given a class with onUpdate database action explicitly set to $action',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -30,7 +30,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var model = definitions.first as ClassDefinition;
 
@@ -57,7 +57,7 @@ void main() {
     group(
         'Given a class with onDelete database action explicitly set to $action',
         () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
         class: Example
@@ -69,7 +69,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var model = definitions.first as ClassDefinition;
 
@@ -92,7 +92,7 @@ void main() {
   }
 
   group('Given a class with no database action explicitly set', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -104,7 +104,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var model = definitions.first as ClassDefinition;
 
@@ -130,7 +130,7 @@ void main() {
   test(
       'Given a class with onUpdate database action set to an invalid value, then collect an error.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -142,7 +142,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -161,7 +161,7 @@ void main() {
   test(
       'Given a class with onDelete database action set to an invalid value, then collect an error.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -173,7 +173,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -192,7 +192,7 @@ void main() {
   group(
       'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
 class: User
@@ -217,7 +217,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
 
     analyzer.validateAll();
     var errors = collector.errors;
@@ -256,7 +256,7 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
 class: User
@@ -280,7 +280,7 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -316,7 +316,7 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -336,7 +336,7 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -358,7 +358,7 @@ fields:
       () {
     var collector = CodeGenerationCollector();
 
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
@@ -378,7 +378,7 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -398,7 +398,7 @@ fields:
   group(
     'Given a class with a field with a parent set',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
             class: Example
@@ -408,7 +408,7 @@ fields:
             ''',
         ).build()
       ];
-      StatefulAnalyzer analyzer = StatefulAnalyzer(protocols);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(models);
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;

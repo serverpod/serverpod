@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a class with a one to many relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('cat').withYaml(
         '''
         class: Cat
@@ -20,7 +20,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();

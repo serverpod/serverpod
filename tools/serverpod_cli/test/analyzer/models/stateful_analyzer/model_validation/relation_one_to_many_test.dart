@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a class with a one to many relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -27,7 +27,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -85,7 +85,7 @@ void main() {
   group(
       'Given two classes with one to many relations defined without specifying a name',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -105,7 +105,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var employeeDefinition = definitions.first as ClassDefinition;
@@ -201,7 +201,7 @@ void main() {
   test(
       'Given a class with a one to many relation where the relation ship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -222,7 +222,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -242,7 +242,7 @@ void main() {
   group(
       'Given a class with a one to many relation where the relationship is only named on one side',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -262,7 +262,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -284,7 +284,7 @@ void main() {
   group(
       'Given a class with a one to many relation where the relationship is named with a none string value',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -310,7 +310,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -328,7 +328,7 @@ void main() {
   });
 
   group('Given an implicit one to many relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -348,7 +348,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var employeeDefinition = definitions.first as ClassDefinition;
@@ -382,7 +382,7 @@ void main() {
   group(
       'Given an implicit one to many relation with many table including underscores',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -402,7 +402,7 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(protocols, onErrorsCollector(collector));
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
 
     var employeeDefinition = definitions.first as ClassDefinition;
@@ -435,9 +435,9 @@ void main() {
   });
 
   group(
-      'Given a named list relation protocol ordered before the primary key protocol, when parsing the protocols',
+      'Given a named list relation model ordered before the primary key model, when parsing the models',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('customer').withYaml(
         '''
         class: Customer
@@ -461,7 +461,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -486,9 +486,9 @@ void main() {
   });
 
   group(
-      'Given an unnamed list relation protocol linked to another protocol with an unname object relation, when parsing the protocols',
+      'Given an unnamed list relation model linked to another model with an unname object relation, when parsing the models',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('customer').withYaml(
         '''
         class: Customer
@@ -512,7 +512,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -544,7 +544,7 @@ void main() {
   });
 
   group('Given a class with a one to many relation on a foreign key field', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
@@ -565,7 +565,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();

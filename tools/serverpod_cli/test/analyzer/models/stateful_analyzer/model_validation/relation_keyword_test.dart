@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a class with a self relation on a field with the class datatype',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -20,7 +20,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -113,7 +113,7 @@ void main() {
   group(
       'Given a class with a self relation on a field with the class datatype where the relation is optional',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -126,7 +126,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -156,7 +156,7 @@ void main() {
   group(
       'Given a class with a self relation on a field with the class datatype where the relation is not optional',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -169,7 +169,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        StatefulAnalyzer(models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var classDefinition = definitions.first as ClassDefinition;
 
@@ -197,7 +197,7 @@ void main() {
   test(
       'Given a class with a self relation without any nested rules, then no errors are collected.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -210,7 +210,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer =
-        StatefulAnalyzer(protocols, onErrorsCollector(collector));
+        StatefulAnalyzer(models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(collector.errors, isEmpty, reason: 'Expected no errors');
@@ -219,7 +219,7 @@ void main() {
   test(
       'Given a class with a field without a relation, then no relation is set.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -232,7 +232,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -245,7 +245,7 @@ void main() {
   test(
       'Given a class with a field with a self reference without a relation, then no relation is set.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -258,7 +258,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -269,7 +269,7 @@ void main() {
   });
 
   group('Given a class with a field with a self relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -282,7 +282,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -312,7 +312,7 @@ void main() {
   test(
       'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that there is a duplicated key.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -325,7 +325,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     analyzer.validateAll();
@@ -345,7 +345,7 @@ void main() {
   test(
     'Given a class with a field with a relation and parent keyword, then an error is collected that they are mutually exclusive key.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -357,7 +357,7 @@ void main() {
       ];
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();
@@ -377,7 +377,7 @@ void main() {
   test(
     'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that locates the second parent key.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
 class: Example
@@ -389,7 +389,7 @@ fields:
       ];
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();
@@ -417,7 +417,7 @@ fields:
   test(
     'Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.',
     () {
-      var protocols = [
+      var models = [
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -428,7 +428,7 @@ fields:
       ];
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
-        protocols,
+        models,
         onErrorsCollector(collector),
       );
       analyzer.validateAll();
@@ -448,7 +448,7 @@ fields:
   test(
       'Given a class with a field with a relation on a complex datatype that is not nullable, then an error is collected that the datatype must be nullable.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
           class: Example
@@ -460,7 +460,7 @@ fields:
     ];
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     analyzer.validateAll();
@@ -472,14 +472,14 @@ fields:
     );
     expect(
       collector.errors.first.message,
-      'Fields with a protocol relations must be nullable (e.g. parent: Example?).',
+      'Fields with a model relations must be nullable (e.g. parent: Example?).',
     );
   });
 
   test(
       'Given a class with a field with a relation on a complex datatype and the parent table is defined, then an error is collected that the parent table is redundant.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -490,7 +490,7 @@ fields:
       ).build()
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -500,14 +500,14 @@ fields:
 
     expect(
       collector.errors.first.message,
-      'The "parent" property should be omitted on protocol relations.',
+      'The "parent" property should be omitted on model relations.',
     );
   });
 
   test(
       'Given a class with a field with a relation on an id field and the relation is defined as optional, then collect a warning that the optional keyword should not be used.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -518,7 +518,7 @@ fields:
       ).build()
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(
       collector.errors,
@@ -535,7 +535,7 @@ fields:
   test(
       'Given a class with a field with a relation on an id field but is missing a parent table definition, then collect an error that the parent table is required.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -546,7 +546,7 @@ fields:
       ).build()
     ];
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(collector.errors, isNotEmpty, reason: 'Expected an error');
 
@@ -557,9 +557,9 @@ fields:
   });
 
   group(
-      'Given a class with a relation to a protocol class with a table defined',
+      'Given a class with a relation to a model class with a table defined',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -580,7 +580,7 @@ fields:
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -611,7 +611,7 @@ fields:
   });
 
   group('Given a class with a json field without a relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -631,7 +631,7 @@ fields:
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -653,7 +653,7 @@ fields:
   });
 
   group('Given a class with a List json field without a relation', () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -673,7 +673,7 @@ fields:
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
@@ -697,7 +697,7 @@ fields:
   test(
       'Given a class with a relation referencing a non-existent class then collect an error that the class was not found',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -709,19 +709,19 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(collector.errors, isNotEmpty);
     expect(
       collector.errors.first.message,
-      'The class "InvalidClass" was not found in any protocol.',
+      'The class "InvalidClass" was not found in any model.',
     );
   });
 
   test(
-      'Given a class with a relation to a protocol enum, then collect an error that the class does not exist.',
+      'Given a class with a relation to a model enum, then collect an error that the class does not exist.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -741,7 +741,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
 
     expect(collector.errors, isNotEmpty);
     expect(
@@ -751,9 +751,9 @@ fields:
   });
 
   test(
-      'Given a class with a relation to a protocol class without a table defined, then collect an error that the class does not have a table.',
+      'Given a class with a relation to a model class without a table defined, then collect an error that the class does not have a table.',
       () {
-    var protocols = [
+    var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
@@ -772,7 +772,7 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(protocols, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
     expect(collector.errors, isNotEmpty, reason: 'Expected an error');
     expect(
       collector.errors.first.message,
