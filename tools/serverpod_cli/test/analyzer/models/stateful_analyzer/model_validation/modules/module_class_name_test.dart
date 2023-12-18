@@ -1,12 +1,12 @@
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('test name', () {
-    var protocols = [
-      ProtocolSourceBuilder()
+    var models = [
+      ModelSourceBuilder()
           .withModuleAlias('auth')
           .withFileName('user_info')
           .withYaml(
@@ -17,7 +17,7 @@ void main() {
           nickname: String
         ''',
       ).build(),
-      ProtocolSourceBuilder()
+      ModelSourceBuilder()
           .withModuleAlias('protocol')
           .withFileName('user_info')
           .withYaml(
@@ -32,7 +32,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     analyzer.validateAll();

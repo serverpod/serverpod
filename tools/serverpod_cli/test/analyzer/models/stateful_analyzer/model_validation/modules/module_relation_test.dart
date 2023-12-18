@@ -1,14 +1,13 @@
-import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/test_util/builders/protocol_source_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Given a class referencing a module class with a relation.', () {
-    var protocols = [
-      ProtocolSourceBuilder()
+    var models = [
+      ModelSourceBuilder()
           .withModuleAlias('auth')
           .withFileName('user_info')
           .withYaml(
@@ -19,7 +18,7 @@ void main() {
           nickname: String
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('profile').withYaml(
+      ModelSourceBuilder().withFileName('profile').withYaml(
         '''
         class: Profile
         table: profile
@@ -32,7 +31,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
-      protocols,
+      models,
       onErrorsCollector(collector),
     );
     var entities = analyzer.validateAll();
