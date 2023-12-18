@@ -77,13 +77,17 @@ class GeneratorConfig {
   List<String> get protocolSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
 
+  /// Path parts to the model directory of the server package.
+  List<String> get modelSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'model'];
+
   /// Path parts to the endpoints directory of the server package.
   List<String> get endpointsSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServerProtocolPathParts =>
+  List<String> get generatedServeModelPathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 
   /// Path parts from the server package to the dart client package.
@@ -96,7 +100,7 @@ class GeneratorConfig {
       ];
 
   /// The path parts to the protocol directory in the dart client package.
-  List<String> get generatedDartClientProtocolPathParts =>
+  List<String> get generatedDartClientModelPathParts =>
       [...clientPackagePathParts, 'lib', 'src', 'protocol'];
 
   /// All the modules defined in the config.
@@ -254,9 +258,10 @@ class GeneratorConfig {
   String toString() {
     var str = '''type: $type
 sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
+sourceModel: ${p.joinAll(modelSourcePathParts)}
 sourceEndpoints: ${p.joinAll(endpointsSourcePathParts)}
-generatedClientDart: ${p.joinAll(generatedDartClientProtocolPathParts)}
-generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
+generatedClientDart: ${p.joinAll(generatedDartClientModelPathParts)}
+generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 ''';
     if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';

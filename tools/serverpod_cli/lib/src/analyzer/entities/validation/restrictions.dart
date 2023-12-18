@@ -101,7 +101,7 @@ class Restrictions {
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
-  EntityRelations? entityRelations;
+  ModelRelations? entityRelations;
 
   Restrictions({
     required this.documentType,

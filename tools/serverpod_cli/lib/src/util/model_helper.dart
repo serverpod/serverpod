@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart';
 
-class ProtocolSource {
+class ModelSource {
   String yaml;
   Uri yamlSourceUri;
   List<String> protocolRootPathParts;
 
-  ProtocolSource(this.yaml, this.yamlSourceUri, this.protocolRootPathParts);
+  ModelSource(this.yaml, this.yamlSourceUri, this.protocolRootPathParts);
 }
 
-const protocolFileExtensions = [
+const modelFileExtensions = [
   '.yaml',
   '.yml',
   '.spy',
@@ -19,8 +19,8 @@ const protocolFileExtensions = [
   '.spy.yml',
 ];
 
-class ProtocolHelper {
-  static Future<List<ProtocolSource>> loadProjectYamlProtocolsFromDisk(
+class ModelHelper {
+  static Future<List<ModelSource>> loadProjectYamlModelsFromDisk(
     GeneratorConfig config,
   ) async {
     var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
@@ -31,23 +31,23 @@ class ProtocolHelper {
     sourceFileList.sort((a, b) => a.path.compareTo(b.path));
 
     var files = sourceFileList.whereType<File>().where(
-        (file) => protocolFileExtensions.any((ext) => file.path.endsWith(ext)));
+        (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
 
-    List<ProtocolSource> sources = [];
+    List<ModelSource> sources = [];
     for (var entity in files) {
       var yaml = await entity.readAsString();
 
-      sources.add(ProtocolSource(
+      sources.add(ModelSource(
         yaml,
         entity.uri,
-        extractPathFromProtocolRoot(config, entity.uri),
+        extractPathFromModelRoot(config, entity.uri),
       ));
     }
 
     return sources;
   }
 
-  static List<String> extractPathFromProtocolRoot(
+  static List<String> extractPathFromModelRoot(
       GeneratorConfig config, Uri fileUri) {
     var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
     var sourceDirPartsLength = split(sourceDir.path).length;

@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 import '../../analyzer.dart';
 import '../generator/code_generation_collector.dart';
@@ -58,31 +58,31 @@ Future<void> runLanguageServer() async {
   connection.onDidCloseTextDocument((params) async {
     var project = serverProject;
     if (project == null) return;
-    if (!project.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+    if (!project.analyzer.isModelRegistered(params.textDocument.uri)) {
       return;
     }
     if (_isFileOnDisk(params.textDocument.uri)) return;
 
-    project.analyzer.removeYamlProtocol(params.textDocument.uri);
+    project.analyzer.removeYamlModel(params.textDocument.uri);
     project.analyzer.validateAll();
   });
 
   connection.onDidOpenTextDocument((params) async {
     var project = serverProject;
     if (project == null) return;
-    if (project.analyzer.isProtocolRegistered(params.textDocument.uri)) {
+    if (project.analyzer.isModelRegistered(params.textDocument.uri)) {
       return;
     }
-    if (!_isProtocolInServerPath(
+    if (!_isModelInServerPath(
         params.textDocument.uri, project.serverRootUri)) {
       return;
     }
 
-    project.analyzer.addYamlProtocol(
-      ProtocolSource(
+    project.analyzer.addYamlModel(
+      ModelSource(
         params.textDocument.text,
         params.textDocument.uri,
-        ProtocolHelper.extractPathFromProtocolRoot(
+        ModelHelper.extractPathFromModelRoot(
           project.config,
           params.textDocument.uri,
         ),
@@ -104,7 +104,7 @@ Future<void> runLanguageServer() async {
       );
     });
 
-    serverProject?.analyzer.validateProtocol(
+    serverProject?.analyzer.validateModel(
       contentChanges.first.text,
       params.textDocument.uri,
     );
@@ -136,7 +136,7 @@ Future<ServerProject?> _loadServerProject(
   var config = await GeneratorConfig.load(serverRootDir.path);
   if (config == null) return null;
 
-  var yamlSources = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
+  var yamlSources = await ModelHelper.loadProjectYamlModelsFromDisk(
     config,
   );
 
@@ -241,7 +241,7 @@ List<DiagnosticTag>? _convertToDiagnosticTags(List<SourceSpanTag>? tags) {
   }).toList();
 }
 
-bool _isProtocolInServerPath(Uri uri, Uri serverUri) {
+bool _isModelInServerPath(Uri uri, Uri serverUri) {
   var path = uri.path;
   if (path.contains(serverUri.path)) {
     return true;

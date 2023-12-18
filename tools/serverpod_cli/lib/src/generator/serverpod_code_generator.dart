@@ -32,7 +32,7 @@ abstract class ServerpodCodeGenerator {
     var allFiles = {
       for (var generator in _generators)
         ...generator.generateSerializableEntitiesCode(
-          entities: entities,
+          models: entities,
           config: config,
         )
     };
@@ -119,8 +119,8 @@ List<String> _getDirectoriesRequiringCleaning({
   required GeneratorConfig config,
 }) {
   return [
-    p.joinAll(config.generatedServerProtocolPathParts),
-    p.joinAll(config.generatedDartClientProtocolPathParts),
+    p.joinAll(config.generatedServeModelPathParts),
+    p.joinAll(config.generatedDartClientModelPathParts),
   ];
 }
 

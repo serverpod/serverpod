@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 /// Analyze the server package and generate the code.
 Future<bool> performGenerate({
@@ -16,7 +16,7 @@ Future<bool> performGenerate({
   bool success = true;
 
   log.debug('Analyzing serializable entities in the protocol directory.');
-  var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
+  var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
   var analyzer = StatefulAnalyzer(protocols, (uri, collector) {
     collector.printErrors();

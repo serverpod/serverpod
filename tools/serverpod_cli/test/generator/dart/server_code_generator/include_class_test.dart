@@ -27,7 +27,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
     var compilationUnit = parseString(content: codeMap[expectedFilePath]!).unit;
@@ -66,7 +66,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -216,7 +216,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 

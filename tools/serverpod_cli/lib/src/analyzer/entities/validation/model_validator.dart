@@ -6,8 +6,8 @@ import 'package:yaml/yaml.dart';
 import 'package:serverpod_cli/src/analyzer/entities/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 
-/// Validates that only one top level entity type is defined.
-List<SourceSpanSeverityException> validateTopLevelEntityType(
+/// Validates that only one top level model type is defined.
+List<SourceSpanSeverityException> validateTopLevelModelType(
   YamlNode documentContents,
   Set<String> classTypes,
 ) {
@@ -46,7 +46,7 @@ List<SourceSpanSeverityException> validateTopLevelEntityType(
 /// The [documentType] represents the parent key of the [documentContents],
 /// in the initial processing this is expected to be the top level entity type
 /// we are checking. E.g. 'class', 'enum', 'exception', etc.
-void validateYamlProtocol(
+void validateYamlModel(
   String documentType,
   Set<ValidateNode> documentStructure,
   YamlMap documentContents,
@@ -109,7 +109,7 @@ void validateYamlProtocol(
       node,
       documentContents,
       collector,
-      validateNestedNodes: validateYamlProtocol, // Recursion
+      validateNestedNodes: validateYamlModel, // Recursion
     );
   }
 }

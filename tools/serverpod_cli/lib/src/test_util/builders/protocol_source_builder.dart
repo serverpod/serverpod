@@ -1,4 +1,4 @@
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 class ProtocolSourceBuilder {
   late String yaml;
@@ -36,7 +36,7 @@ class ProtocolSourceBuilder {
     return this;
   }
 
-  ProtocolSource build() {
-    return ProtocolSource(yaml, yamlSourceUri, protocolRootPathParts);
+  ModelSource build() {
+    return ModelSource(yaml, yamlSourceUri, protocolRootPathParts);
   }
 }

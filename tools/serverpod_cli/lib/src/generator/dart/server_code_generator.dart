@@ -11,7 +11,7 @@ class DartServerCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableModelDefinition> entities,
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {
     var serverSideGenerator = SerializableModelLibraryGenerator(
@@ -19,13 +19,13 @@ class DartServerCodeGenerator extends CodeGenerator {
       config: config,
     );
     return {
-      for (var protocolFile in entities)
+      for (var protocolFile in models)
         p.joinAll([
-          ...config.generatedServerProtocolPathParts,
+          ...config.generatedServeModelPathParts,
           ...protocolFile.subDirParts,
           '${protocolFile.fileName}.dart'
         ]): serverSideGenerator
-            .generateEntityLibrary(protocolFile)
+            .generateModelLibrary(protocolFile)
             .generateCode(),
     };
   }
@@ -42,9 +42,9 @@ class DartServerCodeGenerator extends CodeGenerator {
     );
 
     return {
-      p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
+      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
           serverClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedServerProtocolPathParts, 'endpoints.dart']):
+      p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
     };
   }

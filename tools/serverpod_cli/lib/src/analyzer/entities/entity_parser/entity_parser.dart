@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:source_span/source_span.dart';
@@ -12,7 +12,7 @@ import 'package:yaml/yaml.dart';
 class EntityParser {
   static SerializableModelDefinition? serializeClassFile(
     String documentTypeName,
-    ProtocolSource protocolSource,
+    ModelSource protocolSource,
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
@@ -57,7 +57,7 @@ class EntityParser {
   }
 
   static SerializableModelDefinition? serializeEnumFile(
-    ProtocolSource protocolSource,
+    ModelSource protocolSource,
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,

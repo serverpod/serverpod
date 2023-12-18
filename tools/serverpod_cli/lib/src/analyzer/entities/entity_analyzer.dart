@@ -2,11 +2,11 @@ import 'package:serverpod_cli/src/analyzer/entities/entity_dependency_resolver.d
 import 'package:serverpod_cli/src/analyzer/entities/validation/entity_relations.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/validate_node.dart';
 import 'package:serverpod_cli/src/analyzer/entities/validation/keywords.dart';
-import 'package:serverpod_cli/src/analyzer/entities/validation/protocol_validator.dart';
+import 'package:serverpod_cli/src/analyzer/entities/validation/model_validator.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/entities/yaml_definitions/exception_yaml_definition.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
 import 'package:yaml/src/error_listener.dart';
@@ -20,15 +20,15 @@ import 'package:serverpod_cli/src/analyzer/entities/validation/restrictions.dart
 String _transformFileNameWithoutPathOrExtension(Uri path) {
   var fileName = path.pathSegments.last;
 
-  for (var ext in protocolFileExtensions) {
+  for (var ext in modelFileExtensions) {
     fileName = fileName.replaceAll(ext, '');
   }
   return fileName;
 }
 
-/// Used to analyze a singe yaml protocol file.
+/// Used to analyze a singe yaml model file.
 class SerializableModelAnalyzer {
-  static const Set<String> _protocolClassTypes = {
+  static const Set<String> _modelClassTypes = {
     Keyword.classType,
     Keyword.exceptionType,
     Keyword.enumType,
@@ -36,15 +36,15 @@ class SerializableModelAnalyzer {
 
   /// Best effort attempt to extract an entity definition from a yaml file.
   static SerializableModelDefinition? extractEntityDefinition(
-    ProtocolSource protocolSource,
+    ModelSource modelSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
-      protocolSource.yamlSourceUri,
+      modelSource.yamlSourceUri,
     );
     var yamlErrorCollector = ErrorCollector();
     YamlMap? documentContents = _loadYamlMap(
-      protocolSource.yaml,
-      protocolSource.yamlSourceUri,
+      modelSource.yaml,
+      modelSource.yamlSourceUri,
       yamlErrorCollector,
     );
 
@@ -52,7 +52,7 @@ class SerializableModelAnalyzer {
     if (documentContents == null) return null;
 
     var definitionType = _findDefinitionType(documentContents);
-    var docsExtractor = YamlDocumentationExtractor(protocolSource.yaml);
+    var docsExtractor = YamlDocumentationExtractor(modelSource.yaml);
 
     if (definitionType == null) return null;
 
@@ -60,7 +60,7 @@ class SerializableModelAnalyzer {
       case Keyword.classType:
         return EntityParser.serializeClassFile(
           Keyword.classType,
-          protocolSource,
+          modelSource,
           outFileName,
           documentContents,
           docsExtractor,
@@ -68,14 +68,14 @@ class SerializableModelAnalyzer {
       case Keyword.exceptionType:
         return EntityParser.serializeClassFile(
           Keyword.exceptionType,
-          protocolSource,
+          modelSource,
           outFileName,
           documentContents,
           docsExtractor,
         );
       case Keyword.enumType:
         return EntityParser.serializeEnumFile(
-          protocolSource,
+          modelSource,
           outFileName,
           documentContents,
           docsExtractor,
@@ -86,15 +86,15 @@ class SerializableModelAnalyzer {
   }
 
   /// Resolves dependencies between entities, this method mutates the input.
-  static void resolveEntityDependencies(
-    List<SerializableModelDefinition> entityDefinitions,
+  static void resolveModelDependencies(
+    List<SerializableModelDefinition> modelDefinitions,
   ) {
     return ModelDependencyResolver.resolveModelDependencies(
-      entityDefinitions,
+      modelDefinitions,
     );
   }
 
-  /// Validates a yaml file against an expected syntax for protocol files.
+  /// Validates a yaml file against an expected syntax for model files.
   static void validateYamlDefinition(
     String yaml,
     Uri sourceUri,
@@ -123,9 +123,9 @@ class SerializableModelAnalyzer {
       return;
     }
 
-    var topErrors = validateTopLevelEntityType(
+    var topErrors = validateTopLevelModelType(
       documentContents,
-      _protocolClassTypes,
+      _modelClassTypes,
     );
     collector.addErrors(topErrors);
 
@@ -138,7 +138,7 @@ class SerializableModelAnalyzer {
       documentDefinition: entity,
       // TODO: move instance creation of EntityRelations to StatefulAnalyzer
       // to resolve n-squared time complexity.
-      entityRelations: entities != null ? EntityRelations(entities) : null,
+      entityRelations: entities != null ? ModelRelations(entities) : null,
     );
 
     Set<ValidateNode> documentStructure;
@@ -159,7 +159,7 @@ class SerializableModelAnalyzer {
             'Validation for $definitionType is not implemented.');
     }
 
-    validateYamlProtocol(
+    validateYamlModel(
       definitionType,
       documentStructure,
       documentContents,

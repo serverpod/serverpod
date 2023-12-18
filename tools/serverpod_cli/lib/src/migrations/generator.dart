@@ -9,7 +9,7 @@ import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/migrations/migration_registry.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
@@ -62,7 +62,7 @@ class MigrationGenerator {
       migrationRegistry.getLatest(),
     );
 
-    var protocols = await ProtocolHelper.loadProjectYamlProtocolsFromDisk(
+    var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(
       config,
     );
     var entityDefinitions = StatefulAnalyzer(protocols, (uri, collector) {

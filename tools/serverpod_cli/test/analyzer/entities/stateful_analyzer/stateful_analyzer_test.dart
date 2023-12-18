@@ -1,5 +1,5 @@
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 import 'package:serverpod_cli/src/analyzer/entities/stateful_analyzer.dart';
 
@@ -20,7 +20,7 @@ void main() {
     var statefulAnalyzer = StatefulAnalyzer([]);
 
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
+    var yamlSource = ModelSource(
       '''
 class: Example
 fields:
@@ -29,8 +29,8 @@ fields:
       protocolUri,
       [],
     );
-    statefulAnalyzer.addYamlProtocol(yamlSource);
-    statefulAnalyzer.removeYamlProtocol(protocolUri);
+    statefulAnalyzer.addYamlModel(yamlSource);
+    statefulAnalyzer.removeYamlModel(protocolUri);
 
     var entities = statefulAnalyzer.validateAll();
 
@@ -43,7 +43,7 @@ fields:
     var statefulAnalyzer = StatefulAnalyzer([]);
 
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    statefulAnalyzer.removeYamlProtocol(protocolUri);
+    statefulAnalyzer.removeYamlModel(protocolUri);
 
     var entities = statefulAnalyzer.validateAll();
 
@@ -62,7 +62,7 @@ fields:
   name: String
 ''';
 
-    var entities = statefulAnalyzer.validateProtocol(yaml, protocolUri);
+    var entities = statefulAnalyzer.validateModel(yaml, protocolUri);
 
     expect(entities, []);
   });
@@ -70,7 +70,7 @@ fields:
       'Given a valid protocol class as the initial state, when validating all, then the class is serialized.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
+    var yamlSource = ModelSource(
       '''
 class: Example
 fields:
@@ -92,7 +92,7 @@ fields:
       'Given a valid protocol class and an error callback is registered, when validating all, then the callback is triggered.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
+    var yamlSource = ModelSource(
       '''
 class: Example
 fields:
@@ -115,7 +115,7 @@ fields:
       'Given a protocol with invalid syntax and an error callback is registered, when validating all, then the callback is triggered.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var yamlSource = ProtocolSource(
+    var yamlSource = ModelSource(
       '''''',
       protocolUri,
       [],
@@ -134,7 +134,7 @@ fields:
       'Given a protocol with multi line invalid yaml syntax when validating all then error is reported.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var invalidSource = ProtocolSource(
+    var invalidSource = ModelSource(
       '''
 this is not valid yaml
 and neither is this line
@@ -165,7 +165,7 @@ and neither is this line
       'Given a protocol that was invalid on first validation, when validating the same protocol with an updated valid syntax, then the previous errors are cleared.',
       () {
     var protocolUri = Uri(path: 'lib/src/protocol/example.yaml');
-    var invalidSource = ProtocolSource(
+    var invalidSource = ModelSource(
       '''
 class: 
 fields:
@@ -175,7 +175,7 @@ fields:
       [],
     );
 
-    var validSource = ProtocolSource(
+    var validSource = ModelSource(
       '''
 class: Example
 fields:
@@ -195,7 +195,7 @@ fields:
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
 
-    statefulAnalyzer.validateProtocol(validSource.yaml, protocolUri);
+    statefulAnalyzer.validateModel(validSource.yaml, protocolUri);
 
     expect(reportedErrors?.errors, hasLength(0),
         reason: 'Expected the error to be cleared.');
@@ -204,7 +204,7 @@ fields:
   test(
       'Given two yaml protocols with the same class name, when validating all, then an error is reported.',
       () {
-    var yamlSource1 = ProtocolSource(
+    var yamlSource1 = ModelSource(
       '''
 class: Example
 fields:
@@ -214,7 +214,7 @@ fields:
       [],
     );
 
-    var yamlSource2 = ProtocolSource(
+    var yamlSource2 = ModelSource(
       '''
 class: Example
 fields:
@@ -240,7 +240,7 @@ fields:
   test(
       'Given two yaml protocols with the same class name, when removing and revalidating, then the previous error is cleared.',
       () {
-    var yamlSource1 = ProtocolSource(
+    var yamlSource1 = ModelSource(
       '''
 class: Example
 fields:
@@ -250,7 +250,7 @@ fields:
       [],
     );
 
-    var yamlSource2 = ProtocolSource(
+    var yamlSource2 = ModelSource(
       '''
 class: Example
 fields:
@@ -271,7 +271,7 @@ fields:
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');
 
-    statefulAnalyzer.removeYamlProtocol(yamlSource2.yamlSourceUri);
+    statefulAnalyzer.removeYamlModel(yamlSource2.yamlSourceUri);
 
     statefulAnalyzer.validateAll();
 
@@ -282,7 +282,7 @@ fields:
   test(
       'Given an initial validation with one valid protocol, when adding a second protocol with the same class and revalidating, then an error is reported.',
       () {
-    var yamlSource1 = ProtocolSource(
+    var yamlSource1 = ModelSource(
       '''
 class: Example
 fields:
@@ -292,7 +292,7 @@ fields:
       [],
     );
 
-    var yamlSource2 = ProtocolSource(
+    var yamlSource2 = ModelSource(
       '''
 class: Example
 fields:
@@ -312,9 +312,9 @@ fields:
     expect(reportedErrors?.errors, hasLength(0),
         reason: 'Expected no errors to be reported.');
 
-    statefulAnalyzer.addYamlProtocol(yamlSource2);
+    statefulAnalyzer.addYamlModel(yamlSource2);
 
-    statefulAnalyzer.validateProtocol(
+    statefulAnalyzer.validateModel(
         yamlSource2.yaml, yamlSource2.yamlSourceUri);
 
     expect(reportedErrors?.errors, hasLength(1),

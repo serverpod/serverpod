@@ -28,7 +28,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -126,7 +126,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -186,7 +186,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -241,7 +241,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -288,7 +288,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -350,7 +350,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 
@@ -401,7 +401,7 @@ void main() {
     ];
 
     var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+      models: entities,
       config: config,
     );
 

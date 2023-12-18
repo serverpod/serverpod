@@ -2,33 +2,33 @@ import 'package:serverpod_cli/src/analyzer/entities/checker/analyze_checker.dart
 import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 
 /// A collection of all parsed entities, and their potential collisions.
-class EntityRelations {
-  final List<SerializableModelDefinition> entities;
+class ModelRelations {
+  final List<SerializableModelDefinition> models;
   late final Map<String, List<SerializableModelDefinition>> classNames;
   late final Map<String, List<SerializableModelDefinition>> tableNames;
   late final Map<String, List<SerializableModelDefinition>> indexNames;
 
-  EntityRelations(this.entities) {
-    classNames = _createClassNameMap(entities);
-    tableNames = _createTableNameMap(entities);
-    indexNames = _createIndexNameMap(entities);
+  ModelRelations(this.models) {
+    classNames = _createClassNameMap(models);
+    tableNames = _createTableNameMap(models);
+    indexNames = _createIndexNameMap(models);
   }
 
   bool classNameExists(name) => findAllByClassName(name).isNotEmpty;
 
   Map<String, List<SerializableModelDefinition>> _createTableNameMap(
-    List<SerializableModelDefinition> entities,
+    List<SerializableModelDefinition> models,
   ) {
     Map<String, List<SerializableModelDefinition>> tableNames = {};
-    for (var entity in entities) {
-      if (entity is ClassDefinition) {
-        var tableName = entity.tableName;
+    for (var model in models) {
+      if (model is ClassDefinition) {
+        var tableName = model.tableName;
         if (tableName == null) continue;
 
         tableNames.update(
           tableName,
-          (value) => value..add(entity),
-          ifAbsent: () => [entity],
+          (value) => value..add(model),
+          ifAbsent: () => [model],
         );
       }
     }
@@ -37,14 +37,14 @@ class EntityRelations {
   }
 
   Map<String, List<SerializableModelDefinition>> _createClassNameMap(
-    List<SerializableModelDefinition> entities,
+    List<SerializableModelDefinition> models,
   ) {
     Map<String, List<SerializableModelDefinition>> classNames = {};
-    for (var entity in entities) {
+    for (var model in models) {
       classNames.update(
-        entity.className,
-        (value) => value..add(entity),
-        ifAbsent: () => [entity],
+        model.className,
+        (value) => value..add(model),
+        ifAbsent: () => [model],
       );
     }
 
@@ -52,18 +52,18 @@ class EntityRelations {
   }
 
   Map<String, List<SerializableModelDefinition>> _createIndexNameMap(
-    List<SerializableModelDefinition> entities,
+    List<SerializableModelDefinition> models,
   ) {
     Map<String, List<SerializableModelDefinition>> indexNames = {};
-    for (var entity in entities) {
-      if (entity is ClassDefinition) {
-        var indexes = entity.indexes;
+    for (var model in models) {
+      if (model is ClassDefinition) {
+        var indexes = model.indexes;
 
         for (var index in indexes) {
           indexNames.update(
             index.name,
-            (value) => value..add(entity),
-            ifAbsent: () => [entity],
+            (value) => value..add(model),
+            ifAbsent: () => [model],
           );
         }
       }

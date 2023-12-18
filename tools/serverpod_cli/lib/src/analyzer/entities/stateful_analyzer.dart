@@ -1,6 +1,6 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 var onErrorsCollector = (CodeGenerationCollector collector) {
   return (Uri uri, CodeGenerationCollector collected) {
@@ -9,17 +9,17 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 };
 
 class StatefulAnalyzer {
-  final Map<String, _ProtocolState> _protocolStates = {};
-  List<SerializableModelDefinition> _entities = [];
+  final Map<String, _ModelState> _modelStates = {};
+  List<SerializableModelDefinition> _models = [];
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   StatefulAnalyzer(
-    List<ProtocolSource> sources, [
+    List<ModelSource> sources, [
     Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
     for (var yamlSource in sources) {
-      _protocolStates[yamlSource.yamlSourceUri.path] = _ProtocolState(
+      _modelStates[yamlSource.yamlSourceUri.path] = _ModelState(
         source: yamlSource,
       );
     }
@@ -29,109 +29,109 @@ class StatefulAnalyzer {
 
   /// Returns all valid entities in the state.
   List<SerializableModelDefinition> get _validEntities =>
-      _protocolStates.values
+      _modelStates.values
           .where((state) => state.errors.isEmpty)
           .map((state) => state.entity)
           .whereType<SerializableModelDefinition>()
           .toList();
 
-  /// Adds a new protocol to the state but leaves the responsibility of validating
+  /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to
   /// guarantee that all errors are found.
-  void addYamlProtocol(ProtocolSource yamlSource) {
-    var protocolState = _ProtocolState(
+  void addYamlModel(ModelSource yamlSource) {
+    var modelState = _ModelState(
       source: yamlSource,
     );
 
-    _protocolStates[yamlSource.yamlSourceUri.path] = protocolState;
+    _modelStates[yamlSource.yamlSourceUri.path] = modelState;
   }
 
-  /// Checks if a protocol is registered in the state.
-  bool isProtocolRegistered(Uri uri) {
-    return _protocolStates.containsKey(uri.path);
+  /// Checks if a model is registered in the state.
+  bool isModelRegistered(Uri uri) {
+    return _modelStates.containsKey(uri.path);
   }
 
-  /// Removes a protocol from the state but leaves the responsibility of validating
+  /// Removes a model from the state but leaves the responsibility of validating
   /// the new state to the caller. Please note that [validateAll] should be called to
   /// guarantee that all related errors are cleared.
-  void removeYamlProtocol(Uri protocolUri) {
-    _protocolStates.remove(protocolUri.path);
-    _entities.removeWhere(
-      (entity) => entity.sourceFileName == protocolUri.path,
+  void removeYamlModel(Uri modelUri) {
+    _modelStates.remove(modelUri.path);
+    _models.removeWhere(
+      (entity) => entity.sourceFileName == modelUri.path,
     );
   }
 
-  /// Runs the validation on all protocols in the state. If no protocols are
+  /// Runs the validation on all models in the state. If no models are
   /// registered, this returns an empty list.
   /// Errors are reported through the [onErrorsChangedNotifier].
   List<SerializableModelDefinition> validateAll() {
-    _updateAllEntities();
-    _validateAllProtocols();
+    _updateAllModels();
+    _validateAllModels();
     return _validEntities;
   }
 
-  /// Runs the validation on a single protocol. The protocol must exist in the
+  /// Runs the validation on a single model. The model must exist in the
   /// state, if not this returns the last validated state.
   /// Errors are reported through the [onErrorsChangedNotifier].
-  List<SerializableModelDefinition> validateProtocol(String yaml, Uri uri) {
-    var state = _protocolStates[uri.path];
-    if (state == null) return _entities;
+  List<SerializableModelDefinition> validateModel(String yaml, Uri uri) {
+    var state = _modelStates[uri.path];
+    if (state == null) return _models;
 
     state.source.yaml = yaml;
 
     var doc = SerializableModelAnalyzer.extractEntityDefinition(state.source);
     state.entity = doc;
     if (doc != null) {
-      _upsertEntity(doc, uri);
+      _upsertModel(doc, uri);
     }
 
     // This can be optimized to only validate the files we know have related errors.
-    _validateAllProtocols();
+    _validateAllModels();
     return _validEntities;
   }
 
-  void _updateAllEntities() {
-    for (var state in _protocolStates.values) {
+  void _updateAllModels() {
+    for (var state in _modelStates.values) {
       var entity = SerializableModelAnalyzer.extractEntityDefinition(
         state.source,
       );
       state.entity = entity;
     }
 
-    _entities = _protocolStates.values
+    _models = _modelStates.values
         .map((state) => state.entity)
         .whereType<SerializableModelDefinition>()
         .toList();
 
-    SerializableModelAnalyzer.resolveEntityDependencies(_entities);
+    SerializableModelAnalyzer.resolveModelDependencies(_models);
   }
 
-  void _upsertEntity(
+  void _upsertModel(
     SerializableModelDefinition entity,
     Uri uri,
   ) {
-    var index = _entities.indexWhere(
+    var index = _models.indexWhere(
       (element) => element.sourceFileName == uri.path,
     );
     if (index == -1) {
-      _entities.add(entity);
+      _models.add(entity);
     } else {
-      _entities[index] = entity;
+      _models[index] = entity;
     }
 
     // Can be optimized to only resolve the entity we know has changed.
-    SerializableModelAnalyzer.resolveEntityDependencies(_entities);
+    SerializableModelAnalyzer.resolveModelDependencies(_models);
   }
 
-  void _validateAllProtocols() {
-    for (var state in _protocolStates.values) {
+  void _validateAllModels() {
+    for (var state in _modelStates.values) {
       var collector = CodeGenerationCollector();
       SerializableModelAnalyzer.validateYamlDefinition(
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,
         state.entity,
-        _entities,
+        _models,
       );
 
       if (collector.hasSeverErrors) {
@@ -148,12 +148,12 @@ class StatefulAnalyzer {
   }
 }
 
-class _ProtocolState {
-  ProtocolSource source;
+class _ModelState {
+  ModelSource source;
   List<SourceSpanException> errors = [];
   SerializableModelDefinition? entity;
 
-  _ProtocolState({
+  _ModelState({
     required this.source,
   });
 }

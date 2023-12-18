@@ -28,7 +28,7 @@ void main() {
 
     expect(
       () => generator.generateSerializableEntitiesCode(
-        entities: entities,
+        models: entities,
         config: config,
       ),
       throwsA(const TypeMatcher<Exception>().having((e) => e.toString(),

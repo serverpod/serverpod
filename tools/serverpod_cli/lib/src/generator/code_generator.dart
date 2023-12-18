@@ -18,7 +18,7 @@ abstract class CodeGenerator {
   ///
   /// Called and generated before [generateProtocolCode].
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableModelDefinition> entities,
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   });
 

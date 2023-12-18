@@ -14,7 +14,7 @@ class BuildRepositoryClass {
     required this.config,
   });
 
-  Class buildEntityRepositoryClass(
+  Class buildModelRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -78,7 +78,7 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityAttachRepositoryClass(
+  Class buildModelAttachRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -99,7 +99,7 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityAttachRowRepositoryClass(
+  Class buildModelAttachRowRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -120,7 +120,7 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRepositoryClass(
+  Class buildModelDetachRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -141,7 +141,7 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRowRepositoryClass(
+  Class buildModelDetachRowRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,

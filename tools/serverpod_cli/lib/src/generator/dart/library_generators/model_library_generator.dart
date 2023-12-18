@@ -18,20 +18,20 @@ class SerializableModelLibraryGenerator {
     required this.config,
   });
 
-  /// Generate the file for a protocol entity.
-  Library generateEntityLibrary(
-      SerializableModelDefinition protocolEntityDefinition) {
-    if (protocolEntityDefinition is ClassDefinition) {
-      return _generateClassLibrary(protocolEntityDefinition);
+  /// Generate the file for a model.
+  Library generateModelLibrary(
+      SerializableModelDefinition modelDefinition) {
+    if (modelDefinition is ClassDefinition) {
+      return _generateClassLibrary(modelDefinition);
     }
-    if (protocolEntityDefinition is EnumDefinition) {
-      return _generateEnumLibrary(protocolEntityDefinition);
+    if (modelDefinition is EnumDefinition) {
+      return _generateEnumLibrary(modelDefinition);
     }
 
-    throw Exception('Unsupported protocol entity type.');
+    throw Exception('Unsupported model type.');
   }
 
-  /// Handle ordinary classes for [generateEntityLibrary].
+  /// Handle ordinary classes for [generateModelLibrary].
   Library _generateClassLibrary(ClassDefinition classDefinition) {
     String? tableName = classDefinition.tableName;
     var className = classDefinition.className;
@@ -45,7 +45,7 @@ class SerializableModelLibraryGenerator {
     return Library(
       (libraryBuilder) {
         libraryBuilder.body.addAll([
-          _buildEntityClass(
+          _buildModelClass(
             className,
             classDefinition,
             tableName,
@@ -55,19 +55,19 @@ class SerializableModelLibraryGenerator {
           // to support differentiating between null and undefined values.
           // https://stackoverflow.com/questions/68009392/dart-custom-copywith-method-with-nullable-properties
           if (_shouldCreateUndefinedClass(fields)) _buildUndefinedClass(),
-          _buildEntityImplClass(
+          _buildModelImplClass(
             className,
             classDefinition,
             tableName,
             fields,
           ),
           if (buildRepository.hasImplicitClassOperations(fields))
-            _buildEntityImplicitClass(className, classDefinition),
+            _buildModelImplicitClass(className, classDefinition),
         ]);
 
         if (serverCode && tableName != null) {
           libraryBuilder.body.addAll([
-            _buildEntityTableClass(
+            _buildModelTableClass(
               className,
               tableName,
               fields,
@@ -76,41 +76,41 @@ class SerializableModelLibraryGenerator {
             _buildDeprecatedStaticTableInstance(
               className,
             ),
-            _buildEntityIncludeClass(
+            _buildModelIncludeClass(
               className,
               fields,
               classDefinition,
             ),
-            _buildEntityIncludeListClass(
+            _buildModelIncludeListClass(
               className,
               fields,
               classDefinition,
             ),
-            buildRepository.buildEntityRepositoryClass(
+            buildRepository.buildModelRepositoryClass(
               className,
               fields,
               classDefinition,
             ),
             if (buildRepository.hasAttachOperations(fields))
-              buildRepository.buildEntityAttachRepositoryClass(
+              buildRepository.buildModelAttachRepositoryClass(
                 className,
                 fields,
                 classDefinition,
               ),
             if (buildRepository.hasAttachRowOperations(fields))
-              buildRepository.buildEntityAttachRowRepositoryClass(
+              buildRepository.buildModelAttachRowRepositoryClass(
                 className,
                 fields,
                 classDefinition,
               ),
             if (buildRepository.hasDetachOperations(fields))
-              buildRepository.buildEntityDetachRepositoryClass(
+              buildRepository.buildModelDetachRepositoryClass(
                 className,
                 fields,
                 classDefinition,
               ),
             if (buildRepository.hasDetachRowOperations(fields))
-              buildRepository.buildEntityDetachRowRepositoryClass(
+              buildRepository.buildModelDetachRowRepositoryClass(
                 className,
                 fields,
                 classDefinition,
@@ -121,7 +121,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Class _buildEntityClass(
+  Class _buildModelClass(
     String className,
     ClassDefinition classDefinition,
     String? tableName,
@@ -146,32 +146,32 @@ class SerializableModelLibraryGenerator {
             refer('TableRow', 'package:serverpod/serverpod.dart');
 
         classBuilder.fields.addAll([
-          _buildEntityClassTableField(className),
+          _buildModelClassTableField(className),
         ]);
 
-        classBuilder.fields.add(_buildEntityClassDBField(className));
+        classBuilder.fields.add(_buildModelClassDBField(className));
 
-        classBuilder.methods.add(_buildEntityClassTableGetter());
+        classBuilder.methods.add(_buildModelClassTableGetter());
       } else {
         classBuilder.extend =
             refer('SerializableModel', serverpodUrl(serverCode));
       }
 
-      classBuilder.fields.addAll(_buildEntityClassFields(
+      classBuilder.fields.addAll(_buildModelClassFields(
         fields,
         tableName,
         classDefinition.subDirParts,
       ));
 
       classBuilder.constructors.addAll([
-        _buildEntityClassConstructor(classDefinition, fields, tableName),
-        _buildEntityClassFactoryConstructor(
+        _buildModelClassConstructor(classDefinition, fields, tableName),
+        _buildModelClassFactoryConstructor(
           className,
           classDefinition,
           fields,
           tableName,
         ),
-        _buildEntityClassFromJsonConstructor(className, fields, classDefinition)
+        _buildModelClassFromJsonConstructor(className, fields, classDefinition)
       ]);
 
       classBuilder.methods.add(_buildAbstractCopyWithMethod(
@@ -181,37 +181,37 @@ class SerializableModelLibraryGenerator {
       ));
 
       // Serialization
-      classBuilder.methods.add(_buildEntityClassToJsonMethod(fields));
+      classBuilder.methods.add(_buildModelClassToJsonMethod(fields));
 
       // Serialization for database and everything
       if (serverCode) {
         if (tableName != null) {
           classBuilder.methods
-              .add(_buildEntityClassToJsonForDatabaseMethod(fields));
+              .add(_buildModelClassToJsonForDatabaseMethod(fields));
         }
 
-        classBuilder.methods.add(_buildEntityClassAllToJsonMethod(fields));
+        classBuilder.methods.add(_buildModelClassAllToJsonMethod(fields));
 
         if (tableName != null) {
           classBuilder.methods.addAll([
-            _buildEntityClassSetColumnMethod(fields),
-            _buildEntityClassFindMethod(className, relationFields),
-            _buildEntityClassFindSingleRowMethod(
+            _buildModelClassSetColumnMethod(fields),
+            _buildModelClassFindMethod(className, relationFields),
+            _buildModelClassFindSingleRowMethod(
               className,
               relationFields,
             ),
-            _buildEntityClassFindByIdMethod(className, relationFields),
-            _buildEntityClassDeleteMethod(className),
-            _buildEntityClassDeleteRowMethod(className),
-            _buildEntityClassUpdateMethod(className),
-            _buildEntityClassInsertMethod(className),
-            _buildEntityClassCountMethod(className),
-            _buildEntityClassIncludeMethod(
+            _buildModelClassFindByIdMethod(className, relationFields),
+            _buildModelClassDeleteMethod(className),
+            _buildModelClassDeleteRowMethod(className),
+            _buildModelClassUpdateMethod(className),
+            _buildModelClassInsertMethod(className),
+            _buildModelClassCountMethod(className),
+            _buildModelClassIncludeMethod(
               className,
               relationFields,
               classDefinition.subDirParts,
             ),
-            _buildEntityClassIncludeListMethod(
+            _buildModelClassIncludeListMethod(
               className,
             ),
           ]);
@@ -231,7 +231,7 @@ class SerializableModelLibraryGenerator {
     return Class((classBuilder) => classBuilder.name = '_Undefined');
   }
 
-  Class _buildEntityImplClass(
+  Class _buildModelImplClass(
     String className,
     ClassDefinition classDefinition,
     String? tableName,
@@ -242,13 +242,13 @@ class SerializableModelLibraryGenerator {
         ..name = '_${className}Impl'
         ..extend = refer(className)
         ..constructors.add(
-          _buildEntityImplClassConstructor(classDefinition, fields, tableName),
+          _buildModelImplClassConstructor(classDefinition, fields, tableName),
         )
         ..methods.add(_buildCopyWithMethod(classDefinition, fields));
     });
   }
 
-  Class _buildEntityImplicitClass(
+  Class _buildModelImplicitClass(
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -282,7 +282,7 @@ class SerializableModelLibraryGenerator {
           constructorBuilder
             ..name = '_'
             ..optionalParameters.addAll(
-              _buildEntityClassConstructorParameters(
+              _buildModelClassConstructorParameters(
                 classDefinition,
                 classDefinition.fields,
                 classDefinition.tableName,
@@ -483,7 +483,7 @@ class SerializableModelLibraryGenerator {
     }
   }
 
-  Method _buildEntityClassTableGetter() {
+  Method _buildModelClassTableGetter() {
     return Method(
       (m) => m
         ..name = 'table'
@@ -495,7 +495,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Field _buildEntityClassTableField(String className) {
+  Field _buildModelClassTableField(String className) {
     return Field((f) => f
       ..static = true
       ..modifier = FieldModifier.final$
@@ -503,7 +503,7 @@ class SerializableModelLibraryGenerator {
       ..assignment = refer('${className}Table').call([]).code);
   }
 
-  Field _buildEntityClassDBField(String className) {
+  Field _buildModelClassDBField(String className) {
     return Field((f) => f
       ..static = true
       ..modifier = FieldModifier.constant
@@ -512,7 +512,7 @@ class SerializableModelLibraryGenerator {
           refer('${className}Repository').property('_').call([]).code);
   }
 
-  Method _buildEntityClassIncludeMethod(
+  Method _buildModelClassIncludeMethod(
       String className,
       Iterable<SerializableModelFieldDefinition> relationFields,
       List<String> subDirParts) {
@@ -559,7 +559,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityClassIncludeListMethod(String className) {
+  Method _buildModelClassIncludeListMethod(String className) {
     return Method(
       (m) => m
         ..static = true
@@ -631,7 +631,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityClassCountMethod(String className) {
+  Method _buildModelClassCountMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
         refer("Deprecated('Will be removed in 2.0.0. Use: db.count instead.')")
@@ -693,7 +693,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassInsertMethod(String className) {
+  Method _buildModelClassInsertMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
         refer(
@@ -736,7 +736,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassUpdateMethod(String className) {
+  Method _buildModelClassUpdateMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
         refer("Deprecated('Will be removed in 2.0.0. Use: db.update instead.')")
@@ -778,7 +778,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassDeleteRowMethod(String className) {
+  Method _buildModelClassDeleteRowMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
         refer(
@@ -821,7 +821,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassDeleteMethod(String className) {
+  Method _buildModelClassDeleteMethod(String className) {
     return Method((m) => m
       ..annotations.addAll([
         refer(
@@ -871,7 +871,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassFindByIdMethod(String className,
+  Method _buildModelClassFindByIdMethod(String className,
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..annotations.addAll([
@@ -921,7 +921,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassFindSingleRowMethod(String className,
+  Method _buildModelClassFindSingleRowMethod(String className,
       Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..annotations.addAll([
@@ -1011,7 +1011,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassFindMethod(
+  Method _buildModelClassFindMethod(
     String className,
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
   ) {
@@ -1121,7 +1121,7 @@ class SerializableModelLibraryGenerator {
           .statement);
   }
 
-  Method _buildEntityClassSetColumnMethod(
+  Method _buildModelClassSetColumnMethod(
       List<SerializableModelFieldDefinition> fields) {
     var serializableFields =
         fields.where((f) => f.shouldSerializeFieldForDatabase(serverCode));
@@ -1152,7 +1152,7 @@ class SerializableModelLibraryGenerator {
       ]));
   }
 
-  Method _buildEntityClassAllToJsonMethod(
+  Method _buildModelClassAllToJsonMethod(
       List<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) {
@@ -1171,7 +1171,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityClassToJsonForDatabaseMethod(
+  Method _buildModelClassToJsonForDatabaseMethod(
       List<SerializableModelFieldDefinition> fields) {
     var serializableFields =
         fields.where((f) => f.shouldSerializeFieldForDatabase(serverCode));
@@ -1196,7 +1196,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityClassToJsonMethod(
+  Method _buildModelClassToJsonMethod(
       List<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) {
@@ -1215,7 +1215,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Constructor _buildEntityClassFromJsonConstructor(
+  Constructor _buildModelClassFromJsonConstructor(
       String className,
       List<SerializableModelFieldDefinition> fields,
       ClassDefinition classDefinition) {
@@ -1249,14 +1249,14 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Constructor _buildEntityClassConstructor(
+  Constructor _buildModelClassConstructor(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
   ) {
     return Constructor((c) {
       c.name = '_';
-      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
         classDefinition,
         fields,
         tableName,
@@ -1269,7 +1269,7 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Constructor _buildEntityClassFactoryConstructor(
+  Constructor _buildModelClassFactoryConstructor(
     String className,
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
@@ -1277,7 +1277,7 @@ class SerializableModelLibraryGenerator {
   ) {
     return Constructor((c) {
       c.factory = true;
-      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
         classDefinition,
         fields,
         tableName,
@@ -1288,13 +1288,13 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Constructor _buildEntityImplClassConstructor(
+  Constructor _buildModelImplClassConstructor(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName,
   ) {
     return Constructor((c) {
-      c.optionalParameters.addAll(_buildEntityClassConstructorParameters(
+      c.optionalParameters.addAll(_buildModelClassConstructorParameters(
         classDefinition,
         fields,
         tableName,
@@ -1314,7 +1314,7 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  List<Parameter> _buildEntityClassConstructorParameters(
+  List<Parameter> _buildModelClassConstructorParameters(
     ClassDefinition classDefinition,
     List<SerializableModelFieldDefinition> fields,
     String? tableName, {
@@ -1368,11 +1368,11 @@ class SerializableModelLibraryGenerator {
     }).toList();
   }
 
-  List<Field> _buildEntityClassFields(
+  List<Field> _buildModelClassFields(
       List<SerializableModelFieldDefinition> fields,
       String? tableName,
       List<String> subDirParts) {
-    List<Field> entityClassFields = [];
+    List<Field> modelClassFields = [];
     var classFields = fields
         .where((f) =>
             f.shouldIncludeField(serverCode) ||
@@ -1380,7 +1380,7 @@ class SerializableModelLibraryGenerator {
         .where((f) => !(f.name == 'id' && serverCode && tableName != null));
 
     for (var field in classFields) {
-      entityClassFields.add(Field((f) {
+      modelClassFields.add(Field((f) {
         f.type = field.type
             .reference(serverCode, subDirParts: subDirParts, config: config);
         f
@@ -1390,10 +1390,10 @@ class SerializableModelLibraryGenerator {
       }));
     }
 
-    return entityClassFields;
+    return modelClassFields;
   }
 
-  Class _buildEntityTableClass(
+  Class _buildModelTableClass(
       String className,
       String tableName,
       List<SerializableModelFieldDefinition> fields,
@@ -1402,33 +1402,33 @@ class SerializableModelLibraryGenerator {
       c.name = '${className}Table';
       c.extend = refer('Table', serverpodUrl(serverCode));
 
-      c.constructors.add(_buildEntityTableClassConstructor(
+      c.constructors.add(_buildModelTableClassConstructor(
           tableName, fields, classDefinition));
 
       c.fields.addAll(
-        _buildEntityTableClassFields(fields, classDefinition.subDirParts),
+        _buildModelTableClassFields(fields, classDefinition.subDirParts),
       );
 
       c.methods.addAll([
-        ..._buildEntityTableClassRelationGetters(
+        ..._buildModelTableClassRelationGetters(
           fields,
           classDefinition,
           classDefinition.subDirParts,
         ),
-        ..._buildEntityTableClassManyRelationGetters(fields, classDefinition),
-        _buildEntityTableClassColumnGetter(fields),
+        ..._buildModelTableClassManyRelationGetters(fields, classDefinition),
+        _buildModelTableClassColumnGetter(fields),
       ]);
 
       var relationFields = fields.where((f) =>
           f.relation is ObjectRelationDefinition ||
           f.relation is ListRelationDefinition);
       if (relationFields.isNotEmpty) {
-        c.methods.add(_buildEntityTableClassGetRelationTable(relationFields));
+        c.methods.add(_buildModelTableClassGetRelationTable(relationFields));
       }
     });
   }
 
-  Method _buildEntityTableClassGetRelationTable(
+  Method _buildModelTableClassGetRelationTable(
       Iterable<SerializableModelFieldDefinition> relationFields) {
     return Method(
       (m) => m
@@ -1466,7 +1466,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityTableClassColumnGetter(
+  Method _buildModelTableClassColumnGetter(
       List<SerializableModelFieldDefinition> fields) {
     return Method(
       (m) => m
@@ -1485,7 +1485,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  List<Field> _buildEntityTableClassFields(
+  List<Field> _buildModelTableClassFields(
     List<SerializableModelFieldDefinition> fields,
     List<String> subDirParts,
   ) {
@@ -1557,7 +1557,7 @@ class SerializableModelLibraryGenerator {
     return tableFields;
   }
 
-  List<Method> _buildEntityTableClassRelationGetters(
+  List<Method> _buildModelTableClassRelationGetters(
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
     List<String> subDirParts,
@@ -1654,7 +1654,7 @@ class SerializableModelLibraryGenerator {
     return getters;
   }
 
-  List<Method> _buildEntityTableClassManyRelationGetters(
+  List<Method> _buildModelTableClassManyRelationGetters(
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
@@ -1768,7 +1768,7 @@ class SerializableModelLibraryGenerator {
     return getters;
   }
 
-  Constructor _buildEntityTableClassConstructor(
+  Constructor _buildModelTableClassConstructor(
       String tableName,
       List<SerializableModelFieldDefinition> fields,
       ClassDefinition classDefinition) {
@@ -1790,14 +1790,14 @@ class SerializableModelLibraryGenerator {
           if (!(field.name == 'id' && serverCode))
             refer(createFieldName(serverCode, field))
                 .assign(field.type.isEnumType
-                    ? _buildEntityTableEnumFieldTypeReference(field)
-                    : _buildEntityTableGeneralFieldExpression(field))
+                    ? _buildModelTableEnumFieldTypeReference(field)
+                    : _buildModelTableGeneralFieldExpression(field))
                 .statement,
       ]);
     });
   }
 
-  Expression _buildEntityTableGeneralFieldExpression(
+  Expression _buildModelTableGeneralFieldExpression(
     SerializableModelFieldDefinition field,
   ) {
     assert(!field.type.isEnumType);
@@ -1810,7 +1810,7 @@ class SerializableModelLibraryGenerator {
     ]);
   }
 
-  Expression _buildEntityTableEnumFieldTypeReference(
+  Expression _buildModelTableEnumFieldTypeReference(
     SerializableModelFieldDefinition field,
   ) {
     assert(field.type.isEnumType);
@@ -1846,7 +1846,7 @@ class SerializableModelLibraryGenerator {
       ..assignment = refer('${className}Table').call([]).code);
   }
 
-  Class _buildEntityIncludeClass(
+  Class _buildModelIncludeClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -1860,24 +1860,24 @@ class SerializableModelLibraryGenerator {
               f.relation is ListRelationDefinition)
           .toList();
 
-      c.constructors.add(_buildEntityIncludeClassConstructor(
+      c.constructors.add(_buildModelIncludeClassConstructor(
         relationFields,
         classDefinition,
       ));
 
-      c.fields.addAll(_buildEntityIncludeClassFields(
+      c.fields.addAll(_buildModelIncludeClassFields(
         relationFields,
         classDefinition,
       ));
 
       c.methods.addAll([
-        _buildEntityIncludeClassIncludesGetter(relationFields),
-        _buildEntityIncludeClassTableGetter(className),
+        _buildModelIncludeClassIncludesGetter(relationFields),
+        _buildModelIncludeClassTableGetter(className),
       ]);
     }));
   }
 
-  Class _buildEntityIncludeListClass(
+  Class _buildModelIncludeListClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
@@ -1886,16 +1886,16 @@ class SerializableModelLibraryGenerator {
       c.extend = refer('IncludeList', 'package:serverpod/serverpod.dart');
       c.name = '${className}IncludeList';
 
-      c.constructors.add(_buildEntityIncludeListClassConstructor(className));
+      c.constructors.add(_buildModelIncludeListClassConstructor(className));
 
       c.methods.addAll([
-        _buildEntityIncludeListClassIncludesGetter(),
-        _buildEntityIncludeClassTableGetter(className),
+        _buildModelIncludeListClassIncludesGetter(),
+        _buildModelIncludeClassTableGetter(className),
       ]);
     }));
   }
 
-  Constructor _buildEntityIncludeListClassConstructor(
+  Constructor _buildModelIncludeListClassConstructor(
     String className,
   ) {
     return Constructor((constructorBuilder) {
@@ -1960,7 +1960,7 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  Method _buildEntityIncludeListClassIncludesGetter() {
+  Method _buildModelIncludeListClassIncludesGetter() {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1980,7 +1980,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityIncludeClassTableGetter(String className) {
+  Method _buildModelIncludeClassTableGetter(String className) {
     return Method(
       (m) => m
         ..annotations.add(refer('override'))
@@ -1994,7 +1994,7 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  Method _buildEntityIncludeClassIncludesGetter(
+  Method _buildModelIncludeClassIncludesGetter(
       List<SerializableModelFieldDefinition> objectRelationFields) {
     return Method(
       (m) => m
@@ -2015,13 +2015,13 @@ class SerializableModelLibraryGenerator {
     );
   }
 
-  List<Field> _buildEntityIncludeClassFields(
+  List<Field> _buildModelIncludeClassFields(
       List<SerializableModelFieldDefinition> objectRelationFields,
       ClassDefinition classDefinition) {
-    List<Field> entityIncludeClassFields = [];
+    List<Field> modelIncludeClassFields = [];
     for (var field in objectRelationFields) {
       if (field.relation is ObjectRelationDefinition) {
-        entityIncludeClassFields.add(Field((f) => f
+        modelIncludeClassFields.add(Field((f) => f
           ..name = '_${field.name}'
           ..type = field.type.reference(
             serverCode,
@@ -2031,7 +2031,7 @@ class SerializableModelLibraryGenerator {
             typeSuffix: 'Include',
           )));
       } else if (field.relation is ListRelationDefinition) {
-        entityIncludeClassFields.add(Field((f) => f
+        modelIncludeClassFields.add(Field((f) => f
           ..name = '_${field.name}'
           ..type = field.type.generics.first.reference(
             serverCode,
@@ -2042,10 +2042,10 @@ class SerializableModelLibraryGenerator {
           )));
       }
     }
-    return entityIncludeClassFields;
+    return modelIncludeClassFields;
   }
 
-  Constructor _buildEntityIncludeClassConstructor(
+  Constructor _buildModelIncludeClassConstructor(
     List<SerializableModelFieldDefinition> relationFields,
     ClassDefinition classDefinition,
   ) {
@@ -2092,7 +2092,7 @@ class SerializableModelLibraryGenerator {
     });
   }
 
-  /// Handle enums for [generateEntityLibrary]
+  /// Handle enums for [generateModelLibrary]
   Library _generateEnumLibrary(EnumDefinition enumDefinition) {
     var library = Library((library) {
       library.body.add(
@@ -2189,11 +2189,11 @@ class SerializableModelLibraryGenerator {
     ];
   }
 
-  /// Generate a temporary protocol library, that just exports the entities.
+  /// Generate a temporary protocol library, that just exports the models.
   /// This is needed, since analyzing the endpoints requires a valid
   /// protocol.dart file.
   Library generateTemporaryProtocol({
-    required List<SerializableModelDefinition> entities,
+    required List<SerializableModelDefinition> models,
   }) {
     var library = LibraryBuilder();
 
@@ -2201,7 +2201,7 @@ class SerializableModelLibraryGenerator {
 
     // exports
     library.directives.addAll([
-      for (var classInfo in entities) Directive.export(classInfo.fileRef()),
+      for (var classInfo in models) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 

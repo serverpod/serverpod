@@ -11,7 +11,7 @@ class DartClientCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableModelDefinition> entities,
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {
     var clientSideGenerator = SerializableModelLibraryGenerator(
@@ -20,14 +20,14 @@ class DartClientCodeGenerator extends CodeGenerator {
     );
 
     return {
-      for (var protocolFile in entities)
-        if (!protocolFile.serverOnly)
+      for (var model in models)
+        if (!model.serverOnly)
           p.joinAll([
-            ...config.generatedDartClientProtocolPathParts,
-            ...protocolFile.subDirParts,
-            '${protocolFile.fileName}.dart',
+            ...config.generatedDartClientModelPathParts,
+            ...model.subDirParts,
+            '${model.fileName}.dart',
           ]): clientSideGenerator
-              .generateEntityLibrary(protocolFile)
+              .generateModelLibrary(model)
               .generateCode(),
     };
   }
@@ -44,11 +44,11 @@ class DartClientCodeGenerator extends CodeGenerator {
     );
     return {
       p.joinAll([
-        ...config.generatedDartClientProtocolPathParts,
+        ...config.generatedDartClientModelPathParts,
         'protocol.dart'
       ]): clientClassGenerator.generateProtocol().generateCode(),
       p.joinAll(
-              [...config.generatedDartClientProtocolPathParts, 'client.dart']):
+              [...config.generatedDartClientModelPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
   }

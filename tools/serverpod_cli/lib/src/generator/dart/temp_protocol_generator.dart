@@ -1,7 +1,7 @@
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:serverpod_cli/src/generator/dart/library_generators/entities_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 
 /// A [CodeGenerator] that generates a temporary protocol.dart file required
 /// for analyzing the endpoints.
@@ -10,7 +10,7 @@ class DartTemporaryProtocolGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableModelDefinition> entities,
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {
     var serverSideGenerator = SerializableModelLibraryGenerator(
@@ -18,9 +18,9 @@ class DartTemporaryProtocolGenerator extends CodeGenerator {
       config: config,
     );
     return {
-      p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
+      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
           serverSideGenerator
-              .generateTemporaryProtocol(entities: entities)
+              .generateTemporaryProtocol(models: models)
               .generateCode()
     };
   }

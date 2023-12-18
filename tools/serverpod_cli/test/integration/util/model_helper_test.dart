@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/util/protocol_helper.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
 
 GeneratorConfig createGeneratorConfig([
@@ -52,7 +52,7 @@ void main() {
 
       var config = createGeneratorConfig(split(serverRootDir.path));
 
-      var pathParts = ProtocolHelper.extractPathFromProtocolRoot(
+      var pathParts = ModelHelper.extractPathFromModelRoot(
         config,
         protocolFile.uri,
       );
@@ -80,7 +80,7 @@ void main() {
 
       var config = createGeneratorConfig(split(serverRootDir.path));
 
-      var pathParts = ProtocolHelper.extractPathFromProtocolRoot(
+      var pathParts = ModelHelper.extractPathFromModelRoot(
         config,
         protocolFile.uri,
       );
@@ -105,7 +105,7 @@ void main() {
           'Given a serverpod project with protocol files, then the converted protocol path has the file uri set.',
           () async {
         var protocols =
-            await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
+            await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
         expect(protocols.first.yamlSourceUri.path,
             'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml');
@@ -115,7 +115,7 @@ void main() {
           'Given a serverpod project with protocol files, then the converted protocol yaml string has been set.',
           () async {
         var protocols =
-            await ProtocolHelper.loadProjectYamlProtocolsFromDisk(config);
+            await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
         expect(protocols.first.yaml.replaceAll('\r', ''), '''
 class: Test
