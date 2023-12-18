@@ -23,8 +23,15 @@ class ModelHelper {
   static Future<List<ModelSource>> loadProjectYamlModelsFromDisk(
     GeneratorConfig config,
   ) async {
-    var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
-    var sourceFileList = await sourceDir.list(recursive: true).toList();
+    var protocolSourceDir = Directory(joinAll(config.protocolSourcePathParts));
+    var protocolSourceFileList =
+        await protocolSourceDir.list(recursive: true).toList();
+
+    var modelSourceDir = Directory(joinAll(config.modelSourcePathParts));
+    var modelSourceFileList =
+        await modelSourceDir.list(recursive: true).toList();
+
+    var sourceFileList = [...protocolSourceFileList, ...modelSourceFileList];
 
     // TODO This sort is needed to make sure all generated methods
     // are in the same order. Move this logic to the code generator instead.

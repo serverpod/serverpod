@@ -34,9 +34,9 @@ void main() {
     ));
 
     test(
-        'Given a protocol path directly inside the protocol folder, then the parts list is empty.',
+        'Given a model path directly inside the model folder, then the parts list is empty.',
         () {
-      var protocolFile = File(join(
+      var modelFile = File(join(
         'test',
         'integration'
             'util',
@@ -54,16 +54,16 @@ void main() {
 
       var pathParts = ModelHelper.extractPathFromModelRoot(
         config,
-        protocolFile.uri,
+        modelFile.uri,
       );
 
       expect(pathParts, []);
     });
 
     test(
-        'Given a protocol with a nested path inside the protocol folder, then the parts list contains the nested path.',
+        'Given a model with a nested path inside the model folder, then the parts list contains the nested path.',
         () {
-      var protocolFile = File(join(
+      var modelFile = File(join(
         'test',
         'util',
         'test_assets',
@@ -82,13 +82,13 @@ void main() {
 
       var pathParts = ModelHelper.extractPathFromModelRoot(
         config,
-        protocolFile.uri,
+        modelFile.uri,
       );
 
       expect(pathParts, ['nested', 'folder']);
     });
 
-    group('Test yaml protocol loader.', () {
+    group('Test yaml model loader.', () {
       var serverRootDir = Directory(join(
         'test',
         'integration',
@@ -102,23 +102,38 @@ void main() {
       var config = createGeneratorConfig(split(serverRootDir.path));
 
       test(
-          'Given a serverpod project with protocol files, then the converted protocol path has the file uri set.',
+          'Given a serverpod project with model files, then the converted model path has the file uri set.',
           () async {
-        var protocols =
-            await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-        expect(protocols.first.yamlSourceUri.path,
-            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml');
+        var paths = models.map((e) => e.yamlSourceUri.path).toList();
+
+        expect(
+          paths,
+          contains(
+              'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
+        );
+
+        expect(
+          paths,
+          contains(
+              'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
+        );
       });
 
       test(
-          'Given a serverpod project with protocol files, then the converted protocol yaml string has been set.',
+          'Given a serverpod project with model files, then the converted model yaml string has been set.',
           () async {
-        var protocols =
-            await ModelHelper.loadProjectYamlModelsFromDisk(config);
+        var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-        expect(protocols.first.yaml.replaceAll('\r', ''), '''
+        expect(models.last.yaml.replaceAll('\r', ''), '''
 class: Test
+fields:
+  name: String
+''');
+
+        expect(models.first.yaml.replaceAll('\r', ''), '''
+class: Example
 fields:
   name: String
 ''');
