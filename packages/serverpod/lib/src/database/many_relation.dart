@@ -18,19 +18,19 @@ class ManyRelation<T extends Table> {
     return ColumnCount(where?.call(_table), _tableWithRelations.id);
   }
 
-  /// Returns all entities where none of the related entities match filtering criteria.
+  /// Returns all models where none of the related models match filtering criteria.
   NoneExpression none([Expression Function(T)? where]) {
     return NoneExpression(
         ColumnCount(where?.call(_table), _tableWithRelations.id));
   }
 
-  /// Returns all entities where any of the related entities match filtering criteria.
+  /// Returns all models where any of the related models match filtering criteria.
   AnyExpression any([Expression Function(T)? where]) {
     return AnyExpression(
         ColumnCount(where?.call(_table), _tableWithRelations.id));
   }
 
-  /// Returns all entities where all of the related entities match filtering criteria.
+  /// Returns all models where all of the related models match filtering criteria.
   EveryExpression every(Expression Function(T) where) {
     return EveryExpression(
         ColumnCount(where.call(_table), _tableWithRelations.id));

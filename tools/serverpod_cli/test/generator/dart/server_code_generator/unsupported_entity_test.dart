@@ -7,8 +7,8 @@ const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartServerCodeGenerator();
 
-class UnsupportedEntity extends SerializableEntityDefinition {
-  UnsupportedEntity(
+class UnsupportedModel extends SerializableModelDefinition {
+  UnsupportedModel(
       {required super.fileName,
       required super.sourceFileName,
       required super.className,
@@ -16,10 +16,10 @@ class UnsupportedEntity extends SerializableEntityDefinition {
 }
 
 void main() {
-  test('Given unsupported entity when generating code then exception is thrown',
+  test('Given unsupported model when generating code then exception is thrown',
       () {
-    var entities = [
-      UnsupportedEntity(
+    var models = [
+      UnsupportedModel(
           fileName: 'example',
           sourceFileName: 'example',
           className: 'Example',
@@ -27,12 +27,12 @@ void main() {
     ];
 
     expect(
-      () => generator.generateSerializableEntitiesCode(
-        entities: entities,
+      () => generator.generateSerializableModelsCode(
+        models: models,
         config: config,
       ),
       throwsA(const TypeMatcher<Exception>().having((e) => e.toString(),
-          'message', equals('Exception: Unsupported protocol entity type.'))),
+          'message', equals('Exception: Unsupported model type.'))),
     );
   });
 }

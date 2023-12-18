@@ -34,7 +34,7 @@ void main() async {
   });
 
   test(
-      'Given an entity with a list relation with nothing attached when fetching entity including list relation then returned entity has empty list as list relation.',
+      'Given an model with a list relation with nothing attached when fetching model including list relation then returned model has empty list as list relation.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
@@ -49,7 +49,7 @@ void main() async {
   });
 
   test(
-      'Given an entity with a implicit list relation with data attached when fetching entity including list relation then returned entity has the attached data in the list relation.',
+      'Given an model with a implicit list relation with data attached when fetching model including list relation then returned model has the attached data in the list relation.',
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
     var gothenburg = await City.db.insertRow(session, City(name: 'Gothenburg'));
@@ -76,7 +76,7 @@ void main() async {
   });
 
   test(
-      'Given an entity with a explicit list relation with data attached when fetching entity including list relation then returned entity has the attached data in the list relation.',
+      'Given an model with a explicit list relation with data attached when fetching model including list relation then returned model has the attached data in the list relation.',
       () async {
     var serverpod = await Organization.db.insertRow(
       session,
@@ -109,7 +109,7 @@ void main() async {
   });
 
   test(
-      'Given an entity with a list relation with data attached when fetching filtered entities including list relation then returned entity has the attached data in the list relation.',
+      'Given an model with a list relation with data attached when fetching filtered models including list relation then returned model has the attached data in the list relation.',
       () async {
     var serverpod = await Organization.db.insertRow(
       session,
@@ -143,7 +143,7 @@ void main() async {
   });
 
   test(
-      'Given a list relation when querying for all entities including the list relation then the list relation is populated in the returned entities.',
+      'Given a list relation when querying for all models including the list relation then the list relation is populated in the returned models.',
       () async {
     var serverpod = await Organization.db.insertRow(
       session,

@@ -28,17 +28,17 @@ class Copier {
   }
 
   void _copyDirectory(Directory dir, String relativePath) {
-    for (var entity in dir.listSync()) {
-      var entityName = p.basename(entity.path);
-      if (ignoreFileNames.contains(entityName)) continue;
-      if (entityName.startsWith('.')) continue;
+    for (var model in dir.listSync()) {
+      var modelName = p.basename(model.path);
+      if (ignoreFileNames.contains(modelName)) continue;
+      if (modelName.startsWith('.')) continue;
 
-      if (entity is File) {
-        _copyFile(entity, relativePath);
+      if (model is File) {
+        _copyFile(model, relativePath);
       }
-      if (entity is Directory) {
-        var dirName = p.basename(entity.path);
-        _copyDirectory(entity, p.join(relativePath, dirName));
+      if (model is Directory) {
+        var dirName = p.basename(model.path);
+        _copyDirectory(model, p.join(relativePath, dirName));
       }
     }
   }

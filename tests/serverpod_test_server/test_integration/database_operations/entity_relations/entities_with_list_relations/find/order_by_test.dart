@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with multiple one to many relations', () {
+  group('Given models with multiple one to many relations', () {
     tearDown(() async {
       await Person.db
           .deleteWhere(session, where: (_) => db.Constant.bool(true));
@@ -15,7 +15,7 @@ void main() async {
       await City.db.deleteWhere(session, where: (_) => db.Constant.bool(true));
     });
     test(
-        'when fetching entities ordered on multiple separate one to many relations then result order is as expected.',
+        'when fetching models ordered on multiple separate one to many relations then result order is as expected.',
         () async {
       var cities = await City.db.insert(session, [
         City(name: 'Stockholm'),

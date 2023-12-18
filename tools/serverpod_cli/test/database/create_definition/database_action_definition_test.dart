@@ -11,13 +11,13 @@ void main() {
       'Given a class definition with a table, then generate a table with that name.',
       () {
     var field = FieldDefinitionBuilder().withPrimaryKey().build();
-    var entity = ClassDefinitionBuilder()
+    var model = ClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(
-      [entity],
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      [model],
       'example',
       [],
     );
@@ -41,13 +41,13 @@ void main() {
         .withRelation(relation)
         .build();
 
-    var entity = ClassDefinitionBuilder()
+    var model = ClassDefinitionBuilder()
         .withTableName('example')
         .withField(field)
         .build();
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(
-      [entity],
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      [model],
       'example',
       [],
     );

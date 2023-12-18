@@ -298,8 +298,8 @@ class Server {
       request.response.headers.contentType = ContentType.json;
       request.response.statusCode = HttpStatus.internalServerError;
 
-      var serializedEntity = serializationManager.encodeWithType(result.entity);
-      request.response.write(serializedEntity);
+      var serializedModel = serializationManager.encodeWithType(result.model);
+      request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {
       // Set content type.
@@ -315,8 +315,8 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedEntity = SerializationManager.encode(result.returnValue);
-        request.response.write(serializedEntity);
+        var serializedModel = SerializationManager.encode(result.returnValue);
+        request.response.write(serializedModel);
       }
       await request.response.close();
       return;

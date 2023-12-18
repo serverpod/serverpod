@@ -12,7 +12,7 @@ void main() {
     authenticationKeyManager: ServiceKeyManager('0', 'password'),
   );
 
-  group('Given new protocol entity with table', () {
+  group('Given new protocol model with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -64,7 +64,7 @@ fields:
     });
   });
 
-  group('Given multiple new protocol entities with table', () {
+  group('Given multiple new protocol models with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql:
@@ -133,7 +133,7 @@ fields:
     });
   });
 
-  group('Given protocol entity with table that is removed', () {
+  group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -169,7 +169,7 @@ fields:
     });
   });
 
-  group('Given protocol entity with table that is removed', () {
+  group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -225,7 +225,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with added nullable column', () {
+  group('Given existing protocol model with added nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -298,7 +298,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with removed column', () {
+  group('Given existing protocol model with removed column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -373,7 +373,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with removed column', () {
+  group('Given existing protocol model with removed column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -418,7 +418,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with added non nullable column', () {
+  group('Given existing protocol model with added non nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -463,7 +463,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with non nullable column', () {
+  group('Given existing protocol model with non nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -538,7 +538,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with nullability added to column', () {
+  group('Given existing protocol model with nullability added to column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -621,7 +621,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with nullability removed from column',
+  group('Given existing protocol model with nullability removed from column',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -706,7 +706,7 @@ fields:
     });
   });
 
-  group('Given existing protocol entity with nullability removed from column',
+  group('Given existing protocol model with nullability removed from column',
       () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
@@ -753,7 +753,7 @@ fields:
     });
   });
 
-  group('Given protocol entity with added index', () {
+  group('Given protocol model with added index', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -830,7 +830,7 @@ indexes:
     });
   });
 
-  group('Given protocol entity with index that is removed', () {
+  group('Given protocol model with index that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -908,7 +908,7 @@ fields:
     });
   });
 
-  group('Given protocol entity with added relation', () {
+  group('Given protocol model with added relation', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',
@@ -980,7 +980,7 @@ fields:
     });
   });
 
-  group('Given protocol entity with relation that is removed', () {
+  group('Given protocol model with relation that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetSql: 'DROP TABLE IF EXISTS migrated_table;',

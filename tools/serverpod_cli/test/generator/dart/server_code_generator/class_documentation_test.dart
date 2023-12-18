@@ -19,15 +19,15 @@ void main() {
       '// This is an example documentation',
       '// This is another example'
     ];
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

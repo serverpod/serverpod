@@ -21,15 +21,15 @@ void main() {
   var tableName = 'example_table';
 
   group('Given empty class named $testClassName when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -58,7 +58,7 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableEntity.', () {
+      test('inherits from SerializableModel.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
@@ -101,15 +101,15 @@ void main() {
   });
 
   group('Given a class with table name when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -322,7 +322,7 @@ void main() {
   });
 
   group('Given a class with a none nullable field when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -330,8 +330,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -370,7 +370,7 @@ void main() {
   });
 
   group('Given a class with a nullable field when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -378,8 +378,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -420,7 +420,7 @@ void main() {
   group(
       'Given a class with a non persistent field with scope all when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -428,14 +428,14 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.all)
+                .withScope(ModelFieldScopeDefinition.all)
                 .build(),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -465,7 +465,7 @@ void main() {
   group(
       'Given a class with a non persistent field with scope serverOnly when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -473,15 +473,15 @@ void main() {
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.serverOnly)
+                .withScope(ModelFieldScopeDefinition.serverOnly)
                 .withShouldPersist(false)
                 .build(),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -511,23 +511,23 @@ void main() {
   group(
       'Given a class with a non persistent field with scope none when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withField(
-            SerializableEntityFieldDefinition(
+            SerializableModelFieldDefinition(
               name: 'title',
               type: TypeDefinition(className: 'String', nullable: true),
-              scope: EntityFieldScopeDefinition.none,
+              scope: ModelFieldScopeDefinition.none,
               shouldPersist: false,
             ),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -551,7 +551,7 @@ void main() {
   });
 
   group('Given exception class when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -559,8 +559,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -591,24 +591,24 @@ void main() {
       'Given a class with a persistent field with scope none when generating code',
       () {
     var fieldName = 'implicit_field';
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .withTableName(tableName)
           .withField(
-            SerializableEntityFieldDefinition(
+            SerializableModelFieldDefinition(
               name: fieldName,
               type: TypeDefinition(className: 'String', nullable: true),
-              scope: EntityFieldScopeDefinition.none,
+              scope: ModelFieldScopeDefinition.none,
               shouldPersist: true,
             ),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -684,24 +684,24 @@ void main() {
     'Given a class with a persistent field with scope none starting with underscore when generating code',
     () {
       var fieldName = '_implicit_field';
-      var entities = [
+      var models = [
         ClassDefinitionBuilder()
             .withClassName(testClassName)
             .withFileName(testClassFileName)
             .withTableName(tableName)
             .withField(
-              SerializableEntityFieldDefinition(
+              SerializableModelFieldDefinition(
                 name: fieldName,
                 type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.none,
+                scope: ModelFieldScopeDefinition.none,
                 shouldPersist: true,
               ),
             )
             .build()
       ];
 
-      var codeMap = generator.generateSerializableEntitiesCode(
-        entities: entities,
+      var codeMap = generator.generateSerializableModelsCode(
+        models: models,
         config: config,
       );
 

@@ -13,12 +13,12 @@ typedef constructor<T> = T Function(
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
 abstract mixin class SerializableEntity {
-  /// Returns a serialized JSON structure of the entity, ready to be sent
+  /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
   dynamic toJson();
 
-  /// Returns a serialized JSON structure of the entity which also includes
+  /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
   dynamic allToJson() => toJson();
 

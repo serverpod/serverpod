@@ -1,11 +1,11 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 
 class FieldDefinitionBuilder {
   String _name;
   TypeDefinition _type;
-  EntityFieldScopeDefinition _scope;
+  ModelFieldScopeDefinition _scope;
   RelationDefinition? _relation;
   bool _shouldPersist;
   List<String>? _documentation;
@@ -16,7 +16,7 @@ class FieldDefinitionBuilder {
           className: 'String',
           nullable: true,
         ),
-        _scope = EntityFieldScopeDefinition.all,
+        _scope = ModelFieldScopeDefinition.all,
         _shouldPersist = true;
 
   FieldDefinitionBuilder withName(String name) {
@@ -58,7 +58,7 @@ class FieldDefinitionBuilder {
   }
 
   FieldDefinitionBuilder withScope(
-    EntityFieldScopeDefinition scope,
+    ModelFieldScopeDefinition scope,
   ) {
     _scope = scope;
     return this;
@@ -96,8 +96,8 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  SerializableEntityFieldDefinition build() {
-    return SerializableEntityFieldDefinition(
+  SerializableModelFieldDefinition build() {
+    return SerializableModelFieldDefinition(
       name: _name,
       type: _type,
       scope: _scope,

@@ -203,13 +203,6 @@ databaseListRelationMethods:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
-oneToMany:
-  - customerOrderByOrderCountAscending:
-  - customerOrderByOrderCountAscendingWhereDescriptionIs:
-  - commentInsert:
-  - orderInsert:
-  - customerInsert:
-  - deleteAll:
 relation:
   - citizenFindWhereCompanyNameIs:
   - citizenFindWhereCompanyTownNameIs:
@@ -309,6 +302,13 @@ mapParameters:
   - returnNullableSimpleDataMapNullableSimpleData:
   - returnDurationMap:
   - returnDurationMapNullableDurations:
+oneToMany:
+  - customerOrderByOrderCountAscending:
+  - customerOrderByOrderCountAscendingWhereDescriptionIs:
+  - commentInsert:
+  - orderInsert:
+  - customerInsert:
+  - deleteAll:
 moduleSerialization:
   - serializeModuleObject:
   - modifyModuleObject:

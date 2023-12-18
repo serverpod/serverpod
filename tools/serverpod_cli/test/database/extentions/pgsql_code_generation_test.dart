@@ -12,7 +12,7 @@ void main() {
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
@@ -36,8 +36,8 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(
-      entities,
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
       'example',
       [],
     );

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() async {
   var session = await IntegrationTestServer().session();
 
-  group('Given entities with many to many relation', () {
+  group('Given models with many to many relation', () {
     tearDown(() async {
       await Enrollment.db
           .deleteWhere(session, where: (_) => Constant.bool(true));
@@ -15,7 +15,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities ordered on count of many relation then result is as expected',
+        'when fetching models ordered on count of many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),
@@ -52,7 +52,7 @@ void main() async {
     });
 
     test(
-        'when fetching entities ordered on filtered count of many relation then result is as expected',
+        'when fetching models ordered on filtered count of many relation then result is as expected',
         () async {
       var students = await Student.db.insert(session, [
         Student(name: 'Alex'),

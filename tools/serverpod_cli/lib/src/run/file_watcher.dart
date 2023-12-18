@@ -18,7 +18,7 @@ class SourceFileWatcher {
     var watcherClasses = DirectoryWatcher(p.joinAll(config.libSourcePathParts));
     await for (WatchEvent event in watcherClasses.events) {
       if (event.path
-          .startsWith(p.joinAll(config.generatedServerProtocolPathParts))) {
+          .startsWith(p.joinAll(config.generatedServeModelPathParts))) {
         continue;
       }
       switch (event.type) {

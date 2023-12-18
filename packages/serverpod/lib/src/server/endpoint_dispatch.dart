@@ -124,7 +124,7 @@ abstract class EndpointDispatch {
         sendByteDataAsRaw: connector.endpoint.sendByteDataAsRaw,
       );
     } on SerializableException catch (exception) {
-      return ExceptionResult(entity: exception);
+      return ExceptionResult(model: exception);
     } on Exception catch (e, stackTrace) {
       var sessionLogId = await session.close(error: e, stackTrace: stackTrace);
       return ResultInternalServerError(
@@ -315,13 +315,13 @@ class ResultStatusCode extends Result {
 /// The result of a failed [Endpoint] method call, with a custom exception.
 class ExceptionResult<T extends SerializableException> extends Result {
   /// The exception to be returned to the client.
-  final T entity;
+  final T model;
 
   /// Creates a new [ExceptionResult].
   ExceptionResult({
-    required this.entity,
+    required this.model,
   });
 
   @override
-  String toString() => 'ExceptionResult(entity: $entity)';
+  String toString() => 'ExceptionResult(entity: $model)';
 }

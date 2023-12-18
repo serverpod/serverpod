@@ -1,6 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:recase/recase.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:super_string/super_string.dart';
@@ -14,9 +14,9 @@ class BuildRepositoryClass {
     required this.config,
   });
 
-  Class buildEntityRepositoryClass(
+  Class buildModelRepositoryClass(
     String className,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     var relationFields = fields.where((field) =>
@@ -78,9 +78,9 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityAttachRepositoryClass(
+  Class buildModelAttachRepositoryClass(
     String className,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -99,9 +99,9 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityAttachRowRepositoryClass(
+  Class buildModelAttachRowRepositoryClass(
     String className,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -120,9 +120,9 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRepositoryClass(
+  Class buildModelDetachRepositoryClass(
     String className,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -141,9 +141,9 @@ class BuildRepositoryClass {
     });
   }
 
-  Class buildEntityDetachRowRepositoryClass(
+  Class buildModelDetachRowRepositoryClass(
     String className,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     ClassDefinition classDefinition,
   ) {
     return Class((classBuilder) {
@@ -162,52 +162,52 @@ class BuildRepositoryClass {
     });
   }
 
-  bool hasAttachOperations(List<SerializableEntityFieldDefinition> fields) {
+  bool hasAttachOperations(List<SerializableModelFieldDefinition> fields) {
     return fields.any((f) => _isListRelation(f));
   }
 
-  bool hasAttachRowOperations(List<SerializableEntityFieldDefinition> fields) {
+  bool hasAttachRowOperations(List<SerializableModelFieldDefinition> fields) {
     return fields.any((f) => _isObjectRelation(f) || _isListRelation(f));
   }
 
-  bool hasDetachOperations(List<SerializableEntityFieldDefinition> fields) {
+  bool hasDetachOperations(List<SerializableModelFieldDefinition> fields) {
     return fields.any((f) => _isNullableListRelation(f));
   }
 
-  bool hasDetachRowOperations(List<SerializableEntityFieldDefinition> fields) {
+  bool hasDetachRowOperations(List<SerializableModelFieldDefinition> fields) {
     return fields
         .any((f) => _isNullableObjectRelation(f) || _isNullableListRelation(f));
   }
 
   bool hasImplicitClassOperations(
-      List<SerializableEntityFieldDefinition> fields) {
+      List<SerializableModelFieldDefinition> fields) {
     return fields.any((e) => e.hiddenSerializableField(serverCode));
   }
 
-  bool _isListRelation(SerializableEntityFieldDefinition field) {
+  bool _isListRelation(SerializableModelFieldDefinition field) {
     return field.relation is ListRelationDefinition;
   }
 
-  bool _isNullableListRelation(SerializableEntityFieldDefinition field) {
+  bool _isNullableListRelation(SerializableModelFieldDefinition field) {
     var relation = field.relation;
     return relation is ListRelationDefinition && relation.nullableRelation;
   }
 
   bool _isObjectRelation(
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
   ) {
     return field.relation is ObjectRelationDefinition;
   }
 
   bool _isNullableObjectRelation(
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
   ) {
     var relation = field.relation;
     return relation is ObjectRelationDefinition && relation.nullableRelation;
   }
 
   Method _buildFindMethod(String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+      Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..name = 'find'
       ..returns = TypeReference(
@@ -304,7 +304,7 @@ class BuildRepositoryClass {
 
   Method _buildFindFirstRow(
     String className,
-    Iterable<SerializableEntityFieldDefinition> objectRelationFields,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
   ) {
     return Method((m) => m
       ..name = 'findFirstRow'
@@ -392,7 +392,7 @@ class BuildRepositoryClass {
   }
 
   Method _buildFindByIdMethod(String className,
-      Iterable<SerializableEntityFieldDefinition> objectRelationFields) {
+      Iterable<SerializableModelFieldDefinition> objectRelationFields) {
     return Method((m) => m
       ..name = 'findById'
       ..returns = TypeReference(
@@ -818,7 +818,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildAttachMethods(
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -832,7 +832,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildAttachRowMethods(
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -856,7 +856,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachFromListRelationField(
     String className,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -920,7 +920,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachRowFromListRelationField(
     String className,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -979,7 +979,7 @@ class BuildRepositoryClass {
 
   Method _buildAttachRowFromObjectRelationField(
     String className,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1146,7 +1146,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildDetachMethods(
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -1160,7 +1160,7 @@ class BuildRepositoryClass {
   }
 
   Iterable<Method> _buildDetachRowMethods(
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
     String className,
     ClassDefinition classDefinition,
   ) {
@@ -1184,7 +1184,7 @@ class BuildRepositoryClass {
 
   Method _buildDetachFromListRelationField(
     String className,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1242,7 +1242,7 @@ class BuildRepositoryClass {
 
   Method _buildDetachRowFromListRelationField(
     String className,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
     ClassDefinition classDefinition,
   ) {
     return Method((methodBuilder) {
@@ -1297,10 +1297,8 @@ class BuildRepositoryClass {
     });
   }
 
-  Method _buildDetachRowFromObjectRelationField(
-      String className,
-      SerializableEntityFieldDefinition field,
-      ClassDefinition classDefinition) {
+  Method _buildDetachRowFromObjectRelationField(String className,
+      SerializableModelFieldDefinition field, ClassDefinition classDefinition) {
     return Method((methodBuilder) {
       var classFieldName = className.toCamelCase(isLowerCamelCase: true);
       var fieldName = field.name;

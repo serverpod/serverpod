@@ -1,12 +1,12 @@
 import 'package:recase/recase.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
-typedef _FieldBuilder = SerializableEntityFieldDefinition Function();
+typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
 class ClassDefinitionBuilder {
   String _fileName;
@@ -17,7 +17,7 @@ class ClassDefinitionBuilder {
   bool _isException;
   String? _tableName;
   List<_FieldBuilder> _fields;
-  List<SerializableEntityIndexDefinition> _indexes;
+  List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
 
   ClassDefinitionBuilder()
@@ -37,7 +37,7 @@ class ClassDefinitionBuilder {
         () => FieldDefinitionBuilder()
             .withName('id')
             .withType(TypeDefinition.int.asNullable)
-            .withScope(EntityFieldScopeDefinition.all)
+            .withScope(ModelFieldScopeDefinition.all)
             .withShouldPersist(true)
             .build(),
       );
@@ -101,7 +101,7 @@ class ClassDefinitionBuilder {
     return this;
   }
 
-  ClassDefinitionBuilder withField(SerializableEntityFieldDefinition field) {
+  ClassDefinitionBuilder withField(SerializableModelFieldDefinition field) {
     _fields.add(() => field);
     return this;
   }
@@ -231,14 +231,14 @@ class ClassDefinitionBuilder {
   }
 
   ClassDefinitionBuilder withFields(
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
   ) {
     _fields = fields.map((f) => () => f).toList();
     return this;
   }
 
   ClassDefinitionBuilder withIndexes(
-    List<SerializableEntityIndexDefinition> indexes,
+    List<SerializableModelIndexDefinition> indexes,
   ) {
     _indexes = indexes;
     return this;

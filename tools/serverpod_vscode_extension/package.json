@@ -1,6 +1,6 @@
 {
-  "name": "serverpod-vscode",
-  "displayName": "Serverpod VSCode",
+  "name": "serverpod",
+  "displayName": "Serverpod",
   "publisher": "Serverpod",
   "description": "Serverpod for VS code, manage your projects and get code feedback in real time.",
   "icon": "assets/icons/icon.png",

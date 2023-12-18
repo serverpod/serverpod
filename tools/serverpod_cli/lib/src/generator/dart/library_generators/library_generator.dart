@@ -27,13 +27,13 @@ class LibraryGenerator {
 
     library.name = 'protocol';
 
-    var entities = protocolDefinition.entities
-        .where((entity) => serverCode || !entity.serverOnly)
+    var models = protocolDefinition.models
+        .where((model) => serverCode || !model.serverOnly)
         .toList();
 
     // exports
     library.directives.addAll([
-      for (var classInfo in entities) Directive.export(classInfo.fileRef()),
+      for (var classInfo in models) Directive.export(classInfo.fileRef()),
       if (!serverCode) Directive.export('client.dart'),
     ]);
 
@@ -81,8 +81,8 @@ class LibraryGenerator {
               ..types.add(
                 refer('TableDefinition', serverpodProtocolUrl(serverCode)),
               ))
-            ..assignment = createDatabaseDefinitionFromEntities(
-              entities,
+            ..assignment = createDatabaseDefinitionFromModels(
+              models,
               config.name,
               config.modulesAll,
             ).toCode(
@@ -119,12 +119,12 @@ class LibraryGenerator {
           const Code(
               'if(customConstructors.containsKey(t)){return customConstructors[t]!(data, this) as T;}'),
           ...(<Expression, Code>{
-            for (var classInfo in entities)
+            for (var classInfo in models)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
                   (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
                       '.fromJson(data'
                       '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
-            for (var classInfo in entities)
+            for (var classInfo in models)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
                   (b) => b
@@ -138,7 +138,7 @@ class LibraryGenerator {
                   '${classInfo is ClassDefinition ? ',this' : ''})'
                   ':null)as T'),
           }..addEntries([
-                  for (var classInfo in entities)
+                  for (var classInfo in models)
                     if (classInfo is ClassDefinition)
                       for (var field in classInfo.fields)
                         ...field.type.generateDeserialization(serverCode,
@@ -201,7 +201,7 @@ class LibraryGenerator {
           for (var extraClass in config.extraClasses)
             Code.scope((a) =>
                 'if(data is ${a(extraClass.reference(serverCode, config: config))}) {return \'${extraClass.className}\';}'),
-          for (var classInfo in entities)
+          for (var classInfo in models)
             Code.scope((a) =>
                 'if(data is ${a(refer(classInfo.className, classInfo.fileRef()))}) {return \'${classInfo.className}\';}'),
           const Code('return super.getClassNameForObject(data);'),
@@ -226,7 +226,7 @@ class LibraryGenerator {
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${extraClass.className}\'){'
                 'return deserialize<${a(extraClass.reference(serverCode, config: config))}>(data[\'data\']);}'),
-          for (var classInfo in entities)
+          for (var classInfo in models)
             Code.scope((a) =>
                 'if(data[\'className\'] == \'${classInfo.className}\'){'
                 'return deserialize<${a(refer(classInfo.className, classInfo.fileRef()))}>(data[\'data\']);}'),
@@ -254,11 +254,11 @@ class LibraryGenerator {
                 Code.scope((a) =>
                     '{var table = ${a(refer('Protocol', serverCode ? 'package:serverpod/protocol.dart' : 'package:serverpod_service_client/serverpod_service_client.dart'))}().getTableForType(t);'
                     'if(table!=null) {return table;}}'),
-              if (entities.any((classInfo) =>
+              if (models.any((classInfo) =>
                   classInfo is ClassDefinition && classInfo.tableName != null))
                 Block.of([
                   const Code('switch(t){'),
-                  for (var classInfo in entities)
+                  for (var classInfo in models)
                     if (classInfo is ClassDefinition &&
                         classInfo.tableName != null)
                       Code.scope((a) =>

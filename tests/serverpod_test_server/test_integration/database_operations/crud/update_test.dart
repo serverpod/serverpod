@@ -97,7 +97,7 @@ void main() async {
   });
 
   test(
-      'Given an entity when updatingRow with a specific column only that column and no other data is updated.',
+      'Given an model when updatingRow with a specific column only that column and no other data is updated.',
       () async {
     var expectedEmail = 'info@serverpod.dev';
     var expectedNumber = 5;
@@ -124,8 +124,7 @@ void main() async {
     expect(updated.email, expectedEmail);
   });
 
-  test(
-      'Given an entity without an id when updatingRow then an error is thrown.',
+  test('Given an model without an id when updatingRow then an error is thrown.',
       () async {
     expect(
       UniqueData.db.updateRow(
@@ -138,7 +137,7 @@ void main() async {
   });
 
   test(
-      'Given an entity trying to updateRow with a column that does not exist then an error is thrown.',
+      'Given an model trying to updateRow with a column that does not exist then an error is thrown.',
       () async {
     var inserted = await UniqueData.db.insertRow(
       session,

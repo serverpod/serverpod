@@ -1,10 +1,10 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 
 String createFieldName(
   bool serverCode,
-  SerializableEntityFieldDefinition field,
+  SerializableModelFieldDefinition field,
 ) {
   if (field.hiddenSerializableField(serverCode)) {
     return createImplicitFieldName(field.name);

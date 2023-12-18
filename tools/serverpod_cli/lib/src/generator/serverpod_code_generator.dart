@@ -19,20 +19,20 @@ abstract class ServerpodCodeGenerator {
     const EndpointDescriptionGenerator(),
   ];
 
-  /// Generate from [CodeGenerator.generateSerializableEntitiesCode] for all
+  /// Generate from [CodeGenerator.generateSerializableModelsCode] for all
   /// [CodeGenerator]s and save the files.
   ///
   /// Returns a list of generated files.
-  static Future<List<String>> generateSerializableEntities({
-    required List<SerializableEntityDefinition> entities,
+  static Future<List<String>> generateSerializableModels({
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {
     collector.generatedFiles.clear();
     var allFiles = {
       for (var generator in _generators)
-        ...generator.generateSerializableEntitiesCode(
-          entities: entities,
+        ...generator.generateSerializableModelsCode(
+          models: models,
           config: config,
         )
     };
@@ -119,8 +119,8 @@ List<String> _getDirectoriesRequiringCleaning({
   required GeneratorConfig config,
 }) {
   return [
-    p.joinAll(config.generatedServerProtocolPathParts),
-    p.joinAll(config.generatedDartClientProtocolPathParts),
+    p.joinAll(config.generatedServeModelPathParts),
+    p.joinAll(config.generatedDartClientModelPathParts),
   ];
 }
 
@@ -133,16 +133,16 @@ Future<void> _removeOldFilesInPath(
   log.debug('Remove old files from $directory');
   var fileList = await directory.list(recursive: true).toList();
 
-  for (var entity in fileList) {
+  for (var model in fileList) {
     // Only check Dart files.
-    if (entity is! File ||
-        !fileExtensions.any((extension) => entity.path.endsWith(extension))) {
+    if (model is! File ||
+        !fileExtensions.any((extension) => model.path.endsWith(extension))) {
       continue;
     }
 
-    if (!keepPaths.contains(entity.path)) {
-      log.debug('Remove: $entity');
-      await entity.delete();
+    if (!keepPaths.contains(model.path)) {
+      log.debug('Remove: $model');
+      await model.delete();
     }
   }
 }
