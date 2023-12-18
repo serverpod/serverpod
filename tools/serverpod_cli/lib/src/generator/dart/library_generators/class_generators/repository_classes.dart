@@ -1297,10 +1297,8 @@ class BuildRepositoryClass {
     });
   }
 
-  Method _buildDetachRowFromObjectRelationField(
-      String className,
-      SerializableModelFieldDefinition field,
-      ClassDefinition classDefinition) {
+  Method _buildDetachRowFromObjectRelationField(String className,
+      SerializableModelFieldDefinition field, ClassDefinition classDefinition) {
     return Method((methodBuilder) {
       var classFieldName = className.toCamelCase(isLowerCamelCase: true);
       var fieldName = field.name;
