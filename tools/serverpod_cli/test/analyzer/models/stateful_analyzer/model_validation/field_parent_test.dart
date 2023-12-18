@@ -9,7 +9,7 @@ void main() {
     'Given a class with a field with the parent keyword but without a value, then collect an error that the parent has to have a valid table name.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
@@ -35,7 +35,7 @@ void main() {
     'Given a class with a field with a parent, then the generated model has a parentTable property set to the parent table name.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
@@ -59,7 +59,7 @@ void main() {
     'Given a class with a field with a parent with whitespace in the syntax, then the generated model has a parentTable property set to the parent table name.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
@@ -83,7 +83,7 @@ void main() {
     'Given a class with a field with a parent, then a deprecated info is generated.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -109,7 +109,7 @@ void main() {
     'Given a class with a field with a parent that do not exist, then collect an error that the parent table is not found.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -136,7 +136,7 @@ void main() {
     'Given a class with a field with two parent keywords, then collect an error that only one parent is allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -162,7 +162,7 @@ void main() {
     'Given a class without a table definition but with a field with a parent, then collect an error that the table needs to be defined.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:

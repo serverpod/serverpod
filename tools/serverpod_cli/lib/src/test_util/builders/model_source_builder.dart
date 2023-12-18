@@ -1,11 +1,11 @@
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
-class ProtocolSourceBuilder {
+class ModelSourceBuilder {
   late String yaml;
   late Uri yamlSourceUri;
   late List<String> protocolRootPathParts;
 
-  ProtocolSourceBuilder() {
+  ModelSourceBuilder() {
     withYaml('''
     class: Example
     fields:
@@ -15,22 +15,22 @@ class ProtocolSourceBuilder {
     protocolRootPathParts = [];
   }
 
-  ProtocolSourceBuilder withFileName(String fileName) {
+  ModelSourceBuilder withFileName(String fileName) {
     yamlSourceUri = Uri(path: 'lib/src/protocol/$fileName.yaml');
     return this;
   }
 
-  ProtocolSourceBuilder withYaml(String yaml) {
+  ModelSourceBuilder withYaml(String yaml) {
     this.yaml = yaml;
     return this;
   }
 
-  ProtocolSourceBuilder withYamlSourceUri(Uri yamlSourceUri) {
+  ModelSourceBuilder withYamlSourceUri(Uri yamlSourceUri) {
     this.yamlSourceUri = yamlSourceUri;
     return this;
   }
 
-  ProtocolSourceBuilder withProtocolRootPathParts(
+  ModelSourceBuilder withProtocolRootPathParts(
       List<String> protocolRootPathParts) {
     this.protocolRootPathParts = protocolRootPathParts;
     return this;

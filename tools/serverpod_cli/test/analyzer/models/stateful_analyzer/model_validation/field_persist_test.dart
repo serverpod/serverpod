@@ -10,7 +10,7 @@ void main() {
     'Given a class with a field with no persist set but has a table, then the generated model should be persisted.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
@@ -34,7 +34,7 @@ void main() {
     'Given a class with a field with persist set.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
@@ -63,7 +63,7 @@ void main() {
     'Given a class with a field with persist set to true, then the generated model should be persisted.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -90,7 +90,7 @@ void main() {
     'Given a class with a field with persist set to false, then the generated model should not be persisted.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -117,7 +117,7 @@ void main() {
     'Given a class with a field with persist negated',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -150,7 +150,7 @@ void main() {
     'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -178,7 +178,7 @@ void main() {
     'Given a class with a field with persist negated and a relation defined, then collect an error that the keys are mutually exclusive.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -204,7 +204,7 @@ void main() {
     'Given a class with a field with a persist key set to true, then collect an info that the keyword is unnecessary.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -234,7 +234,7 @@ void main() {
     'Given a class with a field with a negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -259,7 +259,7 @@ void main() {
     'Given a class with a field with a nested negated key and a value set, then collect an error that the negation operator cannot be used together with a value.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -284,7 +284,7 @@ void main() {
     'Given a class with a field with the optional key set to an invalid value, then collect an error that value must be a boolean.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -309,7 +309,7 @@ void main() {
     'Given a class without a table but with a field with persist set, then collect an error that the field cannot be persisted without setting table.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -334,7 +334,7 @@ void main() {
     'Given a class with a field with the persist key set to a none boolean value, then collect a warning that the value must be a bool.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -359,7 +359,7 @@ void main() {
     'Given a class with a field with both the persist and api keywords, then collect an error that only one of them is allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -392,7 +392,7 @@ void main() {
     'Given a class with a field with both the persist and database keywords, then collect an error that only one of them is allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example

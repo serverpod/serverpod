@@ -8,7 +8,7 @@ void main() {
   group('Given a class with a self relation on a field with the class datatype',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -114,7 +114,7 @@ void main() {
       'Given a class with a self relation on a field with the class datatype where the relation is optional',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -157,7 +157,7 @@ void main() {
       'Given a class with a self relation on a field with the class datatype where the relation is not optional',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -198,7 +198,7 @@ void main() {
       'Given a class with a self relation without any nested rules, then no errors are collected.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -220,7 +220,7 @@ void main() {
       'Given a class with a field without a relation, then no relation is set.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -246,7 +246,7 @@ void main() {
       'Given a class with a field with a self reference without a relation, then no relation is set.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -270,7 +270,7 @@ void main() {
 
   group('Given a class with a field with a self relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -313,7 +313,7 @@ void main() {
       'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that there is a duplicated key.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -346,7 +346,7 @@ void main() {
     'Given a class with a field with a relation and parent keyword, then an error is collected that they are mutually exclusive key.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -378,7 +378,7 @@ void main() {
     'Given a class with a field with a relation, but the parent keyword defined twice, then an error is collected that locates the second parent key.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
 class: Example
 table: example
@@ -418,7 +418,7 @@ fields:
     'Given a class with a self relation but without a table defined, then collect an error that the relation keyword cannot be used unless the class has a table.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -449,7 +449,7 @@ fields:
       'Given a class with a field with a relation on a complex datatype that is not nullable, then an error is collected that the datatype must be nullable.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
           class: Example
           table: example
@@ -480,7 +480,7 @@ fields:
       'Given a class with a field with a relation on a complex datatype and the parent table is defined, then an error is collected that the parent table is redundant.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -508,7 +508,7 @@ fields:
       'Given a class with a field with a relation on an id field and the relation is defined as optional, then collect a warning that the optional keyword should not be used.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -536,7 +536,7 @@ fields:
       'Given a class with a field with a relation on an id field but is missing a parent table definition, then collect an error that the parent table is required.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -560,7 +560,7 @@ fields:
       'Given a class with a relation to a protocol class with a table defined',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -568,7 +568,7 @@ fields:
           parent: ExampleParent?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+      ModelSourceBuilder().withFileName('example_parent').withYaml(
         '''
         class: ExampleParent
         table: example_parent
@@ -612,7 +612,7 @@ fields:
 
   group('Given a class with a json field without a relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -620,7 +620,7 @@ fields:
           parent: ExampleParent
         ''',
       ).build(),
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: ExampleParent
         fields:
@@ -654,7 +654,7 @@ fields:
 
   group('Given a class with a List json field without a relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -662,7 +662,7 @@ fields:
           parent: List<ExampleParent>
         ''',
       ).build(),
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: ExampleParent
         fields:
@@ -698,7 +698,7 @@ fields:
       'Given a class with a relation referencing a non-existent class then collect an error that the class was not found',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -722,7 +722,7 @@ fields:
       'Given a class with a relation to a protocol enum, then collect an error that the class does not exist.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -730,7 +730,7 @@ fields:
           parent: EnumParent?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('enum_parent').withYaml(
+      ModelSourceBuilder().withFileName('enum_parent').withYaml(
         '''
         enum: EnumParent
         values:
@@ -754,7 +754,7 @@ fields:
       'Given a class with a relation to a protocol class without a table defined, then collect an error that the class does not have a table.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -762,7 +762,7 @@ fields:
           parent: ExampleParent?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('example_parent').withYaml(
+      ModelSourceBuilder().withFileName('example_parent').withYaml(
         '''
         class: ExampleParent
         fields:

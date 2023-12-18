@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   test('Given a class with a null value as name, then collect an error', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class:
         fields:
@@ -32,7 +32,7 @@ void main() {
       'Given a PascalCASEString class name with several uppercase letters, then no errors are collected.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         exception: PascalCASEString
         fields:
@@ -55,7 +55,7 @@ void main() {
       'Given a PascalCASEString class name with several uppercase letters, then an exception with that name is generated.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         exception: PascalCASEString
         fields:
@@ -74,7 +74,7 @@ void main() {
       'Given a camelCase class name, then give an error indicating that PascalCase is required.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: exampleClass
         fields:
@@ -103,7 +103,7 @@ void main() {
     'Given a snake_case exception name, then give an error indicating that PascalCase is required.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           exception: example_class
           fields:
@@ -133,7 +133,7 @@ void main() {
     'Given an enum name with a leading number, then give an error indicating that PascalCase is required.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           enum: 1ExampleType
           values:
@@ -164,7 +164,7 @@ void main() {
     'Given a class name with reserved value List, then give an error that the class name is reserved.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: List
           fields:
@@ -194,7 +194,7 @@ void main() {
     'Given a class name with reserved value Map, then give an error that the class name is reserved.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Map
           fields:
@@ -224,7 +224,7 @@ void main() {
     'Given a class name with reserved value String, then give an error that the class name is reserved.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: String
           fields:
@@ -254,7 +254,7 @@ void main() {
     'Given a class name with reserved value DateTime, then give an error that the class name is reserved.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: DateTime
           fields:
@@ -285,7 +285,7 @@ void main() {
       'Then return a human readable error message informing the user that the model type is missing.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             invalid: Type
             fields:
@@ -314,7 +314,7 @@ void main() {
 
   group('Given a protocol with class and exception type defined.', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 exception: ExampleException
@@ -362,7 +362,7 @@ fields:
 
   group('Given a protocol with exception and enum type defined', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         exception: ExampleException
         enum: ExampleType
@@ -392,7 +392,7 @@ fields:
 
   group('Given a protocol with three different types defined.', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
 class: Example
 exception: ExampleException

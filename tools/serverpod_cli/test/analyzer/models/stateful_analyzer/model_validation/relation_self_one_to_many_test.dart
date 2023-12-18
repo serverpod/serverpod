@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a class with a one to many relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('cat').withYaml(
+      ModelSourceBuilder().withFileName('cat').withYaml(
         '''
         class: Cat
         table: cat

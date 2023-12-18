@@ -11,7 +11,7 @@ void main() {
       'Given a class with a field with two database keywords, then collect an error that only one database is allowed.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -39,7 +39,7 @@ void main() {
       'Given a class with a field with two api keywords, then collect an error that only one api is allowed.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -67,7 +67,7 @@ void main() {
       'Given a class with a field with a negated api keyword, then the generated model should be persisted.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -91,7 +91,7 @@ void main() {
       'Given a class with a field with a negated database keyword, then the generated model has the scope all.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -115,7 +115,7 @@ void main() {
       'Given a class with a field with both the api and database keywords, then collect an error that only one of them is allowed.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -154,7 +154,7 @@ void main() {
       'Given a class with a field with the scope set to database',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -199,7 +199,7 @@ void main() {
       'Given a class with a field with the scope set to api',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -242,7 +242,7 @@ void main() {
       'Given a class with a field with database set to an invalid value, then collect an error that the value must be a bool.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -266,7 +266,7 @@ void main() {
       'Given a class with a field with api set to an invalid value, then collect an error that the value must be a bool.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             fields:
@@ -290,7 +290,7 @@ void main() {
       'Given a class with a field with the scope set to api and a parent table, then report an error that the parent keyword and api scope is not valid together.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -326,7 +326,7 @@ void main() {
     'Given a class with a field with no scope set, then the generated model has the all scope.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -350,7 +350,7 @@ void main() {
     'Given a class with a field with the scope set',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -395,7 +395,7 @@ void main() {
       'Given a class with a field with the scope set to null, then collect an error informing the user about the correct types.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         fields:
@@ -425,7 +425,7 @@ void main() {
     'Given a class with a field with the scope set to an invalid value, then collect an error informing the user about the correct types.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         fields:
@@ -456,7 +456,7 @@ void main() {
     'Given a class with a field with both the scope and database keywords, then collect an error that only one of them is allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:
@@ -490,7 +490,7 @@ void main() {
     'Given a class with a field with both the scope and api keywords, then collect an error that only one of them is allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           fields:

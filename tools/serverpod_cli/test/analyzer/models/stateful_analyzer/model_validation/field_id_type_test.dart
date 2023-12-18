@@ -9,7 +9,7 @@ void main() {
     'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -35,7 +35,7 @@ void main() {
     'Given a class with a table defined, then add an id field to the generated model.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -61,7 +61,7 @@ void main() {
     'Given a class without a table defined, then no id field is added.',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         fields:

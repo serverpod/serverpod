@@ -10,7 +10,7 @@ void main() {
         'Given a class defined to serverOnly, then the serverOnly property is set to true.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         serverOnly: true
@@ -29,7 +29,7 @@ void main() {
         'Given a class explicitly setting serverOnly to false, then the serverOnly property is set to false.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         serverOnly: false
@@ -48,7 +48,7 @@ void main() {
         'Given a class without the serverOnly property, then the default "false" value is used.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         fields:
@@ -66,7 +66,7 @@ void main() {
         'Given a class with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         serverOnly: Yes
@@ -93,7 +93,7 @@ void main() {
         'Given an exception with the serverOnly property set to another datatype than bool, then an error is collected notifying that the serverOnly must be a bool.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           exception: Example
           serverOnly: Yes
@@ -122,7 +122,7 @@ void main() {
         'Given a class with a table defined, then the tableName is set in the definition.',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
           class: Example
           table: example
@@ -144,7 +144,7 @@ void main() {
       'Given a class with a table name in a none snake_case_format, then collect an error that snake_case must be used.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: camelCaseTable
@@ -176,7 +176,7 @@ void main() {
       'Given a class with a table name is not a string, then collect an error',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: true
@@ -207,7 +207,7 @@ void main() {
       'Given an exception with a table defined, then collect an error',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             exception: Example
             table: example
@@ -238,7 +238,7 @@ void main() {
       'Given two classes with the same table name defined, then collect an error',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             table: example
@@ -246,7 +246,7 @@ void main() {
               name: String
             ''',
           ).build(),
-          ProtocolSourceBuilder().withFileName('example2').withYaml(
+          ModelSourceBuilder().withFileName('example2').withYaml(
             '''
             class: Example2
             table: example
@@ -279,7 +279,7 @@ void main() {
       'Given a class with an invalid property, then collect an error that such a property is not allowed.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             class: Example
             invalidProperty: true
@@ -310,7 +310,7 @@ void main() {
       'Given an exception with indexes defined, then collect an error that indexes cannot be used together with exceptions.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             exception: ExampleException
             fields:
@@ -344,7 +344,7 @@ void main() {
       'Given an enum with a table defined, then collect an error that table cannot be used together with enums.',
       () {
         var protocols = [
-          ProtocolSourceBuilder().withYaml(
+          ModelSourceBuilder().withYaml(
             '''
             enum: Example
             table: example

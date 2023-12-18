@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 void main() {
   group('Given a class with a one to many relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -15,7 +15,7 @@ void main() {
           company: Company?, relation(name=company_employees)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -86,7 +86,7 @@ void main() {
       'Given two classes with one to many relations defined without specifying a name',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -94,7 +94,7 @@ void main() {
           company: Company?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -202,7 +202,7 @@ void main() {
       'Given a class with a one to many relation where the relation ship is ambiguous then an error is collected that the reference cannot be resolved.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -211,7 +211,7 @@ void main() {
           myCompany: Company?, relation(name=company_employees)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -243,7 +243,7 @@ void main() {
       'Given a class with a one to many relation where the relationship is only named on one side',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -251,7 +251,7 @@ void main() {
           company: Company?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -285,7 +285,7 @@ void main() {
       'Given a class with a one to many relation where the relationship is named with a none string value',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -296,7 +296,7 @@ void main() {
               name: 1
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -329,7 +329,7 @@ void main() {
 
   group('Given an implicit one to many relation', () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -337,7 +337,7 @@ void main() {
           name: String
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company
@@ -383,7 +383,7 @@ void main() {
       'Given an implicit one to many relation with many table including underscores',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -391,7 +391,7 @@ void main() {
           name: String
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company_table
@@ -438,7 +438,7 @@ void main() {
       'Given a named list relation protocol ordered before the primary key protocol, when parsing the protocols',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('customer').withYaml(
+      ModelSourceBuilder().withFileName('customer').withYaml(
         '''
         class: Customer
         table: customer
@@ -447,7 +447,7 @@ void main() {
           orders: List<Order>?, relation(name=customer_order)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('order').withYaml(
+      ModelSourceBuilder().withFileName('order').withYaml(
         '''
         class: Order
         table: order
@@ -489,7 +489,7 @@ void main() {
       'Given an unnamed list relation protocol linked to another protocol with an unname object relation, when parsing the protocols',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('customer').withYaml(
+      ModelSourceBuilder().withFileName('customer').withYaml(
         '''
         class: Customer
         table: customer
@@ -498,7 +498,7 @@ void main() {
           orders: List<Order>?, relation
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('order').withYaml(
+      ModelSourceBuilder().withFileName('order').withYaml(
         '''
         class: Order
         table: order
@@ -545,7 +545,7 @@ void main() {
 
   group('Given a class with a one to many relation on a foreign key field', () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('employee').withYaml(
+      ModelSourceBuilder().withFileName('employee').withYaml(
         '''
         class: Employee
         table: employee
@@ -553,7 +553,7 @@ void main() {
           companyId: int, relation(name=company_employees, parent=company)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('company').withYaml(
+      ModelSourceBuilder().withFileName('company').withYaml(
         '''
         class: Company
         table: company

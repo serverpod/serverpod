@@ -19,7 +19,7 @@ void main() {
         'Given a class with onUpdate database action explicitly set to $action',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -58,7 +58,7 @@ void main() {
         'Given a class with onDelete database action explicitly set to $action',
         () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
         class: Example
         table: example
@@ -93,7 +93,7 @@ void main() {
 
   group('Given a class with no database action explicitly set', () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -131,7 +131,7 @@ void main() {
       'Given a class with onUpdate database action set to an invalid value, then collect an error.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -162,7 +162,7 @@ void main() {
       'Given a class with onDelete database action set to an invalid value, then collect an error.',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withYaml(
+      ModelSourceBuilder().withYaml(
         '''
         class: Example
         table: example
@@ -193,7 +193,7 @@ void main() {
       'Given a class with a named object relation on both sides with onDelete defined on the side not holding the foreign key',
       () {
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
 class: User
 table: user
@@ -206,7 +206,7 @@ indexes:
     unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
 class: Address
 table: address
@@ -257,7 +257,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
 class: User
 table: user
@@ -270,7 +270,7 @@ indexes:
     unique: true
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
 class: Address
 table: address
@@ -317,7 +317,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -326,7 +326,7 @@ fields:
           address: Address?, relation(name=user_address, field=addressId)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -359,7 +359,7 @@ fields:
     var collector = CodeGenerationCollector();
 
     var protocols = [
-      ProtocolSourceBuilder().withFileName('user').withYaml(
+      ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
         table: user
@@ -368,7 +368,7 @@ fields:
           address: Address?, relation(name=user_address, field=addressId)
         ''',
       ).build(),
-      ProtocolSourceBuilder().withFileName('address').withYaml(
+      ModelSourceBuilder().withFileName('address').withYaml(
         '''
         class: Address
         table: address
@@ -399,7 +399,7 @@ fields:
     'Given a class with a field with a parent set',
     () {
       var protocols = [
-        ProtocolSourceBuilder().withYaml(
+        ModelSourceBuilder().withYaml(
           '''
             class: Example
             table: example
