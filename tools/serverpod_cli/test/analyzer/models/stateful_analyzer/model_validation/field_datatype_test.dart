@@ -154,7 +154,7 @@ void main() {
       });
 
       test('then a class with that field type set to MyEnum.', () {
-        expect(definition.fields.first.type.toString(), 'model:MyEnum');
+        expect(definition.fields.first.type.toString(), 'protocol:MyEnum');
       });
 
       test('then the type is tagged as an enum', () {

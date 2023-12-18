@@ -147,7 +147,7 @@ class Restrictions {
     if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanSeverityException(
-          'The $documentType name "$className" is already used by another protocol class.',
+          'The $documentType name "$className" is already used by another model class.',
           span,
         )
       ];
@@ -212,7 +212,7 @@ class Restrictions {
 
     if (!field.type.isIdType) {
       errors.add(SourceSpanSeverityException(
-        'The "parent" property should be omitted on protocol relations.',
+        'The "parent" property should be omitted on model relations.',
         span,
       ));
     }
@@ -288,7 +288,7 @@ class Restrictions {
 
       return [
         SourceSpanSeverityException(
-          'The index name "$indexName" is already used by the protocol class "${collision?.className}".',
+          'The index name "$indexName" is already used by the model class "${collision?.className}".',
           span,
         )
       ];
@@ -614,7 +614,7 @@ class Restrictions {
     if (relations != null && !relations.tableNames.containsKey(content)) {
       return [
         SourceSpanSeverityException(
-          'The parent table "$content" was not found in any protocol.',
+          'The parent table "$content" was not found in any model.',
           span,
         )
       ];
@@ -654,7 +654,7 @@ class Restrictions {
 
     if (!type.endsWith('?')) {
       errors.add(SourceSpanSeverityException(
-        'Fields with a protocol relations must be nullable (e.g. $parentNodeName: $type?).',
+        'Fields with a model relations must be nullable (e.g. $parentNodeName: $type?).',
         span,
       ));
     }
@@ -667,7 +667,7 @@ class Restrictions {
     var referenceClassExists = localModelRelations.classNameExists(parsedType);
     if (!referenceClassExists) {
       errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" was not found in any protocol.',
+        'The class "$parsedType" was not found in any model.',
         span,
       ));
       return errors;

@@ -36,12 +36,12 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The class name "Example" is already used by another protocol class.',
+      'The class name "Example" is already used by another model class.',
     );
   });
 
   test(
-      'Given a single valid protocol, then there is no error collected for the class name.',
+      'Given a single valid model, then there is no error collected for the class name.',
       () {
     var modelSources = [
       ModelSourceBuilder().withYaml(

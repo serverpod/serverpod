@@ -11,12 +11,12 @@ class ModelSourceBuilder {
     fields:
       name: String
     ''');
-    yamlSourceUri = Uri(path: 'lib/src/protocol/example.yaml');
+    yamlSourceUri = Uri(path: 'lib/src/model/example.yaml');
     protocolRootPathParts = [];
   }
 
   ModelSourceBuilder withFileName(String fileName) {
-    yamlSourceUri = Uri(path: 'lib/src/protocol/$fileName.yaml');
+    yamlSourceUri = Uri(path: 'lib/src/model/$fileName.yaml');
     return this;
   }
 
