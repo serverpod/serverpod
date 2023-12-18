@@ -14,7 +14,7 @@ class LocalCache extends Cache {
   LocalCache(super.maxEntries, super.serializationManager);
 
   @override
-  Future<void> put(String key, SerializableEntity object,
+  Future<void> put(String key, SerializableModel object,
       {Duration? lifetime, String? group}) async {
     if (_keyList.length >= maxLocalEntries) {
       _removeOldestEntry();
@@ -78,7 +78,7 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+  Future<T?> get<T extends SerializableModel>(String key, [Type? t]) async {
     var entry = _entries[key];
 
     if (entry == null) return null;

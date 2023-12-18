@@ -39,7 +39,7 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+  Future<T?> get<T extends SerializableModel>(String key, [Type? t]) async {
     assert(
       redisController != null,
       'Redis needs to be enabled to use this method',
@@ -77,7 +77,7 @@ class RedisCache extends GlobalCache {
       throw UnimplementedError('No local keys are used in RedisCache');
 
   @override
-  Future<void> put(String key, SerializableEntity object,
+  Future<void> put(String key, SerializableModel object,
       {Duration? lifetime, String? group}) async {
     if (group != null) {
       throw UnimplementedError('Groups are not yet supported in RedisCache');

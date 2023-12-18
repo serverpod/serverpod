@@ -8,7 +8,7 @@ class ProtocolDefinition {
   /// This does not include endpoints from other modules or package:serverpod.
   final List<EndpointDefinition> endpoints;
 
-  final List<SerializableEntityDefinition> entities;
+  final List<SerializableModelDefinition> entities;
 
   /// Create a new [ProtocolDefinition].
   const ProtocolDefinition({

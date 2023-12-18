@@ -6,7 +6,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 /// You can `throw SerializableException()`
 ///
 /// Based on issue [#486](https://github.com/serverpod/serverpod/issues/486)
-abstract class SerializableException extends SerializableEntity
+abstract class SerializableException extends SerializableModel
     implements Exception {
   /// Const constructor to pass empty exception with `statusCode 500`
   SerializableException();

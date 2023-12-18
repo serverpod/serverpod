@@ -4,7 +4,7 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 
 String createFieldName(
   bool serverCode,
-  SerializableEntityFieldDefinition field,
+  SerializableModelFieldDefinition field,
 ) {
   if (field.hiddenSerializableField(serverCode)) {
     return createImplicitFieldName(field.name);

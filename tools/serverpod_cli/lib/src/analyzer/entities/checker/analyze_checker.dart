@@ -19,7 +19,7 @@ class AnalyzeChecker {
     return node.containsKey(Keyword.optional);
   }
 
-  static List<SerializableEntityFieldDefinition> filterRelationByName(
+  static List<SerializableModelFieldDefinition> filterRelationByName(
     ClassDefinition classDefinition,
     ClassDefinition foreignClass,
     String relationFieldName,
@@ -27,7 +27,7 @@ class AnalyzeChecker {
   ) {
     if (relationName == null) return [];
 
-    Iterable<SerializableEntityFieldDefinition> fields = foreignClass.fields;
+    Iterable<SerializableModelFieldDefinition> fields = foreignClass.fields;
 
     if (foreignClass.tableName == classDefinition.tableName) {
       fields = fields.where((referenceField) {

@@ -10,7 +10,7 @@ import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
 class EntityParser {
-  static SerializableEntityDefinition? serializeClassFile(
+  static SerializableModelDefinition? serializeClassFile(
     String documentTypeName,
     ProtocolSource protocolSource,
     String outFileName,
@@ -56,7 +56,7 @@ class EntityParser {
     );
   }
 
-  static SerializableEntityDefinition? serializeEnumFile(
+  static SerializableModelDefinition? serializeEnumFile(
     ProtocolSource protocolSource,
     String outFileName,
     YamlMap documentContents,
@@ -109,7 +109,7 @@ class EntityParser {
     return tableName;
   }
 
-  static List<SerializableEntityFieldDefinition> _parseClassFields(
+  static List<SerializableModelFieldDefinition> _parseClassFields(
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
@@ -126,7 +126,7 @@ class EntityParser {
 
     if (hasTable) {
       fields = [
-        SerializableEntityFieldDefinition(
+        SerializableModelFieldDefinition(
           name: 'id',
           type: TypeDefinition.int.asNullable,
           scope: EntityFieldScopeDefinition.all,
@@ -144,7 +144,7 @@ class EntityParser {
     return fields;
   }
 
-  static List<SerializableEntityFieldDefinition> _parseEntityFieldDefinition(
+  static List<SerializableModelFieldDefinition> _parseEntityFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
   ) {
@@ -185,7 +185,7 @@ class EntityParser {
     );
 
     return [
-      SerializableEntityFieldDefinition(
+      SerializableModelFieldDefinition(
         name: fieldName,
         relation: relation,
         shouldPersist: _shouldNeverPersist(relation) ? false : shouldPersist,
@@ -371,9 +371,9 @@ class EntityParser {
     return null;
   }
 
-  static List<SerializableEntityIndexDefinition> _parseIndexes(
+  static List<SerializableModelIndexDefinition> _parseIndexes(
     YamlMap documentContents,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
   ) {
     var indexesNode = documentContents.nodes[Keyword.indexes];
     if (indexesNode is! YamlMap) return [];
@@ -391,7 +391,7 @@ class EntityParser {
       var type = _parseIndexType(nodeDocument);
       var unique = _parseUniqueKey(nodeDocument);
 
-      return SerializableEntityIndexDefinition(
+      return SerializableModelIndexDefinition(
         name: indexName,
         type: type,
         unique: unique,
@@ -401,13 +401,13 @@ class EntityParser {
 
     return indexes
         .where((index) => index != null)
-        .cast<SerializableEntityIndexDefinition>()
+        .cast<SerializableModelIndexDefinition>()
         .toList();
   }
 
   static List<String> _parseIndexFields(
     YamlMap documentContents,
-    List<SerializableEntityFieldDefinition> fields,
+    List<SerializableModelFieldDefinition> fields,
   ) {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlNode) return [];

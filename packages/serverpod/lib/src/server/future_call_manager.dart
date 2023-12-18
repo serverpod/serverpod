@@ -28,13 +28,13 @@ class FutureCallManager {
   /// the [Serverpod].
   FutureCallManager(this._server, this._serializationManager, this.onCompleted);
 
-  /// Schedules a [FutureCall] by its [name]. A [SerializableEntity] can be
+  /// Schedules a [FutureCall] by its [name]. A [SerializableModel] can be
   /// passed as an argument. The `invoke` method of the [FutureCall] will
   /// be called at or after the specified [time]. Set the identifier if you need
   /// to be able to cancel the call.
   Future<void> scheduleFutureCall(
     String name,
-    SerializableEntity? object,
+    SerializableModel? object,
     DateTime time,
     String serverId,
     String? identifier,

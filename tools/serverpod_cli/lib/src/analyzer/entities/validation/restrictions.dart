@@ -100,7 +100,7 @@ const _databaseEntityReservedFieldNames = [
 class Restrictions {
   String documentType;
   YamlMap documentContents;
-  SerializableEntityDefinition? documentDefinition;
+  SerializableModelDefinition? documentDefinition;
   EntityRelations? entityRelations;
 
   Restrictions({
@@ -403,8 +403,8 @@ class Restrictions {
   }
 
   bool _isForeignKeyDefinedOnAnySide(
-    SerializableEntityFieldDefinition field,
-    List<SerializableEntityFieldDefinition> foreignFields,
+    SerializableModelFieldDefinition field,
+    List<SerializableModelFieldDefinition> foreignFields,
   ) {
     bool isForeignFieldForeignKeyOrigin = _isForeignFieldForeignKeyOrigin(
       foreignFields,
@@ -417,8 +417,8 @@ class Restrictions {
   }
 
   bool _isImplicitManyToManyRelation(
-    SerializableEntityFieldDefinition field,
-    SerializableEntityFieldDefinition foreignField,
+    SerializableModelFieldDefinition field,
+    SerializableModelFieldDefinition foreignField,
   ) {
     if (!field.type.isListType) return false;
     if (!foreignField.type.isListType) return false;
@@ -427,8 +427,8 @@ class Restrictions {
   }
 
   bool _isForeignKeyDefinedOnBothSides(
-    SerializableEntityFieldDefinition field,
-    List<SerializableEntityFieldDefinition> foreignFields,
+    SerializableModelFieldDefinition field,
+    List<SerializableModelFieldDefinition> foreignFields,
   ) {
     bool isForeignFieldForeignKeyOrigin = _isForeignFieldForeignKeyOrigin(
       foreignFields,
@@ -441,7 +441,7 @@ class Restrictions {
   }
 
   bool _isForeignFieldForeignKeyOrigin(
-    List<SerializableEntityFieldDefinition> foreignFields,
+    List<SerializableModelFieldDefinition> foreignFields,
   ) {
     var isForeignFieldForeignKeyOrigin = foreignFields.any(
       (element) => element.relation?.isForeignKeyOrigin == true,
@@ -531,7 +531,7 @@ class Restrictions {
   }
 
   bool _isOneToOneObjectRelation(
-    SerializableEntityFieldDefinition? field,
+    SerializableModelFieldDefinition? field,
     ClassDefinition classDefinition,
   ) {
     if (field == null) return false;
@@ -550,7 +550,7 @@ class Restrictions {
   }
 
   bool _hasUniqueFieldIndex(
-    SerializableEntityFieldDefinition? field,
+    SerializableModelFieldDefinition? field,
   ) {
     if (field == null) return false;
 
@@ -974,7 +974,7 @@ class Restrictions {
     );
   }
 
-  bool _hasTableDefined(SerializableEntityDefinition classDefinition) {
+  bool _hasTableDefined(SerializableModelDefinition classDefinition) {
     if (classDefinition is! ClassDefinition) return false;
 
     return classDefinition.tableName != null;

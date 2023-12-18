@@ -543,10 +543,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
-  /// passing a [SerializableEntity] object as parameter.
+  /// passing a [SerializableModel] object as parameter.
   Future<void> futureCallWithDelay(
     String callName,
-    SerializableEntity? object,
+    SerializableModel? object,
     Duration delay, {
     String? identifier,
   }) async {
@@ -562,10 +562,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
-  /// a [SerializableEntity] object as parameter.
+  /// a [SerializableModel] object as parameter.
   Future<void> futureCallAtTime(
     String callName,
-    SerializableEntity? object,
+    SerializableModel? object,
     DateTime time, {
     String? identifier,
   }) async {

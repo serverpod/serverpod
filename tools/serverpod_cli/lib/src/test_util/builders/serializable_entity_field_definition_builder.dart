@@ -96,8 +96,8 @@ class FieldDefinitionBuilder {
     return this;
   }
 
-  SerializableEntityFieldDefinition build() {
-    return SerializableEntityFieldDefinition(
+  SerializableModelFieldDefinition build() {
+    return SerializableModelFieldDefinition(
       name: _name,
       type: _type,
       scope: _scope,

@@ -4,14 +4,14 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
-abstract class SerializableEntityDefinition {
+abstract class SerializableModelDefinition {
   final String fileName;
   final String sourceFileName;
   final String className;
   final List<String> subDirParts;
   final bool serverOnly;
 
-  SerializableEntityDefinition({
+  SerializableModelDefinition({
     required this.fileName,
     required this.sourceFileName,
     required this.className,
@@ -32,19 +32,19 @@ abstract class SerializableEntityDefinition {
 ///
 /// See also:
 /// - [EnumDefinition]
-class ClassDefinition extends SerializableEntityDefinition {
+class ClassDefinition extends SerializableModelDefinition {
   /// If set, the name of the table, this class should be stored in, in the
   /// database.
   final String? tableName;
 
   /// The fields of this class / exception.
-  List<SerializableEntityFieldDefinition> fields;
+  List<SerializableModelFieldDefinition> fields;
 
   /// The indexes that should be created for the table [tableName] representing
   /// this class.
   ///
   /// The index over the primary key `id` is not part of this list.
-  final List<SerializableEntityIndexDefinition> indexes;
+  final List<SerializableModelIndexDefinition> indexes;
 
   /// The documentation of this class, line by line.
   final List<String>? documentation;
@@ -66,7 +66,7 @@ class ClassDefinition extends SerializableEntityDefinition {
     this.documentation,
   });
 
-  SerializableEntityFieldDefinition? findField(String name) {
+  SerializableModelFieldDefinition? findField(String name) {
     return fields
         .cast()
         .firstWhere((element) => element.name == name, orElse: () => null);
@@ -74,7 +74,7 @@ class ClassDefinition extends SerializableEntityDefinition {
 }
 
 /// Describes a single field of a [ClassDefinition].
-class SerializableEntityFieldDefinition {
+class SerializableModelFieldDefinition {
   /// The name of the field.
   final String name;
 
@@ -107,10 +107,10 @@ class SerializableEntityFieldDefinition {
   final List<String>? documentation;
 
   /// Indexes that this field is part of.
-  List<SerializableEntityIndexDefinition> indexes = [];
+  List<SerializableModelIndexDefinition> indexes = [];
 
-  /// Create a new [SerializableEntityFieldDefinition].
-  SerializableEntityFieldDefinition({
+  /// Create a new [SerializableModelFieldDefinition].
+  SerializableModelFieldDefinition({
     required this.name,
     required this.type,
     required this.scope,
@@ -169,7 +169,7 @@ enum EntityFieldScopeDefinition {
 }
 
 /// The definition of an index for a file, that is also stored in the database.
-class SerializableEntityIndexDefinition {
+class SerializableModelIndexDefinition {
   /// The name of the index.
   final String name;
 
@@ -184,8 +184,8 @@ class SerializableEntityIndexDefinition {
   /// Whether the [fields] of this index should be unique.
   final bool unique;
 
-  /// Create a new [SerializableEntityIndexDefinition].
-  SerializableEntityIndexDefinition({
+  /// Create a new [SerializableModelIndexDefinition].
+  SerializableModelIndexDefinition({
     required this.name,
     required this.type,
     required this.unique,
@@ -194,7 +194,7 @@ class SerializableEntityIndexDefinition {
 }
 
 /// A representation of a yaml file in the protocol directory defining an enum.
-class EnumDefinition extends SerializableEntityDefinition {
+class EnumDefinition extends SerializableModelDefinition {
   /// The type of serialization this enum should use.
   final EnumSerialization serialized;
 

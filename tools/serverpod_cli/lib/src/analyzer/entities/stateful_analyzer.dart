@@ -10,7 +10,7 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 
 class StatefulAnalyzer {
   final Map<String, _ProtocolState> _protocolStates = {};
-  List<SerializableEntityDefinition> _entities = [];
+  List<SerializableModelDefinition> _entities = [];
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
@@ -28,11 +28,11 @@ class StatefulAnalyzer {
   }
 
   /// Returns all valid entities in the state.
-  List<SerializableEntityDefinition> get _validEntities =>
+  List<SerializableModelDefinition> get _validEntities =>
       _protocolStates.values
           .where((state) => state.errors.isEmpty)
           .map((state) => state.entity)
-          .whereType<SerializableEntityDefinition>()
+          .whereType<SerializableModelDefinition>()
           .toList();
 
   /// Adds a new protocol to the state but leaves the responsibility of validating
@@ -64,7 +64,7 @@ class StatefulAnalyzer {
   /// Runs the validation on all protocols in the state. If no protocols are
   /// registered, this returns an empty list.
   /// Errors are reported through the [onErrorsChangedNotifier].
-  List<SerializableEntityDefinition> validateAll() {
+  List<SerializableModelDefinition> validateAll() {
     _updateAllEntities();
     _validateAllProtocols();
     return _validEntities;
@@ -73,13 +73,13 @@ class StatefulAnalyzer {
   /// Runs the validation on a single protocol. The protocol must exist in the
   /// state, if not this returns the last validated state.
   /// Errors are reported through the [onErrorsChangedNotifier].
-  List<SerializableEntityDefinition> validateProtocol(String yaml, Uri uri) {
+  List<SerializableModelDefinition> validateProtocol(String yaml, Uri uri) {
     var state = _protocolStates[uri.path];
     if (state == null) return _entities;
 
     state.source.yaml = yaml;
 
-    var doc = SerializableEntityAnalyzer.extractEntityDefinition(state.source);
+    var doc = SerializableModelAnalyzer.extractEntityDefinition(state.source);
     state.entity = doc;
     if (doc != null) {
       _upsertEntity(doc, uri);
@@ -92,7 +92,7 @@ class StatefulAnalyzer {
 
   void _updateAllEntities() {
     for (var state in _protocolStates.values) {
-      var entity = SerializableEntityAnalyzer.extractEntityDefinition(
+      var entity = SerializableModelAnalyzer.extractEntityDefinition(
         state.source,
       );
       state.entity = entity;
@@ -100,14 +100,14 @@ class StatefulAnalyzer {
 
     _entities = _protocolStates.values
         .map((state) => state.entity)
-        .whereType<SerializableEntityDefinition>()
+        .whereType<SerializableModelDefinition>()
         .toList();
 
-    SerializableEntityAnalyzer.resolveEntityDependencies(_entities);
+    SerializableModelAnalyzer.resolveEntityDependencies(_entities);
   }
 
   void _upsertEntity(
-    SerializableEntityDefinition entity,
+    SerializableModelDefinition entity,
     Uri uri,
   ) {
     var index = _entities.indexWhere(
@@ -120,13 +120,13 @@ class StatefulAnalyzer {
     }
 
     // Can be optimized to only resolve the entity we know has changed.
-    SerializableEntityAnalyzer.resolveEntityDependencies(_entities);
+    SerializableModelAnalyzer.resolveEntityDependencies(_entities);
   }
 
   void _validateAllProtocols() {
     for (var state in _protocolStates.values) {
       var collector = CodeGenerationCollector();
-      SerializableEntityAnalyzer.validateYamlDefinition(
+      SerializableModelAnalyzer.validateYamlDefinition(
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,
@@ -151,7 +151,7 @@ class StatefulAnalyzer {
 class _ProtocolState {
   ProtocolSource source;
   List<SourceSpanException> errors = [];
-  SerializableEntityDefinition? entity;
+  SerializableModelDefinition? entity;
 
   _ProtocolState({
     required this.source,

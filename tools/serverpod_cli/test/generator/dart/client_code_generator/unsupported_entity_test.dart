@@ -7,7 +7,7 @@ const projectName = 'example_project';
 final config = GeneratorConfigBuilder().withName(projectName).build();
 const generator = DartClientCodeGenerator();
 
-class UnsupportedEntity extends SerializableEntityDefinition {
+class UnsupportedEntity extends SerializableModelDefinition {
   UnsupportedEntity(
       {required super.fileName,
       required super.sourceFileName,

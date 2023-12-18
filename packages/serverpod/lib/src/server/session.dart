@@ -549,7 +549,7 @@ class MessageCentralAccess {
   /// only be posted locally on the current server.
   void postMessage(
     String channelName,
-    SerializableEntity message, {
+    SerializableModel message, {
     bool global = false,
   }) {
     _session.server.messageCentral.postMessage(

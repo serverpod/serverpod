@@ -62,14 +62,14 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableEntity.', () {
+      test('inherits from SerializableModel.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
-              name: 'SerializableEntity',
+              name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing extends clause for SerializableModel.');
       });
 
       test('has a fromJson factory.', () {
@@ -137,14 +137,14 @@ void main() {
       name: testClassName,
     );
     group('then the class named $testClassName', () {
-      test('still inherits from SerializableEntity.', () {
+      test('still inherits from SerializableModel.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
-              name: 'SerializableEntity',
+              name: 'SerializableModel',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing extends clause for SerializableModel.');
       });
 
       test('has id in constructor.', () {
@@ -376,7 +376,7 @@ void main() {
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withField(
-            SerializableEntityFieldDefinition(
+            SerializableModelFieldDefinition(
                 name: 'title',
                 type: TypeDefinition(className: 'String', nullable: true),
                 scope: EntityFieldScopeDefinition.none,

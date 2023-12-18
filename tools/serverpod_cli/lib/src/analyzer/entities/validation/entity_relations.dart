@@ -3,10 +3,10 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 
 /// A collection of all parsed entities, and their potential collisions.
 class EntityRelations {
-  final List<SerializableEntityDefinition> entities;
-  late final Map<String, List<SerializableEntityDefinition>> classNames;
-  late final Map<String, List<SerializableEntityDefinition>> tableNames;
-  late final Map<String, List<SerializableEntityDefinition>> indexNames;
+  final List<SerializableModelDefinition> entities;
+  late final Map<String, List<SerializableModelDefinition>> classNames;
+  late final Map<String, List<SerializableModelDefinition>> tableNames;
+  late final Map<String, List<SerializableModelDefinition>> indexNames;
 
   EntityRelations(this.entities) {
     classNames = _createClassNameMap(entities);
@@ -16,10 +16,10 @@ class EntityRelations {
 
   bool classNameExists(name) => findAllByClassName(name).isNotEmpty;
 
-  Map<String, List<SerializableEntityDefinition>> _createTableNameMap(
-    List<SerializableEntityDefinition> entities,
+  Map<String, List<SerializableModelDefinition>> _createTableNameMap(
+    List<SerializableModelDefinition> entities,
   ) {
-    Map<String, List<SerializableEntityDefinition>> tableNames = {};
+    Map<String, List<SerializableModelDefinition>> tableNames = {};
     for (var entity in entities) {
       if (entity is ClassDefinition) {
         var tableName = entity.tableName;
@@ -36,10 +36,10 @@ class EntityRelations {
     return tableNames;
   }
 
-  Map<String, List<SerializableEntityDefinition>> _createClassNameMap(
-    List<SerializableEntityDefinition> entities,
+  Map<String, List<SerializableModelDefinition>> _createClassNameMap(
+    List<SerializableModelDefinition> entities,
   ) {
-    Map<String, List<SerializableEntityDefinition>> classNames = {};
+    Map<String, List<SerializableModelDefinition>> classNames = {};
     for (var entity in entities) {
       classNames.update(
         entity.className,
@@ -51,10 +51,10 @@ class EntityRelations {
     return classNames;
   }
 
-  Map<String, List<SerializableEntityDefinition>> _createIndexNameMap(
-    List<SerializableEntityDefinition> entities,
+  Map<String, List<SerializableModelDefinition>> _createIndexNameMap(
+    List<SerializableModelDefinition> entities,
   ) {
-    Map<String, List<SerializableEntityDefinition>> indexNames = {};
+    Map<String, List<SerializableModelDefinition>> indexNames = {};
     for (var entity in entities) {
       if (entity is ClassDefinition) {
         var indexes = entity.indexes;
@@ -73,78 +73,78 @@ class EntityRelations {
   }
 
   bool isTableNameUnique(
-    SerializableEntityDefinition? classDefinition,
+    SerializableModelDefinition? classDefinition,
     String tableName,
   ) {
     return _isKeyGloballyUnique(classDefinition, tableName, tableNames);
   }
 
   bool isIndexNameUnique(
-    SerializableEntityDefinition? classDefinition,
+    SerializableModelDefinition? classDefinition,
     String indexName,
   ) {
     return _isKeyGloballyUnique(classDefinition, indexName, indexNames);
   }
 
-  List<SerializableEntityDefinition> findAllByTableName(
+  List<SerializableModelDefinition> findAllByTableName(
     String tableName, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     return _filterIgnored(tableNames[tableName], ignore);
   }
 
-  SerializableEntityDefinition? findByTableName(
+  SerializableModelDefinition? findByTableName(
     String tableName, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     var classes = findAllByTableName(tableName, ignore: ignore);
     if (classes.isEmpty) return null;
     return classes.first;
   }
 
-  List<SerializableEntityDefinition> findAllByIndexName(
+  List<SerializableModelDefinition> findAllByIndexName(
     String indexName, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     return _filterIgnored(indexNames[indexName], ignore);
   }
 
-  SerializableEntityDefinition? findByIndexName(
+  SerializableModelDefinition? findByIndexName(
     String indexName, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     var classes = findAllByIndexName(indexName, ignore: ignore);
     if (classes.isEmpty) return null;
     return classes.first;
   }
 
-  List<SerializableEntityDefinition> findAllByClassName(
+  List<SerializableModelDefinition> findAllByClassName(
     String className, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     return _filterIgnored(classNames[className], ignore);
   }
 
-  SerializableEntityDefinition? findByClassName(
+  SerializableModelDefinition? findByClassName(
     String className, {
-    SerializableEntityDefinition? ignore,
+    SerializableModelDefinition? ignore,
   }) {
     var classes = findAllByClassName(className, ignore: ignore);
     if (classes.isEmpty) return null;
     return classes.first;
   }
 
-  List<SerializableEntityDefinition> _filterIgnored(
-    List<SerializableEntityDefinition>? list,
-    SerializableEntityDefinition? ignore,
+  List<SerializableModelDefinition> _filterIgnored(
+    List<SerializableModelDefinition>? list,
+    SerializableModelDefinition? ignore,
   ) {
     if (list == null) return [];
     return list.where((element) => element != ignore).toList();
   }
 
-  List<SerializableEntityFieldDefinition> findNamedForeignRelationFields(
+  List<SerializableModelFieldDefinition> findNamedForeignRelationFields(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
   ) {
     var relationField = _extractRelationField(classDefinition, field);
     if (relationField == null) return [];
@@ -155,7 +155,7 @@ class EntityRelations {
     var relationName = fieldRelation.name;
     if (relationName == null) return [];
 
-    List<SerializableEntityDefinition> foreignClasses;
+    List<SerializableModelDefinition> foreignClasses;
 
     var relation = field.relation;
     if (field.type.isIdType && relation is ForeignRelationDefinition) {
@@ -178,9 +178,9 @@ class EntityRelations {
     );
   }
 
-  SerializableEntityFieldDefinition? _extractRelationField(
+  SerializableModelFieldDefinition? _extractRelationField(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition field,
+    SerializableModelFieldDefinition field,
   ) {
     var fieldRelation = field.relation;
     if (fieldRelation == null) return field;
@@ -197,9 +197,9 @@ class EntityRelations {
   }
 
   bool _isKeyGloballyUnique(
-    SerializableEntityDefinition? classDefinition,
+    SerializableModelDefinition? classDefinition,
     String key,
-    Map<String, List<SerializableEntityDefinition>> map,
+    Map<String, List<SerializableModelDefinition>> map,
   ) {
     var classes = map[key];
 
@@ -210,7 +210,7 @@ class EntityRelations {
     return classes == null || classes.length == 1;
   }
 
-  String extractReferenceClassName(SerializableEntityFieldDefinition field) {
+  String extractReferenceClassName(SerializableModelFieldDefinition field) {
     if (field.type.isListType) {
       return field.type.generics.first.className;
     }

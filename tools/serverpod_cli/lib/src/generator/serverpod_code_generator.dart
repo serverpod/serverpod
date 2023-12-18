@@ -24,7 +24,7 @@ abstract class ServerpodCodeGenerator {
   ///
   /// Returns a list of generated files.
   static Future<List<String>> generateSerializableEntities({
-    required List<SerializableEntityDefinition> entities,
+    required List<SerializableModelDefinition> entities,
     required GeneratorConfig config,
     required CodeGenerationCollector collector,
   }) async {

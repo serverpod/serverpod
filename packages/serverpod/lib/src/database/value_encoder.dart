@@ -29,7 +29,7 @@ class ValueEncoder extends PostgresTextEncoder {
       // encoded to base64. Best would be to find a better way to detect when we
       // are trying to store a ByteData.
       return input;
-    } else if (input is SerializableEntity && input is Enum) {
+    } else if (input is SerializableModel && input is Enum) {
       return super.convert(input.toJson(), escapeStrings: escapeStrings);
     } else if (input is List || input is Map || input is Set) {
       return super.convert(SerializationManager.encode(input),

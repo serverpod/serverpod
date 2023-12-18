@@ -11,10 +11,10 @@ class DartClientCodeGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableEntityDefinition> entities,
+    required List<SerializableModelDefinition> entities,
     required GeneratorConfig config,
   }) {
-    var clientSideGenerator = SerializableEntityLibraryGenerator(
+    var clientSideGenerator = SerializableModelLibraryGenerator(
       serverCode: false,
       config: config,
     );

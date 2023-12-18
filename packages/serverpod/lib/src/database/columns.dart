@@ -37,7 +37,7 @@ class ColumnByteData extends Column<ByteData> {
   ColumnByteData(super.columnName, super.table);
 }
 
-/// A [Column] holding an [SerializableEntity]. The entity will be stored in the
+/// A [Column] holding an [SerializableModel]. The entity will be stored in the
 /// database as a json column.
 class ColumnSerializable extends Column<String> {
   /// Creates a new [Column], this is typically done in generated code only.

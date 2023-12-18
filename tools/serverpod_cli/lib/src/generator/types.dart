@@ -361,7 +361,7 @@ class TypeDefinition {
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
   TypeDefinition applyProtocolReferences(
-      List<SerializableEntityDefinition> classDefinitions) {
+      List<SerializableModelDefinition> classDefinitions) {
     return TypeDefinition(
         className: className,
         nullable: nullable,

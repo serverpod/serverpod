@@ -27,7 +27,7 @@ String _transformFileNameWithoutPathOrExtension(Uri path) {
 }
 
 /// Used to analyze a singe yaml protocol file.
-class SerializableEntityAnalyzer {
+class SerializableModelAnalyzer {
   static const Set<String> _protocolClassTypes = {
     Keyword.classType,
     Keyword.exceptionType,
@@ -35,7 +35,7 @@ class SerializableEntityAnalyzer {
   };
 
   /// Best effort attempt to extract an entity definition from a yaml file.
-  static SerializableEntityDefinition? extractEntityDefinition(
+  static SerializableModelDefinition? extractEntityDefinition(
     ProtocolSource protocolSource,
   ) {
     var outFileName = _transformFileNameWithoutPathOrExtension(
@@ -87,9 +87,9 @@ class SerializableEntityAnalyzer {
 
   /// Resolves dependencies between entities, this method mutates the input.
   static void resolveEntityDependencies(
-    List<SerializableEntityDefinition> entityDefinitions,
+    List<SerializableModelDefinition> entityDefinitions,
   ) {
-    return EntityDependencyResolver.resolveEntityDependencies(
+    return ModelDependencyResolver.resolveModelDependencies(
       entityDefinitions,
     );
   }
@@ -99,8 +99,8 @@ class SerializableEntityAnalyzer {
     String yaml,
     Uri sourceUri,
     CodeAnalysisCollector collector,
-    SerializableEntityDefinition? entity,
-    List<SerializableEntityDefinition>? entities,
+    SerializableModelDefinition? entity,
+    List<SerializableModelDefinition>? entities,
   ) {
     var yamlErrors = ErrorCollector();
     YamlMap? document = _loadYamlMap(yaml, sourceUri, yamlErrors);

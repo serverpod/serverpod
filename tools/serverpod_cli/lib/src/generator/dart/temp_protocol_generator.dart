@@ -10,10 +10,10 @@ class DartTemporaryProtocolGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableEntityDefinition> entities,
+    required List<SerializableModelDefinition> entities,
     required GeneratorConfig config,
   }) {
-    var serverSideGenerator = SerializableEntityLibraryGenerator(
+    var serverSideGenerator = SerializableModelLibraryGenerator(
       serverCode: true,
       config: config,
     );

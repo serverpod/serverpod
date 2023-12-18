@@ -7,7 +7,7 @@ class EndpointDescriptionGenerator extends CodeGenerator {
 
   @override
   Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableEntityDefinition> entities,
+    required List<SerializableModelDefinition> entities,
     required GeneratorConfig config,
   }) {
     return {};

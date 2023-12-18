@@ -5,10 +5,10 @@ import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:super_string/super_string.dart';
 
-class EntityDependencyResolver {
+class ModelDependencyResolver {
   /// Resolves dependencies between entities, this method mutates the input.
-  static void resolveEntityDependencies(
-    List<SerializableEntityDefinition> entityDefinitions,
+  static void resolveModelDependencies(
+    List<SerializableModelDefinition> entityDefinitions,
   ) {
     entityDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
       for (var fieldDefinition in classDefinition.fields) {
@@ -30,7 +30,7 @@ class EntityDependencyResolver {
   }
 
   static void _resolveFieldIndexes(
-    SerializableEntityFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition fieldDefinition,
     ClassDefinition classDefinition,
   ) {
     var indexes = classDefinition.indexes;
@@ -44,16 +44,16 @@ class EntityDependencyResolver {
   }
 
   static TypeDefinition _resolveProtocolReference(
-      SerializableEntityFieldDefinition fieldDefinition,
-      List<SerializableEntityDefinition> entityDefinitions) {
+      SerializableModelFieldDefinition fieldDefinition,
+      List<SerializableModelDefinition> entityDefinitions) {
     return fieldDefinition.type = fieldDefinition.type.applyProtocolReferences(
       entityDefinitions,
     );
   }
 
   static void _resolveEnumType(
-      SerializableEntityFieldDefinition fieldDefinition,
-      List<SerializableEntityDefinition> entityDefinitions) {
+      SerializableModelFieldDefinition fieldDefinition,
+      List<SerializableModelDefinition> entityDefinitions) {
     if (fieldDefinition.type.url != 'protocol') return;
 
     var enumDefinitionList = entityDefinitions
@@ -68,14 +68,14 @@ class EntityDependencyResolver {
 
   static void _resolveObjectRelationReference(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
+    SerializableModelFieldDefinition fieldDefinition,
+    List<SerializableModelDefinition> entityDefinitions,
   ) {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedObjectRelationDefinition) return;
 
     var referenceClass = entityDefinitions
-        .cast<SerializableEntityDefinition?>()
+        .cast<SerializableModelDefinition?>()
         .firstWhere(
             (entity) => entity?.className == fieldDefinition.type.className,
             orElse: () => null);
@@ -120,10 +120,10 @@ class EntityDependencyResolver {
   }
 
   static void _resolveNamedForeignObjectRelation(
-    SerializableEntityFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
-    SerializableEntityFieldDefinition foreignField,
+    SerializableModelFieldDefinition foreignField,
   ) {
     String? foreignFieldName;
 
@@ -151,7 +151,7 @@ class EntityDependencyResolver {
 
   static void _resolveImplicitDefinedRelation(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
@@ -159,7 +159,7 @@ class EntityDependencyResolver {
         ? TypeDefinition.int.asNullable
         : TypeDefinition.int;
 
-    var foreignRelationField = SerializableEntityFieldDefinition(
+    var foreignRelationField = SerializableModelFieldDefinition(
       name: _createImplicitForeignIdFieldName(fieldDefinition.name),
       relation: ForeignRelationDefinition(
         name: relation.name,
@@ -190,7 +190,7 @@ class EntityDependencyResolver {
 
   static void _resolveManualDefinedRelation(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition fieldDefinition,
     UnresolvedObjectRelationDefinition relation,
     String tableName,
     String relationFieldName,
@@ -223,7 +223,7 @@ class EntityDependencyResolver {
     );
   }
 
-  static SerializableEntityFieldDefinition? _findForeignFieldByRelationName(
+  static SerializableModelFieldDefinition? _findForeignFieldByRelationName(
     ClassDefinition classDefinition,
     ClassDefinition foreignClass,
     String fieldName,
@@ -242,8 +242,8 @@ class EntityDependencyResolver {
 
   static void _injectForeignRelationField(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    SerializableEntityFieldDefinition foreignRelationField,
+    SerializableModelFieldDefinition fieldDefinition,
+    SerializableModelFieldDefinition foreignRelationField,
   ) {
     var insertIndex = max(
       classDefinition.fields.indexOf(fieldDefinition),
@@ -258,8 +258,8 @@ class EntityDependencyResolver {
 
   static void _resolveListRelationReference(
     ClassDefinition classDefinition,
-    SerializableEntityFieldDefinition fieldDefinition,
-    List<SerializableEntityDefinition> entityDefinitions,
+    SerializableModelFieldDefinition fieldDefinition,
+    List<SerializableModelDefinition> entityDefinitions,
   ) {
     var relation = fieldDefinition.relation;
     if (relation is! UnresolvedListRelationDefinition) {
@@ -270,7 +270,7 @@ class EntityDependencyResolver {
     var referenceClassName = type.generics.first.className;
 
     var referenceClass =
-        entityDefinitions.cast<SerializableEntityDefinition?>().firstWhere(
+        entityDefinitions.cast<SerializableModelDefinition?>().firstWhere(
               (entity) => entity?.className == referenceClassName,
               orElse: () => null,
             );
@@ -287,7 +287,7 @@ class EntityDependencyResolver {
       var autoRelationName = '#_relation_$foreignFieldName';
 
       referenceClass.fields.add(
-        SerializableEntityFieldDefinition(
+        SerializableModelFieldDefinition(
           name: foreignFieldName,
           type: TypeDefinition.int.asNullable,
           scope: EntityFieldScopeDefinition.none,
