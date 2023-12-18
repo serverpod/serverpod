@@ -19,7 +19,8 @@ class SerializableModelLibraryGenerator {
   });
 
   /// Generate the file for a model.
-  Library generateModelLibrary(SerializableModelDefinition modelDefinition) {
+  Library generateModelLibrary(
+      SerializableModelDefinition modelDefinition) {
     if (modelDefinition is ClassDefinition) {
       return _generateClassLibrary(modelDefinition);
     }
@@ -1401,8 +1402,8 @@ class SerializableModelLibraryGenerator {
       c.name = '${className}Table';
       c.extend = refer('Table', serverpodUrl(serverCode));
 
-      c.constructors.add(
-          _buildModelTableClassConstructor(tableName, fields, classDefinition));
+      c.constructors.add(_buildModelTableClassConstructor(
+          tableName, fields, classDefinition));
 
       c.fields.addAll(
         _buildModelTableClassFields(fields, classDefinition.subDirParts),

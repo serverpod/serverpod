@@ -87,57 +87,105 @@ void main() {
 
       expect(pathParts, ['nested', 'folder']);
     });
+  });
 
-    group('Test yaml model loader.', () {
-      var serverRootDir = Directory(join(
-        'test',
-        'integration',
-        'util',
-        'test_assets',
-        'protocol_helper',
-        'has_serverpod_server_project',
-        'test_server',
-      ));
+  group('Test yaml model loader.', () {
+    var serverRootDir = Directory(join(
+      'test',
+      'integration',
+      'util',
+      'test_assets',
+      'protocol_helper',
+      'has_serverpod_server_project',
+      'test_server',
+    ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+    var config = createGeneratorConfig(split(serverRootDir.path));
 
-      test(
-          'Given a serverpod project with model files, then the converted model path has the file uri set.',
-          () async {
-        var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+    test(
+        'Given a serverpod project with model files, then the converted model path has the file uri set.',
+        () async {
+      var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-        var paths = models.map((e) => e.yamlSourceUri.path).toList();
+      var paths = models.map((e) => e.yamlSourceUri.path).toList();
 
-        expect(
-          paths,
-          contains(
-              'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
-        );
+      expect(
+        paths,
+        contains(
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
+      );
 
-        expect(
-          paths,
-          contains(
-              'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
-        );
-      });
+      expect(
+        paths,
+        contains(
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
+      );
+    });
 
-      test(
-          'Given a serverpod project with model files, then the converted model yaml string has been set.',
-          () async {
-        var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+    test(
+        'Given a serverpod project with model files, then the converted model yaml string has been set.',
+        () async {
+      var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-        expect(models.last.yaml.replaceAll('\r', ''), '''
+      expect(models.last.yaml.replaceAll('\r', ''), '''
 class: Test
 fields:
   name: String
 ''');
 
-        expect(models.first.yaml.replaceAll('\r', ''), '''
+      expect(models.first.yaml.replaceAll('\r', ''), '''
 class: Example
 fields:
   name: String
 ''');
-      });
     });
+  });
+
+  test(
+      'Given a serverpod project without a protocol or model folder then the converted model path list is empty.',
+      () async {
+    var serverRootDir = Directory(join(
+      'test',
+      'integration',
+      'util',
+      'test_assets',
+      'protocol_helper',
+      'empty_serverpod_server_project',
+      'test_server',
+    ));
+
+    var config = createGeneratorConfig(split(serverRootDir.path));
+
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+    var paths = models.map((e) => e.yamlSourceUri.path).toList();
+
+    expect(paths, isEmpty);
+  });
+
+  test(
+      'Given a serverpod project without a protocol or model folder then the converted model path list is empty.',
+      () async {
+    var serverRootDir = Directory(join(
+      'test',
+      'integration',
+      'util',
+      'test_assets',
+      'protocol_helper',
+      'protocol_serverpod_server_project',
+      'test_server',
+    ));
+
+    var config = createGeneratorConfig(split(serverRootDir.path));
+
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+    var paths = models.map((e) => e.yamlSourceUri.path).toList();
+
+    expect(
+      paths,
+      contains(
+          'test/integration/util/test_assets/protocol_helper/protocol_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
+    );
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart';
@@ -24,12 +25,20 @@ class ModelHelper {
     GeneratorConfig config,
   ) async {
     var protocolSourceDir = Directory(joinAll(config.protocolSourcePathParts));
-    var protocolSourceFileList =
-        await protocolSourceDir.list(recursive: true).toList();
+
+    List<FileSystemEntity> protocolSourceFileList = [];
+
+    try {
+      protocolSourceFileList =
+          await protocolSourceDir.list(recursive: true).toList();
+    } on PathNotFoundException catch (_) {}
+
+    List<FileSystemEntity> modelSourceFileList = [];
 
     var modelSourceDir = Directory(joinAll(config.modelSourcePathParts));
-    var modelSourceFileList =
-        await modelSourceDir.list(recursive: true).toList();
+    try {
+      modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
+    } on PathNotFoundException catch (_) {}
 
     var sourceFileList = [...protocolSourceFileList, ...modelSourceFileList];
 
