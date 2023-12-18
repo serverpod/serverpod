@@ -51,8 +51,7 @@ class ModelDependencyResolver {
     );
   }
 
-  static void _resolveEnumType(
-      SerializableModelFieldDefinition fieldDefinition,
+  static void _resolveEnumType(SerializableModelFieldDefinition fieldDefinition,
       List<SerializableModelDefinition> modelDefinitions) {
     if (fieldDefinition.type.url != 'protocol') return;
 

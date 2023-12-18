@@ -49,8 +49,7 @@ void main() {
           .build()
     ];
 
-    var protocolDefinition =
-        ProtocolDefinition(endpoints: [], models: models);
+    var protocolDefinition = ProtocolDefinition(endpoints: [], models: models);
 
     var codeMap = generator.generateProtocolCode(
       protocolDefinition: protocolDefinition,

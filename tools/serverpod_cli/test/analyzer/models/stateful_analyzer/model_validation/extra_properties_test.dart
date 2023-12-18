@@ -77,7 +77,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+          .validateAll();
 
       expect(
         collector.errors,
@@ -104,7 +105,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+          .validateAll();
 
       expect(
         collector.errors,
@@ -155,7 +157,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -187,7 +190,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -218,7 +222,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -257,7 +262,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -290,7 +296,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -324,7 +331,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,
@@ -356,7 +364,8 @@ void main() {
         ];
 
         var collector = CodeGenerationCollector();
-        StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+        StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+            .validateAll();
 
         expect(
           collector.errors,

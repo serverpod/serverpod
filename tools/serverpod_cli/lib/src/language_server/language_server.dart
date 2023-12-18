@@ -73,8 +73,7 @@ Future<void> runLanguageServer() async {
     if (project.analyzer.isModelRegistered(params.textDocument.uri)) {
       return;
     }
-    if (!_isModelInServerPath(
-        params.textDocument.uri, project.serverRootUri)) {
+    if (!_isModelInServerPath(params.textDocument.uri, project.serverRootUri)) {
       return;
     }
 

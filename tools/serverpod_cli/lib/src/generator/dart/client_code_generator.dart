@@ -26,9 +26,7 @@ class DartClientCodeGenerator extends CodeGenerator {
             ...config.generatedDartClientModelPathParts,
             ...model.subDirParts,
             '${model.fileName}.dart',
-          ]): clientSideGenerator
-              .generateModelLibrary(model)
-              .generateCode(),
+          ]): clientSideGenerator.generateModelLibrary(model).generateCode(),
     };
   }
 
@@ -43,12 +41,9 @@ class DartClientCodeGenerator extends CodeGenerator {
       config: config,
     );
     return {
-      p.joinAll([
-        ...config.generatedDartClientModelPathParts,
-        'protocol.dart'
-      ]): clientClassGenerator.generateProtocol().generateCode(),
-      p.joinAll(
-              [...config.generatedDartClientModelPathParts, 'client.dart']):
+      p.joinAll([...config.generatedDartClientModelPathParts, 'protocol.dart']):
+          clientClassGenerator.generateProtocol().generateCode(),
+      p.joinAll([...config.generatedDartClientModelPathParts, 'client.dart']):
           clientClassGenerator.generateClientEndpointCalls().generateCode(),
     };
   }

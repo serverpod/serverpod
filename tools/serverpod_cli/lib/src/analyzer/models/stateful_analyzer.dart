@@ -28,12 +28,11 @@ class StatefulAnalyzer {
   }
 
   /// Returns all valid models in the state.
-  List<SerializableModelDefinition> get _validModels =>
-      _modelStates.values
-          .where((state) => state.errors.isEmpty)
-          .map((state) => state.model)
-          .whereType<SerializableModelDefinition>()
-          .toList();
+  List<SerializableModelDefinition> get _validModels => _modelStates.values
+      .where((state) => state.errors.isEmpty)
+      .map((state) => state.model)
+      .whereType<SerializableModelDefinition>()
+      .toList();
 
   /// Adds a new model to the state but leaves the responsibility of validating
   /// it to the caller. Please note that [validateAll] should be called to

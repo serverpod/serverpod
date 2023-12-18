@@ -314,8 +314,7 @@ fields:
 
     statefulAnalyzer.addYamlModel(yamlSource2);
 
-    statefulAnalyzer.validateModel(
-        yamlSource2.yaml, yamlSource2.yamlSourceUri);
+    statefulAnalyzer.validateModel(yamlSource2.yaml, yamlSource2.yamlSourceUri);
 
     expect(reportedErrors?.errors, hasLength(1),
         reason: 'Expected an error to be reported.');

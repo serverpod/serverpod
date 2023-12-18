@@ -124,8 +124,7 @@ void main() async {
     expect(updated.email, expectedEmail);
   });
 
-  test(
-      'Given an model without an id when updatingRow then an error is thrown.',
+  test('Given an model without an id when updatingRow then an error is thrown.',
       () async {
     expect(
       UniqueData.db.updateRow(

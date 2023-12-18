@@ -556,8 +556,7 @@ fields:
     );
   });
 
-  group(
-      'Given a class with a relation to a model class with a table defined',
+  group('Given a class with a relation to a model class with a table defined',
       () {
     var models = [
       ModelSourceBuilder().withYaml(

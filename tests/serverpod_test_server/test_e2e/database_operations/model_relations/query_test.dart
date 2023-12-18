@@ -69,8 +69,7 @@ void main() async {
     });
   });
 
-  group('Given models with relations when ordering on relation attributes',
-      () {
+  group('Given models with relations when ordering on relation attributes', () {
     late List<Citizen> citizensOrderedByCompanyName;
     setUpAll(() async {
       await _createTestDatabase(client);
@@ -124,8 +123,7 @@ void main() async {
     });
   });
 
-  group('Given models with relation when deleting on relation attributes',
-      () {
+  group('Given models with relation when deleting on relation attributes', () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
@@ -155,8 +153,7 @@ void main() async {
     });
   });
 
-  group('Given models with relation when counting on relation attributes',
-      () {
+  group('Given models with relation when counting on relation attributes', () {
     setUp(() async => await _createTestDatabase(client));
 
     tearDown(() async => await client.relation.deleteAll());
