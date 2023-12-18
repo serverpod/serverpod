@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
-abstract class ReadWriteTestEntry extends _i1.SerializableModel {
+abstract class ReadWriteTestEntry extends _i1.SerializableEntity {
   ReadWriteTestEntry._({
     this.id,
     required this.number,

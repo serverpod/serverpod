@@ -6,7 +6,7 @@ import 'session.dart';
 /// Superclass of a [FutureCall], override the [invoke] method to create a
 /// custom [FutureCall]. The call also needs to be registered with the top
 /// [ServerPod] object before starting the [Server].
-abstract class FutureCall<T extends SerializableModel> {
+abstract class FutureCall<T extends SerializableEntity> {
   late String _name;
 
   /// The name of the call.

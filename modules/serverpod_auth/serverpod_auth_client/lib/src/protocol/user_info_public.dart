@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a user that can safely be publically accessible.
-abstract class UserInfoPublic extends _i1.SerializableModel {
+abstract class UserInfoPublic extends _i1.SerializableEntity {
   UserInfoPublic._({
     this.id,
     required this.userName,

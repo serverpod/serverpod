@@ -403,7 +403,7 @@ class Server {
             dynamic messageError;
             StackTrace? messageStackTrace;
 
-            SerializableModel? message;
+            SerializableEntity? message;
             try {
               session.sessionLogs.currentEndpoint = endpointName;
 

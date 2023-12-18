@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Log entry for a session.
-abstract class SessionLogEntry extends _i1.SerializableModel {
+abstract class SessionLogEntry extends _i1.SerializableEntity {
   SessionLogEntry._({
     this.id,
     required this.serverId,

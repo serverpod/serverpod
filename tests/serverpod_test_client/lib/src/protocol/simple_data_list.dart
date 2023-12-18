@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class SimpleDataList extends _i1.SerializableModel {
+abstract class SimpleDataList extends _i1.SerializableEntity {
   SimpleDataList._({required this.rows});
 
   factory SimpleDataList({required List<_i2.SimpleData> rows}) =

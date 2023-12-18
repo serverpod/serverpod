@@ -6,13 +6,13 @@ import 'dart:typed_data';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The constructor takes JSON structure and turns it into a decoded
-/// [SerializableModel].
+/// [SerializableEntity].
 typedef constructor<T> = T Function(
     dynamic jsonSerialization, SerializationManager serializationManager);
 
-/// The [SerializableModel] is the base class for all serializable objects in
+/// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract mixin class SerializableModel {
+abstract mixin class SerializableEntity {
   /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.

@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) column in the database.
-abstract class ColumnDefinition extends _i1.SerializableModel {
+abstract class ColumnDefinition extends _i1.SerializableEntity {
   ColumnDefinition._({
     required this.name,
     required this.columnType,

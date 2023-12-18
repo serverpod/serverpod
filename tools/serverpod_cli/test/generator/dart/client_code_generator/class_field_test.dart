@@ -66,7 +66,7 @@ void main() {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
-              name: 'SerializableModel',
+              name: 'SerializableEntity',
             ),
             isTrue,
             reason: 'Missing extends clause for SerializableModel.');
@@ -141,7 +141,7 @@ void main() {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
-              name: 'SerializableModel',
+              name: 'SerializableEntity',
             ),
             isTrue,
             reason: 'Missing extends clause for SerializableModel.');

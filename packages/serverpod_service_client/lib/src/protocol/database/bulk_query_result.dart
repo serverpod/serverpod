@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class BulkQueryResult extends _i1.SerializableModel {
+abstract class BulkQueryResult extends _i1.SerializableEntity {
   BulkQueryResult._({
     required this.headers,
     required this.data,

@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Connects a table for handling uploading of files.
-abstract class CloudStorageDirectUploadEntry extends _i1.SerializableModel {
+abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,

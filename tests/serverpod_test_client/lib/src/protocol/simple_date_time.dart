@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Just some simple data.
-abstract class SimpleDateTime extends _i1.SerializableModel {
+abstract class SimpleDateTime extends _i1.SerializableEntity {
   SimpleDateTime._({
     this.id,
     required this.dateTime,

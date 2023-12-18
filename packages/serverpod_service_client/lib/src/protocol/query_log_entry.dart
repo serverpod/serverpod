@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry extends _i1.SerializableModel {
+abstract class QueryLogEntry extends _i1.SerializableEntity {
   QueryLogEntry._({
     this.id,
     required this.serverId,

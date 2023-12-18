@@ -71,7 +71,7 @@ class Serverpod {
   /// running.
   final HealthCheckHandler? healthCheckHandler;
 
-  /// [SerializationManager] used to serialize [SerializableModel], both
+  /// [SerializationManager] used to serialize [SerializableEntity], both
   /// when sending data to a method in an [Endpoint], but also for caching, and
   /// [FutureCall]s.
   final SerializationManagerServer serializationManager;
@@ -543,10 +543,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name after the specified delay, optionally
-  /// passing a [SerializableModel] object as parameter.
+  /// passing a [SerializableEntity] object as parameter.
   Future<void> futureCallWithDelay(
     String callName,
-    SerializableModel? object,
+    SerializableEntity? object,
     Duration delay, {
     String? identifier,
   }) async {
@@ -562,10 +562,10 @@ class Serverpod {
   }
 
   /// Calls a [FutureCall] by its name at the specified time, optionally passing
-  /// a [SerializableModel] object as parameter.
+  /// a [SerializableEntity] object as parameter.
   Future<void> futureCallAtTime(
     String callName,
-    SerializableModel? object,
+    SerializableEntity? object,
     DateTime time, {
     String? identifier,
   }) async {

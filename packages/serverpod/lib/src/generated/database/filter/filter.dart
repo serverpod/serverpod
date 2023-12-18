@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
 
-abstract class Filter extends _i1.SerializableModel {
+abstract class Filter extends _i1.SerializableEntity {
   Filter._({
     required this.name,
     required this.table,

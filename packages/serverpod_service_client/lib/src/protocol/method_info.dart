@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a server method.
-abstract class MethodInfo extends _i1.SerializableModel {
+abstract class MethodInfo extends _i1.SerializableEntity {
   MethodInfo._({
     this.id,
     required this.endpoint,

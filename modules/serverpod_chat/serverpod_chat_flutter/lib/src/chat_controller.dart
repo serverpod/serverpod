@@ -116,7 +116,7 @@ class ChatController {
     _connectionStatusListeners.clear();
   }
 
-  void _handleServerMessage(SerializableModel serverMessage) {
+  void _handleServerMessage(SerializableEntity serverMessage) {
     if (serverMessage is ChatMessage) {
       if (ephemeral && serverMessage.id == null) {
         serverMessage.id = ++_ephemeralMessageId;

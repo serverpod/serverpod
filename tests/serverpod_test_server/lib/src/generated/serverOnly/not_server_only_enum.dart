@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-enum NotServerOnlyEnum with _i1.SerializableModel {
+enum NotServerOnlyEnum with _i1.SerializableEntity {
   foo,
   bar;
 

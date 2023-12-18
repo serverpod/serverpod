@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Provides a method of access for a user to authenticate with the server.
-abstract class AuthKey extends _i1.SerializableModel {
+abstract class AuthKey extends _i1.SerializableEntity {
   AuthKey._({
     this.id,
     required this.userId,

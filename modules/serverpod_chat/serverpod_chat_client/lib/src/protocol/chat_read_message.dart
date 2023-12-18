@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Message to notifiy the server that messages have been read.
-abstract class ChatReadMessage extends _i1.SerializableModel {
+abstract class ChatReadMessage extends _i1.SerializableEntity {
   ChatReadMessage._({
     this.id,
     required this.channel,

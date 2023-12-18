@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database bindings for a Google refresh token.
-abstract class GoogleRefreshToken extends _i1.SerializableModel {
+abstract class GoogleRefreshToken extends _i1.SerializableEntity {
   GoogleRefreshToken._({
     this.id,
     required this.userId,

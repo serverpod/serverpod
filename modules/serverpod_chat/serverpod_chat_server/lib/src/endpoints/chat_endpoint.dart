@@ -37,7 +37,7 @@ class ChatEndpoint extends Endpoint {
 
   @override
   Future<void> handleStreamMessage(
-      StreamingSession session, SerializableModel message) async {
+      StreamingSession session, SerializableEntity message) async {
     var chatSession = getUserObject(session) as _ChatSessionInfo;
 
     if (message is ChatJoinChannel) {
@@ -84,7 +84,7 @@ class ChatEndpoint extends Endpoint {
       }
 
       // Setup a listener that passes on messages from the subscribed channel
-      void messageListener(SerializableModel message) {
+      void messageListener(SerializableEntity message) {
         sendStreamMessage(session, message);
       }
 

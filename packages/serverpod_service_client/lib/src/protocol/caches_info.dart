@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// High level information about the caches.
-abstract class CachesInfo extends _i1.SerializableModel {
+abstract class CachesInfo extends _i1.SerializableEntity {
   CachesInfo._({
     required this.local,
     required this.localPrio,

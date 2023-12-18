@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
 
 /// The definition of a (desired) table in the database.
-abstract class TableDefinition extends _i1.SerializableModel {
+abstract class TableDefinition extends _i1.SerializableEntity {
   TableDefinition._({
     required this.name,
     this.dartName,

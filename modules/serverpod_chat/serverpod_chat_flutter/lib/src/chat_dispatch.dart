@@ -1,7 +1,7 @@
 import 'package:serverpod_chat_client/module.dart';
 
 /// Callback for received chat messages.
-typedef ChatMessageListener = void Function(SerializableModel message);
+typedef ChatMessageListener = void Function(SerializableEntity message);
 
 /// The [ChatDispatch] receives chat related messages from the server and
 /// passes them on to the correct [ChatController].
@@ -60,7 +60,7 @@ class ChatDispatch {
     }
   }
 
-  void _routeMessageToChannel(String channel, SerializableModel message) {
+  void _routeMessageToChannel(String channel, SerializableEntity message) {
     var listener = _listeners[channel];
     if (listener != null) {
       listener(message);

@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class FileNotFoundException extends _i1.SerializableModel
+abstract class FileNotFoundException extends _i1.SerializableEntity
     implements _i1.SerializableException {
   FileNotFoundException._({required this.message});
 

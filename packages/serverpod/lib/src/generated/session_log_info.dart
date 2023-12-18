@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Compounded information about a session log.
-abstract class SessionLogInfo extends _i1.SerializableModel {
+abstract class SessionLogInfo extends _i1.SerializableEntity {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,

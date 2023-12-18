@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../../../protocol.dart' as _i2;
 
-abstract class Cat extends _i1.SerializableModel {
+abstract class Cat extends _i1.SerializableEntity {
   Cat._({
     this.id,
     required this.name,

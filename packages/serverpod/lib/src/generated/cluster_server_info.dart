@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Information about a single server in a cluster.
-abstract class ClusterServerInfo extends _i1.SerializableModel {
+abstract class ClusterServerInfo extends _i1.SerializableEntity {
   ClusterServerInfo._({required this.serverId});
 
   factory ClusterServerInfo({required String serverId}) =

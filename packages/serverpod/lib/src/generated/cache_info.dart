@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Provides high level information about a cache.
-abstract class CacheInfo extends _i1.SerializableModel {
+abstract class CacheInfo extends _i1.SerializableEntity {
   CacheInfo._({
     required this.numEntries,
     required this.maxEntries,

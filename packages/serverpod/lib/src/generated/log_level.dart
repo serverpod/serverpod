@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Represents different log levels.
-enum LogLevel with _i1.SerializableModel {
+enum LogLevel with _i1.SerializableEntity {
   debug,
   info,
   warning,

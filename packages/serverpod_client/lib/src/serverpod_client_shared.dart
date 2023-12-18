@@ -174,7 +174,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   Future<void> _sendSerializableObjectToStream(
-      String endpoint, SerializableModel message) async {
+      String endpoint, SerializableEntity message) async {
     var data = {
       'endpoint': endpoint,
       'object': {
@@ -411,15 +411,15 @@ abstract class EndpointRef {
   /// The name of the endpoint this reference is connected to.
   String get name;
 
-  /// The stream controller handles the stream of [SerializableModel] sent
+  /// The stream controller handles the stream of [SerializableEntity] sent
   /// from the server endpoint to the client, if it supports streaming.
-  var _streamController = StreamController<SerializableModel>();
+  var _streamController = StreamController<SerializableEntity>();
 
   /// Stream of messages sent from an endpoint that supports streaming.
-  Stream<SerializableModel> get stream => _streamController.stream;
+  Stream<SerializableEntity> get stream => _streamController.stream;
 
   /// Sends a message to the endpoint's stream.
-  Future<void> sendStreamMessage(SerializableModel message) async {
+  Future<void> sendStreamMessage(SerializableEntity message) async {
     return client._sendSerializableObjectToStream(name, message);
   }
 
@@ -433,6 +433,6 @@ abstract class EndpointRef {
     } catch (e) {
       // Just in case, an issue happens when closing the stream.
     }
-    _streamController = StreamController<SerializableModel>();
+    _streamController = StreamController<SerializableEntity>();
   }
 }

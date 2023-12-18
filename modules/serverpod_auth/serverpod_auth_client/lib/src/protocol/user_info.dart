@@ -15,7 +15,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
-abstract class UserInfo extends _i1.SerializableModel {
+abstract class UserInfo extends _i1.SerializableEntity {
   UserInfo._({
     this.id,
     required this.userIdentifier,

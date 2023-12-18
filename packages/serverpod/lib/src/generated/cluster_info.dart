@@ -12,7 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 
 /// Information about a cluster of servers.
-abstract class ClusterInfo extends _i1.SerializableModel {
+abstract class ClusterInfo extends _i1.SerializableEntity {
   ClusterInfo._({required this.servers});
 
   factory ClusterInfo({required List<_i2.ClusterServerInfo> servers}) =

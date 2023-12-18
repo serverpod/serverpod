@@ -84,7 +84,10 @@ Future<bool> performGenerate({
   log.debug('Cleaning old files.');
 
   await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
-    generatedFiles: <String>{...generatedModelFiles, ...generatedProtocolFiles},
+    generatedFiles: <String>{
+      ...generatedModelFiles,
+      ...generatedProtocolFiles
+    },
     protocolDefinition: protocolDefinition,
     config: config,
   );

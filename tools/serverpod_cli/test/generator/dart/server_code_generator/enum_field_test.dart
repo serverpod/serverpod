@@ -32,9 +32,9 @@ void main() {
       expect(codeMap[expectedFileName], contains('enum Example'));
     });
 
-    test('then generated enum inherits from SerializableModel', () {
+    test('then generated enum inherits from SerializableEntity', () {
       expect(codeMap[expectedFileName],
-          contains('enum Example with _i1.SerializableModel {'));
+          contains('enum Example with _i1.SerializableEntity {'));
     });
 
     test('then generated enum imports server version of serverpod client', () {

@@ -11,7 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
 
-abstract class BulkData extends _i1.SerializableModel {
+abstract class BulkData extends _i1.SerializableEntity {
   BulkData._({
     required this.tableDefinition,
     required this.data,

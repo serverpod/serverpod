@@ -13,7 +13,7 @@ class StreamingLoggingEndpoint extends Endpoint {
   @override
   Future<void> handleStreamMessage(
     StreamingSession session,
-    SerializableModel message,
+    SerializableEntity message,
   ) async {
     if (message is SimpleData) {
       session.log('handleStreamMessage $_logCount');

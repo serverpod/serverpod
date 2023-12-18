@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-abstract class SimpleDataMap extends _i1.SerializableModel {
+abstract class SimpleDataMap extends _i1.SerializableEntity {
   SimpleDataMap._({required this.data});
 
   factory SimpleDataMap({required Map<String, _i2.SimpleData> data}) =

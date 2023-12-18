@@ -6,7 +6,7 @@ import 'package:serverpod_client/serverpod_client.dart';
 // Just be careful while importing, since the serialization
 // system treats the two implementations this classes differently.
 
-class CustomClass extends SerializableModel {
+class CustomClass extends SerializableEntity {
   final String value;
 
   CustomClass(this.value);
