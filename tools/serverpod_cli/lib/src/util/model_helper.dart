@@ -98,6 +98,14 @@ class ModelHelper {
         (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
   }
 
+  static List<String> extractPathFromConfig(GeneratorConfig config, Uri uri) {
+    if (isWithin(joinAll(config.protocolSourcePathParts), uri.path)) {
+      return extractPathFromModelRoot(config.protocolSourcePathParts, uri);
+    }
+
+    return extractPathFromModelRoot(config.modelSourcePathParts, uri);
+  }
+
   static List<String> extractPathFromModelRoot(
     List<String> pathParts,
     Uri fileUri,

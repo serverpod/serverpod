@@ -22,7 +22,101 @@ GeneratorConfig createGeneratorConfig([
 }
 
 void main() {
-  group('Test path extraction.', () {
+  group('Test path extraction - extractPathFromConfig.', () {
+    var serverRootDir = Directory(join(
+      'test',
+      'integration'
+          'util',
+      'test_assets',
+      'protocol_helper',
+      'has_serverpod_server_project',
+      'test_server',
+    ));
+
+    test(
+        'Given a model path directly inside the protocol folder, then the parts list is empty.',
+        () {
+      var modelFile = File(join(
+        'test',
+        'integration'
+            'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+        'protocol',
+        'test.yaml',
+      ));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
+        modelFile.uri,
+      );
+
+      expect(pathParts, []);
+    });
+
+    test(
+        'Given a model with a nested path inside the protocol folder, then the parts list contains the nested path.',
+        () {
+      var modelFile = File(join(
+        'test',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+        'protocol',
+        'nested',
+        'folder',
+        'test.yaml',
+      ));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
+        modelFile.uri,
+      );
+
+      expect(pathParts, ['nested', 'folder']);
+    });
+
+    test(
+        'Given a model with a nested path inside the model folder, then the parts list contains the nested path.',
+        () {
+      var modelFile = File(join(
+        'test',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+        'model',
+        'nested',
+        'folder',
+        'test.yaml',
+      ));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var pathParts = ModelHelper.extractPathFromConfig(
+        config,
+        modelFile.uri,
+      );
+
+      expect(pathParts, ['nested', 'folder']);
+    });
+  });
+  group('Test path extraction - extractPathFromModelRoot.', () {
     test(
         'Given a model path directly inside the model folder, then the parts list is empty.',
         () {
