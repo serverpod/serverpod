@@ -379,6 +379,10 @@ class StudentRepository {
 
   final attachRow = const StudentAttachRowRepository._();
 
+  final detach = const StudentDetachRepository._();
+
+  final detachRow = const StudentDetachRowRepository._();
+
   Future<List<Student>> find(
     _i1.Session session, {
     _i1.WhereExpressionBuilder<StudentTable>? where,
@@ -571,6 +575,45 @@ class StudentAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(studentId: student.id);
+    await session.dbNext.updateRow<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.studentId],
+    );
+  }
+}
+
+class StudentDetachRepository {
+  const StudentDetachRepository._();
+
+  Future<void> enrollments(
+    _i1.Session session,
+    List<_i2.Enrollment> enrollment,
+  ) async {
+    if (enrollment.any((e) => e.id == null)) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+
+    var $enrollment =
+        enrollment.map((e) => e.copyWith(studentId: null)).toList();
+    await session.dbNext.update<_i2.Enrollment>(
+      $enrollment,
+      columns: [_i2.Enrollment.t.studentId],
+    );
+  }
+}
+
+class StudentDetachRowRepository {
+  const StudentDetachRowRepository._();
+
+  Future<void> enrollments(
+    _i1.Session session,
+    _i2.Enrollment enrollment,
+  ) async {
+    if (enrollment.id == null) {
+      throw ArgumentError.notNull('enrollment.id');
+    }
+
+    var $enrollment = enrollment.copyWith(studentId: null);
     await session.dbNext.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.studentId],
