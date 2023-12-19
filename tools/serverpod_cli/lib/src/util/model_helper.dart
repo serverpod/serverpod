@@ -87,7 +87,7 @@ class ModelHelper {
   ) async {
     List<FileSystemEntity> modelSourceFileList = [];
 
-    var dir = Directory('/${joinAll(absolutePathParts)}');
+    var dir = Directory('$separator${joinAll(absolutePathParts)}');
 
     try {
       var modelSourceDir = dir;
