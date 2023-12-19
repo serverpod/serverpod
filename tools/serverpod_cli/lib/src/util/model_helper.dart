@@ -50,6 +50,11 @@ class ModelHelper {
       modelSources.addAll(modelSource);
     }
 
+    // TODO This sort is needed to make sure all generated methods
+    // are in the same order. Move this logic to the code generator instead.
+    modelSources
+        .sort((a, b) => a.yamlSourceUri.path.compareTo(b.yamlSourceUri.path));
+
     return modelSources;
   }
 
@@ -62,10 +67,6 @@ class ModelHelper {
     List<String> pathParts,
   ) async {
     var files = await _loadAllModelFiles(pathParts);
-
-    // TODO This sort is needed to make sure all generated methods
-    // are in the same order. Move this logic to the code generator instead.
-    files.toList().sort((a, b) => a.path.compareTo(b.path));
 
     List<ModelSource> sources = [];
     for (var model in files) {
