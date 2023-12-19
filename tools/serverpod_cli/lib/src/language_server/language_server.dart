@@ -83,7 +83,7 @@ Future<void> runLanguageServer() async {
         params.textDocument.text,
         params.textDocument.uri,
         ModelHelper.extractPathFromModelRoot(
-          project.config,
+          project.config.protocolSourcePathParts, // TODO
           params.textDocument.uri,
         ),
       ),

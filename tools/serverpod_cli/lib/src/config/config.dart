@@ -116,6 +116,10 @@ class GeneratorConfig {
       .where((module) => module.name != name)
       .toList();
 
+  /// All the modules excluding my self
+  List<ModuleConfig> get modulesDependent =>
+      _modules.where((module) => module.name != name).toList();
+
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
@@ -289,6 +293,18 @@ class ModuleConfig {
   /// The name of the server package.
   String serverPackage;
 
+  /// The parts of the path where the server package is located at.
+  /// Might be relative.
+  final List<String> serverPackageDirectoryPathParts;
+
+  /// Path parts to the protocol directory of the server package.
+  List<String> get protocolSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+
+  /// Path parts to the model directory of the server package.
+  List<String> get modelSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'model'];
+
   /// The migration versions of the module.
   List<String> migrationVersions;
 
@@ -297,6 +313,7 @@ class ModuleConfig {
     required this.name,
     required this.nickname,
     required this.migrationVersions,
+    required this.serverPackageDirectoryPathParts,
   })  : dartClientPackage = '${name}_client',
         serverPackage = '${name}_server';
 

@@ -23,16 +23,6 @@ GeneratorConfig createGeneratorConfig([
 
 void main() {
   group('Test path extraction.', () {
-    var serverRootDir = Directory(join(
-      'test',
-      'integration'
-          'util',
-      'test_assets',
-      'protocol_helper',
-      'has_serverpod_server_project',
-      'test_server',
-    ));
-
     test(
         'Given a model path directly inside the model folder, then the parts list is empty.',
         () {
@@ -50,10 +40,21 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var rootPath = [
+        'test',
+        'integration'
+            'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+        'protocol',
+      ];
 
       var pathParts = ModelHelper.extractPathFromModelRoot(
-        config,
+        rootPath,
         modelFile.uri,
       );
 
@@ -78,10 +79,20 @@ void main() {
         'test.yaml',
       ));
 
-      var config = createGeneratorConfig(split(serverRootDir.path));
+      var rootPath = [
+        'test',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'has_serverpod_server_project',
+        'test_server',
+        'lib',
+        'src',
+        'protocol'
+      ];
 
       var pathParts = ModelHelper.extractPathFromModelRoot(
-        config,
+        rootPath,
         modelFile.uri,
       );
 
@@ -110,15 +121,15 @@ void main() {
       var paths = models.map((e) => e.yamlSourceUri.path).toList();
 
       expect(
-        paths,
+        paths.first,
         contains(
-            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
       );
 
       expect(
-        paths,
+        paths.last,
         contains(
-            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
       );
     });
 
@@ -183,7 +194,7 @@ fields:
     var paths = models.map((e) => e.yamlSourceUri.path).toList();
 
     expect(
-      paths,
+      paths.first,
       contains(
           'test/integration/util/test_assets/protocol_helper/protocol_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
     );

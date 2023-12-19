@@ -30,47 +30,79 @@ class ModelHelper {
   static Future<List<ModelSource>> loadProjectYamlModelsFromDisk(
     GeneratorConfig config,
   ) async {
-    List<FileSystemEntity> protocolSourceFileList = [];
-    try {
-      var protocolSourceDir =
-          Directory(joinAll(config.protocolSourcePathParts));
-      protocolSourceFileList =
-          await protocolSourceDir.list(recursive: true).toList();
-    } on PathNotFoundException catch (_) {}
+    var modelSources = <ModelSource>[];
 
-    List<FileSystemEntity> modelSourceFileList = [];
-    try {
-      var modelSourceDir = Directory(joinAll(config.modelSourcePathParts));
-      modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
-    } on PathNotFoundException catch (_) {}
+    var modelSource = await _loadYamlModelsFromDisk(
+        defaultModuleAlias, _absolutePathParts(config.modelSourcePathParts));
+    modelSources.addAll(modelSource);
 
-    var sourceFileList = [...protocolSourceFileList, ...modelSourceFileList];
+    modelSource = await _loadYamlModelsFromDisk(
+        defaultModuleAlias, _absolutePathParts(config.protocolSourcePathParts));
+    modelSources.addAll(modelSource);
+
+    for (var module in config.modulesDependent) {
+      modelSource = await _loadYamlModelsFromDisk(
+          module.name, module.modelSourcePathParts);
+      modelSources.addAll(modelSource);
+
+      modelSource = await _loadYamlModelsFromDisk(
+          module.name, module.protocolSourcePathParts);
+      modelSources.addAll(modelSource);
+    }
+
+    return modelSources;
+  }
+
+  static List<String> _absolutePathParts(List<String> pathParts) {
+    return split(absolute(joinAll(pathParts)));
+  }
+
+  static Future<List<ModelSource>> _loadYamlModelsFromDisk(
+    String moduleAlias,
+    List<String> pathParts,
+  ) async {
+    var files = await _loadAllModelFiles(pathParts);
 
     // TODO This sort is needed to make sure all generated methods
     // are in the same order. Move this logic to the code generator instead.
-    sourceFileList.sort((a, b) => a.path.compareTo(b.path));
-
-    var files = sourceFileList.whereType<File>().where(
-        (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
+    files.toList().sort((a, b) => a.path.compareTo(b.path));
 
     List<ModelSource> sources = [];
     for (var model in files) {
       var yaml = await model.readAsString();
 
       sources.add(ModelSource(
-        defaultModuleAlias,
+        moduleAlias,
         yaml,
         model.uri,
-        extractPathFromModelRoot(config, model.uri),
+        extractPathFromModelRoot(pathParts, model.uri),
       ));
     }
 
     return sources;
   }
 
+  static Future<Iterable<File>> _loadAllModelFiles(
+    List<String> absolutePathParts,
+  ) async {
+    List<FileSystemEntity> modelSourceFileList = [];
+
+    var dir = Directory('/${joinAll(absolutePathParts)}');
+
+    try {
+      var modelSourceDir = dir;
+      modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
+    } on PathNotFoundException catch (_) {}
+
+    return modelSourceFileList.whereType<File>().where(
+        (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
+  }
+
   static List<String> extractPathFromModelRoot(
-      GeneratorConfig config, Uri fileUri) {
-    var sourceDir = Directory(joinAll(config.protocolSourcePathParts));
+    List<String> pathParts,
+    Uri fileUri,
+  ) {
+    var sourceDir = Directory(joinAll(pathParts));
     var sourceDirPartsLength = split(sourceDir.path).length;
     return split(dirname(fileUri.path)).skip(sourceDirPartsLength).toList();
   }

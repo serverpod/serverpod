@@ -5,12 +5,14 @@ class ModuleConfigBuilder {
   String _name;
   String _nickname;
   List<String> _migrationVersions;
+  List<String> _serverPackageDirectoryPathParts;
 
   ModuleConfigBuilder(String name, [String? nickname])
       : _name = name,
         _nickname = nickname ?? name,
         _migrationVersions = [],
-        _type = PackageType.module;
+        _type = PackageType.module,
+        _serverPackageDirectoryPathParts = [];
 
   ModuleConfigBuilder withType(PackageType type) {
     _type = type;
@@ -32,12 +34,19 @@ class ModuleConfigBuilder {
     return this;
   }
 
+  ModuleConfigBuilder withServerPackageDirectoryPathParts(
+      List<String> serverPackageDirectoryPathParts) {
+    _serverPackageDirectoryPathParts = serverPackageDirectoryPathParts;
+    return this;
+  }
+
   ModuleConfig build() {
     return ModuleConfig(
       type: _type,
       name: _name,
       nickname: _nickname,
       migrationVersions: _migrationVersions,
+      serverPackageDirectoryPathParts: _serverPackageDirectoryPathParts,
     );
   }
 }
