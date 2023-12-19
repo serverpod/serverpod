@@ -15,7 +15,7 @@ class ModelSourceBuilder {
     ''');
     yamlSourcePath = 'lib/src/model/example.yaml';
     protocolRootPathParts = [];
-    moduleAlias = 'protocol';
+    moduleAlias = defaultModuleAlias;
   }
 
   ModelSourceBuilder withModuleAlias(String moduleAlias) {

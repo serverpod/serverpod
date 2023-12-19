@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:path/path.dart';
 
+const String defaultModuleAlias = 'protocol';
+
 class ModelSource {
   String moduleAlias;
   String yaml;
@@ -56,7 +58,7 @@ class ModelHelper {
       var yaml = await model.readAsString();
 
       sources.add(ModelSource(
-        'protocol', // TODO set module alias from constant
+        defaultModuleAlias,
         yaml,
         model.uri,
         extractPathFromModelRoot(config, model.uri),

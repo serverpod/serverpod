@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
@@ -22,7 +23,7 @@ class ClassDefinitionBuilder {
   List<String>? _documentation;
 
   ClassDefinitionBuilder()
-      : _moduleAlias = 'protocol',
+      : _moduleAlias = defaultModuleAlias,
         _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
@@ -58,6 +59,11 @@ class ClassDefinitionBuilder {
       indexes: _indexes,
       documentation: _documentation,
     );
+  }
+
+  ClassDefinitionBuilder withModuleAlias(String moduleAlias) {
+    _moduleAlias = moduleAlias;
+    return this;
   }
 
   ClassDefinitionBuilder withFileName(String fileName) {

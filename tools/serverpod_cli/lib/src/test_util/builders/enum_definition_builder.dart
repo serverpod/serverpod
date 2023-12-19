@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class EnumDefinitionBuilder {
@@ -14,7 +15,7 @@ class EnumDefinitionBuilder {
   List<String>? _documentation;
 
   EnumDefinitionBuilder()
-      : _moduleAlias = 'protocol',
+      : _moduleAlias = defaultModuleAlias,
         _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',

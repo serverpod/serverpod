@@ -4,6 +4,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -145,7 +146,7 @@ class TypeDefinition {
           t.url = 'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
-        } else if (url == 'protocol') {
+        } else if (url == defaultModuleAlias) {
           // protocol: reference
           t.url = p.posix
               .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
@@ -373,7 +374,7 @@ class TypeDefinition {
         serializeEnum: serializeEnum,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
-                ? 'protocol'
+                ? defaultModuleAlias
                 : url);
   }
 

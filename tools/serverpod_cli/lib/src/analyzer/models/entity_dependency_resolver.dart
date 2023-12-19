@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
@@ -53,7 +54,7 @@ class ModelDependencyResolver {
 
   static void _resolveEnumType(SerializableModelFieldDefinition fieldDefinition,
       List<SerializableModelDefinition> modelDefinitions) {
-    if (fieldDefinition.type.url != 'protocol') return;
+    if (fieldDefinition.type.url != defaultModuleAlias) return;
 
     var enumDefinitionList = modelDefinitions
         .whereType<EnumDefinition>()
