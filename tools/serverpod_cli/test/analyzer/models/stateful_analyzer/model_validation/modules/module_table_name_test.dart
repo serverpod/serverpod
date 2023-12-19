@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-      'Given a module class with the same name as a user defined class then there is no name conflict reported.',
+      'Given a module class with the same table name as a user defined table then there is an error reported.',
       () {
     var models = [
       ModelSourceBuilder()
@@ -24,8 +24,8 @@ void main() {
           .withFileName('user_info')
           .withYaml(
         '''
-        class: UserInfo
-        table: user_info
+        class: User
+        table: serverpod_user_info
         fields:
           name: String
         ''',
@@ -40,6 +40,13 @@ void main() {
     analyzer.validateAll();
     var errors = collector.errors;
 
-    expect(errors, isEmpty);
+    expect(errors, isNotEmpty);
+
+    expect(
+      errors.first.message,
+      contains(
+        'The table name "serverpod_user_info" is already in use by the class "User".',
+      ),
+    );
   });
 }
