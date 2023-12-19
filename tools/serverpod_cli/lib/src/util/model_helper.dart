@@ -88,10 +88,14 @@ class ModelHelper {
   ) async {
     List<FileSystemEntity> modelSourceFileList = [];
 
-    var dir = Directory('$separator${joinAll(absolutePathParts)}');
+    var path = joinAll(absolutePathParts);
+
+    if (!Platform.isWindows) {
+      path = '$separator$path';
+    }
 
     try {
-      var modelSourceDir = dir;
+      var modelSourceDir = Directory(path);
       modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
     } on PathNotFoundException catch (_) {}
 
