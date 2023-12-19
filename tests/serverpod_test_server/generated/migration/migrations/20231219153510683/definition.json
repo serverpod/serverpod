@@ -796,6 +796,69 @@
       "managed": true
     },
     {
+      "name": "object_user",
+      "dartName": "ObjectUser",
+      "module": "serverpod_test",
+      "schema": "public",
+      "tableSpace": null,
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('object_user_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": null,
+          "dartType": "String?"
+        },
+        {
+          "name": "userInfoId",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": null,
+          "dartType": "int"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "object_user_fk_0",
+          "columns": [
+            "userInfoId"
+          ],
+          "referenceTable": "serverpod_user_info",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3,
+          "matchType": null
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "object_user_pkey",
+          "tableSpace": null,
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true,
+          "predicate": null
+        }
+      ],
+      "managed": true
+    },
+    {
       "name": "object_with_bytedata",
       "dartName": "ObjectWithByteData",
       "module": "serverpod_test",
@@ -1359,6 +1422,69 @@
       "indexes": [
         {
           "indexName": "organization_pkey",
+          "tableSpace": null,
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true,
+          "predicate": null
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "parent_user",
+      "dartName": "ParentUser",
+      "module": "serverpod_test",
+      "schema": "public",
+      "tableSpace": null,
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('parent_user_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": true,
+          "columnDefault": null,
+          "dartType": "String?"
+        },
+        {
+          "name": "userInfoId",
+          "columnType": 2,
+          "isNullable": true,
+          "columnDefault": null,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "parent_user_fk_0",
+          "columns": [
+            "userInfoId"
+          ],
+          "referenceTable": "serverpod_user_info",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3,
+          "matchType": null
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "parent_user_pkey",
           "tableSpace": null,
           "elements": [
             {
@@ -4010,7 +4136,7 @@
     {
       "id": null,
       "module": "serverpod_test",
-      "version": "20231205080937028",
+      "version": "20231219153510683",
       "timestamp": null
     },
     {
