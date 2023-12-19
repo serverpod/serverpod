@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
 /// Abstract class representing a database [Column]. Subclassed by the different
@@ -154,6 +155,22 @@ class ColumnDateTime extends _ValueOperatorColumn<DateTime>
 
   @override
   Expression _encodeValueForQuery(DateTime value) => EscapedExpression(value);
+}
+
+/// A [Column] holding a [GeographyPoint]. In the database it is stored as a
+/// SRID 4326 geography point.
+class ColumnGeographyPoint extends _ValueOperatorColumn<GeographyPoint>
+    with _NullableColumnDefaultOperations<GeographyPoint> {
+  /// Creates a new [Column], this is typically done in generated code only.
+  ColumnGeographyPoint(super.columnName, super.table);
+
+  Expression distanceFrom(GeographyPoint point,
+          [double? distanceWithinMeters]) =>
+      _GeographyDistanceColumnExpression(this, point, distanceWithinMeters);
+
+  @override
+  Expression _encodeValueForQuery(GeographyPoint value) => EscapedExpression(
+      'SRID=4326;POINT(${value.longitude} ${value.latitude})');
 }
 
 /// A [Column] holding [Duration].
@@ -622,4 +639,26 @@ class _NotInSetExpression extends _SetColumnExpression {
 
   @override
   String get operator => 'NOT IN';
+}
+
+class _GeographyDistanceColumnExpression<T> extends ColumnExpression<T> {
+  final GeographyPoint point;
+  final double? distanceWithinMeters;
+
+  _GeographyDistanceColumnExpression(super.column, this.point,
+      [this.distanceWithinMeters]);
+
+  @override
+  List<Column> get columns => [...super.columns];
+
+  @override
+  String get operator => '';
+
+  @override
+  String toString() {
+    return '${distanceWithinMeters == null ? 'ST_Distance' : 'ST_DWithin'}'
+        '($_getColumnName, '
+        '\'SRID=4326;POINT(${point.longitude} ${point.latitude})\'::geography'
+        '${distanceWithinMeters == null ? '' : ', $distanceWithinMeters'})';
+  }
 }

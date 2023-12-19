@@ -342,6 +342,8 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
         break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
+      case ColumnType.geographyPoint:
+        type = 'geog geography(point,4269)';
     }
 
     out += '"$name" $type$nullable';

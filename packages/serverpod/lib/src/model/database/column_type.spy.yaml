@@ -12,6 +12,8 @@ values:
   - doublePrecision
   ### Dart type: [DateTime]
   - timestampWithoutTimeZone
+  ### Dart type: [GeographyPoint]
+  - geographyPoint
   ### Dart type: [ByteData]
   - bytea
   ### Dart type: [Duration]

@@ -28,6 +28,9 @@ enum ColumnType with _i1.SerializableEntity {
   /// Dart type: [DateTime]
   timestampWithoutTimeZone,
 
+  /// Dart type: [GeographyPoint]
+  geographyPoint,
+
   /// Dart type: [ByteData]
   bytea,
 
@@ -57,14 +60,16 @@ enum ColumnType with _i1.SerializableEntity {
       case 4:
         return timestampWithoutTimeZone;
       case 5:
-        return bytea;
+        return geographyPoint;
       case 6:
-        return bigint;
+        return bytea;
       case 7:
-        return uuid;
+        return bigint;
       case 8:
-        return json;
+        return uuid;
       case 9:
+        return json;
+      case 10:
         return unknown;
       default:
         return null;
