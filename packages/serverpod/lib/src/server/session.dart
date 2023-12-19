@@ -23,9 +23,6 @@ abstract class Session {
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
 
-  /// Max lifetime of the session, after it will be forcefully terminated.
-  final Duration maxLifeTime;
-
   late DateTime _startTime;
 
   /// The time the session object was created.
@@ -80,10 +77,8 @@ abstract class Session {
   Session({
     required this.server,
     String? authenticationKey,
-    this.maxLifeTime = const Duration(minutes: 1),
     HttpRequest? httpRequest,
     WebSocket? webSocket,
-    String? futureCallName,
     required this.enableLogging,
   }) {
     _startTime = DateTime.now();
