@@ -11,8 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/module.dart' as _i3;
-import 'dart:io' as _i4;
-import 'protocol.dart' as _i5;
+import 'protocol.dart' as _i4;
 
 /// {@category Endpoint}
 class EndpointExample extends _i1.EndpointRef {
@@ -39,14 +38,14 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i4.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i5.Protocol(),
-          context: context,
+          _i4.Protocol(),
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,

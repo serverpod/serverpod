@@ -21,7 +21,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
   ServerpodClient(
     super.host,
     super.serializationManager, {
-    super.context,
+    super.securityContext,
     super.authenticationKeyManager,
     super.logFailedCalls,
     super.streamingConnectionTimeout,

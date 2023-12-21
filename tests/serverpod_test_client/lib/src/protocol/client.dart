@@ -55,8 +55,7 @@ import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_
 import 'package:serverpod_test_module_client/module.dart' as _i29;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i30;
-import 'dart:io' as _i31;
-import 'protocol.dart' as _i32;
+import 'protocol.dart' as _i31;
 
 /// {@category Endpoint}
 class EndpointAsyncTasks extends _i1.EndpointRef {
@@ -2719,14 +2718,14 @@ class _Modules {
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i31.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
   }) : super(
           host,
-          _i32.Protocol(),
-          context: context,
+          _i31.Protocol(),
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,

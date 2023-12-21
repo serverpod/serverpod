@@ -123,7 +123,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
-    dynamic context,
+    dynamic securityContext,
     required this.authenticationKeyManager,
     this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
