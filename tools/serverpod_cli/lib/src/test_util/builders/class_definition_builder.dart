@@ -16,6 +16,7 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
+  bool _managedMigration;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
@@ -26,6 +27,7 @@ class ClassDefinitionBuilder {
         _className = 'Example',
         _fields = [],
         _subDirParts = [],
+        _managedMigration = true,
         _serverOnly = false,
         _isException = false,
         _indexes = [];
@@ -52,6 +54,7 @@ class ClassDefinitionBuilder {
       serverOnly: _serverOnly,
       isException: _isException,
       tableName: _tableName,
+      manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
     );
@@ -84,6 +87,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withTableName(String? tableName) {
     _tableName = tableName;
+    return this;
+  }
+
+  ClassDefinitionBuilder withManagedMigration(bool isManaged) {
+    _managedMigration = isManaged;
     return this;
   }
 

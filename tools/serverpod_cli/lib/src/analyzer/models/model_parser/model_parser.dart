@@ -42,10 +42,16 @@ class ModelParser {
     );
     var indexes = _parseIndexes(documentContents, fields);
 
+    var manageMigration = _parseBooleanKey(
+      documentContents,
+      Keyword.managedMigration,
+    );
+
     return ClassDefinition(
       className: className,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
+      manageMigration: manageMigration,
       fileName: outFileName,
       fields: fields,
       indexes: indexes,
@@ -322,6 +328,7 @@ class ModelParser {
   static bool _parseBooleanKey(YamlMap node, String key) {
     var value = node.nodes[key]?.value;
     var boolValue = _parseBool(value);
+
     if (boolValue != null) return boolValue;
 
     var containsKey = node.containsKey(key);
@@ -329,6 +336,8 @@ class ModelParser {
   }
 
   static bool? _parseBool(dynamic value) {
+    if (value is bool) return value;
+
     if (value is String) {
       if (value.toLowerCase() == 'true') return true;
       if (value.toLowerCase() == 'false') return false;

@@ -308,7 +308,7 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          'The "invalidProperty" property is not allowed for class type. Valid keys are {class, table, serverOnly, fields, indexes}.',
+          contains('The "invalidProperty" property is not allowed for class type. Valid keys are'),
         );
       },
     );

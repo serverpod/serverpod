@@ -49,6 +49,8 @@ class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  final bool manageMigration;
+
   /// `true` if this is an exception and not a class.
   final bool isException;
 
@@ -59,6 +61,7 @@ class ClassDefinition extends SerializableModelDefinition {
     required super.className,
     required this.fields,
     required super.serverOnly,
+    required this.manageMigration,
     required this.isException,
     this.tableName,
     this.indexes = const [],
