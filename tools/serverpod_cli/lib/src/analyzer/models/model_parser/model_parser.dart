@@ -42,10 +42,9 @@ class ModelParser {
     );
     var indexes = _parseIndexes(documentContents, fields);
 
-    var manageMigration = _parseBooleanKey(
-      documentContents,
-      Keyword.managedMigration,
-    );
+    var migrationValue =
+        documentContents.nodes[Keyword.managedMigration]?.value;
+    var manageMigration = _parseBool(migrationValue) ?? true;
 
     return ClassDefinition(
       className: className,
