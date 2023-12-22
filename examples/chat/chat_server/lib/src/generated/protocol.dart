@@ -69,7 +69,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: false,
+      managed: true,
     ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
