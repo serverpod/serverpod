@@ -11,11 +11,12 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find deleted tables
   var deleteTables = <String>[];
-  for (var srcTable in databaseSource.tables) {
-    if (srcTable.name == 'serverpod_migrations') {
-      continue;
-    }
+  var sourceTables = databaseSource.tables
+      .where((table) => table.managed)
+      .where((table) => table.name != 'serverpod_migrations');
+  var targetTables = databaseTarget.tables.where((table) => table.managed);
 
+  for (var srcTable in sourceTables) {
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }
@@ -39,7 +40,7 @@ DatabaseMigration generateDatabaseMigration({
   }
 
   // Find added or modified tables
-  for (var dstTable in databaseTarget.tables) {
+  for (var dstTable in targetTables) {
     var srcTable = databaseSource.findTableNamed(dstTable.name);
     if (srcTable == null) {
       // Added table

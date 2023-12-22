@@ -201,7 +201,7 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 
     var tableCreation = '';
     var foreignRelations = '';
-    for (var table in tables) {
+    for (var table in tables.where((table) => table.managed)) {
       tableCreation += '--\n';
       tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
       tableCreation += '--\n';

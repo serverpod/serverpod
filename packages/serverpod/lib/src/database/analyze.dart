@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
@@ -163,6 +162,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
           columns: columns,
           foreignKeys: foreignKeys,
           indexes: indexes,
+          managed: Protocol().isTableMigrationsManaged(tableName),
         );
       })),
       migrationApiVersion: DatabaseConstants.migrationApiVersion,

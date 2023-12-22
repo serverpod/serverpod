@@ -59,8 +59,7 @@ DatabaseDefinition createDatabaseDefinitionFromModels(
                 isPrimary: false,
               ),
           ],
-          //TODO: Add an option in the class specification for this.
-          managed: true,
+          managed: classDefinition.manageMigration,
         ),
   ];
 
