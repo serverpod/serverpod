@@ -308,7 +308,8 @@ void main() {
         var error = collector.errors.first;
         expect(
           error.message,
-          contains('The "invalidProperty" property is not allowed for class type. Valid keys are'),
+          contains(
+              'The "invalidProperty" property is not allowed for class type. Valid keys are'),
         );
       },
     );
