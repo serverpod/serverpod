@@ -211,7 +211,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'arena',
@@ -249,7 +249,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'blocking',
@@ -331,7 +331,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'cat',
@@ -386,7 +386,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'citizen',
@@ -457,7 +457,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'city',
@@ -495,7 +495,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'comment',
@@ -550,7 +550,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'company',
@@ -605,7 +605,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'course',
@@ -643,7 +643,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'customer',
@@ -681,7 +681,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'enrollment',
@@ -763,7 +763,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'member',
@@ -801,7 +801,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_field_scopes',
@@ -845,7 +845,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_bytedata',
@@ -883,7 +883,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_duration',
@@ -921,7 +921,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_enum',
@@ -983,7 +983,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_index',
@@ -1044,7 +1044,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_object',
@@ -1112,7 +1112,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_parent',
@@ -1161,7 +1161,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_self_parent',
@@ -1211,7 +1211,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'object_with_uuid',
@@ -1255,7 +1255,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'order',
@@ -1310,7 +1310,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'organization',
@@ -1365,7 +1365,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'person',
@@ -1436,7 +1436,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'player',
@@ -1491,7 +1491,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'post',
@@ -1559,7 +1559,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'related_unique_data',
@@ -1614,7 +1614,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'simple_data',
@@ -1652,7 +1652,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'simple_date_time',
@@ -1690,7 +1690,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'student',
@@ -1728,7 +1728,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'team',
@@ -1796,7 +1796,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'town',
@@ -1851,7 +1851,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'types',
@@ -1943,7 +1943,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: true,
         )
       ],
-      managed: true,
+      managed: false,
     ),
     _i2.TableDefinition(
       name: 'unique_data',
@@ -2000,7 +2000,7 @@ class Protocol extends _i1.SerializationManagerServer {
           isPrimary: false,
         ),
       ],
-      managed: true,
+      managed: false,
     ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
