@@ -18,9 +18,10 @@ abstract class SerializationManagerServer extends SerializationManager {
 
   /// Checks if a given table is managed by Serverpod.
   bool isTableMigrationsManaged(String tableName) {
-    return getTargetTableDefinitions()
-            .firstWhereOrNull((table) => table.name == tableName)
-            ?.managed ??
-        false;
+    var table = getTargetTableDefinitions()
+        .firstWhereOrNull((table) => table.name == tableName);
+
+    // If the table is not found, defaults to true meaning that we treat it as if it was managed, the implication being that it may be removed in a repair migration.
+    return table?.managed ?? true;
   }
 }
