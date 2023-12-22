@@ -501,7 +501,7 @@ extension on service.TableDefinition {
     expect(name, definition.name);
     expect(schema, definition.schema);
 
-    if (definition.managed ?? false) {
+    if (definition.managed) {
       expect(tableSpace, definition.tableSpace);
 
       expect(columns, hasLength(definition.columns.length));
