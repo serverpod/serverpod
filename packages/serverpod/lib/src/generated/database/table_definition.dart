@@ -22,7 +22,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     required this.columns,
     required this.foreignKeys,
     required this.indexes,
-    this.managed,
+    required this.managed,
   });
 
   factory TableDefinition({
@@ -34,7 +34,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     required List<_i2.ColumnDefinition> columns,
     required List<_i2.ForeignKeyDefinition> foreignKeys,
     required List<_i2.IndexDefinition> indexes,
-    bool? managed,
+    required bool managed,
   }) = _TableDefinitionImpl;
 
   factory TableDefinition.fromJson(
@@ -59,7 +59,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       indexes: serializationManager
           .deserialize<List<_i2.IndexDefinition>>(jsonSerialization['indexes']),
       managed:
-          serializationManager.deserialize<bool?>(jsonSerialization['managed']),
+          serializationManager.deserialize<bool>(jsonSerialization['managed']),
     );
   }
 
@@ -90,7 +90,7 @@ abstract class TableDefinition extends _i1.SerializableEntity {
 
   /// Indicates if the table should be managed by Serverpod.
   /// Null, if this is unknown.
-  bool? managed;
+  bool managed;
 
   TableDefinition copyWith({
     String? name,
@@ -146,7 +146,7 @@ class _TableDefinitionImpl extends TableDefinition {
     required List<_i2.ColumnDefinition> columns,
     required List<_i2.ForeignKeyDefinition> foreignKeys,
     required List<_i2.IndexDefinition> indexes,
-    bool? managed,
+    required bool managed,
   }) : super._(
           name: name,
           dartName: dartName,
@@ -169,7 +169,7 @@ class _TableDefinitionImpl extends TableDefinition {
     List<_i2.ColumnDefinition>? columns,
     List<_i2.ForeignKeyDefinition>? foreignKeys,
     List<_i2.IndexDefinition>? indexes,
-    Object? managed = _Undefined,
+    bool? managed,
   }) {
     return TableDefinition(
       name: name ?? this.name,
@@ -180,7 +180,7 @@ class _TableDefinitionImpl extends TableDefinition {
       columns: columns ?? this.columns.clone(),
       foreignKeys: foreignKeys ?? this.foreignKeys.clone(),
       indexes: indexes ?? this.indexes.clone(),
-      managed: managed is bool? ? managed : this.managed,
+      managed: managed ?? this.managed,
     );
   }
 }
