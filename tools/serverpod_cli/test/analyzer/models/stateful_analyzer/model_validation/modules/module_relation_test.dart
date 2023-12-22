@@ -51,7 +51,9 @@ void main() {
     });
   });
 
-  group('Given a class referencing a module class with a relation.', () {
+  test(
+      'Given a class referencing a module class with a relation then an error is reported that direct list relations are not allowed.',
+      () {
     var models = [
       ModelSourceBuilder()
           .withModuleAlias('auth')
@@ -80,21 +82,15 @@ void main() {
       models,
       onErrorsCollector(collector),
     );
-    var entities = analyzer.validateAll();
+    analyzer.validateAll();
     var errors = collector.errors;
 
-    test('then no errors are collected.', () {
-      expect(errors, isEmpty);
-    });
+    expect(errors, isNotEmpty);
 
-    test('then a relation is created on the local module', () {
-      var classDefinition = entities.firstWhere((e) => e.className == 'Profile')
-          as ClassDefinition;
-
-      var relation = classDefinition.fields.last.relation;
-
-      expect(relation.runtimeType, ListRelationDefinition);
-    });
+    expect(
+      errors.first.message,
+      'A List relation is not allowed on external tables.',
+    );
   });
 
   group('Given a class referencing a module table parent with a relation.', () {
