@@ -27,7 +27,7 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
   String toString() {
     var out = '';
 
-    out += 'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.\n';
+    out += 'Found ${errors.length} issue${errors.length == 1 ? '' : 's'}.\n';
     out += '\n';
 
     for (var error in errors) {
@@ -43,10 +43,26 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
       return;
     }
 
-    log.error(
-      'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.',
-      newParagraph: true,
-    );
+    var logMessage =
+        'Found ${errors.length} issue${errors.length == 1 ? '' : 's'}.';
+
+    var severityErrors = errors.whereType<SourceSpanSeverityException>();
+
+    var hasErrors = severityErrors.isEmpty ||
+        severityErrors
+            .where((error) => error.severity == SourceSpanSeverity.error)
+            .isNotEmpty;
+    var hasWarnings = severityErrors
+        .where((error) => error.severity == SourceSpanSeverity.warning)
+        .isNotEmpty;
+
+    if (hasErrors) {
+      log.error(logMessage, newParagraph: true);
+    } else if (hasWarnings) {
+      log.warning(logMessage, newParagraph: true);
+    } else {
+      log.info(logMessage, newParagraph: true);
+    }
 
     for (var error in errors) {
       log.sourceSpanException(error);

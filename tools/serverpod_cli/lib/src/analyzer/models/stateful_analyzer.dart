@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 
@@ -29,7 +30,8 @@ class StatefulAnalyzer {
 
   /// Returns all valid models in the state.
   List<SerializableModelDefinition> get _validModels => _modelStates.values
-      .where((state) => state.errors.isEmpty)
+      .where(
+          (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
