@@ -131,6 +131,51 @@ void main() {
       );
     });
 
+    test(
+        'Given a module class referencing another module class then no errors are reported.',
+        () {
+      var models = [
+        ModelSourceBuilder()
+            .withModuleAlias('auth')
+            .withFileName('user_profile')
+            .withYaml(
+          '''
+          class: UserProfile
+          fields:
+            email: String
+          ''',
+        ).build(),
+        ModelSourceBuilder()
+            .withModuleAlias('auth')
+            .withFileName('user_info')
+            .withYaml(
+          '''
+          class: UserInfo
+          table: serverpod_user_info
+          fields:
+            nickname: String
+            profile: UserProfile
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: module:auth:UserInfo
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(collector.errors, isEmpty);
+    });
+
     group('Given a class with a field with the type ByteData', () {
       var models = [
         ModelSourceBuilder().withYaml(
