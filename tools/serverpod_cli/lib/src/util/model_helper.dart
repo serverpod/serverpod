@@ -42,11 +42,11 @@ class ModelHelper {
 
     for (var module in config.modulesDependent) {
       modelSource = await _loadYamlModelsFromDisk(
-          module.name, module.modelSourcePathParts);
+          module.nickname, module.modelSourcePathParts);
       modelSources.addAll(modelSource);
 
       modelSource = await _loadYamlModelsFromDisk(
-          module.name, module.protocolSourcePathParts);
+          module.nickname, module.protocolSourcePathParts);
       modelSources.addAll(modelSource);
     }
 
