@@ -1066,10 +1066,6 @@ class Restrictions {
 
     if (referenceClasses.isNotEmpty) {
       var moduleAlias = type.url?.split(':').last;
-
-      print('moduleAlias: $moduleAlias');
-      print('typeUrl: ${type.url}');
-
       return referenceClasses.any((e) => e.moduleAlias == moduleAlias);
     }
 
