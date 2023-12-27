@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
@@ -641,15 +642,14 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (!_isValidFieldType(type)) {
-      errors.add(SourceSpanSeverityException(
-        'The field has an invalid datatype "$type".',
-        span,
-      ));
-    }
-
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
+
+    var fieldType = classDefinition.findField(parentNodeName)?.type;
+
+    if (fieldType == null) return errors;
+
+    errors.addAll(validateFieldType(fieldType, span));
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null || !field.isSymbolicRelation) return errors;
@@ -693,6 +693,48 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  List<SourceSpanSeverityException> validateFieldType(
+    TypeDefinition fieldType,
+    SourceSpan? span,
+  ) {
+    var errors = <SourceSpanSeverityException>[];
+
+    if (!_isValidType(fieldType)) {
+      errors.add(_createInvalidDatatypeException(fieldType.className, span));
+    }
+
+    if (fieldType.isMapType && fieldType.generics.isNotEmpty) {
+      errors.addAll(validateFieldType(fieldType.generics.first, span));
+      errors.addAll(validateFieldType(fieldType.generics.last, span));
+    }
+
+    if (fieldType.isListType) {
+      if (fieldType.generics.length == 1) {
+        errors.addAll(validateFieldType(fieldType.generics.first, span));
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+              'The List type must have one generic type defined (e.g. List<String>).',
+              span),
+        );
+      }
+    }
+
+    return errors;
+  }
+
+  SourceSpanSeverityException _createInvalidDatatypeException(
+      String typeName, SourceSpan? span) {
+    var sourceSpanSeverityException = SourceSpanSeverityException(
+      'The field has an invalid datatype "$typeName".',
+      span?.subspan(
+        span.text.indexOf(typeName),
+        span.text.indexOf(typeName) + typeName.length,
+      ),
+    );
+    return sourceSpanSeverityException;
   }
 
   List<SourceSpanSeverityException> validateIndexFieldsValue(
@@ -979,23 +1021,44 @@ class Restrictions {
     return valueCount;
   }
 
-  bool _isValidFieldType(String type) {
-    var typeComponents = type
-        .replaceAll('?', '')
-        .replaceAll(' ', '')
-        .replaceAll('<', ',')
-        .replaceAll('>', ',')
-        .split(',')
-        .where((t) => t.isNotEmpty);
+  var whiteListedTypes = [
+    'String',
+    'bool',
+    'int',
+    'double',
+    'DateTime',
+    'Duration',
+    'Uuid',
+    'UuidValue',
+    'ByteData',
+    'List',
+    'Map',
+  ];
 
-    if (typeComponents.isEmpty) return false;
+  bool _isValidType(TypeDefinition type) {
+    return whiteListedTypes.contains(type.className) || _isModelType(type);
+  }
 
-    // Checks if the type has several ??? in a row.
-    if (RegExp(r'\?{2,}').hasMatch(type)) return false;
+  bool _isModelType(TypeDefinition type) {
+    var className = type.className;
 
-    return typeComponents.every(
-      (type) => StringValidators.isValidFieldType(type),
-    );
+    var definitions = modelRelations?.classNames[className];
+
+    if (definitions == null) return false;
+    if (definitions.isEmpty) return false;
+
+    var referenceClasses = definitions.whereType<ClassDefinition>();
+
+    if (referenceClasses.isNotEmpty) {
+      var moduleAlias = type.url?.split(':').last;
+
+      print('moduleAlias: $moduleAlias');
+      print('typeUrl: ${type.url}');
+
+      return referenceClasses.any((e) => e.moduleAlias == moduleAlias);
+    }
+
+    return true;
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

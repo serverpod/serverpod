@@ -712,7 +712,7 @@ fields:
 
     expect(collector.errors, isNotEmpty);
     expect(
-      collector.errors.first.message,
+      collector.errors.last.message,
       'The class "InvalidClass" was not found in any model.',
     );
   });

@@ -14,11 +14,14 @@ void main() {
       'double',
       'Uuid',
       'DateTime',
+      'Duration',
+      'UuidValue',
       'List<String>',
       'List<String>?',
       'List<String?>?',
       'List<List<Map<String,int>>>',
       'Map<String,String>',
+      'Map<String,String?>',
       'Map<String,List<int>>',
       'Map<String,Map<String,int>>',
       'Map<String,Map<String,List<List<Map<String,int>>>>>',
@@ -43,14 +46,13 @@ void main() {
         );
         var definitions = analyzer.validateAll();
 
-        var definition = definitions.first as ClassDefinition;
-
         test('then no errors was generated', () {
           expect(collector.errors, isEmpty);
         });
 
         test('then a class with that field type set to $datatype is generated.',
             () {
+          var definition = definitions.first as ClassDefinition;
           expect(definition.fields.first.type.toString(), datatype);
         });
       });
@@ -58,6 +60,14 @@ void main() {
 
     group('Given a class with a field with a module type', () {
       var models = [
+        ModelSourceBuilder().withModuleAlias('auth').withYaml(
+          '''
+          class: UserInfo
+          table: serverpod_user_info
+          fields:
+            nickname: String
+          ''',
+        ).build(),
         ModelSourceBuilder().withYaml(
           '''
           class: Example
@@ -74,8 +84,6 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
-
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
       });
@@ -83,8 +91,44 @@ void main() {
       test(
           'then a class with that field type set to module:auth:UserInfo is generated.',
           () {
-        expect(definition.fields.first.type.toString(), 'module:auth:UserInfo');
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'UserInfo');
       });
+    });
+
+    test(
+        'Given a class with a field with a module type without the module:alias path then an error is reported that the datatype does not exist.',
+        () {
+      var models = [
+        ModelSourceBuilder().withModuleAlias('auth').withYaml(
+          '''
+          class: UserInfo
+          table: serverpod_user_info
+          fields:
+            nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: UserInfo
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(collector.errors, isNotEmpty);
+      expect(
+        collector.errors.first.message,
+        contains('The field has an invalid datatype "UserInfo".'),
+      );
     });
 
     group('Given a class with a field with the type ByteData', () {
@@ -105,8 +149,6 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
-
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
       });
@@ -114,6 +156,7 @@ void main() {
       test(
           'then a class with that field type set to dart:typed_data:ByteData is generated.',
           () {
+        var definition = definitions.first as ClassDefinition;
         expect(
           definition.fields.first.type.toString(),
           'dart:typed_data:ByteData',
@@ -147,17 +190,17 @@ void main() {
       );
       var definitions = analyzer.validateAll();
 
-      var definition = definitions.first as ClassDefinition;
-
       test('then no errors was generated', () {
         expect(collector.errors, isEmpty);
       });
 
       test('then a class with that field type set to MyEnum.', () {
+        var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.toString(), 'protocol:MyEnum');
       });
 
       test('then the type is tagged as an enum', () {
+        var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.isEnumType, isTrue);
       });
     });
@@ -172,7 +215,14 @@ void main() {
           fields:
             customField: Map<  String  , CustomClass  ? > ?   
           ''',
-        ).build()
+        ).build(),
+        ModelSourceBuilder().withFileName('custom_class').withYaml(
+          '''
+          class: CustomClass
+          fields:
+            name: String
+          ''',
+        ).build(),
       ];
 
       var collector = CodeGenerationCollector();
@@ -181,6 +231,13 @@ void main() {
         onErrorsCollector(collector),
       );
       var definitions = analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be generated.',
+      );
+
       var definition = definitions.first as ClassDefinition;
 
       expect(
@@ -218,11 +275,18 @@ void main() {
         var models = [
           ModelSourceBuilder().withYaml(
             '''
-          class: Example
-          fields:
-            customField: Map<String, CustomClass>
-          ''',
-          ).build()
+            class: Example
+            fields:
+              customField: Map<String, CustomClass>
+            ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('custom_class').withYaml(
+            '''
+            class: CustomClass
+            fields:
+              name: String
+            ''',
+          ).build(),
         ];
 
         var collector = CodeGenerationCollector();
@@ -231,6 +295,13 @@ void main() {
           onErrorsCollector(collector),
         );
         var definitions = analyzer.validateAll();
+
+        expect(
+          collector.errors,
+          isEmpty,
+          reason: 'Expected no errors to be generated.',
+        );
+
         var definition = definitions.first as ClassDefinition;
 
         expect(
@@ -298,10 +369,57 @@ void main() {
 
         expect(
           error.message,
-          'The field has an invalid datatype "$datatype".',
+          contains('The field has an invalid datatype'),
         );
       });
     }
+
+    test(
+        'Given an invalid datatype as the generic type of a List then the error location is scoped to the generic type.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+            class: Example
+            fields:
+              name: List<InvalidClass>
+            ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was found.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.span?.start.line,
+        2,
+      );
+      expect(
+        error.span?.start.column,
+        25,
+      );
+
+      expect(
+        error.span?.end.line,
+        2,
+      );
+      expect(
+        error.span?.end.column,
+        37,
+      );
+    });
 
     test(
         'Given a class with a field without a datatype defined, then collect an error that defining a datatype is required.',
@@ -334,6 +452,74 @@ void main() {
       expect(
         error.message,
         'The field must have a datatype defined (e.g. field: String).',
+      );
+    });
+
+    test(
+        'Given a List type without the generic definition then an error is reported that the generic has to be specified.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: List
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The List type must have one generic type defined (e.g. List<String>).',
+      );
+    });
+
+    test(
+        'Given a List type with several generic types then an error is reported that only one generic can be specified.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: List<String, String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The List type must have one generic type defined (e.g. List<String>).',
       );
     });
   });
