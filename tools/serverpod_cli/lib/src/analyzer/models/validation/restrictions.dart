@@ -702,7 +702,14 @@ class Restrictions {
     var errors = <SourceSpanSeverityException>[];
 
     if (!_isValidType(fieldType)) {
-      errors.add(_createInvalidDatatypeException(fieldType.className, span));
+      var typeName = fieldType.className;
+      errors.add(SourceSpanSeverityException(
+        'The field has an invalid datatype "$typeName".',
+        span?.subspan(
+          span.text.indexOf(typeName),
+          span.text.indexOf(typeName) + typeName.length,
+        ),
+      ));
     }
 
     if (fieldType.isMapType) {
@@ -738,18 +745,6 @@ class Restrictions {
     }
 
     return errors;
-  }
-
-  SourceSpanSeverityException _createInvalidDatatypeException(
-      String typeName, SourceSpan? span) {
-    var sourceSpanSeverityException = SourceSpanSeverityException(
-      'The field has an invalid datatype "$typeName".',
-      span?.subspan(
-        span.text.indexOf(typeName),
-        span.text.indexOf(typeName) + typeName.length,
-      ),
-    );
-    return sourceSpanSeverityException;
   }
 
   List<SourceSpanSeverityException> validateIndexFieldsValue(
