@@ -522,5 +522,114 @@ void main() {
         'The List type must have one generic type defined (e.g. List<String>).',
       );
     });
+
+    test(
+        'Given a Map type without the generic definition then an error is reported that the generics has to be specified.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: Map
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The Map type must have two generic types defined (e.g. Map<String, String>).',
+      );
+    });
+
+    test(
+        'Given a Map type with too man generic types then an error is reported that two generics has to be specified.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: Map<String, String, String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The Map type must have two generic types defined (e.g. Map<String, String>).',
+      );
+    });
+
+    test(
+        'Given a class without a generic type but specified with one then an error is reported that the generic has to be removed.',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: Example<String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error, but none was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The type "Example" cannot have generic types defined.',
+      );
+    });
   });
+
+  // To test:
+  // map keys
+  // serverpod: and? module:serverpod ???
+  // project: how to deal with that?
+  // package: how to deal with that?
+  // should we allow / in the types? probably, infact we should allow any string as long as we can resolve the type.
 }

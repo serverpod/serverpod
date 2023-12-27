@@ -705,21 +705,36 @@ class Restrictions {
       errors.add(_createInvalidDatatypeException(fieldType.className, span));
     }
 
-    if (fieldType.isMapType && fieldType.generics.isNotEmpty) {
-      errors.addAll(validateFieldType(fieldType.generics.first, span));
-      errors.addAll(validateFieldType(fieldType.generics.last, span));
-    }
-
-    if (fieldType.isListType) {
+    if (fieldType.isMapType) {
+      if (fieldType.generics.length == 2) {
+        errors.addAll(validateFieldType(fieldType.generics.first, span));
+        errors.addAll(validateFieldType(fieldType.generics.last, span));
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+            'The Map type must have two generic types defined (e.g. Map<String, String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.isListType) {
       if (fieldType.generics.length == 1) {
         errors.addAll(validateFieldType(fieldType.generics.first, span));
       } else {
         errors.add(
           SourceSpanSeverityException(
-              'The List type must have one generic type defined (e.g. List<String>).',
-              span),
+            'The List type must have one generic type defined (e.g. List<String>).',
+            span,
+          ),
         );
       }
+    } else if (fieldType.generics.isNotEmpty) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The type "${fieldType.className}" cannot have generic types defined.',
+          span,
+        ),
+      );
     }
 
     return errors;
