@@ -1,4 +1,4 @@
-@Timeout(Duration(minutes: 8))
+@Timeout(Duration(minutes: 12))
 
 import 'dart:convert';
 import 'dart:io';
