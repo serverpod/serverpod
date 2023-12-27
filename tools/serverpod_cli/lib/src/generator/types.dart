@@ -122,9 +122,10 @@ class TypeDefinition {
   }) {
     return TypeReference(
       (t) {
-        if (url?.startsWith('module:') ?? false) {
+        var moduleRef = 'module:';
+        if (url?.startsWith(moduleRef) ?? false) {
           // module:nickname: reference
-          var moduleName = url?.substring(7);
+          var moduleName = url?.substring(moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
                 (m) => m?.nickname == moduleName,
                 orElse: () => null,
