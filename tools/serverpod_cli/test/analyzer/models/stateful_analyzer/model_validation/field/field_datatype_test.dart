@@ -135,6 +135,13 @@ void main() {
         'Given a module class referencing another module class then no errors are reported.',
         () {
       var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: module:auth:UserInfo
+          ''',
+        ).build(),
         ModelSourceBuilder()
             .withModuleAlias('auth')
             .withFileName('user_profile')
@@ -157,13 +164,6 @@ void main() {
             profile: UserProfile
           ''',
         ).build(),
-        ModelSourceBuilder().withYaml(
-          '''
-          class: Example
-          fields:
-            name: module:auth:UserInfo
-          ''',
-        ).build()
       ];
 
       var collector = CodeGenerationCollector();
