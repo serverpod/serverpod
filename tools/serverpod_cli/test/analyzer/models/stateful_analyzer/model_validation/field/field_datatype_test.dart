@@ -591,6 +591,57 @@ void main() {
       );
     });
 
+    test('Given a Map with a String type as key then no errors are reported',
+        () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: Map<String, String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but some were generated.',
+      );
+    });
+
+    test('Given a Map with a int type as key then no errors are reported', () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: Map<int, String>
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but some were generated.',
+      );
+    });
+
     test(
         'Given a class without a generic type but specified with one then an error is reported that the generic has to be removed.',
         () {
