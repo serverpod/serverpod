@@ -47,7 +47,19 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
+  bool get isModuleType =>
+      url == 'serverpod' || (url?.startsWith('module:') ?? false);
+
   bool get isEnumType => serializeEnum != null;
+
+  String? get moduleAlias {
+    if (url == defaultModuleAlias) return url;
+    if (url == 'serverpod') return url;
+    if (url?.startsWith('module:') ?? false) {
+      return url?.substring('module:'.length);
+    }
+    return null;
+  }
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.

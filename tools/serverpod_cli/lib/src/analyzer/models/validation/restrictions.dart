@@ -712,6 +712,18 @@ class Restrictions {
       return errors;
     }
 
+    var moduleAlias = fieldType.moduleAlias;
+    if (_isUnresolvedModuleType(fieldType) && moduleAlias != null) {
+      errors.add(SourceSpanSeverityException(
+        'The referenced module "$moduleAlias" is not found.',
+        span?.subspan(
+          span.text.indexOf(moduleAlias),
+          span.text.indexOf(moduleAlias) + moduleAlias.length,
+        ),
+      ));
+      return errors;
+    }
+
     if (!_isValidType(fieldType)) {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
@@ -1072,6 +1084,18 @@ class Restrictions {
     return blackListedTypes.contains(type.className);
   }
 
+  bool _isUnresolvedModuleType(TypeDefinition type) {
+    if (!type.isModuleType) return false;
+
+    var moduleAlias = type.moduleAlias;
+    if (moduleAlias == null) return false;
+
+    var relationalData = modelRelations;
+    if (relationalData == null) return true;
+
+    return !relationalData.moduleNames.contains(moduleAlias);
+  }
+
   bool _isModelType(TypeDefinition type) {
     var className = type.className;
 
@@ -1083,7 +1107,7 @@ class Restrictions {
     var referenceClasses = definitions.whereType<ClassDefinition>();
 
     if (referenceClasses.isNotEmpty) {
-      var moduleAlias = type.url?.split(':').last;
+      var moduleAlias = type.moduleAlias;
       return referenceClasses.any((e) => e.moduleAlias == moduleAlias);
     }
 

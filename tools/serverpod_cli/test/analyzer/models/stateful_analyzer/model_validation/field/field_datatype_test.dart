@@ -929,4 +929,76 @@ void main() {
       reason: 'Expected no errors, but one was generated.',
     );
   });
+
+  group('Given a class with a field type to a module that is not imported', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            user: module:auth:UserInfo
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    test('then an error that the module does not exist is reported.', () {
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+
+      var error = collector.errors.first;
+
+      expect(error.message, 'The referenced module "auth" is not found.');
+    });
+
+    test('then the error message location pinpoints the module name.', () {
+      var error = collector.errors.first;
+
+      expect(error.span?.start.line, 2);
+      expect(error.span?.start.column, 25);
+
+      expect(error.span?.end.line, 2);
+      expect(error.span?.end.column, 29);
+    });
+  });
+
+  test(
+      'Given a class with a field type reference to serverpod that is not imported then an error that serverpod does not exist is reported.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            user: serverpod:LogLevel
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected no errors, but one was generated.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(error.message, 'The referenced module "serverpod" is not found.');
+  });
 }
