@@ -701,6 +701,14 @@ class Restrictions {
   ) {
     var errors = <SourceSpanSeverityException>[];
 
+    if (_isUnsupportedType(fieldType)) {
+      errors.add(SourceSpanSeverityException(
+        'The datatype "${fieldType.className}" is not supported in models.',
+        span,
+      ));
+      return errors;
+    }
+
     if (!_isValidType(fieldType)) {
       var typeName = fieldType.className;
       errors.add(SourceSpanSeverityException(
@@ -1045,8 +1053,16 @@ class Restrictions {
     'Map',
   ];
 
+  var blackListedTypes = [
+    'dynamic',
+  ];
+
   bool _isValidType(TypeDefinition type) {
     return whiteListedTypes.contains(type.className) || _isModelType(type);
+  }
+
+  bool _isUnsupportedType(TypeDefinition type) {
+    return blackListedTypes.contains(type.className);
   }
 
   bool _isModelType(TypeDefinition type) {

@@ -841,4 +841,38 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given a class with the unsupported type dynamic then an errors is reported.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: dynamic
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error, but none was generated.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The datatype "dynamic" is not supported in models.',
+    );
+  });
 }
