@@ -1061,7 +1061,6 @@ class Restrictions {
     'double',
     'DateTime',
     'Duration',
-    'Uuid',
     'UuidValue',
     'ByteData',
     'List',

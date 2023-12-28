@@ -12,7 +12,6 @@ void main() {
       'bool',
       'int',
       'double',
-      'Uuid',
       'DateTime',
       'Duration',
       'UuidValue',
