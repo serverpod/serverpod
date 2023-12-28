@@ -26,7 +26,8 @@ void main() {
     var types = server.Types(aStringifiedEnum: server.TestEnumStringified.one);
 
     var encoded = SerializationManager.encode(types);
-    var unpacked = serverProtocol.deserialize<server.Types>(jsonDecode(encoded));
+    var unpacked =
+        serverProtocol.deserialize<server.Types>(jsonDecode(encoded));
 
     expect(unpacked.aStringifiedEnum, server.TestEnumStringified.one);
   });
@@ -37,7 +38,8 @@ void main() {
     var types = server.Types();
 
     var encoded = SerializationManager.encode(types);
-    var unpacked = serverProtocol.deserialize<server.Types>(jsonDecode(encoded));
+    var unpacked =
+        serverProtocol.deserialize<server.Types>(jsonDecode(encoded));
 
     expect(unpacked.aStringifiedEnum, isNull);
   });
