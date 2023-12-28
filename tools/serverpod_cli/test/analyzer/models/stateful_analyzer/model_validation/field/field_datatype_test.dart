@@ -875,4 +875,58 @@ void main() {
       'The datatype "dynamic" is not supported in models.',
     );
   });
+
+  test(
+      'Given a class with a type starting with package: then do no type checking on the type and no errors are reported.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: package:serverpod_cli/src/lib/example.dart:Example
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but one was generated.',
+    );
+  });
+
+  test(
+      'Given a class with a type starting with project: then do no type checking on the type and no errors are reported.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: project:src/lib/example.dart:Example
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors, but one was generated.',
+    );
+  });
 }

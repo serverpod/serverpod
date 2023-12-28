@@ -699,6 +699,9 @@ class Restrictions {
     TypeDefinition fieldType,
     SourceSpan? span,
   ) {
+    var typeText = span?.text;
+    if (typeText != null && _isNoValidationType(typeText)) return [];
+
     var errors = <SourceSpanSeverityException>[];
 
     if (_isUnsupportedType(fieldType)) {
@@ -1056,6 +1059,10 @@ class Restrictions {
   var blackListedTypes = [
     'dynamic',
   ];
+
+  bool _isNoValidationType(String type) {
+    return type.startsWith('package:') || type.startsWith('project:');
+  }
 
   bool _isValidType(TypeDefinition type) {
     return whiteListedTypes.contains(type.className) || _isModelType(type);
