@@ -96,6 +96,82 @@ void main() {
       });
     });
 
+    group(
+        'Given a class with a field with a serverpod class type referenced by module prefix',
+        () {
+      var models = [
+        ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
+          '''
+          class: ServerpodClass
+          table: serverpod_table
+          fields:
+            nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: module:serverpod:ServerpodClass
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then the class name is the one defined in serverpod.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'ServerpodClass');
+      });
+    });
+
+    group(
+        'Given a class with a field with a serverpod class type referenced by module prefix',
+        () {
+      var models = [
+        ModelSourceBuilder().withModuleAlias('serverpod').withYaml(
+          '''
+          class: ServerpodClass
+          table: serverpod_table
+          fields:
+            nickname: String
+          ''',
+        ).build(),
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: serverpod:ServerpodClass
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then the class name is the one defined in serverpod.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'ServerpodClass');
+      });
+    });
+
     test(
         'Given a class with a field with a module type without the module:alias path then an error is reported that the datatype does not exist.',
         () {
@@ -242,6 +318,50 @@ void main() {
       test('then a class with that field type set to MyEnum.', () {
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.first.type.toString(), 'protocol:MyEnum');
+      });
+
+      test('then the type is tagged as an enum', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.isEnumType, isTrue);
+      });
+    });
+
+    group('Given a class with a field with an enum type from a module', () {
+      var models = [
+        ModelSourceBuilder().withFileName('example').withYaml(
+          '''
+          class: Example
+          fields:
+            myEnum: module:auth:MyEnum
+          ''',
+        ).build(),
+        ModelSourceBuilder()
+            .withModuleAlias('auth')
+            .withFileName('my_enum')
+            .withYaml(
+          '''
+          enum: MyEnum
+          values:
+            - first
+            - second
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      test('then no errors was generated', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then a class with that field type set to MyEnum.', () {
+        var definition = definitions.first as ClassDefinition;
+        expect(definition.fields.first.type.className, 'MyEnum');
       });
 
       test('then the type is tagged as an enum', () {
@@ -721,11 +841,4 @@ void main() {
       );
     });
   });
-
-  // To test:
-  // map keys
-  // serverpod: and? module:serverpod ???
-  // project: how to deal with that?
-  // package: how to deal with that?
-  // should we allow / in the types? probably, infact we should allow any string as long as we can resolve the type.
 }
