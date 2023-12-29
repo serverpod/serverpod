@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -216,7 +217,7 @@ abstract class Route {
       return false;
     }
     if (_matchPath!.endsWith('*')) {
-      var start = _matchPath!.substring(0, _matchPath!.length - 1);
+      var start = _matchPath!.subString(0, _matchPath!.length - 1);
       return path.startsWith(start);
     } else {
       return _matchPath == path;

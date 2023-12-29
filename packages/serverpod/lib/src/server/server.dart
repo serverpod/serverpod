@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 
 import '../cache/caches.dart';
 
@@ -337,7 +338,7 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var path = uri.path.substring(1);
+    var path = uri.path.subString(1);
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 

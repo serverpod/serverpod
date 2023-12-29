@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
@@ -225,20 +226,6 @@ extension on String {
         return ForeignKeyMatchType.simple;
       default:
         return null;
-    }
-  }
-}
-
-/// Utility tools used by the [DatabaseAnalyzer].
-extension on String {
-  /// Removes the surrounding quotes if the string
-  /// starts and ends with ".
-  String get removeSurroundingQuotes {
-    //TODO: Handle " that are inside an expression.
-    if (startsWith('"') && endsWith('"')) {
-      return substring(1, length - 1);
-    } else {
-      return this;
     }
   }
 }

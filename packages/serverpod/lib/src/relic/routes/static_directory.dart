@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 
 // TODO: Add more content type mappings.
 final _contentTypeMapping = <String, ContentType>{
@@ -50,7 +51,7 @@ class RouteStaticDirectory extends Route {
 
       if (basePath != null && path.startsWith(basePath!)) {
         var requestDir = p.dirname(path);
-        var middlePath = requestDir.substring(basePath!.length);
+        var middlePath = requestDir.subString(basePath!.length);
 
         if (middlePath.isNotEmpty) {
           path = p.join(dir, middlePath, base + extension);
@@ -71,7 +72,7 @@ class RouteStaticDirectory extends Route {
       // Enforce strong cache control.
       request.response.headers.set('Cache-Control', 'max-age=31536000');
 
-      var filePath = path.startsWith('/') ? path.substring(1) : path;
+      var filePath = path.subString(1);
       filePath = 'web/$filePath';
 
       var fileContents = await File(filePath).readAsBytes();
