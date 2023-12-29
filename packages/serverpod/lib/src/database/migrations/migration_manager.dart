@@ -6,6 +6,7 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/database/migrations/repair_migrations.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../extensions.dart';
@@ -190,7 +191,7 @@ class MigrationManager {
   ) async {
     var sqlToExecute = <({String version, String sql})>[];
 
-    if (fromVersion == null) {
+    if (fromVersion.isNullOrEmpty) {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
         Directory.current,
         latestVersion,
@@ -199,7 +200,7 @@ class MigrationManager {
 
       sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
-      var newerVersions = _getVersionsToApply(fromVersion);
+      var newerVersions = _getVersionsToApply(fromVersion!);
 
       for (var version in newerVersions) {
         var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(

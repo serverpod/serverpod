@@ -9,13 +9,13 @@ extension StringExtension on String? {
   /// Returns the substring of the string, or an empty string if the string is
   /// null or empty.
   String subString(int start, [int? end]) =>
-      (this == null || this!.trim().isEmpty) ? '' : this!.substring(start, end);
+      isNullOrEmpty ? '' : this!.substring(start, end);
 
   /// Removes the surrounding quotes if the string
   /// starts and ends with ".
   String get removeSurroundingQuotes {
     //TODO: Handle " that are inside an expression.
-    if (this == null) {
+    if (isNullOrEmpty) {
       return '';
     }
     if (this!.startsWith('"') && this!.endsWith('"')) {

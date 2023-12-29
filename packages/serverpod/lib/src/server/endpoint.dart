@@ -1,3 +1,4 @@
+import 'package:serverpod/src/util/string_extension.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'server.dart';
@@ -84,7 +85,7 @@ abstract class Endpoint {
   /// Sends an event to the client represented by the [Session] object.
   Future<void> sendStreamMessage(
       StreamingSession session, SerializableEntity message) async {
-    var prefix = moduleName == null ? '' : '$moduleName.';
+    var prefix = moduleName.isNullOrEmpty ? '' : '$moduleName.';
 
     var data = {
       'endpoint': '$prefix$name',

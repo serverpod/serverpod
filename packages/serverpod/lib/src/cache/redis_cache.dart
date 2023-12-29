@@ -1,5 +1,6 @@
 import 'package:serverpod/src/cache/global_cache.dart';
 import 'package:serverpod/src/redis/controller.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A [GlobalCache] managed by Redis. The cache is shared by the servers in
@@ -45,11 +46,11 @@ class RedisCache extends GlobalCache {
       'Redis needs to be enabled to use this method',
     );
     var data = await redisController!.get(key);
-    if (data == null) {
+    if (data.isNullOrEmpty) {
       return null;
     }
 
-    return serializationManager.decode<T>(data, t);
+    return serializationManager.decode<T>(data!, t);
   }
 
   @override

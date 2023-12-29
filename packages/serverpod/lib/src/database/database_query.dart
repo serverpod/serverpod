@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/src/util/string_extension.dart';
 
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
@@ -928,7 +929,7 @@ String _formatOrderByCount(
 ) {
   var queryAlias = subQueries?._orderByQueries[index]?.alias;
 
-  if (queryAlias == null) {
+  if (queryAlias.isNullOrEmpty) {
     throw _createStateErrorWithMessage(
         'Query alias for order by sub query is null.');
   }
@@ -965,12 +966,12 @@ LinkedHashMap<String, String> _gatherOrderByJoins(
 
         var queryAlias = orderByQueries[orderIndex]?.alias;
 
-        if (queryAlias == null) {
+        if (queryAlias.isNullOrEmpty) {
           throw _createStateErrorWithMessage(
               'Missing query alias for order by sub query with index $index.');
         }
 
-        joins[queryAlias] = _buildSubQueryJoinStatement(
+        joins[queryAlias!] = _buildSubQueryJoinStatement(
           tableRelation: tableRelation,
           queryAlias: queryAlias,
         );
