@@ -90,9 +90,11 @@ class ModelHelper {
 
     var path = joinAll(absolutePathParts);
 
-    if (!Platform.isWindows && !Platform.isLinux) {
+    if (!Platform.isWindows) {
       path = '$separator$path';
     }
+
+    print(path);
 
     try {
       var modelSourceDir = Directory(path);
