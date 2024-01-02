@@ -40,7 +40,9 @@ void main() async {
 
     late Process createProcess;
     Process? generateWatch;
-    KeywordSearchInStream? generateStreamSearch;
+    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      keywords: generateWatchCompletionKeywords,
+    );
     setUp(() async {
       // Create project
       createProcess = await Process.start(
@@ -65,7 +67,7 @@ void main() async {
     tearDown(() async {
       createProcess.kill();
       generateWatch?.kill();
-      generateStreamSearch?.close();
+      generateStreamSearch.cancel();
 
       await Process.run(
         'docker',
@@ -88,21 +90,20 @@ void main() async {
         },
       );
 
-      var stdoutStream = generateWatch!.stdout
+      generateStreamSearch = KeywordSearchInStream(
+        keywords: generateWatchCompletionKeywords,
+      );
+      generateWatch!.stdout
           .transform(const Utf8Decoder())
-          .transform(const LineSplitter());
+          .transform(const LineSplitter())
+          .listen(generateStreamSearch.onData);
       generateWatch!.stderr
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .listen(print);
 
-      generateStreamSearch = KeywordSearchInStream(
-        stdoutStream,
-        keywords: generateWatchCompletionKeywords,
-      ).startListen();
-
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Initial code generation did not complete before timeout was reached.',
@@ -126,7 +127,7 @@ fields:
 ''', flush: true);
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -168,7 +169,7 @@ fields:
 ''', flush: true);
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -191,7 +192,7 @@ fields:
       // Remove model file
       protocolFile.deleteSync();
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -214,7 +215,9 @@ fields:
 
     late Process createProcess;
     Process? generateWatch;
-    KeywordSearchInStream? generateStreamSearch;
+    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      keywords: generateWatchCompletionKeywords,
+    );
     setUp(() async {
       // Create project
       createProcess = await Process.start(
@@ -239,7 +242,7 @@ fields:
     tearDown(() async {
       createProcess.kill();
       generateWatch?.kill();
-      generateStreamSearch?.close();
+      generateStreamSearch.cancel();
 
       await Process.run(
         'docker',
@@ -261,21 +264,17 @@ fields:
         },
       );
 
-      var stdoutStream = generateWatch!.stdout
+      generateWatch!.stdout
           .transform(const Utf8Decoder())
-          .transform(const LineSplitter());
+          .transform(const LineSplitter())
+          .listen(generateStreamSearch.onData);
       generateWatch!.stderr
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .listen(print);
 
-      generateStreamSearch = KeywordSearchInStream(
-        stdoutStream,
-        keywords: generateWatchCompletionKeywords,
-      ).startListen();
-
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Initial code generation did not complete before timeout was reached.',
@@ -303,7 +302,7 @@ class TestEndpoint extends Endpoint {
 ''', flush: true);
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -351,7 +350,7 @@ class TestEndpoint extends Endpoint {
 ''', flush: true);
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -371,7 +370,7 @@ class TestEndpoint extends Endpoint {
       endpointFile.deleteSync();
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
@@ -396,7 +395,9 @@ class TestEndpoint extends Endpoint {
 
     late Process createProcess;
     Process? generateWatch;
-    KeywordSearchInStream? generateStreamSearch;
+    KeywordSearchInStream generateStreamSearch = KeywordSearchInStream(
+      keywords: generateWatchCompletionKeywords,
+    );
     setUp(() async {
       // Create project
       createProcess = await Process.start(
@@ -421,7 +422,7 @@ class TestEndpoint extends Endpoint {
     tearDown(() async {
       createProcess.kill();
       generateWatch?.kill();
-      generateStreamSearch?.close();
+      generateStreamSearch.cancel();
 
       await Process.run(
         'docker',
@@ -474,21 +475,17 @@ fields:
         },
       );
 
-      var stdoutStream = generateWatch!.stdout
+      generateWatch!.stdout
           .transform(const Utf8Decoder())
-          .transform(const LineSplitter());
+          .transform(const LineSplitter())
+          .listen(generateStreamSearch.onData);
       generateWatch!.stderr
           .transform(const Utf8Decoder())
           .transform(const LineSplitter())
           .listen(print);
 
-      generateStreamSearch = KeywordSearchInStream(
-        stdoutStream,
-        keywords: generateWatchCompletionKeywords,
-      ).startListen();
-
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Initial code generation did not complete before timeout was reached.',
@@ -541,7 +538,7 @@ fields:
       ));
 
       await expectLater(
-        generateStreamSearch?.keywordFound,
+        generateStreamSearch.keywordFound,
         completion(isTrue),
         reason:
             'Incremental code generation did not complete before timeout was reached.',
