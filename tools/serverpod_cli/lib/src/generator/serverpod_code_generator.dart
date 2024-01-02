@@ -133,16 +133,16 @@ Future<void> _removeOldFilesInPath(
   log.debug('Remove old files from $directory');
   var fileList = await directory.list(recursive: true).toList();
 
-  for (var model in fileList) {
+  for (var file in fileList) {
     // Only check Dart files.
-    if (model is! File ||
-        !fileExtensions.any((extension) => model.path.endsWith(extension))) {
+    if (file is! File ||
+        !fileExtensions.any((extension) => file.path.endsWith(extension))) {
       continue;
     }
 
-    if (!keepPaths.contains(model.path)) {
-      log.debug('Remove: $model');
-      await model.delete();
+    if (!keepPaths.contains(file.path)) {
+      log.debug('Remove: $file');
+      await file.delete();
     }
   }
 }
