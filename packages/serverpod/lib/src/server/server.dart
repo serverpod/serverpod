@@ -212,7 +212,9 @@ class Server {
       webSocket.pingInterval = const Duration(seconds: 30);
       unawaited(_handleWebsocket(webSocket, request));
       return;
-    } else if (uri.path == '/serverpod_cloud_storage') {
+    }
+
+    if (request.headers.contentType?.mimeType == ContentType.binary.mimeType) {
       readBody = false;
     }
 
