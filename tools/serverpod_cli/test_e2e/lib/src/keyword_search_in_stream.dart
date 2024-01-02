@@ -45,14 +45,20 @@ class KeywordSearchInStream {
   }
 
   KeywordSearchInStream startListen() {
-    _subscription = _stream.listen((String output) {
-      if (keywords.contains(output.trim())) {
-        _found = true;
-      }
+    _subscription = _stream.listen(
+      (String output) {
+        if (keywords.contains(output.trim())) {
+          _found = true;
+        }
 
-      print(output);
-      _scheduleTimeout();
-    });
+        print(output);
+        _scheduleTimeout();
+      },
+      onError: (err) {
+        print('Error in stream: $err');
+      },
+      cancelOnError: false,
+    );
 
     return this;
   }
