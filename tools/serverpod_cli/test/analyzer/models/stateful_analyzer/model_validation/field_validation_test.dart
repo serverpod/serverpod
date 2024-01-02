@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -293,7 +294,10 @@ void main() {
         expect(collector.errors, isNotEmpty,
             reason: 'Expected an error but none was generated.');
 
-        var error = collector.errors.first;
+        var error = collector.errors.first as SourceSpanSeverityException;
+
+        expect(error.severity, SourceSpanSeverity.info);
+
         expect(
           error.message,
           'Field names should be valid Dart variable names (e.g. camelCaseString).',

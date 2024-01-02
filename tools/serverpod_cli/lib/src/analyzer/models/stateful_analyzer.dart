@@ -29,7 +29,8 @@ class StatefulAnalyzer {
 
   /// Returns all valid models in the state.
   List<SerializableModelDefinition> get _validModels => _modelStates.values
-      .where((state) => state.errors.isEmpty)
+      .where(
+          (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
