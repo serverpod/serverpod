@@ -90,7 +90,7 @@ class ModelHelper {
 
     var path = joinAll(absolutePathParts);
 
-    if (!Platform.isWindows) {
+    if (!Platform.isWindows && !Platform.isLinux) {
       path = '$separator$path';
     }
 
