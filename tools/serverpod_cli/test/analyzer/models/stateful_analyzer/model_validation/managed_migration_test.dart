@@ -25,7 +25,7 @@ void main() {
       expect(
         collector.errors,
         isEmpty,
-        reason: 'Expected an error but none was generated.',
+        reason: 'Expected no errors but there was one.',
       );
 
       var classDefinition = definitions.first as ClassDefinition;
@@ -55,7 +55,7 @@ void main() {
       expect(
         collector.errors,
         isEmpty,
-        reason: 'Expected an error but none was generated.',
+        reason: 'Expected no errors but there was one.',
       );
 
       var classDefinition = definitions.first as ClassDefinition;
@@ -85,7 +85,7 @@ void main() {
       expect(
         collector.errors,
         isEmpty,
-        reason: 'Expected an error but none was generated.',
+        reason: 'Expected no errors but there was one.',
       );
 
       var classDefinition = definitions.first as ClassDefinition;
