@@ -143,6 +143,7 @@ Future<void> _removeOldFilesInPath(
     if (!keepPaths.contains(file.path)) {
       log.debug('Remove: $file');
       await file.delete();
+      log.debug('  - removed.');
     }
   }
 }
