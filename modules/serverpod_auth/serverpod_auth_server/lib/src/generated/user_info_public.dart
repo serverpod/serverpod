@@ -70,11 +70,11 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userName': userName,
-      'fullName': fullName,
+      if (fullName != null) 'fullName': fullName,
       'created': created,
-      'imageUrl': imageUrl,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 

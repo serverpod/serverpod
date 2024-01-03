@@ -60,9 +60,9 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'type': type,
-      'deleteTable': deleteTable,
-      'alterTable': alterTable,
-      'createTable': createTable,
+      if (deleteTable != null) 'deleteTable': deleteTable,
+      if (alterTable != null) 'alterTable': alterTable,
+      if (createTable != null) 'createTable': createTable,
     };
   }
 }

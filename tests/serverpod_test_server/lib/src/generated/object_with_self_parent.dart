@@ -47,8 +47,8 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'other': other,
+      if (id != null) 'id': id,
+      if (other != null) 'other': other,
     };
   }
 

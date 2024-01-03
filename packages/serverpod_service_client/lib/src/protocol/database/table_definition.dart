@@ -107,14 +107,14 @@ abstract class TableDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'dartName': dartName,
-      'module': module,
+      if (dartName != null) 'dartName': dartName,
+      if (module != null) 'module': module,
       'schema': schema,
-      'tableSpace': tableSpace,
+      if (tableSpace != null) 'tableSpace': tableSpace,
       'columns': columns,
       'foreignKeys': foreignKeys,
       'indexes': indexes,
-      'managed': managed,
+      if (managed != null) 'managed': managed,
     };
   }
 }

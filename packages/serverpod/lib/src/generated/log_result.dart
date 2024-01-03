@@ -32,7 +32,9 @@ abstract class LogResult extends _i1.SerializableEntity {
   LogResult copyWith({List<_i2.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
-    return {'entries': entries};
+    return {
+      'entries': entries,
+    };
   }
 
   @override

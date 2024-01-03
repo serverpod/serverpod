@@ -61,10 +61,10 @@ abstract class Address extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'street': street,
-      'inhabitantId': inhabitantId,
-      'inhabitant': inhabitant,
+      if (inhabitantId != null) 'inhabitantId': inhabitantId,
+      if (inhabitant != null) 'inhabitant': inhabitant,
     };
   }
 }

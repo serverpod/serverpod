@@ -32,7 +32,9 @@ abstract class DistributedCacheEntry extends _i1.SerializableEntity {
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
-    return {'data': data};
+    return {
+      'data': data,
+    };
   }
 }
 

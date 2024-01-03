@@ -62,10 +62,10 @@ abstract class Company extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'townId': townId,
-      'town': town,
+      if (town != null) 'town': town,
     };
   }
 

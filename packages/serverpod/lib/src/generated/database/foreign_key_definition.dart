@@ -101,9 +101,9 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
       'referenceColumns': referenceColumns,
-      'onUpdate': onUpdate,
-      'onDelete': onDelete,
-      'matchType': matchType,
+      if (onUpdate != null) 'onUpdate': onUpdate,
+      if (onDelete != null) 'onDelete': onDelete,
+      if (matchType != null) 'matchType': matchType,
     };
   }
 

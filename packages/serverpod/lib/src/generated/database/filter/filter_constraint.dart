@@ -62,7 +62,7 @@ abstract class FilterConstraint extends _i1.SerializableEntity {
       'type': type,
       'column': column,
       'value': value,
-      'value2': value2,
+      if (value2 != null) 'value2': value2,
     };
   }
 

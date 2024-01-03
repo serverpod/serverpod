@@ -67,11 +67,11 @@ abstract class Team extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'arenaId': arenaId,
-      'arena': arena,
-      'players': players,
+      if (arenaId != null) 'arenaId': arenaId,
+      if (arena != null) 'arena': arena,
+      if (players != null) 'players': players,
     };
   }
 }
