@@ -90,11 +90,10 @@ class ModelHelper {
 
     var path = joinAll(absolutePathParts);
 
-    if (!Platform.isWindows && !isAbsolute(path)) {
-      path = '$separator$path';
+    if (!isAbsolute(path)) {
+      path =
+          Platform.isWindows ? '$separator$separator$path' : '$separator$path';
     }
-
-    print(path);
 
     try {
       var modelSourceDir = Directory(path);
