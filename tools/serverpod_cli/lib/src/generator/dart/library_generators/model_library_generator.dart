@@ -1203,13 +1203,15 @@ class SerializableModelLibraryGenerator {
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
-        m.body = literalMap(
-          {
-            for (var field in fields)
-              if (field.shouldSerializeField(serverCode))
-                literalString(field.name): refer(field.name)
-          },
-        ).returned.statement;
+        var fieldExprs = fields
+            .where((field) => field.shouldSerializeField(serverCode))
+            .map((field) =>
+                '${field.type.nullable ? 'if (${field.name} != null) ' : ''}'
+                '\'${field.name}\':${field.name}')
+            .join(',');
+
+        m.body =
+            Code('return { ${fieldExprs.isEmpty ? '' : '$fieldExprs,'} };');
       },
     );
   }
