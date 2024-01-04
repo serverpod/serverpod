@@ -89,11 +89,11 @@ void main() {
 
     expect(
       errors.first.message,
-      'A List relation is not allowed on external tables.',
+      'A List relation is not allowed on module tables.',
     );
   });
 
-  group('Given a class referencing a module table parent with a relation.', () {
+  group('Given a class referencing a module table with a parent relation.', () {
     var models = [
       ModelSourceBuilder()
           .withModuleAlias('auth')

@@ -787,7 +787,7 @@ class Restrictions {
       if (referenceClass?.moduleAlias != definition.moduleAlias) {
         return [
           SourceSpanSeverityException(
-            'A List relation is not allowed on external tables.',
+            'A List relation is not allowed on module tables.',
             span,
           )
         ];
