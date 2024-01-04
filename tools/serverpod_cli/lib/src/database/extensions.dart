@@ -191,17 +191,20 @@ extension TableDiffComparisons on TableMigration {
   }
 }
 
+extension TableDefinitionExtension on TableDefinition {
+  bool get isManaged => managed != false;
+}
+
 //
 // SQL generation
 //
-
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
   String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
     String out = '';
 
     var tableCreation = '';
     var foreignRelations = '';
-    for (var table in tables.where((table) => table.managed)) {
+    for (var table in tables.where((table) => table.isManaged)) {
       tableCreation += '--\n';
       tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
       tableCreation += '--\n';

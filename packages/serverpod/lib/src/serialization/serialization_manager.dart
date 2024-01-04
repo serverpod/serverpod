@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 
@@ -15,13 +14,4 @@ abstract class SerializationManagerServer extends SerializationManager {
 
   /// The desired structure of the database.
   List<TableDefinition> getTargetTableDefinitions();
-
-  /// Checks if a given table is managed by Serverpod.
-  bool isTableMigrationsManaged(String tableName) {
-    var table = getTargetTableDefinitions()
-        .firstWhereOrNull((table) => table.name == tableName);
-
-    // If the table is not found, defaults to true meaning that we treat it as if it was managed, the implication being that it may be removed in a repair migration.
-    return table?.managed ?? true;
-  }
 }

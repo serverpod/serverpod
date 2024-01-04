@@ -162,7 +162,6 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
           columns: columns,
           foreignKeys: foreignKeys,
           indexes: indexes,
-          managed: Protocol().isTableMigrationsManaged(tableName),
         );
       })),
       migrationApiVersion: DatabaseConstants.migrationApiVersion,

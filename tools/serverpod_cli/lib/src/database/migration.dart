@@ -12,9 +12,9 @@ DatabaseMigration generateDatabaseMigration({
   // Find deleted tables
   var deleteTables = <String>[];
   var sourceTables = databaseSource.tables
-      .where((table) => table.managed)
+      .where((table) => table.isManaged)
       .where((table) => table.name != 'serverpod_migrations');
-  var targetTables = databaseTarget.tables.where((table) => table.managed);
+  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
 
   for (var srcTable in sourceTables) {
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
