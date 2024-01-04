@@ -53,7 +53,8 @@ void main() {
       test(
           'has foreign key creation for citizen after company table is created.',
           () {
-        var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "company"');
+        var createCompanyIndex =
+            pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "company"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
@@ -69,7 +70,8 @@ ALTER TABLE ONLY "citizen"
 
       test('has foreign key creation for company after town table is created.',
           () {
-        var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "town"');
+        var createCompanyIndex =
+            pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "town"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
@@ -85,7 +87,8 @@ ALTER TABLE ONLY "company"
 
       test('has foreign key creation for town after citizen table is created.',
           () {
-        var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "citizen"');
+        var createCompanyIndex =
+            pgsqlFile.indexOf('CREATE TABLE IF NOT EXISTS "citizen"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "town"
     ADD CONSTRAINT "town_fk_0"
@@ -116,6 +119,7 @@ ALTER TABLE ONLY "town"
 
     var pgsql = databaseDefinition.toPgSql(installedModules: []);
 
-    expect(pgsql, isNot(contains('CREATE TABLE IF NOT EXISTS "example_table"')));
+    expect(
+        pgsql, isNot(contains('CREATE TABLE IF NOT EXISTS "example_table"')));
   });
 }
