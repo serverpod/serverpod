@@ -357,7 +357,8 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
 
-    out += 'CREATE$uniqueStr INDEX IF NOT EXISTS "$indexName" ON "$tableName" USING $type'
+    out +=
+        'CREATE$uniqueStr INDEX IF NOT EXISTS "$indexName" ON "$tableName" USING $type'
         ' (${elementStrs.join(', ')});\n';
 
     return out;
