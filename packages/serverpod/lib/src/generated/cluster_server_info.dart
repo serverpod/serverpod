@@ -32,7 +32,9 @@ abstract class ClusterServerInfo extends _i1.SerializableEntity {
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
-    return {'serverId': serverId};
+    return {
+      'serverId': serverId,
+    };
   }
 
   @override

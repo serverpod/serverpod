@@ -74,10 +74,10 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'success': success,
-      'key': key,
-      'keyId': keyId,
-      'userInfo': userInfo,
-      'failReason': failReason,
+      if (key != null) 'key': key,
+      if (keyId != null) 'keyId': keyId,
+      if (userInfo != null) 'userInfo': userInfo,
+      if (failReason != null) 'failReason': failReason,
     };
   }
 }

@@ -122,16 +122,16 @@ abstract class LogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
+      if (messageId != null) 'messageId': messageId,
+      if (reference != null) 'reference': reference,
       'serverId': serverId,
       'time': time,
       'logLevel': logLevel,
       'message': message,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'order': order,
     };
   }

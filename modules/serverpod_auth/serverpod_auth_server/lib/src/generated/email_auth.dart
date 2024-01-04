@@ -65,7 +65,7 @@ abstract class EmailAuth extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'email': email,
       'hash': hash,

@@ -70,11 +70,11 @@ abstract class Post extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'content': content,
-      'previous': previous,
-      'nextId': nextId,
-      'next': next,
+      if (previous != null) 'previous': previous,
+      if (nextId != null) 'nextId': nextId,
+      if (next != null) 'next': next,
     };
   }
 

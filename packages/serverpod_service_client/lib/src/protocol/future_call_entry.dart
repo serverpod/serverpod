@@ -79,12 +79,12 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
       'time': time,
-      'serializedObject': serializedObject,
+      if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
-      'identifier': identifier,
+      if (identifier != null) 'identifier': identifier,
     };
   }
 }

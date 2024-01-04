@@ -69,11 +69,11 @@ abstract class Cat extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'motherId': motherId,
-      'mother': mother,
-      'kittens': kittens,
+      if (motherId != null) 'motherId': motherId,
+      if (mother != null) 'mother': mother,
+      if (kittens != null) 'kittens': kittens,
     };
   }
 

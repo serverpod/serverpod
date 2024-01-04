@@ -67,11 +67,11 @@ abstract class Organization extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'people': people,
-      'cityId': cityId,
-      'city': city,
+      if (people != null) 'people': people,
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city,
     };
   }
 }

@@ -109,13 +109,13 @@ abstract class UserInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
-      'fullName': fullName,
-      'email': email,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
       'created': created,
-      'imageUrl': imageUrl,
+      if (imageUrl != null) 'imageUrl': imageUrl,
       'scopeNames': scopeNames,
       'blocked': blocked,
     };

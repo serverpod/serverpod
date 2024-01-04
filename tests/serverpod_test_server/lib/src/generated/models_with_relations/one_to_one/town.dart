@@ -62,10 +62,10 @@ abstract class Town extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'mayorId': mayorId,
-      'mayor': mayor,
+      if (mayorId != null) 'mayorId': mayorId,
+      if (mayor != null) 'mayor': mayor,
     };
   }
 

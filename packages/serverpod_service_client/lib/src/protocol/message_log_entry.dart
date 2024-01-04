@@ -120,15 +120,15 @@ abstract class MessageLogEntry extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };

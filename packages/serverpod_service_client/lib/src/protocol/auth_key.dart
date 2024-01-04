@@ -79,10 +79,10 @@ abstract class AuthKey extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,
-      'key': key,
+      if (key != null) 'key': key,
       'scopeNames': scopeNames,
       'method': method,
     };

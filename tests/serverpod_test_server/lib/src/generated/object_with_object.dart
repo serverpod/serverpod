@@ -86,13 +86,14 @@ abstract class ObjectWithObject extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'data': data,
-      'nullableData': nullableData,
+      if (nullableData != null) 'nullableData': nullableData,
       'dataList': dataList,
-      'nullableDataList': nullableDataList,
+      if (nullableDataList != null) 'nullableDataList': nullableDataList,
       'listWithNullableData': listWithNullableData,
-      'nullableListWithNullableData': nullableListWithNullableData,
+      if (nullableListWithNullableData != null)
+        'nullableListWithNullableData': nullableListWithNullableData,
     };
   }
 

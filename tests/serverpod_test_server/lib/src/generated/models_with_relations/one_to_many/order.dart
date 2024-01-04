@@ -70,11 +70,11 @@ abstract class Order extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      'customer': customer,
-      'comments': comments,
+      if (customer != null) 'customer': customer,
+      if (comments != null) 'comments': comments,
     };
   }
 

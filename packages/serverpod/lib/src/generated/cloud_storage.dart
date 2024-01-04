@@ -90,11 +90,11 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
       'addedTime': addedTime,
-      'expiration': expiration,
+      if (expiration != null) 'expiration': expiration,
       'byteData': byteData,
       'verified': verified,
     };

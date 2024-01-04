@@ -30,7 +30,9 @@ abstract class DefaultServerOnlyClass extends _i1.SerializableEntity {
   DefaultServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {'foo': foo};
+    return {
+      'foo': foo,
+    };
   }
 
   @override

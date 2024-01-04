@@ -69,7 +69,7 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
       'addNullable': addNullable,
       'removeNullable': removeNullable,
       'changeDefault': changeDefault,
-      'newDefault': newDefault,
+      if (newDefault != null) 'newDefault': newDefault,
     };
   }
 }

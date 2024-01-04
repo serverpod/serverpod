@@ -83,13 +83,13 @@ abstract class Citizen extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'address': address,
+      if (address != null) 'address': address,
       'companyId': companyId,
-      'company': company,
-      'oldCompanyId': oldCompanyId,
-      'oldCompany': oldCompany,
+      if (company != null) 'company': company,
+      if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
+      if (oldCompany != null) 'oldCompany': oldCompany,
     };
   }
 
