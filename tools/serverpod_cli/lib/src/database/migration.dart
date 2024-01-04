@@ -14,7 +14,9 @@ DatabaseMigration generateDatabaseMigration({
   var sourceTables = databaseSource.tables
       .where((table) => table.isManaged)
       .where((table) => table.name != 'serverpod_migrations');
-  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
+  var targetTables = databaseTarget.tables
+      .where((table) => table.isManaged)
+      .where((table) => table.name != 'serverpod_migrations');
 
   for (var srcTable in sourceTables) {
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
