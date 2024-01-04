@@ -261,10 +261,14 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
     out += '\n);\n';
 
     // Indexes
-    var indexesExceptId = indexes.where((index) {
-      if (index.elements.length != 1) return false;
-      return index.elements.first.definition != 'id';
-    });
+    var indexesExceptId = <IndexDefinition>[];
+    for (var index in indexes) {
+      if (index.elements.length == 1 &&
+          index.elements.first.definition == 'id') {
+        continue;
+      }
+      indexesExceptId.add(index);
+    }
 
     if (indexesExceptId.isNotEmpty) {
       out += '\n';
