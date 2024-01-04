@@ -250,7 +250,7 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
     String out = '';
 
     // Table
-    out += 'CREATE TABLE "$name" (\n';
+    out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
@@ -261,14 +261,10 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
     out += '\n);\n';
 
     // Indexes
-    var indexesExceptId = <IndexDefinition>[];
-    for (var index in indexes) {
-      if (index.elements.length == 1 &&
-          index.elements.first.definition == 'id') {
-        continue;
-      }
-      indexesExceptId.add(index);
-    }
+    var indexesExceptId = indexes.where((index) {
+      if (index.elements.length != 1) return false;
+      return index.elements.first.definition != 'id';
+    });
 
     if (indexesExceptId.isNotEmpty) {
       out += '\n';
@@ -361,7 +357,7 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
 
-    out += 'CREATE$uniqueStr INDEX "$indexName" ON "$tableName" USING $type'
+    out += 'CREATE$uniqueStr INDEX IF NOT EXISTS "$indexName" ON "$tableName" USING $type'
         ' (${elementStrs.join(', ')});\n';
 
     return out;
