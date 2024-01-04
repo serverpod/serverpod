@@ -55,9 +55,9 @@ abstract class ParentUser extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
-      'userInfoId': userInfoId,
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (userInfoId != null) 'userInfoId': userInfoId,
     };
   }
 

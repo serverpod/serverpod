@@ -61,10 +61,10 @@ abstract class ObjectUser extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      'userInfo': userInfo,
+      if (userInfo != null) 'userInfo': userInfo,
     };
   }
 }
