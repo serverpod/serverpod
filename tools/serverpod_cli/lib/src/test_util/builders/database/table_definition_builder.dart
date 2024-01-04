@@ -7,10 +7,10 @@ class TableDefinitionBuilder {
   String? _dartName;
   String? _module;
   String _schema;
-  List<ColumnDefinition> _columns = [];
-  List<ForeignKeyDefinition> _foreignKeys = [];
-  List<IndexDefinition> _indexes = [];
-  bool _managed = false;
+  List<ColumnDefinition> _columns;
+  List<ForeignKeyDefinition> _foreignKeys;
+  List<IndexDefinition> _indexes;
+  bool? _managed;
 
   TableDefinitionBuilder()
       : _name = 'example',
@@ -91,7 +91,7 @@ class TableDefinitionBuilder {
     return this;
   }
 
-  TableDefinitionBuilder withManaged(bool managed) {
+  TableDefinitionBuilder withManaged(bool? managed) {
     _managed = managed;
     return this;
   }

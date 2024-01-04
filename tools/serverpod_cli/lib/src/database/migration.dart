@@ -41,7 +41,10 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find added or modified tables
   for (var dstTable in targetTables) {
-    var srcTable = databaseSource.findTableNamed(dstTable.name);
+    var srcTable = sourceTables.cast<TableDefinition?>().firstWhere(
+        (table) => table?.name == dstTable.name,
+        orElse: () => null);
+
     if (srcTable == null) {
       // Added table
       actions.add(
@@ -67,7 +70,6 @@ DatabaseMigration generateDatabaseMigration({
             createTable: dstTable,
           ),
         );
-        continue;
       } else if (!diff.isEmpty) {
         // Table was modified
         // TODO: Check if table can be modified
