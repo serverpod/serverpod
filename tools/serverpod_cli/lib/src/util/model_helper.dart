@@ -95,10 +95,12 @@ class ModelHelper {
           Platform.isWindows ? '$separator$separator$path' : '$separator$path';
     }
 
-    try {
-      var modelSourceDir = Directory(path);
+    var modelSourceDir = Directory(path);
+    var isDirectoryAvailable = await modelSourceDir.exists();
+
+    if (isDirectoryAvailable) {
       modelSourceFileList = await modelSourceDir.list(recursive: true).toList();
-    } on PathNotFoundException catch (_) {}
+    }
 
     return modelSourceFileList.whereType<File>().where(
         (file) => modelFileExtensions.any((ext) => file.path.endsWith(ext)));
