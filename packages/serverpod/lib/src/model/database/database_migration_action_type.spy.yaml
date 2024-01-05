@@ -2,5 +2,6 @@ enum: DatabaseMigrationActionType
 serialized: byName
 values:
   - createTable
+  - createTableIfNotExists
   - deleteTable
   - alterTable

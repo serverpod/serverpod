@@ -11,11 +11,10 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find deleted tables
   var deleteTables = <String>[];
-  for (var srcTable in databaseSource.tables) {
-    if (srcTable.name == 'serverpod_migrations') {
-      continue;
-    }
+  var sourceTables = databaseSource.tables.where((table) => table.isManaged);
+  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
 
+  for (var srcTable in sourceTables) {
     if (!databaseTarget.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }
@@ -39,13 +38,19 @@ DatabaseMigration generateDatabaseMigration({
   }
 
   // Find added or modified tables
-  for (var dstTable in databaseTarget.tables) {
-    var srcTable = databaseSource.findTableNamed(dstTable.name);
-    if (srcTable == null) {
+  for (var dstTable in targetTables) {
+    var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
+        (table) => table?.name == dstTable.name,
+        orElse: () => null);
+
+    if (srcTable == null || srcTable.managed == false) {
       // Added table
+
       actions.add(
         DatabaseMigrationAction(
-          type: DatabaseMigrationActionType.createTable,
+          type: srcTable == null
+              ? DatabaseMigrationActionType.createTable
+              : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
         ),
       );
@@ -66,7 +71,6 @@ DatabaseMigration generateDatabaseMigration({
             createTable: dstTable,
           ),
         );
-        continue;
       } else if (!diff.isEmpty) {
         // Table was modified
         // TODO: Check if table can be modified

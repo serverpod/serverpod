@@ -76,6 +76,8 @@ class MigrationManager {
       for (var warning in warnings) {
         stderr.writeln(' - $warning');
       }
+      stderr.writeln(
+          'Hint: Did you forget to apply the migrations (--apply-migrations) or run a repair migration (--apply-repair-migration)?');
     }
 
     return warnings.isEmpty;

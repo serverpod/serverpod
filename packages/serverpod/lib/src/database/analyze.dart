@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:serverpod/src/server/session.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
