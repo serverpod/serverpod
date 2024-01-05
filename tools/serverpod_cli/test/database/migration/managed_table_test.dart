@@ -1,6 +1,7 @@
 import 'package:serverpod_cli/src/test_util/builders/database/column_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 import 'package:serverpod_cli/src/database/migration.dart';
 
@@ -29,7 +30,7 @@ void main() {
       databaseTarget: targetDefinition,
     );
 
-    expect(migration.actions, hasLength(0));
+    expect(migration.actions, isEmpty);
   });
 
   test(
@@ -56,7 +57,7 @@ void main() {
       databaseTarget: targetDefinition,
     );
 
-    expect(migration.actions, hasLength(0));
+    expect(migration.actions, isEmpty);
   });
 
   test(
@@ -154,8 +155,8 @@ void main() {
     expect(migration.actions, isEmpty);
   });
 
-  test(
-      'Given a table that is not managed by serverpod that changes to be managed then the database migration will create the table if it does not exist.',
+  group(
+      'Given a table that is not managed by serverpod that changes to be managed',
       () {
     var tableName = 'example_table';
 
@@ -180,10 +181,27 @@ void main() {
       databaseTarget: targetDefinition,
     );
 
-    expect(migration.actions, hasLength(1));
+    test('then a migration action is created', () {
+      expect(migration.actions, hasLength(1));
+    });
 
-    var createTable = migration.actions.first.createTable;
-    expect(createTable, isNotNull);
-    expect(createTable!.name, 'example_table');
+    test(
+      'then the database migration will create the table if it does not exist.',
+      () {
+        var action = migration.actions.first;
+        expect(action.type, DatabaseMigrationActionType.createTableIfNotExists);
+      },
+      skip: migration.actions.length != 1,
+    );
+
+    test(
+      'then the create table property is set with the table definition.',
+      () {
+        var createTable = migration.actions.first.createTable;
+        expect(createTable, isNotNull);
+        expect(createTable!.name, 'example_table');
+      },
+      skip: migration.actions.length != 1,
+    );
   });
 }

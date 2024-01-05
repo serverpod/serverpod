@@ -43,15 +43,18 @@ DatabaseMigration generateDatabaseMigration({
 
   // Find added or modified tables
   for (var dstTable in targetTables) {
-    var srcTable = sourceTables.cast<TableDefinition?>().firstWhere(
+    var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
         (table) => table?.name == dstTable.name,
         orElse: () => null);
 
-    if (srcTable == null) {
+    if (srcTable == null || srcTable.managed == false) {
       // Added table
+
       actions.add(
         DatabaseMigrationAction(
-          type: DatabaseMigrationActionType.createTable,
+          type: srcTable == null
+              ? DatabaseMigrationActionType.createTable
+              : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
         ),
       );

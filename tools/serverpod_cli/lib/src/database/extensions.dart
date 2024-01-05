@@ -246,11 +246,15 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 }
 
 extension TableDefinitionPgSqlGeneration on TableDefinition {
-  String tableCreationToPgsql() {
+  String tableCreationToPgsql({bool ifNotExists = false}) {
     String out = '';
 
     // Table
-    out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
+    if (ifNotExists) {
+      out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
+    } else {
+      out += 'CREATE TABLE "$name" (\n';
+    }
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
@@ -274,7 +278,7 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
       out += '\n';
       out += '-- Indexes\n';
       for (var index in indexesExceptId) {
-        out += index.toPgSql(tableName: name);
+        out += index.toPgSql(tableName: name, ifNotExists: ifNotExists);
       }
     }
 
@@ -355,14 +359,16 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
 extension IndexDefinitionPgSqlGeneration on IndexDefinition {
   String toPgSql({
     required String tableName,
+    bool ifNotExists = false,
   }) {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
+    var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
     out +=
-        'CREATE$uniqueStr INDEX IF NOT EXISTS "$indexName" ON "$tableName" USING $type'
+        'CREATE$uniqueStr$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
         ' (${elementStrs.join(', ')});\n';
 
     return out;
@@ -477,6 +483,12 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '-- ACTION CREATE TABLE\n';
         out += '--\n';
         out += createTable!.tableCreationToPgsql();
+        break;
+      case DatabaseMigrationActionType.createTableIfNotExists:
+        out += '--\n';
+        out += '-- ACTION CREATE TABLE IF NOT EXISTS\n';
+        out += '--\n';
+        out += createTable!.tableCreationToPgsql(ifNotExists: true);
         break;
       case DatabaseMigrationActionType.alterTable:
         out += '--\n';
