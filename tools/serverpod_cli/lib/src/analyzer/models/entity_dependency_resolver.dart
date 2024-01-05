@@ -51,10 +51,10 @@ class ModelDependencyResolver {
     );
   }
 
-  static void _resolveEnumType(SerializableModelFieldDefinition fieldDefinition,
-      List<SerializableModelDefinition> modelDefinitions) {
-    if (fieldDefinition.type.url != 'protocol') return;
-
+  static void _resolveEnumType(
+    SerializableModelFieldDefinition fieldDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
     var enumDefinitionList = modelDefinitions
         .whereType<EnumDefinition>()
         .where((e) => e.className == fieldDefinition.type.className)

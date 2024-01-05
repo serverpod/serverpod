@@ -31,6 +31,7 @@ class StatefulAnalyzer {
   List<SerializableModelDefinition> get _validModels => _modelStates.values
       .where(
           (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
+      .where((state) => state.source.moduleAlias == defaultModuleAlias)
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();

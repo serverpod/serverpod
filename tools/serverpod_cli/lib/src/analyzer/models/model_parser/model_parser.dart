@@ -43,6 +43,7 @@ class ModelParser {
     var indexes = _parseIndexes(documentContents, fields);
 
     return ClassDefinition(
+      moduleAlias: protocolSource.moduleAlias,
       className: className,
       sourceFileName: protocolSource.yamlSourceUri.path,
       tableName: tableName,
@@ -74,6 +75,7 @@ class ModelParser {
     var values = _parseEnumValues(documentContents, docsExtractor);
 
     return EnumDefinition(
+      moduleAlias: protocolSource.moduleAlias,
       fileName: outFileName,
       sourceFileName: protocolSource.yamlSourceUri.path,
       className: className,

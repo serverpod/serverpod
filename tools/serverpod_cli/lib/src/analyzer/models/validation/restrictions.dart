@@ -143,7 +143,9 @@ class Restrictions {
       ];
     }
 
-    var classesByName = modelRelations?.classNames[className];
+    var classesByName = modelRelations?.classNames[className]?.where(
+        (model) => model.moduleAlias == documentDefinition?.moduleAlias);
+
     if (classesByName != null && classesByName.length > 1) {
       return [
         SourceSpanSeverityException(
@@ -761,13 +763,35 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is ClassDefinition && definition.tableName == null) {
+
+    if (definition is! ClassDefinition) return [];
+
+    if (definition.tableName == null) {
       return [
         SourceSpanSeverityException(
           'The "table" property must be defined in the class to set a relation on a field.',
           span,
         )
       ];
+    }
+
+    var field = definition.findField(parentNodeName);
+
+    if (field == null) return [];
+
+    if (field.type.isListType) {
+      var referenceClass = modelRelations
+          ?.findAllByClassName(field.type.generics.first.className)
+          .firstOrNull;
+
+      if (referenceClass?.moduleAlias != definition.moduleAlias) {
+        return [
+          SourceSpanSeverityException(
+            'A List relation is not allowed on module tables.',
+            span,
+          )
+        ];
+      }
     }
 
     return [];

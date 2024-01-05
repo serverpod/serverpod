@@ -33,6 +33,7 @@ class KeywordSearchInStream {
 
     _found = null;
 
+    await Future.delayed(const Duration(milliseconds: 250));
     return value;
   }
 

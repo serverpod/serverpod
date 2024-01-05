@@ -1,0 +1,5 @@
+class: ObjectUser
+table: object_user
+fields:
+  name: String?
+  userInfo: module:auth:UserInfo?, relation
