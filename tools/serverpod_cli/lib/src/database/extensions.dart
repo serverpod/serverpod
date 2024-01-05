@@ -368,7 +368,7 @@ extension IndexDefinitionPgSqlGeneration on IndexDefinition {
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
     out +=
-        'CREATE$uniqueStr$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
+        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
         ' (${elementStrs.join(', ')});\n';
 
     return out;
