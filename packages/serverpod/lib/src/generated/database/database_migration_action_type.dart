@@ -12,6 +12,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 
 enum DatabaseMigrationActionType with _i1.SerializableEntity {
   createTable,
+  createTableIfNotExists,
   deleteTable,
   alterTable;
 
@@ -19,6 +20,8 @@ enum DatabaseMigrationActionType with _i1.SerializableEntity {
     switch (name) {
       case 'createTable':
         return createTable;
+      case 'createTableIfNotExists':
+        return createTableIfNotExists;
       case 'deleteTable':
         return deleteTable;
       case 'alterTable':
