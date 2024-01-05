@@ -53,8 +53,7 @@ void main() {
       test(
           'has foreign key creation for citizen after company table is created.',
           () {
-        var createCompanyIndex =
-            pgsqlFile.indexOf('CREATE TABLE "company"');
+        var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "company"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "citizen"
     ADD CONSTRAINT "citizen_fk_0"
@@ -70,8 +69,7 @@ ALTER TABLE ONLY "citizen"
 
       test('has foreign key creation for company after town table is created.',
           () {
-        var createCompanyIndex =
-            pgsqlFile.indexOf('CREATE TABLE "town"');
+        var createCompanyIndex = pgsqlFile.indexOf('CREATE TABLE "town"');
         var createForeignKeyForCitizenIndex = pgsqlFile.indexOf('''
 ALTER TABLE ONLY "company"
     ADD CONSTRAINT "company_fk_0"
@@ -118,11 +116,8 @@ ALTER TABLE ONLY "town"
 
     var pgsql = databaseDefinition.toPgSql(installedModules: []);
 
-    expect(
-        pgsql, isNot(contains('CREATE TABLE "example_table"')));
+    expect(pgsql, isNot(contains('CREATE TABLE "example_table"')));
   });
 
-  test('Given a database definition ', () {
-    
-  });
+  test('Given a database definition ', () {});
 }
