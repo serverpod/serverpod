@@ -1084,4 +1084,41 @@ This is not a valid protocol file, in yaml format
       expect(migrationRegistry.versions, isNot(contains(tag)));
     });
   });
+
+  group('Given a new table that should not be managed by Serverpod', () {
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        serviceClient: serviceClient,
+      );
+    });
+
+    test(
+        'when creating migration then create migration exits with error and migration is not created.',
+        () async {
+      var tag = 'managed-false';
+      var targetStateProtocols = {
+        'migrated_table': '''
+class: MigratedTable
+managedMigration: false
+table: migrated_table
+fields:
+  name: String
+'''
+      };
+
+      var createMigrationExitCode =
+          await MigrationTestUtils.createMigrationFromProtocols(
+        protocols: targetStateProtocols,
+        tag: tag,
+      );
+      expect(
+        createMigrationExitCode,
+        isNot(0),
+        reason: 'Should fail to create migration but exit code 0.',
+      );
+
+      var migrationRegistry = MigrationTestUtils.loadMigrationRegistry();
+      expect(migrationRegistry.versions, isNot(contains(tag)));
+    });
+  });
 }
