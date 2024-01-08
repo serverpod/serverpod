@@ -98,6 +98,19 @@ const _databaseModelReservedFieldNames = [
   'table',
 ];
 
+/// The maximum length of a identfiers and key words in Postgres.
+/// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+const _pgsqlMaxNameLimitation = 63;
+
+/// We reserve 7 characters to enable deterministic generation of the following
+/// suffixes:
+/// - "_id_seq" suffix for the default value for serial fields stored in the
+/// server generated table definition.
+/// - "_fk_{index}" suffix for foreign key constraints.
+const _reservedTableSuffixChars = 7;
+
+const _maxTableNameLength = _pgsqlMaxNameLimitation - _reservedTableSuffixChars;
+
 class Restrictions {
   String documentType;
   YamlMap documentContents;
@@ -192,6 +205,15 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The table name "$tableName" is already in use by the class "${otherClass?.className}".',
+          span,
+        )
+      ];
+    }
+
+    if (tableName.length > _maxTableNameLength) {
+      return [
+        SourceSpanSeverityException(
+          'The table name "$tableName" exceeds the $_maxTableNameLength character table name limitation.',
           span,
         )
       ];
@@ -297,6 +319,15 @@ class Restrictions {
       ];
     }
 
+    if (indexName.length > _pgsqlMaxNameLimitation) {
+      return [
+        SourceSpanSeverityException(
+          'The index name "$indexName" exceeds the $_pgsqlMaxNameLimitation character index name limitation.',
+          span,
+        )
+      ];
+    }
+
     return [];
   }
 
@@ -349,6 +380,15 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The field name "$fieldName" is reserved and cannot be used.',
+          span,
+        )
+      ];
+    }
+
+    if (fieldName.length > _pgsqlMaxNameLimitation) {
+      return [
+        SourceSpanSeverityException(
+          'The field name "$fieldName" exceeds the $_pgsqlMaxNameLimitation character field name limitation.',
           span,
         )
       ];
