@@ -713,7 +713,7 @@ class Restrictions {
     }
 
     var moduleAlias = fieldType.moduleAlias;
-    if (_isUnresolvedModuleType(fieldType) && moduleAlias != null) {
+    if (moduleAlias != null && _isUnresolvedModuleType(fieldType)) {
       errors.add(SourceSpanSeverityException(
         'The referenced module "$moduleAlias" is not found.',
         span?.subspan(
