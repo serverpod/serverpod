@@ -713,7 +713,7 @@ fields:
     expect(collector.errors, isNotEmpty);
     expect(
       collector.errors.last.message,
-      'The class "InvalidClass" was not found in any model.',
+      'The field has an invalid datatype "InvalidClass".',
     );
   });
 

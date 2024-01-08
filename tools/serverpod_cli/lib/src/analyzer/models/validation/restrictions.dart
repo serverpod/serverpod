@@ -663,17 +663,9 @@ class Restrictions {
 
     var localModelRelations = modelRelations;
     if (localModelRelations == null) return errors;
+    if (errors.isNotEmpty) return errors;
 
     String? parsedType = localModelRelations.extractReferenceClassName(field);
-
-    var referenceClassExists = localModelRelations.classNameExists(parsedType);
-    if (!referenceClassExists) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" was not found in any model.',
-        span,
-      ));
-      return errors;
-    }
 
     var referenceClass = localModelRelations.findByClassName(parsedType);
 
