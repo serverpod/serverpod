@@ -376,7 +376,7 @@ void main() {
         '''
         class: Example
         fields:
-          thisIsAVeryLongFieldNameThatIsLongerThan63CharactersAndThereforeInvalid: String
+          thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor: String
         ''',
       ).build()
     ];
@@ -398,8 +398,42 @@ void main() {
 
     expect(
       error.message,
-      'The field name "thisIsAVeryLongFieldNameThatIsLongerThan63CharactersAndThereforeInvalid" exceeds the 63 character field name limitation.',
+      'The field name "thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor" exceeds the 63 character field name limitation.',
       reason: 'Expected the error message to indicate a field name too long.',
     );
+  });
+
+  group(
+      'Given a class with a field name that is 63 characters when analyzing models',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName: String
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    var errors = collector.errors;
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    var definition = definitions.firstOrNull as ClassDefinition?;
+
+    test('then a field definition is created.', () {
+      var field = definition?.fields.firstOrNull;
+      expect(field?.name,
+          'thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName');
+    }, skip: errors.isNotEmpty);
   });
 }

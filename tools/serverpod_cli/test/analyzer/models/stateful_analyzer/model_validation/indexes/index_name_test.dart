@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
@@ -131,7 +132,7 @@ void main() {
         fields:
           name: String
         indexes:
-          this_is_a_very_long_index_name_that_is_longer_than_63_characters_and_therefore_invalid:
+          this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa:
             fields: name
         ''',
       ).build()
@@ -150,7 +151,42 @@ void main() {
     var error = collector.errors.first;
     expect(
       error.message,
-      'The index name "this_is_a_very_long_index_name_that_is_longer_than_63_characters_and_therefore_invalid" exceeds the 63 character index name limitation.',
+      'The index name "this_index_name_is_exactly_64_characters_long_and_is_invalid_aaa" exceeds the 63 character index name limitation.',
     );
+  });
+
+  group(
+      'Given an index with a name that is 63 characters when analyzing models',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var definitions = analyzer.validateAll();
+
+    var errors = collector.errors;
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    var definition = definitions.firstOrNull as ClassDefinition?;
+
+    test('then the index definition is created.', () {
+      var index = definition?.indexes.firstOrNull;
+      expect(index?.name,
+          'this_index_name_is_exactly_63_characters_long_and_is_valid_aaaa');
+    }, skip: errors.isNotEmpty);
   });
 }

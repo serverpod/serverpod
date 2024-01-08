@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
@@ -57,7 +58,7 @@ void main() {
       ModelSourceBuilder().withFileName('user').withYaml(
         '''
         class: User
-        table: this_table_name_is_very_long_and_exceeds_the_56_character_limit
+        table: this_table_name_is_exactly_57_characters_long_and_invalid
         fields:
           nickname: String
         ''',
@@ -77,8 +78,42 @@ void main() {
     expect(
       errors.first.message,
       contains(
-        'The table name "this_table_name_is_very_long_and_exceeds_the_56_character_limit" exceeds the 56 character table name limitation.',
+        'The table name "this_table_name_is_exactly_57_characters_long_and_invalid" exceeds the 56 character table name limitation.',
       ),
     );
+  });
+
+  group('Given a table with a name that is 56 characters when analyzing models',
+      () {
+    var models = [
+      ModelSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: this_table_name_is_exactly_56_characters_long_and_valid_
+        fields:
+          nickname: String
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    var errors = collector.errors;
+
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    var definition = definitions.firstOrNull as ClassDefinition?;
+
+    test('then a table definition is created.', () {
+      expect(definition?.tableName,
+          'this_table_name_is_exactly_56_characters_long_and_valid_');
+    }, skip: errors.isNotEmpty);
   });
 }
