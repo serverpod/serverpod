@@ -951,7 +951,7 @@ void main() {
       expect(
         collector.errors,
         isNotEmpty,
-        reason: 'Expected no errors, but one was generated.',
+        reason: 'Expected an error, but none was generated.',
       );
 
       var error = collector.errors.first;
@@ -993,7 +993,7 @@ void main() {
     expect(
       collector.errors,
       isNotEmpty,
-      reason: 'Expected no errors, but one was generated.',
+      reason: 'Expected an error, but none was generated.',
     );
 
     var error = collector.errors.first;
