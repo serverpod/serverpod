@@ -207,13 +207,6 @@ Future<bool> performCreate(
           name,
         );
       });
-
-      success &=
-          await log.progress('Downloading and configuring Docker image.', () {
-        return DatabaseSetup.applyDefaultMigration(
-          serverpodDirs.serverDir,
-        );
-      });
     }
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
@@ -260,7 +253,7 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
     log.info(
-      'dart .\\bin\\main.dart',
+      'dart .\\bin\\main.dart --apply-migrations',
       type: TextLogType.command,
     );
   } else {
@@ -274,7 +267,7 @@ void _logStartInstructions(name) {
       type: TextLogType.command,
     );
     log.info(
-      'dart bin/main.dart',
+      'dart bin/main.dart --apply-migrations',
       type: TextLogType.command,
     );
   }

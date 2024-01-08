@@ -10,10 +10,3 @@ Future<bool> isNetworkPortAvailable(int port) async {
     return false;
   }
 }
-
-/// Wait for a service on a port to be available.
-Future<void> waitForServiceOnPort(int port) async {
-  while (await isNetworkPortAvailable(port)) {
-    await Future.delayed(const Duration(milliseconds: 100));
-  }
-}

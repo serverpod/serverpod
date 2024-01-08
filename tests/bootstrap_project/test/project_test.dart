@@ -82,7 +82,7 @@ void main() async {
 
       var startProcess = await Process.start(
         'dart',
-        ['bin/main.dart', '--role', 'maintenance'],
+        ['bin/main.dart', '--apply-migrations', '--role', 'maintenance'],
         workingDirectory: commandRoot,
       );
 
