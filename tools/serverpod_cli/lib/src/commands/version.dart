@@ -11,6 +11,8 @@ class VersionCommand extends ServerpodCommand {
 
   @override
   void run() {
+    // The format that the version is printed in is important, as it is used by
+    // the Serverpod Language Server to determine if the CLI is compatible.
     log.info('Serverpod version: $templateVersion');
   }
 }
