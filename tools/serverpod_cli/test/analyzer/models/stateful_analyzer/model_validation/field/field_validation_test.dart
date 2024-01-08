@@ -367,4 +367,39 @@ void main() {
       );
     },
   );
+
+  test(
+      'Given a class with a field name longer than 63 characters, then an error is collected.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          thisIsAVeryLongFieldNameThatIsLongerThan63CharactersAndThereforeInvalid: String
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error to be collected, but none was generated.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The field name "thisIsAVeryLongFieldNameThatIsLongerThan63CharactersAndThereforeInvalid" exceeds the 63 character field name limitation.',
+      reason: 'Expected the error message to indicate a field name too long.',
+    );
+  });
 }

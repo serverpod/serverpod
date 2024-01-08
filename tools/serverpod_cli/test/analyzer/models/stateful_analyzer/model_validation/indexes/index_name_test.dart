@@ -119,4 +119,38 @@ void main() {
       );
     });
   });
+
+  test(
+      'Given an index with a name that is longer than 63 characters, then collect an error that the index name is too long.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          name: String
+        indexes:
+          this_is_a_very_long_index_name_that_is_longer_than_63_characters_and_therefore_invalid:
+            fields: name
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error but none was generated.',
+    );
+
+    var error = collector.errors.first;
+    expect(
+      error.message,
+      'The index name "this_is_a_very_long_index_name_that_is_longer_than_63_characters_and_therefore_invalid" exceeds the 63 character index name limitation.',
+    );
+  });
 }

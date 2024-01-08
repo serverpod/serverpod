@@ -49,4 +49,36 @@ void main() {
       ),
     );
   });
+
+  test(
+      'Given a table with a name longer than 56 characters then there is an error reported.',
+      () {
+    var models = [
+      ModelSourceBuilder().withFileName('user').withYaml(
+        '''
+        class: User
+        table: this_table_name_is_very_long_and_exceeds_the_56_character_limit
+        fields:
+          nickname: String
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+    var errors = collector.errors;
+
+    expect(errors, isNotEmpty);
+
+    expect(
+      errors.first.message,
+      contains(
+        'The table name "this_table_name_is_very_long_and_exceeds_the_56_character_limit" exceeds the 56 character table name limitation.',
+      ),
+    );
+  });
 }
