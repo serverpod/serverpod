@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
@@ -641,15 +642,14 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (!_isValidFieldType(type)) {
-      errors.add(SourceSpanSeverityException(
-        'The field has an invalid datatype "$type".',
-        span,
-      ));
-    }
-
     var classDefinition = documentDefinition;
     if (classDefinition is! ClassDefinition) return errors;
+
+    var fieldType = classDefinition.findField(parentNodeName)?.type;
+
+    if (fieldType == null) return errors;
+
+    errors.addAll(validateFieldType(fieldType, span));
 
     var field = classDefinition.findField(parentNodeName);
     if (field == null || !field.isSymbolicRelation) return errors;
@@ -663,17 +663,9 @@ class Restrictions {
 
     var localModelRelations = modelRelations;
     if (localModelRelations == null) return errors;
+    if (errors.isNotEmpty) return errors;
 
     String? parsedType = localModelRelations.extractReferenceClassName(field);
-
-    var referenceClassExists = localModelRelations.classNameExists(parsedType);
-    if (!referenceClassExists) {
-      errors.add(SourceSpanSeverityException(
-        'The class "$parsedType" was not found in any model.',
-        span,
-      ));
-      return errors;
-    }
 
     var referenceClass = localModelRelations.findByClassName(parsedType);
 
@@ -690,6 +682,81 @@ class Restrictions {
         'The class "$parsedType" must have a "table" property defined to be used in a relation.',
         span,
       ));
+    }
+
+    return errors;
+  }
+
+  List<SourceSpanSeverityException> validateFieldType(
+    TypeDefinition fieldType,
+    SourceSpan? span,
+  ) {
+    var typeText = span?.text;
+    if (typeText != null && _isNoValidationType(typeText)) return [];
+
+    var errors = <SourceSpanSeverityException>[];
+
+    if (_isUnsupportedType(fieldType)) {
+      errors.add(SourceSpanSeverityException(
+        'The datatype "${fieldType.className}" is not supported in models.',
+        span,
+      ));
+      return errors;
+    }
+
+    var moduleAlias = fieldType.moduleAlias;
+    if (moduleAlias != null && _isUnresolvedModuleType(fieldType)) {
+      errors.add(SourceSpanSeverityException(
+        'The referenced module "$moduleAlias" is not found.',
+        span?.subspan(
+          span.text.indexOf(moduleAlias),
+          span.text.indexOf(moduleAlias) + moduleAlias.length,
+        ),
+      ));
+      return errors;
+    }
+
+    if (!_isValidType(fieldType)) {
+      var typeName = fieldType.className;
+      errors.add(SourceSpanSeverityException(
+        'The field has an invalid datatype "$typeName".',
+        span?.subspan(
+          span.text.indexOf(typeName),
+          span.text.indexOf(typeName) + typeName.length,
+        ),
+      ));
+    }
+
+    if (fieldType.isMapType) {
+      if (fieldType.generics.length == 2) {
+        errors.addAll(validateFieldType(fieldType.generics.first, span));
+        errors.addAll(validateFieldType(fieldType.generics.last, span));
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+            'The Map type must have two generic types defined (e.g. Map<String, String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.isListType) {
+      if (fieldType.generics.length == 1) {
+        errors.addAll(validateFieldType(fieldType.generics.first, span));
+      } else {
+        errors.add(
+          SourceSpanSeverityException(
+            'The List type must have one generic type defined (e.g. List<String>).',
+            span,
+          ),
+        );
+      }
+    } else if (fieldType.generics.isNotEmpty) {
+      errors.add(
+        SourceSpanSeverityException(
+          'The type "${fieldType.className}" cannot have generic types defined.',
+          span,
+        ),
+      );
     }
 
     return errors;
@@ -979,23 +1046,63 @@ class Restrictions {
     return valueCount;
   }
 
-  bool _isValidFieldType(String type) {
-    var typeComponents = type
-        .replaceAll('?', '')
-        .replaceAll(' ', '')
-        .replaceAll('<', ',')
-        .replaceAll('>', ',')
-        .split(',')
-        .where((t) => t.isNotEmpty);
+  var whiteListedTypes = [
+    'String',
+    'bool',
+    'int',
+    'double',
+    'DateTime',
+    'Duration',
+    'UuidValue',
+    'ByteData',
+    'List',
+    'Map',
+  ];
 
-    if (typeComponents.isEmpty) return false;
+  var blackListedTypes = [
+    'dynamic',
+  ];
 
-    // Checks if the type has several ??? in a row.
-    if (RegExp(r'\?{2,}').hasMatch(type)) return false;
+  bool _isNoValidationType(String type) {
+    return type.startsWith('package:') || type.startsWith('project:');
+  }
 
-    return typeComponents.every(
-      (type) => StringValidators.isValidFieldType(type),
-    );
+  bool _isValidType(TypeDefinition type) {
+    return whiteListedTypes.contains(type.className) || _isModelType(type);
+  }
+
+  bool _isUnsupportedType(TypeDefinition type) {
+    return blackListedTypes.contains(type.className);
+  }
+
+  bool _isUnresolvedModuleType(TypeDefinition type) {
+    if (!type.isModuleType) return false;
+
+    var moduleAlias = type.moduleAlias;
+    if (moduleAlias == null) return false;
+
+    var relationalData = modelRelations;
+    if (relationalData == null) return true;
+
+    return !relationalData.moduleNames.contains(moduleAlias);
+  }
+
+  bool _isModelType(TypeDefinition type) {
+    var className = type.className;
+
+    var definitions = modelRelations?.classNames[className];
+
+    if (definitions == null) return false;
+    if (definitions.isEmpty) return false;
+
+    var referenceClasses = definitions.whereType<ClassDefinition>();
+
+    if (referenceClasses.isNotEmpty) {
+      var moduleAlias = type.moduleAlias;
+      return referenceClasses.any((e) => e.moduleAlias == moduleAlias);
+    }
+
+    return true;
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

@@ -11,6 +11,8 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../config/config.dart';
 
+const _moduleRef = 'module:';
+
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
   /// The class name of the type.
@@ -47,7 +49,19 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
+  bool get isModuleType =>
+      url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
+
   bool get isEnumType => serializeEnum != null;
+
+  String? get moduleAlias {
+    if (url == defaultModuleAlias) return url;
+    if (url == 'serverpod') return url;
+    if (url?.startsWith(_moduleRef) ?? false) {
+      return url?.substring(_moduleRef.length);
+    }
+    return null;
+  }
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -122,9 +136,12 @@ class TypeDefinition {
   }) {
     return TypeReference(
       (t) {
-        if (url?.startsWith('module:') ?? false) {
+        if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
+          // module:serverpod reference
+          t.url = serverpodUrl(serverCode);
+        } else if (url?.startsWith(_moduleRef) ?? false) {
           // module:nickname: reference
-          var moduleName = url?.substring(7);
+          var moduleName = url?.substring(_moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
                 (m) => m?.nickname == moduleName,
                 orElse: () => null,

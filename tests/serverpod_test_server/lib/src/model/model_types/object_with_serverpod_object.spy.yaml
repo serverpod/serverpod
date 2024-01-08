@@ -1,0 +1,6 @@
+class: ObjectWithServerpodObject
+# Setting to serveronly as it seems the LogLevel is not accessible from the client package.
+serverOnly: true
+fields:
+  logLevel1: serverpod:LogLevel
+  logLevel2: module:serverpod:LogLevel

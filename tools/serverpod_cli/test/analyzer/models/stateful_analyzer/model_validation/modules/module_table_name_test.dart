@@ -45,7 +45,7 @@ void main() {
     expect(
       errors.first.message,
       contains(
-        'The table name "serverpod_user_info" is already in use by the class "User".',
+        'The table name "serverpod_user_info" is already in use by the class "UserInfo".',
       ),
     );
   });
