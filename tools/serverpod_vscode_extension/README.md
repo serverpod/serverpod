@@ -4,13 +4,13 @@
 
 ## Key features
 
-Syntax highlighting in protocol files.
+Syntax highlighting in model files.
 
-![Syntax highlighting](assets/images/syntax-highlighting.png)
+![Syntax highlighting](https://github.com/serverpod/serverpod/blob/main/tools/serverpod_vscode_extension/assets/images/syntax-highlighting.png?raw=true)
 
 Real-time diagnostics show errors in protocol files as you type.
 
-![Diagnostics](assets/videos/diagnostics.mp4)
+![Diagnostics](https://github.com/serverpod/serverpod/raw/main/tools/serverpod_vscode_extension/assets/videos/diagnostics.gif?raw=true)
 
 ## Requirements
 
