@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/create/database_setup.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
-import 'package:serverpod_cli/src/util/constants.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -13,15 +12,6 @@ import '../downloads/resource_manager.dart';
 import '../generated/version.dart';
 import '../util/command_line_tools.dart';
 import 'copier.dart';
-import 'port_checker.dart';
-
-const _defaultPorts = <String, int>{
-  'Serverpod API': 8080,
-  'Serverpod insights API': 8081,
-  'Serverpod Relic web server': 8082,
-  'PostgreSQL server': 8090,
-  'Redis server': 8091,
-};
 
 enum ServerpodTemplateType {
   server('server'),
@@ -51,86 +41,6 @@ Future<bool> performCreate(
       'Invalid project name. Project names can only contain letters, numbers, '
       'and underscores.',
     );
-    return false;
-  }
-  // Check we are set to create a new project
-  var usedPorts = <String, int>{};
-  for (var serverDescription in _defaultPorts.keys) {
-    var port = _defaultPorts[serverDescription]!;
-
-    var available = await isNetworkPortAvailable(port);
-    if (!available) {
-      usedPorts[serverDescription] = port;
-    }
-  }
-  var portsAvailable = usedPorts.isEmpty;
-
-  // Check that docker is installed
-  var dockerConfigured = await CommandLineTools.existsCommand(
-        'docker',
-        ['--version'],
-      ) &&
-      await CommandLineTools.isDockerRunning();
-
-  var isDockerVolumeAvailable = await CommandLineTools.isDockerVolumeAvailable(
-    name,
-  );
-
-  if ((!portsAvailable || !dockerConfigured || !isDockerVolumeAvailable) &&
-      template == ServerpodTemplateType.server &&
-      !force) {
-    var strIssue =
-        'There are some issues with your setup that will prevent your Serverpod'
-        ' project from running out of the box and without further '
-        'configuration. You can still create this project by passing -f to '
-        '"serverpod create" and manually configure your Serverpod.';
-    var strIssuePorts =
-        'One or more network ports Serverpod want to use are not available. The'
-        ' most likely reason is that you have another Serverpod project'
-        ' running, but it can also be another service.';
-    var strIssueDocker =
-        'You do not have Docker installed or it is not running. Serverpod uses '
-        'Docker to run Postgres and Redis. It\'s recommended that you install '
-        'Docker Desktop from https://www.docker.com/get-started but you can '
-        'also install and configure Postgres and Redis manually and run this '
-        'command with the -f flag added.';
-    var strIssueDockerVolume =
-        'A docker volume with the name "${SetupConstants.dockerVolumeName(name)}" already exists. '
-        'Create a project with a different name or remove the volume before running the create command again.';
-
-    log.error(strIssue);
-
-    if (!portsAvailable) {
-      log.error(
-        strIssuePorts,
-        newParagraph: true,
-      );
-      log.error(
-        'Ports in use:',
-        newParagraph: true,
-      );
-      for (var serverDescription in usedPorts.keys) {
-        var port = usedPorts[serverDescription]!;
-        log.error(
-          '$port: $serverDescription',
-          type: TextLogType.bullet,
-        );
-      }
-    }
-    if (!dockerConfigured) {
-      log.error(
-        strIssueDocker,
-        newParagraph: true,
-      );
-    }
-
-    if (!isDockerVolumeAvailable) {
-      log.error(
-        strIssueDockerVolume,
-        newParagraph: true,
-      );
-    }
-
     return false;
   }
 
@@ -200,14 +110,12 @@ Future<bool> performCreate(
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
 
-    if (dockerConfigured) {
-      success &= await log.progress('Creating default database migration.', () {
-        return DatabaseSetup.createDefaultMigration(
-          serverpodDirs.serverDir,
-          name,
-        );
-      });
-    }
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDirs.serverDir,
+        name,
+      );
+    });
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
         'Writing project files.',
@@ -224,7 +132,7 @@ Future<bool> performCreate(
       type: TextLogType.success,
     );
 
-    if (dockerConfigured && template == ServerpodTemplateType.server) {
+    if (template == ServerpodTemplateType.server) {
       _logStartInstructions(name);
     }
   }
