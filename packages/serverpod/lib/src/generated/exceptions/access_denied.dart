@@ -31,7 +31,9 @@ abstract class AccessDeniedException extends _i1.SerializableEntity
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {'message': message};
+    return {
+      'message': message,
+    };
   }
 
   @override

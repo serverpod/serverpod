@@ -33,7 +33,9 @@ abstract class ClusterInfo extends _i1.SerializableEntity {
   ClusterInfo copyWith({List<_i2.ClusterServerInfo>? servers});
   @override
   Map<String, dynamic> toJson() {
-    return {'servers': servers};
+    return {
+      'servers': servers,
+    };
   }
 
   @override

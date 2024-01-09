@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
@@ -293,7 +294,10 @@ void main() {
         expect(collector.errors, isNotEmpty,
             reason: 'Expected an error but none was generated.');
 
-        var error = collector.errors.first;
+        var error = collector.errors.first as SourceSpanSeverityException;
+
+        expect(error.severity, SourceSpanSeverity.info);
+
         expect(
           error.message,
           'Field names should be valid Dart variable names (e.g. camelCaseString).',
@@ -363,4 +367,73 @@ void main() {
       );
     },
   );
+
+  test(
+      'Given a class with a field name longer than 63 characters, then an error is collected.',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor: String
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    analyzer.validateAll();
+
+    expect(
+      collector.errors,
+      isNotEmpty,
+      reason: 'Expected an error to be collected, but none was generated.',
+    );
+
+    var error = collector.errors.first;
+
+    expect(
+      error.message,
+      'The field name "thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor" exceeds the 63 character field name limitation.',
+      reason: 'Expected the error message to indicate a field name too long.',
+    );
+  });
+
+  group(
+      'Given a class with a field name that is 63 characters when analyzing models',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        fields:
+          thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName: String
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    var errors = collector.errors;
+    test('then no errors are collected.', () {
+      expect(errors, isEmpty);
+    });
+
+    var definition = definitions.firstOrNull as ClassDefinition?;
+
+    test('then a field definition is created.', () {
+      var field = definition?.fields.firstOrNull;
+      expect(field?.name,
+          'thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName');
+    }, skip: errors.isNotEmpty);
+  });
 }

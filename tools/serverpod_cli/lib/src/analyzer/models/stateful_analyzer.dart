@@ -29,7 +29,9 @@ class StatefulAnalyzer {
 
   /// Returns all valid models in the state.
   List<SerializableModelDefinition> get _validModels => _modelStates.values
-      .where((state) => state.errors.isEmpty)
+      .where(
+          (state) => !CodeAnalysisCollector.containsSeverErrors(state.errors))
+      .where((state) => state.source.moduleAlias == defaultModuleAlias)
       .map((state) => state.model)
       .whereType<SerializableModelDefinition>()
       .toList();
@@ -123,7 +125,10 @@ class StatefulAnalyzer {
   }
 
   void _validateAllModels() {
-    for (var state in _modelStates.values) {
+    var modelsToValidate = _modelStates.values
+        .where((state) => state.source.moduleAlias == defaultModuleAlias);
+
+    for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
       SerializableModelAnalyzer.validateYamlDefinition(
         state.source.yaml,

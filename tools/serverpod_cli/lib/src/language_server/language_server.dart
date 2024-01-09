@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:lsp_server/lsp_server.dart';
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
-
-import '../../analyzer.dart';
-import '../generator/code_generation_collector.dart';
 
 class ServerProject {
   Uri serverRootUri;
@@ -79,9 +78,10 @@ Future<void> runLanguageServer() async {
 
     project.analyzer.addYamlModel(
       ModelSource(
+        defaultModuleAlias,
         params.textDocument.text,
         params.textDocument.uri,
-        ModelHelper.extractPathFromModelRoot(
+        ModelHelper.extractPathFromConfig(
           project.config,
           params.textDocument.uri,
         ),

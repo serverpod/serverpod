@@ -712,8 +712,8 @@ fields:
 
     expect(collector.errors, isNotEmpty);
     expect(
-      collector.errors.first.message,
-      'The class "InvalidClass" was not found in any model.',
+      collector.errors.last.message,
+      'The field has an invalid datatype "InvalidClass".',
     );
   });
 

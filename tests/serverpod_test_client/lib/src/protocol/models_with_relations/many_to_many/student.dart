@@ -53,9 +53,9 @@ abstract class Student extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'enrollments': enrollments,
+      if (enrollments != null) 'enrollments': enrollments,
     };
   }
 }

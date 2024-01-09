@@ -3,12 +3,14 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/test_util/builders/foreign_relation_definition_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 import 'serializable_entity_field_definition_builder.dart';
 
 typedef _FieldBuilder = SerializableModelFieldDefinition Function();
 
 class ClassDefinitionBuilder {
+  String _moduleAlias;
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -16,16 +18,19 @@ class ClassDefinitionBuilder {
   bool _serverOnly;
   bool _isException;
   String? _tableName;
+  bool _managedMigration;
   List<_FieldBuilder> _fields;
   List<SerializableModelIndexDefinition> _indexes;
   List<String>? _documentation;
 
   ClassDefinitionBuilder()
-      : _fileName = 'example',
+      : _moduleAlias = defaultModuleAlias,
+        _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         _fields = [],
         _subDirParts = [],
+        _managedMigration = true,
         _serverOnly = false,
         _isException = false,
         _indexes = [];
@@ -44,6 +49,7 @@ class ClassDefinitionBuilder {
     }
 
     return ClassDefinition(
+      moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
@@ -52,9 +58,15 @@ class ClassDefinitionBuilder {
       serverOnly: _serverOnly,
       isException: _isException,
       tableName: _tableName,
+      manageMigration: _managedMigration,
       indexes: _indexes,
       documentation: _documentation,
     );
+  }
+
+  ClassDefinitionBuilder withModuleAlias(String moduleAlias) {
+    _moduleAlias = moduleAlias;
+    return this;
   }
 
   ClassDefinitionBuilder withFileName(String fileName) {
@@ -84,6 +96,11 @@ class ClassDefinitionBuilder {
 
   ClassDefinitionBuilder withTableName(String? tableName) {
     _tableName = tableName;
+    return this;
+  }
+
+  ClassDefinitionBuilder withManagedMigration(bool isManaged) {
+    _managedMigration = isManaged;
     return this;
   }
 

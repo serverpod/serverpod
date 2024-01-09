@@ -2,6 +2,8 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -101,4 +103,21 @@ ALTER TABLE ONLY "town"
             ? 'Unexpected number of tables were created'
             : false);
   });
+
+  test(
+      'Given a database definition with only an un-managed table then no sql definition for that table is created.',
+      () {
+    var databaseDefinition = DatabaseDefinitionBuilder()
+        .withTable(TableDefinitionBuilder()
+            .withName('example_table')
+            .withManaged(false)
+            .build())
+        .build();
+
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(pgsql, isNot(contains('CREATE TABLE "example_table"')));
+  });
+
+  test('Given a database definition ', () {});
 }

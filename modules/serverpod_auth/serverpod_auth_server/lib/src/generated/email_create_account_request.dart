@@ -74,7 +74,7 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userName': userName,
       'email': email,
       'hash': hash,

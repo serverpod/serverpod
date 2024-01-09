@@ -785,7 +785,7 @@ extension on DatabaseDefinition {
                 'isPrimary': literalBool(index.isPrimary),
               }),
           ]),
-          if (table.managed != null) 'managed': literalBool(table.managed!),
+          'managed': literalBool(table.isManaged),
         }),
       ...additionalTables,
     ]).code;

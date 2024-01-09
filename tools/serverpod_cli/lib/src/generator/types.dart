@@ -4,11 +4,14 @@ import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../config/config.dart';
+
+const _moduleRef = 'module:';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -46,7 +49,19 @@ class TypeDefinition {
 
   bool get isIdType => className == 'int';
 
+  bool get isModuleType =>
+      url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
+
   bool get isEnumType => serializeEnum != null;
+
+  String? get moduleAlias {
+    if (url == defaultModuleAlias) return url;
+    if (url == 'serverpod') return url;
+    if (url?.startsWith(_moduleRef) ?? false) {
+      return url?.substring(_moduleRef.length);
+    }
+    return null;
+  }
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -121,9 +136,12 @@ class TypeDefinition {
   }) {
     return TypeReference(
       (t) {
-        if (url?.startsWith('module:') ?? false) {
+        if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
+          // module:serverpod reference
+          t.url = serverpodUrl(serverCode);
+        } else if (url?.startsWith(_moduleRef) ?? false) {
           // module:nickname: reference
-          var moduleName = url?.substring(7);
+          var moduleName = url?.substring(_moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
                 (m) => m?.nickname == moduleName,
                 orElse: () => null,
@@ -145,7 +163,7 @@ class TypeDefinition {
           t.url = 'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
-        } else if (url == 'protocol') {
+        } else if (url == defaultModuleAlias) {
           // protocol: reference
           t.url = p.posix
               .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
@@ -373,7 +391,7 @@ class TypeDefinition {
         serializeEnum: serializeEnum,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
-                ? 'protocol'
+                ? defaultModuleAlias
                 : url);
   }
 

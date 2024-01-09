@@ -1,27 +1,24 @@
 import 'dart:async';
 
-/// Searches for keywords in a stream of strings.
-/// The class expects a stream that is split by lines and utf8 decoded.
+/// Searches the [onData] string for the [keywords].
 ///
-/// The class will listen to the stream and set the [_found] flag to true
+/// The class will search for the keywords and set the [_found] flag to true
 /// if the keyword is found. If the keyword is not found within the timeout
 /// period, the [_found] flag will be set to false.
 ///
 /// The user can call [keywordFound] to wait for the keyword to be
 /// found or the timeout to occur.
 ///
-/// The user needs to call [startListen] to start listening to the stream.
-/// The user needs to call [close] to stop listening to the stream.
+/// The user needs to call [cancel] once search is completed to remove any
+/// active timeouts and prevent future onces from being initialized.
 class KeywordSearchInStream {
   bool? _found;
   final List<String> keywords;
-  final Stream<String> _stream;
-  late final StreamSubscription<String> _subscription;
   final Duration timeout;
   Timer? _timer;
+  bool _searching = true;
 
-  KeywordSearchInStream(
-    this._stream, {
+  KeywordSearchInStream({
     this.timeout = const Duration(seconds: 30),
     required this.keywords,
   });
@@ -36,25 +33,27 @@ class KeywordSearchInStream {
 
     _found = null;
 
+    await Future.delayed(const Duration(milliseconds: 250));
     return value;
   }
 
-  void close() {
-    _timer?.cancel();
-    _subscription.cancel();
+  void onData(String data) {
+    print(data);
+
+    if (!_searching) {
+      return;
+    }
+
+    if (keywords.contains(data.trim())) {
+      _found = true;
+    }
+
+    _scheduleTimeout();
   }
 
-  KeywordSearchInStream startListen() {
-    _subscription = _stream.listen((String output) {
-      if (keywords.contains(output.trim())) {
-        _found = true;
-      }
-
-      print(output);
-      _scheduleTimeout();
-    });
-
-    return this;
+  void cancel() {
+    _searching = false;
+    _timer?.cancel();
   }
 
   void _scheduleTimeout() {

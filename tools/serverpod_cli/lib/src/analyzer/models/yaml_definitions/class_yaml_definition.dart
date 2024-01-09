@@ -26,6 +26,10 @@ class ClassYamlDefinition {
         valueRestriction: restrictions.validateTableName,
       ),
       ValidateNode(
+        Keyword.managedMigration,
+        valueRestriction: BooleanValueRestriction().validate,
+      ),
+      ValidateNode(
         Keyword.serverOnly,
         valueRestriction: BooleanValueRestriction().validate,
       ),

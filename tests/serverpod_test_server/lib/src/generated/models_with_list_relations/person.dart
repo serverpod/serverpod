@@ -64,10 +64,10 @@ abstract class Person extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'organizationId': organizationId,
-      'organization': organization,
+      if (organizationId != null) 'organizationId': organizationId,
+      if (organization != null) 'organization': organization,
     };
   }
 

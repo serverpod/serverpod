@@ -1,7 +1,9 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class EnumDefinitionBuilder {
+  String _moduleAlias;
   String _fileName;
   String _sourceFileName;
   String _className;
@@ -13,7 +15,8 @@ class EnumDefinitionBuilder {
   List<String>? _documentation;
 
   EnumDefinitionBuilder()
-      : _fileName = 'example',
+      : _moduleAlias = defaultModuleAlias,
+        _fileName = 'example',
         _sourceFileName = 'example.yaml',
         _className = 'Example',
         _serialized = EnumSerialization.byIndex,
@@ -28,6 +31,7 @@ class EnumDefinitionBuilder {
 
   EnumDefinition build() {
     return EnumDefinition(
+      moduleAlias: _moduleAlias,
       fileName: _fileName,
       sourceFileName: _sourceFileName,
       className: _className,
@@ -37,6 +41,11 @@ class EnumDefinitionBuilder {
       serverOnly: _serverOnly,
       documentation: _documentation,
     );
+  }
+
+  EnumDefinitionBuilder withModuleAlias(String moduleAlias) {
+    _moduleAlias = moduleAlias;
+    return this;
   }
 
   EnumDefinitionBuilder withFileName(String fileName) {

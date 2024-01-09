@@ -4,7 +4,8 @@ import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 /// An abstract representation of a yaml file in the
 /// protocol directory.
-abstract class SerializableModelDefinition {
+sealed class SerializableModelDefinition {
+  final String moduleAlias;
   final String fileName;
   final String sourceFileName;
   final String className;
@@ -12,6 +13,7 @@ abstract class SerializableModelDefinition {
   final bool serverOnly;
 
   SerializableModelDefinition({
+    required this.moduleAlias,
     required this.fileName,
     required this.sourceFileName,
     required this.className,
@@ -49,16 +51,20 @@ class ClassDefinition extends SerializableModelDefinition {
   /// The documentation of this class, line by line.
   final List<String>? documentation;
 
+  final bool manageMigration;
+
   /// `true` if this is an exception and not a class.
   final bool isException;
 
   /// Create a new [ClassDefinition].
   ClassDefinition({
+    required super.moduleAlias,
     required super.fileName,
     required super.sourceFileName,
     required super.className,
     required this.fields,
     required super.serverOnly,
+    required this.manageMigration,
     required this.isException,
     this.tableName,
     this.indexes = const [],
@@ -207,6 +213,7 @@ class EnumDefinition extends SerializableModelDefinition {
 
   /// Create a new [EnumDefinition].
   EnumDefinition({
+    required super.moduleAlias,
     required super.fileName,
     required super.sourceFileName,
     required super.className,

@@ -29,12 +29,14 @@ class GeneratorConfigBuilder {
             name: 'serverpod',
             nickname: 'serverpod',
             migrationVersions: ['0000000000000000000'],
+            serverPackageDirectoryPathParts: [],
           ),
           ModuleConfig(
             type: _defaultType,
             name: _defaultName,
             nickname: _defaultName,
             migrationVersions: ['0000000000000000000'],
+            serverPackageDirectoryPathParts: [],
           ),
         ],
         _extraClasses = [];
@@ -77,6 +79,7 @@ class GeneratorConfigBuilder {
         name: 'serverpod_auth',
         nickname: 'auth',
         migrationVersions: ['0000000000000000000'],
+        serverPackageDirectoryPathParts: [],
       ),
     );
     return this;

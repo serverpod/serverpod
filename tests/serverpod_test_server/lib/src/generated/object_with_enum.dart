@@ -77,9 +77,9 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'testEnum': testEnum,
-      'nullableEnum': nullableEnum,
+      if (nullableEnum != null) 'nullableEnum': nullableEnum,
       'enumList': enumList,
       'nullableEnumList': nullableEnumList,
       'enumListList': enumListList,

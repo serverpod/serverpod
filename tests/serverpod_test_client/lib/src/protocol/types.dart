@@ -111,17 +111,17 @@ abstract class Types extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'anInt': anInt,
-      'aBool': aBool,
-      'aDouble': aDouble,
-      'aDateTime': aDateTime,
-      'aString': aString,
-      'aByteData': aByteData,
-      'aDuration': aDuration,
-      'aUuid': aUuid,
-      'anEnum': anEnum,
-      'aStringifiedEnum': aStringifiedEnum,
+      if (id != null) 'id': id,
+      if (anInt != null) 'anInt': anInt,
+      if (aBool != null) 'aBool': aBool,
+      if (aDouble != null) 'aDouble': aDouble,
+      if (aDateTime != null) 'aDateTime': aDateTime,
+      if (aString != null) 'aString': aString,
+      if (aByteData != null) 'aByteData': aByteData,
+      if (aDuration != null) 'aDuration': aDuration,
+      if (aUuid != null) 'aUuid': aUuid,
+      if (anEnum != null) 'anEnum': anEnum,
+      if (aStringifiedEnum != null) 'aStringifiedEnum': aStringifiedEnum,
     };
   }
 }

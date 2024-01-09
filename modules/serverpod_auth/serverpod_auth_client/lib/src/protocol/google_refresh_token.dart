@@ -56,7 +56,7 @@ abstract class GoogleRefreshToken extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
     };

@@ -64,10 +64,10 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'module': module,
       'version': version,
-      'timestamp': timestamp,
+      if (timestamp != null) 'timestamp': timestamp,
     };
   }
 }

@@ -1,3 +1,6 @@
+## 1.2.0-rc.2
+- Second preview of 1.2.0
+
 ## 1.2.0-rc.1
 - Preview of 1.2.0
 

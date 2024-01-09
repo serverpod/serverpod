@@ -68,6 +68,7 @@ Future<List<ModuleConfig>?> locateModules({
             name: moduleName,
             nickname: nickname,
             migrationVersions: migrationVersions,
+            serverPackageDirectoryPathParts: moduleProjectRoot,
           ),
         );
       } catch (e) {

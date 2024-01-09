@@ -68,11 +68,11 @@ abstract class Blocking extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'blockedId': blockedId,
-      'blocked': blocked,
+      if (blocked != null) 'blocked': blocked,
       'blockedById': blockedById,
-      'blockedBy': blockedBy,
+      if (blockedBy != null) 'blockedBy': blockedBy,
     };
   }
 }

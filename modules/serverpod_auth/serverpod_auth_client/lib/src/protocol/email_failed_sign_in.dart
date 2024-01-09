@@ -65,7 +65,7 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'email': email,
       'time': time,
       'ipAddress': ipAddress,

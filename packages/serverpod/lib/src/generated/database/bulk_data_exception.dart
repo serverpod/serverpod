@@ -46,7 +46,7 @@ abstract class BulkDataException extends _i1.SerializableEntity
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'query': query,
+      if (query != null) 'query': query,
     };
   }
 

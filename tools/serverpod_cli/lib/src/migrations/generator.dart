@@ -80,7 +80,7 @@ class MigrationGenerator {
     );
 
     var databaseDefinitions = await _loadModuleDatabaseDefinitions(
-      config.modulesAll,
+      config.modulesDependent,
       directory,
     );
 
@@ -141,12 +141,9 @@ class MigrationGenerator {
   }
 
   Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
-    List<ModuleConfig> allModules,
+    List<ModuleConfig> modules,
     Directory projectFolder,
   ) async {
-    var modules =
-        allModules.where((module) => module.name != projectName).toList();
-
     var versions = await _loadMigrationVersionsFromModules(
       modules,
       directory: projectFolder,

@@ -1,0 +1,5 @@
+class: ParentUser
+table: parent_user
+fields:
+  name: String?
+  userInfoId: int?, relation(parent=serverpod_user_info)
