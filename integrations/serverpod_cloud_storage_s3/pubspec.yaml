@@ -4,7 +4,7 @@ publish_to: none
 
 name: serverpod_cloud_storage_s3
 description: Serverpod integration for S3 cloud storage
-version: 1.2.0-rc.2
+version: 1.2.0-rc.3
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -13,7 +13,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: #1.2.0-rc.2
+  serverpod: #1.2.0-rc.3
     path: ../../packages/serverpod
   amazon_cognito_identity_dart_2: ^3.0.0
   http: ">=0.13.0 <2.0.0"
