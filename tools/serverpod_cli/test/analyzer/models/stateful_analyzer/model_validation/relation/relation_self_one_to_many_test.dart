@@ -74,4 +74,34 @@ void main() {
       expect((relation as ListRelationDefinition).nullableRelation, false);
     }, skip: relation is! ListRelationDefinition);
   });
+
+  test(
+      'Given a list relation with an invalid type then the only error reported is that the type is invalid.',
+      () {
+    var models = [
+      ModelSourceBuilder().withFileName('example').withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          list: List<InvalidType>?, relation
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+
+    analyzer.validateAll();
+
+    expect(collector.errors, hasLength(1));
+
+    expect(
+      collector.errors.first.message,
+      'The field has an invalid datatype "InvalidType".',
+    );
+  });
 }
