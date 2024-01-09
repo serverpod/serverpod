@@ -891,7 +891,8 @@ class Restrictions {
           ?.findAllByClassName(field.type.generics.first.className)
           .firstOrNull;
 
-      if (referenceClass?.moduleAlias != definition.moduleAlias) {
+      if (referenceClass != null &&
+          referenceClass.moduleAlias != definition.moduleAlias) {
         return [
           SourceSpanSeverityException(
             'A List relation is not allowed on module tables.',
