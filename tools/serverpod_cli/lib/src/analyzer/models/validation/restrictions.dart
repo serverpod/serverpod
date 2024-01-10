@@ -98,9 +98,13 @@ const _databaseModelReservedFieldNames = [
   'table',
 ];
 
-/// The maximum length of a identfiers and key words in Postgres.
+/// The maximum length of a identifiers and key words in Postgres.
 /// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 const _pgsqlMaxNameLimitation = 63;
+
+/// We reserve 2 characters to enable implicit foreign key field generation
+/// without truncation since we append "id" as a suffix of on the field name.
+const _reservedColumnSuffixChars = 2;
 
 /// We reserve 7 characters to enable deterministic generation of the following
 /// suffixes:
@@ -110,6 +114,8 @@ const _pgsqlMaxNameLimitation = 63;
 const _reservedTableSuffixChars = 7;
 
 const _maxTableNameLength = _pgsqlMaxNameLimitation - _reservedTableSuffixChars;
+const _maxColumnNameLength =
+    _pgsqlMaxNameLimitation - _reservedColumnSuffixChars;
 
 class Restrictions {
   String documentType;
@@ -385,10 +391,10 @@ class Restrictions {
       ];
     }
 
-    if (fieldName.length > _pgsqlMaxNameLimitation) {
+    if (fieldName.length > _maxColumnNameLength) {
       return [
         SourceSpanSeverityException(
-          'The field name "$fieldName" exceeds the $_pgsqlMaxNameLimitation character field name limitation.',
+          'The field name "$fieldName" exceeds the $_maxColumnNameLength character field name limitation.',
           span,
         )
       ];
