@@ -369,14 +369,14 @@ void main() {
   );
 
   test(
-      'Given a class with a field name longer than 63 characters, then an error is collected.',
+      'Given a class with a field name longer than 61 characters, then an error is collected.',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         fields:
-          thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor: String
+          thisFieldIsExactly62CharactersLongAndIsThereforeInvalidAsNameF: String
         ''',
       ).build()
     ];
@@ -398,20 +398,20 @@ void main() {
 
     expect(
       error.message,
-      'The field name "thisFieldIsExactly64CharactersLongAndIsThereforeInvalidAsNameFor" exceeds the 63 character field name limitation.',
+      'The field name "thisFieldIsExactly62CharactersLongAndIsThereforeInvalidAsNameF" exceeds the 61 character field name limitation.',
       reason: 'Expected the error message to indicate a field name too long.',
     );
   });
 
   group(
-      'Given a class with a field name that is 63 characters when analyzing models',
+      'Given a class with a field name that is 61 characters when analyzing models',
       () {
     var models = [
       ModelSourceBuilder().withYaml(
         '''
         class: Example
         fields:
-          thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName: String
+          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: String
         ''',
       ).build()
     ];
@@ -433,7 +433,7 @@ void main() {
     test('then a field definition is created.', () {
       var field = definition?.fields.firstOrNull;
       expect(field?.name,
-          'thisFieldIsExactly63CharactersLongAndIsThereforeAValidFieldName');
+          'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa');
     }, skip: errors.isNotEmpty);
   });
 }
