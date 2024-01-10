@@ -131,10 +131,10 @@ class MigrationManager {
   }
 
   /// Applies the repair migration to the database.
-  Future<void> applyRepairMigration(Session session) async {
+  Future<bool> applyRepairMigration(Session session) async {
     var repairMigration = RepairMigration.load(Directory.current);
     if (repairMigration == null) {
-      return;
+      return false;
     }
 
     var appliedRepairMigration = await DatabaseMigrationVersion.db.findFirstRow(
@@ -144,46 +144,58 @@ class MigrationManager {
 
     if (appliedRepairMigration != null &&
         appliedRepairMigration.version == repairMigration.versionName) {
-      return;
+      return false;
     }
 
     await session.dbNext.unsafeExecute(repairMigration.sqlMigration);
+    return true;
   }
 
   /// Migrates all modules to the latest version.
-  Future<void> migrateToLatest(Session session) async {
+  ///
+  /// Returns the number of migrations applied.
+  /// Returns null if latest version was already installed.
+  Future<int?> migrateToLatest(Session session) async {
     var latestVersion = getLatestVersion();
 
     var moduleName = session.serverpod.serializationManager.getModuleName();
 
-    if (!isVersionInstalled(moduleName, latestVersion)) {
-      var installedVersion = getInstalledVersion(moduleName);
-
-      await _migrateToLatestModule(
-        session,
-        latestVersion: latestVersion,
-        fromVersion: installedVersion,
-      );
+    if (isVersionInstalled(moduleName, latestVersion)) {
+      return null;
     }
+
+    var installedVersion = getInstalledVersion(moduleName);
+
+    return await _migrateToLatestModule(
+      session,
+      latestVersion: latestVersion,
+      fromVersion: installedVersion,
+    );
   }
 
   /// Migration a single module to the latest version.
-  Future<void> _migrateToLatestModule(
+  ///
+  /// Returns the number of migrations applied.
+  Future<int> _migrateToLatestModule(
     Session session, {
     required String latestVersion,
     String? fromVersion,
   }) async {
     var sqlToExecute = await _loadMigrationSQL(fromVersion, latestVersion);
 
+    var migrationsApplied = 0;
     for (var code in sqlToExecute) {
       try {
         await session.dbNext.unsafeExecute(code.sql);
+        migrationsApplied++;
       } catch (e) {
         stderr.writeln('Failed to apply migration ${code.version}.');
         stderr.writeln('$e');
         rethrow;
       }
     }
+
+    return migrationsApplied;
   }
 
   Future<List<({String version, String sql})>> _loadMigrationSQL(
