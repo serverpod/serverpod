@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -24,12 +22,6 @@ typedef LoggerInit = void Function(LogLevel);
 typedef PreCommandEnvironmentCheck = Future<void> Function();
 
 Future<void> _preCommandEnvironmentChecks() async {
-  if (Platform.isWindows) {
-    log.warning(
-        'Windows is not officially supported yet. Things may or may not work '
-        'as expected.');
-  }
-
   // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
