@@ -370,11 +370,13 @@ class Serverpod {
 
         if (commandLineArgs.applyRepairMigration) {
           logVerbose('Applying database repair migration');
-          var success = await migrationManager.applyRepairMigration(session);
-          if (success) {
-            stdout.writeln('Database repair migration applied.');
-          } else {
+          var appliedRepairMigration =
+              await migrationManager.applyRepairMigration(session);
+          if (appliedRepairMigration == null) {
             stderr.writeln('Failed to apply database repair migration.');
+          } else {
+            stdout.writeln(
+                'Database repair migration "$appliedRepairMigration" applied.');
           }
           await migrationManager.initialize(session);
         }
@@ -386,10 +388,12 @@ class Serverpod {
 
           if (migrationsApplied == null) {
             stdout.writeln('Latest database migration already applied.');
-          } else if (migrationsApplied == 1) {
-            stdout.writeln('Database migration applied.');
           } else {
-            stdout.writeln('$migrationsApplied database migrations applied.');
+            stdout.writeln(
+                'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:');
+            for (var migration in migrationsApplied) {
+              stdout.writeln(' - $migration');
+            }
           }
 
           await migrationManager.initialize(session);

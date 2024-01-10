@@ -131,10 +131,10 @@ class MigrationManager {
   }
 
   /// Applies the repair migration to the database.
-  Future<bool> applyRepairMigration(Session session) async {
+  Future<String?> applyRepairMigration(Session session) async {
     var repairMigration = RepairMigration.load(Directory.current);
     if (repairMigration == null) {
-      return false;
+      return null;
     }
 
     var appliedRepairMigration = await DatabaseMigrationVersion.db.findFirstRow(
@@ -144,18 +144,18 @@ class MigrationManager {
 
     if (appliedRepairMigration != null &&
         appliedRepairMigration.version == repairMigration.versionName) {
-      return false;
+      return null;
     }
 
     await session.dbNext.unsafeExecute(repairMigration.sqlMigration);
-    return true;
+    return repairMigration.versionName;
   }
 
   /// Migrates all modules to the latest version.
   ///
-  /// Returns the number of migrations applied.
+  /// Returns the migrations applied.
   /// Returns null if latest version was already installed.
-  Future<int?> migrateToLatest(Session session) async {
+  Future<List<String>?> migrateToLatest(Session session) async {
     var latestVersion = getLatestVersion();
 
     var moduleName = session.serverpod.serializationManager.getModuleName();
@@ -175,19 +175,19 @@ class MigrationManager {
 
   /// Migration a single module to the latest version.
   ///
-  /// Returns the number of migrations applied.
-  Future<int> _migrateToLatestModule(
+  /// Returns the migrations applied.
+  Future<List<String>> _migrateToLatestModule(
     Session session, {
     required String latestVersion,
     String? fromVersion,
   }) async {
     var sqlToExecute = await _loadMigrationSQL(fromVersion, latestVersion);
 
-    var migrationsApplied = 0;
+    var migrationsApplied = <String>[];
     for (var code in sqlToExecute) {
       try {
         await session.dbNext.unsafeExecute(code.sql);
-        migrationsApplied++;
+        migrationsApplied.add(code.version);
       } catch (e) {
         stderr.writeln('Failed to apply migration ${code.version}.');
         stderr.writeln('$e');
