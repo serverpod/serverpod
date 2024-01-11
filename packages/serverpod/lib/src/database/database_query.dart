@@ -712,7 +712,8 @@ class _SubQueries {
 
   static String buildUniqueQueryAlias(
       String orderByPrefix, String queryAlias, int index) {
-    return '${orderByPrefix}_${queryAlias}_$index';
+    var alias = '${orderByPrefix}_${queryAlias}_$index';
+    return truncateIdentifier(alias, DatabaseConstants.pgsqlMaxNameLimitation);
   }
 
   static Map<int, _SubQuery> _gatherOrderBySubQueries(List<Order> orderBy) {
