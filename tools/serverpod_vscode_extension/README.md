@@ -8,7 +8,7 @@ Syntax highlighting in model files.
 
 ![Syntax highlighting](https://github.com/serverpod/serverpod/blob/main/tools/serverpod_vscode_extension/assets/images/syntax-highlighting.png?raw=true)
 
-Real-time diagnostics show errors in protocol files as you type.
+Real-time diagnostics show errors in model files as you type.
 
 ![Diagnostics](https://github.com/serverpod/serverpod/blob/main/tools/serverpod_vscode_extension/assets/videos/diagnostics.gif?raw=true)
 
