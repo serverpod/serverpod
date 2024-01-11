@@ -29,7 +29,10 @@ export function activate(context: ExtensionContext) {
 	const serverOptions: ServerOptions = {
 		command: 'serverpod',
 		args: ['language-server'],
-		options: {},
+		options: {
+			env: process.env,
+			shell: true,
+		},
 		transport: TransportKind.stdio
 	};
 
