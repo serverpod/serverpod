@@ -127,7 +127,7 @@ Future<bool> performCreate(
 
   if (success || force) {
     log.info(
-      'Serverpod created.',
+      'Serverpod project created.',
       newParagraph: true,
       type: TextLogType.success,
     );
