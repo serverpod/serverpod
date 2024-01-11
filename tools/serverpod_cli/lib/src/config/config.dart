@@ -79,7 +79,7 @@ class GeneratorConfig {
 
   /// Path parts to the model directory of the server package.
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'model'];
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
 
   /// Path parts to the endpoints directory of the server package.
   List<String> get endpointsSourcePathParts =>
@@ -303,7 +303,7 @@ class ModuleConfig {
 
   /// Path parts to the model directory of the server package.
   List<String> get modelSourcePathParts =>
-      [...serverPackageDirectoryPathParts, 'lib', 'src', 'model'];
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
 
   /// The migration versions of the module.
   List<String> migrationVersions;
