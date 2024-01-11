@@ -586,7 +586,7 @@ String createModelDirectoryPath(
   String serverDir,
   String? subFolder,
 ) {
-  var basePath = [tmpFolder, serverDir, 'lib', 'src', 'model'];
+  var basePath = [tmpFolder, serverDir, 'lib', 'src', 'models'];
 
   if (subFolder == null) {
     return path.joinAll(basePath);

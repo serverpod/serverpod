@@ -217,7 +217,7 @@ void main() {
       expect(
         paths.first,
         contains(
-            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/model/example.spy.yaml'),
+            'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/models/example.spy.yaml'),
       );
 
       expect(
