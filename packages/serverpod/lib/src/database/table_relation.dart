@@ -84,7 +84,8 @@ class TableRelation {
   /// The query alias for field name to be joined on including all joins.
   String get fieldQueryAliasWithJoins {
     return _truncateFunction(
-        '${_fromRelationQueryAlias()}.${_tableRelationEntries.last.field.columnName}');
+      '${_fromRelationQueryAlias()}.${_tableRelationEntries.last.field.columnName}',
+    );
   }
 
   /// The field name to be joined on including all joins.
