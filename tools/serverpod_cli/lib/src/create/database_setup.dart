@@ -11,8 +11,11 @@ class DatabaseSetup {
   ) async {
     log.debug('Creating initial migration.');
 
-    var config = await GeneratorConfig.load(dir.path);
-    if (config == null) {
+    GeneratorConfig? config;
+
+    try {
+      config = await GeneratorConfig.load(dir.path);
+    } catch (error) {
       log.error('Could not load config file.');
       return false;
     }

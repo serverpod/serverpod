@@ -22,6 +22,24 @@ enum PackageType {
   internal,
 }
 
+class ServerpodProjectNotFoundException implements Exception {
+  final String message;
+
+  const ServerpodProjectNotFoundException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class ServerpodModulesNotFoundException implements Exception {
+  final String message;
+
+  const ServerpodModulesNotFoundException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 /// The configuration of the generation and analyzing process.
 class GeneratorConfig {
   const GeneratorConfig({
@@ -124,7 +142,7 @@ class GeneratorConfig {
   List<ModuleConfig> get modulesAll => _modules;
 
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static Future<GeneratorConfig?> load([String dir = '']) async {
+  static Future<GeneratorConfig> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
     Map? pubspec;
@@ -137,7 +155,10 @@ class GeneratorConfig {
         'Failed to load pubspec.yaml. Are you running serverpod from your '
         'projects root directory?',
       );
-      return null;
+
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load pubspec.yaml',
+      );
     }
 
     if (pubspec!['name'] == null) {
@@ -154,7 +175,10 @@ class GeneratorConfig {
     } catch (_) {
       log.error('Failed to load config/generator.yaml. Is this a Serverpod '
           'project?');
-      return null;
+
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load config/generator.yaml',
+      );
     }
 
     if (generatorConfig == null) {
@@ -190,7 +214,9 @@ class GeneratorConfig {
         'Failed to load client pubspec.yaml. Is your client_package_path set '
         'correctly?',
       );
-      return null;
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load client pubspec.yaml',
+      );
     }
 
     var manualModules = <String, String?>{};
@@ -208,7 +234,9 @@ class GeneratorConfig {
     );
 
     if (modules == null) {
-      return null;
+      throw const ServerpodModulesNotFoundException(
+        'Failed to locate modules',
+      );
     }
 
     // Load extraClasses
