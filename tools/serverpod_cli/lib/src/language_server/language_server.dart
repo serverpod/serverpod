@@ -127,7 +127,7 @@ void _sendModulesNotFoundNotification(Connection connection) {
     'window/showMessage',
     ShowMessageParams(
       message:
-          'Serverpod model validation disabled. Unable to locate necessary modules, have you run dart pub get?',
+          'Serverpod model validation disabled. Unable to locate necessary modules, have you run "dart pub get"?',
       type: MessageType.Warning,
     ).toJson(),
   );
