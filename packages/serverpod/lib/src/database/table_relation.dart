@@ -89,11 +89,6 @@ class TableRelation {
     return _tableRelationEntries.last.foreignField.queryAlias;
   }
 
-  /// The foreign field to be joined including all joins as query alias.
-  String get foreignFieldQueryAliasWithJoins {
-    return '"${_buildRelationQueryAlias()}"."${_tableRelationEntries.last.foreignField.queryAlias}"';
-  }
-
   /// Create a new [TableRelation] with only one entry for the last table
   /// relation.
   TableRelation get lastRelation {
