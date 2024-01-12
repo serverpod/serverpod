@@ -30,8 +30,8 @@ String databaseTypeToLowerCamelCase(String databaseType) {
 ///
 /// The hash length cannot be longer than the length of the hash returned
 /// from the hash algorithm.
-/// The function will silently use the generated hash length it is is shorter
-/// than the provided [hashLength].
+/// The function will silently use the generated hash length if it is shorter
+/// than the requested [hashLength].
 String truncateIdentifier(
   String identifier,
   int maxLength, {
@@ -49,7 +49,7 @@ String truncateIdentifier(
   var hash = sha256.convert(utf8.encode(identifier)).toString();
 
   if (hashLength > hash.length) {
-    hashLength = hash.length - 1;
+    hashLength = hash.length;
   }
 
   var digest = hash.substring(0, hashLength);
