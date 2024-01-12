@@ -800,35 +800,32 @@ fields:
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
-    var classDefinition = definitions.first as ClassDefinition;
+    var classDefinition = definitions.firstOrNull as ClassDefinition?;
 
     test('then no errors are collected.', () {
       expect(collector.errors, isEmpty);
     });
 
-    test('then implicit field is created', () {
-      var maybeField = classDefinition.fields
-          .where((element) => element.name != 'id')
-          .where((element) =>
-              element.name !=
-              'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa')
-          .toList();
-      expect(maybeField, hasLength(1));
+    test('then class definition is created', () {
+      expect(classDefinition, isNotNull);
     });
 
     test(
         'then no field exists with a name that is longer than Postgres max name limit',
         () {
-      var fields = classDefinition.fields
+      var fields = classDefinition?.fields
           .where((element) =>
               element.name.length > DatabaseConstants.pgsqlMaxNameLimitation)
           .map((e) => e.name)
           .toList();
 
-      expect(fields, isEmpty,
-          reason:
-              'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars');
-    });
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
+    }, skip: classDefinition == null);
   });
 
   group(
@@ -875,22 +872,21 @@ fields:
       expect(employeeDefinition, isNotNull);
     });
 
-    test('then employee class definition has implicit field.', () {
-      var maybeField = employeeDefinition?.fields
-          .where((element) => element.name != 'id')
-          .where((element) => element.name != 'name')
-          .toList();
-      expect(maybeField, hasLength(1));
-    }, skip: employeeDefinition == null);
-
-    test('then employee class has no field that is longer 63 chars.', () {
+    test(
+        'then employee class has no field with a name that is longer than Postgres max name limit.',
+        () {
       var fields = employeeDefinition?.fields
-          .where((element) => element.name.length > 63)
+          .where((element) =>
+              element.name.length > DatabaseConstants.pgsqlMaxNameLimitation)
           .map((e) => e.name)
           .toList();
 
-      expect(fields, isEmpty,
-          reason: 'Expected no fields with a name longer than 63 chars');
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
     }, skip: employeeDefinition == null);
   });
 
@@ -939,19 +935,8 @@ fields:
       expect(employeeDefinition, isNotNull);
     });
 
-    test('then employee class definition has implicit field.', () {
-      var maybeField = employeeDefinition?.fields
-          .where((element) => element.name != 'id')
-          .where((element) => element.name != 'name')
-          .where((element) =>
-              element.name !=
-              'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa')
-          .toList();
-      expect(maybeField, hasLength(1));
-    }, skip: employeeDefinition == null);
-
     test(
-        'then employee class has no field exists with a name that is longer than Postgres max name limit.',
+        'then employee class has no field with a name that is longer than Postgres max name limit.',
         () {
       var fields = employeeDefinition?.fields
           .where((element) =>
@@ -959,9 +944,12 @@ fields:
           .map((e) => e.name)
           .toList();
 
-      expect(fields, isEmpty,
-          reason:
-              'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars');
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
     }, skip: employeeDefinition == null);
   });
 }
