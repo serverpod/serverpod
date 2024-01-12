@@ -66,13 +66,6 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 
-    try {
-      // Todo: ask alex if we actually need this load?
-      await GeneratorConfig.load();
-    } catch (_) {
-      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
-    }
-
     var projectName = await getProjectName();
     if (projectName == null) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
