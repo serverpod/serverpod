@@ -122,13 +122,6 @@ void main() {
       );
     });
 
-    test(
-        'when getting last joining foreign field query alias then correct alias is returned.',
-        () {
-      expect(tableRelation.foreignFieldQueryAliasWithJoins,
-          '"company_ceo_citizen"."citizen.id"');
-    });
-
     group('when using copyAndAppend to create new table relation ', () {
       var table = Table(tableName: 'citizen');
       var foreignTable = Table(tableName: 'restaurant');
@@ -245,13 +238,6 @@ void main() {
         tableRelation.fieldQueryAlias,
         'citizen.favoriteRestaurantId',
       );
-    });
-
-    test(
-        'when getting last joining foreign field query alias then correct alias is returned.',
-        () {
-      expect(tableRelation.foreignFieldQueryAliasWithJoins,
-          '"company_ceo_citizen_favoriteRestaurant_restaurant"."restaurant.id"');
     });
 
     test(

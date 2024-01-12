@@ -1,5 +1,4 @@
 {
-  "name": null,
   "moduleName": "serverpod_test",
   "tables": [
     {
@@ -7,7 +6,6 @@
       "dartName": "Address",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -20,14 +18,12 @@
           "name": "street",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "inhabitantId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -43,14 +39,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         }
       ],
       "indexes": [
         {
           "indexName": "address_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -59,12 +53,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "inhabitant_index_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -73,8 +65,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -84,7 +75,6 @@
       "dartName": "Arena",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -97,7 +87,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -105,7 +94,6 @@
       "indexes": [
         {
           "indexName": "arena_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -114,8 +102,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -125,7 +112,6 @@
       "dartName": "Blocking",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -138,14 +124,12 @@
           "name": "blockedId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "blockedById",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -161,8 +145,7 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         },
         {
           "constraintName": "blocking_fk_1",
@@ -175,14 +158,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         }
       ],
       "indexes": [
         {
           "indexName": "blocking_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -191,12 +172,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "blocking_blocked_unique_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -209,8 +188,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -220,7 +198,6 @@
       "dartName": "Cat",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -233,14 +210,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "motherId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -256,14 +231,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 0,
-          "matchType": null
+          "onDelete": 0
         }
       ],
       "indexes": [
         {
           "indexName": "cat_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -272,8 +245,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -283,7 +255,6 @@
       "dartName": "Citizen",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -296,21 +267,18 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "companyId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "oldCompanyId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -326,8 +294,7 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         },
         {
           "constraintName": "citizen_fk_1",
@@ -340,14 +307,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "citizen_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -356,8 +321,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -367,7 +331,6 @@
       "dartName": "City",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -380,7 +343,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -388,7 +350,6 @@
       "indexes": [
         {
           "indexName": "city_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -397,8 +358,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -408,7 +368,6 @@
       "dartName": "Comment",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -421,14 +380,12 @@
           "name": "description",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "orderId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -444,14 +401,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         }
       ],
       "indexes": [
         {
           "indexName": "comment_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -460,8 +415,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -471,7 +425,6 @@
       "dartName": "Company",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -484,14 +437,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "townId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -507,14 +458,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "company_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -523,8 +472,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -534,7 +482,6 @@
       "dartName": "Course",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -547,7 +494,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -555,7 +501,6 @@
       "indexes": [
         {
           "indexName": "course_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -564,8 +509,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -575,7 +519,6 @@
       "dartName": "Customer",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -588,7 +531,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -596,7 +538,6 @@
       "indexes": [
         {
           "indexName": "customer_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -605,8 +546,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -616,7 +556,6 @@
       "dartName": "Enrollment",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -629,14 +568,12 @@
           "name": "studentId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "courseId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -652,8 +589,7 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         },
         {
           "constraintName": "enrollment_fk_1",
@@ -666,14 +602,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         }
       ],
       "indexes": [
         {
           "indexName": "enrollment_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -682,12 +616,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "enrollment_index_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -700,8 +632,138 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "long_implicit_id_field",
+      "dartName": "LongImplicitIdField",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('long_implicit_id_field_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
+          "columnType": 2,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "long_implicit_id_field_fk_0",
+          "columns": [
+            "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id"
+          ],
+          "referenceTable": "long_implicit_id_field_collection",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "long_implicit_id_field_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "long_implicit_id_field_collection",
+      "dartName": "LongImplicitIdFieldCollection",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('long_implicit_id_field_collection_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "long_implicit_id_field_collection_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "max_field_name",
+      "dartName": "MaxFieldName",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('max_field_name_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "max_field_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -711,7 +773,6 @@
       "dartName": "Member",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -724,7 +785,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -732,7 +792,6 @@
       "indexes": [
         {
           "indexName": "member_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -741,8 +800,70 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "multiple_max_field_name",
+      "dartName": "MultipleMaxFieldName",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('multiple_max_field_name_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
+          "columnType": 2,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "multiple_max_field_name_fk_0",
+          "columns": [
+            "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId"
+          ],
+          "referenceTable": "relation_to_multiple_max_field_name",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "multiple_max_field_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -752,7 +873,6 @@
       "dartName": "ObjectFieldScopes",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -765,14 +885,12 @@
           "name": "normal",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "database",
           "columnType": 0,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "String?"
         }
       ],
@@ -780,7 +898,6 @@
       "indexes": [
         {
           "indexName": "object_field_scopes_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -789,8 +906,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -800,7 +916,6 @@
       "dartName": "ObjectUser",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -813,14 +928,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "String?"
         },
         {
           "name": "userInfoId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -836,14 +949,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "object_user_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -852,8 +963,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -863,7 +973,6 @@
       "dartName": "ObjectWithByteData",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -876,7 +985,6 @@
           "name": "byteData",
           "columnType": 5,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "dart:typed_data:ByteData"
         }
       ],
@@ -884,7 +992,6 @@
       "indexes": [
         {
           "indexName": "object_with_bytedata_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -893,8 +1000,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -904,7 +1010,6 @@
       "dartName": "ObjectWithDuration",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -917,7 +1022,6 @@
           "name": "duration",
           "columnType": 6,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "Duration"
         }
       ],
@@ -925,7 +1029,6 @@
       "indexes": [
         {
           "indexName": "object_with_duration_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -934,8 +1037,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -945,7 +1047,6 @@
       "dartName": "ObjectWithEnum",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -958,35 +1059,30 @@
           "name": "testEnum",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "protocol:TestEnum"
         },
         {
           "name": "nullableEnum",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "protocol:TestEnum?"
         },
         {
           "name": "enumList",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "List<protocol:TestEnum>"
         },
         {
           "name": "nullableEnumList",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "List<protocol:TestEnum?>"
         },
         {
           "name": "enumListList",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "List<List<protocol:TestEnum>>"
         }
       ],
@@ -994,7 +1090,6 @@
       "indexes": [
         {
           "indexName": "object_with_enum_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1003,8 +1098,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1014,7 +1108,6 @@
       "dartName": "ObjectWithIndex",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1027,14 +1120,12 @@
           "name": "indexed",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "indexed2",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -1042,7 +1133,6 @@
       "indexes": [
         {
           "indexName": "object_with_index_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1051,12 +1141,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "object_with_index_test_index",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1069,8 +1157,7 @@
           ],
           "type": "brin",
           "isUnique": false,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -1080,7 +1167,6 @@
       "dartName": "ObjectWithObject",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1093,42 +1179,36 @@
           "name": "data",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "protocol:SimpleData"
         },
         {
           "name": "nullableData",
           "columnType": 8,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "protocol:SimpleData?"
         },
         {
           "name": "dataList",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "List<protocol:SimpleData>"
         },
         {
           "name": "nullableDataList",
           "columnType": 8,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "List<protocol:SimpleData>?"
         },
         {
           "name": "listWithNullableData",
           "columnType": 8,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "List<protocol:SimpleData?>"
         },
         {
           "name": "nullableListWithNullableData",
           "columnType": 8,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "List<protocol:SimpleData?>?"
         }
       ],
@@ -1136,7 +1216,6 @@
       "indexes": [
         {
           "indexName": "object_with_object_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1145,8 +1224,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1156,7 +1234,6 @@
       "dartName": "ObjectWithParent",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1169,7 +1246,6 @@
           "name": "other",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -1185,14 +1261,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "object_with_parent_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1201,8 +1275,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1212,7 +1285,6 @@
       "dartName": "ObjectWithSelfParent",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1225,7 +1297,6 @@
           "name": "other",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1241,14 +1312,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "object_with_self_parent_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1257,8 +1326,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1268,7 +1336,6 @@
       "dartName": "ObjectWithUuid",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1281,14 +1348,12 @@
           "name": "uuid",
           "columnType": 7,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "UuidValue"
         },
         {
           "name": "uuidNullable",
           "columnType": 7,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "UuidValue?"
         }
       ],
@@ -1296,7 +1361,6 @@
       "indexes": [
         {
           "indexName": "object_with_uuid_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1305,8 +1369,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1316,7 +1379,6 @@
       "dartName": "Order",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1329,14 +1391,12 @@
           "name": "description",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "customerId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -1352,14 +1412,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 4,
-          "matchType": null
+          "onDelete": 4
         }
       ],
       "indexes": [
         {
           "indexName": "order_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1368,8 +1426,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1379,7 +1436,6 @@
       "dartName": "Organization",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1392,14 +1448,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "cityId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1415,14 +1469,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "organization_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1431,8 +1483,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1442,7 +1493,6 @@
       "dartName": "ParentUser",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1455,14 +1505,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "String?"
         },
         {
           "name": "userInfoId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1478,14 +1526,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "parent_user_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1494,8 +1540,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1505,7 +1550,6 @@
       "dartName": "Person",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1518,21 +1562,18 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "organizationId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         },
         {
           "name": "_cityCitizensCityId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1548,8 +1589,7 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         },
         {
           "constraintName": "person_fk_1",
@@ -1562,14 +1602,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "person_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1578,8 +1616,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1589,7 +1626,6 @@
       "dartName": "Player",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1602,14 +1638,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "teamId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1625,14 +1659,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 0,
-          "matchType": null
+          "onDelete": 0
         }
       ],
       "indexes": [
         {
           "indexName": "player_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1641,8 +1673,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1652,7 +1683,6 @@
       "dartName": "Post",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1665,14 +1695,12 @@
           "name": "content",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "nextId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1688,14 +1716,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 0,
-          "matchType": null
+          "onDelete": 0
         }
       ],
       "indexes": [
         {
           "indexName": "post_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1704,12 +1730,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "next_unique_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1718,8 +1742,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -1729,7 +1752,6 @@
       "dartName": "RelatedUniqueData",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1742,14 +1764,12 @@
           "name": "uniqueDataId",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "number",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -1765,14 +1785,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 2,
-          "matchType": null
+          "onDelete": 2
         }
       ],
       "indexes": [
         {
           "indexName": "related_unique_data_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1781,8 +1799,44 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "relation_to_multiple_max_field_name",
+      "dartName": "RelationToMultipleMaxFieldName",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('relation_to_multiple_max_field_name_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "relation_to_multiple_max_field_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1792,7 +1846,6 @@
       "dartName": "SimpleData",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1805,7 +1858,6 @@
           "name": "num",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         }
       ],
@@ -1813,7 +1865,6 @@
       "indexes": [
         {
           "indexName": "simple_data_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1822,8 +1873,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1833,7 +1883,6 @@
       "dartName": "SimpleDateTime",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1846,7 +1895,6 @@
           "name": "dateTime",
           "columnType": 4,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "DateTime"
         }
       ],
@@ -1854,7 +1902,6 @@
       "indexes": [
         {
           "indexName": "simple_date_time_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1863,8 +1910,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1874,7 +1920,6 @@
       "dartName": "Student",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1887,7 +1932,6 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -1895,7 +1939,6 @@
       "indexes": [
         {
           "indexName": "student_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1904,8 +1947,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -1915,7 +1957,6 @@
       "dartName": "Team",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -1928,14 +1969,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "arenaId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -1951,14 +1990,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 0,
-          "matchType": null
+          "onDelete": 0
         }
       ],
       "indexes": [
         {
           "indexName": "team_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1967,12 +2004,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "arena_index_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -1981,8 +2016,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
         }
       ],
       "managed": true
@@ -1992,7 +2026,6 @@
       "dartName": "Town",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -2005,14 +2038,12 @@
           "name": "name",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         },
         {
           "name": "mayorId",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         }
       ],
@@ -2028,14 +2059,12 @@
             "id"
           ],
           "onUpdate": 3,
-          "onDelete": 3,
-          "matchType": null
+          "onDelete": 3
         }
       ],
       "indexes": [
         {
           "indexName": "town_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -2044,8 +2073,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -2055,7 +2083,6 @@
       "dartName": "Types",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -2068,70 +2095,60 @@
           "name": "anInt",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "int?"
         },
         {
           "name": "aBool",
           "columnType": 1,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "bool?"
         },
         {
           "name": "aDouble",
           "columnType": 3,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "double?"
         },
         {
           "name": "aDateTime",
           "columnType": 4,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "DateTime?"
         },
         {
           "name": "aString",
           "columnType": 0,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "String?"
         },
         {
           "name": "aByteData",
           "columnType": 5,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "dart:typed_data:ByteData?"
         },
         {
           "name": "aDuration",
           "columnType": 6,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "Duration?"
         },
         {
           "name": "aUuid",
           "columnType": 7,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "UuidValue?"
         },
         {
           "name": "anEnum",
           "columnType": 2,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "protocol:TestEnum?"
         },
         {
           "name": "aStringifiedEnum",
           "columnType": 0,
           "isNullable": true,
-          "columnDefault": null,
           "dartType": "protocol:TestEnumStringified?"
         }
       ],
@@ -2139,7 +2156,6 @@
       "indexes": [
         {
           "indexName": "types_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -2148,8 +2164,7 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -2159,7 +2174,6 @@
       "dartName": "UniqueData",
       "module": "serverpod_test",
       "schema": "public",
-      "tableSpace": null,
       "columns": [
         {
           "name": "id",
@@ -2172,14 +2186,12 @@
           "name": "number",
           "columnType": 2,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "int"
         },
         {
           "name": "email",
           "columnType": 0,
           "isNullable": false,
-          "columnDefault": null,
           "dartType": "String"
         }
       ],
@@ -2187,7 +2199,6 @@
       "indexes": [
         {
           "indexName": "unique_data_pkey",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -2196,12 +2207,10 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": true,
-          "predicate": null
+          "isPrimary": true
         },
         {
           "indexName": "email_index_idx",
-          "tableSpace": null,
           "elements": [
             {
               "type": 0,
@@ -2210,8 +2219,195 @@
           ],
           "type": "btree",
           "isUnique": true,
-          "isPrimary": false,
-          "predicate": null
+          "isPrimary": false
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "user_note",
+      "dartName": "UserNote",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('user_note_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
+          "columnType": 2,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "user_note_fk_0",
+          "columns": [
+            "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId"
+          ],
+          "referenceTable": "user_note_collections",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "user_note_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "user_note_collection_with_a_long_name",
+      "dartName": "UserNoteCollectionWithALongName",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('user_note_collection_with_a_long_name_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "user_note_collection_with_a_long_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "user_note_collections",
+      "dartName": "UserNoteCollection",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('user_note_collections_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [
+        {
+          "indexName": "user_note_collections_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
+        }
+      ],
+      "managed": true
+    },
+    {
+      "name": "user_note_with_a_long_name",
+      "dartName": "UserNoteWithALongName",
+      "module": "serverpod_test",
+      "schema": "public",
+      "columns": [
+        {
+          "name": "id",
+          "columnType": 2,
+          "isNullable": false,
+          "columnDefault": "nextval('user_note_with_a_long_name_id_seq'::regclass)",
+          "dartType": "int?"
+        },
+        {
+          "name": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "name": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
+          "columnType": 2,
+          "isNullable": true,
+          "dartType": "int?"
+        }
+      ],
+      "foreignKeys": [
+        {
+          "constraintName": "user_note_with_a_long_name_fk_0",
+          "columns": [
+            "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId"
+          ],
+          "referenceTable": "user_note_collection_with_a_long_name",
+          "referenceTableSchema": "public",
+          "referenceColumns": [
+            "id"
+          ],
+          "onUpdate": 3,
+          "onDelete": 3
+        }
+      ],
+      "indexes": [
+        {
+          "indexName": "user_note_with_a_long_name_pkey",
+          "elements": [
+            {
+              "type": 0,
+              "definition": "id"
+            }
+          ],
+          "type": "btree",
+          "isUnique": true,
+          "isPrimary": true
         }
       ],
       "managed": true
@@ -2219,22 +2415,16 @@
   ],
   "installedModules": [
     {
-      "id": null,
       "module": "serverpod_auth",
-      "version": "20231205080924753",
-      "timestamp": null
+      "version": "20231205080924753"
     },
     {
-      "id": null,
       "module": "serverpod",
-      "version": "20231205080920260",
-      "timestamp": null
+      "version": "20231205080920260"
     },
     {
-      "id": null,
       "module": "serverpod_test_module",
-      "version": "20231205080932899",
-      "timestamp": null
+      "version": "20231205080932899"
     }
   ],
   "migrationApiVersion": 1

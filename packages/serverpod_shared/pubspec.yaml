@@ -18,7 +18,9 @@ dependencies:
   super_string: ^1.0.3
   serverpod_client: #1.2.0-rc.3
     path: ../serverpod_client
+  crypto: ^3.0.2
 
 dev_dependencies:
   serverpod_lints: #1.2.0-rc.3
     path: ../serverpod_lints
+  test: ^1.24.2

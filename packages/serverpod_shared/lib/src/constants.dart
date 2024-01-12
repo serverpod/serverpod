@@ -5,6 +5,10 @@ import 'package:path/path.dart' as path;
 abstract class DatabaseConstants {
   /// Current version of the migration api.
   static const migrationApiVersion = 1;
+
+  /// The maximum length of a identifiers and key words in Postgres.
+  /// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  static const pgsqlMaxNameLimitation = 63;
 }
 
 /// Migration constants used by the serverpod framework.

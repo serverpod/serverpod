@@ -11,6 +11,7 @@ fi
 declare -a projectPaths=(
     "tools/serverpod_cli" 
     "packages/serverpod" 
+    "packages/serverpod_shared" 
     "packages/serverpod_serialization"
     "tests/serverpod_test_client"
     "tests/serverpod_test_server"
