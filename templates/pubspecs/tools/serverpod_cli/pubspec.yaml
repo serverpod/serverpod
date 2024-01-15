@@ -27,7 +27,7 @@ dependencies:
   analyzer: ^6.0.0
   path: ^1.8.2
   pub_api_client: ^2.4.0
-  uuid: ^4.3.3
+  uuid: ^4.0.0
   yaml: ^3.1.1
   serverpod_shared: #--CONDITIONAL_COMMENT--#VERSION
     path: ../../packages/serverpod_shared
