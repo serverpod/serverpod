@@ -191,7 +191,7 @@ void main() async {
           .insertRow(
               session, LongImplicitIdFieldCollection(name: 'Collection'));
 
-      LongImplicitIdFieldCollection.db.attachRow
+      await LongImplicitIdFieldCollection.db.attachRow
           .thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa(
               session, longImplicitIdFieldCollection, longImplicitField);
 
@@ -289,7 +289,7 @@ void main() async {
       var userNoteCollection = await UserNoteCollectionWithALongName.db
           .insertRow(
               session, UserNoteCollectionWithALongName(name: 'Collection'));
-      UserNoteCollectionWithALongName.db.attachRow
+      await UserNoteCollectionWithALongName.db.attachRow
           .notes(session, userNoteCollection, userNote);
 
       var collection = await UserNoteCollectionWithALongName.db.findById(
@@ -316,7 +316,8 @@ void main() async {
           await UserNote.db.insertRow(session, UserNote(name: 'Note'));
       var userNoteCollection = await UserNoteCollection.db
           .insertRow(session, UserNoteCollection(name: 'Collection'));
-      UserNoteCollection.db.attachRow
+
+      await UserNoteCollection.db.attachRow
           .userNotesPropertyName(session, userNoteCollection, userNote);
 
       var collection = await UserNoteCollection.db.findById(
