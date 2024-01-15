@@ -46,7 +46,7 @@ void main() {
         aDateTime: DateTime.utc(1976),
         aByteData: createByteData(),
         aDuration: const Duration(seconds: 1),
-        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aUuid: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
       );
       var s = SerializationManager.encode(types);
       var unpacked = protocol.deserialize<Types>(jsonDecode(s));
@@ -61,7 +61,7 @@ void main() {
         expect(unpacked.aByteData!.buffer.asUint8List()[i], equals(i));
       }
       expect(unpacked.aUuid,
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
     });
 
     test('Object with enum', () {
@@ -131,13 +131,13 @@ void main() {
           Duration(seconds: 1),
           null,
         ],
-        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aUuid: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
         aUuidList: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
         ],
         aListWithNullableUuids: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
         ],
       );
@@ -188,7 +188,7 @@ void main() {
 
       expect(unpacked.aListWithNullableUuids.length, equals(2));
       expect(unpacked.aListWithNullableUuids[0],
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.aListWithNullableUuids[1], isNull);
 
       expect(unpacked.aNullableInt, isNull);
@@ -272,21 +272,22 @@ void main() {
           null,
         ],
         aUuidList: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
         ],
         aListWithNullableUuids: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
         ],
         aNullableUuidList: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')
         ],
-        aUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-        aNullableUuid: UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aUuid: UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+        aNullableUuid:
+            UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
         aNullableListWithNullableUuids: [
-          UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           null,
         ],
       );
@@ -302,7 +303,7 @@ void main() {
       expect(unpacked.aNullableObject!.num, equals(42));
       expect(unpacked.aNullableDuration, equals(const Duration(seconds: 1)));
       expect(unpacked.aNullableUuid,
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
 
       expect(unpacked.aNullableIntList!.length, equals(2));
       expect(unpacked.aNullableIntList![0], equals(10));
@@ -344,9 +345,9 @@ void main() {
 
       expect(unpacked.aNullableUuidList!.length, equals(2));
       expect(unpacked.aNullableUuidList![0],
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.aNullableUuidList![1],
-          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+          equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
 
       expect(unpacked.aNullableListWithNullableDurations!.length, equals(2));
       expect(unpacked.aNullableListWithNullableDurations![0]!.inSeconds,
@@ -355,7 +356,7 @@ void main() {
 
       expect(unpacked.aNullableListWithNullableUuids!.length, equals(2));
       expect(unpacked.aNullableListWithNullableUuids![0],
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.aNullableListWithNullableUuids![1], isNull);
     });
 
@@ -403,11 +404,11 @@ void main() {
           '1': null,
         },
         uuidMap: {
-          '0': UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-          '1': UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
+          '0': UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          '1': UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a'),
         },
         nullableUuidMap: {
-          '0': UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+          '0': UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
           '1': null,
         },
       );
@@ -437,9 +438,9 @@ void main() {
       expect(unpacked.durationMap['1']!.inMinutes, equals(equals(1)));
 
       expect(unpacked.uuidMap['0'],
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.uuidMap['1'],
-          equals(UuidValue('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
+          equals(UuidValue.fromString('6c84fb90-12c4-11e1-840d-7b25c5ee775a')));
 
       expect(unpacked.nullableDataMap['0']!.num, equals(0));
       expect(unpacked.nullableDataMap['1'], isNull);
@@ -464,7 +465,7 @@ void main() {
       expect(unpacked.nullableDurationMap['1'], isNull);
 
       expect(unpacked.nullableUuidMap['0']!,
-          equals(UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
+          equals(UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
       expect(unpacked.nullableUuidMap['1'], isNull);
 
       expect(unpacked.intIntMap.length, equals(3));

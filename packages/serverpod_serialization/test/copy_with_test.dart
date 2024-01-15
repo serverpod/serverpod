@@ -159,14 +159,14 @@ void main() {
         'Given a list of Uuid when modifying the original after creating a copy then the copy is left unmodified',
         () {
       var expected = [
-        UuidValue(const Uuid().v4()),
-        UuidValue(const Uuid().v4()),
-        UuidValue(const Uuid().v4()),
+        UuidValue.fromString(const Uuid().v4()),
+        UuidValue.fromString(const Uuid().v4()),
+        UuidValue.fromString(const Uuid().v4()),
       ];
       var list = [...expected];
       var copy = list.clone();
 
-      list.add(UuidValue(const Uuid().v4()));
+      list.add(UuidValue.fromString(const Uuid().v4()));
 
       expect(copy, expected);
     });
@@ -392,19 +392,19 @@ void main() {
         () {
       var uuid = const Uuid();
       var map = {
-        'a': UuidValue(Uuid.NAMESPACE_NIL),
-        'b': UuidValue(Uuid.NAMESPACE_NIL),
-        'c': UuidValue(Uuid.NAMESPACE_NIL),
+        'a': UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        'b': UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        'c': UuidValue.fromString(Uuid.NAMESPACE_NIL),
       };
 
       var copy = map.clone();
 
-      map['a'] = UuidValue(uuid.v4());
+      map['a'] = UuidValue.fromString(uuid.v4());
 
       expect(copy, {
-        'a': UuidValue(Uuid.NAMESPACE_NIL),
-        'b': UuidValue(Uuid.NAMESPACE_NIL),
-        'c': UuidValue(Uuid.NAMESPACE_NIL),
+        'a': UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        'b': UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        'c': UuidValue.fromString(Uuid.NAMESPACE_NIL),
       });
     });
 

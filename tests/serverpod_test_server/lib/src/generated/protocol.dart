@@ -83,7 +83,7 @@ import 'protocol.dart' as _i65;
 import 'dart:typed_data' as _i66;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i67;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i68;
-import 'package:uuid/uuid.dart' as _i69;
+import 'package:uuid/uuid_value.dart' as _i69;
 import 'package:serverpod_test_server/src/generated/simple_data.dart' as _i70;
 import 'package:serverpod_test_server/src/generated/unique_data.dart' as _i71;
 import 'package:serverpod_test_server/src/generated/models_with_list_relations/person.dart'
