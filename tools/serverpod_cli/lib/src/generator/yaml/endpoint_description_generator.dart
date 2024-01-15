@@ -26,6 +26,6 @@ class EndpointDescriptionGenerator extends CodeGenerator {
       }
     }
 
-    return {p.join('generated', 'protocol.yaml'): out};
+    return {p.join('lib', 'src', 'generated', 'protocol.yaml'): out};
   }
 }
