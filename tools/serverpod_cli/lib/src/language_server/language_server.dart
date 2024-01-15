@@ -52,10 +52,10 @@ Future<void> runLanguageServer() async {
         exception is ServerpodModulesNotFoundException) {
       _sendModulesNotFoundNotification(connection);
     } else if (serverProject == null) {
-      _sendServerDisabledNotification(connection);
-    } else {
-      serverProject?.analyzer.validateAll();
+      return;
     }
+
+    serverProject?.analyzer.validateAll();
   });
 
   connection.onShutdown(() async {
@@ -129,16 +129,6 @@ void _sendModulesNotFoundNotification(Connection connection) {
       message:
           'Serverpod model validation disabled. Unable to locate necessary modules, have you run "dart pub get"?',
       type: MessageType.Warning,
-    ).toJson(),
-  );
-}
-
-void _sendServerDisabledNotification(Connection connection) {
-  connection.sendNotification(
-    'window/showMessage',
-    ShowMessageParams(
-      message: 'Serverpod model validation disabled, not a Serverpod project.',
-      type: MessageType.Info,
     ).toJson(),
   );
 }
