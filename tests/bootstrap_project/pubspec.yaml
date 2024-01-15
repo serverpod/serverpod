@@ -1,6 +1,6 @@
 publish_to: none
 
-name: serverpod_test_server
+name: bootstrap_project
 version: 1.0.0
 description: Bootstrapping test for Serverpod projects.
 repository: https://github.com/serverpod/serverpod
