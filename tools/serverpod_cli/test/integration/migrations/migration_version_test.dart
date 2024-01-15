@@ -24,8 +24,6 @@ void main() {
     var versionName = '00000000000000';
     var versionDirectory = Directory(path.join(
       tempDirectory.path,
-      'generated',
-      'migration',
       'migrations',
       versionName,
     ));

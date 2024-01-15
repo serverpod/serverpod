@@ -26,13 +26,11 @@ abstract class MigrationConstants {
 
   /// Directory where migrations are stored.
   static Directory migrationsBaseDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(
-          _migrationDirectory(serverRootDirectory).path, 'migrations'));
+      Directory(path.join(serverRootDirectory.path, 'migrations'));
 
   /// Directory where repair migrations are stored.
   static Directory repairMigrationDirectory(Directory serverRootDirectory) =>
-      Directory(
-          path.join(_migrationDirectory(serverRootDirectory).path, 'repair'));
+      Directory(path.join(serverRootDirectory.path, 'repair-migration'));
 
   /// File path where the database definition is stored.
   static File databaseDefinitionSQLPath(
@@ -83,9 +81,6 @@ abstract class MigrationConstants {
         migrationVersionDirectory(serverRootDirectory, version).path,
         'migration.json',
       ));
-
-  static Directory _migrationDirectory(Directory serverRootDirectory) =>
-      Directory(path.join(serverRootDirectory.path, 'generated', 'migration'));
 }
 
 /// Serverpod URL constants used by the serverpod framework.

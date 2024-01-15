@@ -210,7 +210,7 @@ class Serverpod {
   /// directories (including sub directories) can be whitelisted by adding a
   /// trailing slash.
   Set<String> filesWhitelistedForInsights = {
-    'generated/protocol.yaml',
+    'lib/src/generated/protocol.yaml',
   };
 
   late final HealthCheckManager _healthCheckManager;
