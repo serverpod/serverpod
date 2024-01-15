@@ -1,5 +1,5 @@
 ## 1.2.0
-This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github.
+This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github. Instructions for updating from 1.1 of Serverpod is available in our documentation [here](https://docs.serverpod.dev/upgrading/upgrade-to-one-point-two).
 
 ### Main new features and fixes
 - feat: Adds official support for Windows.
