@@ -9,7 +9,7 @@ fi
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
-MIGRATION_DIR=generated/migration/migrations
+MIGRATION_DIR=migrations
 
 echo "pub get cli"
 cd $CLI_DIR
