@@ -731,7 +731,7 @@ void main() {
   group('Basic types', () {
     var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
     var duration = const Duration(seconds: 1);
-    var uuid = UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+    var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
     test('Simple calls', () async {
       await client.simple.setGlobalInt(10);
@@ -829,7 +829,7 @@ void main() {
     test('Write and read', () async {
       var dateTime = DateTime.utc(1976, 9, 10, 2, 10);
       var duration = const Duration(seconds: 1);
-      var uuid = UuidValue('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+      var uuid = UuidValue.fromString('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
 
       // TODO: Support ByteData in database store
       var types = Types(

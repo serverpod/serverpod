@@ -81,7 +81,7 @@ abstract class SerializationManager {
     } else if (_isNullableType<Duration>(t)) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
     } else if (_isNullableType<UuidValue>(t)) {
-      return (data == null ? null : UuidValue(data as String)) as T;
+      return (data == null ? null : UuidValue.fromString(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
