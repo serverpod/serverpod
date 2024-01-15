@@ -11,7 +11,7 @@ dependencies:
   http: ">=0.13.0 <2.0.0"
   serverpod:
     path: ../../packages/serverpod
-  uuid: ^4.3.3
+  uuid: ^4.0.0
 
 dev_dependencies:
   lints: ^3.0.0

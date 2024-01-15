@@ -19,7 +19,7 @@ dependencies:
     path: ../../integrations/serverpod_cloud_storage_s3
   serverpod_test_shared:
     path: ../serverpod_test_shared
-  uuid: ^4.3.3
+  uuid: ^4.0.0
 
 
 dev_dependencies:
