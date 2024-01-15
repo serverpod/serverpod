@@ -219,8 +219,6 @@ void main() async {
             Directory(
               path.join(
                 serverDir,
-                'generated',
-                'migration',
                 'migrations',
               ),
             ).existsSync(),
@@ -233,8 +231,6 @@ void main() async {
           expect(
             File(path.join(
               serverDir,
-              'generated',
-              'migration',
               'migrations',
               'migration_registry.txt',
             )).existsSync(),

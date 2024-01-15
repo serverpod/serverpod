@@ -209,19 +209,13 @@ abstract class MigrationTestUtils {
         'migration_test_protocol_files',
       ));
 
-  static Directory _migrationDirectory() => Directory(path.join(
-        Directory.current.path,
-        'generated',
-        'migration',
-      ));
-
   static Directory _repairMigrationDirectory() => Directory(path.join(
-        _migrationDirectory().path,
-        'repair',
+        Directory.current.path,
+        'repair-migration',
       ));
 
   static Directory _migrationsProjectDirectory() => Directory(path.join(
-        _migrationDirectory().path,
+        Directory.current.path,
         'migrations',
       ));
 
