@@ -12,7 +12,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:serverpod_auth_client/module.dart' as _i3;
 import 'dart:typed_data' as _i4;
-import 'package:uuid/uuid.dart' as _i5;
+import 'package:uuid/uuid_value.dart' as _i5;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i6;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i7;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i8;
