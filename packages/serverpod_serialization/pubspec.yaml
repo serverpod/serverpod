@@ -3,7 +3,7 @@
 publish_to: none
 
 name: serverpod_serialization
-version: 1.2.0-rc.4
+version: 1.2.0
 description: Serialization package for Serverpod.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -17,6 +17,6 @@ dependencies:
   uuid: ^4.0.0
 
 dev_dependencies:
-  serverpod_lints: #1.2.0-rc.4
+  serverpod_lints: #1.2.0
     path: ../serverpod_lints
   test: ^1.24.2

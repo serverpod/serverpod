@@ -1,3 +1,144 @@
+## 1.2.0
+This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github. Instructions for updating from 1.1 of Serverpod is available in our documentation [here](https://docs.serverpod.dev/upgrading/upgrade-to-one-point-two).
+
+### Main new features and fixes
+- feat: Adds official support for Windows.
+- feat: Adds Visual Studio Code extension.
+- feat: Syntax highlighting in model files.
+- feat: Adds LSP server for analyzing model files.
+- feat: CLI automatically detects modules withouth the need to modify the generator file.
+- feat: Validates project names on `serverpod create`.
+- feat: Validates Serverpod packages and CLI version in `serverpod generate`.
+- feat: Prompts user to update Serverpod when running an old version of the CLI.
+- feat: Improves exit codes for CLI.
+- feat: Improvements to output from CLI, including different formats for different platforms and run-modes.
+- feat: Progress animations in CLI.
+- feat: Uses CommandRunner for CLI.
+- feat: Adds global `--verbose` and `--quiet` flags to control log level.
+- feat: Developer version of `serverpod create` now creates a project referring to the local version of Serverpod.
+- feat: Adds `copyWith` methods on all generated model files.
+- feat: Makes it possible to call endpoint methods by specifying the method name in the path.
+- feat: Makes return headers configurable for API and OPTION HTTP calls.
+- feat: Adds `fromYaml` constructor to `ServerpodConfig`.
+- feat: Adds reference to all modules in config.
+- feat: Makes HTTP timeout configurable.
+- feat: Improves compatibility for `serverpod create` by not running Docker through tooling.
+- fix: Makes endpoint classes public to enable Dart doc.
+- fix: Serializable exceptions now work with modules.
+- fix: Handels invalid return types when parsing endpoint methods.
+- fix: Fixes localhost on Android emulator.
+- fix: Use explicit version for all Serverpod packages.
+- fix: Uses git version of CLI in local tests.
+- fix: Fixes typos in `serverpod create` start instructions.
+- fix: Makes include class fields private.
+- fix: Adds flag to disable analytics reporting.
+- fix: Correctly resets error message state when and endpoint call was successful in template project.
+- fix: Closes session when protocol exception is thrown.
+- fix: Allows deeply nested `Map` and `List` in model files.
+- docs: Many improvements to API documentation.
+- chore: Updates to latest version of Flutter.
+- chore: Updates dependencies.
+- chore: Fixes deprected methods.
+- chore: Makes Dart & Flutter version requirements consistent across packages.
+- chore: Adds serverpod_lints package.
+- ci: Now runs tests on multiple Flutter versions.
+- ci: Adds 2000 new tests.
+- ci: Unit tests are now running on Windows.
+
+### Database ORM
+- feat: Adds support for database migrations.
+- feat: Adds support for database repair migrations.
+- feat: Adds support for database relations.
+- feat: Support `IN`, `NOT IN`, `BETWEEN` and `NOT BETWEEN` query operations.
+- feat: Separates `Column` from `Expression` and harmonizes operations.
+- feat: Adds scoped database operations on generated models.
+- feat: Adds batch `insert`, `update`, and `delete` database operations.
+- feat: Exposes mapped results database query for public use.
+- feat: Adds `notLike` and `notILike` on database `String` expressions.
+- feat: Adds column selection to generated update method.
+- fix: Adds helpful error message if wrong table is used for `where` or `orderBy` expression.
+- fix: Change signature of `orderBy` and `orderByList` to callback taking a typed table.
+- fix: Removes old Postgres generator (replaced by migrations).
+
+### Model files (.spy.yaml) and code generation
+- feat: Dual pass parsing when validating model files.
+- feat: Validates field datatypes when running `serverpod generate`.
+- feat: Adds deprecation warnings to old model file keywords.
+- feat: Adds severity levels to reported errors in analyzer.
+- feat: Adds ability to toggle implicit key in stringified nodes.
+- feat: Reports severity level of errors.
+- feat: Adds `scope` and `persist` keywords to models.
+- feat: Adds `onDelete` and `onUpdate` bindings.
+- feat: Introduces reserved keywords in protocols.
+- feat: Adds serialization `byName` option for enums.
+- feat: Allow `.spy` file extension on model files (default is now `.spy.yaml`).
+- feat: Now loads model files from `src/lib/models` directory (old `protocol` directory is still supported for backward compatibility).
+- feat: Adds type validation to model files.
+- fix: Allows multiple uppercase characters in model class names.
+- fix: Protocol entities only allowed to be one type.
+- fix: Better error messages for `fields` in model files.
+- fix: Enforce index types to be a valid Postgres index type.
+- fix: Require all serialized enum values to be unique.
+- fix: Enforce that the `id` field isn't used for models that have a table defined.
+- fix: Enforce that `parent` keyword is only used if a model has an associated table.
+- fix: Report an error if the referenced parent table does not exists.
+- fix: Report an error if the table name in a model is not globally unique.
+- fix: Report an error if an index name is not globally unique.
+- fix: Report an error if a field is referenced twice in the same index.
+- fix: Allows complex types to be nullable.
+- fix: Parse the source location for all comma separated values in a field string.
+- fix: Restrict class names to now allow standard datatypes.
+- fix: Add automatic deprecated reporting of keys in analyzer.
+- fix: Set exit code to non-zero if generator finds issues.
+- fix: Correctly validate deeply nested datatypes in protocols.
+- fix: Enum value restrictions matches default linting in Dart.
+- fix: Less restrictive naming of model class names.
+- fix: Avoid generating code from broken protocol files.
+- fix: Deprecate `database` and `api` keywords.
+- fix: Stop generator from getting stuck on circular dependencies.
+- fix: Handle invalid YAML errors and report them.
+- fix: Only report duplicated and invald negations once.
+- fix: Adds deep check of `DateTime` and `Uint8List` during deserialization.
+- fix: Deserialization of `DateTime` handles `null` explicitly.
+- fix: Only return valid entries from analyzer.
+- fix: Reintroduces generation of `protocol.yaml`.
+- fix: Use version command to check if a command exists.
+- fix: Prevents `generate --watch` from crashing.
+- fix: Prevents analyzer from crashing because of invalid Dart syntax.
+- fix: Prevents analyzer from crashing when an unsupported type is used.
+- fix: Avoid serializing null `Map` values.
+- fix: Restrict length of user defined Postgres identifier names.
+
+### Insights
+- feat: Insight endpoint methods for running queries and fetching full database configuration.
+- feat: Adds module name and Dart class names to table definitions in Insights protocol.
+- feat: Support for filtering bulk data fetched from Serverpod Insights.
+- feat: Adds API for accessing files local to the server.
+- fix: Include installed modules in all database definitions.
+
+### Auth module
+- feat: Improves auth example.
+- feat: Adds Sign in with Apple button.
+- feat: Adds Google Sign in on the web.
+- feat: Allows min and max password lengths to be configured in auth module.
+- feat: Allows label and icon to be customized for Sign in with Email button in auth.
+- fix: Removes dead code in auth module.
+- fix: Adds error message if email is already in use in auth.
+- fix: Properly close barrier when sign in is complete in auth.
+- fix: Corrects typo in sign in button.
+- fix: Require consent in order to generate refresh token for Google Signin.
+- fix: Throw descriptive error if Google auth secret is not loaded on the server.
+- fix: Typo in reset password example email.
+- fix: Enforces user blocked status on login.
+- fix: Allows Firebase phone auth and logs auth errors.
+
+### File storage
+- feat: Adds bulk file URL lookup method for file storage.
+
+### Chat module
+- fix: Adds missing return statement to require authentication.
+
+
 ## 1.2.0-rc.4
 - Fourth preview of 1.2.0
 
