@@ -466,9 +466,9 @@ void main() {
   });
 
   group('File retrieval', () {
-    test('Fetch generated/protocol.yaml file', () async {
-      var file =
-          await serviceClient.insights.fetchFile('generated/protocol.yaml');
+    test('Fetch lib/src/generated/protocol.yaml file', () async {
+      var file = await serviceClient.insights
+          .fetchFile('lib/src/generated/protocol.yaml');
       expect(file, isNotNull);
       expect(file.length, greaterThan(0));
     });

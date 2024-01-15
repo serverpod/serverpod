@@ -341,7 +341,8 @@ void main() async {
       expect(createProjectExitCode, 0);
 
       // Delete generated files
-      await Process.run('rm', ['-f', '${serverDir}/generated/protocol.yaml']);
+      await Process.run(
+          'rm', ['-f', '${serverDir}/lib/src/generated/protocol.yaml']);
       await Process.run('rm', ['-f', '${serverDir}/lib/src/generated/*.dart']);
       await Process.run('rm', ['-f', '${clientDir}/lib/src/protocol/*.dart']);
 
@@ -398,6 +399,8 @@ void main() async {
       expect(
         File(path.join(
           serverDir,
+          'lib',
+          'src',
           'generated',
           'protocol.yaml',
         )).existsSync(),

@@ -12,6 +12,8 @@ const generator = EndpointDescriptionGenerator();
 
 void main() {
   var expectedFileName = path.join(
+    'lib',
+    'src',
     'generated',
     'protocol.yaml',
   );
