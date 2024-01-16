@@ -95,12 +95,13 @@ class Server {
   }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
-  Future<void> start() async {
+  Future<bool> start() async {
     if (await PortChecker.isNetworkPortAvailable(port) == false) {
       stderr.writeln(
         '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port is '
         'already in use.',
       );
+      return false;
     }
 
     if (securityContext != null) {
@@ -116,6 +117,7 @@ class Server {
             '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
+        return false;
       }
     } else {
       try {
@@ -126,11 +128,13 @@ class Server {
             '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
         stderr.writeln('$e');
         stderr.writeln('$stackTrace');
+        return false;
       }
     }
 
     _running = true;
     stdout.writeln('$name listening on port $port');
+    return _running;
   }
 
   void _runServer(HttpServer httpServer) async {

@@ -48,8 +48,16 @@ class WebServer {
   }
 
   /// Starts the webserver.
-  Future<void> start() async {
+  Future<bool> start() async {
     await templates.loadAll();
+
+    if (await PortChecker.isNetworkPortAvailable(_port) == false) {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
+        'port $_port is already in use.',
+      );
+      return false;
+    }
 
     runZonedGuarded(
       _start,
@@ -59,16 +67,11 @@ class WebServer {
         stdout.writeln('$stackTrace');
       },
     );
+
+    return true;
   }
 
   void _start() async {
-    if (await PortChecker.isNetworkPortAvailable(_port) == false) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
-        'port $_port is already in use.',
-      );
-      return;
-    }
     var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
     _httpServer = httpServer;
     httpServer.autoCompress = true;
