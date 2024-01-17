@@ -175,7 +175,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
     Database database,
   ) async {
     try {
-      return database.find<DatabaseMigrationVersion>();
+      return await database.find<DatabaseMigrationVersion>();
     } catch (e) {
       // Ignore if the table does not exist.
       stderr.writeln('Failed to get installed migrations: $e');
@@ -188,7 +188,7 @@ WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
     Session session,
   ) async {
     try {
-      return DatabaseMigrationVersion.db.find(session);
+      return await DatabaseMigrationVersion.db.find(session);
     } catch (e) {
       // Ignore if the table does not exist.
       stderr.writeln('Failed to get installed migrations: $e');
