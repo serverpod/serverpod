@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/util/string_extension.dart';
 
 import '../cache/caches.dart';
 
@@ -338,7 +338,7 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var path = uri.path.subString(1);
+    var path = p.joinAll(uri.path.split('/'));
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 

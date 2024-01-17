@@ -51,7 +51,7 @@ class RouteStaticDirectory extends Route {
 
       if (basePath != null && path.startsWith(basePath!)) {
         var requestDir = p.dirname(path);
-        var middlePath = requestDir.subString(basePath!.length);
+        var middlePath = requestDir.subStringOrEmpty(basePath!.length);
 
         if (middlePath.isNotEmpty) {
           path = p.join(dir, middlePath, base + extension);
@@ -72,7 +72,7 @@ class RouteStaticDirectory extends Route {
       // Enforce strong cache control.
       request.response.headers.set('Cache-Control', 'max-age=31536000');
 
-      var filePath = path.subString(1);
+      var filePath = p.joinAll(path.split('/'));
       filePath = 'web/$filePath';
 
       var fileContents = await File(filePath).readAsBytes();

@@ -213,11 +213,11 @@ abstract class Route {
   Future<bool> handleCall(Session session, HttpRequest request);
 
   bool _isMatch(String path) {
-    if (_matchPath == null) {
+    if (_matchPath.isNull) {
       return false;
     }
     if (_matchPath!.endsWith('*')) {
-      var start = _matchPath!.subString(0, _matchPath!.length - 1);
+      var start = _matchPath!.subStringOrEmpty(0, _matchPath!.length - 1);
       return path.startsWith(start);
     } else {
       return _matchPath == path;
