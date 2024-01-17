@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:lsp_server/lsp_server.dart';
-import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/language_server/diagnostics_source.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
@@ -26,11 +26,18 @@ Future<void> runLanguageServer() async {
   var connection = Connection(stdin, stdout);
 
   ServerProject? serverProject;
+  Exception? exception;
 
   connection.onInitialize((params) async {
     var rootUri = params.rootUri;
     if (rootUri != null) {
-      serverProject = await _loadServerProject(rootUri, connection);
+      try {
+        serverProject = await _loadServerProject(rootUri, connection);
+      } catch (error) {
+        if (error is Exception) {
+          exception = error;
+        }
+      }
     }
 
     return InitializeResult(
@@ -41,7 +48,10 @@ Future<void> runLanguageServer() async {
   });
 
   connection.onInitialized((_) async {
-    if (serverProject == null) {
+    if (serverProject == null &&
+        exception is ServerpodModulesNotFoundException) {
+      _sendModulesNotFoundNotification(connection);
+    } else if (serverProject == null) {
       _sendServerDisabledNotification(connection);
     } else {
       serverProject?.analyzer.validateAll();
@@ -112,12 +122,22 @@ Future<void> runLanguageServer() async {
   await connection.listen();
 }
 
-void _sendServerDisabledNotification(Connection connection) {
+void _sendModulesNotFoundNotification(Connection connection) {
   connection.sendNotification(
     'window/showMessage',
     ShowMessageParams(
       message:
-          'Serverpod protocol validation disabled, not a Serverpod project.',
+          'Serverpod model validation disabled. Unable to locate necessary modules, have you run "dart pub get"?',
+      type: MessageType.Warning,
+    ).toJson(),
+  );
+}
+
+void _sendServerDisabledNotification(Connection connection) {
+  connection.sendNotification(
+    'window/showMessage',
+    ShowMessageParams(
+      message: 'Serverpod model validation disabled, not a Serverpod project.',
       type: MessageType.Info,
     ).toJson(),
   );
@@ -133,7 +153,6 @@ Future<ServerProject?> _loadServerProject(
   if (serverRootDir == null) return null;
 
   var config = await GeneratorConfig.load(serverRootDir.path);
-  if (config == null) return null;
 
   var yamlSources = await ModelHelper.loadProjectYamlModelsFromDisk(
     config,

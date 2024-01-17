@@ -2,8 +2,8 @@ import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';
 
-final firstUuid = UuidValue('6948DF80-14BD-4E04-8842-7668D9C001F5');
-final secondUuid = UuidValue('4B8302DA-21AD-401F-AF45-1DFD956B80B5');
+final firstUuid = UuidValue.fromString('6948DF80-14BD-4E04-8842-7668D9C001F5');
+final secondUuid = UuidValue.fromString('4B8302DA-21AD-401F-AF45-1DFD956B80B5');
 
 Future<void> _createTestDatabase(Client client) async {
   var first = Types(

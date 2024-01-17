@@ -50,7 +50,7 @@ import '../endpoints/streaming_logging.dart' as _i39;
 import '../endpoints/subDir/subSubDir/subsubdir_test_endpoint.dart' as _i40;
 import '../endpoints/subDir/subdir_test_endpoint.dart' as _i41;
 import 'dart:typed_data' as _i42;
-import 'package:uuid/uuid.dart' as _i43;
+import 'package:uuid/uuid_value.dart' as _i43;
 import 'package:serverpod_test_server/src/generated/types.dart' as _i44;
 import 'package:serverpod_test_server/src/generated/test_enum.dart' as _i45;
 import 'package:serverpod_test_server/src/custom_classes.dart' as _i46;

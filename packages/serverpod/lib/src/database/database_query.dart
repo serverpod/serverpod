@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 import 'package:serverpod/src/util/string_extension.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Builds a SQL query for a select statement.
 /// This is typically only used internally by the serverpod framework.
@@ -444,7 +445,10 @@ String _buildSelectStatement(
   TableRelation? countTableRelation,
 }) {
   var selectStatements = selectColumns
-      .map((column) => '$column AS "${column.queryAlias}"')
+      .map((column) => '$column AS "${truncateIdentifier(
+            column.queryAlias,
+            DatabaseConstants.pgsqlMaxNameLimitation,
+          )}"')
       .join(', ');
 
   if (countTableRelation != null) {
@@ -709,7 +713,8 @@ class _SubQueries {
 
   static String buildUniqueQueryAlias(
       String orderByPrefix, String queryAlias, int index) {
-    return '${orderByPrefix}_${queryAlias}_$index';
+    var alias = '${orderByPrefix}_${queryAlias}_$index';
+    return truncateIdentifier(alias, DatabaseConstants.pgsqlMaxNameLimitation);
   }
 
   static Map<int, _SubQuery> _gatherOrderBySubQueries(List<Order> orderBy) {

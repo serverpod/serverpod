@@ -1,6 +1,6 @@
 publish_to: none
 
-name: serverpod_test_server
+name: bootstrap_project
 version: 1.0.0
 description: Bootstrapping test for Serverpod projects.
 repository: https://github.com/serverpod/serverpod
@@ -11,7 +11,7 @@ dependencies:
   http: ">=0.13.0 <2.0.0"
   serverpod:
     path: ../../packages/serverpod
-  uuid: ^3.0.7
+  uuid: ^4.0.0
 
 dev_dependencies:
   lints: ^3.0.0

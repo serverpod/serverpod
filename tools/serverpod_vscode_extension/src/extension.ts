@@ -29,7 +29,10 @@ export function activate(context: ExtensionContext) {
 	const serverOptions: ServerOptions = {
 		command: 'serverpod',
 		args: ['language-server'],
-		options: {},
+		options: {
+			env: process.env,
+			shell: true,
+		},
 		transport: TransportKind.stdio
 	};
 
@@ -37,7 +40,7 @@ export function activate(context: ExtensionContext) {
 		revealOutputChannelOn: RevealOutputChannelOn.Info,
 		documentSelector: [
 			{ scheme: 'file', language: 'yaml', pattern: '**/protocol/**/*.yaml' },
-			{ scheme: 'file', language: 'yaml', pattern: '**/model/**/*.yaml' },
+			{ scheme: 'file', language: 'yaml', pattern: '**/models/**/*.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yml' },
 			{ scheme: 'file', pattern: '**/*.spy' },

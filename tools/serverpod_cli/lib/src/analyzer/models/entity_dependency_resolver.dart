@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
@@ -180,7 +181,7 @@ class ModelDependencyResolver {
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
-      fieldName: '${fieldDefinition.name}Id',
+      fieldName: foreignRelationField.name,
       foreignFieldName: defaultPrimaryKeyName,
       isForeignKeyOrigin: true,
       nullableRelation: relation.nullableRelation,
@@ -280,8 +281,10 @@ class ModelDependencyResolver {
     if (tableName == null) return;
 
     if (relation.name == null) {
-      var foreignFieldName =
-          '_${classDefinition.tableName?.toCamelCase(isLowerCamelCase: true)}${fieldDefinition.name.toCamelCase()}${classDefinition.tableName?.toCamelCase()}Id';
+      var foreignFieldName = _createImplicitListForeignFieldName(
+        classDefinition.tableName,
+        fieldDefinition.name,
+      );
 
       var autoRelationName = '#_relation_$foreignFieldName';
 
@@ -339,7 +342,20 @@ class ModelDependencyResolver {
     }
   }
 
+  static String _createImplicitListForeignFieldName(
+    String? tableName,
+    String fieldName,
+  ) {
+    return _createImplicitForeignIdFieldName(
+      '_${tableName?.toCamelCase(isLowerCamelCase: true)}${fieldName.toCamelCase()}${tableName?.toCamelCase()}',
+    );
+  }
+
   static String _createImplicitForeignIdFieldName(String fieldName) {
-    return '${fieldName}Id';
+    var truncatedFieldName = truncateIdentifier(
+      fieldName,
+      DatabaseConstants.pgsqlMaxNameLimitation - 2,
+    );
+    return '${truncatedFieldName}Id';
   }
 }

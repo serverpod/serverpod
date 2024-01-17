@@ -33,8 +33,10 @@ class GenerateCommand extends ServerpodCommand {
     bool watch = argResults!['watch'];
 
     // TODO: add a -d option to select the directory
-    var config = await GeneratorConfig.load();
-    if (config == null) {
+    GeneratorConfig config;
+    try {
+      config = await GeneratorConfig.load();
+    } catch (_) {
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }
 

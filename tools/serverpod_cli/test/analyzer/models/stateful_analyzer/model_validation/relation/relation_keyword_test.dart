@@ -2,6 +2,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -777,5 +778,178 @@ fields:
       collector.errors.first.message,
       'The class "ExampleParent" must have a "table" property defined to be used in a relation.',
     );
+  });
+
+  group(
+      'Given a class with an implicit self relation field name with 61 chars when analyzing model',
+      () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+        class: Example
+        table: example
+        fields:
+          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: Example?, relation
+        ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+    var classDefinition = definitions.firstOrNull as ClassDefinition?;
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then class definition is created', () {
+      expect(classDefinition, isNotNull);
+    });
+
+    test(
+        'then no field exists with a name that is longer than Postgres max name limit',
+        () {
+      var fields = classDefinition?.fields
+          .where((element) =>
+              element.name.length > DatabaseConstants.pgsqlMaxNameLimitation)
+          .map((e) => e.name)
+          .toList();
+
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
+    }, skip: classDefinition == null);
+  });
+
+  group(
+      'Given a class with an implicit list relation that creates a foreign key field with more than 63 chars when analyzing model',
+      () {
+    var models = [
+      ModelSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          name: String
+        ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: List<Employee>?, relation
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+
+    var definitions = analyzer.validateAll();
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    var employeeDefinition = definitions
+        .where(
+          (classes) => classes.className == 'Employee',
+        )
+        .firstOrNull as ClassDefinition?;
+
+    test('then employee class definition is created.', () {
+      expect(employeeDefinition, isNotNull);
+    });
+
+    test(
+        'then employee class has no field with a name that is longer than Postgres max name limit.',
+        () {
+      var fields = employeeDefinition?.fields
+          .where((element) =>
+              element.name.length > DatabaseConstants.pgsqlMaxNameLimitation)
+          .map((e) => e.name)
+          .toList();
+
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
+    }, skip: employeeDefinition == null);
+  });
+
+  group(
+      'Given a class with an implicit named list relation when analyzing model',
+      () {
+    var models = [
+      ModelSourceBuilder().withFileName('employee').withYaml(
+        '''
+        class: Employee
+        table: employee
+        fields:
+          name: String
+          thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa: Company?, relation(name=company_employee)
+        ''',
+      ).build(),
+      ModelSourceBuilder().withFileName('company').withYaml(
+        '''
+        class: Company
+        table: company
+        fields:
+          employees: List<Employee>?, relation(name=company_employee)
+        ''',
+      ).build(),
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      models,
+      onErrorsCollector(collector),
+    );
+
+    var definitions = analyzer.validateAll();
+
+    test('then no errors are collected.', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    var employeeDefinition = definitions
+        .where(
+          (classes) => classes.className == 'Employee',
+        )
+        .firstOrNull as ClassDefinition?;
+
+    test('then employee class definition is created.', () {
+      expect(employeeDefinition, isNotNull);
+    });
+
+    test(
+        'then employee class has no field with a name that is longer than Postgres max name limit.',
+        () {
+      var fields = employeeDefinition?.fields
+          .where((element) =>
+              element.name.length > DatabaseConstants.pgsqlMaxNameLimitation)
+          .map((e) => e.name)
+          .toList();
+
+      expect(
+        fields,
+        isEmpty,
+        reason:
+            'Expected no fields with a name longer than ${DatabaseConstants.pgsqlMaxNameLimitation} chars',
+      );
+    }, skip: employeeDefinition == null);
   });
 }

@@ -210,7 +210,7 @@ class Serverpod {
   /// directories (including sub directories) can be whitelisted by adding a
   /// trailing slash.
   Set<String> filesWhitelistedForInsights = {
-    'generated/protocol.yaml',
+    'lib/src/generated/protocol.yaml',
   };
 
   late final HealthCheckManager _healthCheckManager;
@@ -370,13 +370,32 @@ class Serverpod {
 
         if (commandLineArgs.applyRepairMigration) {
           logVerbose('Applying database repair migration');
-          await migrationManager.applyRepairMigration(session);
+          var appliedRepairMigration =
+              await migrationManager.applyRepairMigration(session);
+          if (appliedRepairMigration == null) {
+            stderr.writeln('Failed to apply database repair migration.');
+          } else {
+            stdout.writeln(
+                'Database repair migration "$appliedRepairMigration" applied.');
+          }
           await migrationManager.initialize(session);
         }
 
         if (commandLineArgs.applyMigrations) {
           logVerbose('Applying database migrations.');
-          await migrationManager.migrateToLatest(session);
+          var migrationsApplied =
+              await migrationManager.migrateToLatest(session);
+
+          if (migrationsApplied == null) {
+            stdout.writeln('Latest database migration already applied.');
+          } else {
+            stdout.writeln(
+                'Applied database migration${migrationsApplied.length > 1 ? 's' : ''}:');
+            for (var migration in migrationsApplied) {
+              stdout.writeln(' - $migration');
+            }
+          }
+
           await migrationManager.initialize(session);
         }
 

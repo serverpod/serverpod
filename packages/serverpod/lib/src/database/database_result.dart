@@ -1,4 +1,5 @@
 import 'package:serverpod/database.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Prepares a query result for serverpod serialization.
 /// This is typically only used internally by the serverpod framework.
@@ -90,7 +91,11 @@ Map<String, dynamic> _createColumnMapFromQueryAliasColumns(
 ) {
   var columnMap = <String, dynamic>{};
   for (var column in columns) {
-    var columnData = rawTableRow[column.queryAlias];
+    var queryKey = truncateIdentifier(
+      column.queryAlias,
+      DatabaseConstants.pgsqlMaxNameLimitation,
+    );
+    var columnData = rawTableRow[queryKey];
     if (columnData != null) {
       columnMap[column.columnName] = columnData;
     }

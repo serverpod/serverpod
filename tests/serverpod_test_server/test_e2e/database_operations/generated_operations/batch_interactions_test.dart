@@ -152,7 +152,7 @@ void main() {
         aDateTime: DateTime.now(),
         aByteData: ByteData.view(Uint8List(8).buffer),
         aDuration: Duration(milliseconds: 1000),
-        aUuid: UuidValue(Uuid().v4()),
+        aUuid: UuidValue.fromString(Uuid().v4()),
         anEnum: TestEnum.one,
       ),
     ];
@@ -435,7 +435,7 @@ void main() {
     test(
         'when updating aUuid to a real value then the database is updated with the real value.',
         () async {
-      var uuidValue = UuidValue(Uuid().v4());
+      var uuidValue = UuidValue.fromString(Uuid().v4());
       var toUpdate = <Types>[
         Types(
           id: type.id,

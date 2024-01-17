@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -98,10 +99,6 @@ const _databaseModelReservedFieldNames = [
   'table',
 ];
 
-/// The maximum length of a identfiers and key words in Postgres.
-/// Source: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-const _pgsqlMaxNameLimitation = 63;
-
 /// We reserve 7 characters to enable deterministic generation of the following
 /// suffixes:
 /// - "_id_seq" suffix for the default value for serial fields stored in the
@@ -109,7 +106,14 @@ const _pgsqlMaxNameLimitation = 63;
 /// - "_fk_{index}" suffix for foreign key constraints.
 const _reservedTableSuffixChars = 7;
 
-const _maxTableNameLength = _pgsqlMaxNameLimitation - _reservedTableSuffixChars;
+/// We reserve 2 characters to enable implicit foreign key field generation
+/// without truncation since we append "id" as a suffix of on the field name.
+const _reservedColumnSuffixChars = 2;
+
+const _maxTableNameLength =
+    DatabaseConstants.pgsqlMaxNameLimitation - _reservedTableSuffixChars;
+const _maxColumnNameLength =
+    DatabaseConstants.pgsqlMaxNameLimitation - _reservedColumnSuffixChars;
 
 class Restrictions {
   String documentType;
@@ -319,10 +323,10 @@ class Restrictions {
       ];
     }
 
-    if (indexName.length > _pgsqlMaxNameLimitation) {
+    if (indexName.length > DatabaseConstants.pgsqlMaxNameLimitation) {
       return [
         SourceSpanSeverityException(
-          'The index name "$indexName" exceeds the $_pgsqlMaxNameLimitation character index name limitation.',
+          'The index name "$indexName" exceeds the ${DatabaseConstants.pgsqlMaxNameLimitation} character index name limitation.',
           span,
         )
       ];
@@ -385,10 +389,10 @@ class Restrictions {
       ];
     }
 
-    if (fieldName.length > _pgsqlMaxNameLimitation) {
+    if (fieldName.length > _maxColumnNameLength) {
       return [
         SourceSpanSeverityException(
-          'The field name "$fieldName" exceeds the $_pgsqlMaxNameLimitation character field name limitation.',
+          'The field name "$fieldName" exceeds the $_maxColumnNameLength character field name limitation.',
           span,
         )
       ];

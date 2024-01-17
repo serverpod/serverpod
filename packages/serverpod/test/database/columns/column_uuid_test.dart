@@ -32,10 +32,14 @@ void main() {
       test(
           'when equals compared to uuid value then output is equals expression.',
           () {
-        var comparisonExpression = column.equals(UuidValue(Uuid.NAMESPACE_NIL));
+        var comparisonExpression = column.equals(
+          UuidValue.fromString(Uuid.NAMESPACE_NIL),
+        );
 
-        expect(comparisonExpression.toString(),
-            '$column = \'00000000-0000-0000-0000-000000000000\'');
+        expect(
+          comparisonExpression.toString(),
+          '$column = \'00000000-0000-0000-0000-000000000000\'',
+        );
       });
 
       test(
@@ -50,7 +54,7 @@ void main() {
           'when NOT equals compared to uuid value then output is NOT equals expression.',
           () {
         var comparisonExpression =
-            column.notEquals(UuidValue(Uuid.NAMESPACE_NIL));
+            column.notEquals(UuidValue.fromString(Uuid.NAMESPACE_NIL));
 
         expect(comparisonExpression.toString(),
             '$column IS DISTINCT FROM \'00000000-0000-0000-0000-000000000000\'');
@@ -60,9 +64,9 @@ void main() {
           'when checking if expression is in value set then output is IN expression.',
           () {
         var comparisonExpression = column.inSet(<UuidValue>{
-          UuidValue('testUuid1', false /* Disable validation for test */),
-          UuidValue('testUuid2', false /* Disable validation for test */),
-          UuidValue('testUuid3', false /* Disable validation for test */),
+          UuidValue.fromString('testUuid1'),
+          UuidValue.fromString('testUuid2'),
+          UuidValue.fromString('testUuid3'),
         });
 
         expect(comparisonExpression.toString(),
@@ -73,13 +77,15 @@ void main() {
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
         var comparisonExpression = column.notInSet(<UuidValue>{
-          UuidValue('testUuid1', false /* Disable validation for test */),
-          UuidValue('testUuid2', false /* Disable validation for test */),
-          UuidValue('testUuid3', false /* Disable validation for test */),
+          UuidValue.fromString('testUuid1'),
+          UuidValue.fromString('testUuid2'),
+          UuidValue.fromString('testUuid3'),
         });
 
-        expect(comparisonExpression.toString(),
-            '($column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\') OR $column IS NULL)');
+        expect(
+          comparisonExpression.toString(),
+          '($column NOT IN (\'testuuid1\', \'testuuid2\', \'testuuid3\') OR $column IS NULL)',
+        );
       });
     });
   });
