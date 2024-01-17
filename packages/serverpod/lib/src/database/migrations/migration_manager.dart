@@ -205,7 +205,7 @@ class MigrationManager {
   ) async {
     var sqlToExecute = <({String version, String sql})>[];
 
-    if (fromVersion.isNullOrEmpty) {
+    if (fromVersion.isNull) {
       var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
         Directory.current,
         latestVersion,

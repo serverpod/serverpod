@@ -46,7 +46,7 @@ class RedisCache extends GlobalCache {
       'Redis needs to be enabled to use this method',
     );
     var data = await redisController!.get(key);
-    if (data.isNullOrEmpty) {
+    if (data.isNull) {
       return null;
     }
 

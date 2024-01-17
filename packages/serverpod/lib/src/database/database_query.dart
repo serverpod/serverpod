@@ -934,7 +934,7 @@ String _formatOrderByCount(
 ) {
   var queryAlias = subQueries?._orderByQueries[index]?.alias;
 
-  if (queryAlias.isNullOrEmpty) {
+  if (queryAlias.isNull) {
     throw _createStateErrorWithMessage(
         'Query alias for order by sub query is null.');
   }
@@ -971,7 +971,7 @@ LinkedHashMap<String, String> _gatherOrderByJoins(
 
         var queryAlias = orderByQueries[orderIndex]?.alias;
 
-        if (queryAlias.isNullOrEmpty) {
+        if (queryAlias.isNull) {
           throw _createStateErrorWithMessage(
               'Missing query alias for order by sub query with index $index.');
         }
