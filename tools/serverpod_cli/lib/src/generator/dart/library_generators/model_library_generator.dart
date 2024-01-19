@@ -1157,13 +1157,7 @@ class SerializableModelLibraryGenerator {
         m.name = 'allToJson';
         m.annotations.add(refer('override'));
 
-        m.body = literalMap(
-          {
-            for (var field in fields)
-              literalString(field.name):
-                  _createSerializableFieldNameReference(serverCode, field)
-          },
-        ).returned.statement;
+        m.body = _createToJsonBodyFromFields(fields);
       },
     );
   }
@@ -1182,13 +1176,7 @@ class SerializableModelLibraryGenerator {
           refer("Deprecated('Will be removed in 2.0.0')")
         ]);
 
-        m.body = literalMap(
-          {
-            for (var field in serializableFields)
-              literalString(field.name):
-                  _createSerializableFieldNameReference(serverCode, field)
-          },
-        ).returned.statement;
+        m.body = _createToJsonBodyFromFields(serializableFields.toList());
       },
     );
   }
@@ -1201,17 +1189,26 @@ class SerializableModelLibraryGenerator {
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
-        var fieldExprs = fields
-            .where((field) => field.shouldSerializeField(serverCode))
-            .map((field) =>
-                '${field.type.nullable ? 'if (${field.name} != null) ' : ''}'
-                '\'${field.name}\':${field.name}')
-            .join(',');
-
-        m.body =
-            Code('return { ${fieldExprs.isEmpty ? '' : '$fieldExprs,'} };');
+        var filteredFields =
+            fields.where((field) => field.shouldSerializeField(serverCode));
+        m.body = _createToJsonBodyFromFields(filteredFields.toList());
       },
     );
+  }
+
+  Code _createToJsonBodyFromFields(
+    List<SerializableModelFieldDefinition> fields,
+  ) {
+    var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
+      return {
+        ...map,
+        if (field.type.nullable)
+          Code("if (${field.name} != null) '${field.name}'"): refer(field.name),
+        if (!field.type.nullable) Code("'${field.name}'"): refer(field.name),
+      };
+    });
+
+    return literalMap(map).returned.statement;
   }
 
   Constructor _buildModelClassFromJsonConstructor(
