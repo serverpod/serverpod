@@ -4,23 +4,23 @@ publish_to: none
 
 name: serverpod_chat_server
 description: Serverpod chat server module.
-version: 1.2.0
+version: 1.2.1-rc.3
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: #1.2.0
+  serverpod: #1.2.1-rc.3
     path: ../../../packages/serverpod
-  serverpod_auth_server: #1.2.0
+  serverpod_auth_server: #1.2.1-rc.3
     path: ../../serverpod_auth/serverpod_auth_server
-  serverpod_serialization: #1.2.0
+  serverpod_serialization: #1.2.1-rc.3
     path: ../../../packages/serverpod_serialization/
   http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   path: ^1.8.2
 
 dev_dependencies:
-  serverpod_lints: #1.2.0
+  serverpod_lints: #1.2.1-rc.3
     path: ../../../packages/serverpod_lints

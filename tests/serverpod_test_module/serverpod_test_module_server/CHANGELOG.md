@@ -1,3 +1,5 @@
+
+
 ## 1.2.0
 This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github. Instructions for updating from 1.1 of Serverpod is available in our documentation [here](https://docs.serverpod.dev/upgrading/upgrade-to-one-point-two).
 
@@ -138,18 +140,6 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 ### Chat module
 - fix: Adds missing return statement to require authentication.
 
-
-## 1.2.0-rc.4
-- Fourth preview of 1.2.0
-
-## 1.2.0-rc.3
-- Third preview of 1.2.0
-
-## 1.2.0-rc.2
-- Second preview of 1.2.0
-
-## 1.2.0-rc.1
-- Preview of 1.2.0
 
 ## 1.1.0
 - feat: Lightweight run mode and support for serverless platforms.
@@ -353,3 +343,25 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 ## 0.8.3
 
 - Initial working version.
+
+## 1.2.1-rc.3
+
+- Third preview of 1.2.1
+
+## 1.2.1-rc.2
+- Second preview of 1.2.1
+
+## 1.2.1-rc.1
+- First preview of 1.2.1
+
+## 1.2.0-rc.4
+- Fourth preview of 1.2.0
+
+## 1.2.0-rc.3
+- Third preview of 1.2.0
+
+## 1.2.0-rc.2
+- Second preview of 1.2.0
+
+## 1.2.0-rc.1
+- Preview of 1.2.0
