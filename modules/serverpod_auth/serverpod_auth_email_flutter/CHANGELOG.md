@@ -344,6 +344,10 @@ This is a summary of the new features in version 1.2.0. For the full list, pleas
 
 - Initial working version.
 
+## 1.2.1-rc.3
+
+- Third preview of 1.2.1
+
 ## 1.2.1-rc.2
 - Second preview of 1.2.1
 
