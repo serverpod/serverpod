@@ -34,7 +34,7 @@ dependencies:
   synchronized: ^3.1.0
   postgres_pool: ^2.1.6
   system_resources: ^1.6.0
-  vm_service: ^13.0.0
+  vm_service: ">=13.0.0 <15.0.0"
   yaml: ^3.1.1
   serverpod_shared: #1.2.1-rc.2
     path: ../serverpod_shared
