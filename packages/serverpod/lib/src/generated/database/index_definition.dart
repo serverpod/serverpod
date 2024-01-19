@@ -103,12 +103,12 @@ abstract class IndexDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'indexName': indexName,
-      'tableSpace': tableSpace,
+      if (tableSpace != null) 'tableSpace': tableSpace,
       'elements': elements,
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,
-      'predicate': predicate,
+      if (predicate != null) 'predicate': predicate,
     };
   }
 }

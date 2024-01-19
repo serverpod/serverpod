@@ -31,9 +31,7 @@ abstract class ChatLeaveChannel extends _i1.SerializableEntity {
   ChatLeaveChannel copyWith({String? channel});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'channel': channel,
-    };
+    return {'channel': channel};
   }
 
   @override

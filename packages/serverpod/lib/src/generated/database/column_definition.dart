@@ -87,8 +87,8 @@ abstract class ColumnDefinition extends _i1.SerializableEntity {
       'name': name,
       'columnType': columnType,
       'isNullable': isNullable,
-      'columnDefault': columnDefault,
-      'dartType': dartType,
+      if (columnDefault != null) 'columnDefault': columnDefault,
+      if (dartType != null) 'dartType': dartType,
     };
   }
 }

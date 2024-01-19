@@ -71,19 +71,19 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'normal': normal,
-      'database': database,
+      if (database != null) 'database': database,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'normal': normal,
-      'api': api,
-      'database': database,
+      if (api != null) 'api': api,
+      if (database != null) 'database': database,
     };
   }
 

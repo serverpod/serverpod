@@ -74,19 +74,19 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'street': street,
-      'inhabitantId': inhabitantId,
+      if (inhabitantId != null) 'inhabitantId': inhabitantId,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'street': street,
-      'inhabitantId': inhabitantId,
-      'inhabitant': inhabitant,
+      if (inhabitantId != null) 'inhabitantId': inhabitantId,
+      if (inhabitant != null) 'inhabitant': inhabitant,
     };
   }
 

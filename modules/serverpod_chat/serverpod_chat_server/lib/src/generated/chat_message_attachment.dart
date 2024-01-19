@@ -93,9 +93,9 @@ abstract class ChatMessageAttachment extends _i1.SerializableEntity {
       'fileName': fileName,
       'url': url,
       'contentType': contentType,
-      'previewImage': previewImage,
-      'previewWidth': previewWidth,
-      'previewHeight': previewHeight,
+      if (previewImage != null) 'previewImage': previewImage,
+      if (previewWidth != null) 'previewWidth': previewWidth,
+      if (previewHeight != null) 'previewHeight': previewHeight,
     };
   }
 }

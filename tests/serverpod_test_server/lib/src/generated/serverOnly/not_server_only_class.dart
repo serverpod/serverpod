@@ -29,9 +29,7 @@ abstract class NotServerOnlyClass extends _i1.SerializableEntity {
   NotServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'foo': foo,
-    };
+    return {'foo': foo};
   }
 
   @override

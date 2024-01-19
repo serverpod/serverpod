@@ -82,20 +82,20 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'content': content,
-      'nextId': nextId,
+      if (nextId != null) 'nextId': nextId,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'content': content,
-      'previous': previous,
-      'nextId': nextId,
-      'next': next,
+      if (previous != null) 'previous': previous,
+      if (nextId != null) 'nextId': nextId,
+      if (next != null) 'next': next,
     };
   }
 

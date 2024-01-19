@@ -56,7 +56,7 @@ abstract class ChatJoinChannel extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'channel': channel,
-      'userName': userName,
+      if (userName != null) 'userName': userName,
     };
   }
 }

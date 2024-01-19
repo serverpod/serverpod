@@ -136,8 +136,8 @@ abstract class TableMigration extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'name': name,
-      'dartName': dartName,
-      'module': module,
+      if (dartName != null) 'dartName': dartName,
+      if (module != null) 'module': module,
       'schema': schema,
       'addColumns': addColumns,
       'deleteColumns': deleteColumns,

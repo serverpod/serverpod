@@ -33,9 +33,7 @@ abstract class SessionLogResult extends _i1.SerializableEntity {
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'sessionLog': sessionLog,
-    };
+    return {'sessionLog': sessionLog};
   }
 
   @override

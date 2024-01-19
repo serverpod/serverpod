@@ -86,7 +86,7 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'name': name,
+      if (name != null) 'name': name,
       'moduleName': moduleName,
       'tables': tables,
       'installedModules': installedModules,
