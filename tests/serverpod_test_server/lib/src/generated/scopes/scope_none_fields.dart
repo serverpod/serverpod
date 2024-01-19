@@ -35,25 +35,23 @@ abstract class ScopeNoneFields extends _i1.TableRow {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-    };
+    return {if (id != null) 'id': id};
   }
 
   @override
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
-      'name': _name,
+      if (id != null) 'id': id,
+      if (_name != null) 'name': _name,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
-      'name': _name,
+      if (id != null) 'id': id,
+      if (_name != null) 'name': _name,
     };
   }
 

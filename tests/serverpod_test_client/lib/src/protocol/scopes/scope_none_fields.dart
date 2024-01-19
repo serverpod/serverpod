@@ -31,9 +31,7 @@ abstract class ScopeNoneFields extends _i1.SerializableEntity {
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-    };
+    return {if (id != null) 'id': id};
   }
 }
 
