@@ -102,16 +102,6 @@ class DatabaseConnectionLegacy {
 
     Map data = row.allToJson();
 
-    for (var column in row.table.columns) {
-      if (!data.containsKey(column.columnName)) {
-        throw ArgumentError.value(
-          column,
-          column.columnName,
-          'does not exist in row',
-        );
-      }
-    }
-
     var selectedColumns = row.table.columns.where((column) {
       return column.columnName != 'id';
     });
