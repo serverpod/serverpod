@@ -1200,11 +1200,13 @@ class SerializableModelLibraryGenerator {
     List<SerializableModelFieldDefinition> fields,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
+      var fieldName = _createSerializableFieldNameReference(serverCode, field);
+
       return {
         ...map,
         if (field.type.nullable)
-          Code("if (${field.name} != null) '${field.name}'"): refer(field.name),
-        if (!field.type.nullable) Code("'${field.name}'"): refer(field.name),
+          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldName,
+        if (!field.type.nullable) Code("'${field.name}'"): fieldName,
       };
     });
 
