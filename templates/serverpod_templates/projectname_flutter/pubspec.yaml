@@ -24,8 +24,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod_flutter
+  serverpod_flutter: 1.2.1
   projectname_client:
     path: ../projectname_client
 
@@ -38,6 +37,14 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
+
+dependency_overrides: 
+  serverpod_flutter: 
+    path: ../../../packages/serverpod_flutter 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

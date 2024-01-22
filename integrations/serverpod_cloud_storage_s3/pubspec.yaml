@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_cloud_storage_s3
 description: Serverpod integration for S3 cloud storage
@@ -13,8 +12,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: #1.2.1
-    path: ../../packages/serverpod
+  serverpod: 1.2.1
   amazon_cognito_identity_dart_2: ^3.0.0
   http: ">=0.13.0 <2.0.0"
   built_collection: ^5.1.1
@@ -24,3 +22,15 @@ dependencies:
 
 dev_dependencies:
   lints: ^3.0.0
+
+dependency_overrides: 
+  serverpod: 
+    path: ../../packages/serverpod 
+  serverpod_client: 
+    path: ../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../packages/serverpod_serialization 
+  serverpod_service_client: 
+    path: ../../packages/serverpod_service_client 
+  serverpod_shared: 
+    path: ../../packages/serverpod_shared 

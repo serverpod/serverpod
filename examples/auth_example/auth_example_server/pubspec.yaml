@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: auth_example_server
 description: Starting point for a Serverpod server.
 # version: 1.0.0
@@ -8,10 +11,22 @@ environment:
 
 dependencies:
   mailer: ^6.0.1
-  serverpod:
-    path: ../../../packages/serverpod
-  serverpod_auth_server:
-      path: ../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod: 1.2.1
+  serverpod_auth_server: 1.2.1
 
 dev_dependencies:
   lints: ^3.0.0
+
+dependency_overrides: 
+  serverpod: 
+    path: ../../../packages/serverpod 
+  serverpod_auth_server: 
+      path: ../../../modules/serverpod_auth/serverpod_auth_server 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
+  serverpod_service_client: 
+    path: ../../../packages/serverpod_service_client 
+  serverpod_shared: 
+    path: ../../../packages/serverpod_shared 

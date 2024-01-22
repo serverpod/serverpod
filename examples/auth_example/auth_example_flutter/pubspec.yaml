@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: auth_example_flutter
 description: A new Flutter project with Serverpod.
 
@@ -24,19 +27,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter:
-    path: ../../../packages/serverpod_flutter
+  serverpod_flutter: 1.2.1
+  serverpod_auth_email_flutter: 1.2.1
+  serverpod_auth_shared_flutter: 1.2.1
+  serverpod_auth_google_flutter: 1.2.1
+  serverpod_auth_apple_flutter: 1.2.1
   auth_example_client:
     path: ../auth_example_client
-
-  serverpod_auth_email_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
-  serverpod_auth_shared_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
-  serverpod_auth_google_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter
-  serverpod_auth_apple_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -47,6 +44,24 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
+
+dependency_overrides: 
+  serverpod_flutter: 
+    path: ../../../packages/serverpod_flutter 
+  serverpod_auth_email_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter 
+  serverpod_auth_shared_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter 
+  serverpod_auth_google_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter 
+  serverpod_auth_apple_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter 
+  serverpod_auth_client: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_client 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: chat_flutter
 description: Demo project for the chat module.
 
@@ -25,16 +28,11 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
-  serverpod_auth_email_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
-  serverpod_auth_shared_flutter:
-    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
-  serverpod_chat_flutter:
-    path: ../../../modules/serverpod_chat/serverpod_chat_flutter
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_flutter:
-    path: ../../../packages/serverpod_flutter
+  serverpod_auth_email_flutter: 1.2.1
+  serverpod_auth_shared_flutter: 1.2.1
+  serverpod_chat_flutter: 1.2.1
+  serverpod_client: 1.2.1
+  serverpod_flutter: 1.2.1
   chat_client:
     path: ../chat_client
 
@@ -47,6 +45,24 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
+
+dependency_overrides: 
+  serverpod_auth_email_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter 
+  serverpod_auth_shared_flutter: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter 
+  serverpod_chat_flutter: 
+    path: ../../../modules/serverpod_chat/serverpod_chat_flutter 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_flutter: 
+    path: ../../../packages/serverpod_flutter 
+  serverpod_auth_client: 
+    path: ../../../modules/serverpod_auth/serverpod_auth_client 
+  serverpod_chat_client: 
+    path: ../../../modules/serverpod_chat/serverpod_chat_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

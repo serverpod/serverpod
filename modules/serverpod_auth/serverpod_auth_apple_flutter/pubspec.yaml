@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_auth_apple_flutter
 description: Sign in with Apple for the Serverpod auth module.
@@ -17,17 +16,26 @@ dependencies:
   flutter:
     sdk: flutter
   material_design_icons_flutter: ">=6.0.0 < 7.0.0"
-  serverpod_auth_client: #1.2.1
-    path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: #1.2.1
-    path: ../serverpod_auth_shared_flutter
+  serverpod_auth_client: 1.2.1
+  serverpod_auth_shared_flutter: 1.2.1
   sign_in_with_apple: ^5.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #1.2.1
-    path: ../../../packages/serverpod_lints
+  serverpod_lints: 1.2.1
+
+dependency_overrides: 
+  serverpod_auth_client: 
+    path: ../serverpod_auth_client 
+  serverpod_auth_shared_flutter: 
+    path: ../serverpod_auth_shared_flutter 
+  serverpod_lints: 
+    path: ../../../packages/serverpod_lints 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

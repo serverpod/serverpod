@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_auth_shared_flutter
 description: Shared widgets for Flutter side authentication with Serverpod.
@@ -16,10 +15,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: #1.2.1
-    path: ../../../packages/serverpod_client
-  serverpod_auth_client: #1.2.1
-    path: ../serverpod_auth_client
+  serverpod_client: 1.2.1
+  serverpod_auth_client: 1.2.1
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
   image: ^4.0.15
@@ -33,10 +30,19 @@ dependencies:
 
 
 dev_dependencies:
-  serverpod_lints: #1.2.1
-    path: ../../../packages/serverpod_lints
+  serverpod_lints: 1.2.1
   flutter_test:
     sdk: flutter
+
+dependency_overrides: 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_auth_client: 
+    path: ../serverpod_auth_client 
+  serverpod_lints: 
+    path: ../../../packages/serverpod_lints 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
