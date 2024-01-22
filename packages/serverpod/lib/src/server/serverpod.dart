@@ -451,17 +451,23 @@ class Serverpod {
       if (commandLineArgs.role == ServerpodRole.monolith ||
           commandLineArgs.role == ServerpodRole.serverless) {
         // Serverpod Insights.
-        await _startInsightsServer();
+        var serversStarted = await _startInsightsServer();
 
         // Main API server.
-        await server.start();
+        serversStarted &= await server.start();
 
         /// Web server.
         if (webServer.routes.isNotEmpty) {
           logVerbose('Starting web server.');
-          await webServer.start();
+          serversStarted &= await webServer.start();
         } else {
           logVerbose('No routes configured for web server, skipping.');
+        }
+
+        if (!serversStarted) {
+          _exitCode = 1;
+          stderr.writeln('Failed to start servers.');
+          exit(_exitCode);
         }
 
         logVerbose('All servers started.');
@@ -525,7 +531,7 @@ class Serverpod {
     }
   }
 
-  Future<void> _startInsightsServer() async {
+  Future<bool> _startInsightsServer() async {
     // var context = SecurityContext();
     // context.useCertificateChain(sslCertificatePath(_runMode, serverId));
     // context.usePrivateKey(sslPrivateKeyPath(_runMode, serverId));
@@ -550,9 +556,10 @@ class Serverpod {
     );
     endpoints.initializeEndpoints(_serviceServer!);
 
-    await _serviceServer!.start();
+    var success = await _serviceServer!.start();
 
     cluster = ClusterManager(_serviceServer!);
+    return success;
   }
 
   /// Registers a [FutureCall] with the [Serverpod] and associates it with

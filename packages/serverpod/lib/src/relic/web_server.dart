@@ -47,8 +47,21 @@ class WebServer {
   }
 
   /// Starts the webserver.
-  Future<void> start() async {
+  /// Returns true if the webserver was started successfully.
+  Future<bool> start() async {
     await templates.loadAll();
+
+    try {
+      _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
+    } catch (e) {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
+        'port $_port may already be in use.',
+      );
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      return false;
+    }
+    httpServer.autoCompress = true;
 
     runZonedGuarded(
       _start,
@@ -58,13 +71,11 @@ class WebServer {
         stdout.writeln('$stackTrace');
       },
     );
+
+    return true;
   }
 
   void _start() async {
-    var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
-    _httpServer = httpServer;
-    httpServer.autoCompress = true;
-
     stdout.writeln('Webserver listening on port $_port');
 
     try {

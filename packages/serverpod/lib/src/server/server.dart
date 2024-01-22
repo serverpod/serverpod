@@ -94,35 +94,41 @@ class Server {
   }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
-  Future<void> start() async {
-    if (securityContext != null) {
-      try {
-        var httpServer = await HttpServer.bindSecure(
+  /// Returns true if the server was started successfully.
+  Future<bool> start() async {
+    HttpServer httpServer;
+    try {
+      if (securityContext != null) {
+        httpServer = await HttpServer.bindSecure(
           InternetAddress.anyIPv6,
           port,
           securityContext!,
         );
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+      } else {
+        httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
       }
-    } else {
-      try {
-        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
+    } catch (e) {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '
+        'may already be in use.',
+      );
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      return false;
+    }
+
+    try {
+      _runServer(httpServer);
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      return false;
     }
 
     _running = true;
     stdout.writeln('$name listening on port $port');
+    return _running;
   }
 
   void _runServer(HttpServer httpServer) async {
