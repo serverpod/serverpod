@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithEnum extends _i1.TableRow {
   ObjectWithEnum._({
@@ -78,11 +79,13 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'testEnum': testEnum,
-      if (nullableEnum != null) 'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
+      'testEnum': testEnum.toJson(),
+      if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
+      'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
+      'nullableEnumList':
+          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'enumListList': enumListList.toJson(
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
   }
 
@@ -91,11 +94,13 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       if (id != null) 'id': id,
-      'testEnum': testEnum,
-      if (nullableEnum != null) 'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
+      'testEnum': testEnum.toJson(),
+      if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
+      'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
+      'nullableEnumList':
+          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'enumListList': enumListList.toJson(
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
   }
 
@@ -103,11 +108,13 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'testEnum': testEnum,
-      if (nullableEnum != null) 'nullableEnum': nullableEnum,
-      'enumList': enumList,
-      'nullableEnumList': nullableEnumList,
-      'enumListList': enumListList,
+      'testEnum': testEnum.toJson(),
+      if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
+      'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
+      'nullableEnumList':
+          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
+      'enumListList': enumListList.toJson(
+          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
     };
   }
 

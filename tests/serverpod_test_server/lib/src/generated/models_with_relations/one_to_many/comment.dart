@@ -66,7 +66,7 @@ abstract class Comment extends _i1.TableRow {
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
-      if (order != null) 'order': order,
+      if (order != null) 'order': order?.toJson(),
     };
   }
 
@@ -86,7 +86,7 @@ abstract class Comment extends _i1.TableRow {
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
-      if (order != null) 'order': order,
+      if (order != null) 'order': order?.toJson(),
     };
   }
 

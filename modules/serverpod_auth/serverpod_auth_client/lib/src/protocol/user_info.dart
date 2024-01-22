@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensative information, such as the users email.
@@ -114,9 +115,9 @@ abstract class UserInfo extends _i1.SerializableEntity {
       'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
-      'created': created,
+      'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
   }

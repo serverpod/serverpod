@@ -74,7 +74,7 @@ abstract class ColumnDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'columnType': columnType,
+      'columnType': columnType.toJson(),
       'isNullable': isNullable,
       if (columnDefault != null) 'columnDefault': columnDefault,
       if (dartType != null) 'dartType': dartType,

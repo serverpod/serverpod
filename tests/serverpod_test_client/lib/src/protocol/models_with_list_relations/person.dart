@@ -63,7 +63,7 @@ abstract class Person extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization,
+      if (organization != null) 'organization': organization?.toJson(),
     };
   }
 }

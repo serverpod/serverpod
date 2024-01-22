@@ -65,7 +65,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      if (uniqueData != null) 'uniqueData': uniqueData,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
       'number': number,
     };
   }
@@ -85,7 +85,7 @@ abstract class RelatedUniqueData extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'uniqueDataId': uniqueDataId,
-      if (uniqueData != null) 'uniqueData': uniqueData,
+      if (uniqueData != null) 'uniqueData': uniqueData?.toJson(),
       'number': number,
     };
   }

@@ -67,7 +67,7 @@ abstract class Person extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization,
+      if (organization != null) 'organization': organization?.toJson(),
     };
   }
 
@@ -89,7 +89,7 @@ abstract class Person extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization,
+      if (organization != null) 'organization': organization?.toJson(),
       if (_cityCitizensCityId != null)
         '_cityCitizensCityId': _cityCitizensCityId,
     };

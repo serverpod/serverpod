@@ -57,7 +57,7 @@ abstract class Arena extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 
@@ -75,7 +75,7 @@ abstract class Arena extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 

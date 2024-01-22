@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
@@ -67,10 +68,12 @@ abstract class DatabaseDefinitions extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'target': target,
-      'live': live,
-      'installedMigrations': installedMigrations,
-      'latestAvailableMigrations': latestAvailableMigrations,
+      'target': target.toJson(valueToJson: (v) => v.toJson()),
+      'live': live.toJson(valueToJson: (v) => v.toJson()),
+      'installedMigrations':
+          installedMigrations.toJson(valueToJson: (v) => v.toJson()),
+      'latestAvailableMigrations':
+          latestAvailableMigrations.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

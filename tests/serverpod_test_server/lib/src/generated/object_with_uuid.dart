@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithUuid extends _i1.TableRow {
   ObjectWithUuid._({
@@ -56,8 +57,8 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'uuid': uuid,
-      if (uuidNullable != null) 'uuidNullable': uuidNullable,
+      'uuid': uuid.toJson(),
+      if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
   }
 
@@ -66,8 +67,8 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       if (id != null) 'id': id,
-      'uuid': uuid,
-      if (uuidNullable != null) 'uuidNullable': uuidNullable,
+      'uuid': uuid.toJson(),
+      if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
   }
 
@@ -75,8 +76,8 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'uuid': uuid,
-      if (uuidNullable != null) 'uuidNullable': uuidNullable,
+      'uuid': uuid.toJson(),
+      if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
   }
 

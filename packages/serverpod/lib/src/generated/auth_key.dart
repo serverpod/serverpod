@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey extends _i1.TableRow {
@@ -85,7 +86,7 @@ abstract class AuthKey extends _i1.TableRow {
       'userId': userId,
       'hash': hash,
       if (key != null) 'key': key,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'method': method,
     };
   }
@@ -97,7 +98,7 @@ abstract class AuthKey extends _i1.TableRow {
       if (id != null) 'id': id,
       'userId': userId,
       'hash': hash,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'method': method,
     };
   }
@@ -109,7 +110,7 @@ abstract class AuthKey extends _i1.TableRow {
       'userId': userId,
       'hash': hash,
       if (key != null) 'key': key,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'method': method,
     };
   }

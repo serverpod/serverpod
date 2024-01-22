@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class SimpleDataList extends _i1.SerializableEntity {
   SimpleDataList._({required this.rows});
@@ -31,7 +32,7 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
   SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
-    return {'rows': rows};
+    return {'rows': rows.toJson(valueToJson: (v) => v.toJson())};
   }
 }
 

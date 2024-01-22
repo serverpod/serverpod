@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class DatabaseMigration extends _i1.SerializableEntity {
   DatabaseMigration._({
@@ -54,8 +55,8 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'actions': actions,
-      'warnings': warnings,
+      'actions': actions.toJson(valueToJson: (v) => v.toJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -63,8 +64,8 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'actions': actions,
-      'warnings': warnings,
+      'actions': actions.toJson(valueToJson: (v) => v.toJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

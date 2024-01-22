@@ -70,9 +70,9 @@ abstract class Enrollment extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'studentId': studentId,
-      if (student != null) 'student': student,
+      if (student != null) 'student': student?.toJson(),
       'courseId': courseId,
-      if (course != null) 'course': course,
+      if (course != null) 'course': course?.toJson(),
     };
   }
 }

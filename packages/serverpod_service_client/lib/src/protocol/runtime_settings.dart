@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings extends _i1.SerializableEntity {
@@ -75,8 +76,9 @@ abstract class RuntimeSettings extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

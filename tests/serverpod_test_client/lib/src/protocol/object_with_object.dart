@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithObject extends _i1.SerializableEntity {
   ObjectWithObject._({
@@ -85,13 +86,17 @@ abstract class ObjectWithObject extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'data': data,
-      if (nullableData != null) 'nullableData': nullableData,
-      'dataList': dataList,
-      if (nullableDataList != null) 'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
+      'data': data.toJson(),
+      if (nullableData != null) 'nullableData': nullableData?.toJson(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJson()),
+      if (nullableDataList != null)
+        'nullableDataList':
+            nullableDataList?.toJson(valueToJson: (v) => v.toJson()),
+      'listWithNullableData':
+          listWithNullableData.toJson(valueToJson: (v) => v?.toJson()),
       if (nullableListWithNullableData != null)
-        'nullableListWithNullableData': nullableListWithNullableData,
+        'nullableListWithNullableData': nullableListWithNullableData?.toJson(
+            valueToJson: (v) => v?.toJson()),
     };
   }
 }

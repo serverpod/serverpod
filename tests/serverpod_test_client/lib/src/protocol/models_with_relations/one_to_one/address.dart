@@ -64,7 +64,7 @@ abstract class Address extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
-      if (inhabitant != null) 'inhabitant': inhabitant,
+      if (inhabitant != null) 'inhabitant': inhabitant?.toJson(),
     };
   }
 }

@@ -70,9 +70,9 @@ abstract class Post extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'content': content,
-      if (previous != null) 'previous': previous,
+      if (previous != null) 'previous': previous?.toJson(),
       if (nextId != null) 'nextId': nextId,
-      if (next != null) 'next': next,
+      if (next != null) 'next': next?.toJson(),
     };
   }
 }

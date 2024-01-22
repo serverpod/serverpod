@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A list of log entries, used to return logging data.
 abstract class LogResult extends _i1.SerializableEntity {
@@ -32,12 +33,12 @@ abstract class LogResult extends _i1.SerializableEntity {
   LogResult copyWith({List<_i2.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
-    return {'entries': entries};
+    return {'entries': entries.toJson(valueToJson: (v) => v.toJson())};
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'entries': entries};
+    return {'entries': entries.toJson(valueToJson: (v) => v.toJson())};
   }
 }
 

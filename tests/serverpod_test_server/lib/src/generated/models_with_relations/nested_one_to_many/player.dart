@@ -65,7 +65,7 @@ abstract class Player extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (teamId != null) 'teamId': teamId,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 
@@ -85,7 +85,7 @@ abstract class Player extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (teamId != null) 'teamId': teamId,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 

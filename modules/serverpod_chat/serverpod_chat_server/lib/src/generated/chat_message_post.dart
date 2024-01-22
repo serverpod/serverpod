@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message post request.
 abstract class ChatMessagePost extends _i1.SerializableEntity {
@@ -68,7 +69,8 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      if (attachments != null) 'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -78,7 +80,8 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
       'channel': channel,
       'message': message,
       'clientMessageId': clientMessageId,
-      if (attachments != null) 'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

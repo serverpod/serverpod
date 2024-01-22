@@ -65,7 +65,7 @@ abstract class Company extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       'townId': townId,
-      if (town != null) 'town': town,
+      if (town != null) 'town': town?.toJson(),
     };
   }
 
@@ -85,7 +85,7 @@ abstract class Company extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       'townId': townId,
-      if (town != null) 'town': town,
+      if (town != null) 'town': town?.toJson(),
     };
   }
 

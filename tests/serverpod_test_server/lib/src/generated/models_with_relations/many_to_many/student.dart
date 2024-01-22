@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Student extends _i1.TableRow {
   Student._({
@@ -57,7 +58,8 @@ abstract class Student extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (enrollments != null) 'enrollments': enrollments,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -75,7 +77,8 @@ abstract class Student extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (enrollments != null) 'enrollments': enrollments,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 

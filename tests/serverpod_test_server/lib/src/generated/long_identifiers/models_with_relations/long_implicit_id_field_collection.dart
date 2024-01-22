@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class LongImplicitIdFieldCollection extends _i1.TableRow {
   LongImplicitIdFieldCollection._({
@@ -65,7 +66,8 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow {
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
-            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -85,7 +87,8 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow {
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
-            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 

@@ -11,6 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Types extends _i1.TableRow {
   Types._({
@@ -117,13 +118,14 @@ abstract class Types extends _i1.TableRow {
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,
       if (aDouble != null) 'aDouble': aDouble,
-      if (aDateTime != null) 'aDateTime': aDateTime,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
       if (aString != null) 'aString': aString,
-      if (aByteData != null) 'aByteData': aByteData,
-      if (aDuration != null) 'aDuration': aDuration,
-      if (aUuid != null) 'aUuid': aUuid,
-      if (anEnum != null) 'anEnum': anEnum,
-      if (aStringifiedEnum != null) 'aStringifiedEnum': aStringifiedEnum,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
     };
   }
 
@@ -135,13 +137,14 @@ abstract class Types extends _i1.TableRow {
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,
       if (aDouble != null) 'aDouble': aDouble,
-      if (aDateTime != null) 'aDateTime': aDateTime,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
       if (aString != null) 'aString': aString,
-      if (aByteData != null) 'aByteData': aByteData,
-      if (aDuration != null) 'aDuration': aDuration,
-      if (aUuid != null) 'aUuid': aUuid,
-      if (anEnum != null) 'anEnum': anEnum,
-      if (aStringifiedEnum != null) 'aStringifiedEnum': aStringifiedEnum,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
     };
   }
 
@@ -152,13 +155,14 @@ abstract class Types extends _i1.TableRow {
       if (anInt != null) 'anInt': anInt,
       if (aBool != null) 'aBool': aBool,
       if (aDouble != null) 'aDouble': aDouble,
-      if (aDateTime != null) 'aDateTime': aDateTime,
+      if (aDateTime != null) 'aDateTime': aDateTime?.toJson(),
       if (aString != null) 'aString': aString,
-      if (aByteData != null) 'aByteData': aByteData,
-      if (aDuration != null) 'aDuration': aDuration,
-      if (aUuid != null) 'aUuid': aUuid,
-      if (anEnum != null) 'anEnum': anEnum,
-      if (aStringifiedEnum != null) 'aStringifiedEnum': aStringifiedEnum,
+      if (aByteData != null) 'aByteData': aByteData?.toJson(),
+      if (aDuration != null) 'aDuration': aDuration?.toJson(),
+      if (aUuid != null) 'aUuid': aUuid?.toJson(),
+      if (anEnum != null) 'anEnum': anEnum?.toJson(),
+      if (aStringifiedEnum != null)
+        'aStringifiedEnum': aStringifiedEnum?.toJson(),
     };
   }
 

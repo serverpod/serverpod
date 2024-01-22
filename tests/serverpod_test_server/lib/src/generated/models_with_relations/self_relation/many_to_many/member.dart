@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Member extends _i1.TableRow {
   Member._({
@@ -64,8 +65,10 @@ abstract class Member extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (blocking != null) 'blocking': blocking,
-      if (blockedBy != null) 'blockedBy': blockedBy,
+      if (blocking != null)
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toJson()),
+      if (blockedBy != null)
+        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -83,8 +86,10 @@ abstract class Member extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (blocking != null) 'blocking': blocking,
-      if (blockedBy != null) 'blockedBy': blockedBy,
+      if (blocking != null)
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toJson()),
+      if (blockedBy != null)
+        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 

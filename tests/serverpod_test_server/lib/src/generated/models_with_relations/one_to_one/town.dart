@@ -65,7 +65,7 @@ abstract class Town extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor,
+      if (mayor != null) 'mayor': mayor?.toJson(),
     };
   }
 
@@ -85,7 +85,7 @@ abstract class Town extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor,
+      if (mayor != null) 'mayor': mayor?.toJson(),
     };
   }
 

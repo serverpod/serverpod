@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings extends _i1.TableRow {
@@ -77,8 +78,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -89,8 +91,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
   Map<String, dynamic> toJsonForDatabase() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -100,8 +103,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

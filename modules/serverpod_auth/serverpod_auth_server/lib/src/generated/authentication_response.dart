@@ -76,8 +76,8 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
-      if (userInfo != null) 'userInfo': userInfo,
-      if (failReason != null) 'failReason': failReason,
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
+      if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }
 
@@ -87,8 +87,8 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
-      if (userInfo != null) 'userInfo': userInfo,
-      if (failReason != null) 'failReason': failReason,
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
+      if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }
 }

@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry extends _i1.TableRow {
@@ -127,8 +128,8 @@ abstract class LogEntry extends _i1.TableRow {
       if (messageId != null) 'messageId': messageId,
       if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
       if (error != null) 'error': error,
       if (stackTrace != null) 'stackTrace': stackTrace,
@@ -145,8 +146,8 @@ abstract class LogEntry extends _i1.TableRow {
       if (messageId != null) 'messageId': messageId,
       if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
       if (error != null) 'error': error,
       if (stackTrace != null) 'stackTrace': stackTrace,
@@ -162,8 +163,8 @@ abstract class LogEntry extends _i1.TableRow {
       if (messageId != null) 'messageId': messageId,
       if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
       if (error != null) 'error': error,
       if (stackTrace != null) 'stackTrace': stackTrace,

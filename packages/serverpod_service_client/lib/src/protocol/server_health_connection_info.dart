@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
@@ -92,7 +93,7 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'active': active,
       'closing': closing,
       'idle': idle,

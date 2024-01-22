@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A list of SessionLogInfo.
 abstract class SessionLogResult extends _i1.SerializableEntity {
@@ -33,12 +34,12 @@ abstract class SessionLogResult extends _i1.SerializableEntity {
   SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
-    return {'sessionLog': sessionLog};
+    return {'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson())};
   }
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'sessionLog': sessionLog};
+    return {'sessionLog': sessionLog.toJson(valueToJson: (v) => v.toJson())};
   }
 }
 

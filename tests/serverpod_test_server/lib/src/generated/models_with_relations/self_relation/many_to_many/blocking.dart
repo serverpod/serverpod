@@ -72,9 +72,9 @@ abstract class Blocking extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'blockedId': blockedId,
-      if (blocked != null) 'blocked': blocked,
+      if (blocked != null) 'blocked': blocked?.toJson(),
       'blockedById': blockedById,
-      if (blockedBy != null) 'blockedBy': blockedBy,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
     };
   }
 
@@ -93,9 +93,9 @@ abstract class Blocking extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'blockedId': blockedId,
-      if (blocked != null) 'blocked': blocked,
+      if (blocked != null) 'blocked': blocked?.toJson(),
       'blockedById': blockedById,
-      if (blockedBy != null) 'blockedBy': blockedBy,
+      if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
     };
   }
 

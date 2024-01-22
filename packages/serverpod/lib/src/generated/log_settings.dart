@@ -113,7 +113,7 @@ abstract class LogSettings extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'logLevel': logLevel,
+      'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
       'logSlowSessions': logSlowSessions,
@@ -129,7 +129,7 @@ abstract class LogSettings extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'logLevel': logLevel,
+      'logLevel': logLevel.toJson(),
       'logAllSessions': logAllSessions,
       'logAllQueries': logAllQueries,
       'logSlowSessions': logSlowSessions,

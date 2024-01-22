@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition extends _i1.SerializableEntity {
@@ -77,8 +78,9 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables,
-      'installedModules': installedModules,
+      'tables': tables.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules':
+          installedModules.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }
@@ -88,8 +90,9 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables,
-      'installedModules': installedModules,
+      'tables': tables.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules':
+          installedModules.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

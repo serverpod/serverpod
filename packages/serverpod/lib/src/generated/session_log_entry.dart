@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Log entry for a session.
 abstract class SessionLogEntry extends _i1.TableRow {
@@ -151,7 +152,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toJson(),
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
@@ -163,7 +164,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
       if (isOpen != null) 'isOpen': isOpen,
-      'touched': touched,
+      'touched': touched.toJson(),
     };
   }
 
@@ -173,7 +174,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toJson(),
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
@@ -185,7 +186,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
       if (isOpen != null) 'isOpen': isOpen,
-      'touched': touched,
+      'touched': touched.toJson(),
     };
   }
 
@@ -194,7 +195,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toJson(),
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
@@ -206,7 +207,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
       if (isOpen != null) 'isOpen': isOpen,
-      'touched': touched,
+      'touched': touched.toJson(),
     };
   }
 

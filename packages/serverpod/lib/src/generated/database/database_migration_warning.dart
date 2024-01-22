@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   DatabaseMigrationWarning._({
@@ -66,10 +67,10 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'message': message,
       'table': table,
-      'columns': columns,
+      'columns': columns.toJson(),
       'destrucive': destrucive,
     };
   }
@@ -77,10 +78,10 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'message': message,
       'table': table,
-      'columns': columns,
+      'columns': columns.toJson(),
       'destrucive': destrucive,
     };
   }

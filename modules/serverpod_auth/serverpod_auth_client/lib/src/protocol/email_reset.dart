@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database bindings for an email reset.
 abstract class EmailReset extends _i1.SerializableEntity {
@@ -67,7 +68,7 @@ abstract class EmailReset extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
     };
   }
 }

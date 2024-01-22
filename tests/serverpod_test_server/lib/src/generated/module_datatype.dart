@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_module_server/module.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ModuleDatatype extends _i1.SerializableEntity {
   ModuleDatatype._({
@@ -52,18 +53,18 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'model': model,
-      'list': list,
-      'map': map,
+      'model': model.toJson(),
+      'list': list.toJson(valueToJson: (v) => v.toJson()),
+      'map': map.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'model': model,
-      'list': list,
-      'map': map,
+      'model': model.toJson(),
+      'list': list.toJson(valueToJson: (v) => v.toJson()),
+      'map': map.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

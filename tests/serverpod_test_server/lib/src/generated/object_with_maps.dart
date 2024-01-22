@@ -11,6 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithMaps extends _i1.SerializableEntity {
   ObjectWithMaps._({
@@ -142,42 +143,52 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'dataMap': dataMap,
-      'intMap': intMap,
-      'stringMap': stringMap,
-      'dateTimeMap': dateTimeMap,
-      'byteDataMap': byteDataMap,
-      'durationMap': durationMap,
-      'uuidMap': uuidMap,
-      'nullableDataMap': nullableDataMap,
-      'nullableIntMap': nullableIntMap,
-      'nullableStringMap': nullableStringMap,
-      'nullableDateTimeMap': nullableDateTimeMap,
-      'nullableByteDataMap': nullableByteDataMap,
-      'nullableDurationMap': nullableDurationMap,
-      'nullableUuidMap': nullableUuidMap,
-      'intIntMap': intIntMap,
+      'dataMap': dataMap.toJson(valueToJson: (v) => v.toJson()),
+      'intMap': intMap.toJson(),
+      'stringMap': stringMap.toJson(),
+      'dateTimeMap': dateTimeMap.toJson(valueToJson: (v) => v.toJson()),
+      'byteDataMap': byteDataMap.toJson(valueToJson: (v) => v.toJson()),
+      'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
+      'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
+      'nullableDataMap':
+          nullableDataMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableIntMap': nullableIntMap.toJson(),
+      'nullableStringMap': nullableStringMap.toJson(),
+      'nullableDateTimeMap':
+          nullableDateTimeMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableByteDataMap':
+          nullableByteDataMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableDurationMap':
+          nullableDurationMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableUuidMap':
+          nullableUuidMap.toJson(valueToJson: (v) => v?.toJson()),
+      'intIntMap': intIntMap.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'dataMap': dataMap,
-      'intMap': intMap,
-      'stringMap': stringMap,
-      'dateTimeMap': dateTimeMap,
-      'byteDataMap': byteDataMap,
-      'durationMap': durationMap,
-      'uuidMap': uuidMap,
-      'nullableDataMap': nullableDataMap,
-      'nullableIntMap': nullableIntMap,
-      'nullableStringMap': nullableStringMap,
-      'nullableDateTimeMap': nullableDateTimeMap,
-      'nullableByteDataMap': nullableByteDataMap,
-      'nullableDurationMap': nullableDurationMap,
-      'nullableUuidMap': nullableUuidMap,
-      'intIntMap': intIntMap,
+      'dataMap': dataMap.toJson(valueToJson: (v) => v.toJson()),
+      'intMap': intMap.toJson(),
+      'stringMap': stringMap.toJson(),
+      'dateTimeMap': dateTimeMap.toJson(valueToJson: (v) => v.toJson()),
+      'byteDataMap': byteDataMap.toJson(valueToJson: (v) => v.toJson()),
+      'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
+      'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
+      'nullableDataMap':
+          nullableDataMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableIntMap': nullableIntMap.toJson(),
+      'nullableStringMap': nullableStringMap.toJson(),
+      'nullableDateTimeMap':
+          nullableDateTimeMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableByteDataMap':
+          nullableByteDataMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableDurationMap':
+          nullableDurationMap.toJson(valueToJson: (v) => v?.toJson()),
+      'nullableUuidMap':
+          nullableUuidMap.toJson(valueToJson: (v) => v?.toJson()),
+      'intIntMap': intIntMap.toJson(),
     };
   }
 }

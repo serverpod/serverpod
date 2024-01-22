@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about health and connection metrics.
 abstract class ServerHealthResult extends _i1.SerializableEntity {
@@ -49,16 +50,16 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'metrics': metrics,
-      'connectionInfos': connectionInfos,
+      'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
+      'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'metrics': metrics,
-      'connectionInfos': connectionInfos,
+      'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
+      'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

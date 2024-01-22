@@ -85,11 +85,11 @@ abstract class Citizen extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (address != null) 'address': address,
+      if (address != null) 'address': address?.toJson(),
       'companyId': companyId,
-      if (company != null) 'company': company,
+      if (company != null) 'company': company?.toJson(),
       if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
-      if (oldCompany != null) 'oldCompany': oldCompany,
+      if (oldCompany != null) 'oldCompany': oldCompany?.toJson(),
     };
   }
 
@@ -109,11 +109,11 @@ abstract class Citizen extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (address != null) 'address': address,
+      if (address != null) 'address': address?.toJson(),
       'companyId': companyId,
-      if (company != null) 'company': company,
+      if (company != null) 'company': company?.toJson(),
       if (oldCompanyId != null) 'oldCompanyId': oldCompanyId,
-      if (oldCompany != null) 'oldCompany': oldCompany,
+      if (oldCompany != null) 'oldCompany': oldCompany?.toJson(),
     };
   }
 

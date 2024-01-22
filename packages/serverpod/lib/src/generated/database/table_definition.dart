@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition extends _i1.SerializableEntity {
@@ -111,9 +112,9 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'columns': columns,
-      'foreignKeys': foreignKeys,
-      'indexes': indexes,
+      'columns': columns.toJson(valueToJson: (v) => v.toJson()),
+      'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.toJson()),
+      'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
       if (managed != null) 'managed': managed,
     };
   }
@@ -126,9 +127,9 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'columns': columns,
-      'foreignKeys': foreignKeys,
-      'indexes': indexes,
+      'columns': columns.toJson(valueToJson: (v) => v.toJson()),
+      'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.toJson()),
+      'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
       if (managed != null) 'managed': managed,
     };
   }

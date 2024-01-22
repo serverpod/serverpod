@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
@@ -69,7 +70,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'email': email,
-      'time': time,
+      'time': time.toJson(),
       'ipAddress': ipAddress,
     };
   }
@@ -80,7 +81,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'email': email,
-      'time': time,
+      'time': time.toJson(),
       'ipAddress': ipAddress,
     };
   }
@@ -90,7 +91,7 @@ abstract class EmailFailedSignIn extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'email': email,
-      'time': time,
+      'time': time.toJson(),
       'ipAddress': ipAddress,
     };
   }
