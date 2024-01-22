@@ -71,7 +71,7 @@ class RouteStaticDirectory extends Route {
       // Enforce strong cache control.
       request.response.headers.set('Cache-Control', 'max-age=31536000');
 
-      var filePath = p.joinAll(path.split('/'));
+      var filePath = path.startsWith('/') ? path.substring(1) : path;
       filePath = 'web/$filePath';
 
       var fileContents = await File(filePath).readAsBytes();

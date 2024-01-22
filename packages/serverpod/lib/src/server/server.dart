@@ -338,7 +338,7 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var path = p.joinAll(uri.pathSegments);
+    var path = uri.pathSegments.join('/');
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 
