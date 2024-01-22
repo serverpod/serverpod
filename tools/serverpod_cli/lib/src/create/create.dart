@@ -252,14 +252,6 @@ void _copyServerTemplates(
         replacement: randomAwsId,
       ),
       Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
-      Replacement(
         slotName: 'SERVICE_SECRET_DEVELOPMENT',
         replacement: generateRandomString(),
       ),
@@ -289,8 +281,8 @@ void _copyServerTemplates(
       ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod',
-          replacement: 'path: $customServerpodPath/packages/serverpod',
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
     fileNameReplacements: [
@@ -307,9 +299,6 @@ void _copyServerTemplates(
         replacement: '.gcloudignore',
       ),
     ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
-    ],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
@@ -324,18 +313,10 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod_client',
-          replacement: 'path: $customServerpodPath/packages/serverpod_client',
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
     fileNameReplacements: [
@@ -347,9 +328,6 @@ void _copyServerTemplates(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
     ],
     ignoreFileNames: ['pubspec.lock'],
   );
@@ -365,18 +343,10 @@ void _copyServerTemplates(
         slotName: 'projectname',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod_flutter',
-          replacement: 'path: $customServerpodPath/packages/serverpod_flutter',
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
     fileNameReplacements: [
@@ -388,10 +358,6 @@ void _copyServerTemplates(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null)
-        'path: ../../../packages/serverpod_flutter',
     ],
     ignoreFileNames: [
       'pubspec.lock',
@@ -442,18 +408,10 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod',
-          replacement: 'path: $customServerpodPath/packages/serverpod',
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
     fileNameReplacements: [
@@ -465,9 +423,6 @@ void _copyModuleTemplates(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
     ],
     ignoreFileNames: ['pubspec.lock'],
   );
@@ -483,18 +438,10 @@ void _copyModuleTemplates(
         slotName: 'modulename',
         replacement: name,
       ),
-      Replacement(
-        slotName: '#--CONDITIONAL_COMMENT--#',
-        replacement: '',
-      ),
-      Replacement(
-        slotName: 'VERSION',
-        replacement: customServerpodPath == null ? templateVersion : '',
-      ),
       if (customServerpodPath != null)
         Replacement(
-          slotName: 'path: ../../../packages/serverpod_client',
-          replacement: 'path: $customServerpodPath/packages/serverpod_client',
+          slotName: 'path: ../../../packages/',
+          replacement: 'path: $customServerpodPath/packages/',
         ),
     ],
     fileNameReplacements: [
@@ -506,9 +453,6 @@ void _copyModuleTemplates(
         slotName: 'gitignore',
         replacement: '.gitignore',
       ),
-    ],
-    removePrefixes: [
-      if (customServerpodPath == null) 'path',
     ],
     ignoreFileNames: ['pubspec.lock'],
   );
