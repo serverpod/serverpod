@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/util/port_checker.dart';
 
 /// The Serverpod webserver.
 class WebServer {
@@ -48,16 +47,21 @@ class WebServer {
   }
 
   /// Starts the webserver.
+  /// Returns true if the webserver was started successfully.
   Future<bool> start() async {
     await templates.loadAll();
 
-    if (await PortChecker.isNetworkPortAvailable(_port) == false) {
+    try {
+      _httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
+    } catch (e) {
       stderr.writeln(
         '${DateTime.now().toUtc()} ERROR: Failed to bind socket, Webserver '
-        'port $_port is already in use.',
+        'port $_port may already be in use.',
       );
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
       return false;
     }
+    httpServer.autoCompress = true;
 
     runZonedGuarded(
       _start,
@@ -72,10 +76,6 @@ class WebServer {
   }
 
   void _start() async {
-    var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, _port);
-    _httpServer = httpServer;
-    httpServer.autoCompress = true;
-
     stdout.writeln('Webserver listening on port $_port');
 
     try {

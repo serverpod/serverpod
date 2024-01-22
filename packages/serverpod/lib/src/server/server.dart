@@ -7,7 +7,6 @@ import 'package:path/path.dart' as p;
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
-import 'package:serverpod/src/util/port_checker.dart';
 
 import '../cache/caches.dart';
 
@@ -95,41 +94,36 @@ class Server {
   }) : name = name ?? 'Server $serverId';
 
   /// Starts the server.
+  /// Returns true if the server was started successfully.
   Future<bool> start() async {
-    if (await PortChecker.isNetworkPortAvailable(port) == false) {
-      stderr.writeln(
-        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port is '
-        'already in use.',
-      );
-      return false;
-    }
-
-    if (securityContext != null) {
-      try {
-        var httpServer = await HttpServer.bindSecure(
+    HttpServer httpServer;
+    try {
+      if (securityContext != null) {
+        httpServer = await HttpServer.bindSecure(
           InternetAddress.anyIPv6,
           port,
           securityContext!,
         );
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-        return false;
+      } else {
+        httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
       }
-    } else {
-      try {
-        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-        return false;
-      }
+    } catch (e) {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '
+        'may already be in use.',
+      );
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      return false;
+    }
+
+    try {
+      _runServer(httpServer);
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      return false;
     }
 
     _running = true;
