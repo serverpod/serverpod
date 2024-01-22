@@ -1,0 +1,53 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_server
+version: 1.0.0
+description: Test server for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  http: ">=0.13.0 <2.0.0"
+  serverpod: VERSION
+  serverpod_auth_server: VERSION
+  serverpod_cloud_storage_s3: VERSION
+  serverpod_test_shared:
+    path: ../serverpod_test_shared
+  serverpod_test_module_server:
+    path: ../serverpod_test_module/serverpod_test_module_server
+  uuid: ^4.0.0
+
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.2
+  path: ^1.8.2
+  serverpod_cli: VERSION
+  serverpod_service_client: VERSION
+  serverpod_test_client:
+    path: ../serverpod_test_client
+  serverpod_test_module_client:
+    path: ../serverpod_test_module/serverpod_test_module_client
+
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_auth_server: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../modules/serverpod_auth/serverpod_auth_server #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_cloud_storage_s3: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../integrations/serverpod_cloud_storage_s3 #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_cli: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../tools/serverpod_cli #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../modules/serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#

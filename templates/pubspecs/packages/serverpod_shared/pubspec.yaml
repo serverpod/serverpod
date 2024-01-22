@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_shared
 version: VERSION
@@ -15,11 +14,17 @@ dependencies:
   yaml: ^3.1.1
   path: ^1.8.2
   super_string: ^1.0.3
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  serverpod_client: VERSION
   crypto: ^3.0.2
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_lints
+  serverpod_lints: VERSION
   test: ^1.24.2
+
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#

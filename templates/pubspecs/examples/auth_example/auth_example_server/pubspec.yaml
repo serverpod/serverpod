@@ -1,35 +1,30 @@
 # TEMPLATE
 
-name: serverpod_chat_server
-description: Serverpod chat server module.
-version: VERSION
-repository: https://github.com/serverpod/serverpod
+name: auth_example_server
+description: Starting point for a Serverpod server.
+# version: 1.0.0
+# homepage: https://www.example.com
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
+  mailer: ^6.0.1
   serverpod: VERSION
   serverpod_auth_server: VERSION
-  serverpod_serialization: VERSION
-  http: ">=0.13.0 <2.0.0"
-  image: ^4.0.15
-  path: ^1.8.2
 
 dev_dependencies:
-  serverpod_lints: VERSION
+  lints: ^3.0.0
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_auth_server: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../serverpod_auth/serverpod_auth_server #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization/ #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+      path: ../../../modules/serverpod_auth/serverpod_auth_server #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#

@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
@@ -14,15 +13,21 @@ environment:
 
 dependencies:
   connectivity_plus: ^5.0.0
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  serverpod_client: VERSION
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_lints
+  serverpod_lints: VERSION
 
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+#--CONDITIONALLY_REMOVE_LINE--#
 flutter:

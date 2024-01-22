@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_auth_shared_flutter
 description: Shared widgets for Flutter side authentication with Serverpod.
@@ -15,10 +14,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod_client
-  serverpod_auth_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_auth_client
+  serverpod_client: VERSION
+  serverpod_auth_client: VERSION
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
   image: ^4.0.15
@@ -32,11 +29,20 @@ dependencies:
 
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod_lints
+  serverpod_lints: VERSION
   flutter_test:
     sdk: flutter
 
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+#--CONDITIONALLY_REMOVE_LINE--#
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

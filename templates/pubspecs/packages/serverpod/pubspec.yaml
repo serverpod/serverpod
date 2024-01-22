@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod
 version: VERSION
@@ -35,16 +34,23 @@ dependencies:
   system_resources: ^1.6.0
   vm_service: ">=13.0.0 <15.0.0"
   yaml: ^3.1.1
-  serverpod_shared: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_shared
-  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_serialization
-  serverpod_service_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_service_client
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  serverpod_shared: VERSION
+  serverpod_serialization: VERSION
+  serverpod_service_client: VERSION
+  serverpod_client: VERSION
 
 dev_dependencies:
   test: ^1.24.2
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_lints
+  serverpod_lints: VERSION
+
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#

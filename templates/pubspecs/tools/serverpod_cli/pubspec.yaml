@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_cli
 version: VERSION
@@ -29,12 +28,9 @@ dependencies:
   pub_api_client: ^2.4.0
   uuid: ^4.0.0
   yaml: ^3.1.1
-  serverpod_shared: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../packages/serverpod_shared
-  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../packages/serverpod_serialization
-  serverpod_service_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../packages/serverpod_service_client
+  serverpod_shared: VERSION
+  serverpod_serialization: VERSION
+  serverpod_service_client: VERSION
   async: ^2.11.0
   meta: ^1.8.0
   json_rpc_2: ^3.0.2
@@ -42,10 +38,22 @@ dependencies:
   lsp_server: ^0.3.0
   pub_semver: ^2.1.4
 
+
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../packages/serverpod_lints
+  serverpod_lints: VERSION
   test: ^1.24.2
 
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+#--CONDITIONALLY_REMOVE_LINE--#
 executables:
   serverpod: serverpod_cli

@@ -1,22 +1,22 @@
 # TEMPLATE
 
-name: serverpod_chat_client
-description: Serverpod chat module client.
-version: VERSION
-repository: https://github.com/serverpod/serverpod
-homepage: https://serverpod.dev
-issue_tracker: https://github.com/serverpod/serverpod/issues
+name: chat_client
+description: Starting point for a Serverpod client.
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
+
 dependencies:
   serverpod_client: VERSION
   serverpod_auth_client: VERSION
+  serverpod_chat_client: VERSION
 
 dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../modules/serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_chat_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../modules/serverpod_chat/serverpod_chat_client #--CONDITIONALLY_REMOVE_LINE--#
   serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
     path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#

@@ -49,6 +49,10 @@ void performGeneratePubspecs(String version, String mode) {
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
         ),
+        Replacement(
+          slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
+          replacement: '',
+        )
       ],
       fileNameReplacements: [],
     );
@@ -80,6 +84,9 @@ void performGeneratePubspecs(String version, String mode) {
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',
         ),
+      ],
+      removePatterns: [
+        '#--CONDITIONALLY_REMOVE_LINE--#',
       ],
       fileNameReplacements: [],
       removePrefixes: ['path'],

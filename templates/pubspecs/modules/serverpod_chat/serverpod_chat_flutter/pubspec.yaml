@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_chat_flutter
 description: Flutter widgets for the Serverpod chat module.
@@ -19,18 +18,28 @@ dependencies:
   intl: ^0.18.0
   url_launcher: ^6.1.10
   path: ^1.8.2
-  serverpod_auth_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../serverpod_auth/serverpod_auth_client
-  serverpod_chat_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_chat_client
-  serverpod_auth_shared_flutter: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_auth_client: VERSION
+  serverpod_chat_client: VERSION
+  serverpod_auth_shared_flutter: VERSION
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod_lints
+  serverpod_lints: VERSION
   mocktail: ^1.0.0
 
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_chat_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../serverpod_chat_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_auth_shared_flutter: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../serverpod_auth/serverpod_auth_shared_flutter #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+#--CONDITIONALLY_REMOVE_LINE--#
 flutter:
