@@ -43,6 +43,9 @@ class TypeDefinition {
     this.serializeEnum,
   });
 
+  bool get isSerializedValue =>
+      ['int', 'bool', 'double', 'String'].contains(className);
+
   bool get isListType => className == 'List';
 
   bool get isMapType => className == 'Map';

@@ -42,6 +42,8 @@ class SerializableModelLibraryGenerator {
     return Library(
       (libraryBuilder) {
         libraryBuilder.body.addAll([
+          const Code(
+              "import 'package:serverpod_serialization/serverpod_serialization.dart';"),
           _buildModelClass(
             className,
             classDefinition,
@@ -1197,17 +1199,88 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Expression _toJsonCallConversionMethod(
+      Reference fieldRef, TypeDefinition fieldType) {
+    if (fieldType.isSerializedValue) return fieldRef;
+
+    Expression fieldExpression = fieldRef;
+
+    if (fieldType.nullable) {
+      fieldExpression = fieldExpression.nullSafeProperty('toJson');
+    } else {
+      fieldExpression = fieldExpression.property('toJson');
+    }
+
+    Map<String, Expression> namedParams = {};
+
+    if (fieldType.isListType && !fieldType.generics.first.isSerializedValue) {
+      namedParams = {
+        'valueToJson': Method(
+          (p) => p
+            ..lambda = true
+            ..requiredParameters.add(
+              Parameter((p) => p..name = 'v'),
+            )
+            ..body = _toJsonCallConversionMethod(
+              refer('v'),
+              fieldType.generics.first,
+            ).code,
+        ).closure
+      };
+    } else if (fieldType.isMapType) {
+      if (!fieldType.generics.first.isSerializedValue) {
+        namedParams = {
+          ...namedParams,
+          'keyToJson': Method(
+            (p) => p
+              ..lambda = true
+              ..requiredParameters.add(
+                Parameter((p) => p..name = 'k'),
+              )
+              ..body = _toJsonCallConversionMethod(
+                refer('k'),
+                fieldType.generics.first,
+              ).code,
+          ).closure
+        };
+      }
+      if (!fieldType.generics.last.isSerializedValue) {
+        namedParams = {
+          ...namedParams,
+          'valueToJson': Method(
+            (p) => p
+              ..lambda = true
+              ..requiredParameters.add(
+                Parameter((p) => p..name = 'v'),
+              )
+              ..body = _toJsonCallConversionMethod(
+                refer('v'),
+                fieldType.generics.last,
+              ).code,
+          ).closure
+        };
+      }
+    }
+
+    return fieldExpression.call([], namedParams);
+  }
+
   Code _createToJsonBodyFromFields(
     Iterable<SerializableModelFieldDefinition> fields,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
-      var fieldName = _createSerializableFieldNameReference(serverCode, field);
+      var fieldName = _createSerializableFieldNameReference(
+        serverCode,
+        field,
+      );
+
+      Expression fieldRef = _toJsonCallConversionMethod(fieldName, field.type);
 
       return {
         ...map,
         if (field.type.nullable)
-          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldName,
-        if (!field.type.nullable) Code("'${field.name}'"): fieldName,
+          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldRef,
+        if (!field.type.nullable) Code("'${field.name}'"): fieldRef,
       };
     });
 
