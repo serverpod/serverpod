@@ -1,0 +1,15 @@
+class: TypesList
+fields:
+  anInt: List<int>?
+  aBool: List<bool>?
+  aDouble: List<double>?
+  aDateTime: List<DateTime>?
+  aString: List<String>?
+  aByteData: List<ByteData>?
+  aDuration: List<Duration>?
+  aUuid: List<UuidValue>?
+  anEnum: List<TestEnum>?
+  aStringifiedEnum: List<TestEnumStringified>?
+  anObject: List<Types>?
+  aMap: List<Map<String, Types>>?
+  aList: List<List<Types>>?

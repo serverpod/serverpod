@@ -1,0 +1,30 @@
+class: TypesMap
+fields:
+  # keys
+  anIntKey: Map<int, String>?
+  aBoolKey: Map<bool, String>?
+  aDoubleKey: Map<double, String>?
+  aDateTimeKey: Map<DateTime, String>?
+  aStringKey: Map<String, String>?
+  aByteDataKey: Map<ByteData, String>?
+  aDurationKey: Map<Duration, String>?
+  aUuidKey: Map<UuidValue, String>?
+  anEnumKey: Map<TestEnum, String>?
+  aStringifiedEnumKey: Map<TestEnumStringified, String>?
+  anObjectKey: Map<Types, String>?
+  aMapKey: Map<Map<Types, String>, String>?
+  aListKey: Map<List<Types>, String>?
+  # values
+  anIntValue: Map<String, int>?
+  aBoolValue: Map<String, bool>?
+  aDoubleValue: Map<String, double>?
+  aDateTimeValue: Map<String, DateTime>?
+  aStringValue: Map<String, String>?
+  aByteDataValue: Map<String, ByteData>?
+  aDurationValue: Map<String, Duration>?
+  aUuidValue: Map<String, UuidValue>?
+  anEnumValue: Map<String, TestEnum>?
+  aStringifiedEnumValue: Map<String, TestEnumStringified>?
+  anObjectValue: Map<String, Types>?
+  aMapValue: Map<String, Map<String, Types>>?
+  aListValue: Map<String, List<Types>>?
