@@ -77,7 +77,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
@@ -87,7 +87,7 @@ abstract class ChatReadMessage extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,

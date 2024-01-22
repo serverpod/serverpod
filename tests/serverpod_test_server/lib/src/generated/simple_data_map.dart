@@ -31,9 +31,7 @@ abstract class SimpleDataMap extends _i1.SerializableEntity {
   SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'data': data,
-    };
+    return {'data': data};
   }
 
   @override

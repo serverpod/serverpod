@@ -97,13 +97,13 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'endpoint': endpoint,
-      'method': method,
-      'futureCall': futureCall,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (futureCall != null) 'futureCall': futureCall,
       'slow': slow,
       'error': error,
       'open': open,
-      'lastSessionLogId': lastSessionLogId,
+      if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
     };
   }
 }

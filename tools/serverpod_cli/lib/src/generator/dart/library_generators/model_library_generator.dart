@@ -1157,13 +1157,7 @@ class SerializableModelLibraryGenerator {
         m.name = 'allToJson';
         m.annotations.add(refer('override'));
 
-        m.body = literalMap(
-          {
-            for (var field in fields)
-              literalString(field.name):
-                  _createSerializableFieldNameReference(serverCode, field)
-          },
-        ).returned.statement;
+        m.body = _createToJsonBodyFromFields(fields);
       },
     );
   }
@@ -1182,36 +1176,42 @@ class SerializableModelLibraryGenerator {
           refer("Deprecated('Will be removed in 2.0.0')")
         ]);
 
-        m.body = literalMap(
-          {
-            for (var field in serializableFields)
-              literalString(field.name):
-                  _createSerializableFieldNameReference(serverCode, field)
-          },
-        ).returned.statement;
+        m.body = _createToJsonBodyFromFields(serializableFields);
       },
     );
   }
 
   Method _buildModelClassToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
+    List<SerializableModelFieldDefinition> fields,
+  ) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
         m.name = 'toJson';
         m.annotations.add(refer('override'));
 
-        var fieldExprs = fields
-            .where((field) => field.shouldSerializeField(serverCode))
-            .map((field) =>
-                '${field.type.nullable ? 'if (${field.name} != null) ' : ''}'
-                '\'${field.name}\':${field.name}')
-            .join(',');
-
-        m.body =
-            Code('return { ${fieldExprs.isEmpty ? '' : '$fieldExprs,'} };');
+        var filteredFields =
+            fields.where((field) => field.shouldSerializeField(serverCode));
+        m.body = _createToJsonBodyFromFields(filteredFields);
       },
     );
+  }
+
+  Code _createToJsonBodyFromFields(
+    Iterable<SerializableModelFieldDefinition> fields,
+  ) {
+    var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
+      var fieldName = _createSerializableFieldNameReference(serverCode, field);
+
+      return {
+        ...map,
+        if (field.type.nullable)
+          Code("if (${fieldName.symbol} != null) '${field.name}'"): fieldName,
+        if (!field.type.nullable) Code("'${field.name}'"): fieldName,
+      };
+    });
+
+    return literalMap(map).returned.statement;
   }
 
   Constructor _buildModelClassFromJsonConstructor(

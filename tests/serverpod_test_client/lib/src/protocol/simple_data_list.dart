@@ -31,9 +31,7 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
   SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'rows': rows,
-    };
+    return {'rows': rows};
   }
 }
 

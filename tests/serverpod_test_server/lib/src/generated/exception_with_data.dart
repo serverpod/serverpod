@@ -72,7 +72,7 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
       'message': message,
       'creationDate': creationDate,
       'errorFields': errorFields,
-      'someNullableField': someNullableField,
+      if (someNullableField != null) 'someNullableField': someNullableField,
     };
   }
 }

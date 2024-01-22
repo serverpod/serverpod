@@ -133,29 +133,29 @@ abstract class ChatMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'message': message,
       'time': time,
       'sender': sender,
       'removed': removed,
-      'attachments': attachments,
+      if (attachments != null) 'attachments': attachments,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'message': message,
       'time': time,
       'sender': sender,
-      'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo,
       'removed': removed,
-      'clientMessageId': clientMessageId,
-      'sent': sent,
-      'attachments': attachments,
+      if (clientMessageId != null) 'clientMessageId': clientMessageId,
+      if (sent != null) 'sent': sent,
+      if (attachments != null) 'attachments': attachments,
     };
   }
 

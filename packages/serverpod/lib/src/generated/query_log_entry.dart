@@ -140,15 +140,15 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
+      if (messageId != null) 'messageId': messageId,
       'query': query,
       'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
@@ -157,15 +157,15 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
+      if (messageId != null) 'messageId': messageId,
       'query': query,
       'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };

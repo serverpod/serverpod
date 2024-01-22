@@ -81,20 +81,20 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'cityId': cityId,
+      if (cityId != null) 'cityId': cityId,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'people': people,
-      'cityId': cityId,
-      'city': city,
+      if (people != null) 'people': people,
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city,
     };
   }
 

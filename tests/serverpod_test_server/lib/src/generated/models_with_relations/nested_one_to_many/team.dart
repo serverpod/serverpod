@@ -81,20 +81,20 @@ abstract class Team extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'arenaId': arenaId,
+      if (arenaId != null) 'arenaId': arenaId,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'arenaId': arenaId,
-      'arena': arena,
-      'players': players,
+      if (arenaId != null) 'arenaId': arenaId,
+      if (arena != null) 'arena': arena,
+      if (players != null) 'players': players,
     };
   }
 

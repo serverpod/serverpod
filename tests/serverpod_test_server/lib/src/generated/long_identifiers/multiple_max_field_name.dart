@@ -73,26 +73,30 @@ abstract class MultipleMaxFieldName extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-      '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-          _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
+      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
+          null)
+        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
+            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-      '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-          _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
+      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
+          null)
+        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
+            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 

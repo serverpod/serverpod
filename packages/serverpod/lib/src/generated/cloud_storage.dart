@@ -104,11 +104,11 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
       'addedTime': addedTime,
-      'expiration': expiration,
+      if (expiration != null) 'expiration': expiration,
       'byteData': byteData,
       'verified': verified,
     };
@@ -117,11 +117,11 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
       'addedTime': addedTime,
-      'expiration': expiration,
+      if (expiration != null) 'expiration': expiration,
       'byteData': byteData,
       'verified': verified,
     };

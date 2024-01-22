@@ -31,9 +31,7 @@ abstract class FileNotFoundException extends _i1.SerializableEntity
   FileNotFoundException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-    };
+    return {'message': message};
   }
 
   @override

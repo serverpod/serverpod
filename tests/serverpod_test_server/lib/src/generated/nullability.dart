@@ -433,51 +433,65 @@ abstract class Nullability extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'anInt': anInt,
-      'aNullableInt': aNullableInt,
+      if (aNullableInt != null) 'aNullableInt': aNullableInt,
       'aDouble': aDouble,
-      'aNullableDouble': aNullableDouble,
+      if (aNullableDouble != null) 'aNullableDouble': aNullableDouble,
       'aBool': aBool,
-      'aNullableBool': aNullableBool,
+      if (aNullableBool != null) 'aNullableBool': aNullableBool,
       'aString': aString,
-      'aNullableString': aNullableString,
+      if (aNullableString != null) 'aNullableString': aNullableString,
       'aDateTime': aDateTime,
-      'aNullableDateTime': aNullableDateTime,
+      if (aNullableDateTime != null) 'aNullableDateTime': aNullableDateTime,
       'aByteData': aByteData,
-      'aNullableByteData': aNullableByteData,
+      if (aNullableByteData != null) 'aNullableByteData': aNullableByteData,
       'aDuration': aDuration,
-      'aNullableDuration': aNullableDuration,
+      if (aNullableDuration != null) 'aNullableDuration': aNullableDuration,
       'aUuid': aUuid,
-      'aNullableUuid': aNullableUuid,
+      if (aNullableUuid != null) 'aNullableUuid': aNullableUuid,
       'anObject': anObject,
-      'aNullableObject': aNullableObject,
+      if (aNullableObject != null) 'aNullableObject': aNullableObject,
       'anIntList': anIntList,
-      'aNullableIntList': aNullableIntList,
+      if (aNullableIntList != null) 'aNullableIntList': aNullableIntList,
       'aListWithNullableInts': aListWithNullableInts,
-      'aNullableListWithNullableInts': aNullableListWithNullableInts,
+      if (aNullableListWithNullableInts != null)
+        'aNullableListWithNullableInts': aNullableListWithNullableInts,
       'anObjectList': anObjectList,
-      'aNullableObjectList': aNullableObjectList,
+      if (aNullableObjectList != null)
+        'aNullableObjectList': aNullableObjectList,
       'aListWithNullableObjects': aListWithNullableObjects,
-      'aNullableListWithNullableObjects': aNullableListWithNullableObjects,
+      if (aNullableListWithNullableObjects != null)
+        'aNullableListWithNullableObjects': aNullableListWithNullableObjects,
       'aDateTimeList': aDateTimeList,
-      'aNullableDateTimeList': aNullableDateTimeList,
+      if (aNullableDateTimeList != null)
+        'aNullableDateTimeList': aNullableDateTimeList,
       'aListWithNullableDateTimes': aListWithNullableDateTimes,
-      'aNullableListWithNullableDateTimes': aNullableListWithNullableDateTimes,
+      if (aNullableListWithNullableDateTimes != null)
+        'aNullableListWithNullableDateTimes':
+            aNullableListWithNullableDateTimes,
       'aByteDataList': aByteDataList,
-      'aNullableByteDataList': aNullableByteDataList,
+      if (aNullableByteDataList != null)
+        'aNullableByteDataList': aNullableByteDataList,
       'aListWithNullableByteDatas': aListWithNullableByteDatas,
-      'aNullableListWithNullableByteDatas': aNullableListWithNullableByteDatas,
+      if (aNullableListWithNullableByteDatas != null)
+        'aNullableListWithNullableByteDatas':
+            aNullableListWithNullableByteDatas,
       'aDurationList': aDurationList,
-      'aNullableDurationList': aNullableDurationList,
+      if (aNullableDurationList != null)
+        'aNullableDurationList': aNullableDurationList,
       'aListWithNullableDurations': aListWithNullableDurations,
-      'aNullableListWithNullableDurations': aNullableListWithNullableDurations,
+      if (aNullableListWithNullableDurations != null)
+        'aNullableListWithNullableDurations':
+            aNullableListWithNullableDurations,
       'aUuidList': aUuidList,
-      'aNullableUuidList': aNullableUuidList,
+      if (aNullableUuidList != null) 'aNullableUuidList': aNullableUuidList,
       'aListWithNullableUuids': aListWithNullableUuids,
-      'aNullableListWithNullableUuids': aNullableListWithNullableUuids,
+      if (aNullableListWithNullableUuids != null)
+        'aNullableListWithNullableUuids': aNullableListWithNullableUuids,
       'anIntMap': anIntMap,
-      'aNullableIntMap': aNullableIntMap,
+      if (aNullableIntMap != null) 'aNullableIntMap': aNullableIntMap,
       'aMapWithNullableInts': aMapWithNullableInts,
-      'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
+      if (aNullableMapWithNullableInts != null)
+        'aNullableMapWithNullableInts': aNullableMapWithNullableInts,
     };
   }
 }
