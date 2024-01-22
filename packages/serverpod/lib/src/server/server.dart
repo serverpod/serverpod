@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:path/path.dart' as p;
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/health_check.dart';
@@ -344,7 +343,7 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var path = p.joinAll(uri.pathSegments);
+    var path = uri.pathSegments.join('/');
     return endpoints.handleUriCall(this, path, uri, body, request);
   }
 
