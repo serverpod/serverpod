@@ -1176,13 +1176,14 @@ class SerializableModelLibraryGenerator {
           refer("Deprecated('Will be removed in 2.0.0')")
         ]);
 
-        m.body = _createToJsonBodyFromFields(serializableFields.toList());
+        m.body = _createToJsonBodyFromFields(serializableFields);
       },
     );
   }
 
   Method _buildModelClassToJsonMethod(
-      List<SerializableModelFieldDefinition> fields) {
+    List<SerializableModelFieldDefinition> fields,
+  ) {
     return Method(
       (m) {
         m.returns = refer('Map<String,dynamic>');
@@ -1191,13 +1192,13 @@ class SerializableModelLibraryGenerator {
 
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
-        m.body = _createToJsonBodyFromFields(filteredFields.toList());
+        m.body = _createToJsonBodyFromFields(filteredFields);
       },
     );
   }
 
   Code _createToJsonBodyFromFields(
-    List<SerializableModelFieldDefinition> fields,
+    Iterable<SerializableModelFieldDefinition> fields,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
       var fieldName = _createSerializableFieldNameReference(serverCode, field);
