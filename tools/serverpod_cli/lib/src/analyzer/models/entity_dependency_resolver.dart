@@ -15,7 +15,7 @@ class ModelDependencyResolver {
       for (var fieldDefinition in classDefinition.fields) {
         _resolveFieldIndexes(fieldDefinition, classDefinition);
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
-        _resolveEnumType(fieldDefinition, modelDefinitions);
+        _resolveEnumType(fieldDefinition.type, modelDefinitions);
         _resolveObjectRelationReference(
           classDefinition,
           fieldDefinition,
@@ -53,17 +53,23 @@ class ModelDependencyResolver {
   }
 
   static void _resolveEnumType(
-    SerializableModelFieldDefinition fieldDefinition,
+    TypeDefinition typeDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
+    if (typeDefinition.generics.isNotEmpty) {
+      for (var genericType in typeDefinition.generics) {
+        _resolveEnumType(genericType, modelDefinitions);
+      }
+      return;
+    }
+
     var enumDefinitionList = modelDefinitions
         .whereType<EnumDefinition>()
-        .where((e) => e.className == fieldDefinition.type.className)
-        .toList();
+        .where((e) => e.className == typeDefinition.className);
 
     if (enumDefinitionList.isEmpty) return;
 
-    fieldDefinition.type.serializeEnum = enumDefinitionList.first.serialized;
+    typeDefinition.serializeEnum = enumDefinitionList.first.serialized;
   }
 
   static void _resolveObjectRelationReference(
