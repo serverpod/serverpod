@@ -45,7 +45,7 @@ class SerializableModelLibraryGenerator {
             .where((field) => field.shouldIncludeField(serverCode))
             .any((field) => field.type.isSerializedByExtension);
 
-        if (hasFieldSerializedByExtension) {
+        if (hasFieldSerializedByExtension && serverCode) {
           libraryBuilder.directives.add(Directive.import(
               'package:serverpod_serialization/serverpod_serialization.dart'));
         }
