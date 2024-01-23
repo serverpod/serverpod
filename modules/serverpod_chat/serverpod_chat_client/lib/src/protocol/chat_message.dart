@@ -11,7 +11,6 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/module.dart' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
 abstract class ChatMessage extends _i1.SerializableEntity {
