@@ -41,9 +41,16 @@ class SerializableModelLibraryGenerator {
 
     return Library(
       (libraryBuilder) {
+        var hasFieldSerializedByExtension = classDefinition.fields
+            .where((field) => field.shouldIncludeField(serverCode))
+            .any((field) => field.type.isSerializedByExtension);
+
+        if (hasFieldSerializedByExtension) {
+          libraryBuilder.directives.add(Directive.import(
+              'package:serverpod_serialization/serverpod_serialization.dart'));
+        }
+
         libraryBuilder.body.addAll([
-          const Code(
-              "import 'package:serverpod_serialization/serverpod_serialization.dart';"),
           _buildModelClass(
             className,
             classDefinition,

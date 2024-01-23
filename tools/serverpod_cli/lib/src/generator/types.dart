@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -43,8 +44,10 @@ class TypeDefinition {
     this.serializeEnum,
   });
 
-  bool get isSerializedValue =>
-      ['int', 'bool', 'double', 'String'].contains(className);
+  bool get isSerializedValue => autoSerializedTypes.contains(className);
+
+  bool get isSerializedByExtension =>
+      extensionSerializedTypes.contains(className);
 
   bool get isListType => className == 'List';
 

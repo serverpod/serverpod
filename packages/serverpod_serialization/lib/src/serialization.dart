@@ -164,6 +164,21 @@ abstract class SerializationManager {
   }
 }
 
+/// All datatypes that are serialized by default.
+/// Used internally in Serverpod code generation.
+const autoSerializedTypes = ['int', 'bool', 'double', 'String'];
+
+/// All datatypes that has extensions to support serialization.
+/// Used internally in Serverpod code generation.
+const extensionSerializedTypes = [
+  'DateTime',
+  'ByteData',
+  'Duration',
+  'UuidValue',
+  'Map',
+  'List',
+];
+
 /// Expose toJson on DateTime
 extension DateTimeToJson on DateTime {
   /// Returns a serialized version of the [DateTime] in UTC.
