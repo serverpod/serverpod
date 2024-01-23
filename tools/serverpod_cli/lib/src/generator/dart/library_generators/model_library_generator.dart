@@ -1166,7 +1166,7 @@ class SerializableModelLibraryGenerator {
         m.name = 'allToJson';
         m.annotations.add(refer('override'));
 
-        m.body = _createToJsonBodyFromFields(fields);
+        m.body = _createToJsonBodyFromFields(fields, 'allToJson');
       },
     );
   }
@@ -1185,7 +1185,13 @@ class SerializableModelLibraryGenerator {
           refer("Deprecated('Will be removed in 2.0.0')")
         ]);
 
-        m.body = _createToJsonBodyFromFields(serializableFields);
+        m.body = literalMap(
+          {
+            for (var field in serializableFields)
+              literalString(field.name):
+                  _createSerializableFieldNameReference(serverCode, field)
+          },
+        ).returned.statement;
       },
     );
   }
@@ -1201,21 +1207,28 @@ class SerializableModelLibraryGenerator {
 
         var filteredFields =
             fields.where((field) => field.shouldSerializeField(serverCode));
-        m.body = _createToJsonBodyFromFields(filteredFields);
+        m.body = _createToJsonBodyFromFields(filteredFields, 'toJson');
       },
     );
   }
 
   Expression _toJsonCallConversionMethod(
-      Reference fieldRef, TypeDefinition fieldType) {
+    Reference fieldRef,
+    TypeDefinition fieldType,
+    String toJsonMethodName,
+  ) {
     if (fieldType.isSerializedValue) return fieldRef;
 
     Expression fieldExpression = fieldRef;
 
+    var toJson = fieldType.isSerializedByExtension || fieldType.isEnumType
+        ? 'toJson'
+        : toJsonMethodName;
+
     if (fieldType.nullable) {
-      fieldExpression = fieldExpression.nullSafeProperty('toJson');
+      fieldExpression = fieldExpression.nullSafeProperty(toJson);
     } else {
-      fieldExpression = fieldExpression.property('toJson');
+      fieldExpression = fieldExpression.property(toJson);
     }
 
     Map<String, Expression> namedParams = {};
@@ -1231,6 +1244,7 @@ class SerializableModelLibraryGenerator {
             ..body = _toJsonCallConversionMethod(
               refer('v'),
               fieldType.generics.first,
+              toJsonMethodName,
             ).code,
         ).closure
       };
@@ -1247,6 +1261,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('k'),
                 fieldType.generics.first,
+                toJsonMethodName,
               ).code,
           ).closure
         };
@@ -1263,6 +1278,7 @@ class SerializableModelLibraryGenerator {
               ..body = _toJsonCallConversionMethod(
                 refer('v'),
                 fieldType.generics.last,
+                toJsonMethodName,
               ).code,
           ).closure
         };
@@ -1274,6 +1290,7 @@ class SerializableModelLibraryGenerator {
 
   Code _createToJsonBodyFromFields(
     Iterable<SerializableModelFieldDefinition> fields,
+    String toJsonMethodName,
   ) {
     var map = fields.fold<Map<Code, Expression>>({}, (map, field) {
       var fieldName = _createSerializableFieldNameReference(
@@ -1281,7 +1298,11 @@ class SerializableModelLibraryGenerator {
         field,
       );
 
-      Expression fieldRef = _toJsonCallConversionMethod(fieldName, field.type);
+      Expression fieldRef = _toJsonCallConversionMethod(
+        fieldName,
+        field.type,
+        toJsonMethodName,
+      );
 
       return {
         ...map,
