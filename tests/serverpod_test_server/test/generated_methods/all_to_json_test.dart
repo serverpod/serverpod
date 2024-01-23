@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:test/test.dart';
-import 'package:uuid/uuid_value.dart';
 
 void main() {
   test(
@@ -449,9 +449,12 @@ void main() {
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'anObjectValue': {
-          {'anInt': 123}: 'value'
-        }
+        'anObjectKey': [
+          {
+            'k': {'anInt': 123},
+            'v': 'value'
+          }
+        ]
       });
     });
 
@@ -459,13 +462,15 @@ void main() {
         'Given a class with a Map with a nested DateTime when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aDateTimeValue: {'key': DateTime.parse('2024-01-01T00:00:00.000Z')},
+        aDateTimeKey: {DateTime.parse('2024-01-01T00:00:00.000Z'): 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aDateTimeValue': {'key': '2024-01-01T00:00:00.000Z'}
+        'aDateTimeKey': [
+          {'k': '2024-01-01T00:00:00.000Z', 'v': 'value'}
+        ]
       });
     });
 
@@ -478,13 +483,15 @@ void main() {
       }
 
       var object = TypesMap(
-        aByteDataValue: {'key': ByteData.view(intList.buffer)},
+        aByteDataKey: {ByteData.view(intList.buffer): 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aByteDataValue': {'key': 'decode(\'AAECAwQFBgc=\', \'base64\')'}
+        'aByteDataKey': [
+          {'k': 'decode(\'AAECAwQFBgc=\', \'base64\')', 'v': 'value'}
+        ]
       });
     });
 
@@ -492,13 +499,15 @@ void main() {
         'Given a class with a Map with a nested Duration when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aDurationValue: {'key': Duration(seconds: 1)},
+        aDurationKey: {Duration(seconds: 1): 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aDurationValue': {'key': 1000}
+        'aDurationKey': [
+          {'k': 1000, 'v': 'value'}
+        ]
       });
     });
 
@@ -506,13 +515,15 @@ void main() {
         'Given a class with a Map with a nested Uuid when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aUuidValue: {'key': UuidValue.nil},
+        aUuidKey: {UuidValue.nil: 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aUuidValue': {'key': '00000000-0000-0000-0000-000000000000'}
+        'aUuidKey': [
+          {'k': '00000000-0000-0000-0000-000000000000', 'v': 'value'}
+        ]
       });
     });
 
@@ -520,13 +531,15 @@ void main() {
         'Given a class with a Map with a nested enum serialized by index when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        anEnumValue: {'key': TestEnum.one},
+        anEnumKey: {TestEnum.one: 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'anEnumValue': {'key': 0}
+        'anEnumKey': [
+          {'k': 0, 'v': 'value'}
+        ]
       });
     });
 
@@ -534,13 +547,15 @@ void main() {
         'Given a class with a Map with a nested enum serialized by name when calling toJson the entire nested structure is converted.',
         () {
       var object = TypesMap(
-        aStringifiedEnumValue: {'key': TestEnumStringified.one},
+        aStringifiedEnumKey: {TestEnumStringified.one: 'value'},
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aStringifiedEnumValue': {'key': 'one'}
+        'aStringifiedEnumKey': [
+          {'k': 'one', 'v': 'value'}
+        ]
       });
     });
 
@@ -549,19 +564,25 @@ void main() {
         () {
       var type = Types(anInt: 1);
       var object = TypesMap(
-        aMapValue: {
-          'key': {'key': type}
+        aMapKey: {
+          {type: 'value'}: 'value'
         },
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aMapValue': {
-          'key': {
-            'key': {'anInt': 1}
+        'aMapKey': [
+          {
+            'k': [
+              {
+                'k': {'anInt': 1},
+                'v': 'value'
+              }
+            ],
+            'v': 'value'
           }
-        }
+        ]
       });
     });
 
@@ -570,19 +591,22 @@ void main() {
         () {
       var type = Types(anInt: 1);
       var object = TypesMap(
-        aListValue: {
-          'key': [type]
+        aListKey: {
+          [type]: 'value'
         },
       );
 
       var jsonMap = object.allToJson();
 
       expect(jsonMap, {
-        'aListValue': {
-          'key': [
-            {'anInt': 1}
-          ]
-        }
+        'aListKey': [
+          {
+            'k': [
+              {'anInt': 1}
+            ],
+            'v': 'value'
+          }
+        ]
       });
     });
   });
