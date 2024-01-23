@@ -120,7 +120,11 @@ Future<bool> performCreate(
     success &= await log.progress(
         'Writing project files.',
         () => Future(() {
-              _copyModuleTemplates(serverpodDirs, name: name);
+              _copyModuleTemplates(
+                serverpodDirs,
+                name: name,
+                customServerpodPath: productionMode ? null : serverpodHome,
+              );
               return true;
             }));
   }
@@ -426,6 +430,7 @@ void _copyServerTemplates(
 void _copyModuleTemplates(
   ServerpodDirectories serverpodDirs, {
   required String name,
+  String? customServerpodPath,
 }) {
   log.debug('Copying server files', newParagraph: true);
   var copier = Copier(
@@ -443,8 +448,13 @@ void _copyModuleTemplates(
       ),
       Replacement(
         slotName: 'VERSION',
-        replacement: templateVersion,
+        replacement: customServerpodPath == null ? templateVersion : '',
       ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/serverpod',
+          replacement: 'path: $customServerpodPath/packages/serverpod',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -456,7 +466,9 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    removePrefixes: ['path'],
+    removePrefixes: [
+      if (customServerpodPath == null) 'path',
+    ],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
@@ -477,8 +489,13 @@ void _copyModuleTemplates(
       ),
       Replacement(
         slotName: 'VERSION',
-        replacement: templateVersion,
+        replacement: customServerpodPath == null ? templateVersion : '',
       ),
+      if (customServerpodPath != null)
+        Replacement(
+          slotName: 'path: ../../../packages/serverpod_client',
+          replacement: 'path: $customServerpodPath/packages/serverpod_client',
+        ),
     ],
     fileNameReplacements: [
       Replacement(
@@ -490,7 +507,9 @@ void _copyModuleTemplates(
         replacement: '.gitignore',
       ),
     ],
-    removePrefixes: ['path'],
+    removePrefixes: [
+      if (customServerpodPath == null) 'path',
+    ],
     ignoreFileNames: ['pubspec.lock'],
   );
   copier.copyFiles();
