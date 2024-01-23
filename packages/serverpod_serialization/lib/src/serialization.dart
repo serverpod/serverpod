@@ -152,7 +152,29 @@ abstract class SerializationManager {
   /// indentation.
   static String encode(Object? object, {bool formatted = false}) {
     // This is the only time [jsonEncode] should be used in the project.
-    return JsonEncoder.withIndent(formatted ? '  ' : null).convert(object);
+    return JsonEncoder.withIndent(
+      formatted ? '  ' : null,
+      (nonEncodable) {
+        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
+        if (nonEncodable is DateTime) {
+          return nonEncodable.toUtc().toIso8601String();
+        } else if (nonEncodable is ByteData) {
+          return nonEncodable.base64encodedString();
+        } else if (nonEncodable is Duration) {
+          return nonEncodable.inMilliseconds;
+        } else if (nonEncodable is UuidValue) {
+          return nonEncodable.uuid;
+        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
+          return nonEncodable.entries
+              .map((e) => {'k': e.key, 'v': e.value})
+              .toList();
+        } else {
+          return (nonEncodable as dynamic)?.toJson();
+        }
+      },
+    ).convert(
+      object,
+    );
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
@@ -178,6 +200,10 @@ const extensionSerializedTypes = [
   'Map',
   'List',
 ];
+
+extension<K, V> on Map<K, V> {
+  Type get keyType => K;
+}
 
 /// Expose toJson on DateTime
 extension DateTimeToJson on DateTime {
