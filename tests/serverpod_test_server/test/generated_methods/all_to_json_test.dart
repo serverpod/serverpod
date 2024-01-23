@@ -610,4 +610,23 @@ void main() {
       });
     });
   });
+
+  test('Given an object with a server only field then field is serialized.',
+      () {
+    var object = ScopeServerOnlyField(
+      nested: ScopeServerOnlyField(
+        allScope: Types(anInt: 1),
+        serverOnlyScope: Types(anInt: 2),
+      ),
+    );
+
+    var jsonMap = object.allToJson();
+
+    expect(jsonMap, {
+      'nested': {
+        'allScope': {'anInt': 1},
+        'serverOnlyScope': {'anInt': 2},
+      },
+    });
+  });
 }
