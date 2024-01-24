@@ -16,16 +16,16 @@ dependencies:
 dev_dependencies:
   lints: ^3.0.0
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_server: #--CONDITIONALLY_REMOVE_LINE--#
-      path: ../../../modules/serverpod_auth/serverpod_auth_server #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_server:
+      path: ../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

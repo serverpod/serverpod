@@ -13,10 +13,10 @@ dependencies:
   serverpod_client: VERSION
   serverpod_auth_client: VERSION
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_client:
+    path: ../../serverpod_auth/serverpod_auth_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

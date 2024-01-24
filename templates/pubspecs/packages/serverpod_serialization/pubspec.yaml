@@ -18,6 +18,6 @@ dev_dependencies:
   serverpod_lints: VERSION
   test: ^1.24.2
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints:  #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints

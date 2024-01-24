@@ -43,14 +43,14 @@ dev_dependencies:
   test: ^1.24.2
   serverpod_lints: VERSION
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_shared: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_shared #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_service_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_service_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_shared:
+    path: ../serverpod_shared
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_service_client:
+    path: ../serverpod_service_client
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
+    path: ../serverpod_lints

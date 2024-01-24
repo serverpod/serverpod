@@ -17,10 +17,10 @@ dependencies:
 dev_dependencies:
   serverpod_lints: VERSION
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client:  #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization

@@ -24,18 +24,18 @@ dev_dependencies:
     sdk: flutter
   serverpod_lints: VERSION
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_shared_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_auth_shared_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-#--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../serverpod_auth_shared_flutter
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

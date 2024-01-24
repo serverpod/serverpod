@@ -45,23 +45,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_email_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_shared_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_chat_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_chat/serverpod_chat_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_flutter: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_flutter #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_chat_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_chat/serverpod_chat_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_auth_email_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
+  serverpod_auth_shared_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_chat_flutter:
+    path: ../../../modules/serverpod_chat/serverpod_chat_flutter
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_flutter:
+    path: ../../../packages/serverpod_flutter
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../../../modules/serverpod_chat/serverpod_chat_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

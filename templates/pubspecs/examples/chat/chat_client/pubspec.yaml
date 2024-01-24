@@ -11,12 +11,12 @@ dependencies:
   serverpod_auth_client: VERSION
   serverpod_chat_client: VERSION
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_auth/serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_chat_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../modules/serverpod_chat/serverpod_chat_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../../../modules/serverpod_chat/serverpod_chat_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

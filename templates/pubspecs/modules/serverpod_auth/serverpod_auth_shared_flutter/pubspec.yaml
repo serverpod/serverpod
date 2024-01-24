@@ -33,16 +33,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_auth_client: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../serverpod_auth_client #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_lints: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_lints #--CONDITIONALLY_REMOVE_LINE--#
-  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
-    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#
-#--CONDITIONALLY_REMOVE_LINE--#
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_client:
+    path: ../serverpod_auth_client
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
