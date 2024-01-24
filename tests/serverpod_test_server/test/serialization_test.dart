@@ -70,7 +70,7 @@ void main() {
   });
 
   test(
-      'Given a serializable object as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a serializable object as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var type = Types(anInt: 123);
     var object = TypesMap(anObjectKey: {type: 'value'});
@@ -82,7 +82,7 @@ void main() {
   });
 
   test(
-      'Given a DateTime as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a DateTime as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(
       aDateTimeKey: {DateTime.parse('2024-01-01T00:00:00.000Z'): 'value'},
@@ -98,7 +98,7 @@ void main() {
   });
 
   test(
-      'Given a UuidValue as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a UuidValue as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(aUuidKey: {UuidValue.nil: 'value'});
 
@@ -112,7 +112,7 @@ void main() {
   });
 
   test(
-      'Given a ByteData as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a ByteData as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var intList = Uint8List(8);
     for (var i = 0; i < intList.length; i++) {
@@ -133,7 +133,7 @@ void main() {
   });
 
   test(
-      'Given a Duration as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a Duration as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(
       aDurationKey: {Duration(seconds: 1): 'value'},
@@ -149,7 +149,7 @@ void main() {
   });
 
   test(
-      'Given a index serialized Enum as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a index serialized Enum as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(
       anEnumKey: {TestEnum.one: 'value'},
@@ -165,7 +165,7 @@ void main() {
   });
 
   test(
-      'Given a name serialized Enum as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a name serialized Enum as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(
       aStringifiedEnumKey: {TestEnumStringified.one: 'value'},
@@ -181,7 +181,7 @@ void main() {
   });
 
   test(
-      'Given a Map as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a Map as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var object = TypesMap(
       aMapKey: {
@@ -199,7 +199,7 @@ void main() {
   });
 
   test(
-      'Given a List as a key in a map then wen serializing and unpacking the original object remains unchanged.',
+      'Given a List as a key in a map when serializing and unpacking the original object remains unchanged.',
       () {
     var type = Types(anInt: 1);
     var object = TypesMap(
@@ -215,5 +215,27 @@ void main() {
       typesMap.aListKey?.entries.first.key.first.anInt,
       1,
     );
+  });
+
+  test(
+      'Given an empty map with an int key when serializing and unpacking the empty map is preserved.',
+      () {
+    var object = TypesMap(anIntKey: {});
+
+    var encodedString = SerializationManager.encode(object);
+    var typesMap = Protocol().decode<TypesMap>(encodedString);
+
+    expect(typesMap.anIntKey, {});
+  });
+
+  test(
+      'Given an empty map with an SerializedEntity key when serializing and unpacking the empty map is preserved.',
+      () {
+    var object = TypesMap(anObjectKey: {});
+
+    var encodedString = SerializationManager.encode(object);
+    var typesMap = Protocol().decode<TypesMap>(encodedString);
+
+    expect(typesMap.anObjectKey, {});
   });
 }
