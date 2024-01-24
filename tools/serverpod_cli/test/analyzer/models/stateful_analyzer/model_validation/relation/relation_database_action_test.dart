@@ -32,12 +32,12 @@ void main() {
       var collector = CodeGenerationCollector();
       var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
-      var model = definitions.first as ClassDefinition;
 
       test('then no errors are detected.', () {
         expect(collector.errors, isEmpty);
       });
 
+      var model = definitions.first as ClassDefinition;
       var field = model.findField('exampleId');
 
       var noneFieldRelation =

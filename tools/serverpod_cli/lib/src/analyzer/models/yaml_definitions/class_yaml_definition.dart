@@ -111,6 +111,9 @@ class ClassYamlDefinition {
                 mutuallyExclusiveKeys: {Keyword.database, Keyword.api},
                 valueRestriction: EnumValueRestriction(
                   enums: ModelFieldScopeDefinition.values,
+                  additionalRestriction: ScopeValueRestriction(
+                    restrictions: restrictions,
+                  ),
                 ).validate,
               ),
               ValidateNode(

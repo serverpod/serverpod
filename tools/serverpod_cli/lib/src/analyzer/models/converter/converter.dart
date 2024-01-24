@@ -22,6 +22,15 @@ T convertToEnum<T extends Enum>({
   );
 }
 
+T unsafeConvertToEnum<T extends Enum>({
+  required dynamic value,
+  required List<T> enumValues,
+}) {
+  return enumValues.firstWhere(
+    (v) => v.name.toLowerCase() == value.toLowerCase(),
+  );
+}
+
 typedef DeepNestedNodeHandler = YamlMap Function(
     String? content, SourceSpan span);
 
