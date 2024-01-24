@@ -64,7 +64,7 @@ abstract class ObjectUser extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      if (userInfo != null) 'userInfo': userInfo,
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
     };
   }
 }

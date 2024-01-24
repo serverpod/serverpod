@@ -48,7 +48,7 @@ abstract class ObjectWithByteData extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'byteData': byteData,
+      'byteData': byteData.toJson(),
     };
   }
 }

@@ -77,8 +77,9 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     return {
       if (name != null) 'name': name,
       'moduleName': moduleName,
-      'tables': tables,
-      'installedModules': installedModules,
+      'tables': tables.toJson(valueToJson: (v) => v.toJson()),
+      'installedModules':
+          installedModules.toJson(valueToJson: (v) => v.toJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

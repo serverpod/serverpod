@@ -53,7 +53,7 @@ abstract class Filter extends _i1.SerializableEntity {
     return {
       'name': name,
       'table': table,
-      'constraints': constraints,
+      'constraints': constraints.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

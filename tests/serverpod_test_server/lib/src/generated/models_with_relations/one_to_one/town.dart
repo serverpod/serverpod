@@ -65,7 +65,7 @@ abstract class Town extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor,
+      if (mayor != null) 'mayor': mayor?.toJson(),
     };
   }
 
@@ -73,9 +73,9 @@ abstract class Town extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (mayorId != null) 'mayorId': mayorId,
+      'mayorId': mayorId,
     };
   }
 
@@ -85,7 +85,7 @@ abstract class Town extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (mayorId != null) 'mayorId': mayorId,
-      if (mayor != null) 'mayor': mayor,
+      if (mayor != null) 'mayor': mayor?.allToJson(),
     };
   }
 

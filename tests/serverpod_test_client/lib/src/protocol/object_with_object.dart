@@ -85,13 +85,17 @@ abstract class ObjectWithObject extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'data': data,
-      if (nullableData != null) 'nullableData': nullableData,
-      'dataList': dataList,
-      if (nullableDataList != null) 'nullableDataList': nullableDataList,
-      'listWithNullableData': listWithNullableData,
+      'data': data.toJson(),
+      if (nullableData != null) 'nullableData': nullableData?.toJson(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.toJson()),
+      if (nullableDataList != null)
+        'nullableDataList':
+            nullableDataList?.toJson(valueToJson: (v) => v.toJson()),
+      'listWithNullableData':
+          listWithNullableData.toJson(valueToJson: (v) => v?.toJson()),
       if (nullableListWithNullableData != null)
-        'nullableListWithNullableData': nullableListWithNullableData,
+        'nullableListWithNullableData': nullableListWithNullableData?.toJson(
+            valueToJson: (v) => v?.toJson()),
     };
   }
 }

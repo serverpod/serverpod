@@ -72,9 +72,9 @@ abstract class Enrollment extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'studentId': studentId,
-      if (student != null) 'student': student,
+      if (student != null) 'student': student?.toJson(),
       'courseId': courseId,
-      if (course != null) 'course': course,
+      if (course != null) 'course': course?.toJson(),
     };
   }
 
@@ -82,7 +82,7 @@ abstract class Enrollment extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'studentId': studentId,
       'courseId': courseId,
     };
@@ -93,9 +93,9 @@ abstract class Enrollment extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'studentId': studentId,
-      if (student != null) 'student': student,
+      if (student != null) 'student': student?.allToJson(),
       'courseId': courseId,
-      if (course != null) 'course': course,
+      if (course != null) 'course': course?.allToJson(),
     };
   }
 

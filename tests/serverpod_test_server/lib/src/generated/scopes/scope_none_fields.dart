@@ -42,8 +42,8 @@ abstract class ScopeNoneFields extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      if (_name != null) 'name': _name,
+      'id': id,
+      'name': _name,
     };
   }
 

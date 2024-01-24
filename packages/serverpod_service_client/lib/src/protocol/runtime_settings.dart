@@ -75,8 +75,9 @@ abstract class RuntimeSettings extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
+      'logSettings': logSettings.toJson(),
+      'logSettingsOverrides':
+          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

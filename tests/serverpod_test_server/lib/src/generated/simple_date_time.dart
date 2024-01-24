@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Just some simple data.
 abstract class SimpleDateTime extends _i1.TableRow {
@@ -51,7 +52,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'dateTime': dateTime,
+      'dateTime': dateTime.toJson(),
     };
   }
 
@@ -59,7 +60,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'dateTime': dateTime,
     };
   }
@@ -68,7 +69,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'dateTime': dateTime,
+      'dateTime': dateTime.toJson(),
     };
   }
 

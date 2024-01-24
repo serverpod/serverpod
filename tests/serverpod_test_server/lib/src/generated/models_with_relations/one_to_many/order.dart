@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Order extends _i1.TableRow {
   Order._({
@@ -73,8 +74,9 @@ abstract class Order extends _i1.TableRow {
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      if (customer != null) 'customer': customer,
-      if (comments != null) 'comments': comments,
+      if (customer != null) 'customer': customer?.toJson(),
+      if (comments != null)
+        'comments': comments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -82,7 +84,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'description': description,
       'customerId': customerId,
     };
@@ -94,8 +96,9 @@ abstract class Order extends _i1.TableRow {
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      if (customer != null) 'customer': customer,
-      if (comments != null) 'comments': comments,
+      if (customer != null) 'customer': customer?.allToJson(),
+      if (comments != null)
+        'comments': comments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

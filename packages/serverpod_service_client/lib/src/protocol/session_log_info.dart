@@ -64,10 +64,10 @@ abstract class SessionLogInfo extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'sessionLogEntry': sessionLogEntry,
-      'queries': queries,
-      'logs': logs,
-      'messages': messages,
+      'sessionLogEntry': sessionLogEntry.toJson(),
+      'queries': queries.toJson(valueToJson: (v) => v.toJson()),
+      'logs': logs.toJson(valueToJson: (v) => v.toJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

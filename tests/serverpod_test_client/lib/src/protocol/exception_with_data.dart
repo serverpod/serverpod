@@ -60,8 +60,8 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
   Map<String, dynamic> toJson() {
     return {
       'message': message,
-      'creationDate': creationDate,
-      'errorFields': errorFields,
+      'creationDate': creationDate.toJson(),
+      'errorFields': errorFields.toJson(),
       if (someNullableField != null) 'someNullableField': someNullableField,
     };
   }

@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class BulkQueryResult extends _i1.SerializableEntity {
   BulkQueryResult._({
@@ -58,20 +59,20 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'headers': headers,
+      'headers': headers.toJson(valueToJson: (v) => v.toJson()),
       'data': data,
       'numAffectedRows': numAffectedRows,
-      'duration': duration,
+      'duration': duration.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'headers': headers,
+      'headers': headers.toJson(valueToJson: (v) => v.allToJson()),
       'data': data,
       'numAffectedRows': numAffectedRows,
-      'duration': duration,
+      'duration': duration.toJson(),
     };
   }
 }

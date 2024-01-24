@@ -48,7 +48,7 @@ abstract class IndexElementDefinition extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'definition': definition,
     };
   }

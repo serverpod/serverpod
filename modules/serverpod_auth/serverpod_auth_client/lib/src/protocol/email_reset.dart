@@ -67,7 +67,7 @@ abstract class EmailReset extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
     };
   }
 }

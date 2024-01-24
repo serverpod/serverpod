@@ -59,7 +59,7 @@ abstract class FilterConstraint extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'column': column,
       'value': value,
       if (value2 != null) 'value2': value2,

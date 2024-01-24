@@ -54,8 +54,8 @@ abstract class ObjectWithUuid extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'uuid': uuid,
-      if (uuidNullable != null) 'uuidNullable': uuidNullable,
+      'uuid': uuid.toJson(),
+      if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
   }
 }

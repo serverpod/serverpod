@@ -70,8 +70,9 @@ abstract class Team extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId,
-      if (arena != null) 'arena': arena,
-      if (players != null) 'players': players,
+      if (arena != null) 'arena': arena?.toJson(),
+      if (players != null)
+        'players': players?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

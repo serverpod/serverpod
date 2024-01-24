@@ -69,9 +69,10 @@ abstract class Organization extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (people != null) 'people': people,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJson()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city,
+      if (city != null) 'city': city?.toJson(),
     };
   }
 }

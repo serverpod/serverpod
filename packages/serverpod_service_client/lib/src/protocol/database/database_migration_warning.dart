@@ -66,10 +66,10 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.toJson(),
       'message': message,
       'table': table,
-      'columns': columns,
+      'columns': columns.toJson(),
       'destrucive': destrucive,
     };
   }

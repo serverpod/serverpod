@@ -56,8 +56,8 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      if (other != null) 'other': other,
+      'id': id,
+      'other': other,
     };
   }
 

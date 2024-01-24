@@ -73,15 +73,13 @@ abstract class MultipleMaxFieldName extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1,
       'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2':
           thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2,
-      if (_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId !=
-          null)
-        '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
-            _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
+      '_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId':
+          _relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId,
     };
   }
 

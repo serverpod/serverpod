@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion extends _i1.TableRow {
@@ -69,7 +70,7 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
       if (id != null) 'id': id,
       'module': module,
       'version': version,
-      if (timestamp != null) 'timestamp': timestamp,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
     };
   }
 
@@ -77,10 +78,10 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'module': module,
       'version': version,
-      if (timestamp != null) 'timestamp': timestamp,
+      'timestamp': timestamp,
     };
   }
 
@@ -90,7 +91,7 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
       if (id != null) 'id': id,
       'module': module,
       'version': version,
-      if (timestamp != null) 'timestamp': timestamp,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
     };
   }
 

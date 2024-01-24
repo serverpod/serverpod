@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithDuration extends _i1.TableRow {
   ObjectWithDuration._({
@@ -49,7 +50,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'duration': duration,
+      'duration': duration.toJson(),
     };
   }
 
@@ -57,7 +58,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'duration': duration,
     };
   }
@@ -66,7 +67,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'duration': duration,
+      'duration': duration.toJson(),
     };
   }
 

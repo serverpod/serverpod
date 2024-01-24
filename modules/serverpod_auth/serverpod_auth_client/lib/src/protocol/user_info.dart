@@ -114,9 +114,9 @@ abstract class UserInfo extends _i1.SerializableEntity {
       'userName': userName,
       if (fullName != null) 'fullName': fullName,
       if (email != null) 'email': email,
-      'created': created,
+      'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'blocked': blocked,
     };
   }

@@ -140,15 +140,15 @@ abstract class QueryLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      if (messageId != null) 'messageId': messageId,
+      'messageId': messageId,
       'query': query,
       'duration': duration,
-      if (numRows != null) 'numRows': numRows,
-      if (error != null) 'error': error,
-      if (stackTrace != null) 'stackTrace': stackTrace,
+      'numRows': numRows,
+      'error': error,
+      'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };

@@ -47,7 +47,7 @@ abstract class ObjectWithDuration extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'duration': duration,
+      'duration': duration.toJson(),
     };
   }
 }

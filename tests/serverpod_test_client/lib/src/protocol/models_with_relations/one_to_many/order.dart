@@ -71,8 +71,9 @@ abstract class Order extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      if (customer != null) 'customer': customer,
-      if (comments != null) 'comments': comments,
+      if (customer != null) 'customer': customer?.toJson(),
+      if (comments != null)
+        'comments': comments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

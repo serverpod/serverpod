@@ -97,13 +97,13 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'constraintName': constraintName,
-      'columns': columns,
+      'columns': columns.toJson(),
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
-      'referenceColumns': referenceColumns,
-      if (onUpdate != null) 'onUpdate': onUpdate,
-      if (onDelete != null) 'onDelete': onDelete,
-      if (matchType != null) 'matchType': matchType,
+      'referenceColumns': referenceColumns.toJson(),
+      if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
+      if (onDelete != null) 'onDelete': onDelete?.toJson(),
+      if (matchType != null) 'matchType': matchType?.toJson(),
     };
   }
 }

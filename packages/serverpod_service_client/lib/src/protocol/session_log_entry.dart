@@ -149,7 +149,7 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
+      'time': time.toJson(),
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
@@ -161,7 +161,7 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
       if (authenticatedUserId != null)
         'authenticatedUserId': authenticatedUserId,
       if (isOpen != null) 'isOpen': isOpen,
-      'touched': touched,
+      'touched': touched.toJson(),
     };
   }
 }

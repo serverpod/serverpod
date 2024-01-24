@@ -44,7 +44,7 @@ abstract class BulkData extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'tableDefinition': tableDefinition,
+      'tableDefinition': tableDefinition.toJson(),
       'data': data,
     };
   }
@@ -52,7 +52,7 @@ abstract class BulkData extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'tableDefinition': tableDefinition,
+      'tableDefinition': tableDefinition.allToJson(),
       'data': data,
     };
   }

@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
@@ -76,7 +77,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
       'authKey': authKey,
     };
   }
@@ -85,7 +86,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'storageId': storageId,
       'path': path,
       'expiration': expiration,
@@ -99,7 +100,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
       'authKey': authKey,
     };
   }

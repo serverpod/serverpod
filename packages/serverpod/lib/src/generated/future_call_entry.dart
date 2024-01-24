@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry extends _i1.TableRow {
@@ -83,7 +84,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'time': time,
+      'time': time.toJson(),
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,
@@ -94,12 +95,12 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
       'time': time,
-      if (serializedObject != null) 'serializedObject': serializedObject,
+      'serializedObject': serializedObject,
       'serverId': serverId,
-      if (identifier != null) 'identifier': identifier,
+      'identifier': identifier,
     };
   }
 
@@ -108,7 +109,7 @@ abstract class FutureCallEntry extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'time': time,
+      'time': time.toJson(),
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,

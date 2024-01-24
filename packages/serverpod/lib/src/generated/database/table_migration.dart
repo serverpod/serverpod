@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class TableMigration extends _i1.SerializableEntity {
   TableMigration._({
@@ -121,14 +122,14 @@ abstract class TableMigration extends _i1.SerializableEntity {
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns,
-      'deleteColumns': deleteColumns,
-      'modifyColumns': modifyColumns,
-      'addIndexes': addIndexes,
-      'deleteIndexes': deleteIndexes,
-      'addForeignKeys': addForeignKeys,
-      'deleteForeignKeys': deleteForeignKeys,
-      'warnings': warnings,
+      'addColumns': addColumns.toJson(valueToJson: (v) => v.toJson()),
+      'deleteColumns': deleteColumns.toJson(),
+      'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.toJson()),
+      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toJson()),
+      'deleteIndexes': deleteIndexes.toJson(),
+      'addForeignKeys': addForeignKeys.toJson(valueToJson: (v) => v.toJson()),
+      'deleteForeignKeys': deleteForeignKeys.toJson(),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -139,14 +140,15 @@ abstract class TableMigration extends _i1.SerializableEntity {
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns,
-      'deleteColumns': deleteColumns,
-      'modifyColumns': modifyColumns,
-      'addIndexes': addIndexes,
-      'deleteIndexes': deleteIndexes,
-      'addForeignKeys': addForeignKeys,
-      'deleteForeignKeys': deleteForeignKeys,
-      'warnings': warnings,
+      'addColumns': addColumns.toJson(valueToJson: (v) => v.allToJson()),
+      'deleteColumns': deleteColumns.toJson(),
+      'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.allToJson()),
+      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.allToJson()),
+      'deleteIndexes': deleteIndexes.toJson(),
+      'addForeignKeys':
+          addForeignKeys.toJson(valueToJson: (v) => v.allToJson()),
+      'deleteForeignKeys': deleteForeignKeys.toJson(),
+      'warnings': warnings.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 }

@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Information about a user that can safely be publically accessible.
 abstract class UserInfoPublic extends _i1.SerializableEntity {
@@ -73,7 +74,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'userName': userName,
       if (fullName != null) 'fullName': fullName,
-      'created': created,
+      'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
@@ -84,7 +85,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'userName': userName,
       if (fullName != null) 'fullName': fullName,
-      'created': created,
+      'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }

@@ -117,13 +117,14 @@ abstract class ChatMessage extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
-      if (attachments != null) 'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

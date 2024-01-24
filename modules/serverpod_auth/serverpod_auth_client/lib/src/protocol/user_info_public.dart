@@ -73,7 +73,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'userName': userName,
       if (fullName != null) 'fullName': fullName,
-      'created': created,
+      'created': created.toJson(),
       if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }

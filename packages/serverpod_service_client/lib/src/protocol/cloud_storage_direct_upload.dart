@@ -74,7 +74,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
       'authKey': authKey,
     };
   }

@@ -81,7 +81,7 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      'time': time,
+      'time': time.toJson(),
       if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
       if (identifier != null) 'identifier': identifier,

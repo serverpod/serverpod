@@ -91,9 +91,9 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime,
-      if (expiration != null) 'expiration': expiration,
-      'byteData': byteData,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
       'verified': verified,
     };
   }

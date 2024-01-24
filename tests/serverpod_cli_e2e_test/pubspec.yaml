@@ -16,6 +16,6 @@ dev_dependencies:
   test: ^1.24.2
   uuid: ^4.0.0
   serverpod_cli:
-    path: ../.
-  serverpod_lints: #1.2.0-rc.1
-    path: ../../../packages/serverpod_lints
+    path: ../../tools/serverpod_cli
+  serverpod_lints:
+    path: ../../packages/serverpod_lints
