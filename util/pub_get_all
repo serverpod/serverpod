@@ -87,7 +87,7 @@ cd $BASE/tests/bootstrap_project
 dart pub upgrade
 
 echo "\n### serverpod_cli_e2e_test"
-cd $BASE/tools/serverpod_cli/test_e2e
+cd $BASE/tests/serverpod_cli_e2e_test
 dart pub upgrade
 
 # Templates

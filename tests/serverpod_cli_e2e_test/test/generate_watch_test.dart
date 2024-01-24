@@ -17,7 +17,7 @@ const generateWatchCompletionKeywords = [
 
 void main() async {
   var tempPath = path.join(Directory.current.path, 'temp');
-  var rootPath = path.join(Directory.current.path, '..', '..', '..');
+  var rootPath = path.join(Directory.current.path, '..', '..');
   var cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
 
   setUpAll(() async {
