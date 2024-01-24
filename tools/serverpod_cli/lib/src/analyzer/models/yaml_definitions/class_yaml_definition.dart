@@ -1,6 +1,8 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/validate_node.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
