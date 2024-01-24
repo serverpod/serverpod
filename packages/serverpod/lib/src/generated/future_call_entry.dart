@@ -95,12 +95,12 @@ abstract class FutureCallEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      'time': time.toJson(),
-      if (serializedObject != null) 'serializedObject': serializedObject,
+      'time': time,
+      'serializedObject': serializedObject,
       'serverId': serverId,
-      if (identifier != null) 'identifier': identifier,
+      'identifier': identifier,
     };
   }
 

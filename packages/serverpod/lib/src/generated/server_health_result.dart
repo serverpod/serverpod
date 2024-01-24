@@ -58,8 +58,9 @@ abstract class ServerHealthResult extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'metrics': metrics.toJson(valueToJson: (v) => v.toJson()),
-      'connectionInfos': connectionInfos.toJson(valueToJson: (v) => v.toJson()),
+      'metrics': metrics.toJson(valueToJson: (v) => v.allToJson()),
+      'connectionInfos':
+          connectionInfos.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 }

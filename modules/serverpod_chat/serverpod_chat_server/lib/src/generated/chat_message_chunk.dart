@@ -67,7 +67,7 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'channel': channel,
-      'messages': messages.toJson(valueToJson: (v) => v.toJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.allToJson()),
       'hasOlderMessages': hasOlderMessages,
     };
   }

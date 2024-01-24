@@ -169,7 +169,7 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'dataMap': dataMap.toJson(valueToJson: (v) => v.toJson()),
+      'dataMap': dataMap.toJson(valueToJson: (v) => v.allToJson()),
       'intMap': intMap.toJson(),
       'stringMap': stringMap.toJson(),
       'dateTimeMap': dateTimeMap.toJson(valueToJson: (v) => v.toJson()),
@@ -177,7 +177,7 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
       'durationMap': durationMap.toJson(valueToJson: (v) => v.toJson()),
       'uuidMap': uuidMap.toJson(valueToJson: (v) => v.toJson()),
       'nullableDataMap':
-          nullableDataMap.toJson(valueToJson: (v) => v?.toJson()),
+          nullableDataMap.toJson(valueToJson: (v) => v?.allToJson()),
       'nullableIntMap': nullableIntMap.toJson(),
       'nullableStringMap': nullableStringMap.toJson(),
       'nullableDateTimeMap':

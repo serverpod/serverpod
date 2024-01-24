@@ -82,9 +82,9 @@ abstract class Post extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'content': content,
-      if (nextId != null) 'nextId': nextId,
+      'nextId': nextId,
     };
   }
 
@@ -93,9 +93,9 @@ abstract class Post extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'content': content,
-      if (previous != null) 'previous': previous?.toJson(),
+      if (previous != null) 'previous': previous?.allToJson(),
       if (nextId != null) 'nextId': nextId,
-      if (next != null) 'next': next?.toJson(),
+      if (next != null) 'next': next?.allToJson(),
     };
   }
 

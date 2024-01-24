@@ -172,21 +172,20 @@ abstract class SessionLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'serverId': serverId,
-      'time': time.toJson(),
-      if (module != null) 'module': module,
-      if (endpoint != null) 'endpoint': endpoint,
-      if (method != null) 'method': method,
-      if (duration != null) 'duration': duration,
-      if (numQueries != null) 'numQueries': numQueries,
-      if (slow != null) 'slow': slow,
-      if (error != null) 'error': error,
-      if (stackTrace != null) 'stackTrace': stackTrace,
-      if (authenticatedUserId != null)
-        'authenticatedUserId': authenticatedUserId,
-      if (isOpen != null) 'isOpen': isOpen,
-      'touched': touched.toJson(),
+      'time': time,
+      'module': module,
+      'endpoint': endpoint,
+      'method': method,
+      'duration': duration,
+      'numQueries': numQueries,
+      'slow': slow,
+      'error': error,
+      'stackTrace': stackTrace,
+      'authenticatedUserId': authenticatedUserId,
+      'isOpen': isOpen,
+      'touched': touched,
     };
   }
 

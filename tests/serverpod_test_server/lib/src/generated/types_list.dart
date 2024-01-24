@@ -172,13 +172,13 @@ abstract class TypesList extends _i1.SerializableEntity {
         'aStringifiedEnum':
             aStringifiedEnum?.toJson(valueToJson: (v) => v.toJson()),
       if (anObject != null)
-        'anObject': anObject?.toJson(valueToJson: (v) => v.toJson()),
+        'anObject': anObject?.toJson(valueToJson: (v) => v.allToJson()),
       if (aMap != null)
         'aMap': aMap?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
       if (aList != null)
         'aList': aList?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
     };
   }
 }

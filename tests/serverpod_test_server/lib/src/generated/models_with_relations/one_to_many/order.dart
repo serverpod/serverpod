@@ -84,7 +84,7 @@ abstract class Order extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'description': description,
       'customerId': customerId,
     };
@@ -96,9 +96,9 @@ abstract class Order extends _i1.TableRow {
       if (id != null) 'id': id,
       'description': description,
       'customerId': customerId,
-      if (customer != null) 'customer': customer?.toJson(),
+      if (customer != null) 'customer': customer?.allToJson(),
       if (comments != null)
-        'comments': comments?.toJson(valueToJson: (v) => v.toJson()),
+        'comments': comments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

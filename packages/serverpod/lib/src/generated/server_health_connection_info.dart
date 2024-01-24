@@ -107,9 +107,9 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'serverId': serverId,
-      'timestamp': timestamp.toJson(),
+      'timestamp': timestamp,
       'active': active,
       'closing': closing,
       'idle': idle,

@@ -297,13 +297,13 @@ abstract class TypesMap extends _i1.SerializableEntity {
         'aStringifiedEnumKey':
             aStringifiedEnumKey?.toJson(keyToJson: (k) => k.toJson()),
       if (anObjectKey != null)
-        'anObjectKey': anObjectKey?.toJson(keyToJson: (k) => k.toJson()),
+        'anObjectKey': anObjectKey?.toJson(keyToJson: (k) => k.allToJson()),
       if (aMapKey != null)
         'aMapKey': aMapKey?.toJson(
-            keyToJson: (k) => k.toJson(keyToJson: (k) => k.toJson())),
+            keyToJson: (k) => k.toJson(keyToJson: (k) => k.allToJson())),
       if (aListKey != null)
         'aListKey': aListKey?.toJson(
-            keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson())),
+            keyToJson: (k) => k.toJson(valueToJson: (v) => v.allToJson())),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -325,13 +325,14 @@ abstract class TypesMap extends _i1.SerializableEntity {
         'aStringifiedEnumValue':
             aStringifiedEnumValue?.toJson(valueToJson: (v) => v.toJson()),
       if (anObjectValue != null)
-        'anObjectValue': anObjectValue?.toJson(valueToJson: (v) => v.toJson()),
+        'anObjectValue':
+            anObjectValue?.toJson(valueToJson: (v) => v.allToJson()),
       if (aMapValue != null)
         'aMapValue': aMapValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
       if (aListValue != null)
         'aListValue': aListValue?.toJson(
-            valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+            valueToJson: (v) => v.toJson(valueToJson: (v) => v.allToJson())),
     };
   }
 }

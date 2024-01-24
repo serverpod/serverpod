@@ -140,15 +140,15 @@ abstract class MessageLogEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      if (error != null) 'error': error,
-      if (stackTrace != null) 'stackTrace': stackTrace,
+      'error': error,
+      'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };

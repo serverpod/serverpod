@@ -105,12 +105,12 @@ abstract class CloudStorageEntry extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime.toJson(),
-      if (expiration != null) 'expiration': expiration?.toJson(),
-      'byteData': byteData.toJson(),
+      'addedTime': addedTime,
+      'expiration': expiration,
+      'byteData': byteData,
       'verified': verified,
     };
   }

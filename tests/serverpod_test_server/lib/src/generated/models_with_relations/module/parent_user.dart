@@ -65,9 +65,9 @@ abstract class ParentUser extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (userInfoId != null) 'userInfoId': userInfoId,
+      'id': id,
+      'name': name,
+      'userInfoId': userInfoId,
     };
   }
 

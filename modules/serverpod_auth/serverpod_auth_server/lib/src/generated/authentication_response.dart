@@ -87,7 +87,7 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
       'success': success,
       if (key != null) 'key': key,
       if (keyId != null) 'keyId': keyId,
-      if (userInfo != null) 'userInfo': userInfo?.toJson(),
+      if (userInfo != null) 'userInfo': userInfo?.allToJson(),
       if (failReason != null) 'failReason': failReason?.toJson(),
     };
   }

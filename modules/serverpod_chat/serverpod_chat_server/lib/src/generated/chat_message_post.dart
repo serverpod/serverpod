@@ -81,7 +81,7 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
       'message': message,
       'clientMessageId': clientMessageId,
       if (attachments != null)
-        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
+        'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 }

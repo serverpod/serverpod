@@ -83,9 +83,9 @@ abstract class Cat extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (motherId != null) 'motherId': motherId,
+      'motherId': motherId,
     };
   }
 
@@ -95,9 +95,9 @@ abstract class Cat extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (motherId != null) 'motherId': motherId,
-      if (mother != null) 'mother': mother?.toJson(),
+      if (mother != null) 'mother': mother?.allToJson(),
       if (kittens != null)
-        'kittens': kittens?.toJson(valueToJson: (v) => v.toJson()),
+        'kittens': kittens?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

@@ -82,7 +82,7 @@ abstract class Blocking extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'blockedId': blockedId,
       'blockedById': blockedById,
     };
@@ -93,9 +93,9 @@ abstract class Blocking extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'blockedId': blockedId,
-      if (blocked != null) 'blocked': blocked?.toJson(),
+      if (blocked != null) 'blocked': blocked?.allToJson(),
       'blockedById': blockedById,
-      if (blockedBy != null) 'blockedBy': blockedBy?.toJson(),
+      if (blockedBy != null) 'blockedBy': blockedBy?.allToJson(),
     };
   }
 

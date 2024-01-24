@@ -62,9 +62,9 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'model': model.toJson(),
-      'list': list.toJson(valueToJson: (v) => v.toJson()),
-      'map': map.toJson(valueToJson: (v) => v.toJson()),
+      'model': model.allToJson(),
+      'list': list.toJson(valueToJson: (v) => v.allToJson()),
+      'map': map.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 }

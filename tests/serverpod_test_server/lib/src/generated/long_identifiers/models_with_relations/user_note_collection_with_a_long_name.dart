@@ -66,7 +66,7 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -76,7 +76,8 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (notes != null) 'notes': notes?.toJson(valueToJson: (v) => v.toJson()),
+      if (notes != null)
+        'notes': notes?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

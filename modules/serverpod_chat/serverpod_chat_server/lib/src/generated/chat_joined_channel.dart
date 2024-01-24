@@ -77,9 +77,9 @@ abstract class ChatJoinedChannel extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'channel': channel,
-      'initialMessageChunk': initialMessageChunk.toJson(),
+      'initialMessageChunk': initialMessageChunk.allToJson(),
       'lastReadMessageId': lastReadMessageId,
-      'userInfo': userInfo.toJson(),
+      'userInfo': userInfo.allToJson(),
     };
   }
 }

@@ -83,9 +83,9 @@ abstract class Team extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (arenaId != null) 'arenaId': arenaId,
+      'arenaId': arenaId,
     };
   }
 
@@ -95,9 +95,9 @@ abstract class Team extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (arenaId != null) 'arenaId': arenaId,
-      if (arena != null) 'arena': arena?.toJson(),
+      if (arena != null) 'arena': arena?.allToJson(),
       if (players != null)
-        'players': players?.toJson(valueToJson: (v) => v.toJson()),
+        'players': players?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

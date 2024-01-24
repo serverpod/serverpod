@@ -71,8 +71,8 @@ abstract class DatabaseMigrationAction extends _i1.SerializableEntity {
     return {
       'type': type.toJson(),
       if (deleteTable != null) 'deleteTable': deleteTable,
-      if (alterTable != null) 'alterTable': alterTable?.toJson(),
-      if (createTable != null) 'createTable': createTable?.toJson(),
+      if (alterTable != null) 'alterTable': alterTable?.allToJson(),
+      if (createTable != null) 'createTable': createTable?.allToJson(),
     };
   }
 }

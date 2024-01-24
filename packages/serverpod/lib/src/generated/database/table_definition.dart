@@ -127,9 +127,9 @@ abstract class TableDefinition extends _i1.SerializableEntity {
       if (module != null) 'module': module,
       'schema': schema,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'columns': columns.toJson(valueToJson: (v) => v.toJson()),
-      'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.toJson()),
-      'indexes': indexes.toJson(valueToJson: (v) => v.toJson()),
+      'columns': columns.toJson(valueToJson: (v) => v.allToJson()),
+      'foreignKeys': foreignKeys.toJson(valueToJson: (v) => v.allToJson()),
+      'indexes': indexes.toJson(valueToJson: (v) => v.allToJson()),
       if (managed != null) 'managed': managed,
     };
   }

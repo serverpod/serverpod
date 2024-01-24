@@ -67,7 +67,7 @@ abstract class Course extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -78,7 +78,7 @@ abstract class Course extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (enrollments != null)
-        'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
+        'enrollments': enrollments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

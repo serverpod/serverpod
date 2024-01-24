@@ -78,7 +78,7 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
       if (module != null) 'module': module,
       if (endpoint != null) 'endpoint': endpoint,
       if (method != null) 'method': method,
-      'logSettings': logSettings.toJson(),
+      'logSettings': logSettings.allToJson(),
     };
   }
 }

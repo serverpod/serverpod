@@ -60,8 +60,8 @@ abstract class SimpleDateTime extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      'dateTime': dateTime.toJson(),
+      'id': id,
+      'dateTime': dateTime,
     };
   }
 

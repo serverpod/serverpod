@@ -95,10 +95,10 @@ abstract class AuthKey extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'userId': userId,
       'hash': hash,
-      'scopeNames': scopeNames.toJson(),
+      'scopeNames': scopeNames,
       'method': method,
     };
   }

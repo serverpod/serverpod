@@ -90,10 +90,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      'logSettings': logSettings.toJson(),
-      'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
+      'id': id,
+      'logSettings': logSettings,
+      'logSettingsOverrides': logSettingsOverrides,
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
@@ -103,9 +102,9 @@ abstract class RuntimeSettings extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'logSettings': logSettings.toJson(),
+      'logSettings': logSettings.allToJson(),
       'logSettingsOverrides':
-          logSettingsOverrides.toJson(valueToJson: (v) => v.toJson()),
+          logSettingsOverrides.toJson(valueToJson: (v) => v.allToJson()),
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };

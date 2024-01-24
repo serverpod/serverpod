@@ -64,8 +64,8 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'actions': actions.toJson(valueToJson: (v) => v.toJson()),
-      'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
+      'actions': actions.toJson(valueToJson: (v) => v.allToJson()),
+      'warnings': warnings.toJson(valueToJson: (v) => v.allToJson()),
       'migrationApiVersion': migrationApiVersion,
     };
   }

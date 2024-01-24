@@ -75,7 +75,7 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -88,7 +88,7 @@ abstract class LongImplicitIdFieldCollection extends _i1.TableRow {
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
             thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-                ?.toJson(valueToJson: (v) => v.toJson()),
+                ?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

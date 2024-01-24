@@ -58,12 +58,10 @@ abstract class UserNote extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId !=
-          null)
-        '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-            _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
+      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
+          _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
     };
   }
 

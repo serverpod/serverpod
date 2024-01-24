@@ -106,18 +106,13 @@ abstract class ObjectWithObject extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      'data': data.toJson(),
-      if (nullableData != null) 'nullableData': nullableData?.toJson(),
-      'dataList': dataList.toJson(valueToJson: (v) => v.toJson()),
-      if (nullableDataList != null)
-        'nullableDataList':
-            nullableDataList?.toJson(valueToJson: (v) => v.toJson()),
-      'listWithNullableData':
-          listWithNullableData.toJson(valueToJson: (v) => v?.toJson()),
-      if (nullableListWithNullableData != null)
-        'nullableListWithNullableData': nullableListWithNullableData?.toJson(
-            valueToJson: (v) => v?.toJson()),
+      'id': id,
+      'data': data,
+      'nullableData': nullableData,
+      'dataList': dataList,
+      'nullableDataList': nullableDataList,
+      'listWithNullableData': listWithNullableData,
+      'nullableListWithNullableData': nullableListWithNullableData,
     };
   }
 
@@ -125,17 +120,17 @@ abstract class ObjectWithObject extends _i1.TableRow {
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
-      'data': data.toJson(),
-      if (nullableData != null) 'nullableData': nullableData?.toJson(),
-      'dataList': dataList.toJson(valueToJson: (v) => v.toJson()),
+      'data': data.allToJson(),
+      if (nullableData != null) 'nullableData': nullableData?.allToJson(),
+      'dataList': dataList.toJson(valueToJson: (v) => v.allToJson()),
       if (nullableDataList != null)
         'nullableDataList':
-            nullableDataList?.toJson(valueToJson: (v) => v.toJson()),
+            nullableDataList?.toJson(valueToJson: (v) => v.allToJson()),
       'listWithNullableData':
-          listWithNullableData.toJson(valueToJson: (v) => v?.toJson()),
+          listWithNullableData.toJson(valueToJson: (v) => v?.allToJson()),
       if (nullableListWithNullableData != null)
         'nullableListWithNullableData': nullableListWithNullableData?.toJson(
-            valueToJson: (v) => v?.toJson()),
+            valueToJson: (v) => v?.allToJson()),
     };
   }
 

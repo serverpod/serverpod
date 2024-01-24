@@ -470,8 +470,9 @@ abstract class Nullability extends _i1.SerializableEntity {
         'aNullableDuration': aNullableDuration?.toJson(),
       'aUuid': aUuid.toJson(),
       if (aNullableUuid != null) 'aNullableUuid': aNullableUuid?.toJson(),
-      'anObject': anObject.toJson(),
-      if (aNullableObject != null) 'aNullableObject': aNullableObject?.toJson(),
+      'anObject': anObject.allToJson(),
+      if (aNullableObject != null)
+        'aNullableObject': aNullableObject?.allToJson(),
       'anIntList': anIntList.toJson(),
       if (aNullableIntList != null)
         'aNullableIntList': aNullableIntList?.toJson(),
@@ -479,15 +480,15 @@ abstract class Nullability extends _i1.SerializableEntity {
       if (aNullableListWithNullableInts != null)
         'aNullableListWithNullableInts':
             aNullableListWithNullableInts?.toJson(),
-      'anObjectList': anObjectList.toJson(valueToJson: (v) => v.toJson()),
+      'anObjectList': anObjectList.toJson(valueToJson: (v) => v.allToJson()),
       if (aNullableObjectList != null)
         'aNullableObjectList':
-            aNullableObjectList?.toJson(valueToJson: (v) => v.toJson()),
+            aNullableObjectList?.toJson(valueToJson: (v) => v.allToJson()),
       'aListWithNullableObjects':
-          aListWithNullableObjects.toJson(valueToJson: (v) => v?.toJson()),
+          aListWithNullableObjects.toJson(valueToJson: (v) => v?.allToJson()),
       if (aNullableListWithNullableObjects != null)
         'aNullableListWithNullableObjects': aNullableListWithNullableObjects
-            ?.toJson(valueToJson: (v) => v?.toJson()),
+            ?.toJson(valueToJson: (v) => v?.allToJson()),
       'aDateTimeList': aDateTimeList.toJson(valueToJson: (v) => v.toJson()),
       if (aNullableDateTimeList != null)
         'aNullableDateTimeList':

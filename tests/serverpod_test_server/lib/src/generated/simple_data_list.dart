@@ -37,7 +37,7 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
 
   @override
   Map<String, dynamic> allToJson() {
-    return {'rows': rows.toJson(valueToJson: (v) => v.toJson())};
+    return {'rows': rows.toJson(valueToJson: (v) => v.allToJson())};
   }
 }
 

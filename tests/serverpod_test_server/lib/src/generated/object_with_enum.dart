@@ -93,14 +93,12 @@ abstract class ObjectWithEnum extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      'testEnum': testEnum.toJson(),
-      if (nullableEnum != null) 'nullableEnum': nullableEnum?.toJson(),
-      'enumList': enumList.toJson(valueToJson: (v) => v.toJson()),
-      'nullableEnumList':
-          nullableEnumList.toJson(valueToJson: (v) => v?.toJson()),
-      'enumListList': enumListList.toJson(
-          valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson())),
+      'id': id,
+      'testEnum': testEnum,
+      'nullableEnum': nullableEnum,
+      'enumList': enumList,
+      'nullableEnumList': nullableEnumList,
+      'enumListList': enumListList,
     };
   }
 

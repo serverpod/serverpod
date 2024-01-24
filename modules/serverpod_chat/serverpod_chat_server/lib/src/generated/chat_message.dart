@@ -135,14 +135,13 @@ abstract class ChatMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'channel': channel,
       'message': message,
-      'time': time.toJson(),
+      'time': time,
       'sender': sender,
       'removed': removed,
-      if (attachments != null)
-        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
+      'attachments': attachments,
     };
   }
 
@@ -154,12 +153,12 @@ abstract class ChatMessage extends _i1.TableRow {
       'message': message,
       'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
+      if (senderInfo != null) 'senderInfo': senderInfo?.allToJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
       if (attachments != null)
-        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
+        'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

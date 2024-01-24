@@ -76,7 +76,7 @@ abstract class City extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -87,9 +87,10 @@ abstract class City extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (citizens != null)
-        'citizens': citizens?.toJson(valueToJson: (v) => v.toJson()),
+        'citizens': citizens?.toJson(valueToJson: (v) => v.allToJson()),
       if (organizations != null)
-        'organizations': organizations?.toJson(valueToJson: (v) => v.toJson()),
+        'organizations':
+            organizations?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

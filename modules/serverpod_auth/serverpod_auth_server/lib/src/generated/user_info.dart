@@ -128,14 +128,14 @@ abstract class UserInfo extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'userIdentifier': userIdentifier,
       'userName': userName,
-      if (fullName != null) 'fullName': fullName,
-      if (email != null) 'email': email,
-      'created': created.toJson(),
-      if (imageUrl != null) 'imageUrl': imageUrl,
-      'scopeNames': scopeNames.toJson(),
+      'fullName': fullName,
+      'email': email,
+      'created': created,
+      'imageUrl': imageUrl,
+      'scopeNames': scopeNames,
       'blocked': blocked,
     };
   }

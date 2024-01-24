@@ -74,9 +74,9 @@ abstract class Address extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'street': street,
-      if (inhabitantId != null) 'inhabitantId': inhabitantId,
+      'inhabitantId': inhabitantId,
     };
   }
 
@@ -86,7 +86,7 @@ abstract class Address extends _i1.TableRow {
       if (id != null) 'id': id,
       'street': street,
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
-      if (inhabitant != null) 'inhabitant': inhabitant?.toJson(),
+      if (inhabitant != null) 'inhabitant': inhabitant?.allToJson(),
     };
   }
 

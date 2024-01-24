@@ -75,11 +75,10 @@ abstract class Person extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (organizationId != null) 'organizationId': organizationId,
-      if (_cityCitizensCityId != null)
-        '_cityCitizensCityId': _cityCitizensCityId,
+      'organizationId': organizationId,
+      '_cityCitizensCityId': _cityCitizensCityId,
     };
   }
 
@@ -89,7 +88,7 @@ abstract class Person extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (organizationId != null) 'organizationId': organizationId,
-      if (organization != null) 'organization': organization?.toJson(),
+      if (organization != null) 'organization': organization?.allToJson(),
       if (_cityCitizensCityId != null)
         '_cityCitizensCityId': _cityCitizensCityId,
     };
