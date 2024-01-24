@@ -15,7 +15,7 @@ void main() {
             '''
             class: Example
             fields:
-              name: String, database, database
+              name: String?, database, database
             ''',
           ).build(),
         ];
@@ -43,7 +43,7 @@ void main() {
             '''
             class: Example
             fields:
-              name: String, api, api
+              name: String?, api, api
             ''',
           ).build(),
         ];
@@ -119,7 +119,7 @@ void main() {
             '''
             class: Example
             fields:
-              name: String, api, database
+              name: String?, api, database
             ''',
           ).build(),
         ];
@@ -159,7 +159,7 @@ void main() {
             class: Example
             table: example
             fields:
-              name: String, database
+              name: String?, database
             ''',
           ).build(),
         ];
@@ -204,7 +204,7 @@ void main() {
             class: Example
             table: example
             fields:
-              name: String, api
+              name: String?, api
             ''',
           ).build(),
         ];
@@ -246,7 +246,7 @@ void main() {
             '''
             class: Example
             fields:
-              name: String, database=INVALID
+              name: String?, database=INVALID
             ''',
           ).build(),
         ];
@@ -270,7 +270,7 @@ void main() {
             '''
             class: Example
             fields:
-              name: String, api=INVALID
+              name: String?, api=INVALID
             ''',
           ).build(),
         ];
@@ -295,7 +295,7 @@ void main() {
             class: Example
             table: example
             fields:
-              nextId: int, parent=example, api
+              nextId: int?, parent=example, api
             ''',
           ).build(),
         ];
@@ -354,9 +354,9 @@ void main() {
           '''
           class: Example
           fields:
-            name: String, scope=serverOnly
+            name: String?, scope=serverOnly
             example: String, scope=all
-            town: String, scope=none
+            town: String?, scope=none
           ''',
         ).build(),
       ];
@@ -399,7 +399,7 @@ void main() {
         '''
         class: Example
         fields:
-          name: String, scope=
+          name: String?, scope=
         ''',
       ).build(),
     ];
@@ -429,7 +429,7 @@ void main() {
           '''
         class: Example
         fields:
-          name: String, scope=InvalidScope
+          name: String?, scope=InvalidScope
         ''',
         ).build(),
       ];
@@ -460,7 +460,7 @@ void main() {
           '''
           class: Example
           fields:
-            name: String, scope=serverOnly, database
+            name: String?, scope=serverOnly, database
           ''',
         ).build(),
       ];
@@ -494,7 +494,7 @@ void main() {
           '''
           class: Example
           fields:
-            name: String, scope=serverOnly, api
+            name: String?, scope=serverOnly, api
           ''',
         ).build(),
       ];
@@ -518,6 +518,68 @@ void main() {
       expect(
         error2.message,
         'The "api" property is mutually exclusive with the "scope" property.',
+      );
+    },
+  );
+
+  test(
+    'Given a class with a none nullable field with the scope serverOnly then an error is collected notifying that only nullable fields are allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, scope=serverOnly
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field "name" must be nullable when the "scope" property is set to "serverOnly".',
+      );
+    },
+  );
+
+  test(
+    'Given a class with a none nullable field with the scope none then an error is collected notifying that only nullable fields are allowed.',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          fields:
+            name: String, scope=none
+          ''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      analyzer.validateAll();
+
+      expect(collector.errors, isNotEmpty);
+
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The field "name" must be nullable when the "scope" property is set to "none".',
       );
     },
   );
