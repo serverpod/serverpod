@@ -57,7 +57,8 @@ abstract class UserNoteCollection extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'name': name,
       if (userNotesPropertyName != null)
-        'userNotesPropertyName': userNotesPropertyName,
+        'userNotesPropertyName':
+            userNotesPropertyName?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

@@ -49,7 +49,7 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
-      'dateTime': dateTime,
+      'dateTime': dateTime.toJson(),
     };
   }
 }

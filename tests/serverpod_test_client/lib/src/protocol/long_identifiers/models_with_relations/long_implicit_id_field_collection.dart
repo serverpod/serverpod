@@ -63,7 +63,8 @@ abstract class LongImplicitIdFieldCollection extends _i1.SerializableEntity {
       'name': name,
       if (thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa != null)
         'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa':
-            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+            thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
+                ?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

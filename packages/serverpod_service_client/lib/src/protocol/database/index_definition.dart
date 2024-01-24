@@ -91,7 +91,7 @@ abstract class IndexDefinition extends _i1.SerializableEntity {
     return {
       'indexName': indexName,
       if (tableSpace != null) 'tableSpace': tableSpace,
-      'elements': elements,
+      'elements': elements.toJson(valueToJson: (v) => v.toJson()),
       'type': type,
       'isUnique': isUnique,
       'isPrimary': isPrimary,

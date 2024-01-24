@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Provides high level information about a cache.
 abstract class CacheInfo extends _i1.SerializableEntity {
@@ -57,7 +58,7 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
-      if (keys != null) 'keys': keys,
+      if (keys != null) 'keys': keys?.toJson(),
     };
   }
 
@@ -66,7 +67,7 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
-      if (keys != null) 'keys': keys,
+      if (keys != null) 'keys': keys?.toJson(),
     };
   }
 }

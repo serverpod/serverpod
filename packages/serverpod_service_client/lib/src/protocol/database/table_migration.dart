@@ -121,14 +121,14 @@ abstract class TableMigration extends _i1.SerializableEntity {
       if (dartName != null) 'dartName': dartName,
       if (module != null) 'module': module,
       'schema': schema,
-      'addColumns': addColumns,
-      'deleteColumns': deleteColumns,
-      'modifyColumns': modifyColumns,
-      'addIndexes': addIndexes,
-      'deleteIndexes': deleteIndexes,
-      'addForeignKeys': addForeignKeys,
-      'deleteForeignKeys': deleteForeignKeys,
-      'warnings': warnings,
+      'addColumns': addColumns.toJson(valueToJson: (v) => v.toJson()),
+      'deleteColumns': deleteColumns.toJson(),
+      'modifyColumns': modifyColumns.toJson(valueToJson: (v) => v.toJson()),
+      'addIndexes': addIndexes.toJson(valueToJson: (v) => v.toJson()),
+      'deleteIndexes': deleteIndexes.toJson(),
+      'addForeignKeys': addForeignKeys.toJson(valueToJson: (v) => v.toJson()),
+      'deleteForeignKeys': deleteForeignKeys.toJson(),
+      'warnings': warnings.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

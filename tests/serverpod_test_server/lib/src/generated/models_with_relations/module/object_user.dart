@@ -66,7 +66,7 @@ abstract class ObjectUser extends _i1.TableRow {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      if (userInfo != null) 'userInfo': userInfo,
+      if (userInfo != null) 'userInfo': userInfo?.toJson(),
     };
   }
 
@@ -74,8 +74,8 @@ abstract class ObjectUser extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
+      'id': id,
+      'name': name,
       'userInfoId': userInfoId,
     };
   }
@@ -86,7 +86,7 @@ abstract class ObjectUser extends _i1.TableRow {
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       'userInfoId': userInfoId,
-      if (userInfo != null) 'userInfo': userInfo,
+      if (userInfo != null) 'userInfo': userInfo?.allToJson(),
     };
   }
 

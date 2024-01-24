@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class RelationToMultipleMaxFieldName extends _i1.TableRow {
   RelationToMultipleMaxFieldName._({
@@ -59,7 +60,8 @@ abstract class RelationToMultipleMaxFieldName extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (multipleMaxFieldNames != null)
-        'multipleMaxFieldNames': multipleMaxFieldNames,
+        'multipleMaxFieldNames':
+            multipleMaxFieldNames?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -67,7 +69,7 @@ abstract class RelationToMultipleMaxFieldName extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -78,7 +80,8 @@ abstract class RelationToMultipleMaxFieldName extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       if (multipleMaxFieldNames != null)
-        'multipleMaxFieldNames': multipleMaxFieldNames,
+        'multipleMaxFieldNames':
+            multipleMaxFieldNames?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

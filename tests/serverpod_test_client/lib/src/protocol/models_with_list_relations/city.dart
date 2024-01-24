@@ -62,8 +62,10 @@ abstract class City extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (citizens != null) 'citizens': citizens,
-      if (organizations != null) 'organizations': organizations,
+      if (citizens != null)
+        'citizens': citizens?.toJson(valueToJson: (v) => v.toJson()),
+      if (organizations != null)
+        'organizations': organizations?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

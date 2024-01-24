@@ -55,7 +55,7 @@ abstract class UserNoteCollectionWithALongName extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (notes != null) 'notes': notes,
+      if (notes != null) 'notes': notes?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Organization extends _i1.TableRow {
   Organization._({
@@ -71,9 +72,10 @@ abstract class Organization extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (people != null) 'people': people,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJson()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city,
+      if (city != null) 'city': city?.toJson(),
     };
   }
 
@@ -81,9 +83,9 @@ abstract class Organization extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
-      if (cityId != null) 'cityId': cityId,
+      'cityId': cityId,
     };
   }
 
@@ -92,9 +94,10 @@ abstract class Organization extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (people != null) 'people': people,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.allToJson()),
       if (cityId != null) 'cityId': cityId,
-      if (city != null) 'city': city,
+      if (city != null) 'city': city?.allToJson(),
     };
   }
 

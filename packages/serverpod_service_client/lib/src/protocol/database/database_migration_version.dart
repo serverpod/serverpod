@@ -67,7 +67,7 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'module': module,
       'version': version,
-      if (timestamp != null) 'timestamp': timestamp,
+      if (timestamp != null) 'timestamp': timestamp?.toJson(),
     };
   }
 }

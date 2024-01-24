@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chunk of chat messages.
 abstract class ChatMessageChunk extends _i1.SerializableEntity {
@@ -57,7 +58,7 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'channel': channel,
-      'messages': messages,
+      'messages': messages.toJson(valueToJson: (v) => v.toJson()),
       'hasOlderMessages': hasOlderMessages,
     };
   }
@@ -66,7 +67,7 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'channel': channel,
-      'messages': messages,
+      'messages': messages.toJson(valueToJson: (v) => v.allToJson()),
       'hasOlderMessages': hasOlderMessages,
     };
   }

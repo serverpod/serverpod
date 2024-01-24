@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
@@ -95,7 +96,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'isHealthy': isHealthy,
       'value': value,
       'granularity': granularity,
@@ -106,7 +107,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
       'serverId': serverId,
       'timestamp': timestamp,
@@ -122,7 +123,7 @@ abstract class ServerHealthMetric extends _i1.TableRow {
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'isHealthy': isHealthy,
       'value': value,
       'granularity': granularity,

@@ -57,7 +57,7 @@ abstract class Arena extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.toJson(),
     };
   }
 
@@ -65,7 +65,7 @@ abstract class Arena extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'name': name,
     };
   }
@@ -75,7 +75,7 @@ abstract class Arena extends _i1.TableRow {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (team != null) 'team': team,
+      if (team != null) 'team': team?.allToJson(),
     };
   }
 

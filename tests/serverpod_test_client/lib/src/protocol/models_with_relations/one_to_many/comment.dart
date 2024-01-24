@@ -64,7 +64,7 @@ abstract class Comment extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'description': description,
       'orderId': orderId,
-      if (order != null) 'order': order,
+      if (order != null) 'order': order?.toJson(),
     };
   }
 }

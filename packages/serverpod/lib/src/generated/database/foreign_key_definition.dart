@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
@@ -97,13 +98,13 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> toJson() {
     return {
       'constraintName': constraintName,
-      'columns': columns,
+      'columns': columns.toJson(),
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
-      'referenceColumns': referenceColumns,
-      if (onUpdate != null) 'onUpdate': onUpdate,
-      if (onDelete != null) 'onDelete': onDelete,
-      if (matchType != null) 'matchType': matchType,
+      'referenceColumns': referenceColumns.toJson(),
+      if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
+      if (onDelete != null) 'onDelete': onDelete?.toJson(),
+      if (matchType != null) 'matchType': matchType?.toJson(),
     };
   }
 
@@ -111,13 +112,13 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
   Map<String, dynamic> allToJson() {
     return {
       'constraintName': constraintName,
-      'columns': columns,
+      'columns': columns.toJson(),
       'referenceTable': referenceTable,
       'referenceTableSchema': referenceTableSchema,
-      'referenceColumns': referenceColumns,
-      if (onUpdate != null) 'onUpdate': onUpdate,
-      if (onDelete != null) 'onDelete': onDelete,
-      if (matchType != null) 'matchType': matchType,
+      'referenceColumns': referenceColumns.toJson(),
+      if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
+      if (onDelete != null) 'onDelete': onDelete?.toJson(),
+      if (matchType != null) 'matchType': matchType?.toJson(),
     };
   }
 }

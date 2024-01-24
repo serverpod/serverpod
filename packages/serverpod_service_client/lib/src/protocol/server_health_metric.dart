@@ -93,7 +93,7 @@ abstract class ServerHealthMetric extends _i1.SerializableEntity {
       if (id != null) 'id': id,
       'name': name,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'isHealthy': isHealthy,
       'value': value,
       'granularity': granularity,

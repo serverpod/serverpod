@@ -92,7 +92,7 @@ abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'active': active,
       'closing': closing,
       'idle': idle,

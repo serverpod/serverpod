@@ -83,7 +83,7 @@ abstract class AuthKey extends _i1.SerializableEntity {
       'userId': userId,
       'hash': hash,
       if (key != null) 'key': key,
-      'scopeNames': scopeNames,
+      'scopeNames': scopeNames.toJson(),
       'method': method,
     };
   }

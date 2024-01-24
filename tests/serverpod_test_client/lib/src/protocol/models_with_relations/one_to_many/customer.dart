@@ -55,7 +55,8 @@ abstract class Customer extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (orders != null) 'orders': orders,
+      if (orders != null)
+        'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

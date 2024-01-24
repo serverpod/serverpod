@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Filter extends _i1.SerializableEntity {
   Filter._({
@@ -53,7 +54,7 @@ abstract class Filter extends _i1.SerializableEntity {
     return {
       'name': name,
       'table': table,
-      'constraints': constraints,
+      'constraints': constraints.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -62,7 +63,7 @@ abstract class Filter extends _i1.SerializableEntity {
     return {
       'name': name,
       'table': table,
-      'constraints': constraints,
+      'constraints': constraints.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 }

@@ -55,7 +55,8 @@ abstract class Student extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (enrollments != null) 'enrollments': enrollments,
+      if (enrollments != null)
+        'enrollments': enrollments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }

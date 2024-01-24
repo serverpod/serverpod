@@ -11,6 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/module.dart' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
 abstract class ChatMessage extends _i1.TableRow {
@@ -119,13 +120,14 @@ abstract class ChatMessage extends _i1.TableRow {
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
-      if (attachments != null) 'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
@@ -133,13 +135,13 @@ abstract class ChatMessage extends _i1.TableRow {
   @Deprecated('Will be removed in 2.0.0')
   Map<String, dynamic> toJsonForDatabase() {
     return {
-      if (id != null) 'id': id,
+      'id': id,
       'channel': channel,
       'message': message,
       'time': time,
       'sender': sender,
       'removed': removed,
-      if (attachments != null) 'attachments': attachments,
+      'attachments': attachments,
     };
   }
 
@@ -149,13 +151,14 @@ abstract class ChatMessage extends _i1.TableRow {
       if (id != null) 'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo?.allToJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
-      if (attachments != null) 'attachments': attachments,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
     };
   }
 

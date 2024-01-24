@@ -57,7 +57,7 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     return {
       'numEntries': numEntries,
       'maxEntries': maxEntries,
-      if (keys != null) 'keys': keys,
+      if (keys != null) 'keys': keys?.toJson(),
     };
   }
 }

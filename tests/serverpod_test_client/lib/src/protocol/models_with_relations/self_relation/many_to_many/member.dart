@@ -62,8 +62,10 @@ abstract class Member extends _i1.SerializableEntity {
     return {
       if (id != null) 'id': id,
       'name': name,
-      if (blocking != null) 'blocking': blocking,
-      if (blockedBy != null) 'blockedBy': blockedBy,
+      if (blocking != null)
+        'blocking': blocking?.toJson(valueToJson: (v) => v.toJson()),
+      if (blockedBy != null)
+        'blockedBy': blockedBy?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 }
