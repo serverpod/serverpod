@@ -325,6 +325,81 @@ void main() {
       });
     });
 
+    test(
+        'Given a class with a field with the type List<MyEnum> then the nested type is tagged as an enum',
+        () {
+      var models = [
+        ModelSourceBuilder().withFileName('example').withYaml(
+          '''
+          class: Example
+          fields:
+            myEnum: List<MyEnum>
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('my_enum').withYaml(
+          '''
+          enum: MyEnum
+          values:
+            - first
+            - second
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.isEnumType,
+        isTrue,
+      );
+    });
+
+    test(
+        'Given a class with a field with the type Map<MyEnum, MyEnum> then the nested type is tagged as an enum',
+        () {
+      var models = [
+        ModelSourceBuilder().withFileName('example').withYaml(
+          '''
+          class: Example
+          fields:
+            myEnum: Map<MyEnum, MyEnum>
+          ''',
+        ).build(),
+        ModelSourceBuilder().withFileName('my_enum').withYaml(
+          '''
+          enum: MyEnum
+          values:
+            - first
+            - second
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer analyzer = StatefulAnalyzer(
+        models,
+        onErrorsCollector(collector),
+      );
+      var definitions = analyzer.validateAll();
+
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.isEnumType,
+        isTrue,
+      );
+
+      expect(
+        definition.fields.first.type.generics.last.isEnumType,
+        isTrue,
+      );
+    });
+
     group('Given a class with a field with an enum type from a module', () {
       var models = [
         ModelSourceBuilder().withFileName('example').withYaml(
