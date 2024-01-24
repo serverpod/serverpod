@@ -17,14 +17,14 @@ dependencies:
 dev_dependencies:
   lints: ^3.0.0
 
-dependency_overrides: 
-  serverpod: 
-    path: ../../../packages/serverpod 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
-  serverpod_service_client: 
-    path: ../../../packages/serverpod_service_client 
-  serverpod_shared: 
-    path: ../../../packages/serverpod_shared 
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

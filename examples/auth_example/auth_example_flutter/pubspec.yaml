@@ -45,23 +45,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides: 
-  serverpod_flutter: 
-    path: ../../../packages/serverpod_flutter 
-  serverpod_auth_email_flutter: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter 
-  serverpod_auth_shared_flutter: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter 
-  serverpod_auth_google_flutter: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter 
-  serverpod_auth_apple_flutter: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter 
-  serverpod_auth_client: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_client 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_flutter:
+    path: ../../../packages/serverpod_flutter
+  serverpod_auth_email_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
+  serverpod_auth_shared_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_auth_google_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_google_flutter
+  serverpod_auth_apple_flutter:
+    path: ../../../modules/serverpod_auth/serverpod_auth_apple_flutter
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

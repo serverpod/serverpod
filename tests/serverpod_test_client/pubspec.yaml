@@ -22,10 +22,10 @@ dependencies:
 dev_dependencies:
   test: ^1.24.2
 
-dependency_overrides: 
-  serverpod_client: 
-    path: ../../packages/serverpod_client 
-  serverpod_auth_client: 
-    path: ../../modules/serverpod_auth/serverpod_auth_client 
-  serverpod_serialization: 
-    path: ../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_auth_client:
+    path: ../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization

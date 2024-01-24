@@ -12,12 +12,12 @@ dependencies:
   serverpod_auth_client: 1.2.1
   serverpod_chat_client: 1.2.1
 
-dependency_overrides: 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_auth_client: 
-    path: ../../../modules/serverpod_auth/serverpod_auth_client 
-  serverpod_chat_client: 
-    path: ../../../modules/serverpod_chat/serverpod_chat_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../../../modules/serverpod_chat/serverpod_chat_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

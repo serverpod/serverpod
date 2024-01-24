@@ -29,18 +29,18 @@ dev_dependencies:
   serverpod_lints: 1.2.1
   mocktail: ^1.0.0
 
-dependency_overrides: 
-  serverpod_auth_client: 
-    path: ../../serverpod_auth/serverpod_auth_client 
-  serverpod_chat_client: 
-    path: ../serverpod_chat_client 
-  serverpod_auth_shared_flutter: 
-    path: ../../serverpod_auth/serverpod_auth_shared_flutter 
-  serverpod_lints: 
-    path: ../../../packages/serverpod_lints 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../../serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../serverpod_chat_client
+  serverpod_auth_shared_flutter:
+    path: ../../serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_lints:
+    path: ../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 flutter:

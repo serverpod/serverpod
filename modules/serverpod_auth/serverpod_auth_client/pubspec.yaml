@@ -14,8 +14,8 @@ dependencies:
   lints: ^3.0.0
   serverpod_client: 1.2.1
 
-dependency_overrides: 
-  serverpod_client: 
-    path: ../../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../../packages/serverpod_serialization 
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

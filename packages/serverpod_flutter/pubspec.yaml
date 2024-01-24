@@ -23,12 +23,12 @@ dev_dependencies:
     sdk: flutter
   serverpod_lints: 1.2.1
 
-dependency_overrides: 
-  serverpod_client: 
-    path: ../serverpod_client 
-  serverpod_lints: 
-    path: ../serverpod_lints 
-  serverpod_serialization: 
-    path: ../serverpod_serialization 
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
 
 flutter:

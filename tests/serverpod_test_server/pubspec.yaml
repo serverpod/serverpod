@@ -33,22 +33,22 @@ dev_dependencies:
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
 
-dependency_overrides: 
-  serverpod: 
-    path: ../../packages/serverpod 
-  serverpod_auth_server: 
-    path: ../../modules/serverpod_auth/serverpod_auth_server 
-  serverpod_cloud_storage_s3: 
-    path: ../../integrations/serverpod_cloud_storage_s3 
-  serverpod_cli: 
-    path: ../../tools/serverpod_cli 
-  serverpod_service_client: 
-    path: ../../packages/serverpod_service_client 
-  serverpod_auth_client: 
-    path: ../../modules/serverpod_auth/serverpod_auth_client 
-  serverpod_client: 
-    path: ../../packages/serverpod_client 
-  serverpod_serialization: 
-    path: ../../packages/serverpod_serialization 
-  serverpod_shared: 
-    path: ../../packages/serverpod_shared 
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_cloud_storage_s3:
+    path: ../../integrations/serverpod_cloud_storage_s3
+  serverpod_cli:
+    path: ../../tools/serverpod_cli
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client
+  serverpod_auth_client:
+    path: ../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
