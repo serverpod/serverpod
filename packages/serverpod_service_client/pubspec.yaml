@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_service_client
 version: 1.2.1
@@ -13,10 +12,16 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client: #1.2.1
-    path: ../serverpod_client
+  serverpod_client: 1.2.1
   meta: ^1.8.0
 
 dev_dependencies:
-  serverpod_lints: #1.2.1
+  serverpod_lints: 1.2.1
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization

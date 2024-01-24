@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
@@ -15,15 +14,21 @@ environment:
 
 dependencies:
   connectivity_plus: ^5.0.0
-  serverpod_client: #1.2.1
-    path: ../serverpod_client
+  serverpod_client: 1.2.1
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #1.2.1
+  serverpod_lints: 1.2.1
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
 
 flutter:

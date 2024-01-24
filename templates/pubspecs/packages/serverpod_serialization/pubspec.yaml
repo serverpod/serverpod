@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_serialization
 version: VERSION
@@ -16,6 +15,9 @@ dependencies:
   uuid: ^4.0.0
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_lints
+  serverpod_lints: VERSION
   test: ^1.24.2
+
+dependency_overrides:
+  serverpod_lints:
+    path: ../serverpod_lints

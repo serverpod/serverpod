@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_lints
 description: Lints used by internal Serverpod packages.
@@ -12,4 +11,3 @@ environment:
 dependencies:
   flutter_lints: ^3.0.0
   lints: ^3.0.0
-  

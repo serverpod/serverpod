@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_shared
 version: 1.2.1
@@ -16,11 +15,17 @@ dependencies:
   yaml: ^3.1.1
   path: ^1.8.2
   super_string: ^1.0.3
-  serverpod_client: #1.2.1
-    path: ../serverpod_client
+  serverpod_client: 1.2.1
   crypto: ^3.0.2
 
 dev_dependencies:
-  serverpod_lints: #1.2.1
-    path: ../serverpod_lints
+  serverpod_lints: 1.2.1
   test: ^1.24.2
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
+    path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization

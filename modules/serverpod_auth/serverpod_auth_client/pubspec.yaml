@@ -1,6 +1,5 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_auth_client
 description: Serverpod authentication client.
@@ -13,5 +12,10 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
   lints: ^3.0.0
-  serverpod_client: #1.2.1
+  serverpod_client: 1.2.1
+
+dependency_overrides:
+  serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

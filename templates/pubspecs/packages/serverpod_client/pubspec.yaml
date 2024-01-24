@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_client
 version: VERSION
@@ -12,13 +11,17 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_serialization
+  serverpod_serialization: VERSION
   http: ">=0.13.0 <2.0.0"
   meta: ^1.8.0
   web_socket_channel: ^2.4.0
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_lints
+  serverpod_lints: VERSION
   test: ^1.24.2
+
+dependency_overrides:
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_lints:
+    path: ../serverpod_lints

@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 publish_to: none
 
 name: serverpod_test_server
@@ -9,16 +12,13 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
   http: ">=0.13.0 <2.0.0"
-  serverpod:
-    path: ../../packages/serverpod
-  serverpod_test_module_server:
-    path: ../serverpod_test_module/serverpod_test_module_server
-  serverpod_auth_server:
-    path: ../../modules/serverpod_auth/serverpod_auth_server
-  serverpod_cloud_storage_s3:
-    path: ../../integrations/serverpod_cloud_storage_s3
+  serverpod: 1.2.1
+  serverpod_auth_server: 1.2.1
+  serverpod_cloud_storage_s3: 1.2.1
   serverpod_test_shared:
     path: ../serverpod_test_shared
+  serverpod_test_module_server:
+    path: ../serverpod_test_module/serverpod_test_module_server
   uuid: ^4.0.0
 
 
@@ -26,11 +26,29 @@ dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.2
   path: ^1.8.2
-  serverpod_cli:
-    path: ../../tools/serverpod_cli
+  serverpod_cli: 1.2.1
+  serverpod_service_client: 1.2.1
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_cloud_storage_s3:
+    path: ../../integrations/serverpod_cloud_storage_s3
+  serverpod_cli:
+    path: ../../tools/serverpod_cli
   serverpod_service_client:
     path: ../../packages/serverpod_service_client
+  serverpod_auth_client:
+    path: ../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_shared:
+    path: ../../packages/serverpod_shared

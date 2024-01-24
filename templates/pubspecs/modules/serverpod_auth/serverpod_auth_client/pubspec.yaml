@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_auth_client
 description: Serverpod authentication client.
@@ -12,5 +11,10 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
   lints: ^3.0.0
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_client: VERSION
+
+dependency_overrides:
+  serverpod_client:
     path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

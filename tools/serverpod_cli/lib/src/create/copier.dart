@@ -10,7 +10,7 @@ class Copier {
   List<Replacement> replacements;
   List<Replacement> fileNameReplacements;
 
-  List<String> removePrefixes;
+  List<String> removePatterns;
 
   List<String> ignoreFileNames;
 
@@ -19,7 +19,7 @@ class Copier {
     required this.dstDir,
     required this.replacements,
     required this.fileNameReplacements,
-    this.removePrefixes = const <String>[],
+    this.removePatterns = const <String>[],
     this.ignoreFileNames = const <String>[],
   });
 
@@ -57,7 +57,7 @@ class Copier {
     var dstFile = File(p.join(dstDir.path, dstFileName));
     var contents = srcFile.readAsStringSync();
     contents = _replace(contents, replacements);
-    contents = _filterLines(contents, removePrefixes);
+    contents = _filterLines(contents, removePatterns);
     dstFile.createSync(recursive: true);
     dstFile.writeAsStringSync(contents);
   }
@@ -69,18 +69,16 @@ class Copier {
     return str;
   }
 
-  String _filterLines(String str, List<String> prefixes) {
-    for (var prefix in prefixes) {
-      var lines = str.split('\n');
-      var processedLines = <String>[];
-      for (var line in lines) {
-        if (line.trim().startsWith(prefix) &&
-            !line.trim().startsWith('path: ^')) continue;
-        processedLines.add(line);
-      }
-      str = processedLines.join('\n');
+  String _filterLines(String str, List<String> removePatterns) {
+    var processedLines = <String>[];
+    var lines = str.split('\n');
+
+    for (var line in lines) {
+      if (removePatterns.any((pattern) => line.contains(pattern))) continue;
+      processedLines.add(line);
     }
-    return str;
+
+    return processedLines.join('\n');
   }
 }
 
