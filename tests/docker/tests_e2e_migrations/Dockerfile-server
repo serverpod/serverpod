@@ -1,5 +1,5 @@
 # Specify the Dart SDK base image version
-FROM dart:3.0 AS build
+FROM dart:3.2.5 AS build
 
 # Install psql client.
 RUN apt-get update && apt-get install -y postgresql-client
