@@ -371,7 +371,8 @@ void main() {
     );
   });
 
-   test('Given a value starting with an _ value then no errors are generated.', () {
+  test('Given a value starting with an _ value then no errors are generated.',
+      () {
     var modelSources = [
       ModelSourceBuilder().withYaml(
         '''
