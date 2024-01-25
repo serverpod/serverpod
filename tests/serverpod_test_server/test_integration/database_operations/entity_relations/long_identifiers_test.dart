@@ -391,4 +391,65 @@ void main() async {
       );
     });
   });
+
+  group(
+      'Given a deep nested relationship with long names when fetching with includes',
+      () {
+    tearDownAll(() async {
+      await PersonWithLongTableName.db
+          .deleteWhere(session, where: (_) => Constant.bool(true));
+      await OrganizationWithLongTableName.db
+          .deleteWhere(session, where: (_) => Constant.bool(true));
+      await CityWithLongTableName.db
+          .deleteWhere(session, where: (_) => Constant.bool(true));
+    });
+
+    var personName = 'Alex';
+    var cityName = 'Stockholm';
+    var organizationName = 'Serverpod';
+    setUpAll(() async {
+      var insertedPerson = await PersonWithLongTableName.db.insertRow(
+        session,
+        PersonWithLongTableName(name: personName),
+      );
+
+      var insertedCity = await CityWithLongTableName.db.insertRow(
+        session,
+        CityWithLongTableName(name: cityName),
+      );
+
+      await CityWithLongTableName.db.attachRow.citizens(
+        session,
+        insertedCity,
+        insertedPerson,
+      );
+
+      var insertedOrganization =
+          await OrganizationWithLongTableName.db.insertRow(
+        session,
+        OrganizationWithLongTableName(name: organizationName),
+      );
+
+      await OrganizationWithLongTableName.db.attachRow
+          .city(session, insertedOrganization, insertedCity);
+    });
+
+    test('then all includes are included in the result.', () async {
+      var organizations = await OrganizationWithLongTableName.db.find(
+        session,
+        include: OrganizationWithLongTableName.include(
+          city: CityWithLongTableName.include(
+            citizens: PersonWithLongTableName.includeList(),
+          ),
+        ),
+      );
+
+      var firstOrganization = organizations.firstOrNull;
+      expect(firstOrganization?.name, organizationName);
+      var city = firstOrganization?.city;
+      expect(city?.name, cityName);
+      var citizen = city?.citizens?.firstOrNull;
+      expect(citizen?.name, personName);
+    });
+  });
 }

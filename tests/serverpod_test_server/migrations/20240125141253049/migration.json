@@ -383,6 +383,46 @@
     {
       "type": "createTable",
       "createTable": {
+        "name": "city_with_long_table_name_that_is_still_valid",
+        "dartName": "CityWithLongTableName",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('city_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "city_with_long_table_name_that_is_still_valid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
         "name": "comment",
         "dartName": "Comment",
         "module": "serverpod_test",
@@ -1574,6 +1614,66 @@
     {
       "type": "createTable",
       "createTable": {
+        "name": "organization_with_long_table_name_that_is_still_valid",
+        "dartName": "OrganizationWithLongTableName",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('organization_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "cityId",
+            "columnType": 2,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "organization_with_long_table_name_that_is_still_valid_fk_0",
+            "columns": [
+              "cityId"
+            ],
+            "referenceTable": "city_with_long_table_name_that_is_still_valid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "organization_with_long_table_name_that_is_still_valid_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
         "name": "parent_user",
         "dartName": "ParentUser",
         "module": "serverpod_test",
@@ -1696,6 +1796,85 @@
         "indexes": [
           {
             "indexName": "person_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "person_with_long_table_name_that_is_still_valid",
+        "dartName": "PersonWithLongTableName",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('person_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": false,
+            "dartType": "String"
+          },
+          {
+            "name": "organizationId",
+            "columnType": 2,
+            "isNullable": true,
+            "dartType": "int?"
+          },
+          {
+            "name": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
+            "columnType": 2,
+            "isNullable": true,
+            "dartType": "int?"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "constraintName": "person_with_long_table_name_that_is_still_valid_fk_0",
+            "columns": [
+              "organizationId"
+            ],
+            "referenceTable": "organization_with_long_table_name_that_is_still_valid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          },
+          {
+            "constraintName": "person_with_long_table_name_that_is_still_valid_fk_1",
+            "columns": [
+              "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id"
+            ],
+            "referenceTable": "city_with_long_table_name_that_is_still_valid",
+            "referenceTableSchema": "public",
+            "referenceColumns": [
+              "id"
+            ],
+            "onUpdate": 3,
+            "onDelete": 3
+          }
+        ],
+        "indexes": [
+          {
+            "indexName": "person_with_long_table_name_that_is_still_valid_pkey",
             "elements": [
               {
                 "type": 0,
@@ -1928,6 +2107,46 @@
         "indexes": [
           {
             "indexName": "relation_to_multiple_max_field_name_pkey",
+            "elements": [
+              {
+                "type": 0,
+                "definition": "id"
+              }
+            ],
+            "type": "btree",
+            "isUnique": true,
+            "isPrimary": true
+          }
+        ],
+        "managed": true
+      }
+    },
+    {
+      "type": "createTable",
+      "createTable": {
+        "name": "scope_none_fields",
+        "dartName": "ScopeNoneFields",
+        "module": "serverpod_test",
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "columnType": 2,
+            "isNullable": false,
+            "columnDefault": "nextval('scope_none_fields_id_seq'::regclass)",
+            "dartType": "int?"
+          },
+          {
+            "name": "name",
+            "columnType": 0,
+            "isNullable": true,
+            "dartType": "String?"
+          }
+        ],
+        "foreignKeys": [],
+        "indexes": [
+          {
+            "indexName": "scope_none_fields_pkey",
             "elements": [
               {
                 "type": 0,

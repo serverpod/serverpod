@@ -60,6 +60,14 @@ CREATE TABLE "city" (
 );
 
 --
+-- Class CityWithLongTableName as table city_with_long_table_name_that_is_still_valid
+--
+CREATE TABLE "city_with_long_table_name_that_is_still_valid" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL
+);
+
+--
 -- Class Comment as table comment
 --
 CREATE TABLE "comment" (
@@ -263,6 +271,15 @@ CREATE TABLE "organization" (
 );
 
 --
+-- Class OrganizationWithLongTableName as table organization_with_long_table_name_that_is_still_valid
+--
+CREATE TABLE "organization_with_long_table_name_that_is_still_valid" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL,
+    "cityId" integer
+);
+
+--
 -- Class ParentUser as table parent_user
 --
 CREATE TABLE "parent_user" (
@@ -279,6 +296,16 @@ CREATE TABLE "person" (
     "name" text NOT NULL,
     "organizationId" integer,
     "_cityCitizensCityId" integer
+);
+
+--
+-- Class PersonWithLongTableName as table person_with_long_table_name_that_is_still_valid
+--
+CREATE TABLE "person_with_long_table_name_that_is_still_valid" (
+    "id" serial PRIMARY KEY,
+    "name" text NOT NULL,
+    "organizationId" integer,
+    "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id" integer
 );
 
 --
@@ -317,6 +344,14 @@ CREATE TABLE "related_unique_data" (
 CREATE TABLE "relation_to_multiple_max_field_name" (
     "id" serial PRIMARY KEY,
     "name" text NOT NULL
+);
+
+--
+-- Class ScopeNoneFields as table scope_none_fields
+--
+CREATE TABLE "scope_none_fields" (
+    "id" serial PRIMARY KEY,
+    "name" text
 );
 
 --
@@ -904,6 +939,16 @@ ALTER TABLE ONLY "organization"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "organization_with_long_table_name_that_is_still_valid" table
+--
+ALTER TABLE ONLY "organization_with_long_table_name_that_is_still_valid"
+    ADD CONSTRAINT "organization_with_long_table_name_that_is_still_valid_fk_0"
+    FOREIGN KEY("cityId")
+    REFERENCES "city_with_long_table_name_that_is_still_valid"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
 -- Foreign relations for "parent_user" table
 --
 ALTER TABLE ONLY "parent_user"
@@ -926,6 +971,22 @@ ALTER TABLE ONLY "person"
     ADD CONSTRAINT "person_fk_1"
     FOREIGN KEY("_cityCitizensCityId")
     REFERENCES "city"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+
+--
+-- Foreign relations for "person_with_long_table_name_that_is_still_valid" table
+--
+ALTER TABLE ONLY "person_with_long_table_name_that_is_still_valid"
+    ADD CONSTRAINT "person_with_long_table_name_that_is_still_valid_fk_0"
+    FOREIGN KEY("organizationId")
+    REFERENCES "organization_with_long_table_name_that_is_still_valid"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION;
+ALTER TABLE ONLY "person_with_long_table_name_that_is_still_valid"
+    ADD CONSTRAINT "person_with_long_table_name_that_is_still_valid_fk_1"
+    FOREIGN KEY("_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id")
+    REFERENCES "city_with_long_table_name_that_is_still_valid"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION;
 
@@ -1034,9 +1095,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20240115074251824', now())
+    VALUES ('serverpod_test', '20240125141253049', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20240115074251824', "timestamp" = now();
+    DO UPDATE SET "version" = '20240125141253049', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod_auth
