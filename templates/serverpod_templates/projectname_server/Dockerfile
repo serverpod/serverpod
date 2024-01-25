@@ -1,4 +1,6 @@
-FROM dart:3.0 AS build
+# If you update the dart version, make sure the image is
+# compatible with the busybox image.
+FROM dart:3.2.5 AS build
 
 WORKDIR /app
 COPY . .
@@ -6,7 +8,9 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/main
 
-FROM busybox
+# If you update the busybox version, make sure the image is
+# compatible with the dart image.
+FROM busybox:1.36.1-glibc
 
 ENV runmode=development
 ENV serverid=default
