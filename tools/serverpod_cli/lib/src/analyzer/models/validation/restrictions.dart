@@ -1047,17 +1047,9 @@ class Restrictions {
         );
       }
 
-      if (StringValidators.isInvalidFieldValueInfoSeverity(node.value)) {
+      if (!StringValidators.isValidEnumName(node.value)) {
         return SourceSpanSeverityException(
-          'Enum values should be lowerCamelCase.',
-          node.span,
-          severity: SourceSpanSeverity.info,
-        );
-      }
-
-      if (!StringValidators.isValidFieldName(node.value)) {
-        return SourceSpanSeverityException(
-          'Enum values must be lowerCamelCase.',
+          'Enum values must be valid dart enums.',
           node.span,
         );
       }
