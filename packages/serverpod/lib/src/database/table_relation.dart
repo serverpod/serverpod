@@ -90,7 +90,7 @@ class TableRelation {
 
   /// The field name to be joined on including all joins.
   String get fieldNameWithJoins {
-    return '"${_truncateFunction(_fromRelationQueryAlias())}"."${_tableRelationEntries.last.field.columnName}"';
+    return '"${_fromRelationQueryAlias()}"."${_tableRelationEntries.last.field.columnName}"';
   }
 
   /// The foreign field name joined on.
@@ -155,7 +155,9 @@ class TableRelation {
   }
 
   String _fromRelationQueryAlias() {
-    return _buildRelationQueryAlias(_tableRelationEntries.length - 1);
+    return _truncateFunction(
+      _buildRelationQueryAlias(_tableRelationEntries.length - 1),
+    );
   }
 }
 
