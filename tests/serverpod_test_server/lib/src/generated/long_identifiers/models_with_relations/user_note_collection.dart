@@ -86,6 +86,7 @@ abstract class UserNoteCollection extends _i1.TableRow {
   }
 
   @override
+  @Deprecated('Will be removed in 2.0.0')
   void setColumn(
     String columnName,
     value,
