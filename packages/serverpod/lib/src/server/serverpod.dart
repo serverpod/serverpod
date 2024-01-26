@@ -437,7 +437,7 @@ class Serverpod {
       await session.close();
 
       // Setup log manager.
-      _logManager = LogManager(_runtimeSettings!);
+      _logManager = LogManager(_runtimeSettings ?? _defaultRuntimeSettings);
 
       // Connect to Redis
       if (redisController != null) {

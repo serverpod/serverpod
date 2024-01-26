@@ -3,9 +3,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart' as path;
 
 void main() async {
   Directory.current = path.join(Directory.current.path, '..', '..');
@@ -93,6 +94,93 @@ void main() async {
       expect(startProjectExitCode, 0);
     });
   });
+
+  group('Given a clean state', () {
+    final (projectName, commandRoot) = createRandomProjectName(tempPath);
+
+    late Process createProcess;
+    Process? startProcess;
+
+    tearDown(() async {
+      createProcess.kill();
+      startProcess?.kill();
+
+      await Process.run(
+        'docker',
+        ['compose', 'down', '-v'],
+        workingDirectory: commandRoot,
+      );
+
+      while (!await isNetworkPortAvailable(8090));
+    });
+
+    test(
+        'when creating a new project then the project can be booted without applying migrations',
+        () async {
+      createProcess = await Process.start(
+        'serverpod',
+        ['create', projectName, '-v', '--no-analytics'],
+        workingDirectory: tempPath,
+        environment: {
+          'SERVERPOD_HOME': rootPath,
+        },
+      );
+
+      createProcess.stdout.transform(Utf8Decoder()).listen(print);
+      createProcess.stderr.transform(Utf8Decoder()).listen(print);
+
+      var createProjectExitCode = await createProcess.exitCode;
+      expect(
+        createProjectExitCode,
+        0,
+        reason: 'Failed to create the serverpod project.',
+      );
+
+      final docker = await Process.start(
+        'docker',
+        ['compose', 'up', '--build', '--detach'],
+        workingDirectory: commandRoot,
+      );
+
+      docker.stdout.transform(Utf8Decoder()).listen(print);
+      docker.stderr.transform(Utf8Decoder()).listen(print);
+
+      var dockerExitCode = await docker.exitCode;
+
+      expect(
+        dockerExitCode,
+        0,
+        reason: 'Docker with postgres failed to start.',
+      );
+
+      startProcess = await Process.start(
+        'dart',
+        ['bin/main.dart'],
+        workingDirectory: commandRoot,
+      );
+
+      startProcess?.stdout.transform(Utf8Decoder()).listen(print);
+      startProcess?.stderr.transform(Utf8Decoder()).listen(print);
+
+      var serverStarted = false;
+      for (int retries = 0; retries < 10; retries++) {
+        try {
+          var response = await http.get(Uri.parse('http://localhost:8080'));
+          serverStarted = response.statusCode == HttpStatus.ok;
+          break;
+        } catch (e) {
+          print(e);
+        }
+
+        print('failed to get response from server, retrying...');
+        await Future.delayed(Duration(seconds: 1));
+      }
+
+      expect(serverStarted, isTrue,
+          reason: 'Failed to get 200 response from server.');
+    });
+  });
+
   group('Given a clean state', () {
     var (projectName, commandRootPath) = createRandomProjectName(tempPath);
     final (serverDir, flutterDir, clientDir) =
