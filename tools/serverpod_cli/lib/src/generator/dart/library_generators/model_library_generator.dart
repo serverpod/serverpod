@@ -1133,7 +1133,10 @@ class SerializableModelLibraryGenerator {
         fields.where((f) => f.shouldSerializeFieldForDatabase(serverCode));
 
     return Method((m) => m
-      ..annotations.add(refer('override'))
+      ..annotations.addAll([
+        refer('override'),
+        refer("Deprecated('Will be removed in 2.0.0')"),
+      ])
       ..name = 'setColumn'
       ..returns = refer('void')
       ..requiredParameters.addAll([
