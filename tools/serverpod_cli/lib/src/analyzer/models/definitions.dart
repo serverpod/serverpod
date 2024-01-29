@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
@@ -259,10 +260,16 @@ class UnresolvedListRelationDefinition extends RelationDefinition {
 /// to another Objects field name that holds the id of this object.
 class ListRelationDefinition extends RelationDefinition {
   /// References the field in the current object that points to the foreign table.
+  /// Normally this is the primary key.
   String fieldName;
 
   /// References the field in the other object holding the id of this object.
   String foreignFieldName;
+
+  /// References the field in the other object holding the data for the relation.
+  /// Meaning either an object of the type of the current object.
+  /// If this is null then there is no link from the other side.
+  SerializableModelFieldDefinition? foreignContainerField;
 
   final bool nullableRelation;
 
@@ -273,6 +280,7 @@ class ListRelationDefinition extends RelationDefinition {
     String? name,
     required this.fieldName,
     required this.foreignFieldName,
+    this.foreignContainerField,
     required this.nullableRelation,
     this.implicitForeignField = false,
   }) : super(name, false);
@@ -293,6 +301,11 @@ class ObjectRelationDefinition extends RelationDefinition {
   /// References the column in the unresolved [parentTable] that this field should be joined on.
   String foreignFieldName;
 
+  /// References the field in the other object that holds the data for the relation.
+  /// Meaning either an object or a list of objects of the type of the current object.
+  /// If this is null then there is no link from the other side.
+  SerializableModelFieldDefinition? foreignContainerField;
+
   final bool nullableRelation;
 
   ObjectRelationDefinition({
@@ -300,6 +313,7 @@ class ObjectRelationDefinition extends RelationDefinition {
     required this.parentTable,
     required this.fieldName,
     required this.foreignFieldName,
+    this.foreignContainerField,
     required bool isForeignKeyOrigin,
     required this.nullableRelation,
   }) : super(name, isForeignKeyOrigin);
@@ -377,6 +391,16 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// References the column in the [parentTable] that this field should be joined on.
   String foreignFieldName;
 
+  /// References the field in the current object that hold the data for the relation.
+  /// Meaning either an object or a list of objects of the type of the [parentTable].
+  /// If this is null then there is no link from this side.
+  SerializableModelFieldDefinition? containerField;
+
+  /// References the field on the other side that hold the data for the links the relation.
+  /// Meaning either an object or a list of objects of the type of the current object.
+  /// If this is null then there is no link from the other side.
+  SerializableModelFieldDefinition? foreignContainerField;
+
   /// On delete behavior in the database.
   final ForeignKeyAction onDelete;
 
@@ -387,6 +411,8 @@ class ForeignRelationDefinition extends RelationDefinition {
     String? name,
     required this.parentTable,
     required this.foreignFieldName,
+    this.containerField,
+    this.foreignContainerField,
     this.onDelete = onDeleteDefault,
     this.onUpdate = onUpdateDefault,
   }) : super(name, true);
