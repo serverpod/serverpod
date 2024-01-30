@@ -161,39 +161,39 @@ class GeneratorConfig {
       );
     }
 
-    if (pubspec!['name'] == null) {
+    if (pubspec == null ||
+        pubspec['dependencies']?.containsKey('serverpod') != true) {
+      log.error(
+        'Could not find the Serverpod dependency. Are you running serverpod from your '
+        'projects root directory?',
+      );
+
+      throw const ServerpodProjectNotFoundException(
+        'Serverpod dependency not found.',
+      );
+    }
+
+    if (pubspec['name'] == null) {
       throw const FormatException('Package name is missing in pubspec.yaml');
     }
     var serverPackage = pubspec['name'];
     var name = _stripPackage(serverPackage);
 
-    Map? generatorConfig;
+    Map generatorConfig = {};
     try {
       var file = File(p.join(dir, 'config', 'generator.yaml'));
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
-    } catch (_) {
-      log.error('Failed to load config/generator.yaml. Is this a Serverpod '
-          'project?');
-
-      throw const ServerpodProjectNotFoundException(
-        'Failed to load config/generator.yaml',
-      );
-    }
-
-    if (generatorConfig == null) {
-      throw const FormatException(
-          'Failed to load config/generator.yaml. Is this a Serverpod project?');
-    }
+    } catch (_) {}
 
     PackageType type = getPackageType(generatorConfig);
 
-    if (generatorConfig['client_package_path'] == null) {
-      throw const FormatException(
-          'Option "client_package_path" is required in config/generator.yaml');
+    var relativeDartClientPackagePathParts = ['..', '${name}_client'];
+
+    if (generatorConfig['client_package_path'] != null) {
+      relativeDartClientPackagePathParts =
+          p.split(generatorConfig['client_package_path']);
     }
-    var relativeDartClientPackagePathParts =
-        p.split(generatorConfig['client_package_path']);
 
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
@@ -211,8 +211,8 @@ class GeneratorConfig {
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
       log.error(
-        'Failed to load client pubspec.yaml. Is your client_package_path set '
-        'correctly?',
+        'Failed to load client pubspec.yaml. If you are using a none default '
+        'path it has to be specified in the config/generator.yaml file!',
       );
       throw const ServerpodProjectNotFoundException(
         'Failed to load client pubspec.yaml',
