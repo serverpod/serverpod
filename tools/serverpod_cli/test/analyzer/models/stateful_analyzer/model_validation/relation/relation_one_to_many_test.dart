@@ -31,9 +31,13 @@ void main() {
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
-    var classDefinition = definitions
+    var companyDefinition = definitions
         .whereType<ClassDefinition>()
         .firstWhere((d) => d.className == 'Company');
+
+    var employeeDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Employee');
 
     var errors = collector.errors;
 
@@ -43,13 +47,13 @@ void main() {
 
     test('then no id field was created for the many side.', () {
       expect(
-        classDefinition.findField('employeesId'),
+        companyDefinition.findField('employeesId'),
         isNull,
         reason: 'Expected employeesId to not exist as a field, but it did.',
       );
     }, skip: errors.isNotEmpty);
 
-    var relation = classDefinition.findField('employees')?.relation;
+    var relation = companyDefinition.findField('employees')?.relation;
     test('then the reference field is set on the list relation.', () {
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
@@ -68,6 +72,15 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
+    test('then the foreign container field field is set on the list relation.',
+        () {
+      expect(
+        (relation as ListRelationDefinition).foreignContainerField?.name,
+        'company',
+        reason: 'Expected the reference field to be set to "company".',
+      );
+    }, skip: errors.isNotEmpty);
+
     test('then the implicit field is false.', () {
       expect(relation.runtimeType, ListRelationDefinition);
       expect(
@@ -77,9 +90,42 @@ void main() {
       );
     }, skip: errors.isNotEmpty);
 
-    test('has the nullableRelation set to false', () {
+    test('then has the nullableRelation set to false', () {
       expect((relation as ListRelationDefinition).nullableRelation, false);
     }, skip: relation is! ListRelationDefinition);
+
+    test('then has the foreign container field set on the object relation.',
+        () {
+      var objectRelationField = employeeDefinition.findField('company');
+
+      var relation = objectRelationField?.relation as ObjectRelationDefinition;
+
+      expect(
+        relation.foreignContainerField?.name,
+        'employees',
+        reason: 'Expected the reference field to be set to "employees".',
+      );
+    }, skip: errors.isNotEmpty);
+
+    test(
+        'then the foreign key field has the relation pointing to the foreign container field.',
+        () {
+      var foreignKeyField = employeeDefinition.findField('companyId');
+
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.foreignContainerField?.name, 'employees');
+    });
+
+    test(
+        'then the foreign key field has the relation pointing to the local container field.',
+        () {
+      var foreignKeyField = employeeDefinition.findField('companyId');
+
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.containerField?.name, 'company');
+    });
   });
 
   group(
@@ -377,6 +423,39 @@ void main() {
 
       expect(field, isNotNull);
     });
+
+    var foreignKeyRelation =
+        employeeDefinition.findField('_companyEmployeesCompanyId')?.relation;
+    test('then the employee relation is set', () {
+      expect(foreignKeyRelation.runtimeType, ForeignRelationDefinition);
+    });
+
+    test(
+        'then the foreign key field has the relation pointing to the foreign container field.',
+        () {
+      foreignKeyRelation as ForeignRelationDefinition;
+
+      expect(foreignKeyRelation.foreignContainerField?.name, 'employees');
+    });
+
+    test(
+        'then the foreign key field has the relation pointing to the local container field.',
+        () {
+      foreignKeyRelation as ForeignRelationDefinition;
+
+      expect(foreignKeyRelation.containerField, isNull);
+    });
+
+    test(
+        'then the foreign container field field is not set on the list relation.',
+        () {
+      expect(
+        (relation as ListRelationDefinition).foreignContainerField,
+        isNull,
+        reason:
+            'Has the foreign container field set but there should be no container on the other side.',
+      );
+    });
   });
 
   group(
@@ -432,6 +511,17 @@ void main() {
 
       expect(field, isNotNull);
     });
+
+    test(
+        'then the foreign container field field is not set on the list relation.',
+        () {
+      expect(
+        (relation as ListRelationDefinition).foreignContainerField,
+        isNull,
+        reason:
+            'Has the foreign container field set but there should be no container on the other side.',
+      );
+    });
   });
 
   group(
@@ -465,9 +555,13 @@ void main() {
       onErrorsCollector(collector),
     );
     var definitions = analyzer.validateAll();
-    var classDefinition = definitions
+    var customerDefinition = definitions
         .whereType<ClassDefinition>()
         .firstWhere((d) => d.className == 'Customer');
+
+    var orderDefinition = definitions
+        .whereType<ClassDefinition>()
+        .firstWhere((d) => d.className == 'Order');
 
     var errors = collector.errors;
 
@@ -476,12 +570,55 @@ void main() {
     });
 
     test('then customer has list orders field', () {
-      expect(classDefinition.findField('orders'), isNotNull);
+      expect(customerDefinition.findField('orders'), isNotNull);
     });
 
+    var relation = customerDefinition.findField('orders')?.relation;
+
     test('then orders is list relation', () {
-      expect(classDefinition.findField('orders')?.relation.runtimeType,
-          ListRelationDefinition);
+      expect(relation.runtimeType, ListRelationDefinition);
+    });
+
+    test('then the foreign container field field is set on the list relation.',
+        () {
+      expect(
+        (relation as ListRelationDefinition).foreignContainerField?.name,
+        'customer',
+        reason: 'Expected the reference field to be set to "customer".',
+      );
+    }, skip: errors.isNotEmpty);
+
+    test('then has the foreign container field set on the object relation.',
+        () {
+      var objectRelationField = orderDefinition.findField('customer');
+
+      var relation = objectRelationField?.relation as ObjectRelationDefinition;
+
+      expect(
+        relation.foreignContainerField?.name,
+        'orders',
+        reason: 'Expected the reference field to be set to "employees".',
+      );
+    }, skip: errors.isNotEmpty);
+
+    test(
+        'then the foreign key field has the relation pointing to the foreign container field.',
+        () {
+      var foreignKeyField = orderDefinition.findField('customerId');
+
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.foreignContainerField?.name, 'orders');
+    });
+
+    test(
+        'then the foreign key field has the relation pointing to the local container field.',
+        () {
+      var foreignKeyField = orderDefinition.findField('customerId');
+
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.containerField?.name, 'customer');
     });
   });
 
@@ -589,11 +726,41 @@ void main() {
       expect(relation.runtimeType, ForeignRelationDefinition);
     });
 
-    test('then the company relation is set', () {
-      var relation = companyDefinition.findField('employees')?.relation;
+    test(
+        'then the foreign key field has the relation pointing to the foreign container field.',
+        () {
+      var foreignKeyField = employeeDefinition.findField('companyId');
 
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.foreignContainerField?.name, 'employees');
+    });
+
+    test(
+        'then the foreign key field has the local relation container set to null.',
+        () {
+      var foreignKeyField = employeeDefinition.findField('companyId');
+
+      var relation = foreignKeyField?.relation as ForeignRelationDefinition;
+
+      expect(relation.containerField, isNull);
+    });
+
+    var relation = companyDefinition.findField('employees')?.relation;
+
+    test('then the company relation is set', () {
       expect(relation?.name, 'company_employees');
       expect(relation.runtimeType, ListRelationDefinition);
+    });
+
+    test('then the foreign container field field is set on the list relation.',
+        () {
+      expect(
+        (relation as ListRelationDefinition).foreignContainerField,
+        isNull,
+        reason:
+            'Has the foreign container field set but there should be no container on the other side.',
+      );
     });
   });
 }
