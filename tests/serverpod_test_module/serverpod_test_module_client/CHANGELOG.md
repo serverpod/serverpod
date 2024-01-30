@@ -1,24 +1,24 @@
-## 1.2.2-rc.1
-fix: Makes it possible to create modules from templates in developer mode.
-fix: Correctly marks nested enum types in the analyzer.
-fix: Adds support for all Serverpod's supported types as keys in Maps.
-fix: Restric fields with scopes other than all to be nullable.
-fix: Uses pubspec override instead of direct paths (to improve score on pub.dev).
-fix: Less restrictive enum naming rules.
-fix: Pins Dart and Busybox docker image versions (only for new projects).
-fix: Deterministically truncate list aliases in database relations.
-fix: Enables server to start without migrated database.
-fix: Adds missing deprecation messages.
-fix: Adds placeholder for old postgres file, to aid users who are following old tutorials.
-fix: Resolves internal relation pointers in class representations.
+## 1.2.2
+- fix: Makes it possible to create modules from templates in developer mode.
+- fix: Correctly marks nested enum types in the analyzer.
+- fix: Adds support for all Serverpod's supported types as keys in Maps.
+- fix: Restric fields with scopes other than all to be nullable.
+- fix: Uses pubspec override instead of direct paths (to improve score on pub.dev).
+- fix: Less restrictive enum naming rules.
+- fix: Pins Dart and Busybox docker image versions (only for new projects).
+- fix: Deterministically truncate list aliases in database relations.
+- fix: Enables server to start without migrated database.
+- fix: Adds missing deprecation messages.
+- fix: Adds placeholder for old postgres file, to aid users who are following old tutorials.
+- fix: Resolves internal relation pointers in class representations.
 
 ## 1.2.1
-fix: Removes old generated folder from Dockerfile.
-fix: Prevents database analyzer from crashing when missing table.
-fix: Fixes issue with DevTools extension not being bundled with the `serverpod` package.
-fix: Ingores all null fields in JSON map serialization.
-fix: Improved error message if port is in use when starting server.
-chore: Bumbs `vm_service` version to support latest version.
+- fix: Removes old generated folder from Dockerfile.
+- fix: Prevents database analyzer from crashing when missing table.
+- fix: Fixes issue with DevTools extension not being bundled with the `serverpod` package.
+- fix: Ingores all null fields in JSON map serialization.
+- fix: Improved error message if port is in use when starting server.
+- chore: Bumbs `vm_service` version to support latest version.
 
 ## 1.2.0
 This is a summary of the new features in version 1.2.0. For the full list, please refer to the [commits](https://github.com/serverpod/serverpod/commits/main/) on Github. Instructions for updating from 1.1 of Serverpod is available in our documentation [here](https://docs.serverpod.dev/upgrading/upgrade-to-one-point-two).
