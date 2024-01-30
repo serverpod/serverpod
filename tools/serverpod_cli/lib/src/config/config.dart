@@ -188,7 +188,7 @@ class GeneratorConfig {
 
     PackageType type = getPackageType(generatorConfig);
 
-    var relativeDartClientPackagePathParts = ['..', '$name\_client'];
+    var relativeDartClientPackagePathParts = ['..', '${name}_client'];
 
     if (generatorConfig['client_package_path'] != null) {
       relativeDartClientPackagePathParts =
