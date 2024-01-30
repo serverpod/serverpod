@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/generator/open_api/open_api_objects.dart';
 import 'package:serverpod_cli/src/test_util/builders/type_definition_builder.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -88,7 +89,7 @@ void main() {
     OpenAPIParameterSchema object = OpenAPIParameterSchema(
       TypeDefinitionBuilder()
           .withClassName('TestEnum')
-          .withIsEnum(true)
+          .withEnumSerialized(EnumSerialization.byName)
           .build(),
     );
     expect({'type': 'string', 'enum': {}}, object.toJson());
