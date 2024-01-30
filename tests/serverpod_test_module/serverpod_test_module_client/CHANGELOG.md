@@ -1,3 +1,17 @@
+## 1.2.2-rc.1
+fix: Makes it possible to create modules from templates in developer mode.
+fix: Correctly marks nested enum types in the analyzer.
+fix: Adds support for all Serverpod's supported types as keys in Maps.
+fix: Restric fields with scopes other than all to be nullable.
+fix: Uses pubspec override instead of direct paths (to improve score on pub.dev).
+fix: Less restrictive enum naming rules.
+fix: Pins Dart and Busybox docker image versions (only for new projects).
+fix: Deterministically truncate list aliases in database relations.
+fix: Enables server to start without migrated database.
+fix: Adds missing deprecation messages.
+fix: Adds placeholder for old postgres file, to aid users who are following old tutorials.
+fix: Resolves internal relation pointers in class representations.
+
 ## 1.2.1
 fix: Removes old generated folder from Dockerfile.
 fix: Prevents database analyzer from crashing when missing table.
