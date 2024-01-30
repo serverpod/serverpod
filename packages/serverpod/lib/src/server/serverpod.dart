@@ -638,7 +638,7 @@ class Serverpod {
     server.shutdown();
     _serviceServer?.shutdown();
     _futureCallManager.stop();
-    _healthCheckManager.stop;
+    _healthCheckManager.stop();
     if (exitProcess) {
       exit(0);
     }
