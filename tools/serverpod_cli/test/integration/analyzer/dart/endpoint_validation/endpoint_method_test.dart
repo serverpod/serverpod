@@ -8,7 +8,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart' as path;
 
-const pathToServerpod = '../../../../../../../../packages/serverpod';
+const pathToServerpodRoot = '../../../../../../../..';
 var testProjectDirectory = Directory(path.joinAll([
   'test',
   'integration',
@@ -20,7 +20,7 @@ var testProjectDirectory = Directory(path.joinAll([
 
 void main() {
   setUpAll(() async {
-    await createTestEnvironment(testProjectDirectory, pathToServerpod);
+    await createTestEnvironment(testProjectDirectory, pathToServerpodRoot);
   });
 
   tearDownAll(() {
