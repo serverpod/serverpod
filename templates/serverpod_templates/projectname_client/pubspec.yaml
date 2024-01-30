@@ -5,7 +5,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client: 1.2.1
+  serverpod_client: 1.2.2-rc.1
 
 dependency_overrides: 
   serverpod_client: 
