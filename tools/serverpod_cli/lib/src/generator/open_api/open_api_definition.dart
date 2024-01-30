@@ -3,6 +3,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart';
 import 'package:serverpod_cli/src/generator/open_api/helpers/extensions.dart';
 import 'package:serverpod_cli/src/generator/open_api/objects/components.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'helpers/utils.dart';
 import 'open_api_objects.dart';
@@ -237,8 +238,9 @@ List<SerializableEntityDefinition> _getEntitiesFromEndpointsReturnType(
       }
       SerializableEntityDefinition entity;
 
-      if (returnType.isEnum) {
+      if (returnType.isEnumType) {
         entity = EnumDefinition(
+          serialized: returnType.serializeEnum!,
             fileName: 'undefined',
             sourceFileName: 'undefined',
             className: returnType.className,

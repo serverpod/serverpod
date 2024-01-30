@@ -224,7 +224,7 @@ class OpenAPIParameterSchema {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {};
-    if (typeDefinition.isEnum) {
+    if (typeDefinition.isEnumType) {
       map[OpenAPIJsonKey.type] = OpenAPISchemaType.string.name;
       map[OpenAPIJsonKey.enumKey] = {};
       return map;
