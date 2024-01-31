@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 void main() {
   var serviceClient = Client(
     serviceServerUrl,
-    authenticationKeyManager: ServiceKeyManager('0', 'password'),
+    authenticationKeyManager: ServiceKeyManager('0', 'super_SECRET_password'),
   );
   group('Given database not matching latest migration', () {
     tearDownAll(() async {
