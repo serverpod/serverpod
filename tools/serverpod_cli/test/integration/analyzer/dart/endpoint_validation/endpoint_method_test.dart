@@ -542,8 +542,9 @@ class ExampleEndpoint extends Endpoint {
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
+    late File endpointFile;
     setUpAll(() async {
-      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -567,6 +568,20 @@ class ExampleEndpoint extends Endpoint {
         collector.errors.firstOrNull?.message,
         'The type "String Function()" is not a supported endpoint return type.',
       );
+    });
+
+    test('then toString reports that the type is not supported.', () {
+      var expectedToString = '''Found 1 issue.
+
+Error on line 6, column 31 of ${endpointFile.path}: The type "String Function()" is not a supported endpoint return type.
+  ╷
+6 │   Future<TestFunctionBuilder> hello(Session session) async {
+  │                               ^^^^^
+  ╵
+
+''';
+
+      expect(collector.toString(), expectedToString);
     });
 
     test('then endpoint definition is created.', () {
