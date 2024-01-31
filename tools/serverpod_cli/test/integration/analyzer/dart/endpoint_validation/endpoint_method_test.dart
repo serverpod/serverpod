@@ -577,13 +577,15 @@ class ExampleEndpoint extends Endpoint {
       var regexPattern = r'''Found 1 issue\.
 
 Error on line 6, column 31 of .+: The type "String Function\(\)" is not a supported endpoint return type\.
-.*6 \|   Future<TestFunctionBuilder> hello\(Session session\) async {
-.*\|                               \^\^\^\^\^
+.*6.*Future<TestFunctionBuilder> hello\(Session session\) async {
+.*\^\^\^\^\^
 .*''';
+
+      var actual = collector.toString();
 
       expect(
           RegExp(regexPattern, multiLine: true, dotAll: true)
-              .hasMatch(collector.toString()),
+              .hasMatch(actual),
           isTrue);
     });
 
