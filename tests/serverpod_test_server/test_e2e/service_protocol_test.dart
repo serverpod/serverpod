@@ -14,7 +14,7 @@ void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
     serviceServerUrl,
-    authenticationKeyManager: ServiceKeyManager('0', 'password'),
+    authenticationKeyManager: ServiceKeyManager('0', 'super_SECRET_password'),
   );
 
   group('Health metrics', () {

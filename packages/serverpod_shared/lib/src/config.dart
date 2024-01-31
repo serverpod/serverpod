@@ -32,7 +32,7 @@ class ServerpodConfig {
   late RedisConfig redis;
 
   /// Authentication key for service protocol.
-  late final String serviceSecret;
+  late final String? serviceSecret;
 
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
@@ -53,7 +53,7 @@ class ServerpodConfig {
     // Get max request size (default to 512kb)
     maxRequestSize = doc['maxRequestSize'] ?? 524288;
 
-    serviceSecret = passwords['serviceSecret'] ?? '';
+    serviceSecret = passwords['serviceSecret'];
 
     // Get database setup
     assert(doc['database'] is Map, 'Database setup is missing in config');

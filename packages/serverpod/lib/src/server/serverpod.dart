@@ -450,8 +450,16 @@ class Serverpod {
       // Start servers.
       if (commandLineArgs.role == ServerpodRole.monolith ||
           commandLineArgs.role == ServerpodRole.serverless) {
+        var serversStarted = true;
+
         // Serverpod Insights.
-        var serversStarted = await _startInsightsServer();
+        if (_isValidSecret(config.serviceSecret)) {
+          serversStarted &= await _startInsightsServer();
+        } else {
+          stderr.write(
+            'Invalid serviceSecret in password file, insights server disabled.',
+          );
+        }
 
         // Main API server.
         serversStarted &= await server.start();
@@ -687,5 +695,9 @@ class Serverpod {
         await Future.delayed(const Duration(seconds: 10));
       }
     }
+  }
+
+  bool _isValidSecret(String? secret) {
+    return secret != null && secret.isNotEmpty && secret.length > 20;
   }
 }
