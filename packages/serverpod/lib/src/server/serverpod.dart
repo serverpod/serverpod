@@ -457,7 +457,7 @@ class Serverpod {
           serversStarted &= await _startInsightsServer();
         } else {
           stderr.write(
-            'Invalid serviceSecret in password file, insights server disabled.',
+            'Invalid serviceSecret in password file, Insights server disabled.',
           );
         }
 
