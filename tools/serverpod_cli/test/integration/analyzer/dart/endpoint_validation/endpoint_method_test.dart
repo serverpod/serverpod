@@ -542,9 +542,8 @@ class ExampleEndpoint extends Endpoint {
 
     late List<EndpointDefinition> endpointDefinitions;
     late EndpointsAnalyzer analyzer;
-    late File endpointFile;
     setUpAll(() async {
-      endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
+      var endpointFile = File(path.join(testDirectory.path, 'endpoint.dart'));
       endpointFile.createSync(recursive: true);
       endpointFile.writeAsStringSync('''
 import 'package:serverpod/serverpod.dart';
@@ -571,17 +570,21 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test('then toString reports that the type is not supported.', () {
-      var expectedToString = '''Found 1 issue.
 
-Error on line 6, column 31 of ${endpointFile.path}: The type "String Function()" is not a supported endpoint return type.
-  ╷
-6 │   Future<TestFunctionBuilder> hello(Session session) async {
-  │                               ^^^^^
-  ╵
+      //These RegEx patterns are used to match the error message because the output
+      //is slightly different between Windows and macOS. Fox example, macOS outputs
+      //╷ in the error message, while Windows outputs ,. This may be something to review
+      var regexPattern = r'''Found 1 issue\.
 
-''';
+Error on line 6, column 31 of .+: The type "String Function\(\)" is not a supported endpoint return type\.
+.*6 \|   Future<TestFunctionBuilder> hello\(Session session\) async {
+.*\|                               \^\^\^\^\^
+.*''';
 
-      expect(collector.toString(), expectedToString);
+      expect(
+          RegExp(regexPattern, multiLine: true, dotAll: true)
+              .hasMatch(collector.toString()),
+          isTrue);
     });
 
     test('then endpoint definition is created.', () {
