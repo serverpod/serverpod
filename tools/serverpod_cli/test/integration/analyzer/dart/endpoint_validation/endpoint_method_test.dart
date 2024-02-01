@@ -570,7 +570,6 @@ class ExampleEndpoint extends Endpoint {
     });
 
     test('then toString reports that the type is not supported.', () {
-
       //These RegEx patterns are used to match the error message because the output
       //is slightly different between Windows and macOS. Fox example, macOS outputs
       //╷ in the error message, while Windows outputs ,. This may be something to review
@@ -584,8 +583,7 @@ Error on line 6, column 31 of .+: The type "String Function\(\)" is not a suppor
       var actual = collector.toString();
 
       expect(
-          RegExp(regexPattern, multiLine: true, dotAll: true)
-              .hasMatch(actual),
+          RegExp(regexPattern, multiLine: true, dotAll: true).hasMatch(actual),
           isTrue);
     });
 
