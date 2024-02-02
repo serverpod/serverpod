@@ -43,15 +43,13 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
     var startTime = DateTime.now();
     var rnd = Random().nextInt(1000000);
 
-    var databaseConnection = pod.databaseConfig.createConnection();
-
     // Write entry
     ReadWriteTestEntry? entry = ReadWriteTestEntry(
       number: rnd,
     );
 
     var session = await pod.createSession(enableLogging: false);
-    entry = await databaseConnection.insertRow(session, entry);
+    entry = await ReadWriteTestEntry.db.insertRow(session, entry);
 
     await session.close();
 
