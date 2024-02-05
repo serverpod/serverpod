@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
-  /// Path to the configuration file.
-  final String file;
-
   /// The servers run mode.
   final String runMode;
 
@@ -14,61 +12,117 @@ class ServerpodConfig {
   final String serverId;
 
   /// Max limit in bytes of requests to the server.
-  late int maxRequestSize;
+  final int maxRequestSize;
 
   /// Configuration for the main API server.
-  late ServerConfig apiServer;
+  final ServerConfig apiServer;
 
   /// Configuration for the Insights server.
-  late ServerConfig insightsServer;
+  final ServerConfig? insightsServer;
 
   /// Configuration for the web server (optional).
-  late ServerConfig webServer;
+  final ServerConfig? webServer;
 
   /// Configuration for the Postgres database.
-  late DatabaseConfig database;
+  final DatabaseConfig? database;
 
   /// Configuration for Redis.
-  late RedisConfig redis;
+  final RedisConfig? redis;
 
   /// Authentication key for service protocol.
   late final String? serviceSecret;
 
+  /// Creates a new [ServerpodConfig].
+  ServerpodConfig({
+    required this.apiServer,
+    this.runMode = 'development',
+    this.serverId = 'default',
+    this.maxRequestSize = 524288,
+    this.insightsServer,
+    this.webServer,
+    this.database,
+    this.redis,
+    this.serviceSecret,
+  }) {
+    apiServer._name = 'api';
+    insightsServer?._name = 'insights';
+    webServer?._name = 'web';
+  }
+
+  /// Creates a default bare bone configuration.
+  factory ServerpodConfig.defaultConfig() {
+    return ServerpodConfig(
+      apiServer: ServerConfig(
+        port: 8080,
+        publicHost: 'localhost',
+        publicPort: 8080,
+        publicScheme: 'http',
+      ),
+    );
+  }
+
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
-  ServerpodConfig(this.runMode, this.serverId, Map<String, String> passwords)
-      : file = 'config/$runMode.yaml' {
-    var data = File(file).readAsStringSync();
+  factory ServerpodConfig.load(
+    String runMode,
+    String serverId,
+    Map<String, String> passwords,
+  ) {
+    String data;
+
+    data = File(_createConfigPath(runMode)).readAsStringSync();
+
     var doc = loadYaml(data);
 
     assert(doc['apiServer'] is Map, 'apiServer is missing in confing');
-    apiServer = ServerConfig._(doc['apiServer'], 'api');
+    var apiServer = ServerConfig._fromJson(doc['apiServer']);
 
     assert(doc['insightsServer'] is Map, 'insightsServer is missing in config');
-    insightsServer = ServerConfig._(doc['insightsServer'], 'insights');
+    var insightsServer = ServerConfig._fromJson(doc['insightsServer']);
 
     assert(doc['webServer'] is Map, 'webServer is missing in config');
-    webServer = ServerConfig._(doc['webServer'], 'web');
+    var webServer = ServerConfig._fromJson(doc['webServer']);
 
     // Get max request size (default to 512kb)
-    maxRequestSize = doc['maxRequestSize'] ?? 524288;
+    var maxRequestSize = doc['maxRequestSize'] ?? 524288;
 
-    serviceSecret = passwords['serviceSecret'];
+    var serviceSecret = passwords['serviceSecret'];
 
     // Get database setup
     assert(doc['database'] is Map, 'Database setup is missing in config');
     Map dbSetup = doc['database'];
-    database = DatabaseConfig._(dbSetup, passwords);
+    var database = DatabaseConfig._fromJson(dbSetup, passwords);
 
     // Get Redis setup
     assert(doc['redis'] is Map, 'Redis setup is missing in config');
     Map redisSetup = doc['redis'];
-    redis = RedisConfig._(redisSetup, passwords);
+    var redis = RedisConfig._fromJson(redisSetup, passwords);
+
+    return ServerpodConfig(
+      runMode: runMode,
+      serverId: serverId,
+      apiServer: apiServer,
+      maxRequestSize: maxRequestSize,
+      insightsServer: insightsServer,
+      webServer: webServer,
+      database: database,
+      redis: redis,
+      serviceSecret: serviceSecret,
+    );
+  }
+
+  /// Checks if a configuration file is available on disk for the given run mode.
+  static bool isConfigAvailable(String runMode) {
+    return File(_createConfigPath(runMode)).existsSync();
+  }
+
+  static String _createConfigPath(String runMode) {
+    return path.joinAll(['config', '$runMode.yaml']);
   }
 
   @override
   String toString() {
-    var str = 'Config loaded from: $file\n';
+    var str = '';
 
     str += apiServer.toString();
     str += insightsServer.toString();
@@ -83,25 +137,35 @@ class ServerpodConfig {
 
 /// Configuration for a server.
 class ServerConfig {
-  final String _name;
+  String? _name;
 
   /// The port the server will be running on.
-  late final int port;
+  final int port;
 
   /// Public facing host name.
-  late final String publicHost;
+  final String publicHost;
 
   /// Public facing port.
-  late final int publicPort;
+  final int publicPort;
 
   /// Public facing scheme, i.e. http or https.
-  late final String publicScheme;
+  final String publicScheme;
 
-  ServerConfig._(Map serverSetup, this._name) {
-    port = serverSetup['port'];
-    publicHost = serverSetup['publicHost'];
-    publicPort = serverSetup['publicPort'];
-    publicScheme = serverSetup['publicScheme'];
+  ///
+  ServerConfig({
+    required this.port,
+    required this.publicScheme,
+    required this.publicHost,
+    required this.publicPort,
+  });
+
+  factory ServerConfig._fromJson(Map serverSetup) {
+    return ServerConfig(
+      port: serverSetup['port'] as int,
+      publicHost: serverSetup['publicHost'] as String,
+      publicPort: serverSetup['publicPort'] as int,
+      publicScheme: serverSetup['publicScheme'] as String,
+    );
   }
 
   @override
@@ -119,35 +183,48 @@ class ServerConfig {
 /// Configuration for a Postgres database,
 class DatabaseConfig {
   /// Database host.
-  late final String host;
+  final String host;
 
   /// Database port.
-  late final int port;
+  final int port;
 
   /// Database user name.
-  late final String user;
+  final String user;
 
   /// Database password.
-  late final String password;
+  final String password;
 
   /// Database name.
-  late final String name;
+  final String name;
 
   /// True if the database requires an SSL connection.
-  late final bool requireSsl;
+  final bool requireSsl;
 
   /// True if the database is running on a unix socket.
-  late final bool isUnixSocket;
+  final bool isUnixSocket;
 
-  DatabaseConfig._(Map dbSetup, Map<String, String> passwords) {
-    host = dbSetup['host']!;
-    port = dbSetup['port']!;
-    name = dbSetup['name']!;
-    user = dbSetup['user']!;
-    requireSsl = dbSetup['requireSsl'] ?? false;
-    isUnixSocket = dbSetup['isUnixSocket'] ?? false;
+  /// Creates a new [DatabaseConfig].
+  DatabaseConfig({
+    required this.host,
+    required this.port,
+    required this.user,
+    required this.password,
+    required this.name,
+    this.requireSsl = false,
+    this.isUnixSocket = false,
+  });
+
+  factory DatabaseConfig._fromJson(Map dbSetup, Map<String, String> passwords) {
     assert(passwords['database'] != null, 'Database password is missing');
-    password = passwords['database']!;
+    return DatabaseConfig(
+      host: dbSetup['host']!,
+      port: dbSetup['port']!,
+      name: dbSetup['name']!,
+      user: dbSetup['user']!,
+      requireSsl: dbSetup['requireSsl'] ?? false,
+      isUnixSocket: dbSetup['isUnixSocket'] ?? false,
+      password: passwords['database']!,
+    );
   }
 
   @override
@@ -167,26 +244,37 @@ class DatabaseConfig {
 /// Configuration for Redis.
 class RedisConfig {
   /// True if Redis should be enabled.
-  late final bool enabled;
+  final bool enabled;
 
   /// Redis host.
-  late final String host;
+  final String host;
 
   /// Redis port.
-  late final int port;
+  final int port;
 
   /// Redis user name (optional).
-  late final String? user;
+  final String? user;
 
   /// Redis password (optional, but recommended).
-  late final String? password;
+  final String? password;
 
-  RedisConfig._(Map redisSetup, Map<String, String> passwords) {
-    enabled = redisSetup['enabled'] ?? false;
-    host = redisSetup['host']!;
-    port = redisSetup['port']!;
-    user = redisSetup['user'];
-    password = passwords['redis'];
+  /// Creates a new [RedisConfig].
+  RedisConfig({
+    required this.enabled,
+    required this.host,
+    required this.port,
+    this.user,
+    this.password,
+  });
+
+  factory RedisConfig._fromJson(Map redisSetup, Map<String, String> passwords) {
+    return RedisConfig(
+      enabled: redisSetup['enabled'] ?? false,
+      host: redisSetup['host']!,
+      port: redisSetup['port']!,
+      user: redisSetup['user'],
+      password: passwords['redis'],
+    );
   }
 
   @override
