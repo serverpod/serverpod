@@ -3,7 +3,6 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import 'database_connection.dart';
 import 'value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
@@ -50,9 +49,4 @@ class DatabasePoolManager {
       settings: poolSettings,
     );
   }
-
-  /// Used internally by the [Server]. Creates a new connection to the database.
-  /// Typically, the [Database] provided by the [Session] object should be used
-  /// to connect with the database.
-  DatabaseConnection createConnection() => DatabaseConnection(this);
 }
