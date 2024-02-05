@@ -2,12 +2,12 @@ import 'package:serverpod/relic.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 /// Toggles for enabling and disabling features in the server.
-class FeatureDecisions {
-  static late FeatureDecisions _instance;
+class Features {
+  static late Features _instance;
   final ServerpodConfig _config;
 
-  /// Creates a new [FeatureDecisions] and instantiates the singleton.
-  FeatureDecisions(this._config) {
+  /// Creates a new [Features] and instantiates the singleton.
+  Features(this._config) {
     _instance = this;
   }
 

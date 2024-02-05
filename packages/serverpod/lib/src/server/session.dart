@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_legacy.dart';
-import 'package:serverpod/src/server/feature_decisions.dart';
+import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
 
@@ -107,7 +107,7 @@ abstract class Session {
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    if (FeatureDecisions.enableDatabase) {
+    if (Features.enableDatabase) {
       // ignore: deprecated_member_use_from_same_package
       _db = DatabaseLegacy(session: this);
       _dbNext = Database(session: this);

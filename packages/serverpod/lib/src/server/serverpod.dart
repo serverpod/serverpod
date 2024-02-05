@@ -7,7 +7,7 @@ import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
-import 'package:serverpod/src/server/feature_decisions.dart';
+import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
@@ -207,14 +207,14 @@ class Serverpod {
   Future<void> updateRuntimeSettings(internal.RuntimeSettings settings) async {
     _runtimeSettings = settings;
     _logManager = LogManager(settings, _logWriter);
-    if (FeatureDecisions.enablePersistentLogging) {
+    if (Features.enablePersistentLogging) {
       await _storeRuntimeSettings(settings);
     }
   }
 
   /// Reloads the runtime settings from the database.
   Future<void> reloadRuntimeSettings() async {
-    if (!FeatureDecisions.enablePersistentLogging) {
+    if (!Features.enablePersistentLogging) {
       throw StateError(
         'Persistent logging is disabled, runtime settings are not stored in '
         'the database.',
@@ -310,9 +310,9 @@ class Serverpod {
 
     // Load config
     this.config = _loadConfig(config, _passwords);
-    FeatureDecisions(this.config);
+    Features(this.config);
 
-    _logWriter = FeatureDecisions.enablePersistentLogging
+    _logWriter = Features.enablePersistentLogging
         ? DatabaseLogWriter()
         : StdOutLogWriter();
 
@@ -322,14 +322,14 @@ class Serverpod {
 
     // Setup database
     var database = this.config.database;
-    if (FeatureDecisions.enableDatabase && database != null) {
+    if (Features.enableDatabase && database != null) {
       _databaseConfig = DatabasePoolManager(
         serializationManager,
         database,
       );
     }
 
-    if (FeatureDecisions.enableDatabase) {
+    if (Features.enableDatabase) {
       storage.addAll({
         'public': DatabaseCloudStorage('public'),
         'private': DatabaseCloudStorage('private'),
@@ -338,7 +338,7 @@ class Serverpod {
 
     // Setup Redis
     var redis = this.config.redis;
-    if (FeatureDecisions.enableRedis && redis != null) {
+    if (Features.enableRedis && redis != null) {
       redisController = RedisController(
         host: redis.host,
         port: redis.port,
@@ -356,7 +356,7 @@ class Serverpod {
 
     var authHandler = authenticationHandler;
 
-    if (FeatureDecisions.enableDefaultAuthenticationHandler) {
+    if (Features.enableDefaultAuthenticationHandler) {
       authHandler ??= defaultAuthenticationHandler;
     }
 
@@ -377,7 +377,7 @@ class Serverpod {
     );
     endpoints.initializeEndpoints(server);
 
-    if (FeatureDecisions.enableFutureCalls) {
+    if (Features.enableFutureCalls) {
       _futureCallManager = FutureCallManager(
         server,
         serializationManager,
@@ -385,14 +385,14 @@ class Serverpod {
       );
     }
 
-    if (FeatureDecisions.enableScheduledHealthChecks) {
+    if (Features.enableScheduledHealthChecks) {
       _healthCheckManager = HealthCheckManager(
         this,
         _onCompletedHealthChecks,
       );
     }
 
-    if (FeatureDecisions.enableWebServer()) {
+    if (Features.enableWebServer()) {
       _webServer = WebServer(serverpod: this);
     }
 
@@ -439,7 +439,7 @@ class Serverpod {
         _runtimeSettings = _defaultRuntimeSettings;
       }
 
-      if (FeatureDecisions.enableMigrations) {
+      if (Features.enableMigrations) {
         await _applyMigrations();
       }
 
@@ -450,7 +450,7 @@ class Serverpod {
       );
 
       // Connect to Redis
-      if (FeatureDecisions.enableRedis) {
+      if (Features.enableRedis) {
         logVerbose('Connecting to Redis.');
         await redisController?.start();
       } else {
@@ -463,7 +463,7 @@ class Serverpod {
         var serversStarted = true;
 
         // Serverpod Insights.
-        if (FeatureDecisions.enableInsights) {
+        if (Features.enableInsights) {
           if (_isValidSecret(config.serviceSecret)) {
             serversStarted &= await _startInsightsServer();
           } else {
@@ -477,7 +477,7 @@ class Serverpod {
         serversStarted &= await server.start();
 
         /// Web server.
-        if (FeatureDecisions.enableWebServer(_webServer)) {
+        if (Features.enableWebServer(_webServer)) {
           logVerbose('Starting web server.');
           serversStarted &= await webServer.start();
         } else {

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:serverpod/src/server/feature_decisions.dart';
+import 'package:serverpod/src/server/features.dart';
 
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
@@ -41,7 +41,7 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
   var dbResponseTime = 0.0;
   bool? dbHealthy;
 
-  if (FeatureDecisions.enableDatabase) {
+  if (Features.enableDatabase) {
     try {
       var startTime = DateTime.now();
       var rnd = Random().nextInt(1000000);
