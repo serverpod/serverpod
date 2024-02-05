@@ -26,7 +26,15 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabasePoolManager databaseConfig;
+  final DatabasePoolManager? _databaseConfig;
+
+  /// Current database configuration.
+  DatabasePoolManager get databaseConfig {
+    if (_databaseConfig == null) {
+      throw ArgumentError('Database config not set');
+    }
+    return _databaseConfig!;
+  }
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
@@ -79,7 +87,7 @@ class Server {
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required this.databaseConfig,
+    required DatabasePoolManager? databaseConfig,
     required this.passwords,
     required this.runMode,
     this.authenticationHandler,
@@ -90,7 +98,8 @@ class Server {
     required this.endpoints,
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
-  }) : name = name ?? 'Server $serverId';
+  })  : name = name ?? 'Server $serverId',
+        _databaseConfig = databaseConfig;
 
   /// Starts the server.
   /// Returns true if the server was started successfully.
