@@ -638,6 +638,15 @@ class Restrictions {
   ) {
     if (content == null) return [];
 
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "parent" value must be a String.',
+          span,
+        )
+      ];
+    }
+
     var definition = documentDefinition;
     if (definition is ClassDefinition && definition.tableName == null) {
       return [

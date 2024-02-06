@@ -182,4 +182,30 @@ void main() {
       );
     },
   );
+
+  test(
+    'Given a class with the parent keyword with a nested value then an error is collected that the parent ...',
+    () {
+      var models = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            parentId: int, parent(relation=example)
+          ''',
+        ).build()
+      ];
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+
+      expect(collector.errors, isNotEmpty);
+      var error = collector.errors.first;
+
+      expect(
+        error.message,
+        'The "parent" value must be a String.',
+      );
+    },
+  );
 }
