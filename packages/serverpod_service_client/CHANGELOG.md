@@ -1,3 +1,10 @@
+## 1.2.3
+- fix: Correctly cleans up health check manager when shutting down server.
+- fix: Supports projects without a config generator file in CLI.
+- fix: Adds additional requirements to Insights setup.
+- fix: Removes unnecessary database connection creation in pool manager.
+- fix: CLI gives error if non-string value is used as parent keyword.
+
 ## 1.2.2
 - fix: Makes it possible to create modules from templates in developer mode.
 - fix: Correctly marks nested enum types in the analyzer.
