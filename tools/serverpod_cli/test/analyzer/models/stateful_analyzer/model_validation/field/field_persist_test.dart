@@ -2,10 +2,12 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   test(
     'Given a class with a field with no persist set but has a table, then the generated model should be persisted.',
     () {
@@ -21,7 +23,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
@@ -44,7 +47,8 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
@@ -74,7 +78,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
@@ -101,7 +106,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
 
@@ -128,7 +134,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
@@ -161,7 +168,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -189,7 +197,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -215,7 +224,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -245,7 +255,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -270,7 +281,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -295,7 +307,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -319,7 +332,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -345,7 +359,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors, isNotEmpty);
 
@@ -370,7 +385,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors.length, greaterThan(1));
 
@@ -403,7 +419,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       expect(collector.errors.length, greaterThan(1));
 

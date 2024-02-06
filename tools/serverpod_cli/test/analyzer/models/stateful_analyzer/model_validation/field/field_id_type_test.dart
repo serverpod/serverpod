@@ -1,10 +1,12 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   test(
     'Given a class with a table and a field called "id" defined, then collect an error that the id field is not allowed.',
     () {
@@ -20,7 +22,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector))
+          .validateAll();
 
       var error = collector.errors.first;
 
@@ -46,7 +49,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
@@ -71,7 +75,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;
