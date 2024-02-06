@@ -8,10 +8,14 @@ on:
       - tests
       - stable-1.0
       - stable-1.1
+      - stable-1.2
   pull_request:
     branches:
       - main
       - dev
+      - stable-1.0
+      - stable-1.1
+      - stable-1.2
 
 jobs:
   dart_format:
