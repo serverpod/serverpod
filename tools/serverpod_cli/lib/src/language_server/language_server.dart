@@ -149,6 +149,7 @@ Future<ServerProject?> _loadServerProject(
   );
 
   var analyzer = StatefulAnalyzer(
+    config,
     yamlSources,
     (filePath, errors) => _reportDiagnosticErrors(connection, filePath, errors),
   );

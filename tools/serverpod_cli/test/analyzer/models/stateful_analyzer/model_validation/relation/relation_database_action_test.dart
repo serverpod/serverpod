@@ -1,11 +1,14 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   var databaseActions = [
     'Cascade',
     'NoAction',
@@ -30,7 +33,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
 
       test('then no errors are detected.', () {
@@ -69,7 +73,8 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+      var analyzer =
+          StatefulAnalyzer(config, models, onErrorsCollector(collector));
       var definitions = analyzer.validateAll();
       var model = definitions.first as ClassDefinition;
 
@@ -104,7 +109,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     var definitions = analyzer.validateAll();
     var model = definitions.first as ClassDefinition;
 
@@ -142,7 +148,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -173,7 +180,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     expect(
@@ -217,7 +225,8 @@ fields:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
 
     analyzer.validateAll();
     var errors = collector.errors;
@@ -280,7 +289,8 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -336,7 +346,8 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -378,7 +389,8 @@ fields:
       ).build(),
     ];
 
-    var analyzer = StatefulAnalyzer(models, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, models, onErrorsCollector(collector));
     analyzer.validateAll();
 
     var errors = collector.errors;
@@ -408,7 +420,7 @@ fields:
             ''',
         ).build()
       ];
-      StatefulAnalyzer analyzer = StatefulAnalyzer(models);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, models);
       var definitions = analyzer.validateAll();
 
       var definition = definitions.first as ClassDefinition;

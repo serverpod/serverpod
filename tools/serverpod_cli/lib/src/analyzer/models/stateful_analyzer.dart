@@ -9,12 +9,14 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 };
 
 class StatefulAnalyzer {
+  final GeneratorConfig config;
   final Map<String, _ModelState> _modelStates = {};
   List<SerializableModelDefinition> _models = [];
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   StatefulAnalyzer(
+    this.config,
     List<ModelSource> sources, [
     Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
@@ -131,6 +133,7 @@ class StatefulAnalyzer {
     for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
       SerializableModelAnalyzer.validateYamlDefinition(
+        config,
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,

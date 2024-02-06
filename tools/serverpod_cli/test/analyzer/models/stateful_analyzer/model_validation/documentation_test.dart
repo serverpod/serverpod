@@ -1,9 +1,12 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   test(
     'Given a class with a class documentation comment then an model with the class documentation set is generated.',
     () {
@@ -18,7 +21,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -41,7 +44,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -66,7 +69,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -88,7 +91,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -114,7 +117,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -139,7 +142,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -165,7 +168,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as ClassDefinition;
 
@@ -188,7 +191,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as EnumDefinition;
 
@@ -214,7 +217,7 @@ void main() {
         ).build(),
       ];
 
-      StatefulAnalyzer analyzer = StatefulAnalyzer(modelSources);
+      StatefulAnalyzer analyzer = StatefulAnalyzer(config, modelSources);
       var definitions = analyzer.validateAll();
       var definition = definitions.first as EnumDefinition;
 

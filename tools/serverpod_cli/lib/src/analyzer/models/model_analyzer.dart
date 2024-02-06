@@ -6,6 +6,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/model_validator.dar
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/class_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/enum_yaml_definition.dart';
 import 'package:serverpod_cli/src/analyzer/models/yaml_definitions/exception_yaml_definition.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:source_span/source_span.dart';
 // ignore: implementation_imports
@@ -96,6 +97,7 @@ class SerializableModelAnalyzer {
 
   /// Validates a yaml file against an expected syntax for model files.
   static void validateYamlDefinition(
+    GeneratorConfig config,
     String yaml,
     Uri sourceUri,
     CodeAnalysisCollector collector,
@@ -133,6 +135,7 @@ class SerializableModelAnalyzer {
     if (definitionType == null) return;
 
     var restrictions = Restrictions(
+      config: config,
       documentType: definitionType,
       documentContents: documentContents,
       documentDefinition: model,
