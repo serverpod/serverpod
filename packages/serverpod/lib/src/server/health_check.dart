@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:serverpod/src/server/features.dart';
+
 import '../../serverpod.dart';
 import '../generated/protocol.dart';
 
@@ -37,43 +39,46 @@ Future<ServerHealthResult> defaultHealthCheckMetrics(
 
   // Check database response time
   var dbResponseTime = 0.0;
-  var dbHealthy = false;
+  bool? dbHealthy;
 
-  try {
-    var startTime = DateTime.now();
-    var rnd = Random().nextInt(1000000);
+  if (Features.enableDatabase) {
+    try {
+      var startTime = DateTime.now();
+      var rnd = Random().nextInt(1000000);
 
-    // Write entry
-    ReadWriteTestEntry? entry = ReadWriteTestEntry(
-      number: rnd,
-    );
+      // Write entry
+      ReadWriteTestEntry? entry = ReadWriteTestEntry(
+        number: rnd,
+      );
 
-    var session = await pod.createSession(enableLogging: false);
-    entry = await ReadWriteTestEntry.db.insertRow(session, entry);
+      var session = await pod.createSession(enableLogging: false);
+      entry = await ReadWriteTestEntry.db.insertRow(session, entry);
 
-    await session.close();
+      await session.close();
 
-    // Verify random number
-    dbHealthy = entry.number == rnd;
+      // Verify random number
+      dbHealthy = entry.number == rnd;
 
-    dbResponseTime =
-        DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+      dbResponseTime =
+          DateTime.now().difference(startTime).inMicroseconds / 1000000.0;
+    }
+    // ignore: empty_catches
+    catch (e) {}
   }
-  // ignore: empty_catches
-  catch (e) {}
 
   var connectionsInfo = pod.server.httpServer.connectionsInfo();
 
   return ServerHealthResult(
     metrics: [
-      ServerHealthMetric(
-        serverId: pod.serverId,
-        name: 'serverpod_database',
-        timestamp: timestamp,
-        value: dbResponseTime,
-        isHealthy: dbHealthy,
-        granularity: 1,
-      ),
+      if (dbHealthy != null)
+        ServerHealthMetric(
+          serverId: pod.serverId,
+          name: 'serverpod_database',
+          timestamp: timestamp,
+          value: dbResponseTime,
+          isHealthy: dbHealthy,
+          granularity: 1,
+        ),
       if (cpuLoad != null)
         ServerHealthMetric(
           serverId: pod.serverId,

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_legacy.dart';
+import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
 
@@ -41,10 +42,29 @@ abstract class Session {
 
   /// Access to the database.
   @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  late final DatabaseLegacy db;
+  late final DatabaseLegacy? _db;
+
+  /// Access to the database.
+  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
+  DatabaseLegacy get db {
+    var database = _db;
+    if (database == null) {
+      throw Exception('Database is not available in this session.');
+    }
+    return database;
+  }
 
   /// Access to the database. Replaces db in the future.
-  late final Database dbNext;
+  late final Database? _dbNext;
+
+  /// Access to the database. Replaces db in the future.
+  Database get dbNext {
+    var database = _dbNext;
+    if (database == null) {
+      throw Exception('Database is not available in this session.');
+    }
+    return database;
+  }
 
   String? _authenticationKey;
 
@@ -87,9 +107,15 @@ abstract class Session {
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    // ignore: deprecated_member_use_from_same_package
-    db = DatabaseLegacy(session: this);
-    dbNext = Database(session: this);
+    if (Features.enableDatabase) {
+      // ignore: deprecated_member_use_from_same_package
+      _db = DatabaseLegacy(session: this);
+      _dbNext = Database(session: this);
+    } else {
+      // ignore: deprecated_member_use_from_same_package
+      _db = null;
+      _dbNext = null;
+    }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -99,12 +125,20 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
+    if (server.authenticationHandler == null) {
+      stderr.write(
+        'No authentication handler is set, authentication is disabled, '
+        'all requests to protected endpoints will be rejected.',
+      );
+    }
+
     if (server.authenticationHandler != null && _authenticationKey != null) {
       var authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
+
     _initialized = true;
   }
 
