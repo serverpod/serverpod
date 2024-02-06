@@ -282,6 +282,39 @@ void main() {
         );
       },
     );
+
+    test(
+        'Given a class with a table defined but without the database feature enabled then an error is given.',
+        () {
+      var config = GeneratorConfigBuilder().withEnabledFeatures([]).build();
+      var modelSources = [
+        ModelSourceBuilder().withYaml(
+          '''
+          class: Example
+          table: example
+          fields:
+            name: String
+          ''',
+        ).build()
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+          .validateAll();
+
+      expect(
+        collector.errors,
+        isNotEmpty,
+        reason: 'Expected an error but none was generated.',
+      );
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        contains(
+            'The "table" property cannot be used when the database feature is disabled.'),
+      );
+    });
   });
 
   group('Invalid properties', () {

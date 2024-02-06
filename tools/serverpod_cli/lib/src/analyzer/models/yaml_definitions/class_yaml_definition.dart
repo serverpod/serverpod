@@ -25,6 +25,7 @@ class ClassYamlDefinition {
       ),
       ValidateNode(
         Keyword.table,
+        keyRestriction: restrictions.validateTableNameKey,
         valueRestriction: restrictions.validateTableName,
       ),
       ValidateNode(

@@ -179,6 +179,23 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateTableNameKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    if (!config.enabledFeatures.contains(ServerpodFeature.database)) {
+      return [
+        SourceSpanSeverityException(
+          'The "table" property cannot be used when the database feature is disabled.',
+          span,
+        )
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateTableName(
     String parentNodeName,
     dynamic tableName,

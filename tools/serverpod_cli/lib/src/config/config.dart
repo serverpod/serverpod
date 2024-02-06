@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:source_span/source_span.dart';
@@ -52,6 +53,7 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
+    required this.enabledFeatures,
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _modules = modules;
@@ -128,6 +130,9 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// All the features that are enabled in the serverpod project.
+  final List<ServerpodFeature> enabledFeatures;
+
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
       .where((module) => module.type == PackageType.module)
@@ -179,9 +184,9 @@ class GeneratorConfig {
     var serverPackage = pubspec['name'];
     var name = _stripPackage(serverPackage);
 
+    var file = File(p.join(dir, 'config', 'generator.yaml'));
     Map generatorConfig = {};
     try {
-      var file = File(p.join(dir, 'config', 'generator.yaml'));
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {}
@@ -260,6 +265,8 @@ class GeneratorConfig {
       }
     }
 
+    var enabledFeatures = _enabledFeatures(file, generatorConfig);
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -270,7 +277,26 @@ class GeneratorConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
+      enabledFeatures: enabledFeatures,
     );
+  }
+
+  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
+    var enabledFeatures = <ServerpodFeature>[];
+    if (!file.existsSync()) return enabledFeatures;
+
+    if (!config.containsKey('features')) {
+      enabledFeatures.add(ServerpodFeature.database);
+    }
+
+    var features = config['features'];
+
+    if (features is! Map) return enabledFeatures;
+    if (features.containsKey('database') && features['database'] == true) {
+      enabledFeatures.add(ServerpodFeature.database);
+    }
+
+    return enabledFeatures;
   }
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
