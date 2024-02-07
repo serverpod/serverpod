@@ -341,8 +341,8 @@ void _copyServerUpgrade(
 
   log.debug('Copying upgrade files.', newParagraph: true);
   var copier = Copier(
-      srcDir: Directory(p.join(
-          resourceManager.templateDirectory.path, 'projectname_server_upgrade')),
+      srcDir: Directory(p.join(resourceManager.templateDirectory.path,
+          'projectname_server_upgrade')),
       dstDir: serverpodDirs.serverDir,
       replacements: [
         Replacement(
