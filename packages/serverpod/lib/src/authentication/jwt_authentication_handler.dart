@@ -11,7 +11,7 @@ import 'util.dart';
 
 /// The default [AuthenticationHandler], uses the auth_key table from the
 /// database to authenticate a user.
-class DefaultAuthenticationHandler extends AuthenticationHandler {
+class JwtAuthenticationHandler extends AuthenticationHandler {
   @override
   Future<String> getSalt(Session session) =>
       Future.value(session.passwords['authKeySalt'] ?? defaultAuthKeySalt);
