@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
-Future<String?> getProjectName() async {
-  var pubspecFile = File('pubspec.yaml');
+Future<String?> getProjectName([Directory? projectDirectory]) async {
+  projectDirectory ??= Directory.current;
+  var pubspecFile = File(path.join(projectDirectory.path, 'pubspec.yaml'));
   if (!await pubspecFile.exists()) {
     log.error('No pubspec.yaml file found in current directory.');
     return null;
