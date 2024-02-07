@@ -14,8 +14,13 @@ class ServiceAuthenticationHandler extends AuthenticationHandler {
 
   @override
   Future<AuthKey> generateAuthKey(
-          Session session, int userId, Iterable<Scope> scopes, String method) =>
-      // TODO: I don't think this is called, but I'm not sure
+    Session session,
+    int userId,
+    Iterable<Scope> scopes,
+    String method, {
+    bool update = false,
+  }) =>
+      // TODO: I don't think this is called anywhere, but I'm not sure
       throw UnimplementedError();
 
   @override

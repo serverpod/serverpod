@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:serverpod/src/authentication/authentication_handler.dart';
 import 'package:serverpod/src/generated/auth_key.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../server/session.dart';
 import 'authentication_info.dart';
@@ -36,17 +35,24 @@ class JwtAuthenticationHandler extends AuthenticationHandler {
     String method, {
     bool update = false,
   }) async {
+    // We comma-separate scope names in the JWT
+    if (scopes.any((scope) => (scope.name ?? '').contains(','))) {
+      throw Exception('Scope names cannot contain commas');
+    }
+
+    // Generate JWT from payload map
     var jwt = JWT(
-      // Payload
       {
-        'id': userId,
+        'userId': userId,
+        // Ensure scopes are sorted for consistent token generation
         'scopes': scopes.map((scope) => scope.name).nonNulls.sorted().join(','),
         'method': method,
-        'exp': DateTime.now().add(tokenLifespan).millisecondsSinceEpoch ~/ 1000,
+        'expires':
+            DateTime.now().add(tokenLifespan).millisecondsSinceEpoch ~/ 1000,
       },
     );
 
-    // Sign it (default with HS256 algorithm)
+    // Sign JWT (default uses HS256 algorithm)
     var token = jwt.sign(SecretKey(_getSecret(session)));
 
     // Hash the token (probably not necessary for a JWT, but AuthKey requires
@@ -63,40 +69,24 @@ class JwtAuthenticationHandler extends AuthenticationHandler {
       method: method,
     );
 
-    var result = update
-        ? await AuthKey.db.updateRow(session, authKey)
-        : await AuthKey.db.insertRow(session, authKey);
+    AuthKey result;
+    if (update) {
+      var existingAuthKey = await AuthKey.db
+          .findFirstRow(session, where: (t) => t.userId.equals(userId));
+      if (existingAuthKey == null) {
+        // Should not happen
+        throw Exception('No existing auth key found for user $userId');
+      }
+      result =
+          await AuthKey.db.updateRow(session, authKey..id = existingAuthKey.id);
+    } else {
+      result = await AuthKey.db.insertRow(session, authKey);
+    }
     return result.copyWith(key: token);
   }
 
   @override
   Future<AuthenticationInfo?> authenticate(Session session, String key) async {
-    var expired = false;
-    JWT? jwt;
-    try {
-      // Verify the token
-      jwt = JWT.verify(key, SecretKey(_getSecret(session)));
-    } on JWTExpiredException {
-      // JWT has expired -- regenerate it, to ensure user is still allowed
-      // to be logged in, and that scopes are up to date.
-      // TODO: check that the AuthKey table has an index on userId
-      var authKey = await AuthKey.db.findFirstRow(session,
-          where: (t) => t.userId.equals(jwt.payload['id']));
-      if (authKey == null) {
-        return null;
-      }
-      // Update the AuthKey so that it has the new expiration time
-      await generateAuthKey(
-        session,
-        authKey.userId,
-        authKey.scopes,
-        authKey.method,
-        update: true,
-      );
-    } on JWTException catch (ex) {
-      print(ex.message); // ex: invalid signature
-    }
-
     try {
       // Get the secret and user id
       var parts = key.split(':');
@@ -105,32 +95,55 @@ class JwtAuthenticationHandler extends AuthenticationHandler {
       if (keyId == null) return null;
       var secret = parts[1];
 
-      // Get the authentication key from the database
-      var tempSession = await session.serverpod.createSession(
-        enableLogging: false,
-      );
+      // Verify the token (throws an exception if verification fails)
+      var jwt = JWT.verify(secret, SecretKey(_getSecret(session)));
+      var userId = jwt.payload['userId'] as int;
+      var scopesStr = jwt.payload['scopes'] as String;
+      // Use the `expires` field to check if the token has expired,
+      // rather than the standard `exp` field, because then we still
+      // get the other fields in the jwt object (which has been
+      // cryptographicall verified), so we can reuse the userId
+      // and scopes. (Otherwise, JWT.verify would throw an exception
+      // if the token has expired.)
+      var expires = jwt.payload['expires'] as int;
 
-      var authKey = await tempSession.dbNext.findById<AuthKey>(keyId);
-      await tempSession.close();
+      if (DateTime.fromMillisecondsSinceEpoch(expires * 1000)
+          .isBefore(DateTime.now())) {
+        // JWT has expired -- regenerate it by looking up the auth
+        // key in the database, to ensure user is still allowed
+        // to be logged in, and that scopes are up to date.
+        var tempSession = await session.serverpod.createSession(
+          enableLogging: false,
+        );
+        var authKey = await AuthKey.db
+            .findFirstRow(tempSession, where: (t) => t.userId.equals(userId));
+        if (authKey == null) {
+          // User login has been invalidated
+          return null;
+        }
+        // Update the AuthKey so that it has the new expiration time
+        await generateAuthKey(
+          tempSession,
+          authKey.userId,
+          authKey.scopes,
+          authKey.method,
+          update: true,
+        );
+        await tempSession.close();
+        // Update JWT scopes from the AuthKey
+        scopesStr = authKey.scopeNames.sorted().join(',');
+      }
 
-      if (authKey == null) return null;
-
-      // Hash the key from the user and check that it is what we expect
-      var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-      var expectedHash = hashString(signInSalt, secret);
-
-      if (authKey.hash != expectedHash) return null;
-
-      // All looking bright, user is signed in
+      // User is signed in
 
       // Setup scopes
       var scopes = <Scope>{};
-      for (var scopeName in authKey.scopeNames) {
+      for (var scopeName in scopesStr.split(',')) {
         scopes.add(Scope(scopeName));
       }
-      return AuthenticationInfo(authKey.userId, scopes);
+      return AuthenticationInfo(userId, scopes);
     } catch (exception, stackTrace) {
-      stderr.writeln('Failed authentication: $exception');
+      stderr.writeln('Failed JWT authentication: $exception');
       stderr.writeln('$stackTrace');
       return null;
     }
