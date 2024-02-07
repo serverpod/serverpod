@@ -8,11 +8,13 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
+var tempDirName = 'temp';
+
 void main() async {
   Directory.current = path.join(Directory.current.path, '..', '..');
   final rootPath = Directory.current.path;
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
-  final tempPath = path.join(rootPath, 'temp');
+  final tempPath = path.join(rootPath, tempDirName);
 
   setUpAll(() async {
     await Process.run(
@@ -21,7 +23,7 @@ void main() async {
       workingDirectory: cliPath,
     );
 
-    await Process.run('mkdir', ['temp'], workingDirectory: rootPath);
+    await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
     Directory.current = tempPath;
   });
 
@@ -502,7 +504,7 @@ void main() async {
     try {
       await Process.run(
         'rm',
-        ['-rf', 'temp'],
+        ['-rf', tempDirName],
         workingDirectory: rootPath,
       );
     } catch (e) {}
