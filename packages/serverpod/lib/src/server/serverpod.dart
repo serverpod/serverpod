@@ -3,19 +3,20 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/authentication/authentication_handler.dart';
+import 'package:serverpod/src/authentication/default_authentication_handler.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/cluster_manager.dart';
+import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/future_call_manager.dart';
 import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager.dart';
-import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import '../authentication/default_authentication_handler.dart';
-import '../authentication/service_authentication.dart';
+import '../authentication/service_authentication_handler.dart';
 import '../cache/caches.dart';
 import '../generated/endpoints.dart' as internal;
 import '../generated/protocol.dart' as internal;
@@ -298,7 +299,7 @@ class Serverpod {
       runMode: _runMode,
       caches: caches,
       authenticationHandler:
-          authenticationHandler ?? defaultAuthenticationHandler,
+          authenticationHandler ?? DatabaseAuthenticationHandler(),
       whitelistedExternalCalls: whitelistedExternalCalls,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,
@@ -523,7 +524,7 @@ class Serverpod {
       runMode: _runMode,
       name: 'Insights',
       caches: caches,
-      authenticationHandler: serviceAuthenticationHandler,
+      authenticationHandler: ServiceAuthenticationHandler(),
       // securityContext: context,
       endpoints: endpoints,
       httpResponseHeaders: httpResponseHeaders,

@@ -9,18 +9,24 @@ import 'authentication_info.dart';
 import 'scope.dart';
 import 'util.dart';
 
-/// The default [AuthenticationHandler], uses the auth_key table from the
-/// database to authenticate a user.
-class DefaultAuthenticationHandler extends AuthenticationHandler {
-  @override
-  Future<String> getSalt(Session session) =>
-      Future.value(session.passwords['authKeySalt'] ?? defaultAuthKeySalt);
+/// An [AuthenticationHandler] that uses the auth_key table from the
+/// database to authenticate a user. Performs a database query for every
+/// authenticated endpoint call, to look up the [AuthKey] for the user.
+class DatabaseAuthenticationHandler extends AuthenticationHandler {
+  String _getSalt(Session session) =>
+      session.passwords['authKeySalt'] ??
+      (throw 'Need to set authKeySalt in passwords config file');
 
   @override
-  Future<AuthKey> generateAuthKey(Session session, int userId, String secret,
-      List<Scope> scopes, String method) async {
+  Future<AuthKey> generateAuthKey(
+    Session session,
+    int userId,
+    Iterable<Scope> scopes,
+    String method, {
+    bool update = false,
+  }) async {
     var key = generateRandomString();
-    var hash = hashString(await getSalt(session), key);
+    var hash = hashString(_getSalt(session), key);
 
     var scopeNames = scopes.map((scope) => scope.name).nonNulls.toList();
 
@@ -32,8 +38,9 @@ class DefaultAuthenticationHandler extends AuthenticationHandler {
       method: method,
     );
 
-    session._authenticatedUser = userId;
-    var result = await AuthKey.db.insertRow(session, authKey);
+    var result = update
+        ? await AuthKey.db.updateRow(session, authKey)
+        : await AuthKey.db.insertRow(session, authKey);
     return result.copyWith(key: key);
   }
 
@@ -58,7 +65,7 @@ class DefaultAuthenticationHandler extends AuthenticationHandler {
       if (authKey == null) return null;
 
       // Hash the key from the user and check that it is what we expect
-      var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+      var signInSalt = _getSalt(session);
       var expectedHash = hashString(signInSalt, secret);
 
       if (authKey.hash != expectedHash) return null;

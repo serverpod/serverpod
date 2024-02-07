@@ -7,12 +7,14 @@ import 'scope.dart';
 /// Returns authentication information for a given [Session] and [key] or null
 /// if the key is invalid.
 abstract class AuthenticationHandler {
-  /// Returns the salt used for hashing the authentication key.
-  Future<String> getSalt(Session session);
-
   /// Generates a new authentication key for the user with the given [userId].
-  Future<AuthKey> generateAuthKey(Session session, int userId, String secret,
-      List<Scope> scopes, String method);
+  Future<AuthKey> generateAuthKey(
+    Session session,
+    int userId,
+    Iterable<Scope> scopes,
+    String method, {
+    bool update,
+  });
 
   /// Authenticates the user with the given [key] and returns the userId and
   /// scopes in an [AuthenticationInfo] object, or null if the key is invalid.

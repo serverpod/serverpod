@@ -36,6 +36,7 @@ dependencies:
   system_resources: ^1.6.0
   vm_service: ^13.0.0
   yaml: ^3.1.1
+  dart_jsonwebtoken: ^2.12.2
   serverpod_shared: #1.2.0-rc.1
     path: ../serverpod_shared
   serverpod_serialization: #1.2.0-rc.1

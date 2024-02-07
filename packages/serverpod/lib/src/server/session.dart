@@ -2,12 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/database_legacy.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:meta/meta.dart';
 
-import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
@@ -100,8 +98,8 @@ abstract class Session {
 
   Future<void> _initialize() async {
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
-          await server.authenticationHandler!(this, _authenticationKey!);
+      var authenticationInfo = await server.authenticationHandler!
+          .authenticate(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
@@ -358,27 +356,16 @@ class UserAuthetication {
   /// convenient to use the serverpod_auth module for authentication.
   Future<AuthKey> signInUser(int userId, String method,
       {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
-
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
-      if (scope.name != null) scopeNames.add(scope.name!);
+    if (_session.server.authenticationHandler == null) {
+      // Should not happen
+      throw Exception('No authentication handler is set');
     }
-
-    var authKey = AuthKey(
-      userId: userId,
-      hash: hash,
-      key: key,
-      scopeNames: scopeNames,
-      method: method,
-    );
+    var authKey = await _session.server.authenticationHandler!
+        .generateAuthKey(_session, userId, scopes, method);
 
     _session._authenticatedUser = userId;
     var result = await AuthKey.db.insertRow(_session, authKey);
-    return result.copyWith(key: key);
+    return result.copyWith(key: authKey.key);
   }
 
   /// Signs out a user from the server and deletes all authentication keys.
