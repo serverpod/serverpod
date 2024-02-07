@@ -1,13 +1,15 @@
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   test(
       'Given that no initial validation was done, then an empty list is returned when validating all files.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer([]);
+    var statefulAnalyzer = StatefulAnalyzer(config, []);
 
     var models = statefulAnalyzer.validateAll();
 
@@ -17,7 +19,7 @@ void main() {
   test(
       'When we add and remove a model, then an empty list is returned when validating all files.',
       () {
-    var statefulAnalyzer = StatefulAnalyzer([]);
+    var statefulAnalyzer = StatefulAnalyzer(config, []);
 
     var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yamlSource = ModelSourceBuilder().withYamlSourceUri(modelUri).withYaml(
@@ -38,7 +40,7 @@ void main() {
   test(
       'Given an empty state, when removing a model that does not exist and validating all, then an empty list is returned',
       () {
-    var statefulAnalyzer = StatefulAnalyzer([]);
+    var statefulAnalyzer = StatefulAnalyzer(config, []);
 
     var modelUri = Uri(path: 'lib/src/model/example.yaml');
     statefulAnalyzer.removeYamlModel(modelUri);
@@ -51,7 +53,7 @@ void main() {
   test(
       'Given an empty state, when validating a single model, then an empty list is returned',
       () {
-    var statefulAnalyzer = StatefulAnalyzer([]);
+    var statefulAnalyzer = StatefulAnalyzer(config, []);
 
     var modelUri = Uri(path: 'lib/src/model/example.yaml');
     var yaml = '''
@@ -75,7 +77,7 @@ fields:
       ''',
     ).build();
 
-    var statefulAnalyzer = StatefulAnalyzer([yamlSource]);
+    var statefulAnalyzer = StatefulAnalyzer(config, [yamlSource]);
 
     var models = statefulAnalyzer.validateAll();
 
@@ -95,7 +97,8 @@ fields:
     ).build();
 
     var wasCalled = false;
-    var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [yamlSource], (uri, errors) {
       wasCalled = true;
     });
 
@@ -109,7 +112,8 @@ fields:
     var yamlSource = ModelSourceBuilder().withYaml('''''').build();
 
     var wasCalled = false;
-    var statefulAnalyzer = StatefulAnalyzer([yamlSource], (uri, errors) {
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [yamlSource], (uri, errors) {
       wasCalled = true;
     });
 
@@ -128,7 +132,7 @@ and neither is this line
     ).build();
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer([invalidSource], onErrorsCollector(collector))
+    StatefulAnalyzer(config, [invalidSource], onErrorsCollector(collector))
         .validateAll();
 
     expect(
@@ -167,7 +171,8 @@ and neither is this line
     ).build();
 
     CodeGenerationCollector? reportedErrors;
-    var statefulAnalyzer = StatefulAnalyzer([invalidSource], (uri, errors) {
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [invalidSource], (uri, errors) {
       reportedErrors = errors;
     });
 
@@ -204,7 +209,7 @@ and neither is this line
     CodeGenerationCollector? reportedErrors;
 
     var statefulAnalyzer =
-        StatefulAnalyzer([yamlSource1, yamlSource2], (uri, errors) {
+        StatefulAnalyzer(config, [yamlSource1, yamlSource2], (uri, errors) {
       reportedErrors = errors;
     });
 
@@ -235,7 +240,7 @@ and neither is this line
 
     CodeGenerationCollector? reportedErrors;
     var statefulAnalyzer =
-        StatefulAnalyzer([yamlSource1, yamlSource2], (uri, errors) {
+        StatefulAnalyzer(config, [yamlSource1, yamlSource2], (uri, errors) {
       reportedErrors = errors;
     });
 
@@ -272,7 +277,8 @@ and neither is this line
     ).build();
 
     CodeGenerationCollector? reportedErrors;
-    var statefulAnalyzer = StatefulAnalyzer([yamlSource1], (uri, errors) {
+    var statefulAnalyzer =
+        StatefulAnalyzer(config, [yamlSource1], (uri, errors) {
       reportedErrors = errors;
     });
 

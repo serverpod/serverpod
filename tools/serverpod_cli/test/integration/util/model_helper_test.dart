@@ -18,6 +18,7 @@ GeneratorConfig createGeneratorConfig([
     relativeDartClientPackagePathParts: [],
     modules: [],
     extraClasses: [],
+    enabledFeatures: [],
   );
 }
 

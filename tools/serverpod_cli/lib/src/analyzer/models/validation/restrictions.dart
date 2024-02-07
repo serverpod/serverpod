@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -116,12 +117,14 @@ const _maxColumnNameLength =
     DatabaseConstants.pgsqlMaxNameLimitation - _reservedColumnSuffixChars;
 
 class Restrictions {
+  final GeneratorConfig config;
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
   ModelRelations? modelRelations;
 
   Restrictions({
+    required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
@@ -170,6 +173,23 @@ class Restrictions {
           'The $documentType name "$className" is already used by another model class.',
           span,
         )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateTableNameKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    if (!config.enabledFeatures.contains(ServerpodFeature.database)) {
+      return [
+        SourceSpanSeverityException(
+            'The "table" property cannot be used when the database feature is disabled.',
+            span,
+            severity: SourceSpanSeverity.warning)
       ];
     }
 

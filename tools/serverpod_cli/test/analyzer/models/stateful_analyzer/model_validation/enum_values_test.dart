@@ -1,10 +1,13 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
+
   test(
     'Given an enum without a values property, then collect an error that the values property is required.',
     () {
@@ -17,7 +20,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -44,7 +47,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -73,7 +76,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -102,7 +105,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -130,7 +133,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -158,7 +161,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -186,7 +189,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -214,7 +217,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -243,7 +246,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -274,7 +277,7 @@ void main() {
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(modelSources, onErrorsCollector(collector))
+      StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
           .validateAll();
 
       expect(
@@ -297,7 +300,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -320,7 +324,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -341,7 +346,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -362,7 +368,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -384,7 +391,8 @@ void main() {
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -403,7 +411,8 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    StatefulAnalyzer(modelSources, onErrorsCollector(collector)).validateAll();
+    StatefulAnalyzer(config, modelSources, onErrorsCollector(collector))
+        .validateAll();
 
     expect(
       collector.errors,
@@ -427,7 +436,8 @@ values:
     ];
 
     var collector = CodeGenerationCollector();
-    var analyzer = StatefulAnalyzer(modelSources, onErrorsCollector(collector));
+    var analyzer =
+        StatefulAnalyzer(config, modelSources, onErrorsCollector(collector));
 
     var definitions = analyzer.validateAll();
 
