@@ -8,11 +8,10 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
-var tempDirName = 'temp';
+const tempDirName = 'temp';
 
 void main() async {
-  Directory.current = path.join(Directory.current.path, '..', '..');
-  final rootPath = Directory.current.path;
+  final rootPath = path.join(Directory.current.path, '..', '..');
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
   final tempPath = path.join(rootPath, tempDirName);
 
@@ -24,7 +23,6 @@ void main() async {
     );
 
     await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
-    Directory.current = tempPath;
   });
 
   group('Given a clean state', () {
@@ -157,7 +155,7 @@ void main() async {
 
       startProcess = await Process.start(
         'dart',
-        ['bin/main.dart'],
+        ['bin/main.dart', '--apply-migrations'],
         workingDirectory: commandRoot,
       );
 
@@ -232,7 +230,7 @@ void main() async {
       group('then the server project', () {
         test('folder is created', () {
           expect(
-            Directory(serverDir).existsSync(),
+            Directory(path.join(tempPath, serverDir)).existsSync(),
             isTrue,
             reason: 'Server folder does not exist.',
           );
@@ -240,7 +238,7 @@ void main() async {
 
         test('has a pubspec file', () {
           expect(
-            File(path.join(serverDir, 'pubspec.yaml')).existsSync(),
+            File(path.join(tempPath, serverDir, 'pubspec.yaml')).existsSync(),
             isTrue,
             reason: 'Server pubspec file does not exist.',
           );
@@ -248,7 +246,7 @@ void main() async {
 
         test('has a .gitignore file', () {
           expect(
-            File(path.join(serverDir, '.gitignore')).existsSync(),
+            File(path.join(tempPath, serverDir, '.gitignore')).existsSync(),
             isTrue,
             reason: 'Server .gitignore file does not exist.',
           );
@@ -256,7 +254,8 @@ void main() async {
 
         test('has a server.dart file', () {
           expect(
-            File(path.join(serverDir, 'lib', 'server.dart')).existsSync(),
+            File(path.join(tempPath, serverDir, 'lib', 'server.dart'))
+                .existsSync(),
             isTrue,
             reason: 'Server server.dart file does not exist.',
           );
@@ -265,6 +264,7 @@ void main() async {
         test('has an example_endpoint file', () {
           expect(
             File(path.join(
+              tempPath,
               serverDir,
               'lib',
               'src',
@@ -279,6 +279,7 @@ void main() async {
         test('has a generated endpoints file', () {
           expect(
             File(path.join(
+              tempPath,
               serverDir,
               'lib',
               'src',
@@ -293,6 +294,7 @@ void main() async {
         test('has a generated example file', () {
           expect(
             File(path.join(
+              tempPath,
               serverDir,
               'lib',
               'src',
@@ -308,6 +310,7 @@ void main() async {
           expect(
             Directory(
               path.join(
+                tempPath,
                 serverDir,
                 'migrations',
               ),
@@ -320,6 +323,7 @@ void main() async {
         test('has project migration registry', () {
           expect(
             File(path.join(
+              tempPath,
               serverDir,
               'migrations',
               'migration_registry.txt',
@@ -333,7 +337,7 @@ void main() async {
       group('then the flutter project', () {
         test('folder is created', () {
           expect(
-            Directory(flutterDir).existsSync(),
+            Directory(path.join(tempPath, flutterDir)).existsSync(),
             isTrue,
             reason: 'Flutter folder does not exist.',
           );
@@ -341,7 +345,7 @@ void main() async {
 
         test('has a pubspec file', () {
           expect(
-            File(path.join(flutterDir, 'pubspec.yaml')).existsSync(),
+            File(path.join(tempPath, flutterDir, 'pubspec.yaml')).existsSync(),
             isTrue,
             reason: 'Flutter pubspec file does not exist.',
           );
@@ -349,7 +353,8 @@ void main() async {
 
         test('has a main file', () {
           expect(
-            File(path.join(flutterDir, 'lib', 'main.dart')).existsSync(),
+            File(path.join(tempPath, flutterDir, 'lib', 'main.dart'))
+                .existsSync(),
             isTrue,
             reason: 'Flutter main file does not exist.',
           );
@@ -359,7 +364,7 @@ void main() async {
       group('then the client project', () {
         test('folder is created', () {
           expect(
-            Directory(clientDir).existsSync(),
+            Directory(path.join(tempPath, clientDir)).existsSync(),
             isTrue,
             reason: 'Client folder does not exist.',
           );
@@ -367,7 +372,7 @@ void main() async {
 
         test('has a pubspec file', () {
           expect(
-            File(path.join(clientDir, 'pubspec.yaml')).existsSync(),
+            File(path.join(tempPath, clientDir, 'pubspec.yaml')).existsSync(),
             isTrue,
             reason: 'Client pubspec file does not exist.',
           );
@@ -376,7 +381,8 @@ void main() async {
         test('has a project_client file', () {
           expect(
             File(
-              path.join(clientDir, 'lib', '${projectName}_client.dart'),
+              path.join(
+                  tempPath, clientDir, 'lib', '${projectName}_client.dart'),
             ).existsSync(),
             isTrue,
             reason: 'Client project_client file does not exist.',
@@ -386,7 +392,8 @@ void main() async {
         test('has a protocol client file', () {
           expect(
             File(
-              path.join(clientDir, 'lib', 'src', 'protocol', 'client.dart'),
+              path.join(
+                  tempPath, clientDir, 'lib', 'src', 'protocol', 'client.dart'),
             ).existsSync(),
             isTrue,
             reason: 'Client protocol client file does not exist.',
@@ -452,6 +459,7 @@ void main() async {
 
       expect(
         File(path.join(
+          tempPath,
           serverDir,
           'lib',
           'src',
@@ -464,6 +472,7 @@ void main() async {
 
       expect(
         File(path.join(
+          tempPath,
           serverDir,
           'lib',
           'src',
@@ -476,6 +485,7 @@ void main() async {
 
       expect(
         File(path.join(
+          tempPath,
           clientDir,
           'lib',
           'src',
@@ -488,6 +498,7 @@ void main() async {
 
       expect(
         File(path.join(
+          tempPath,
           serverDir,
           'lib',
           'src',

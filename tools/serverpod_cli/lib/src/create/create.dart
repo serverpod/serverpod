@@ -121,13 +121,6 @@ Future<bool> performCreate(
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
     });
-
-    success &= await log.progress('Creating default database migration.', () {
-      return DatabaseSetup.createDefaultMigration(
-        serverpodDirs.serverDir,
-        name,
-      );
-    });
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
         'Writing project files.',
@@ -139,6 +132,15 @@ Future<bool> performCreate(
               );
               return true;
             }));
+  }
+
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDirs.serverDir,
+        name,
+      );
+    });
   }
 
   if (success || force) {
@@ -199,6 +201,13 @@ Future<bool> _performUpgrade(ServerpodTemplateType template) async {
       return true;
     },
   );
+
+  success &= await log.progress('Creating default database migration.', () {
+    return DatabaseSetup.createDefaultMigration(
+      serverpodDir.serverDir,
+      name,
+    );
+  });
 
   if (success) {
     log.info(

@@ -7,11 +7,10 @@ import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
-var tempDirName = 'temp-mini';
+const tempDirName = 'temp-mini';
 
 void main() async {
-  Directory.current = path.join(Directory.current.path, '..', '..');
-  final rootPath = Directory.current.path;
+  final rootPath = path.join(Directory.current.path, '..', '..');
   final cliPath = path.join(rootPath, 'tools', 'serverpod_cli');
   final tempPath = path.join(rootPath, tempDirName);
 
@@ -23,7 +22,6 @@ void main() async {
     );
 
     await Process.run('mkdir', [tempDirName], workingDirectory: rootPath);
-    Directory.current = tempPath;
   });
 
   group('Given a clean state', () {
@@ -96,28 +94,32 @@ void main() async {
 
       final (serverDir, _, _) = createProjectFolderPaths(projectName);
 
-      var configDir = Directory(path.join(serverDir, 'config')).existsSync();
+      var configDir =
+          Directory(path.join(tempPath, serverDir, 'config')).existsSync();
       expect(
         configDir,
         isFalse,
         reason: 'No config directory should exist but it was found.',
       );
 
-      var deployDir = Directory(path.join(serverDir, 'deploy')).existsSync();
+      var deployDir =
+          Directory(path.join(tempPath, serverDir, 'deploy')).existsSync();
       expect(
         deployDir,
         isFalse,
         reason: 'No deploy directory should exist but it was found.',
       );
 
-      var webDir = Directory(path.join(serverDir, 'web')).existsSync();
+      var webDir =
+          Directory(path.join(tempPath, serverDir, 'web')).existsSync();
       expect(
         webDir,
         isFalse,
         reason: 'No web directory should exist but it was found.',
       );
 
-      var dockerFile = File(path.join(serverDir, 'Dockerfile')).existsSync();
+      var dockerFile =
+          File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
       expect(
         dockerFile,
         isFalse,
@@ -125,7 +127,8 @@ void main() async {
       );
 
       var dockerComposeFile =
-          File(path.join(serverDir, 'docker-compose.yaml')).existsSync();
+          File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
+              .existsSync();
       expect(
         dockerComposeFile,
         isFalse,
@@ -133,7 +136,7 @@ void main() async {
       );
 
       var gcloudIgnoreFile =
-          File(path.join(serverDir, '.gcloudignore')).existsSync();
+          File(path.join(tempPath, serverDir, '.gcloudignore')).existsSync();
       expect(
         gcloudIgnoreFile,
         isFalse,
@@ -273,28 +276,32 @@ void main() async {
         reason: 'Failed to create the serverpod project.',
       );
 
-      var configDir = Directory(path.join(serverDir, 'config')).existsSync();
+      var configDir =
+          Directory(path.join(tempPath, serverDir, 'config')).existsSync();
       expect(
         configDir,
         isTrue,
         reason: 'Config directory should exist but it was not found.',
       );
 
-      var deployDir = Directory(path.join(serverDir, 'deploy')).existsSync();
+      var deployDir =
+          Directory(path.join(tempPath, serverDir, 'deploy')).existsSync();
       expect(
         deployDir,
         isTrue,
         reason: 'Deploy directory should exist but it was not found.',
       );
 
-      var webDir = Directory(path.join(serverDir, 'web')).existsSync();
+      var webDir =
+          Directory(path.join(tempPath, serverDir, 'web')).existsSync();
       expect(
         webDir,
         isTrue,
         reason: 'Web directory should exist but it was not found.',
       );
 
-      var dockerFile = File(path.join(serverDir, 'Dockerfile')).existsSync();
+      var dockerFile =
+          File(path.join(tempPath, serverDir, 'Dockerfile')).existsSync();
       expect(
         dockerFile,
         isTrue,
@@ -302,7 +309,8 @@ void main() async {
       );
 
       var dockerComposeFile =
-          File(path.join(serverDir, 'docker-compose.yaml')).existsSync();
+          File(path.join(tempPath, serverDir, 'docker-compose.yaml'))
+              .existsSync();
       expect(
         dockerComposeFile,
         isTrue,
@@ -310,7 +318,7 @@ void main() async {
       );
 
       var gcloudIgnoreFile =
-          File(path.join(serverDir, '.gcloudignore')).existsSync();
+          File(path.join(tempPath, serverDir, '.gcloudignore')).existsSync();
       expect(
         gcloudIgnoreFile,
         isTrue,
