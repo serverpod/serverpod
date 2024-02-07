@@ -38,6 +38,8 @@ Future<bool> performCreate(
   ServerpodTemplateType template,
   bool force,
 ) async {
+  // If the name is a dot, we are upgrading an existing project
+  // Instead of creating a new one, we try to upgrade the current directory.
   if (name == '.') {
     return await _performUpgrade(template);
   }
