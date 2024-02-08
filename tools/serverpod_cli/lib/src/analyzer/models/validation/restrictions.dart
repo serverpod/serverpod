@@ -184,7 +184,7 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    if (!config.enabledFeatures.contains(ServerpodFeature.database)) {
+    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
       return [
         SourceSpanSeverityException(
             'The "table" property cannot be used when the database feature is disabled.',
