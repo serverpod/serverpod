@@ -125,11 +125,11 @@ class ServerpodConfig {
     var str = '';
 
     str += apiServer.toString();
-    str += insightsServer.toString();
-    str += webServer.toString();
+    if (insightsServer != null) str += insightsServer.toString();
+    if (webServer != null) str += webServer.toString();
 
-    str += database.toString();
-    str += redis.toString();
+    if (database != null) str += database.toString();
+    if (redis != null) str += redis.toString();
 
     return str;
   }
