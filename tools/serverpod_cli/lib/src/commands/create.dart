@@ -23,13 +23,18 @@ class CreateCommand extends ServerpodCommand {
       help: 'Create the project even if there are issues that prevent it from '
           'running out of the box.',
     );
+    argParser.addFlag(
+      'mini',
+      negatable: false,
+      help: 'Shortcut for --template mini.',
+    );
     argParser.addOption(
       'template',
       abbr: 't',
       defaultsTo: ServerpodTemplateType.server.name,
       allowed: templateTypes,
       help: 'Template to use when creating a new project, valid options are '
-          '"server" or "module".',
+          '"mini", "server" or "module".',
     );
   }
 
@@ -52,6 +57,10 @@ class CreateCommand extends ServerpodCommand {
     var name = rest.last;
     var template = ServerpodTemplateType.tryParse(argResults!['template']);
     bool force = argResults!['force'];
+
+    if (argResults!['mini']) {
+      template = ServerpodTemplateType.mini;
+    }
 
     if (template == null || templateTypes.contains(name) || name == 'create') {
       printUsage();
