@@ -133,6 +133,9 @@ class GeneratorConfig {
   /// All the features that are enabled in the serverpod project.
   final List<ServerpodFeature> enabledFeatures;
 
+  bool isFeatureEnabled(ServerpodFeature feature) =>
+      enabledFeatures.contains(feature);
+
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
       .where((module) => module.type == PackageType.module)
