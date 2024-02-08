@@ -441,6 +441,12 @@ class Serverpod {
 
       if (Features.enableMigrations) {
         await _applyMigrations();
+      } else if (commandLineArgs.applyMigrations ||
+          commandLineArgs.applyRepairMigration) {
+        stderr.writeln(
+          'Migrations are disabled in this project, skipping applying migration(s).',
+        );
+        _exitCode = 1;
       }
 
       // Setup log manager.
