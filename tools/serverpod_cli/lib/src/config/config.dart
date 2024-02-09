@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
@@ -153,24 +156,23 @@ class GeneratorConfig {
   static Future<GeneratorConfig> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
-    Map? pubspec;
+    Pubspec? pubspec;
     try {
-      var file = File(p.join(dir, 'pubspec.yaml'));
-      var yamlStr = file.readAsStringSync();
-      pubspec = loadYaml(yamlStr);
-    } catch (_) {
+      pubspec = parsePubspec(File(p.join(dir, 'pubspec.yaml')));
+    } catch (_) {}
+
+    if (pubspec == null) {
       log.error(
         'Failed to load pubspec.yaml. Are you running serverpod from your '
         'projects root directory?',
       );
 
       throw const ServerpodProjectNotFoundException(
-        'Failed to load pubspec.yaml',
+        'Failed to load valid pubspec.yaml',
       );
     }
 
-    if (pubspec == null ||
-        pubspec['dependencies']?.containsKey('serverpod') != true) {
+    if (!isServerDirectory(Directory(dir))) {
       log.error(
         'Could not find the Serverpod dependency. Are you running serverpod from your '
         'projects root directory?',
@@ -181,10 +183,7 @@ class GeneratorConfig {
       );
     }
 
-    if (pubspec['name'] == null) {
-      throw const FormatException('Package name is missing in pubspec.yaml');
-    }
-    var serverPackage = pubspec['name'];
+    var serverPackage = pubspec.name;
     var name = _stripPackage(serverPackage);
 
     var file = File(p.join(dir, 'config', 'generator.yaml'));
