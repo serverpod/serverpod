@@ -1,15 +1,21 @@
 /// Provides utility functions for working with colors in the terminal
+// ignore_for_file: unnecessary_string_escapes
 class TerminalColors {
   /// Reset color code
   static String resetColor = '\e[0m';
 
   /// Matching logLevel string with escape color code
   static const matcher = {
-    'fatal': '\e[0;31m',
-    'error': '\e[1;31m',
-    'warning': '\e[1;33m',
-    'info': '\e[1;34m',
-    'debug': '\e[1;30m',
+    //logLevels
+    'fatal': '\e[0;31m', //red
+    'error': '\e[1;31m', //light red
+    'warning': '\e[1;33m', //yellow
+    'info': '\e[1;34m', //light blue
+    'debug': '\e[1;30m', //gray
+
+    //log_manager - magic logLevels
+    'method': '\e[0;32m', //green
+    'future': '\e[0;35m', //purple
   };
 
   /// Adds a color to a text based on the logLevel sting.

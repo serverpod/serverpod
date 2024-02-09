@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:meta/meta.dart';
 import 'package:serverpod/database.dart';
+import 'package:serverpod/src/util/terminal_colors.dart';
 import 'package:synchronized/synchronized.dart';
 
 import '../../server.dart';
@@ -518,11 +519,13 @@ class LogManager {
     // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
+        String prefix = TerminalColors.colorize('METHOD CALL', 'method');
         stdout.writeln(
-            'METHOD CALL: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
+            '$prefix: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
       } else if (session is FutureCallSession) {
+        String prefix = TerminalColors.colorize('FUTURE CALL', 'future');
         stdout.writeln(
-            'FUTURE CALL: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
+            '$prefix: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
       }
       if (exception != null) {
         stdout.writeln(exception);
