@@ -12,6 +12,7 @@ import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
+import '../util/terminalColors.dart';
 import 'log_manager.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
@@ -118,8 +119,7 @@ abstract class Session {
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
-    sessionLogs.temporarySessionId =
-        serverpod.logManager.nextTemporarySessionId();
+    sessionLogs.temporarySessionId = serverpod.logManager.nextTemporarySessionId();
   }
 
   bool _initialized = false;
@@ -133,8 +133,7 @@ abstract class Session {
     }
 
     if (server.authenticationHandler != null && _authenticationKey != null) {
-      var authenticationInfo =
-          await server.authenticationHandler!(this, _authenticationKey!);
+      var authenticationInfo = await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
@@ -219,7 +218,12 @@ abstract class Session {
     sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
+      //Only colorize the prefix, we dont want a light show.
+      String prefixLevel = TerminalColors.colorize(
+        entry.logLevel.name.toUpperCase(),
+        entry.logLevel.name,
+      );
+      stdout.writeln('$prefixLevel: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }
@@ -390,8 +394,7 @@ class UserAuthetication {
   /// before signing them in. Send the AuthKey.id and key to the client and
   /// use that to authenticate in future calls. In most cases, it's more
   /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
+  Future<AuthKey> signInUser(int userId, String method, {Set<Scope> scopes = const {}}) async {
     var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
 
     var key = generateRandomString();
@@ -421,8 +424,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.dbNext
-        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
+    await _session.dbNext.deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }
 }
@@ -512,8 +514,7 @@ class StorageAccess {
     required String storageId,
     required List<String> paths,
   }) =>
-      Future.wait(
-          paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
+      Future.wait(paths.map((path) => getPublicUrl(storageId: storageId, path: path)));
 
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
@@ -528,8 +529,7 @@ class StorageAccess {
       throw CloudStorageException('Storage $storageId is not registered');
     }
 
-    return await storage.createDirectFileUploadDescription(
-        session: _session, path: path);
+    return await storage.createDirectFileUploadDescription(session: _session, path: path);
   }
 
   /// Call this method after a file has been uploaded. It will return true
@@ -567,10 +567,8 @@ class MessageCentralAccess {
   }
 
   /// Removes a listener from a named channel.
-  void removeListener(
-      String channelName, MessageCentralListenerCallback listener) {
-    _session.server.messageCentral
-        .removeListener(_session, channelName, listener);
+  void removeListener(String channelName, MessageCentralListenerCallback listener) {
+    _session.server.messageCentral.removeListener(_session, channelName, listener);
   }
 
   /// Posts a [message] to a named channel. If [global] is set to true, the
