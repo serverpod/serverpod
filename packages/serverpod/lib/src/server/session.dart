@@ -12,6 +12,7 @@ import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
+import '../util/terminalColors.dart'
 import 'log_manager.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
@@ -219,7 +220,11 @@ abstract class Session {
     sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
-      stdout.writeln('${entry.logLevel.name.toUpperCase()}: ${entry.message}');
+      String prefixLevel = TerminalColors.colorize(
+        entry.logLevel.name.toUpperCase(),
+        entry.logLevel.name,
+      );
+      stdout.writeln('$prefixLevel: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
     }
