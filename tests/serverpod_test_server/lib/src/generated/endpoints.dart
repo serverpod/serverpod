@@ -90,8 +90,7 @@ import 'package:serverpod_test_server/src/generated/models_with_relations/one_to
     as _i65;
 import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
     as _i66;
-import 'package:serverpod_auth_server/module.dart' as _i67;
-import 'package:serverpod_test_module_server/module.dart' as _i68;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i67;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -5998,7 +5997,7 @@ class Endpoints extends _i1.EndpointDispatch {
       },
     );
     modules['serverpod_auth'] = _i67.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_test_module'] = _i68.Endpoints()
+    modules['serverpod_test_module'] = _i66.Endpoints()
       ..initializeEndpoints(server);
   }
 }
