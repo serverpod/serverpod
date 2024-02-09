@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/src/text_with_links.dart';
 import 'package:serverpod_chat_flutter/src/web_util/web_util.dart';
 

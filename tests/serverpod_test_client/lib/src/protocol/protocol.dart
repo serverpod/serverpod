@@ -83,7 +83,8 @@ import 'types_list.dart' as _i64;
 import 'types_map.dart' as _i65;
 import 'unique_data.dart' as _i66;
 import 'protocol.dart' as _i67;
-import 'package:serverpod_test_module_client/module.dart' as _i68;
+import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
+    as _i68;
 import 'dart:typed_data' as _i69;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i70;
 import 'package:serverpod_test_client/src/protocol/test_enum.dart' as _i71;
@@ -108,7 +109,7 @@ import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_
     as _i82;
 import 'package:serverpod_test_client/src/custom_classes.dart' as _i83;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i84;
-import 'package:serverpod_auth_client/module.dart' as _i85;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i85;
 export 'exception_with_data.dart';
 export 'long_identifiers/deep_includes/city_with_long_table_name.dart';
 export 'long_identifiers/deep_includes/organization_with_long_table_name.dart';

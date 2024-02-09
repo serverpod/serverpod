@@ -10,7 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/module.dart' as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
 import 'dart:typed_data' as _i4;
 import 'package:uuid/uuid_value.dart' as _i5;
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i6;
@@ -52,7 +52,8 @@ import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_
     as _i27;
 import 'package:serverpod_test_client/src/protocol/models_with_relations/one_to_many/order.dart'
     as _i28;
-import 'package:serverpod_test_module_client/module.dart' as _i29;
+import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
+    as _i29;
 import 'package:serverpod_test_client/src/protocol/module_datatype.dart'
     as _i30;
 import 'protocol.dart' as _i31;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_email_flutter/src/signin_dialog.dart';
 
 /// Sign in with Email button. When pressed, a pop-up window appears with fields for entering login, email and password.
