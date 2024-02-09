@@ -11,8 +11,9 @@ library protocol; // ignore_for_file: no_leading_underscores_for_library_prefixe
 
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_server/module.dart' as _i3;
-import 'package:serverpod_test_module_server/module.dart' as _i4;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
+    as _i4;
 import 'exception_with_data.dart' as _i5;
 import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i6;
 import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'

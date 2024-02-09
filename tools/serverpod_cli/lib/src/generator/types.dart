@@ -156,9 +156,9 @@ class TypeDefinition {
             throw FormatException(
                 'Module with nickname $moduleName not found in config!');
           }
-          t.url = 'package:'
-              '${serverCode ? module.serverPackage : module.dartClientPackage}'
-              '/module.dart';
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
             (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
@@ -185,10 +185,10 @@ class TypeDefinition {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
               (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
-              ? 'package:'
-                  '${serverCode ? module.serverPackage : module.dartClientPackage}'
-                  '/module.dart'
+              ? 'package:$packageName/$packageName.dart'
               : serverCode
                   ? url
                   : url?.replaceFirst('package:${module.serverPackage}',

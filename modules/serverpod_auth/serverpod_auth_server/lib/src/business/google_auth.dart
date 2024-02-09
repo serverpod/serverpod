@@ -6,7 +6,7 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:googleapis_auth/src/auth_http_utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 const _configFilePath = 'config/google_client_secret.json';
 

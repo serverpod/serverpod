@@ -1,6 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_email_flutter/src/auth.dart';
 
 const _defaultMaxPasswordLength = 128;

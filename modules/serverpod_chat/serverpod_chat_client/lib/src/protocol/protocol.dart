@@ -22,7 +22,7 @@ import 'chat_message_post.dart' as _i10;
 import 'chat_read_message.dart' as _i11;
 import 'chat_request_message_chunk.dart' as _i12;
 import 'protocol.dart' as _i13;
-import 'package:serverpod_auth_client/module.dart' as _i14;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
 export 'chat_join_channel.dart';
 export 'chat_join_channel_failed.dart';
 export 'chat_joined_channel.dart';

@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart' as auth;
-import 'package:serverpod_chat_server/module.dart' as chat;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
+import 'package:serverpod_chat_server/serverpod_chat_server.dart' as chat;
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';

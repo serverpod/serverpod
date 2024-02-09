@@ -375,8 +375,10 @@ class ModuleConfig {
         serverPackage = '${name}_server';
 
   /// The url when importing this module in dart code.
-  String dartImportUrl(bool serverCode) =>
-      'package:${serverCode ? serverPackage : dartClientPackage}/module.dart';
+  String dartImportUrl(bool serverCode) {
+    var packageName = serverCode ? serverPackage : dartClientPackage;
+    return 'package:$packageName/$packageName.dart';
+  }
 
   @override
   String toString() {

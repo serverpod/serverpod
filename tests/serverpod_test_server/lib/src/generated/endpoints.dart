@@ -88,8 +88,9 @@ import 'package:serverpod_test_server/src/generated/models_with_relations/one_to
     as _i64;
 import 'package:serverpod_test_server/src/generated/models_with_relations/one_to_many/customer.dart'
     as _i65;
-import 'package:serverpod_test_module_server/module.dart' as _i66;
-import 'package:serverpod_auth_server/module.dart' as _i67;
+import 'package:serverpod_test_module_server/serverpod_test_module_server.dart'
+    as _i66;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i67;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override

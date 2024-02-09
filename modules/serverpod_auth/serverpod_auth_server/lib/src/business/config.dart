@@ -1,6 +1,6 @@
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import 'user_images.dart';
 

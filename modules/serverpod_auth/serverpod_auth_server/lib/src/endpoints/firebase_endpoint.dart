@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:firebase_admin/firebase_admin.dart';
 import 'package:serverpod_auth_server/src/business/firebase_auth.dart';
 
