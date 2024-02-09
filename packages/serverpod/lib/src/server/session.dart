@@ -12,7 +12,7 @@ import '../authentication/util.dart';
 import '../cache/caches.dart';
 import '../database/database.dart';
 import '../generated/protocol.dart';
-import '../util/terminalColors.dart'
+import '../util/terminalColors.dart';
 import 'log_manager.dart';
 
 /// When a call is made to the [Server] a [Session] object is created. It
