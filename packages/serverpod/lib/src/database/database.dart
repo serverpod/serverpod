@@ -244,7 +244,6 @@ class Database {
   /// the value as the contents of the column.
   /// You are responsible to sanitize the query to avoid SQL injection.
   Future<List<Map<String, Map<String, dynamic>>>> unsafeQueryMappedResults(
-    Session session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
