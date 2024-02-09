@@ -25,6 +25,7 @@ bool isServerDirectory(Directory directory) {
   if (!pubspec.existsSync()) return false;
 
   var content = parsePubspec(pubspec);
+  if (content.name == 'serverpod') return true;
   if (!content.dependencies.containsKey('serverpod')) return false;
 
   return true;
