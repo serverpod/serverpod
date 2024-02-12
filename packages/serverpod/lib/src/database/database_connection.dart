@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/columns.dart';
-import 'package:serverpod/src/database/database_connection_legacy.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_query_helper.dart';
 import 'package:serverpod/src/database/database_result.dart';
@@ -23,18 +22,11 @@ class DatabaseConnection {
   /// Access to the raw Postgresql connection pool.
   final PgPool _postgresConnection;
 
-  /// Access to legacy database methods.
-  // ignore: deprecated_member_use_from_same_package
-  late final DatabaseConnectionLegacy legacy;
-
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
   /// access the database.
   DatabaseConnection(this._poolManager)
-      : _postgresConnection = _poolManager.pool {
-    // ignore: deprecated_member_use_from_same_package
-    legacy = DatabaseConnectionLegacy(_poolManager, _logQuery);
-  }
+      : _postgresConnection = _poolManager.pool;
 
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
