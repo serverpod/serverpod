@@ -198,18 +198,6 @@ class DatabaseLegacy {
         .retrieveFile(storageId, path, session: session);
   }
 
-  /// Verifies that a file has been successfully uploaded.
-  Future<bool> verifyFile(
-    String storageId,
-    String path,
-  ) async {
-    return await databaseConnection.legacy.verifyFile(
-      storageId,
-      path,
-      session: session,
-    );
-  }
-
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   Future<PostgreSQLResult> query(

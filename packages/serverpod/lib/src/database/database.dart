@@ -231,20 +231,6 @@ class Database {
         .retrieveFile(storageId, path, session: _session);
   }
 
-  /// Verifies that a file has been successfully uploaded.
-  @Deprecated(
-      'Will be removed in 2.0.0. Use Session.storage.verifyDirectFileUpload instead.')
-  Future<bool> verifyFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy.verifyFile(
-      storageId,
-      path,
-      session: _session,
-    );
-  }
-
   /// Executes a single SQL query. A [List] of rows represented of a [Map] with
   /// the table name and value is another [Map] with the keys as column names and
   /// the value as the contents of the column.

@@ -130,13 +130,25 @@ class DatabaseCloudStorage extends CloudStorage {
     return SerializationManager.encode(uploadDescriptionData);
   }
 
+  /// Returns true if the specified file has been successfully uploaded to the
+  /// database cloud storage.
   @override
   Future<bool> verifyDirectFileUpload({
     required Session session,
     required String path,
   }) async {
-    // ignore: deprecated_member_use_from_same_package
-    return await session.dbNext.verifyFile(storageId, path);
+    var query =
+        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
+    var result = await session.dbNext.unsafeQuery(query);
+    if (result.isEmpty) return false;
+
+    var verified = result.first.first as bool;
+    if (verified) return false;
+
+    query =
+        'UPDATE serverpod_cloud_storage SET "verified"=${EscapedExpression(true)} WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
+    await session.dbNext.unsafeQuery(query);
+    return true;
   }
 
   static String _generateAuthKey() {
