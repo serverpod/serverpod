@@ -204,6 +204,8 @@ class Database {
 
   /// Stores a file in the database, specifically using the
   /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
+  @Deprecated(
+      'Will be removed in 2.0.0. Use Session.storage.storeFile instead.')
   Future<void> storeFile(
     String storageId,
     String path,
@@ -219,6 +221,8 @@ class Database {
   /// Retrieves a file stored in the database or null if it doesn't exist,
   /// specifically using the serverpod_cloud_storage table. Used by the the
   /// [DatabaseCloudStorage].
+  @Deprecated(
+      'Will be removed in 2.0.0. Use Session.storage.retrieveFile instead.')
   Future<ByteData?> retrieveFile(
     String storageId,
     String path,
@@ -228,6 +232,8 @@ class Database {
   }
 
   /// Verifies that a file has been successfully uploaded.
+  @Deprecated(
+      'Will be removed in 2.0.0. Use Session.storage.verifyDirectFileUpload instead.')
   Future<bool> verifyFile(
     String storageId,
     String path,
