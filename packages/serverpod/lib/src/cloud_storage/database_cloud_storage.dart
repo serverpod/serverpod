@@ -66,6 +66,7 @@ class DatabaseCloudStorage extends CloudStorage {
   Future<ByteData?> retrieveFile(
       {required Session session, required String path}) async {
     try {
+      // ignore: deprecated_member_use_from_same_package
       return await session.dbNext.retrieveFile(storageId, path);
     } catch (e) {
       throw CloudStorageException('Failed to retrieve file. ($e)');
@@ -82,6 +83,7 @@ class DatabaseCloudStorage extends CloudStorage {
   }) async {
     try {
       await session.dbNext
+          // ignore: deprecated_member_use_from_same_package
           .storeFile(storageId, path, byteData, expiration, verified);
     } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
@@ -133,6 +135,7 @@ class DatabaseCloudStorage extends CloudStorage {
     required Session session,
     required String path,
   }) async {
+    // ignore: deprecated_member_use_from_same_package
     return await session.dbNext.verifyFile(storageId, path);
   }
 
