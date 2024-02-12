@@ -294,11 +294,10 @@ class GeneratorConfig {
     var features = config['features'];
 
     if (features is! Map) return enabledFeatures;
-    if (features.containsKey('database') && features['database'] == true) {
-      enabledFeatures.add(ServerpodFeature.database);
-    }
 
-    return enabledFeatures;
+    return ServerpodFeature.values
+        .where((feature) => features[feature.name.toString()] == true)
+        .toList();
   }
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
