@@ -14,17 +14,4 @@ abstract class TableRow extends SerializableEntity {
 
   /// The table that this row belongs to.
   Table get table;
-
-  /// The name of the table that contains this row.
-  @Deprecated('Use: table.tableName instead, will be removed in 2.0.0.')
-  String get tableName => table.tableName;
-
-  /// Will create a serialization of with the fields that are stored in the
-  /// database only.
-  @Deprecated('Will be removed in 2.0.0.')
-  Map<String, dynamic> toJsonForDatabase();
-
-  /// Sets the value of a column by its name. Used in communication with the
-  /// database.
-  void setColumn(String columnName, dynamic value);
 }
