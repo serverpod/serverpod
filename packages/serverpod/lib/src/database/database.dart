@@ -202,22 +202,6 @@ class Database {
     );
   }
 
-  /// Stores a file in the database, specifically using the
-  /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  @Deprecated(
-      'Will be removed in 2.0.0. Use Session.storage.storeFile instead.')
-  Future<void> storeFile(
-    String storageId,
-    String path,
-    ByteData byteData,
-    DateTime? expiration,
-    bool verified,
-  ) async {
-    return await _databaseConnection.legacy.storeFile(
-        storageId, path, byteData, expiration, verified,
-        session: _session);
-  }
-
   /// Retrieves a file stored in the database or null if it doesn't exist,
   /// specifically using the serverpod_cloud_storage table. Used by the the
   /// [DatabaseCloudStorage].

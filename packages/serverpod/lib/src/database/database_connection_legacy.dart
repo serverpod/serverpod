@@ -6,7 +6,6 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_connection.dart';
 import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../server/session.dart';
 import 'database_pool_manager.dart';
@@ -223,37 +222,6 @@ You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
 Current type was $T''');
     return table!;
-  }
-
-  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
-  Future<void> storeFile(String storageId, String path, ByteData byteData,
-      DateTime? expiration, bool verified,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      var encoded = byteData.base64encodedString();
-      query =
-          'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
-
-      await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'addedTime': DateTime.now().toUtc(),
-          'expiration': expiration?.toUtc(),
-          'verified': verified,
-          // TODO: Use substitution value for the data for efficiency (seems not to work with the driver currently).
-          // 'byteData': byteData.buffer.asUint8List(),
-        },
-      );
-      _logQuery(session, query, startTime);
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
   }
 
   /// For most cases use the corresponding method in [DatabaseLegacy] instead.

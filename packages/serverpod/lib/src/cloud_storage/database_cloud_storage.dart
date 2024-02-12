@@ -81,10 +81,12 @@ class DatabaseCloudStorage extends CloudStorage {
     DateTime? expiration,
     bool verified = true,
   }) async {
+    var addedTime = DateTime.now().toUtc();
+    var encoded = byteData.base64encodedString();
+    var query =
+        'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (${EscapedExpression(storageId)}, ${EscapedExpression(path)}, ${EscapedExpression(addedTime)}, ${EscapedExpression(expiration?.toUtc())}, ${EscapedExpression(verified)}, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=${EscapedExpression(addedTime)}, "expiration"=${EscapedExpression(expiration?.toUtc())}, "verified"=${EscapedExpression(verified)}';
     try {
-      await session.dbNext
-          // ignore: deprecated_member_use_from_same_package
-          .storeFile(storageId, path, byteData, expiration, verified);
+      await session.dbNext.unsafeQuery(query);
     } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
     }
