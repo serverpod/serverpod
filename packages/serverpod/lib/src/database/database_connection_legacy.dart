@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/columns.dart';
@@ -222,35 +220,5 @@ You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
 Current type was $T''');
     return table!;
-  }
-
-  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
-  Future<ByteData?> retrieveFile(String storageId, String path,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      query =
-          'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
-
-      var result = await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'verified': true,
-        },
-      );
-      _logQuery(session, query, startTime);
-      if (result.isNotEmpty) {
-        var encoded = (result.first.first as String).replaceAll('\n', '');
-        return ByteData.view(base64Decode(encoded).buffer);
-      }
-      return null;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
   }
 }

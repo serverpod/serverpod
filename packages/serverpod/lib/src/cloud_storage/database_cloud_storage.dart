@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -63,14 +64,24 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<ByteData?> retrieveFile(
-      {required Session session, required String path}) async {
+  Future<ByteData?> retrieveFile({
+    required Session session,
+    required String path,
+  }) async {
+    var query =
+        'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND path=${EscapedExpression(path)} AND verified=${EscapedExpression(true)}';
+
     try {
-      // ignore: deprecated_member_use_from_same_package
-      return await session.dbNext.retrieveFile(storageId, path);
+      var result = await session.dbNext.unsafeQuery(query);
+      if (result.isNotEmpty) {
+        var encoded = (result.first.first as String).replaceAll('\n', '');
+        return ByteData.view(base64Decode(encoded).buffer);
+      }
     } catch (e) {
       throw CloudStorageException('Failed to retrieve file. ($e)');
     }
+
+    return null;
   }
 
   @override

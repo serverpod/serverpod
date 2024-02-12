@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
@@ -200,19 +199,6 @@ class Database {
       limit: limit,
       transaction: transaction,
     );
-  }
-
-  /// Retrieves a file stored in the database or null if it doesn't exist,
-  /// specifically using the serverpod_cloud_storage table. Used by the the
-  /// [DatabaseCloudStorage].
-  @Deprecated(
-      'Will be removed in 2.0.0. Use Session.storage.retrieveFile instead.')
-  Future<ByteData?> retrieveFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy
-        .retrieveFile(storageId, path, session: _session);
   }
 
   /// Executes a single SQL query. A [List] of rows represented of a [Map] with
