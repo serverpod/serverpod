@@ -28,7 +28,7 @@ export function activate(context: ExtensionContext) {
 
 	const serverOptions: ServerOptions = {
 		command: 'serverpod',
-		args: ['language-server'],
+		args: ['-q', 'language-server'],
 		options: {
 			env: process.env,
 			shell: true,
