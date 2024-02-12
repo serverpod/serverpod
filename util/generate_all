@@ -6,6 +6,9 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     exit 1
 fi
 
+# Makes script exit on first non-zero error code
+set -e
+
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
