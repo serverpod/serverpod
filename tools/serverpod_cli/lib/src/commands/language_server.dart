@@ -2,8 +2,10 @@ import 'package:serverpod_cli/src/language_server/language_server.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 
 class LanguageServerCommand extends ServerpodCommand {
+  static String commandName = 'language-server';
+
   @override
-  final name = 'language-server';
+  final name = commandName;
 
   @override
   final description =
