@@ -2,6 +2,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
@@ -165,6 +166,9 @@ class ServerpodCommandRunner extends CommandRunner {
     if (topLevelResults[GlobalFlags.verbose]) {
       logLevel = LogLevel.debug;
     } else if (topLevelResults[GlobalFlags.quiet]) {
+      logLevel = LogLevel.nothing;
+    } else if (topLevelResults.command?.name ==
+        LanguageServerCommand.commandName) {
       logLevel = LogLevel.nothing;
     }
 
