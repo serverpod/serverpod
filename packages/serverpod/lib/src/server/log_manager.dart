@@ -519,11 +519,11 @@ class LogManager {
     // Output to console in development mode.
     if (session.serverpod.runMode == ServerpodRunMode.development) {
       if (session is MethodCallSession) {
-        String prefix = TerminalColors.colorize('METHOD CALL', 'method');
+        String prefix = stdout.supportsAnsiEscapes ? TerminalColors.colorize('METHOD CALL', 'method') : 'METHOD CALL';
         stdout.writeln(
             '$prefix: ${session.endpointName}.${session.methodName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length} authenticatedUser: $authenticatedUserId');
       } else if (session is FutureCallSession) {
-        String prefix = TerminalColors.colorize('FUTURE CALL', 'future');
+        String prefix = stdout.supportsAnsiEscapes ? TerminalColors.colorize('FUTURE CALL', 'future') : 'FUTURE CALL';
         stdout.writeln(
             '$prefix: ${session.futureCallName} duration: ${duration.inMilliseconds}ms numQueries: ${cachedEntry.queries.length}');
       }

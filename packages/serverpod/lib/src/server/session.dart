@@ -220,10 +220,12 @@ abstract class Session {
     sessionLogs.currentLogOrderId += 1;
 
     if (serverpod.runMode == ServerpodRunMode.development) {
-      String prefixLevel = TerminalColors.colorize(
-        entry.logLevel.name.toUpperCase(),
-        entry.logLevel.name,
-      );
+      String prefixLevel = stdout.supportsAnsiEscapes
+          ? TerminalColors.colorize(
+              entry.logLevel.name.toUpperCase(),
+              entry.logLevel.name,
+            )
+          : entry.logLevel.name.toUpperCase();
       stdout.writeln('$prefixLevel: ${entry.message}');
       if (entry.error != null) stdout.writeln(entry.error);
       if (entry.stackTrace != null) stdout.writeln(entry.stackTrace);
