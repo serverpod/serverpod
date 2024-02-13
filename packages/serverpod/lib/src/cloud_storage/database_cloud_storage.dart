@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -63,13 +64,24 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
-  Future<ByteData?> retrieveFile(
-      {required Session session, required String path}) async {
+  Future<ByteData?> retrieveFile({
+    required Session session,
+    required String path,
+  }) async {
+    var query =
+        'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND path=${EscapedExpression(path)} AND verified=${EscapedExpression(true)}';
+
     try {
-      return await session.dbNext.retrieveFile(storageId, path);
+      var result = await session.dbNext.unsafeQuery(query);
+      if (result.isNotEmpty) {
+        var encoded = (result.first.first as String).replaceAll('\n', '');
+        return ByteData.view(base64Decode(encoded).buffer);
+      }
     } catch (e) {
       throw CloudStorageException('Failed to retrieve file. ($e)');
     }
+
+    return null;
   }
 
   @override
@@ -80,9 +92,12 @@ class DatabaseCloudStorage extends CloudStorage {
     DateTime? expiration,
     bool verified = true,
   }) async {
+    var addedTime = DateTime.now().toUtc();
+    var encoded = byteData.base64encodedString();
+    var query =
+        'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (${EscapedExpression(storageId)}, ${EscapedExpression(path)}, ${EscapedExpression(addedTime)}, ${EscapedExpression(expiration?.toUtc())}, ${EscapedExpression(verified)}, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=${EscapedExpression(addedTime)}, "expiration"=${EscapedExpression(expiration?.toUtc())}, "verified"=${EscapedExpression(verified)}';
     try {
-      await session.dbNext
-          .storeFile(storageId, path, byteData, expiration, verified);
+      await session.dbNext.unsafeQuery(query);
     } catch (e) {
       throw CloudStorageException('Failed to store file. ($e)');
     }
@@ -128,12 +143,25 @@ class DatabaseCloudStorage extends CloudStorage {
     return SerializationManager.encode(uploadDescriptionData);
   }
 
+  /// Returns true if the specified file has been successfully uploaded to the
+  /// database cloud storage.
   @override
   Future<bool> verifyDirectFileUpload({
     required Session session,
     required String path,
   }) async {
-    return await session.dbNext.verifyFile(storageId, path);
+    var query =
+        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
+    var result = await session.dbNext.unsafeQuery(query);
+    if (result.isEmpty) return false;
+
+    var verified = result.first.first as bool;
+    if (verified) return false;
+
+    query =
+        'UPDATE serverpod_cloud_storage SET "verified"=${EscapedExpression(true)} WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
+    await session.dbNext.unsafeQuery(query);
+    return true;
   }
 
   static String _generateAuthKey() {

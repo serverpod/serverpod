@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_connection.dart';
 import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import '../server/session.dart';
 import 'database_pool_manager.dart';
@@ -223,116 +220,5 @@ You need to specify a template type that is a subclass of TableRow.
 E.g. myRows = await session.db.$operation<MyTableClass>(where: ...);
 Current type was $T''');
     return table!;
-  }
-
-  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
-  Future<void> storeFile(String storageId, String path, ByteData byteData,
-      DateTime? expiration, bool verified,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      var encoded = byteData.base64encodedString();
-      query =
-          'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (@storageId, @path, @addedTime, @expiration, @verified, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=@addedTime, "expiration"=@expiration, "verified"=@verified';
-
-      await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'addedTime': DateTime.now().toUtc(),
-          'expiration': expiration?.toUtc(),
-          'verified': verified,
-          // TODO: Use substitution value for the data for efficiency (seems not to work with the driver currently).
-          // 'byteData': byteData.buffer.asUint8List(),
-        },
-      );
-      _logQuery(session, query, startTime);
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// For most cases use the corresponding method in [DatabaseLegacy] instead.
-  Future<ByteData?> retrieveFile(String storageId, String path,
-      {required Session session}) async {
-    var startTime = DateTime.now();
-    var query = '';
-    try {
-      query =
-          'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND path=@path AND verified=@verified';
-
-      var result = await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'verified': true,
-        },
-      );
-      _logQuery(session, query, startTime);
-      if (result.isNotEmpty) {
-        var encoded = (result.first.first as String).replaceAll('\n', '');
-        return ByteData.view(base64Decode(encoded).buffer);
-      }
-      return null;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-  }
-
-  /// Returns true if the specified file has been successfully uploaded to the
-  /// database cloud storage.
-  Future<bool> verifyFile(String storageId, String path,
-      {required Session session}) async {
-    // Check so that the file is saved, but not
-    var startTime = DateTime.now();
-    var query =
-        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=@storageId AND "path"=@path';
-    try {
-      var result = await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-        },
-      );
-      _logQuery(session, query, startTime);
-
-      if (result.isEmpty) return false;
-
-      var verified = result.first.first as bool;
-      if (verified) return false;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
-
-    startTime = DateTime.now();
-    try {
-      var query =
-          'UPDATE serverpod_cloud_storage SET "verified"=@verified WHERE "storageId"=@storageId AND "path"=@path';
-      await _postgresConnection.query(
-        query,
-        allowReuse: false,
-        substitutionValues: {
-          'storageId': storageId,
-          'path': path,
-          'verified': true,
-        },
-      );
-      _logQuery(session, query, startTime);
-
-      return true;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
   }
 }

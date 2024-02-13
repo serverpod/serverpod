@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
@@ -199,43 +198,6 @@ class Database {
       where: where,
       limit: limit,
       transaction: transaction,
-    );
-  }
-
-  /// Stores a file in the database, specifically using the
-  /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(
-    String storageId,
-    String path,
-    ByteData byteData,
-    DateTime? expiration,
-    bool verified,
-  ) async {
-    return await _databaseConnection.legacy.storeFile(
-        storageId, path, byteData, expiration, verified,
-        session: _session);
-  }
-
-  /// Retrieves a file stored in the database or null if it doesn't exist,
-  /// specifically using the serverpod_cloud_storage table. Used by the the
-  /// [DatabaseCloudStorage].
-  Future<ByteData?> retrieveFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy
-        .retrieveFile(storageId, path, session: _session);
-  }
-
-  /// Verifies that a file has been successfully uploaded.
-  Future<bool> verifyFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy.verifyFile(
-      storageId,
-      path,
-      session: _session,
     );
   }
 
