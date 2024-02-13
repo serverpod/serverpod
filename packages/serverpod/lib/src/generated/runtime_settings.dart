@@ -245,7 +245,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<RuntimeSettings>(
+    return session.db.find<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -265,7 +265,7 @@ class RuntimeSettingsRepository {
     _i1.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<RuntimeSettings>(
+    return session.db.findFirstRow<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
@@ -280,7 +280,7 @@ class RuntimeSettingsRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<RuntimeSettings>(
+    return session.db.findById<RuntimeSettings>(
       id,
       transaction: transaction,
     );
@@ -291,7 +291,7 @@ class RuntimeSettingsRepository {
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<RuntimeSettings>(
+    return session.db.insert<RuntimeSettings>(
       rows,
       transaction: transaction,
     );
@@ -302,7 +302,7 @@ class RuntimeSettingsRepository {
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<RuntimeSettings>(
+    return session.db.insertRow<RuntimeSettings>(
       row,
       transaction: transaction,
     );
@@ -314,7 +314,7 @@ class RuntimeSettingsRepository {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<RuntimeSettings>(
+    return session.db.update<RuntimeSettings>(
       rows,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
@@ -327,7 +327,7 @@ class RuntimeSettingsRepository {
     _i1.ColumnSelections<RuntimeSettingsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<RuntimeSettings>(
+    return session.db.updateRow<RuntimeSettings>(
       row,
       columns: columns?.call(RuntimeSettings.t),
       transaction: transaction,
@@ -339,7 +339,7 @@ class RuntimeSettingsRepository {
     List<RuntimeSettings> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<RuntimeSettings>(
+    return session.db.delete<RuntimeSettings>(
       rows,
       transaction: transaction,
     );
@@ -350,7 +350,7 @@ class RuntimeSettingsRepository {
     RuntimeSettings row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<RuntimeSettings>(
+    return session.db.deleteRow<RuntimeSettings>(
       row,
       transaction: transaction,
     );
@@ -361,7 +361,7 @@ class RuntimeSettingsRepository {
     required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<RuntimeSettings>(
+    return session.db.deleteWhere<RuntimeSettings>(
       where: where(RuntimeSettings.t),
       transaction: transaction,
     );
@@ -373,7 +373,7 @@ class RuntimeSettingsRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<RuntimeSettings>(
+    return session.db.count<RuntimeSettings>(
       where: where?.call(RuntimeSettings.t),
       limit: limit,
       transaction: transaction,

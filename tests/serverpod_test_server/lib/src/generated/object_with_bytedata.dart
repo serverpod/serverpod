@@ -172,7 +172,7 @@ class ObjectWithByteDataRepository {
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithByteData>(
+    return session.db.find<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -192,7 +192,7 @@ class ObjectWithByteDataRepository {
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithByteData>(
+    return session.db.findFirstRow<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
@@ -207,7 +207,7 @@ class ObjectWithByteDataRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithByteData>(
+    return session.db.findById<ObjectWithByteData>(
       id,
       transaction: transaction,
     );
@@ -218,7 +218,7 @@ class ObjectWithByteDataRepository {
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithByteData>(
+    return session.db.insert<ObjectWithByteData>(
       rows,
       transaction: transaction,
     );
@@ -229,7 +229,7 @@ class ObjectWithByteDataRepository {
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithByteData>(
+    return session.db.insertRow<ObjectWithByteData>(
       row,
       transaction: transaction,
     );
@@ -241,7 +241,7 @@ class ObjectWithByteDataRepository {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithByteData>(
+    return session.db.update<ObjectWithByteData>(
       rows,
       columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
@@ -254,7 +254,7 @@ class ObjectWithByteDataRepository {
     _i1.ColumnSelections<ObjectWithByteDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithByteData>(
+    return session.db.updateRow<ObjectWithByteData>(
       row,
       columns: columns?.call(ObjectWithByteData.t),
       transaction: transaction,
@@ -266,7 +266,7 @@ class ObjectWithByteDataRepository {
     List<ObjectWithByteData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithByteData>(
+    return session.db.delete<ObjectWithByteData>(
       rows,
       transaction: transaction,
     );
@@ -277,7 +277,7 @@ class ObjectWithByteDataRepository {
     ObjectWithByteData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithByteData>(
+    return session.db.deleteRow<ObjectWithByteData>(
       row,
       transaction: transaction,
     );
@@ -288,7 +288,7 @@ class ObjectWithByteDataRepository {
     required _i1.WhereExpressionBuilder<ObjectWithByteDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithByteData>(
+    return session.db.deleteWhere<ObjectWithByteData>(
       where: where(ObjectWithByteData.t),
       transaction: transaction,
     );
@@ -300,7 +300,7 @@ class ObjectWithByteDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithByteData>(
+    return session.db.count<ObjectWithByteData>(
       where: where?.call(ObjectWithByteData.t),
       limit: limit,
       transaction: transaction,

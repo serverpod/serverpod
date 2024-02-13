@@ -234,7 +234,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.find<Town>(
+    return session.db.find<Town>(
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -256,7 +256,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Town>(
+    return session.db.findFirstRow<Town>(
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -273,7 +273,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.findById<Town>(
+    return session.db.findById<Town>(
       id,
       transaction: transaction,
       include: include,
@@ -285,7 +285,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Town>(
+    return session.db.insert<Town>(
       rows,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Town>(
+    return session.db.insertRow<Town>(
       row,
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class TownRepository {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Town>(
+    return session.db.update<Town>(
       rows,
       columns: columns?.call(Town.t),
       transaction: transaction,
@@ -321,7 +321,7 @@ class TownRepository {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Town>(
+    return session.db.updateRow<Town>(
       row,
       columns: columns?.call(Town.t),
       transaction: transaction,
@@ -333,7 +333,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Town>(
+    return session.db.delete<Town>(
       rows,
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Town>(
+    return session.db.deleteRow<Town>(
       row,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class TownRepository {
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Town>(
+    return session.db.deleteWhere<Town>(
       where: where(Town.t),
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class TownRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Town>(
+    return session.db.count<Town>(
       where: where?.call(Town.t),
       limit: limit,
       transaction: transaction,
@@ -391,7 +391,7 @@ class TownAttachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: mayor.id);
-    await session.dbNext.updateRow<Town>(
+    await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );
@@ -410,7 +410,7 @@ class TownDetachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: null);
-    await session.dbNext.updateRow<Town>(
+    await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );

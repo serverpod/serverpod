@@ -287,7 +287,7 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ServerHealthMetric>(
+    return session.db.find<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -307,7 +307,7 @@ class ServerHealthMetricRepository {
     _i1.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ServerHealthMetric>(
+    return session.db.findFirstRow<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
@@ -322,7 +322,7 @@ class ServerHealthMetricRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ServerHealthMetric>(
+    return session.db.findById<ServerHealthMetric>(
       id,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class ServerHealthMetricRepository {
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ServerHealthMetric>(
+    return session.db.insert<ServerHealthMetric>(
       rows,
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class ServerHealthMetricRepository {
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ServerHealthMetric>(
+    return session.db.insertRow<ServerHealthMetric>(
       row,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class ServerHealthMetricRepository {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ServerHealthMetric>(
+    return session.db.update<ServerHealthMetric>(
       rows,
       columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
@@ -369,7 +369,7 @@ class ServerHealthMetricRepository {
     _i1.ColumnSelections<ServerHealthMetricTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ServerHealthMetric>(
+    return session.db.updateRow<ServerHealthMetric>(
       row,
       columns: columns?.call(ServerHealthMetric.t),
       transaction: transaction,
@@ -381,7 +381,7 @@ class ServerHealthMetricRepository {
     List<ServerHealthMetric> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ServerHealthMetric>(
+    return session.db.delete<ServerHealthMetric>(
       rows,
       transaction: transaction,
     );
@@ -392,7 +392,7 @@ class ServerHealthMetricRepository {
     ServerHealthMetric row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ServerHealthMetric>(
+    return session.db.deleteRow<ServerHealthMetric>(
       row,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class ServerHealthMetricRepository {
     required _i1.WhereExpressionBuilder<ServerHealthMetricTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ServerHealthMetric>(
+    return session.db.deleteWhere<ServerHealthMetric>(
       where: where(ServerHealthMetric.t),
       transaction: transaction,
     );
@@ -415,7 +415,7 @@ class ServerHealthMetricRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ServerHealthMetric>(
+    return session.db.count<ServerHealthMetric>(
       where: where?.call(ServerHealthMetric.t),
       limit: limit,
       transaction: transaction,

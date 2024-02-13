@@ -219,7 +219,7 @@ class EmailFailedSignInRepository {
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<EmailFailedSignIn>(
+    return session.db.find<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -239,7 +239,7 @@ class EmailFailedSignInRepository {
     _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<EmailFailedSignIn>(
+    return session.db.findFirstRow<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
@@ -254,7 +254,7 @@ class EmailFailedSignInRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<EmailFailedSignIn>(
+    return session.db.findById<EmailFailedSignIn>(
       id,
       transaction: transaction,
     );
@@ -265,7 +265,7 @@ class EmailFailedSignInRepository {
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<EmailFailedSignIn>(
+    return session.db.insert<EmailFailedSignIn>(
       rows,
       transaction: transaction,
     );
@@ -276,7 +276,7 @@ class EmailFailedSignInRepository {
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<EmailFailedSignIn>(
+    return session.db.insertRow<EmailFailedSignIn>(
       row,
       transaction: transaction,
     );
@@ -288,7 +288,7 @@ class EmailFailedSignInRepository {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<EmailFailedSignIn>(
+    return session.db.update<EmailFailedSignIn>(
       rows,
       columns: columns?.call(EmailFailedSignIn.t),
       transaction: transaction,
@@ -301,7 +301,7 @@ class EmailFailedSignInRepository {
     _i1.ColumnSelections<EmailFailedSignInTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<EmailFailedSignIn>(
+    return session.db.updateRow<EmailFailedSignIn>(
       row,
       columns: columns?.call(EmailFailedSignIn.t),
       transaction: transaction,
@@ -313,7 +313,7 @@ class EmailFailedSignInRepository {
     List<EmailFailedSignIn> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<EmailFailedSignIn>(
+    return session.db.delete<EmailFailedSignIn>(
       rows,
       transaction: transaction,
     );
@@ -324,7 +324,7 @@ class EmailFailedSignInRepository {
     EmailFailedSignIn row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<EmailFailedSignIn>(
+    return session.db.deleteRow<EmailFailedSignIn>(
       row,
       transaction: transaction,
     );
@@ -335,7 +335,7 @@ class EmailFailedSignInRepository {
     required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<EmailFailedSignIn>(
+    return session.db.deleteWhere<EmailFailedSignIn>(
       where: where(EmailFailedSignIn.t),
       transaction: transaction,
     );
@@ -347,7 +347,7 @@ class EmailFailedSignInRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<EmailFailedSignIn>(
+    return session.db.count<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
       limit: limit,
       transaction: transaction,

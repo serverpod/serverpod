@@ -195,7 +195,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<MethodInfo>(
+    return session.db.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -215,7 +215,7 @@ class MethodInfoRepository {
     _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<MethodInfo>(
+    return session.db.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
@@ -230,7 +230,7 @@ class MethodInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<MethodInfo>(
+    return session.db.findById<MethodInfo>(
       id,
       transaction: transaction,
     );
@@ -241,7 +241,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<MethodInfo>(
+    return session.db.insert<MethodInfo>(
       rows,
       transaction: transaction,
     );
@@ -252,7 +252,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<MethodInfo>(
+    return session.db.insertRow<MethodInfo>(
       row,
       transaction: transaction,
     );
@@ -264,7 +264,7 @@ class MethodInfoRepository {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<MethodInfo>(
+    return session.db.update<MethodInfo>(
       rows,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
@@ -277,7 +277,7 @@ class MethodInfoRepository {
     _i1.ColumnSelections<MethodInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<MethodInfo>(
+    return session.db.updateRow<MethodInfo>(
       row,
       columns: columns?.call(MethodInfo.t),
       transaction: transaction,
@@ -289,7 +289,7 @@ class MethodInfoRepository {
     List<MethodInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<MethodInfo>(
+    return session.db.delete<MethodInfo>(
       rows,
       transaction: transaction,
     );
@@ -300,7 +300,7 @@ class MethodInfoRepository {
     MethodInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<MethodInfo>(
+    return session.db.deleteRow<MethodInfo>(
       row,
       transaction: transaction,
     );
@@ -311,7 +311,7 @@ class MethodInfoRepository {
     required _i1.WhereExpressionBuilder<MethodInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<MethodInfo>(
+    return session.db.deleteWhere<MethodInfo>(
       where: where(MethodInfo.t),
       transaction: transaction,
     );
@@ -323,7 +323,7 @@ class MethodInfoRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<MethodInfo>(
+    return session.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
       limit: limit,
       transaction: transaction,

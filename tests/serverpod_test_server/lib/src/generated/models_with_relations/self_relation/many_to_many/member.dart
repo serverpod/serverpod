@@ -308,7 +308,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.find<Member>(
+    return session.db.find<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -330,7 +330,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Member>(
+    return session.db.findFirstRow<Member>(
       where: where?.call(Member.t),
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
@@ -347,7 +347,7 @@ class MemberRepository {
     _i1.Transaction? transaction,
     MemberInclude? include,
   }) async {
-    return session.dbNext.findById<Member>(
+    return session.db.findById<Member>(
       id,
       transaction: transaction,
       include: include,
@@ -359,7 +359,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Member>(
+    return session.db.insert<Member>(
       rows,
       transaction: transaction,
     );
@@ -370,7 +370,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Member>(
+    return session.db.insertRow<Member>(
       row,
       transaction: transaction,
     );
@@ -382,7 +382,7 @@ class MemberRepository {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Member>(
+    return session.db.update<Member>(
       rows,
       columns: columns?.call(Member.t),
       transaction: transaction,
@@ -395,7 +395,7 @@ class MemberRepository {
     _i1.ColumnSelections<MemberTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Member>(
+    return session.db.updateRow<Member>(
       row,
       columns: columns?.call(Member.t),
       transaction: transaction,
@@ -407,7 +407,7 @@ class MemberRepository {
     List<Member> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Member>(
+    return session.db.delete<Member>(
       rows,
       transaction: transaction,
     );
@@ -418,7 +418,7 @@ class MemberRepository {
     Member row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Member>(
+    return session.db.deleteRow<Member>(
       row,
       transaction: transaction,
     );
@@ -429,7 +429,7 @@ class MemberRepository {
     required _i1.WhereExpressionBuilder<MemberTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Member>(
+    return session.db.deleteWhere<Member>(
       where: where(Member.t),
       transaction: transaction,
     );
@@ -441,7 +441,7 @@ class MemberRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Member>(
+    return session.db.count<Member>(
       where: where?.call(Member.t),
       limit: limit,
       transaction: transaction,
@@ -466,7 +466,7 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedById: member.id)).toList();
-    await session.dbNext.update<_i2.Blocking>(
+    await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
     );
@@ -486,7 +486,7 @@ class MemberAttachRepository {
 
     var $blocking =
         blocking.map((e) => e.copyWith(blockedId: member.id)).toList();
-    await session.dbNext.update<_i2.Blocking>(
+    await session.db.update<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
     );
@@ -509,7 +509,7 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: member.id);
-    await session.dbNext.updateRow<_i2.Blocking>(
+    await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedById],
     );
@@ -528,7 +528,7 @@ class MemberAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: member.id);
-    await session.dbNext.updateRow<_i2.Blocking>(
+    await session.db.updateRow<_i2.Blocking>(
       $blocking,
       columns: [_i2.Blocking.t.blockedId],
     );

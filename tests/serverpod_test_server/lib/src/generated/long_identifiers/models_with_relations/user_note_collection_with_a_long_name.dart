@@ -250,7 +250,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.find<UserNoteCollectionWithALongName>(
+    return session.db.find<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
@@ -272,7 +272,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<UserNoteCollectionWithALongName>(
+    return session.db.findFirstRow<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
@@ -289,7 +289,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.findById<UserNoteCollectionWithALongName>(
+    return session.db.findById<UserNoteCollectionWithALongName>(
       id,
       transaction: transaction,
       include: include,
@@ -301,7 +301,7 @@ class UserNoteCollectionWithALongNameRepository {
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserNoteCollectionWithALongName>(
+    return session.db.insert<UserNoteCollectionWithALongName>(
       rows,
       transaction: transaction,
     );
@@ -312,7 +312,7 @@ class UserNoteCollectionWithALongNameRepository {
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserNoteCollectionWithALongName>(
+    return session.db.insertRow<UserNoteCollectionWithALongName>(
       row,
       transaction: transaction,
     );
@@ -324,7 +324,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserNoteCollectionWithALongName>(
+    return session.db.update<UserNoteCollectionWithALongName>(
       rows,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
       transaction: transaction,
@@ -337,7 +337,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserNoteCollectionWithALongName>(
+    return session.db.updateRow<UserNoteCollectionWithALongName>(
       row,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
       transaction: transaction,
@@ -349,7 +349,7 @@ class UserNoteCollectionWithALongNameRepository {
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserNoteCollectionWithALongName>(
+    return session.db.delete<UserNoteCollectionWithALongName>(
       rows,
       transaction: transaction,
     );
@@ -360,7 +360,7 @@ class UserNoteCollectionWithALongNameRepository {
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserNoteCollectionWithALongName>(
+    return session.db.deleteRow<UserNoteCollectionWithALongName>(
       row,
       transaction: transaction,
     );
@@ -372,7 +372,7 @@ class UserNoteCollectionWithALongNameRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserNoteCollectionWithALongName>(
+    return session.db.deleteWhere<UserNoteCollectionWithALongName>(
       where: where(UserNoteCollectionWithALongName.t),
       transaction: transaction,
     );
@@ -384,7 +384,7 @@ class UserNoteCollectionWithALongNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserNoteCollectionWithALongName>(
+    return session.db.count<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
       transaction: transaction,
@@ -414,7 +414,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
                   userNoteCollectionWithALongName.id,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNoteWithALongName>(
+    await session.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -444,7 +444,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
           userNoteCollectionWithALongName.id,
     );
-    await session.dbNext.updateRow<_i2.UserNoteWithALongName>(
+    await session.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -472,7 +472,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNoteWithALongName>(
+    await session.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -497,7 +497,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
       userNoteWithALongName,
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId: null,
     );
-    await session.dbNext.updateRow<_i2.UserNoteWithALongName>(
+    await session.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t

@@ -239,7 +239,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<EmailCreateAccountRequest>(
+    return session.db.find<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -259,7 +259,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<EmailCreateAccountRequest>(
+    return session.db.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -274,7 +274,7 @@ class EmailCreateAccountRequestRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<EmailCreateAccountRequest>(
+    return session.db.findById<EmailCreateAccountRequest>(
       id,
       transaction: transaction,
     );
@@ -285,7 +285,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<EmailCreateAccountRequest>(
+    return session.db.insert<EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<EmailCreateAccountRequest>(
+    return session.db.insertRow<EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<EmailCreateAccountRequest>(
+    return session.db.update<EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -321,7 +321,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<EmailCreateAccountRequest>(
+    return session.db.updateRow<EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -333,7 +333,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<EmailCreateAccountRequest>(
+    return session.db.delete<EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<EmailCreateAccountRequest>(
+    return session.db.deleteRow<EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class EmailCreateAccountRequestRepository {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<EmailCreateAccountRequest>(
+    return session.db.deleteWhere<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class EmailCreateAccountRequestRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<EmailCreateAccountRequest>(
+    return session.db.count<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
       transaction: transaction,

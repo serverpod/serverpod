@@ -216,7 +216,7 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<EmailAuth>(
+    return session.db.find<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -236,7 +236,7 @@ class EmailAuthRepository {
     _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<EmailAuth>(
+    return session.db.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
@@ -251,7 +251,7 @@ class EmailAuthRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<EmailAuth>(
+    return session.db.findById<EmailAuth>(
       id,
       transaction: transaction,
     );
@@ -262,7 +262,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<EmailAuth>(
+    return session.db.insert<EmailAuth>(
       rows,
       transaction: transaction,
     );
@@ -273,7 +273,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<EmailAuth>(
+    return session.db.insertRow<EmailAuth>(
       row,
       transaction: transaction,
     );
@@ -285,7 +285,7 @@ class EmailAuthRepository {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<EmailAuth>(
+    return session.db.update<EmailAuth>(
       rows,
       columns: columns?.call(EmailAuth.t),
       transaction: transaction,
@@ -298,7 +298,7 @@ class EmailAuthRepository {
     _i1.ColumnSelections<EmailAuthTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<EmailAuth>(
+    return session.db.updateRow<EmailAuth>(
       row,
       columns: columns?.call(EmailAuth.t),
       transaction: transaction,
@@ -310,7 +310,7 @@ class EmailAuthRepository {
     List<EmailAuth> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<EmailAuth>(
+    return session.db.delete<EmailAuth>(
       rows,
       transaction: transaction,
     );
@@ -321,7 +321,7 @@ class EmailAuthRepository {
     EmailAuth row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<EmailAuth>(
+    return session.db.deleteRow<EmailAuth>(
       row,
       transaction: transaction,
     );
@@ -332,7 +332,7 @@ class EmailAuthRepository {
     required _i1.WhereExpressionBuilder<EmailAuthTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<EmailAuth>(
+    return session.db.deleteWhere<EmailAuth>(
       where: where(EmailAuth.t),
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class EmailAuthRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<EmailAuth>(
+    return session.db.count<EmailAuth>(
       where: where?.call(EmailAuth.t),
       limit: limit,
       transaction: transaction,

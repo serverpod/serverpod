@@ -234,7 +234,7 @@ class ObjectUserRepository {
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
   }) async {
-    return session.dbNext.find<ObjectUser>(
+    return session.db.find<ObjectUser>(
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -256,7 +256,7 @@ class ObjectUserRepository {
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<ObjectUser>(
+    return session.db.findFirstRow<ObjectUser>(
       where: where?.call(ObjectUser.t),
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
@@ -273,7 +273,7 @@ class ObjectUserRepository {
     _i1.Transaction? transaction,
     ObjectUserInclude? include,
   }) async {
-    return session.dbNext.findById<ObjectUser>(
+    return session.db.findById<ObjectUser>(
       id,
       transaction: transaction,
       include: include,
@@ -285,7 +285,7 @@ class ObjectUserRepository {
     List<ObjectUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectUser>(
+    return session.db.insert<ObjectUser>(
       rows,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class ObjectUserRepository {
     ObjectUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectUser>(
+    return session.db.insertRow<ObjectUser>(
       row,
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class ObjectUserRepository {
     _i1.ColumnSelections<ObjectUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectUser>(
+    return session.db.update<ObjectUser>(
       rows,
       columns: columns?.call(ObjectUser.t),
       transaction: transaction,
@@ -321,7 +321,7 @@ class ObjectUserRepository {
     _i1.ColumnSelections<ObjectUserTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectUser>(
+    return session.db.updateRow<ObjectUser>(
       row,
       columns: columns?.call(ObjectUser.t),
       transaction: transaction,
@@ -333,7 +333,7 @@ class ObjectUserRepository {
     List<ObjectUser> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectUser>(
+    return session.db.delete<ObjectUser>(
       rows,
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class ObjectUserRepository {
     ObjectUser row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectUser>(
+    return session.db.deleteRow<ObjectUser>(
       row,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class ObjectUserRepository {
     required _i1.WhereExpressionBuilder<ObjectUserTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectUser>(
+    return session.db.deleteWhere<ObjectUser>(
       where: where(ObjectUser.t),
       transaction: transaction,
     );
@@ -367,7 +367,7 @@ class ObjectUserRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectUser>(
+    return session.db.count<ObjectUser>(
       where: where?.call(ObjectUser.t),
       limit: limit,
       transaction: transaction,
@@ -391,7 +391,7 @@ class ObjectUserAttachRowRepository {
     }
 
     var $objectUser = objectUser.copyWith(userInfoId: userInfo.id);
-    await session.dbNext.updateRow<ObjectUser>(
+    await session.db.updateRow<ObjectUser>(
       $objectUser,
       columns: [ObjectUser.t.userInfoId],
     );

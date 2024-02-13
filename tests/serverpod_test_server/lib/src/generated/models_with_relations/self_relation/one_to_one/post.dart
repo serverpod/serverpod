@@ -281,7 +281,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.dbNext.find<Post>(
+    return session.db.find<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -303,7 +303,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Post>(
+    return session.db.findFirstRow<Post>(
       where: where?.call(Post.t),
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
@@ -320,7 +320,7 @@ class PostRepository {
     _i1.Transaction? transaction,
     PostInclude? include,
   }) async {
-    return session.dbNext.findById<Post>(
+    return session.db.findById<Post>(
       id,
       transaction: transaction,
       include: include,
@@ -332,7 +332,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Post>(
+    return session.db.insert<Post>(
       rows,
       transaction: transaction,
     );
@@ -343,7 +343,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Post>(
+    return session.db.insertRow<Post>(
       row,
       transaction: transaction,
     );
@@ -355,7 +355,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Post>(
+    return session.db.update<Post>(
       rows,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -368,7 +368,7 @@ class PostRepository {
     _i1.ColumnSelections<PostTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Post>(
+    return session.db.updateRow<Post>(
       row,
       columns: columns?.call(Post.t),
       transaction: transaction,
@@ -380,7 +380,7 @@ class PostRepository {
     List<Post> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Post>(
+    return session.db.delete<Post>(
       rows,
       transaction: transaction,
     );
@@ -391,7 +391,7 @@ class PostRepository {
     Post row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Post>(
+    return session.db.deleteRow<Post>(
       row,
       transaction: transaction,
     );
@@ -402,7 +402,7 @@ class PostRepository {
     required _i1.WhereExpressionBuilder<PostTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Post>(
+    return session.db.deleteWhere<Post>(
       where: where(Post.t),
       transaction: transaction,
     );
@@ -414,7 +414,7 @@ class PostRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Post>(
+    return session.db.count<Post>(
       where: where?.call(Post.t),
       limit: limit,
       transaction: transaction,
@@ -438,7 +438,7 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.dbNext.updateRow<_i2.Post>(
+    await session.db.updateRow<_i2.Post>(
       $previous,
       columns: [_i2.Post.t.nextId],
     );
@@ -457,7 +457,7 @@ class PostAttachRowRepository {
     }
 
     var $post = post.copyWith(nextId: next.id);
-    await session.dbNext.updateRow<Post>(
+    await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
     );
@@ -484,7 +484,7 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.dbNext.updateRow<_i2.Post>(
+    await session.db.updateRow<_i2.Post>(
       $$previous,
       columns: [_i2.Post.t.nextId],
     );
@@ -499,7 +499,7 @@ class PostDetachRowRepository {
     }
 
     var $post = post.copyWith(nextId: null);
-    await session.dbNext.updateRow<Post>(
+    await session.db.updateRow<Post>(
       $post,
       columns: [Post.t.nextId],
     );

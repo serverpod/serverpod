@@ -287,7 +287,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ServerHealthConnectionInfo>(
+    return session.db.find<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -307,7 +307,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ServerHealthConnectionInfo>(
+    return session.db.findFirstRow<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
@@ -322,7 +322,7 @@ class ServerHealthConnectionInfoRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ServerHealthConnectionInfo>(
+    return session.db.findById<ServerHealthConnectionInfo>(
       id,
       transaction: transaction,
     );
@@ -333,7 +333,7 @@ class ServerHealthConnectionInfoRepository {
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ServerHealthConnectionInfo>(
+    return session.db.insert<ServerHealthConnectionInfo>(
       rows,
       transaction: transaction,
     );
@@ -344,7 +344,7 @@ class ServerHealthConnectionInfoRepository {
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ServerHealthConnectionInfo>(
+    return session.db.insertRow<ServerHealthConnectionInfo>(
       row,
       transaction: transaction,
     );
@@ -356,7 +356,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ServerHealthConnectionInfo>(
+    return session.db.update<ServerHealthConnectionInfo>(
       rows,
       columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
@@ -369,7 +369,7 @@ class ServerHealthConnectionInfoRepository {
     _i1.ColumnSelections<ServerHealthConnectionInfoTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ServerHealthConnectionInfo>(
+    return session.db.updateRow<ServerHealthConnectionInfo>(
       row,
       columns: columns?.call(ServerHealthConnectionInfo.t),
       transaction: transaction,
@@ -381,7 +381,7 @@ class ServerHealthConnectionInfoRepository {
     List<ServerHealthConnectionInfo> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ServerHealthConnectionInfo>(
+    return session.db.delete<ServerHealthConnectionInfo>(
       rows,
       transaction: transaction,
     );
@@ -392,7 +392,7 @@ class ServerHealthConnectionInfoRepository {
     ServerHealthConnectionInfo row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ServerHealthConnectionInfo>(
+    return session.db.deleteRow<ServerHealthConnectionInfo>(
       row,
       transaction: transaction,
     );
@@ -403,7 +403,7 @@ class ServerHealthConnectionInfoRepository {
     required _i1.WhereExpressionBuilder<ServerHealthConnectionInfoTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ServerHealthConnectionInfo>(
+    return session.db.deleteWhere<ServerHealthConnectionInfo>(
       where: where(ServerHealthConnectionInfo.t),
       transaction: transaction,
     );
@@ -415,7 +415,7 @@ class ServerHealthConnectionInfoRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ServerHealthConnectionInfo>(
+    return session.db.count<ServerHealthConnectionInfo>(
       where: where?.call(ServerHealthConnectionInfo.t),
       limit: limit,
       transaction: transaction,
