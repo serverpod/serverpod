@@ -40,7 +40,7 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  late final Database? _db;
+  Database? _db;
 
   /// Access to the database.
   Database get db {
@@ -94,8 +94,6 @@ abstract class Session {
 
     if (Features.enableDatabase) {
       _db = Database(session: this);
-    } else {
-      _db = null;
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
