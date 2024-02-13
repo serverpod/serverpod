@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 
@@ -17,7 +15,7 @@ class LoggingEndpoint extends Endpoint {
 
   Future<void> twoQueries(Session session) async {
     var data = SimpleData(num: 42);
-    await session.db.insert(data);
-    data = (await session.db.findSingleRow<SimpleData>())!;
+    await session.dbNext.insertRow(data);
+    data = (await session.dbNext.findFirstRow<SimpleData>())!;
   }
 }
