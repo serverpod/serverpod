@@ -278,7 +278,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('find')
           .call([], {
             'where': refer('where').nullSafeProperty('call').call(
@@ -366,7 +366,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('findFirstRow')
           .call(
             [],
@@ -430,7 +430,7 @@ class BuildRepositoryClass {
       ])
       ..modifier = MethodModifier.async
       ..body = refer('session')
-          .property('dbNext')
+          .property('db')
           .property('findById')
           .call(
             [refer('id')],
@@ -472,7 +472,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('insert')
             .call([
               refer('rows')
@@ -514,7 +514,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('insertRow')
             .call([
               refer('row')
@@ -563,7 +563,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('update')
             .call([
               refer('rows')
@@ -615,7 +615,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('updateRow')
             .call([
               refer('row')
@@ -660,7 +660,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('delete')
             .call([
               refer('rows')
@@ -702,7 +702,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('deleteRow')
             .call([
               refer('row')
@@ -750,7 +750,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('deleteWhere')
             .call([], {
               'where': refer('where').call([refer(className).property('t')]),
@@ -801,7 +801,7 @@ class BuildRepositoryClass {
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
-            .property('dbNext')
+            .property('db')
             .property('count')
             .call([], {
               'where': refer('where').nullSafeProperty('call').call(
@@ -1705,7 +1705,7 @@ class BuildRepositoryClass {
     return (BlockBuilder()
           ..statements.addAll([
             refer('session')
-                .property('dbNext')
+                .property('db')
                 .property(property)
                 .call([
                   refer(localCopyVariable)
