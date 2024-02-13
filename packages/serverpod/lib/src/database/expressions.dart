@@ -75,12 +75,6 @@ class EscapedExpression extends Expression {
 
 /// A constant [Expression].
 class Constant extends Expression {
-  // TODO: Handle more types
-
-  /// Creates a constant [Expression]. Currently supports [bool] and [String].
-  @Deprecated('Use Constant.bool or Constant.string instead.')
-  Constant(dynamic value) : super(_formatValue(value));
-
   const Constant._(super.value);
 
   /// Creates a constant [String] expression.
@@ -91,17 +85,6 @@ class Constant extends Expression {
 
   /// Creates a constant [null] expression.
   static Constant nullValue = const Constant._('NULL');
-
-  static String _formatValue(dynamic value) {
-    if (value == null) return 'NULL';
-    if (value is bool) {
-      return '$value'.toUpperCase();
-    } else if (value is String) {
-      return '\'$value\'';
-    } else {
-      throw const FormatException();
-    }
-  }
 }
 
 /// A database expression to invert the result of another expression.
