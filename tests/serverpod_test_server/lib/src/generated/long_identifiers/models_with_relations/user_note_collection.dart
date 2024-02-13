@@ -253,7 +253,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.find<UserNoteCollection>(
+    return session.db.find<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -275,7 +275,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<UserNoteCollection>(
+    return session.db.findFirstRow<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -292,7 +292,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.findById<UserNoteCollection>(
+    return session.db.findById<UserNoteCollection>(
       id,
       transaction: transaction,
       include: include,
@@ -304,7 +304,7 @@ class UserNoteCollectionRepository {
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserNoteCollection>(
+    return session.db.insert<UserNoteCollection>(
       rows,
       transaction: transaction,
     );
@@ -315,7 +315,7 @@ class UserNoteCollectionRepository {
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserNoteCollection>(
+    return session.db.insertRow<UserNoteCollection>(
       row,
       transaction: transaction,
     );
@@ -327,7 +327,7 @@ class UserNoteCollectionRepository {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserNoteCollection>(
+    return session.db.update<UserNoteCollection>(
       rows,
       columns: columns?.call(UserNoteCollection.t),
       transaction: transaction,
@@ -340,7 +340,7 @@ class UserNoteCollectionRepository {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserNoteCollection>(
+    return session.db.updateRow<UserNoteCollection>(
       row,
       columns: columns?.call(UserNoteCollection.t),
       transaction: transaction,
@@ -352,7 +352,7 @@ class UserNoteCollectionRepository {
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserNoteCollection>(
+    return session.db.delete<UserNoteCollection>(
       rows,
       transaction: transaction,
     );
@@ -363,7 +363,7 @@ class UserNoteCollectionRepository {
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserNoteCollection>(
+    return session.db.deleteRow<UserNoteCollection>(
       row,
       transaction: transaction,
     );
@@ -374,7 +374,7 @@ class UserNoteCollectionRepository {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserNoteCollection>(
+    return session.db.deleteWhere<UserNoteCollection>(
       where: where(UserNoteCollection.t),
       transaction: transaction,
     );
@@ -386,7 +386,7 @@ class UserNoteCollectionRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserNoteCollection>(
+    return session.db.count<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       limit: limit,
       transaction: transaction,
@@ -416,7 +416,7 @@ class UserNoteCollectionAttachRepository {
                   userNoteCollection.id,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNote>(
+    await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -446,7 +446,7 @@ class UserNoteCollectionAttachRowRepository {
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
           userNoteCollection.id,
     );
-    await session.dbNext.updateRow<_i2.UserNote>(
+    await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -474,7 +474,7 @@ class UserNoteCollectionDetachRepository {
                   null,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNote>(
+    await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -499,7 +499,7 @@ class UserNoteCollectionDetachRowRepository {
       userNote,
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId: null,
     );
-    await session.dbNext.updateRow<_i2.UserNote>(
+    await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t

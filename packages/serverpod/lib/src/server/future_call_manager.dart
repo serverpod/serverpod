@@ -108,7 +108,7 @@ class FutureCallManager {
         enableLogging: false,
       );
 
-      var rows = await tempSession.dbNext
+      var rows = await tempSession.db
           .transaction<List<FutureCallEntry>>((transaction) async {
         var activeFutureCalls = await FutureCallEntry.db.find(
           tempSession,

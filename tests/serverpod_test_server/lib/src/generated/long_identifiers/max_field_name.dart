@@ -180,7 +180,7 @@ class MaxFieldNameRepository {
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<MaxFieldName>(
+    return session.db.find<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -200,7 +200,7 @@ class MaxFieldNameRepository {
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<MaxFieldName>(
+    return session.db.findFirstRow<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
@@ -215,7 +215,7 @@ class MaxFieldNameRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<MaxFieldName>(
+    return session.db.findById<MaxFieldName>(
       id,
       transaction: transaction,
     );
@@ -226,7 +226,7 @@ class MaxFieldNameRepository {
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<MaxFieldName>(
+    return session.db.insert<MaxFieldName>(
       rows,
       transaction: transaction,
     );
@@ -237,7 +237,7 @@ class MaxFieldNameRepository {
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<MaxFieldName>(
+    return session.db.insertRow<MaxFieldName>(
       row,
       transaction: transaction,
     );
@@ -249,7 +249,7 @@ class MaxFieldNameRepository {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<MaxFieldName>(
+    return session.db.update<MaxFieldName>(
       rows,
       columns: columns?.call(MaxFieldName.t),
       transaction: transaction,
@@ -262,7 +262,7 @@ class MaxFieldNameRepository {
     _i1.ColumnSelections<MaxFieldNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<MaxFieldName>(
+    return session.db.updateRow<MaxFieldName>(
       row,
       columns: columns?.call(MaxFieldName.t),
       transaction: transaction,
@@ -274,7 +274,7 @@ class MaxFieldNameRepository {
     List<MaxFieldName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<MaxFieldName>(
+    return session.db.delete<MaxFieldName>(
       rows,
       transaction: transaction,
     );
@@ -285,7 +285,7 @@ class MaxFieldNameRepository {
     MaxFieldName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<MaxFieldName>(
+    return session.db.deleteRow<MaxFieldName>(
       row,
       transaction: transaction,
     );
@@ -296,7 +296,7 @@ class MaxFieldNameRepository {
     required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<MaxFieldName>(
+    return session.db.deleteWhere<MaxFieldName>(
       where: where(MaxFieldName.t),
       transaction: transaction,
     );
@@ -308,7 +308,7 @@ class MaxFieldNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<MaxFieldName>(
+    return session.db.count<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
       limit: limit,
       transaction: transaction,

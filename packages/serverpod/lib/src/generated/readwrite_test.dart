@@ -174,7 +174,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ReadWriteTestEntry>(
+    return session.db.find<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -194,7 +194,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ReadWriteTestEntry>(
+    return session.db.findFirstRow<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -209,7 +209,7 @@ class ReadWriteTestEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ReadWriteTestEntry>(
+    return session.db.findById<ReadWriteTestEntry>(
       id,
       transaction: transaction,
     );
@@ -220,7 +220,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ReadWriteTestEntry>(
+    return session.db.insert<ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -231,7 +231,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ReadWriteTestEntry>(
+    return session.db.insertRow<ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -243,7 +243,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ReadWriteTestEntry>(
+    return session.db.update<ReadWriteTestEntry>(
       rows,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -256,7 +256,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ReadWriteTestEntry>(
+    return session.db.updateRow<ReadWriteTestEntry>(
       row,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -268,7 +268,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ReadWriteTestEntry>(
+    return session.db.delete<ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -279,7 +279,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ReadWriteTestEntry>(
+    return session.db.deleteRow<ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -290,7 +290,7 @@ class ReadWriteTestEntryRepository {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ReadWriteTestEntry>(
+    return session.db.deleteWhere<ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
       transaction: transaction,
     );
@@ -302,7 +302,7 @@ class ReadWriteTestEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ReadWriteTestEntry>(
+    return session.db.count<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       transaction: transaction,

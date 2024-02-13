@@ -321,7 +321,7 @@ class CityWithLongTableNameRepository {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.find<CityWithLongTableName>(
+    return session.db.find<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -343,7 +343,7 @@ class CityWithLongTableNameRepository {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<CityWithLongTableName>(
+    return session.db.findFirstRow<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       orderBy: orderBy?.call(CityWithLongTableName.t),
       orderByList: orderByList?.call(CityWithLongTableName.t),
@@ -360,7 +360,7 @@ class CityWithLongTableNameRepository {
     _i1.Transaction? transaction,
     CityWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findById<CityWithLongTableName>(
+    return session.db.findById<CityWithLongTableName>(
       id,
       transaction: transaction,
       include: include,
@@ -372,7 +372,7 @@ class CityWithLongTableNameRepository {
     List<CityWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<CityWithLongTableName>(
+    return session.db.insert<CityWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -383,7 +383,7 @@ class CityWithLongTableNameRepository {
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<CityWithLongTableName>(
+    return session.db.insertRow<CityWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -395,7 +395,7 @@ class CityWithLongTableNameRepository {
     _i1.ColumnSelections<CityWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<CityWithLongTableName>(
+    return session.db.update<CityWithLongTableName>(
       rows,
       columns: columns?.call(CityWithLongTableName.t),
       transaction: transaction,
@@ -408,7 +408,7 @@ class CityWithLongTableNameRepository {
     _i1.ColumnSelections<CityWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<CityWithLongTableName>(
+    return session.db.updateRow<CityWithLongTableName>(
       row,
       columns: columns?.call(CityWithLongTableName.t),
       transaction: transaction,
@@ -420,7 +420,7 @@ class CityWithLongTableNameRepository {
     List<CityWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<CityWithLongTableName>(
+    return session.db.delete<CityWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -431,7 +431,7 @@ class CityWithLongTableNameRepository {
     CityWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<CityWithLongTableName>(
+    return session.db.deleteRow<CityWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -442,7 +442,7 @@ class CityWithLongTableNameRepository {
     required _i1.WhereExpressionBuilder<CityWithLongTableNameTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<CityWithLongTableName>(
+    return session.db.deleteWhere<CityWithLongTableName>(
       where: where(CityWithLongTableName.t),
       transaction: transaction,
     );
@@ -454,7 +454,7 @@ class CityWithLongTableNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<CityWithLongTableName>(
+    return session.db.count<CityWithLongTableName>(
       where: where?.call(CityWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -484,7 +484,7 @@ class CityWithLongTableNameAttachRepository {
                   cityWithLongTableName.id,
             ))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
@@ -508,7 +508,7 @@ class CityWithLongTableNameAttachRepository {
     var $organizationWithLongTableName = organizationWithLongTableName
         .map((e) => e.copyWith(cityId: cityWithLongTableName.id))
         .toList();
-    await session.dbNext.update<_i2.OrganizationWithLongTableName>(
+    await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
     );
@@ -535,7 +535,7 @@ class CityWithLongTableNameAttachRowRepository {
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           cityWithLongTableName.id,
     );
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
@@ -558,7 +558,7 @@ class CityWithLongTableNameAttachRowRepository {
 
     var $organizationWithLongTableName = organizationWithLongTableName.copyWith(
         cityId: cityWithLongTableName.id);
-    await session.dbNext.updateRow<_i2.OrganizationWithLongTableName>(
+    await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
     );
@@ -583,7 +583,7 @@ class CityWithLongTableNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
@@ -603,7 +603,7 @@ class CityWithLongTableNameDetachRepository {
     var $organizationWithLongTableName = organizationWithLongTableName
         .map((e) => e.copyWith(cityId: null))
         .toList();
-    await session.dbNext.update<_i2.OrganizationWithLongTableName>(
+    await session.db.update<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
     );
@@ -625,7 +625,7 @@ class CityWithLongTableNameDetachRowRepository {
       personWithLongTableName,
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id: null,
     );
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [
         _i2.PersonWithLongTableName.t
@@ -644,7 +644,7 @@ class CityWithLongTableNameDetachRowRepository {
 
     var $organizationWithLongTableName =
         organizationWithLongTableName.copyWith(cityId: null);
-    await session.dbNext.updateRow<_i2.OrganizationWithLongTableName>(
+    await session.db.updateRow<_i2.OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [_i2.OrganizationWithLongTableName.t.cityId],
     );

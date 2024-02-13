@@ -190,7 +190,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithIndex>(
+    return session.db.find<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -210,7 +210,7 @@ class ObjectWithIndexRepository {
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithIndex>(
+    return session.db.findFirstRow<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       orderBy: orderBy?.call(ObjectWithIndex.t),
       orderByList: orderByList?.call(ObjectWithIndex.t),
@@ -225,7 +225,7 @@ class ObjectWithIndexRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithIndex>(
+    return session.db.findById<ObjectWithIndex>(
       id,
       transaction: transaction,
     );
@@ -236,7 +236,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithIndex>(
+    return session.db.insert<ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
@@ -247,7 +247,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithIndex>(
+    return session.db.insertRow<ObjectWithIndex>(
       row,
       transaction: transaction,
     );
@@ -259,7 +259,7 @@ class ObjectWithIndexRepository {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithIndex>(
+    return session.db.update<ObjectWithIndex>(
       rows,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
@@ -272,7 +272,7 @@ class ObjectWithIndexRepository {
     _i1.ColumnSelections<ObjectWithIndexTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithIndex>(
+    return session.db.updateRow<ObjectWithIndex>(
       row,
       columns: columns?.call(ObjectWithIndex.t),
       transaction: transaction,
@@ -284,7 +284,7 @@ class ObjectWithIndexRepository {
     List<ObjectWithIndex> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithIndex>(
+    return session.db.delete<ObjectWithIndex>(
       rows,
       transaction: transaction,
     );
@@ -295,7 +295,7 @@ class ObjectWithIndexRepository {
     ObjectWithIndex row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithIndex>(
+    return session.db.deleteRow<ObjectWithIndex>(
       row,
       transaction: transaction,
     );
@@ -306,7 +306,7 @@ class ObjectWithIndexRepository {
     required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithIndex>(
+    return session.db.deleteWhere<ObjectWithIndex>(
       where: where(ObjectWithIndex.t),
       transaction: transaction,
     );
@@ -318,7 +318,7 @@ class ObjectWithIndexRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithIndex>(
+    return session.db.count<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
       limit: limit,
       transaction: transaction,

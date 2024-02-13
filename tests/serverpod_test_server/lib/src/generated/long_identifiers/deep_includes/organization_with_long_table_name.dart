@@ -313,7 +313,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.find<OrganizationWithLongTableName>(
+    return session.db.find<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -335,7 +335,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<OrganizationWithLongTableName>(
+    return session.db.findFirstRow<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -352,7 +352,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findById<OrganizationWithLongTableName>(
+    return session.db.findById<OrganizationWithLongTableName>(
       id,
       transaction: transaction,
       include: include,
@@ -364,7 +364,7 @@ class OrganizationWithLongTableNameRepository {
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<OrganizationWithLongTableName>(
+    return session.db.insert<OrganizationWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -375,7 +375,7 @@ class OrganizationWithLongTableNameRepository {
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<OrganizationWithLongTableName>(
+    return session.db.insertRow<OrganizationWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -387,7 +387,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<OrganizationWithLongTableName>(
+    return session.db.update<OrganizationWithLongTableName>(
       rows,
       columns: columns?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
@@ -400,7 +400,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<OrganizationWithLongTableName>(
+    return session.db.updateRow<OrganizationWithLongTableName>(
       row,
       columns: columns?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
@@ -412,7 +412,7 @@ class OrganizationWithLongTableNameRepository {
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<OrganizationWithLongTableName>(
+    return session.db.delete<OrganizationWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -423,7 +423,7 @@ class OrganizationWithLongTableNameRepository {
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<OrganizationWithLongTableName>(
+    return session.db.deleteRow<OrganizationWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -435,7 +435,7 @@ class OrganizationWithLongTableNameRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<OrganizationWithLongTableName>(
+    return session.db.deleteWhere<OrganizationWithLongTableName>(
       where: where(OrganizationWithLongTableName.t),
       transaction: transaction,
     );
@@ -447,7 +447,7 @@ class OrganizationWithLongTableNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<OrganizationWithLongTableName>(
+    return session.db.count<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -474,7 +474,7 @@ class OrganizationWithLongTableNameAttachRepository {
         .map(
             (e) => e.copyWith(organizationId: organizationWithLongTableName.id))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -498,7 +498,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
 
     var $organizationWithLongTableName =
         organizationWithLongTableName.copyWith(cityId: city.id);
-    await session.dbNext.updateRow<OrganizationWithLongTableName>(
+    await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [OrganizationWithLongTableName.t.cityId],
     );
@@ -518,7 +518,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
 
     var $personWithLongTableName = personWithLongTableName.copyWith(
         organizationId: organizationWithLongTableName.id);
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -539,7 +539,7 @@ class OrganizationWithLongTableNameDetachRepository {
     var $personWithLongTableName = personWithLongTableName
         .map((e) => e.copyWith(organizationId: null))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -559,7 +559,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
 
     var $organizationwithlongtablename =
         organizationwithlongtablename.copyWith(cityId: null);
-    await session.dbNext.updateRow<OrganizationWithLongTableName>(
+    await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationwithlongtablename,
       columns: [OrganizationWithLongTableName.t.cityId],
     );
@@ -575,7 +575,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
 
     var $personWithLongTableName =
         personWithLongTableName.copyWith(organizationId: null);
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );

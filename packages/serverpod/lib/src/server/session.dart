@@ -39,12 +39,12 @@ abstract class Session {
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
 
-  /// Access to the database. Replaces db in the future.
-  late final Database? _dbNext;
+  /// Access to the database.
+  Database? _db;
 
-  /// Access to the database. Replaces db in the future.
-  Database get dbNext {
-    var database = _dbNext;
+  /// Access to the database.
+  Database get db {
+    var database = _db;
     if (database == null) {
       throw Exception('Database is not available in this session.');
     }
@@ -93,9 +93,7 @@ abstract class Session {
     messages = MessageCentralAccess._(this);
 
     if (Features.enableDatabase) {
-      _dbNext = Database(session: this);
-    } else {
-      _dbNext = null;
+      _db = Database(session: this);
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
@@ -402,7 +400,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.dbNext
+    await _session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }

@@ -373,7 +373,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<MessageLogEntry>(
+    return session.db.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -393,7 +393,7 @@ class MessageLogEntryRepository {
     _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<MessageLogEntry>(
+    return session.db.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
@@ -408,7 +408,7 @@ class MessageLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<MessageLogEntry>(
+    return session.db.findById<MessageLogEntry>(
       id,
       transaction: transaction,
     );
@@ -419,7 +419,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<MessageLogEntry>(
+    return session.db.insert<MessageLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -430,7 +430,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<MessageLogEntry>(
+    return session.db.insertRow<MessageLogEntry>(
       row,
       transaction: transaction,
     );
@@ -442,7 +442,7 @@ class MessageLogEntryRepository {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<MessageLogEntry>(
+    return session.db.update<MessageLogEntry>(
       rows,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
@@ -455,7 +455,7 @@ class MessageLogEntryRepository {
     _i1.ColumnSelections<MessageLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<MessageLogEntry>(
+    return session.db.updateRow<MessageLogEntry>(
       row,
       columns: columns?.call(MessageLogEntry.t),
       transaction: transaction,
@@ -467,7 +467,7 @@ class MessageLogEntryRepository {
     List<MessageLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<MessageLogEntry>(
+    return session.db.delete<MessageLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -478,7 +478,7 @@ class MessageLogEntryRepository {
     MessageLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<MessageLogEntry>(
+    return session.db.deleteRow<MessageLogEntry>(
       row,
       transaction: transaction,
     );
@@ -489,7 +489,7 @@ class MessageLogEntryRepository {
     required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<MessageLogEntry>(
+    return session.db.deleteWhere<MessageLogEntry>(
       where: where(MessageLogEntry.t),
       transaction: transaction,
     );
@@ -501,7 +501,7 @@ class MessageLogEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<MessageLogEntry>(
+    return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
       limit: limit,
       transaction: transaction,

@@ -169,7 +169,7 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithSelfParent>(
+    return session.db.find<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -189,7 +189,7 @@ class ObjectWithSelfParentRepository {
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithSelfParent>(
+    return session.db.findFirstRow<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
       orderByList: orderByList?.call(ObjectWithSelfParent.t),
@@ -204,7 +204,7 @@ class ObjectWithSelfParentRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithSelfParent>(
+    return session.db.findById<ObjectWithSelfParent>(
       id,
       transaction: transaction,
     );
@@ -215,7 +215,7 @@ class ObjectWithSelfParentRepository {
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithSelfParent>(
+    return session.db.insert<ObjectWithSelfParent>(
       rows,
       transaction: transaction,
     );
@@ -226,7 +226,7 @@ class ObjectWithSelfParentRepository {
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithSelfParent>(
+    return session.db.insertRow<ObjectWithSelfParent>(
       row,
       transaction: transaction,
     );
@@ -238,7 +238,7 @@ class ObjectWithSelfParentRepository {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithSelfParent>(
+    return session.db.update<ObjectWithSelfParent>(
       rows,
       columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
@@ -251,7 +251,7 @@ class ObjectWithSelfParentRepository {
     _i1.ColumnSelections<ObjectWithSelfParentTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithSelfParent>(
+    return session.db.updateRow<ObjectWithSelfParent>(
       row,
       columns: columns?.call(ObjectWithSelfParent.t),
       transaction: transaction,
@@ -263,7 +263,7 @@ class ObjectWithSelfParentRepository {
     List<ObjectWithSelfParent> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithSelfParent>(
+    return session.db.delete<ObjectWithSelfParent>(
       rows,
       transaction: transaction,
     );
@@ -274,7 +274,7 @@ class ObjectWithSelfParentRepository {
     ObjectWithSelfParent row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithSelfParent>(
+    return session.db.deleteRow<ObjectWithSelfParent>(
       row,
       transaction: transaction,
     );
@@ -285,7 +285,7 @@ class ObjectWithSelfParentRepository {
     required _i1.WhereExpressionBuilder<ObjectWithSelfParentTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithSelfParent>(
+    return session.db.deleteWhere<ObjectWithSelfParent>(
       where: where(ObjectWithSelfParent.t),
       transaction: transaction,
     );
@@ -297,7 +297,7 @@ class ObjectWithSelfParentRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithSelfParent>(
+    return session.db.count<ObjectWithSelfParent>(
       where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
       transaction: transaction,
