@@ -19,9 +19,9 @@ import 'package:serverpod_test_client/src/custom_classes.dart' as _i8;
 import 'package:serverpod_test_shared/src/external_custom_class.dart' as _i9;
 import 'package:serverpod_test_shared/src/freezed_custom_class.dart' as _i10;
 import 'package:serverpod_test_client/src/protocol/simple_data.dart' as _i11;
-import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
-    as _i12;
 import 'package:serverpod_test_client/src/protocol/simple_data_list.dart'
+    as _i12;
+import 'package:serverpod_test_client/src/protocol/object_with_enum.dart'
     as _i13;
 import 'package:serverpod_test_client/src/protocol/object_with_object.dart'
     as _i14;
@@ -1087,6 +1087,33 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
   @override
   String get name => 'basicDatabase';
 
+  _i2.Future<void> deleteAllSimpleTestData() => caller.callServerEndpoint<void>(
+        'basicDatabase',
+        'deleteAllSimpleTestData',
+        {},
+      );
+
+  _i2.Future<void> deleteSimpleTestDataLessThan(int num) =>
+      caller.callServerEndpoint<void>(
+        'basicDatabase',
+        'deleteSimpleTestDataLessThan',
+        {'num': num},
+      );
+
+  _i2.Future<void> findAndDeleteSimpleTestData(int num) =>
+      caller.callServerEndpoint<void>(
+        'basicDatabase',
+        'findAndDeleteSimpleTestData',
+        {'num': num},
+      );
+
+  _i2.Future<void> createSimpleTestData(int numRows) =>
+      caller.callServerEndpoint<void>(
+        'basicDatabase',
+        'createSimpleTestData',
+        {'numRows': numRows},
+      );
+
   _i2.Future<List<_i11.SimpleData>> findSimpleData({
     required int limit,
     required int offset,
@@ -1112,6 +1139,23 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         'basicDatabase',
         'findByIdSimpleData',
         {'id': id},
+      );
+
+  _i2.Future<_i12.SimpleDataList?> findSimpleDataRowsLessThan(
+    int num,
+    int offset,
+    int limit,
+    bool descending,
+  ) =>
+      caller.callServerEndpoint<_i12.SimpleDataList?>(
+        'basicDatabase',
+        'findSimpleDataRowsLessThan',
+        {
+          'num': num,
+          'offset': offset,
+          'limit': limit,
+          'descending': descending,
+        },
       );
 
   _i2.Future<_i11.SimpleData> insertRowSimpleData(_i11.SimpleData simpleData) =>
@@ -1162,152 +1206,71 @@ class EndpointBasicDatabase extends _i1.EndpointRef {
         {'value': value},
       );
 
-  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
-        'basicDatabase',
-        'deleteAll',
-        {},
-      );
-}
-
-/// {@category Endpoint}
-class EndpointBasicDatabaseLegacy extends _i1.EndpointRef {
-  EndpointBasicDatabaseLegacy(_i1.EndpointCaller caller) : super(caller);
-
-  @override
-  String get name => 'basicDatabaseLegacy';
-
-  _i2.Future<int?> storeTypes(_i6.Types types) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
-        'storeTypes',
-        {'types': types},
-      );
-
-  _i2.Future<_i6.Types?> getTypes(int id) =>
-      caller.callServerEndpoint<_i6.Types?>(
-        'basicDatabaseLegacy',
-        'getTypes',
-        {'id': id},
-      );
-
-  _i2.Future<int?> storeObjectWithEnum(_i12.ObjectWithEnum object) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
-        'storeObjectWithEnum',
-        {'object': object},
-      );
-
-  _i2.Future<_i12.ObjectWithEnum?> getObjectWithEnum(int id) =>
-      caller.callServerEndpoint<_i12.ObjectWithEnum?>(
-        'basicDatabaseLegacy',
-        'getObjectWithEnum',
-        {'id': id},
-      );
-
-  _i2.Future<int?> getTypesRawQuery(int id) => caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
-        'getTypesRawQuery',
-        {'id': id},
-      );
-
   _i2.Future<int?> countTypesRows() => caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
+        'basicDatabase',
         'countTypesRows',
         {},
       );
 
-  _i2.Future<int?> deleteAllInTypes() => caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
+  _i2.Future<List<int>> deleteAllInTypes() =>
+      caller.callServerEndpoint<List<int>>(
+        'basicDatabase',
         'deleteAllInTypes',
         {},
       );
 
-  _i2.Future<void> createSimpleTestData(int numRows) =>
-      caller.callServerEndpoint<void>(
-        'basicDatabaseLegacy',
-        'createSimpleTestData',
-        {'numRows': numRows},
+  _i2.Future<_i6.Types?> getTypes(int id) =>
+      caller.callServerEndpoint<_i6.Types?>(
+        'basicDatabase',
+        'getTypes',
+        {'id': id},
       );
 
-  _i2.Future<int?> countSimpleData() => caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
-        'countSimpleData',
-        {},
+  _i2.Future<int?> getTypesRawQuery(int id) => caller.callServerEndpoint<int?>(
+        'basicDatabase',
+        'getTypesRawQuery',
+        {'id': id},
       );
 
-  _i2.Future<void> deleteAllSimpleTestData() => caller.callServerEndpoint<void>(
-        'basicDatabaseLegacy',
-        'deleteAllSimpleTestData',
-        {},
+  _i2.Future<_i13.ObjectWithEnum> storeObjectWithEnum(
+          _i13.ObjectWithEnum object) =>
+      caller.callServerEndpoint<_i13.ObjectWithEnum>(
+        'basicDatabase',
+        'storeObjectWithEnum',
+        {'object': object},
       );
 
-  _i2.Future<void> deleteSimpleTestDataLessThan(int num) =>
-      caller.callServerEndpoint<void>(
-        'basicDatabaseLegacy',
-        'deleteSimpleTestDataLessThan',
-        {'num': num},
+  _i2.Future<_i13.ObjectWithEnum?> getObjectWithEnum(int id) =>
+      caller.callServerEndpoint<_i13.ObjectWithEnum?>(
+        'basicDatabase',
+        'getObjectWithEnum',
+        {'id': id},
       );
 
-  _i2.Future<bool?> findAndDeleteSimpleTestData(int num) =>
-      caller.callServerEndpoint<bool?>(
-        'basicDatabaseLegacy',
-        'findAndDeleteSimpleTestData',
-        {'num': num},
-      );
-
-  _i2.Future<_i13.SimpleDataList?> findSimpleDataRowsLessThan(
-    int num,
-    int offset,
-    int limit,
-    bool descending,
-  ) =>
-      caller.callServerEndpoint<_i13.SimpleDataList?>(
-        'basicDatabaseLegacy',
-        'findSimpleDataRowsLessThan',
-        {
-          'num': num,
-          'offset': offset,
-          'limit': limit,
-          'descending': descending,
-        },
-      );
-
-  _i2.Future<bool?> updateSimpleDataRow(
-    int num,
-    int newNum,
-  ) =>
-      caller.callServerEndpoint<bool?>(
-        'basicDatabaseLegacy',
-        'updateSimpleDataRow',
-        {
-          'num': num,
-          'newNum': newNum,
-        },
-      );
-
-  _i2.Future<int?> storeObjectWithObject(_i14.ObjectWithObject object) =>
-      caller.callServerEndpoint<int?>(
-        'basicDatabaseLegacy',
+  _i2.Future<_i14.ObjectWithObject> storeObjectWithObject(
+          _i14.ObjectWithObject object) =>
+      caller.callServerEndpoint<_i14.ObjectWithObject>(
+        'basicDatabase',
         'storeObjectWithObject',
         {'object': object},
       );
 
   _i2.Future<_i14.ObjectWithObject?> getObjectWithObject(int id) =>
       caller.callServerEndpoint<_i14.ObjectWithObject?>(
-        'basicDatabaseLegacy',
+        'basicDatabase',
         'getObjectWithObject',
         {'id': id},
       );
 
-  _i2.Future<bool> testByteDataStore() => caller.callServerEndpoint<bool>(
-        'basicDatabaseLegacy',
-        'testByteDataStore',
+  _i2.Future<int> deleteAll() => caller.callServerEndpoint<int>(
+        'basicDatabase',
+        'deleteAll',
         {},
       );
 
-  _i2.Future<bool> testDurationStore() => caller.callServerEndpoint<bool>(
-        'basicDatabaseLegacy',
-        'testDurationStore',
+  _i2.Future<bool> testByteDataStore() => caller.callServerEndpoint<bool>(
+        'basicDatabase',
+        'testByteDataStore',
         {},
       );
 }
@@ -2746,7 +2709,6 @@ class Client extends _i1.ServerpodClient {
     columnUuidLegacy = EndpointColumnUuidLegacy(this);
     customTypes = EndpointCustomTypes(this);
     basicDatabase = EndpointBasicDatabase(this);
-    basicDatabaseLegacy = EndpointBasicDatabaseLegacy(this);
     databaseBatch = EndpointDatabaseBatch(this);
     databaseBatchGenerated = EndpointDatabaseBatchGenerated(this);
     databaseListRelationMethods = EndpointDatabaseListRelationMethods(this);
@@ -2803,8 +2765,6 @@ class Client extends _i1.ServerpodClient {
   late final EndpointCustomTypes customTypes;
 
   late final EndpointBasicDatabase basicDatabase;
-
-  late final EndpointBasicDatabaseLegacy basicDatabaseLegacy;
 
   late final EndpointDatabaseBatch databaseBatch;
 
@@ -2873,7 +2833,6 @@ class Client extends _i1.ServerpodClient {
         'columnUuidLegacy': columnUuidLegacy,
         'customTypes': customTypes,
         'basicDatabase': basicDatabase,
-        'basicDatabaseLegacy': basicDatabaseLegacy,
         'databaseBatch': databaseBatch,
         'databaseBatchGenerated': databaseBatchGenerated,
         'databaseListRelationMethods': databaseListRelationMethods,
