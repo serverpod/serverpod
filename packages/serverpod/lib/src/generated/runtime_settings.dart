@@ -87,18 +87,6 @@ abstract class RuntimeSettings extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'logSettings': logSettings,
-      'logSettingsOverrides': logSettingsOverrides,
-      'logServiceCalls': logServiceCalls,
-      'logMalformedCalls': logMalformedCalls,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -108,150 +96,6 @@ abstract class RuntimeSettings extends _i1.TableRow {
       'logServiceCalls': logServiceCalls,
       'logMalformedCalls': logMalformedCalls,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'logSettings':
-        logSettings = value;
-        return;
-      case 'logSettingsOverrides':
-        logSettingsOverrides = value;
-        return;
-      case 'logServiceCalls':
-        logServiceCalls = value;
-        return;
-      case 'logMalformedCalls':
-        logMalformedCalls = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<RuntimeSettings>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<RuntimeSettings?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<RuntimeSettings?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<RuntimeSettings>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<RuntimeSettingsTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<RuntimeSettings>(
-      where: where(RuntimeSettings.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    RuntimeSettings row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RuntimeSettingsTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<RuntimeSettings>(
-      where: where != null ? where(RuntimeSettings.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static RuntimeSettingsInclude include() {
@@ -357,9 +201,6 @@ class RuntimeSettingsTable extends _i1.Table {
         logMalformedCalls,
       ];
 }
-
-@Deprecated('Use RuntimeSettingsTable.t instead.')
-RuntimeSettingsTable tRuntimeSettings = RuntimeSettingsTable();
 
 class RuntimeSettingsInclude extends _i1.IncludeObject {
   RuntimeSettingsInclude._();

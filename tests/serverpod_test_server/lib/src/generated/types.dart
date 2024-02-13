@@ -130,24 +130,6 @@ abstract class Types extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'anInt': anInt,
-      'aBool': aBool,
-      'aDouble': aDouble,
-      'aDateTime': aDateTime,
-      'aString': aString,
-      'aByteData': aByteData,
-      'aDuration': aDuration,
-      'aUuid': aUuid,
-      'anEnum': anEnum,
-      'aStringifiedEnum': aStringifiedEnum,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -163,168 +145,6 @@ abstract class Types extends _i1.TableRow {
       if (aStringifiedEnum != null)
         'aStringifiedEnum': aStringifiedEnum?.toJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'anInt':
-        anInt = value;
-        return;
-      case 'aBool':
-        aBool = value;
-        return;
-      case 'aDouble':
-        aDouble = value;
-        return;
-      case 'aDateTime':
-        aDateTime = value;
-        return;
-      case 'aString':
-        aString = value;
-        return;
-      case 'aByteData':
-        aByteData = value;
-        return;
-      case 'aDuration':
-        aDuration = value;
-        return;
-      case 'aUuid':
-        aUuid = value;
-        return;
-      case 'anEnum':
-        anEnum = value;
-        return;
-      case 'aStringifiedEnum':
-        aStringifiedEnum = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Types>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<Types>(
-      where: where != null ? where(Types.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Types?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<Types>(
-      where: where != null ? where(Types.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Types?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<Types>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<TypesTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Types>(
-      where: where(Types.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Types row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Types row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Types row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Types>(
-      where: where != null ? where(Types.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static TypesInclude include() {
@@ -495,9 +315,6 @@ class TypesTable extends _i1.Table {
         aStringifiedEnum,
       ];
 }
-
-@Deprecated('Use TypesTable.t instead.')
-TypesTable tTypes = TypesTable();
 
 class TypesInclude extends _i1.IncludeObject {
   TypesInclude._();
