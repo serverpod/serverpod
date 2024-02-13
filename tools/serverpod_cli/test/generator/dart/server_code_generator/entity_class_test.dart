@@ -189,114 +189,6 @@ void main() {
             reason: 'Declaration for id field should not be generated.');
       });
 
-      test('has a toJsonForDatabase method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'toJsonForDatabase',
-            ),
-            isTrue,
-            reason: 'Missing declaration for toJsonForDatabase method.');
-      });
-
-      test('has a setColumn method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'setColumn',
-            ),
-            isTrue,
-            reason: 'Missing declaration for setColumn method.');
-      });
-
-      test('has a static find method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'find',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static find method.');
-      });
-
-      test('has a static findSingleRow method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'findSingleRow',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static findSingleRow method.');
-      });
-
-      test('has a findById static method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'findById',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static findById method.');
-      });
-
-      test('has a static delete method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'delete',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static delete method.');
-      });
-
-      test('has a static deleteRow method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'deleteRow',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration static deleteRow method.');
-      });
-
-      test('has a static update method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'update',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static update method.');
-      });
-
-      test('has a static insert method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'insert',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static insert method.');
-      });
-
-      test('has a static count method.', () {
-        expect(
-            CompilationUnitHelpers.hasMethodDeclaration(
-              maybeClassNamedExample!,
-              name: 'count',
-              isStatic: true,
-            ),
-            isTrue,
-            reason: 'Missing declaration for static count method.');
-      });
-
       test('has a static include method.', () {
         expect(
             CompilationUnitHelpers.hasMethodDeclaration(
@@ -632,21 +524,6 @@ void main() {
               reason: 'Field declaration missing for $fieldName.');
         });
 
-        test('has a toJsonForDatabase that uses hidden class variable.', () {
-          var maybeToJsonForDatabase =
-              CompilationUnitHelpers.tryFindMethodDeclaration(
-            maybeClassNamedExample!,
-            name: 'toJsonForDatabase',
-          );
-
-          expect(maybeToJsonForDatabase, isNotNull,
-              reason: 'Missing declaration for toJsonForDatabase method.');
-          expect(maybeToJsonForDatabase!.toSource(),
-              contains('\'$fieldName\' : _$fieldName'),
-              reason:
-                  'Missing use of hidden class variable in toJsonForDatabase method.');
-        });
-
         test('has a allToJson that uses hidden class variable.', () {
           var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
             maybeClassNamedExample!,
@@ -657,19 +534,6 @@ void main() {
               reason: 'Missing declaration for allToJson method.');
           expect(maybeAllToJson!.toSource(),
               contains('\'$fieldName\' : _$fieldName'),
-              reason:
-                  'Missing use of hidden class variable in setColumn method.');
-        });
-
-        test('has a setColumn that uses hidden class variable.', () {
-          var maybeAllToJson = CompilationUnitHelpers.tryFindMethodDeclaration(
-            maybeClassNamedExample!,
-            name: 'setColumn',
-          );
-
-          expect(maybeAllToJson, isNotNull,
-              reason: 'Missing declaration for setColumn method.');
-          expect(maybeAllToJson!.toSource(), contains('_$fieldName = value'),
               reason:
                   'Missing use of hidden class variable in setColumn method.');
         });

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_legacy.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
@@ -39,20 +38,6 @@ abstract class Session {
   /// An custom object associated with this [Session]. This is especially
   /// useful for keeping track of the state in a [StreamingEndpoint].
   dynamic userObject;
-
-  /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  late final DatabaseLegacy? _db;
-
-  /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  DatabaseLegacy get db {
-    var database = _db;
-    if (database == null) {
-      throw Exception('Database is not available in this session.');
-    }
-    return database;
-  }
 
   /// Access to the database. Replaces db in the future.
   late final Database? _dbNext;
@@ -108,12 +93,8 @@ abstract class Session {
     messages = MessageCentralAccess._(this);
 
     if (Features.enableDatabase) {
-      // ignore: deprecated_member_use_from_same_package
-      _db = DatabaseLegacy(session: this);
       _dbNext = Database(session: this);
     } else {
-      // ignore: deprecated_member_use_from_same_package
-      _db = null;
       _dbNext = null;
     }
 
