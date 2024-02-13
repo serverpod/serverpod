@@ -794,7 +794,7 @@ class Serverpod {
       attempts++;
       var session = await createSession(enableLogging: enableLogging);
       try {
-        await session.dbNext.testConnection();
+        await session.db.testConnection();
         return session;
       } catch (e, stackTrace) {
         // Write connection error to stderr.

@@ -38,7 +38,7 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.dbNext.deleteWhere<SessionLogEntry>(
+    await session.db.deleteWhere<SessionLogEntry>(
       where: Constant.bool(true),
     );
   }
@@ -78,7 +78,7 @@ class InsightsEndpoint extends Endpoint {
       where = where & (SessionLogEntry.t.id < filter.lastSessionLogId);
     }
 
-    var rows = (await session.dbNext.find<SessionLogEntry>(
+    var rows = (await session.db.find<SessionLogEntry>(
       where: where,
       limit: numEntries,
       orderBy: SessionLogEntry.t.id,
@@ -88,15 +88,15 @@ class InsightsEndpoint extends Endpoint {
 
     var sessionLogInfo = <SessionLogInfo>[];
     for (var logEntry in rows) {
-      var logRows = await session.dbNext.find<LogEntry>(
+      var logRows = await session.db.find<LogEntry>(
         where: LogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
-      var queryRows = await session.dbNext.find<QueryLogEntry>(
+      var queryRows = await session.db.find<QueryLogEntry>(
         where: QueryLogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
-      var messageRows = await session.dbNext.find<MessageLogEntry>(
+      var messageRows = await session.db.find<MessageLogEntry>(
         where: MessageLogEntry.t.sessionLogId.equals(logEntry.id),
       );
 
@@ -207,7 +207,7 @@ class InsightsEndpoint extends Endpoint {
   /// - [getTargetTableDefinition]
   Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
     // Get database definition of the live database.
-    var databaseDefinition = await DatabaseAnalyzer.analyze(session.dbNext);
+    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
 
     // Make sure that the migration manager is up-to-date.
     await session.serverpod.migrationManager.initialize(session);
@@ -258,7 +258,7 @@ class InsightsEndpoint extends Endpoint {
   }) async {
     try {
       return DatabaseBulkData.exportTableData(
-        database: session.dbNext,
+        database: session.db,
         table: table,
         lastId: startingId,
         limit: limit,
@@ -279,7 +279,7 @@ class InsightsEndpoint extends Endpoint {
   ) async {
     try {
       var result = await DatabaseBulkData.executeQueries(
-        database: session.dbNext,
+        database: session.db,
         queries: queries,
       );
       return result;
@@ -302,7 +302,7 @@ class InsightsEndpoint extends Endpoint {
     required String table,
   }) async {
     return DatabaseBulkData.approximateRowCount(
-      database: session.dbNext,
+      database: session.db,
       table: table,
     );
   }
@@ -310,7 +310,7 @@ class InsightsEndpoint extends Endpoint {
   /// Executes SQL commands. Returns the number of rows affected.
   Future<int> executeSql(Session session, String sql) async {
     try {
-      return await session.dbNext.unsafeExecute(sql);
+      return await session.db.unsafeExecute(sql);
     } catch (e) {
       throw ServerpodSqlException(
         message: '$e',

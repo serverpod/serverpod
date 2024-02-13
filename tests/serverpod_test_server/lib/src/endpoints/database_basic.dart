@@ -152,7 +152,7 @@ class BasicDatabase extends Endpoint {
 
   Future<int?> getTypesRawQuery(Session session, int id) async {
     var query = 'SELECT * FROM types WHERE id = $id';
-    var result = await session.dbNext.unsafeQuery(query);
+    var result = await session.db.unsafeQuery(query);
     if (result.length != 1) {
       return null;
     }

@@ -93,7 +93,7 @@ class DatabaseLogWriter extends LogWriter {
       enableLogging: false,
     );
 
-    var result = await tempSession.dbNext.insertRow<T>(entry);
+    var result = await tempSession.db.insertRow<T>(entry);
 
     await tempSession.close();
 
@@ -111,23 +111,23 @@ class DatabaseLogWriter extends LogWriter {
     );
 
     var sessionLog =
-        await tempSession.dbNext.insertRow<SessionLogEntry>(sessionLogEntry);
+        await tempSession.db.insertRow<SessionLogEntry>(sessionLogEntry);
     var sessionLogId = sessionLog.id!;
 
     // Write log entries
     for (var logInfo in cache.logEntries) {
       logInfo.sessionLogId = sessionLogId;
-      await tempSession.dbNext.insertRow<LogEntry>(logInfo);
+      await tempSession.db.insertRow<LogEntry>(logInfo);
     }
     // Write queries
     for (var queryInfo in cache.queries) {
       queryInfo.sessionLogId = sessionLogId;
-      await tempSession.dbNext.insertRow<QueryLogEntry>(queryInfo);
+      await tempSession.db.insertRow<QueryLogEntry>(queryInfo);
     }
     // Write streaming messages
     for (var messageInfo in cache.messages) {
       messageInfo.sessionLogId = sessionLogId;
-      await tempSession.dbNext.insertRow<MessageLogEntry>(messageInfo);
+      await tempSession.db.insertRow<MessageLogEntry>(messageInfo);
     }
 
     await tempSession.close();

@@ -38,7 +38,7 @@ void main() async {
       () async {
     var stockholm = await City.db.insertRow(session, City(name: 'Stockholm'));
 
-    var city = await session.dbNext.findById<City>(
+    var city = await session.db.findById<City>(
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(),
@@ -61,7 +61,7 @@ void main() async {
     await City.db.attach.citizens(session, stockholm, [citizen1, citizen2]);
     await City.db.attach.citizens(session, gothenburg, [citizen3]);
 
-    var city = await session.dbNext.findById<City>(
+    var city = await session.db.findById<City>(
       stockholm.id!,
       include: City.include(
         citizens: Person.includeList(),
@@ -94,7 +94,7 @@ void main() async {
     await Organization.db.attach.people(session, serverpod, [person1, person2]);
     await Organization.db.attach.people(session, flutter, [person3]);
 
-    var organization = await session.dbNext.findById<Organization>(
+    var organization = await session.db.findById<Organization>(
       serverpod.id!,
       include: Organization.include(
         people: Person.includeList(),
@@ -127,7 +127,7 @@ void main() async {
     await Organization.db.attach.people(session, serverpod, [person1, person2]);
     await Organization.db.attach.people(session, flutter, [person3]);
 
-    var organizations = await session.dbNext.find<Organization>(
+    var organizations = await session.db.find<Organization>(
       where: Organization.t.name.equals('Serverpod'),
       include: Organization.include(
         people: Person.includeList(),
