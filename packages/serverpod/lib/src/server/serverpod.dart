@@ -80,20 +80,7 @@ class Serverpod {
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
 
-  DatabasePoolManager? _databaseConfig;
-
-  /// The database configuration.
-  DatabasePoolManager get databaseConfig {
-    var database = _databaseConfig;
-    if (database == null) {
-      throw StateError(
-        'Database is disabled, supply a database configuration to the '
-        'Serverpod constructor to enable this feature.',
-      );
-    }
-
-    return database;
-  }
+  DatabasePoolManager? _databasePoolManager;
 
   late Caches _caches;
 
@@ -321,11 +308,11 @@ class Serverpod {
     _logManager = LogManager(_defaultRuntimeSettings, _logWriter);
 
     // Setup database
-    var database = this.config.database;
-    if (Features.enableDatabase && database != null) {
-      _databaseConfig = DatabasePoolManager(
+    var databaseConfiguration = this.config.database;
+    if (Features.enableDatabase && databaseConfiguration != null) {
+      _databasePoolManager = DatabasePoolManager(
         serializationManager,
-        database,
+        databaseConfiguration,
       );
     }
 
@@ -365,7 +352,7 @@ class Serverpod {
       serverId: serverId,
       port: this.config.apiServer.port,
       serializationManager: serializationManager,
-      databaseConfig: _databaseConfig,
+      databasePoolManager: _databasePoolManager,
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
@@ -435,7 +422,7 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      if (_databaseConfig == null) {
+      if (_databasePoolManager == null) {
         _runtimeSettings = _defaultRuntimeSettings;
       }
 
@@ -659,7 +646,7 @@ class Serverpod {
       serverId: serverId,
       port: config.insightsServer!.port,
       serializationManager: _internalSerializationManager,
-      databaseConfig: _databaseConfig,
+      databasePoolManager: _databasePoolManager,
       passwords: _passwords,
       runMode: _runMode,
       name: 'Insights',

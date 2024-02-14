@@ -6,6 +6,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 
 import '../server/session.dart';
 import 'adapters/postgres/database_connection.dart';
@@ -20,9 +21,9 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session})
+  Database({required Session session, required DatabasePoolManager poolManager})
       : _session = session,
-        _databaseConnection = DatabaseConnection(session.server.databaseConfig);
+        _databaseConnection = DatabaseConnection(poolManager);
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
