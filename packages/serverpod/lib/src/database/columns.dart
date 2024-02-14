@@ -2,6 +2,9 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 
+/// A function that returns a [Column] for a [Table].
+typedef ColumnSelections<T extends Table> = List<Column> Function(T);
+
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].
 abstract class Column<T> {

@@ -6,6 +6,9 @@ import 'package:serverpod/src/database/columns.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_query_helper.dart';
 import 'package:serverpod/src/database/database_result.dart';
+import 'package:serverpod/src/database/includes.dart';
+import 'package:serverpod/src/database/order.dart';
+import 'package:serverpod/src/database/transaction.dart';
 
 import '../generated/protocol.dart';
 import '../server/session.dart';
@@ -490,7 +493,7 @@ class DatabaseConnection {
   }) {
     return _postgresConnection.runTx<R>(
       (ctx) {
-        var transaction = Transaction._(ctx);
+        var transaction = _PostgresTransaction(ctx);
         return transactionFunction(transaction);
       },
       retryOptions: retryOptions,
@@ -659,94 +662,7 @@ Current type was $T''');
   return table!;
 }
 
-/// A function performing a transaction, passed to the transaction method.
-typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
-
-/// Defines how to order a database [column].
-class Order {
-  /// The columns to order by.
-  final Column column;
-
-  /// Whether the column should be ordered ascending or descending.
-  final bool orderDescending;
-
-  /// Creates a new [Order] definition for a specific [column] and whether it
-  /// should be ordered descending or ascending.
-  Order({required this.column, this.orderDescending = false});
-
-  @override
-  String toString() {
-    var str = '$column';
-    if (orderDescending) str += ' DESC';
-    return str;
-  }
-}
-
-/// Holds the state of a running database transaction.
-class Transaction {
-  /// The Postgresql execution context associated with a running transaction.
-  final PostgreSQLExecutionContext postgresContext;
-  Transaction._(this.postgresContext);
-}
-
-/// A function that returns an [Expression] for a [Table] to be used with where
-/// clauses.
-typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
-
-/// A function that returns a Column for a Table to be used with order by
-typedef OrderByBuilder<T extends Table> = Column Function(T);
-
-/// A function that returns a list of [Order] for a [Table] to be used with
-/// order by list.
-typedef OrderByListBuilder<T extends Table> = List<Order> Function(T);
-
-/// A function that returns a [Column] for a [Table].
-typedef ColumnSelections<T extends Table> = List<Column> Function(T);
-
-/// The base include class, should not be used directly.
-abstract class Include {
-  /// Map containing the relation field name as key and the [Include] object
-  /// for the foreign table as value.
-  Map<String, Include?> get includes;
-
-  /// Accessor for the [Table] this include is for.
-  Table get table;
-}
-
-/// Defines what tables to join when querying a table.
-abstract class IncludeObject extends Include {}
-
-/// Defines what tables to join when querying a table.
-abstract class IncludeList extends Include {
-  /// Constructs a new [IncludeList] object.
-  IncludeList({
-    this.where,
-    this.limit,
-    this.offset,
-    this.orderBy,
-    this.orderDescending = false,
-    this.orderByList,
-    this.include,
-  });
-
-  /// Where expression to filter the included list.
-  Expression? where;
-
-  /// The maximum number of rows to return.
-  int? limit;
-
-  /// The number of rows to skip.
-  int? offset;
-
-  /// The column to order by.
-  Column? orderBy;
-
-  /// Whether the column should be ordered descending or ascending.
-  bool orderDescending = false;
-
-  /// The columns to order by.
-  List<Order>? orderByList;
-
-  /// The nested includes
-  IncludeObject? include;
+/// Postgres specific implementation of transactions.
+class _PostgresTransaction extends Transaction {
+  _PostgresTransaction(super.postgresContext);
 }

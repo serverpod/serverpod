@@ -1,6 +1,10 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/table_relation.dart';
 
+/// A function that returns an [Expression] for a [Table] to be used with where
+/// clauses.
+typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
+
 /// A database [Expression].
 class Expression<T> {
   final T _expression;
