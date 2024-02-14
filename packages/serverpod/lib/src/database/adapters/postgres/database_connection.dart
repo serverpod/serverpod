@@ -7,7 +7,7 @@ import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
-import 'package:serverpod/src/database/adapters/postgres/database_result.dart';
+import 'package:serverpod/src/database/adapters/postgres/postgres_result_parser.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
