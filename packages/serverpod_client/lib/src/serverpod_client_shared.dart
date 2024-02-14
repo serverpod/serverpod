@@ -207,12 +207,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   }
 
   /// Open a streaming connection to the server.
-  @Deprecated('Renamed to openStreamingConnection')
-  Future<void> connectWebSocket() async {
-    await openStreamingConnection();
-  }
-
-  /// Open a streaming connection to the server.
   Future<void> openStreamingConnection({
     bool disconnectOnLostInternetConnection = true,
   }) async {
@@ -269,18 +263,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
-  /// Closes the current web socket connection (if open), then connects again.
-  @Deprecated('Use closeStreamingConnection / openStreamingConnection instead.')
-  Future<void> reconnectWebSocket() async {
-    if (_webSocket == null) return;
-
-    await _webSocket?.sink.close();
-    _webSocket = null;
-    _cancelConnectionTimer();
-
-    await openStreamingConnection();
-  }
-
   Future<void> _listenToWebSocketStream() async {
     if (_webSocket == null) return;
 
@@ -301,19 +283,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _notifyWebSocketConnectionStatusListeners();
   }
 
-  /// Adds a callback for when the [isWebSocketConnected] property is
-  /// changed.
-  @Deprecated('Use addStreamingConnectionStatusListener instead.')
-  void addWebSocketConnectionStatusListener(VoidCallback listener) {
-    addStreamingConnectionStatusListener(listener);
-  }
-
-  /// Removes a connection status listener.
-  @Deprecated('Use removeStreamingConnectionStatusListener instead.')
-  void removeWebSocketConnectionStatusListener(VoidCallback listener) {
-    removeStreamingConnectionStatusListener(listener);
-  }
-
   /// Adds a callback for when the [streamingConnectionStatus] property is
   /// changed.
   void addStreamingConnectionStatusListener(VoidCallback listener) {
@@ -329,12 +298,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     for (var listener in _websocketConnectionStatusListeners) {
       listener();
     }
-  }
-
-  /// Returns true if the web socket is connected.
-  @Deprecated('Use streamingConnectionStatus instead.')
-  bool get isWebSocketConnected {
-    return _webSocket != null;
   }
 
   /// Returns the current status of the streaming connection. It can be one of
