@@ -2,19 +2,19 @@ import 'dart:async';
 
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
-import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/database_query.dart';
 import 'package:serverpod/src/database/database_query_helper.dart';
 import 'package:serverpod/src/database/database_result.dart';
-import 'package:serverpod/src/database/includes.dart';
-import 'package:serverpod/src/database/order.dart';
-import 'package:serverpod/src/database/transaction.dart';
+import 'package:serverpod/src/database/concepts/includes.dart';
+import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
 
 import '../generated/protocol.dart';
 import '../server/session.dart';
 import 'database_pool_manager.dart';
-import 'expressions.dart';
-import 'table.dart';
+import 'concepts/expressions.dart';
+import 'concepts/table.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.

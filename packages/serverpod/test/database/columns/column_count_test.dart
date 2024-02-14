@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
 void main() {

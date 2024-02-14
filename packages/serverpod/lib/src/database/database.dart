@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
-import 'package:serverpod/src/database/columns.dart';
-import 'package:serverpod/src/database/includes.dart';
-import 'package:serverpod/src/database/order.dart';
-import 'package:serverpod/src/database/transaction.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/includes.dart';
+import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
 
 import '../server/session.dart';
 import 'database_connection.dart';
-import 'expressions.dart';
-import 'table.dart';
+import 'concepts/expressions.dart';
+import 'concepts/table.dart';
 
 /// Provides easy access to the database in relation to the current [Session].
 class Database {

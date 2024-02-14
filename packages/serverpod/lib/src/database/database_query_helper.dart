@@ -1,4 +1,4 @@
-import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 
 /// Extracts all the primary keys from the result set that are referenced by
 /// the given [relationTable].
