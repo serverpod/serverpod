@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 
 /// A function that returns an [Expression] for a [Table] to be used with where
 /// clauses.
