@@ -4,7 +4,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
-import 'package:serverpod/src/database/database_query.dart';
+import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
