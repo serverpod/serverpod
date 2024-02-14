@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod/src/database/database_query_helper.dart';
 import 'package:serverpod/src/database/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
@@ -524,7 +524,7 @@ class DatabaseConnection {
       }
 
       if (nestedInclude is IncludeList) {
-        var ids = extractPrimaryKeyForRelation<int>(
+        var ids = _extractPrimaryKeyForRelation<int>(
           previousResultSet,
           tableRelation,
         );
@@ -665,4 +665,20 @@ Current type was $T''');
 /// Postgres specific implementation of transactions.
 class _PostgresTransaction extends Transaction {
   _PostgresTransaction(super.postgresContext);
+}
+
+/// Extracts all the primary keys from the result set that are referenced by
+/// the given [relationTable].
+Set<T> _extractPrimaryKeyForRelation<T>(
+  List<Map<String, Map<String, dynamic>>> resultSet,
+  TableRelation tableRelation,
+) {
+  var foreignTableName = tableRelation.fieldTableName;
+  var idFieldName = tableRelation.fieldQueryAliasWithJoins;
+
+  var ids = resultSet
+      .map((e) => e[foreignTableName]?[idFieldName] as T?)
+      .whereType<T>()
+      .toSet();
+  return ids;
 }
