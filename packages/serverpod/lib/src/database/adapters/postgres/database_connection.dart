@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
@@ -18,6 +19,7 @@ import '../../concepts/table.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
+@internal
 class DatabaseConnection {
   /// Database configuration.
   final DatabasePoolManager _poolManager;
