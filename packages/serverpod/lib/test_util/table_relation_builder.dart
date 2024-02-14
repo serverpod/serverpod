@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 
 /// Test util for building a table with relations.
 class TableRelationBuilder {

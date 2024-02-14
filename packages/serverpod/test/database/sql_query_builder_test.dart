@@ -1,6 +1,6 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod/src/database/table_relation.dart';
+import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:test/test.dart';
 
 class _TableWithoutFields extends Table {

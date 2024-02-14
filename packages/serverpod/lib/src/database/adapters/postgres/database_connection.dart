@@ -1,20 +1,25 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
-import 'package:serverpod/src/database/columns.dart';
-import 'package:serverpod/src/database/database_query.dart';
-import 'package:serverpod/src/database/database_query_helper.dart';
-import 'package:serverpod/src/database/database_result.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/table_relation.dart';
+import 'package:serverpod/src/database/sql_query_builder.dart';
+import 'package:serverpod/src/database/adapters/postgres/database_result.dart';
+import 'package:serverpod/src/database/concepts/includes.dart';
+import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
 
-import '../generated/protocol.dart';
-import '../server/session.dart';
-import 'database_pool_manager.dart';
-import 'expressions.dart';
-import 'table.dart';
+import '../../../generated/protocol.dart';
+import '../../../server/session.dart';
+import '../../database_pool_manager.dart';
+import '../../concepts/expressions.dart';
+import '../../concepts/table.dart';
 
 /// A connection to the database. In most cases the [Database] db object in
 /// the [Session] object should be used when connecting with the database.
+@internal
 class DatabaseConnection {
   /// Database configuration.
   final DatabasePoolManager _poolManager;
@@ -490,7 +495,7 @@ class DatabaseConnection {
   }) {
     return _postgresConnection.runTx<R>(
       (ctx) {
-        var transaction = Transaction._(ctx);
+        var transaction = _PostgresTransaction(ctx);
         return transactionFunction(transaction);
       },
       retryOptions: retryOptions,
@@ -521,7 +526,7 @@ class DatabaseConnection {
       }
 
       if (nestedInclude is IncludeList) {
-        var ids = extractPrimaryKeyForRelation<int>(
+        var ids = _extractPrimaryKeyForRelation<int>(
           previousResultSet,
           tableRelation,
         );
@@ -659,94 +664,23 @@ Current type was $T''');
   return table!;
 }
 
-/// A function performing a transaction, passed to the transaction method.
-typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
-
-/// Defines how to order a database [column].
-class Order {
-  /// The columns to order by.
-  final Column column;
-
-  /// Whether the column should be ordered ascending or descending.
-  final bool orderDescending;
-
-  /// Creates a new [Order] definition for a specific [column] and whether it
-  /// should be ordered descending or ascending.
-  Order({required this.column, this.orderDescending = false});
-
-  @override
-  String toString() {
-    var str = '$column';
-    if (orderDescending) str += ' DESC';
-    return str;
-  }
+/// Postgres specific implementation of transactions.
+class _PostgresTransaction extends Transaction {
+  _PostgresTransaction(super.postgresContext);
 }
 
-/// Holds the state of a running database transaction.
-class Transaction {
-  /// The Postgresql execution context associated with a running transaction.
-  final PostgreSQLExecutionContext postgresContext;
-  Transaction._(this.postgresContext);
-}
+/// Extracts all the primary keys from the result set that are referenced by
+/// the given [relationTable].
+Set<T> _extractPrimaryKeyForRelation<T>(
+  List<Map<String, Map<String, dynamic>>> resultSet,
+  TableRelation tableRelation,
+) {
+  var foreignTableName = tableRelation.fieldTableName;
+  var idFieldName = tableRelation.fieldQueryAliasWithJoins;
 
-/// A function that returns an [Expression] for a [Table] to be used with where
-/// clauses.
-typedef WhereExpressionBuilder<T extends Table> = Expression Function(T);
-
-/// A function that returns a Column for a Table to be used with order by
-typedef OrderByBuilder<T extends Table> = Column Function(T);
-
-/// A function that returns a list of [Order] for a [Table] to be used with
-/// order by list.
-typedef OrderByListBuilder<T extends Table> = List<Order> Function(T);
-
-/// A function that returns a [Column] for a [Table].
-typedef ColumnSelections<T extends Table> = List<Column> Function(T);
-
-/// The base include class, should not be used directly.
-abstract class Include {
-  /// Map containing the relation field name as key and the [Include] object
-  /// for the foreign table as value.
-  Map<String, Include?> get includes;
-
-  /// Accessor for the [Table] this include is for.
-  Table get table;
-}
-
-/// Defines what tables to join when querying a table.
-abstract class IncludeObject extends Include {}
-
-/// Defines what tables to join when querying a table.
-abstract class IncludeList extends Include {
-  /// Constructs a new [IncludeList] object.
-  IncludeList({
-    this.where,
-    this.limit,
-    this.offset,
-    this.orderBy,
-    this.orderDescending = false,
-    this.orderByList,
-    this.include,
-  });
-
-  /// Where expression to filter the included list.
-  Expression? where;
-
-  /// The maximum number of rows to return.
-  int? limit;
-
-  /// The number of rows to skip.
-  int? offset;
-
-  /// The column to order by.
-  Column? orderBy;
-
-  /// Whether the column should be ordered descending or ascending.
-  bool orderDescending = false;
-
-  /// The columns to order by.
-  List<Order>? orderByList;
-
-  /// The nested includes
-  IncludeObject? include;
+  var ids = resultSet
+      .map((e) => e[foreignTableName]?[idFieldName] as T?)
+      .whereType<T>()
+      .toSet();
+  return ids;
 }
