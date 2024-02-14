@@ -5,10 +5,6 @@ import 'package:serverpod/src/database/table_relation.dart';
 class Expression<T> {
   final T _expression;
 
-  /// Retrieves expression as a string.
-  @Deprecated('Use toString instead')
-  String get expression => toString();
-
   /// Creates a new [Expression].
   /// Note that the precedence of operators may not be what you think, so
   /// always use parentheses to make sure that that expressions are executed

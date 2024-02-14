@@ -51,17 +51,6 @@ class SessionManager with ChangeNotifier {
   /// currently signed in.
   UserInfo? get signedInUser => _signedInUser;
 
-  @Deprecated('Use setSignedInUser instead.')
-  set signedInUser(UserInfo? userInfo) {
-    _signedInUser = userInfo;
-    // TODO: Avoid doing asynchronously.
-    keyManager.get().then((String? key) async {
-      await caller.client.updateStreamingConnectionAuthenticationKey(key);
-    });
-    _storeSharedPrefs();
-    notifyListeners();
-  }
-
   /// Registers the signed in user, updates the [keyManager], and upgrades the
   /// streaming connection if it is open.
   Future<void> registerSignedInUser(
