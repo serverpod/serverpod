@@ -8,7 +8,7 @@ import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 
 import '../server/session.dart';
-import 'database_connection.dart';
+import 'adapters/postgres/database_connection.dart';
 import 'concepts/expressions.dart';
 import 'concepts/table.dart';
 

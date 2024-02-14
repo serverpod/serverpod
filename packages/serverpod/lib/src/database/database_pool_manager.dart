@@ -3,7 +3,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
-import 'value_encoder.dart';
+import 'adapters/postgres/value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
 class DatabasePoolManager {
