@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:serverpod/src/serialization/serialization_manager.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -6,6 +7,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'adapters/postgres/value_encoder.dart';
 
 /// Configuration for connecting to the Postgresql database.
+@internal
 class DatabasePoolManager {
   /// Database configuration.
   final DatabaseConfig config;

@@ -93,7 +93,7 @@ abstract class Session {
     messages = MessageCentralAccess._(this);
 
     if (Features.enableDatabase) {
-      _db = Database(session: this);
+      _db = server.createDatabase(this);
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
