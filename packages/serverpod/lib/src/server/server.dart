@@ -282,11 +282,7 @@ class Server {
       body = '';
     }
 
-    print(
-        'Preprocessing: ${request.method} ${request.uri.path} took ${stopwatch.elapsedMilliseconds} ms');
     var result = await _handleUriCall(uri, body!, request);
-    print(
-        'Uri call: ${request.method} ${request.uri.path} took ${stopwatch.elapsedMilliseconds} ms');
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {
