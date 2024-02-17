@@ -176,6 +176,7 @@ class Server {
   void _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
+    Stopwatch stopwatch = Stopwatch()..start();
 
     for (var header in httpResponseHeaders.entries) {
       request.response.headers.add(header.key, header.value);
@@ -281,7 +282,11 @@ class Server {
       body = '';
     }
 
+    print(
+        'Preprocessing: ${request.method} ${request.uri.path} took ${stopwatch.elapsedMilliseconds} ms');
     var result = await _handleUriCall(uri, body!, request);
+    print(
+        'Uri call: ${request.method} ${request.uri.path} took ${stopwatch.elapsedMilliseconds} ms');
 
     if (result is ResultInvalidParams) {
       if (serverpod.runtimeSettings.logMalformedCalls) {

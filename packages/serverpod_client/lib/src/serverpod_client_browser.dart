@@ -67,12 +67,16 @@ abstract class ServerpodClient extends ServerpodClientShared {
         return parseData<T>(data, T, serializationManager);
       }
     } catch (e) {
+      if (e is DioException) {
+        var message = data ?? 'Unknown server response code. ($e)';
+        throw (ServerpodClientException(message, -1));
+      }
+
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
-      throw (ServerpodClientException(
-          data ?? 'Error during POST request. ($e)', -1));
+      rethrow;
     }
   }
 
