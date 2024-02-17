@@ -76,6 +76,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
             options: Options(
               contentType: 'application/json; charset=utf-8',
               headers: {Headers.contentLengthHeader: body.length},
+              // Don't parse the JSON response, allow Serverpod to do it
+              responseType: ResponseType.plain,
             ),
           )
           .timeout(connectionTimeout);
