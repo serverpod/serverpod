@@ -69,7 +69,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     } catch (e) {
       if (e is DioException) {
         var message = data ?? 'Unknown server response code. ($e)';
-        throw (ServerpodClientException(message, -1));
+        throw (ServerpodClientException(message, e.response?.statusCode ?? -1));
       }
 
       if (logFailedCalls) {
