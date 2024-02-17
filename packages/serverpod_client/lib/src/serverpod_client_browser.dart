@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -52,12 +53,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       data = response.data.toString();
 
-      var statusCode = response.statusCode ?? 400;
-      if (statusCode != 200) {
+      if (response.statusCode != HttpStatus.ok) {
         throw getExceptionFrom(
           data: data,
           serializationManager: serializationManager,
-          statusCode: statusCode,
+          statusCode: response.statusCode ?? HttpStatus.badRequest,
         );
       }
 
