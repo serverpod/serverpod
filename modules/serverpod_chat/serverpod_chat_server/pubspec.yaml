@@ -13,7 +13,7 @@ dependencies:
   serverpod: 1.2.3
   serverpod_auth_server: 1.2.3
   serverpod_serialization: 1.2.3
-  dio: ^5.4.0
+  http: ">=0.13.0 <2.0.0"
   image: ^4.0.15
   path: ^1.8.2
 

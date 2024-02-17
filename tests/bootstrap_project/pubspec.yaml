@@ -8,7 +8,7 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: ">=3.0.0 <4.0.0"
 dependencies:
-  dio: ^5.4.0
+  http: ">=0.13.0 <2.0.0"
   serverpod: 1.2.3
   uuid: ^4.0.0
 
