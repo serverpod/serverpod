@@ -176,7 +176,6 @@ class Server {
   void _handleRequest(HttpRequest request) async {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
-    Stopwatch stopwatch = Stopwatch()..start();
 
     for (var header in httpResponseHeaders.entries) {
       request.response.headers.add(header.key, header.value);
