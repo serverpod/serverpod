@@ -14,6 +14,7 @@ environment:
 dependencies:
   serverpod_serialization: 1.2.3
   http: ">=0.13.0 <2.0.0"
+  dio: ^5.4.0
   meta: ^1.8.0
   web_socket_channel: ^2.4.0
 

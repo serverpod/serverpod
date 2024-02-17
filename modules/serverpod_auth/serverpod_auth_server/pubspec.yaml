@@ -18,6 +18,7 @@ dependencies:
   googleapis: ^11.0.0
   googleapis_auth: ^1.4.0
   http: ">=0.13.0 <2.0.0"
+  dio: ^5.4.0
   image: ^4.0.15
   jose: ^0.3.3
 

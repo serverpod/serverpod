@@ -15,6 +15,7 @@ dependencies:
   code_builder: ^4.4.0
   dart_style: ^2.3.0
   http: ">=0.13.0 <2.0.0"
+  dio: ^5.4.0
   intl: ^0.18.0
   recase: ^4.1.0
   built_collection: ^5.1.1
