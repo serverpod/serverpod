@@ -23,6 +23,7 @@ dependencies:
   collection: ^1.17.1
   crypto: ^3.0.2
   http: ">=0.13.0 <2.0.0"
+  dio: ^5.4.0
   meta: ^1.8.0
   mustache_template: ^2.0.0
   path: ^1.8.2

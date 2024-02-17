@@ -12,6 +12,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
   http: ">=0.13.0 <2.0.0"
+  dio: ^5.4.0
   serverpod: 1.2.3
   serverpod_auth_server: 1.2.3
   serverpod_cloud_storage_s3: 1.2.3
