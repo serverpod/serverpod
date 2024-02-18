@@ -48,7 +48,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
           .post(
             '$host$endpoint',
             data: body,
-            options: Options(validateStatus: (_) => true),
+            options: Options(
+              sendTimeout: connectionTimeout,
+              receiveTimeout: connectionTimeout,
+              // Don't parse the JSON response, allow Serverpod to do it
+              responseType: ResponseType.plain,
+              // Don't throw an exception for non-200 status codes
+              validateStatus: (_) => true,
+            ),
           )
           .timeout(connectionTimeout);
 

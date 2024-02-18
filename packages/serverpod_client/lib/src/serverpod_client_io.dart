@@ -74,6 +74,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
             '$host$endpoint',
             data: body,
             options: Options(
+              sendTimeout: connectionTimeout,
+              receiveTimeout: connectionTimeout,
               contentType: 'application/json; charset=utf-8',
               headers: {Headers.contentLengthHeader: body.length},
               // Don't parse the JSON response, allow Serverpod to do it
