@@ -5,17 +5,14 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 /// This is typically only used internally by the serverpod framework.
 Map<String, dynamic>? resolvePrefixedQueryRow(
   Table table,
-  Map<String, Map<String, dynamic>> rawRow,
+  Map<String, dynamic> rawRow,
   Map<String, Map<int, List<dynamic>>> resolvedListRelations, {
   Include? include,
 }) {
   // Resolve this object.
-  var rawTableRow = rawRow[table.tableName];
-  if (rawTableRow == null) return null;
-
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
     table.columns,
-    rawTableRow,
+    rawRow,
   );
 
   if (resolvedTableRow.isEmpty) {
