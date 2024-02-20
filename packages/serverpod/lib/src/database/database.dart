@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
+import 'package:serverpod/src/database/concepts/database_result.dart';
 
 import '../server/session.dart';
 import 'adapters/postgres/database_connection.dart';
@@ -225,7 +225,7 @@ class Database {
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<PostgreSQLResult> unsafeQuery(
+  Future<DatabaseResult> unsafeQuery(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
