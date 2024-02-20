@@ -82,7 +82,10 @@ class StatefulAnalyzer {
 
     state.source.yaml = yaml;
 
-    var doc = SerializableModelAnalyzer.extractModelDefinition(state.source);
+    var doc = SerializableModelAnalyzer.extractModelDefinition(
+      state.source,
+      config,
+    );
     state.model = doc;
     if (doc != null) {
       _upsertModel(doc, uri);
@@ -97,6 +100,7 @@ class StatefulAnalyzer {
     for (var state in _modelStates.values) {
       var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
+        config,
       );
       state.model = model;
     }
