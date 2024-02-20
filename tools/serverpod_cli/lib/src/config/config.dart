@@ -246,7 +246,7 @@ class GeneratorConfig {
           extraClasses.add(
             parseType(
               extraClassConfig,
-              analyzingExtraClasses: true,
+              extraClasses: null,
             ),
           );
         }

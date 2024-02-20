@@ -16,6 +16,7 @@ class ModelParser {
     String outFileName,
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
+    List<TypeDefinition> extraClasses,
   ) {
     YamlNode? classNode = documentContents.nodes[documentTypeName];
 
@@ -39,6 +40,7 @@ class ModelParser {
       documentContents,
       docsExtractor,
       tableName != null,
+      extraClasses,
     );
     var indexes = _parseIndexes(documentContents, fields);
 
@@ -120,6 +122,7 @@ class ModelParser {
     YamlMap documentContents,
     YamlDocumentationExtractor docsExtractor,
     bool hasTable,
+    List<TypeDefinition> extraClasses,
   ) {
     var fieldsNode = documentContents.nodes[Keyword.fields];
     if (fieldsNode is! YamlMap) return [];
@@ -128,6 +131,7 @@ class ModelParser {
       return _parseModelFieldDefinition(
         fieldNode,
         docsExtractor,
+        extraClasses,
       );
     }).toList();
 
@@ -154,6 +158,7 @@ class ModelParser {
   static List<SerializableModelFieldDefinition> _parseModelFieldDefinition(
     MapEntry<dynamic, YamlNode> fieldNode,
     YamlDocumentationExtractor docsExtractor,
+    List<TypeDefinition> extraClasses,
   ) {
     var key = fieldNode.key;
     if (key is! YamlScalar) return [];
@@ -180,6 +185,7 @@ class ModelParser {
     var fieldDocumentation = docsExtractor.getDocumentation(key.span.start);
     var typeResult = parseType(
       typeValue,
+      extraClasses: extraClasses,
     );
 
     var scope = _parseClassFieldScope(node);
