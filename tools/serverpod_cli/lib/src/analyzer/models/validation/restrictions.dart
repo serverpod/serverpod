@@ -1134,7 +1134,9 @@ class Restrictions {
   }
 
   bool _isValidType(TypeDefinition type) {
-    return whiteListedTypes.contains(type.className) || _isModelType(type);
+    return whiteListedTypes.contains(type.className) ||
+        _isModelType(type) ||
+        _isCustomType(type);
   }
 
   bool _isUnsupportedType(TypeDefinition type) {
@@ -1169,6 +1171,10 @@ class Restrictions {
     }
 
     return true;
+  }
+
+  bool _isCustomType(TypeDefinition type) {
+    return config.extraClasses.any((c) => c.className == type.className);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {
