@@ -23,7 +23,6 @@ bool isServerDirectory(Directory directory) {
   var pubspec = File(p.join(directory.path, 'pubspec.yaml'));
   var generator = File(p.join(directory.path, 'config', 'generator.yaml'));
 
-
   if (!pubspec.existsSync() || !generator.existsSync()) {
     return false;
   }
