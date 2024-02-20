@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:postgres/postgres.dart';
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
 import 'package:serverpod/src/database/migrations/migrations.dart';
@@ -284,7 +283,7 @@ class InsightsEndpoint extends Endpoint {
       );
       return result;
     } catch (e) {
-      if (e is PostgreSQLException) {
+      if (e is DatabaseException) {
         throw BulkDataException(
           message: 'Failed to execute query: ${e.message}',
         );
