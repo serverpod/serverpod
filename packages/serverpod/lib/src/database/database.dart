@@ -205,11 +205,11 @@ class Database {
     );
   }
 
-  /// Executes a single SQL query. A [List] of rows represented of a [Map] with
-  /// the table name and value is another [Map] with the keys as column names and
-  /// the value as the contents of the column.
+  /// Executes a single SQL query.
+  /// Returns an [Iterable] with the result rows represented by a [Map] with
+  /// the column name as key and column row content as value.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<List<Map<String, Map<String, dynamic>>>> unsafeQueryMappedResults(
+  Future<Iterable<Map<String, dynamic>>> unsafeQueryMappedResults(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
