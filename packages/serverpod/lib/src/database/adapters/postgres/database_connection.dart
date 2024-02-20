@@ -5,6 +5,7 @@ import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
+import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/src/database/adapters/postgres/database_result.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
@@ -163,8 +164,9 @@ class DatabaseConnection {
     var result = await insert<T>(session, [row], transaction: transaction);
 
     if (result.length != 1) {
-      throw PostgreSQLException(
-          'Failed to insert row, updated number of rows is ${result.length} != 1');
+      throw DatabaseInsertRowException(
+        'Failed to insert row, updated number of rows is ${result.length} != 1',
+      );
     }
 
     return result.first;
@@ -229,7 +231,9 @@ class DatabaseConnection {
     );
 
     if (updated.isEmpty) {
-      throw PostgreSQLException('Failed to update row, no rows updated');
+      throw DatabaseUpdateRowException(
+        'Failed to update row, no rows updated',
+      );
     }
 
     return updated.first;
@@ -268,7 +272,9 @@ class DatabaseConnection {
     );
 
     if (result.isEmpty) {
-      throw PostgreSQLException('Failed to delete row, no rows deleted.');
+      throw DatabaseDeleteRowException(
+        'Failed to delete row, no rows deleted.',
+      );
     }
 
     return result.first;
@@ -348,6 +354,9 @@ class DatabaseConnection {
       return result;
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
+      if (exception is PostgreSQLException) {
+        throw DatabaseException(exception.message ?? '$exception');
+      }
       rethrow;
     }
   }
@@ -375,6 +384,9 @@ class DatabaseConnection {
       return result;
     } catch (exception, trace) {
       _logQuery(session, query, startTime, exception: exception, trace: trace);
+      if (exception is PostgreSQLException) {
+        throw DatabaseException(exception.message ?? '$exception');
+      }
       rethrow;
     }
   }
