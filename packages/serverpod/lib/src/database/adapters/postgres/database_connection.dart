@@ -353,10 +353,21 @@ class DatabaseConnection {
       );
       return result;
     } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
       if (exception is PostgreSQLException) {
-        throw DatabaseException(exception.message ?? '$exception');
+        var serverpodException = DatabaseException(
+          exception.message ?? '$exception',
+        );
+        _logQuery(
+          session,
+          query,
+          startTime,
+          exception: serverpodException,
+          trace: trace,
+        );
+        throw serverpodException;
       }
+
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
@@ -383,10 +394,20 @@ class DatabaseConnection {
       _logQuery(session, query, startTime);
       return result;
     } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
       if (exception is PostgreSQLException) {
-        throw DatabaseException(exception.message ?? '$exception');
+        var serverpodException = DatabaseException(
+          exception.message ?? '$exception',
+        );
+        _logQuery(
+          session,
+          query,
+          startTime,
+          exception: serverpodException,
+          trace: trace,
+        );
+        throw serverpodException;
       }
+      _logQuery(session, query, startTime, exception: exception, trace: trace);
       rethrow;
     }
   }
