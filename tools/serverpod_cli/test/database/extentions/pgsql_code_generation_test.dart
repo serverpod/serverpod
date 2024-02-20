@@ -2,6 +2,8 @@ import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
 import 'package:serverpod_cli/src/test_util/builders/class_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/database/database_definition_builder.dart';
+import 'package:serverpod_cli/src/test_util/builders/database/table_definition_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -12,7 +14,7 @@ void main() {
     var citizen = 'citizen';
     var company = 'company';
     var town = 'town';
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(citizen.sentenceCase)
           .withFileName(citizen)
@@ -36,16 +38,18 @@ void main() {
           .build()
     ];
 
-    var databaseDefinition = createDatabaseDefinitionFromEntities(entities);
-    databaseDefinition.priority = 1;
+    var databaseDefinition = createDatabaseDefinitionFromModels(
+      models,
+      'example',
+      [],
+    );
 
     test('then all definitions are created.', () {
       expect(databaseDefinition.tables, hasLength(3));
     });
 
     group('then pgsql file for migration', () {
-      var pgsqlFile =
-          databaseDefinition.toPgSql(version: '1.0,0', module: 'test_module');
+      var pgsqlFile = databaseDefinition.toPgSql(installedModules: []);
       test(
           'has foreign key creation for citizen after company table is created.',
           () {
@@ -99,4 +103,21 @@ ALTER TABLE ONLY "town"
             ? 'Unexpected number of tables were created'
             : false);
   });
+
+  test(
+      'Given a database definition with only an un-managed table then no sql definition for that table is created.',
+      () {
+    var databaseDefinition = DatabaseDefinitionBuilder()
+        .withTable(TableDefinitionBuilder()
+            .withName('example_table')
+            .withManaged(false)
+            .build())
+        .build();
+
+    var pgsql = databaseDefinition.toPgSql(installedModules: []);
+
+    expect(pgsql, isNot(contains('CREATE TABLE "example_table"')));
+  });
+
+  test('Given a database definition ', () {});
 }

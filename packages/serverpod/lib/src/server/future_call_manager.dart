@@ -53,7 +53,7 @@ class FutureCallManager {
     );
 
     var session = await _server.serverpod.createSession(enableLogging: false);
-    await session.db.insert(entry);
+    await FutureCallEntry.db.insertRow(session, entry);
     await session.close();
   }
 
@@ -62,7 +62,7 @@ class FutureCallManager {
   Future<void> cancelFutureCall(String identifier) async {
     var session = await _server.serverpod.createSession(enableLogging: false);
 
-    await FutureCallEntry.delete(
+    await FutureCallEntry.db.deleteWhere(
       session,
       where: (t) => t.identifier.equals(identifier),
     );
@@ -107,12 +107,27 @@ class FutureCallManager {
       var tempSession = await _server.serverpod.createSession(
         enableLogging: false,
       );
-      var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
-        where: (FutureCallEntry.t.time <= now),
-      );
+
+      var rows = await tempSession.db
+          .transaction<List<FutureCallEntry>>((transaction) async {
+        var activeFutureCalls = await FutureCallEntry.db.find(
+          tempSession,
+          where: (t) => t.time <= now,
+          transaction: transaction,
+        );
+
+        await FutureCallEntry.db.deleteWhere(
+          tempSession,
+          where: (t) => t.time <= now,
+          transaction: transaction,
+        );
+
+        return activeFutureCalls;
+      });
+
       await tempSession.close();
 
-      for (var entry in rows.cast<FutureCallEntry>()) {
+      for (var entry in rows) {
         var call = _futureCalls[entry.name];
         if (call == null) {
           continue;

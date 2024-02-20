@@ -22,6 +22,11 @@ class StringValidators {
     return false;
   }
 
+  static bool isValidEnumName(String name) {
+    // alpha numeric and underscore but cannot start with a number.
+    return RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$').hasMatch(name);
+  }
+
   static bool isInvalidFieldValueInfoSeverity(String name) {
     if (isValidFieldName(name)) return false;
 

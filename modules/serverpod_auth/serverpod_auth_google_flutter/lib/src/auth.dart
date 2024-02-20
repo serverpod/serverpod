@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'google/sign_in_with_google.dart';
 
@@ -76,7 +76,8 @@ Future<UserInfo?> signInWithGoogle(
     if (!serverResponse.success) {
       if (kDebugMode) {
         print(
-          'serverpod_auth_google: Failed to authenticate with Serverpod backend. Aborting.',
+          'serverpod_auth_google: Failed to authenticate with Serverpod backend: '
+          '${serverResponse.failReason ?? 'reason unknown'}. Aborting.',
         );
       }
       return null;

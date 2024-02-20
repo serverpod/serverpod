@@ -3,7 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 // const _configFilePath = 'config/google_client_secret.json';
 
@@ -22,9 +22,10 @@ class EmailEndpoint extends Endpoint {
     session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
 
     // Fetch password entry
-    var entry = await session.db.findSingleRow<EmailAuth>(
-      where: EmailAuth.t.email.equals(email),
-    );
+    var entry = await EmailAuth.db.findFirstRow(session, where: (t) {
+      return t.email.equals(email);
+    });
+
     if (entry == null) {
       return AuthenticationResponse(
         success: false,
@@ -62,6 +63,11 @@ class EmailEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.invalidCredentials,
       );
+    } else if (userInfo.blocked) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.blocked,
+      );
     }
 
     session.log(' - user found', level: LogLevel.debug);
@@ -90,11 +96,11 @@ class EmailEndpoint extends Endpoint {
       time: DateTime.now(),
       ipAddress: session.httpRequest.remoteIpAddress,
     );
-    await EmailFailedSignIn.insert(session, failedSignIn);
+    await EmailFailedSignIn.db.insertRow(session, failedSignIn);
   }
 
   Future<bool> _hasTooManyFailedSignIns(Session session, String email) async {
-    var numFailedSignIns = await EmailFailedSignIn.count(
+    var numFailedSignIns = await EmailFailedSignIn.db.count(
       session,
       where: (t) =>
           t.email.equals(email) &

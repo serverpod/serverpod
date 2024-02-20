@@ -177,12 +177,12 @@ class FacebookEndpoint extends Endpoint {
       expiresAt: longLivedAccessTokenExpiresAt,
       token: longLivedAccessToken,
     );
-    if (await FacebookLongLivedToken.findSingleRow(session,
+    if (await FacebookLongLivedToken.db.findFirstRow(session,
             where: (t) => t.userId.equals(userInfo.id!)) ==
         null) {
-      await FacebookLongLivedToken.insert(session, tokenRecord);
+      await FacebookLongLivedToken.db.insertRow(session, tokenRecord);
     } else {
-      await FacebookLongLivedToken.update(session, tokenRecord);
+      await FacebookLongLivedToken.db.updateRow(session, tokenRecord);
     }
 
     var authKey = await session.auth.signInUser(userInfo.id!, _authMethod);

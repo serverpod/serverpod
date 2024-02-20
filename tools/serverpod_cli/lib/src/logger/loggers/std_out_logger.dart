@@ -16,7 +16,7 @@ class StdOutLogger extends Logger {
 
   Progress? trackedAnimationInProgress;
 
-  StdOutLogger(LogLevel logLevel) : super(logLevel);
+  StdOutLogger(super.logLevel);
 
   @override
   int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
@@ -250,7 +250,7 @@ class StdOutLogger extends Logger {
 /// The operates in the same way but filters out emojis not compatible with
 /// Windows.
 class WindowsStdOutLogger extends StdOutLogger {
-  WindowsStdOutLogger(LogLevel logLevel) : super(logLevel);
+  WindowsStdOutLogger(super.logLevel);
 
   @override
   void _write(

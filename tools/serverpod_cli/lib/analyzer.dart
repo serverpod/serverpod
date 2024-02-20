@@ -3,22 +3,20 @@ library analyzer;
 
 export 'src/analyzer/protocol_definition.dart' show ProtocolDefinition;
 export 'src/config/config.dart' show GeneratorConfig, PackageType;
-export 'src/analyzer/entities/entity_analyzer.dart'
-    show SerializableEntityAnalyzer;
+export 'src/analyzer/models/model_analyzer.dart' show SerializableModelAnalyzer;
 export 'src/analyzer/dart/endpoints_analyzer.dart' show EndpointsAnalyzer;
 export 'src/analyzer/code_analysis_collector.dart' show CodeAnalysisCollector;
 export 'package:source_span/source_span.dart'
     show SourceSpanException; // The collector uses them.
-export 'src/analyzer/entities/definitions.dart'
+export 'src/analyzer/models/definitions.dart'
     show
-        SerializableEntityDefinition,
+        SerializableModelDefinition,
         ClassDefinition,
-        SerializableEntityFieldDefinition,
-        EntityFieldScopeDefinition,
-        SerializableEntityIndexDefinition,
+        SerializableModelFieldDefinition,
+        ModelFieldScopeDefinition,
+        SerializableModelIndexDefinition,
         EnumDefinition;
 export 'src/database/migration.dart';
 export 'src/generator/types.dart' show TypeDefinition;
-export 'src/generator/generator_database_definition.dart';
 export 'src/migrations/generator.dart';
 export 'src/database/extensions.dart';

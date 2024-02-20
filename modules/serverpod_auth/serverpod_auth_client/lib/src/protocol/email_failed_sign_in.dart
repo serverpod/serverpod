@@ -4,19 +4,28 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
-class EmailFailedSignIn extends _i1.SerializableEntity {
-  EmailFailedSignIn({
+abstract class EmailFailedSignIn extends _i1.SerializableEntity {
+  EmailFailedSignIn._({
     this.id,
     required this.email,
     required this.time,
     required this.ipAddress,
   });
+
+  factory EmailFailedSignIn({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) = _EmailFailedSignInImpl;
 
   factory EmailFailedSignIn.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -47,13 +56,50 @@ class EmailFailedSignIn extends _i1.SerializableEntity {
   /// The IP address of the sign in attempt.
   String ipAddress;
 
+  EmailFailedSignIn copyWith({
+    int? id,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'email': email,
-      'time': time,
+      'time': time.toJson(),
       'ipAddress': ipAddress,
     };
+  }
+}
+
+class _Undefined {}
+
+class _EmailFailedSignInImpl extends EmailFailedSignIn {
+  _EmailFailedSignInImpl({
+    int? id,
+    required String email,
+    required DateTime time,
+    required String ipAddress,
+  }) : super._(
+          id: id,
+          email: email,
+          time: time,
+          ipAddress: ipAddress,
+        );
+
+  @override
+  EmailFailedSignIn copyWith({
+    Object? id = _Undefined,
+    String? email,
+    DateTime? time,
+    String? ipAddress,
+  }) {
+    return EmailFailedSignIn(
+      id: id is int? ? id : this.id,
+      email: email ?? this.email,
+      time: time ?? this.time,
+      ipAddress: ipAddress ?? this.ipAddress,
+    );
   }
 }

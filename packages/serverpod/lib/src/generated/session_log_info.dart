@@ -4,19 +4,29 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Compounded information about a session log.
-class SessionLogInfo extends _i1.SerializableEntity {
-  SessionLogInfo({
+abstract class SessionLogInfo extends _i1.SerializableEntity {
+  SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
     required this.logs,
     required this.messages,
   });
+
+  factory SessionLogInfo({
+    required _i2.SessionLogEntry sessionLogEntry,
+    required List<_i2.QueryLogEntry> queries,
+    required List<_i2.LogEntry> logs,
+    required List<_i2.MessageLogEntry> messages,
+  }) = _SessionLogInfoImpl;
 
   factory SessionLogInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -46,23 +56,58 @@ class SessionLogInfo extends _i1.SerializableEntity {
   /// List of messages sent during the session.
   List<_i2.MessageLogEntry> messages;
 
+  SessionLogInfo copyWith({
+    _i2.SessionLogEntry? sessionLogEntry,
+    List<_i2.QueryLogEntry>? queries,
+    List<_i2.LogEntry>? logs,
+    List<_i2.MessageLogEntry>? messages,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'sessionLogEntry': sessionLogEntry,
-      'queries': queries,
-      'logs': logs,
-      'messages': messages,
+      'sessionLogEntry': sessionLogEntry.toJson(),
+      'queries': queries.toJson(valueToJson: (v) => v.toJson()),
+      'logs': logs.toJson(valueToJson: (v) => v.toJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'sessionLogEntry': sessionLogEntry,
-      'queries': queries,
-      'logs': logs,
-      'messages': messages,
+      'sessionLogEntry': sessionLogEntry.allToJson(),
+      'queries': queries.toJson(valueToJson: (v) => v.allToJson()),
+      'logs': logs.toJson(valueToJson: (v) => v.allToJson()),
+      'messages': messages.toJson(valueToJson: (v) => v.allToJson()),
     };
+  }
+}
+
+class _SessionLogInfoImpl extends SessionLogInfo {
+  _SessionLogInfoImpl({
+    required _i2.SessionLogEntry sessionLogEntry,
+    required List<_i2.QueryLogEntry> queries,
+    required List<_i2.LogEntry> logs,
+    required List<_i2.MessageLogEntry> messages,
+  }) : super._(
+          sessionLogEntry: sessionLogEntry,
+          queries: queries,
+          logs: logs,
+          messages: messages,
+        );
+
+  @override
+  SessionLogInfo copyWith({
+    _i2.SessionLogEntry? sessionLogEntry,
+    List<_i2.QueryLogEntry>? queries,
+    List<_i2.LogEntry>? logs,
+    List<_i2.MessageLogEntry>? messages,
+  }) {
+    return SessionLogInfo(
+      sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),
+      queries: queries ?? this.queries.clone(),
+      logs: logs ?? this.logs.clone(),
+      messages: messages ?? this.messages.clone(),
+    );
   }
 }

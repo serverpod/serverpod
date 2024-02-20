@@ -4,11 +4,22 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../../../packages/serverpod
+  serverpod: 1.2.3
 
 dev_dependencies:
-  lints: ^2.0.1
+  lints: ^3.0.0
+
+dependency_overrides: 
+  serverpod: 
+    path: ../../../packages/serverpod 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
+  serverpod_service_client: 
+    path: ../../../packages/serverpod_service_client 
+  serverpod_shared: 
+    path: ../../../packages/serverpod_shared 

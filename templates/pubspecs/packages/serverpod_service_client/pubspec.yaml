@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_service_client
 version: VERSION
@@ -9,13 +8,19 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  serverpod_client: VERSION
   meta: ^1.8.0
 
 dev_dependencies:
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_lints: VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization

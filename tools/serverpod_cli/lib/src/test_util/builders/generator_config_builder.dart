@@ -1,5 +1,9 @@
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+
+const _defaultName = 'example';
+const _defaultType = PackageType.server;
 
 class GeneratorConfigBuilder {
   String _name;
@@ -11,17 +15,34 @@ class GeneratorConfigBuilder {
   List<String> _relativeDartClientPackagePathParts;
   List<ModuleConfig> _modules;
   List<TypeDefinition> _extraClasses;
+  List<ServerpodFeature> _enabledFeatures;
 
   GeneratorConfigBuilder()
-      : _name = 'example',
-        _type = PackageType.server,
+      : _name = _defaultName,
+        _type = _defaultType,
         _serverPackage = 'example_server',
         _dartClientPackage = 'example_client',
         _dartClientDependsOnServiceClient = false,
         _serverPackageDirectoryPathParts = [],
         _relativeDartClientPackagePathParts = ['..', 'example_client'],
-        _modules = [],
-        _extraClasses = [];
+        _modules = [
+          ModuleConfig(
+            type: PackageType.internal,
+            name: 'serverpod',
+            nickname: 'serverpod',
+            migrationVersions: ['0000000000000000000'],
+            serverPackageDirectoryPathParts: [],
+          ),
+          ModuleConfig(
+            type: _defaultType,
+            name: _defaultName,
+            nickname: _defaultName,
+            migrationVersions: ['0000000000000000000'],
+            serverPackageDirectoryPathParts: [],
+          ),
+        ],
+        _extraClasses = [],
+        _enabledFeatures = [ServerpodFeature.database];
 
   GeneratorConfigBuilder withName(String name) {
     _name = name;
@@ -57,8 +78,11 @@ class GeneratorConfigBuilder {
   GeneratorConfigBuilder withAuthModule() {
     _modules.add(
       ModuleConfig(
+        type: PackageType.module,
         name: 'serverpod_auth',
         nickname: 'auth',
+        migrationVersions: ['0000000000000000000'],
+        serverPackageDirectoryPathParts: [],
       ),
     );
     return this;
@@ -74,6 +98,11 @@ class GeneratorConfigBuilder {
     return this;
   }
 
+  GeneratorConfigBuilder withEnabledFeatures(List<ServerpodFeature> features) {
+    _enabledFeatures = features;
+    return this;
+  }
+
   GeneratorConfig build() {
     return GeneratorConfig(
       name: _name,
@@ -85,6 +114,7 @@ class GeneratorConfigBuilder {
       relativeDartClientPackagePathParts: _relativeDartClientPackagePathParts,
       modules: _modules,
       extraClasses: _extraClasses,
+      enabledFeatures: _enabledFeatures,
     );
   }
 }

@@ -1,0 +1,4 @@
+class: LongImplicitIdField
+table: long_implicit_id_field
+fields:
+  name: String

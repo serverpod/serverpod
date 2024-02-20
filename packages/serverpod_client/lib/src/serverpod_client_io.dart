@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'auth_key_manager.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
@@ -15,30 +15,30 @@ import 'serverpod_client_shared_private.dart';
 /// This is the concrete implementation using the io library
 /// (for Flutter native apps).
 abstract class ServerpodClient extends ServerpodClientShared {
-  late HttpClient _httpClient;
+  final _dio = Dio();
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
-    String host,
-    SerializationManager serializationManager, {
-    dynamic context,
-    AuthenticationKeyManager? authenticationKeyManager,
-    bool logFailedCalls = true,
-  }) : super(
-          host,
-          serializationManager,
-          authenticationKeyManager: authenticationKeyManager,
-          logFailedCalls: logFailedCalls,
-        ) {
-    assert(context == null || context is SecurityContext);
+    super.host,
+    super.serializationManager, {
+    dynamic securityContext,
+    super.authenticationKeyManager,
+    super.logFailedCalls,
+    super.streamingConnectionTimeout,
+    super.connectionTimeout,
+  }) {
+    assert(securityContext == null || securityContext is SecurityContext,
+        'Context must be of type SecurityContext');
 
     // Setup client
-    _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = const Duration(seconds: 20);
-    // TODO: Generate working certificates
-    _httpClient.badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
+    _dio.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () {
+        var httpClient = HttpClient(context: securityContext);
+
+        // TODO: Generate working certificates
+        httpClient.badCertificateCallback =
+            ((X509Certificate cert, String host, int port) {
 //      print('Failed to verify server certificate');
 //      print('pem: ${cert.pem}');
 //      print('subject: ${cert.subject}');
@@ -48,8 +48,12 @@ abstract class ServerpodClient extends ServerpodClientShared {
 //      print('host: $host');
 //      print('port: $port');
 //      return false;
-      return true;
-    });
+          return true;
+        });
+        return httpClient;
+      },
+    );
+    _dio.options.connectTimeout = connectionTimeout;
   }
 
   Future<void> _initialize() async {
@@ -65,24 +69,26 @@ abstract class ServerpodClient extends ServerpodClientShared {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
 
-      var url = Uri.parse('$host$endpoint');
+      var response = await _dio
+          .post(
+            '$host$endpoint',
+            data: body,
+            options: Options(
+              contentType: 'application/json; charset=utf-8',
+              headers: {Headers.contentLengthHeader: body.length},
+              // Don't parse the JSON response, allow Serverpod to do it
+              responseType: ResponseType.plain,
+            ),
+          )
+          .timeout(connectionTimeout);
 
-      var request = await _httpClient.postUrl(url);
-      request.headers.contentType =
-          ContentType('application', 'json', charset: 'utf-8');
-      request.contentLength = utf8.encode(body).length;
-      request.write(body);
-
-      await request.flush();
-
-      var response = await request.close(); // done instead of close() ?
-      var data = await _readResponse(response);
+      var data = response.data.toString();
 
       if (response.statusCode != HttpStatus.ok) {
         throw getExceptionFrom(
           data: data,
           serializationManager: serializationManager,
-          statusCode: response.statusCode,
+          statusCode: response.statusCode ?? HttpStatus.badRequest,
         );
       }
 
@@ -101,21 +107,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
     }
   }
 
-  Future<String> _readResponse(HttpClientResponse response) {
-    var completer = Completer<String>();
-    var contents = StringBuffer();
-    response.transform(const Utf8Decoder()).listen((String data) {
-      contents.write(data);
-    }, onDone: () //
-        {
-      return completer.complete(contents.toString());
-    });
-    return completer.future;
-  }
-
   @override
   void close() {
-    _httpClient.close();
+    _dio.close();
     super.close();
   }
 }

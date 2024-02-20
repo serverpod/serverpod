@@ -1,0 +1,5 @@
+class: UserNoteCollectionWithALongName
+table: user_note_collection_with_a_long_name
+fields:
+  name: String
+  notes: List<UserNoteWithALongName>?, relation

@@ -68,7 +68,7 @@ class DatabaseBulkData {
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
-      data = await database.query(query);
+      data = await database.unsafeQuery(query);
     } catch (e) {
       throw BulkDataException(
         message: 'Failed to query database ($e).',
@@ -98,7 +98,7 @@ class DatabaseBulkData {
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
         'WHERE relname = \'$table\' AND nspname = \'public\'';
 
-    var result = await database.query(query);
+    var result = await database.unsafeQuery(query);
 
     if (result.isEmpty) {
       return 0;
@@ -120,7 +120,7 @@ class DatabaseBulkData {
       int numAffectedRows = 0;
 
       for (var query in queries) {
-        result = await database.query(query, transaction: transaction);
+        result = await database.unsafeQuery(query, transaction: transaction);
         numAffectedRows += result.affectedRowCount;
       }
       result!;
@@ -131,7 +131,6 @@ class DatabaseBulkData {
         headers: result.columnDescriptions
             .map((e) => BulkQueryColumnDescription(
                   name: e.columnName,
-                  table: e.tableName,
                 ))
             .toList(),
         data: SerializationManager.encode(result),
@@ -147,11 +146,11 @@ class DatabaseBulkData {
     Database database,
     String table,
   ) async {
-    var databaseDefinition =
-        Serverpod.instance!.serializationManager.getTargetDatabaseDefinition();
+    var tableDefinitions =
+        Serverpod.instance.serializationManager.getTargetTableDefinitions();
 
     var tableDefinition =
-        databaseDefinition.tables.firstWhereOrNull((e) => e.name == table);
+        tableDefinitions.firstWhereOrNull((e) => e.name == table);
 
     return tableDefinition;
   }

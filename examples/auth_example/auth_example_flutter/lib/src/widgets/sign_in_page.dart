@@ -12,7 +12,7 @@ const _googleServerClientId = '<Your Web app Client ID from the Cloud console>';
 
 /// Sign in dialog with the option of signing in with email or Google.
 class SignInPage extends StatelessWidget {
-  const SignInPage({Key? key}) : super(key: key);
+  const SignInPage({super.key});
 
   @override
   Widget build(BuildContext context) {

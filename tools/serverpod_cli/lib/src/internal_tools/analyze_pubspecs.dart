@@ -68,6 +68,7 @@ Future<void> _checkLatestVersion(
         }
       }
     }
+    pub.close();
   } catch (e) {
     log.error('Version check failed.');
     log.error(e.toString());

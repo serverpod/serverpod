@@ -1,0 +1,29 @@
+# TEMPLATE
+
+publish_to: none
+
+name: serverpod_test_module_server
+version: 1.0.0
+description: A simple Serverpod module.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod: VERSION
+
+dev_dependencies:
+  lints: ^3.0.0
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

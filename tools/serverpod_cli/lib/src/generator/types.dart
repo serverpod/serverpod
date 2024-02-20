@@ -1,14 +1,18 @@
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:source_span/source_span.dart';
-import 'package:path/path.dart' as p;
 
 import '../config/config.dart';
+
+const _moduleRef = 'module:';
 
 /// Contains information about the type of fields, arguments and return values.
 class TypeDefinition {
@@ -28,8 +32,7 @@ class TypeDefinition {
   /// True if this type references a custom class.
   final bool customClass;
 
-  /// True if this type references a enum.
-  bool isEnum;
+  EnumSerialization? serializeEnum;
 
   TypeDefinition({
     required this.className,
@@ -38,10 +41,33 @@ class TypeDefinition {
     this.url,
     this.dartType,
     this.customClass = false,
-    this.isEnum = false,
+    this.serializeEnum,
   });
 
-  bool get isList => className == 'List';
+  bool get isSerializedValue => autoSerializedTypes.contains(className);
+
+  bool get isSerializedByExtension =>
+      extensionSerializedTypes.contains(className);
+
+  bool get isListType => className == 'List';
+
+  bool get isMapType => className == 'Map';
+
+  bool get isIdType => className == 'int';
+
+  bool get isModuleType =>
+      url == 'serverpod' || (url?.startsWith(_moduleRef) ?? false);
+
+  bool get isEnumType => serializeEnum != null;
+
+  String? get moduleAlias {
+    if (url == defaultModuleAlias) return url;
+    if (url == 'serverpod') return url;
+    if (url?.startsWith(_moduleRef) ?? false) {
+      return url?.substring(_moduleRef.length);
+    }
+    return null;
+  }
 
   /// Creates an [TypeDefinition] from [mixed] where the [url]
   /// and [className] is separated by ':'.
@@ -67,6 +93,8 @@ class TypeDefinition {
   }
 
   /// Creates an [TypeDefinition] from a given [DartType].
+  /// throws [FromDartTypeClassNameException] if the class name could not be
+  /// determined.
   factory TypeDefinition.fromDartType(DartType type) {
     var generics = (type is ParameterizedType)
         ? type.typeArguments.map((e) => TypeDefinition.fromDartType(e)).toList()
@@ -74,7 +102,11 @@ class TypeDefinition {
     var url = type.element?.librarySource?.uri.toString();
     var nullable = type.nullabilitySuffix == NullabilitySuffix.question;
 
-    var className = type is! VoidType ? type.element!.displayName : 'void';
+    var className = type is! VoidType ? type.element?.displayName : 'void';
+
+    if (className == null) {
+      throw FromDartTypeClassNameException(type);
+    }
 
     return TypeDefinition(
       className: className,
@@ -97,7 +129,7 @@ class TypeDefinition {
         customClass: customClass,
         dartType: dartType,
         generics: generics,
-        isEnum: isEnum,
+        serializeEnum: serializeEnum,
       );
 
   /// Generate a [TypeReference] from this definition.
@@ -106,12 +138,16 @@ class TypeDefinition {
     bool? nullable,
     List<String> subDirParts = const [],
     required GeneratorConfig config,
+    String? typeSuffix,
   }) {
     return TypeReference(
       (t) {
-        if (url?.startsWith('module:') ?? false) {
+        if (url?.startsWith('${_moduleRef}serverpod') ?? false) {
+          // module:serverpod reference
+          t.url = serverpodUrl(serverCode);
+        } else if (url?.startsWith(_moduleRef) ?? false) {
           // module:nickname: reference
-          var moduleName = url?.substring(7);
+          var moduleName = url?.substring(_moduleRef.length);
           var module = config.modules.cast<ModuleConfig?>().firstWhere(
                 (m) => m?.nickname == moduleName,
                 orElse: () => null,
@@ -120,9 +156,9 @@ class TypeDefinition {
             throw FormatException(
                 'Module with nickname $moduleName not found in config!');
           }
-          t.url = 'package:'
-              '${serverCode ? module.serverPackage : module.dartClientPackage}'
-              '/module.dart';
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
             (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
@@ -133,7 +169,7 @@ class TypeDefinition {
           t.url = 'package:'
               '${serverCode ? config.serverPackage : config.dartClientPackage}'
               '/${split[1]}';
-        } else if (url == 'protocol') {
+        } else if (url == defaultModuleAlias) {
           // protocol: reference
           t.url = p.posix
               .joinAll([...subDirParts.map((e) => '..'), 'protocol.dart']);
@@ -149,10 +185,10 @@ class TypeDefinition {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
               (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
-              ? 'package:'
-                  '${serverCode ? module.serverPackage : module.dartClientPackage}'
-                  '/module.dart'
+              ? 'package:$packageName/$packageName.dart'
               : serverCode
                   ? url
                   : url?.replaceFirst('package:${module.serverPackage}',
@@ -161,7 +197,7 @@ class TypeDefinition {
           t.url = url;
         }
         t.isNullable = nullable ?? this.nullable;
-        t.symbol = className;
+        t.symbol = typeSuffix != null ? '$className$typeSuffix' : className;
         t.types.addAll(generics.map((e) => e.reference(
               serverCode,
               subDirParts: subDirParts,
@@ -174,10 +210,19 @@ class TypeDefinition {
   /// Get the qgsql type that represents this [TypeDefinition] in the database.
   String get databaseType {
     // TODO: add all suported types here
-    if (className == 'String') return 'text';
-    if (className == 'bool') return 'boolean';
-    if (className == 'int' || isEnum) return 'integer';
+    var enumSerialization = serializeEnum;
+    if (enumSerialization != null && isEnumType) {
+      switch (enumSerialization) {
+        case EnumSerialization.byName:
+          return 'text';
+        case EnumSerialization.byIndex:
+          return 'integer';
+      }
+    }
+    if (className == 'int') return 'integer';
     if (className == 'double') return 'double precision';
+    if (className == 'bool') return 'boolean';
+    if (className == 'String') return 'text';
     if (className == 'DateTime') return 'timestamp without time zone';
     if (className == 'ByteData') return 'bytea';
     if (className == 'Duration') return 'bigint';
@@ -195,8 +240,8 @@ class TypeDefinition {
   /// Get the [Column] extending class name representing this [TypeDefinition].
   String get columnType {
     // TODO: add all suported types here
+    if (isEnumType) return 'ColumnEnum';
     if (className == 'int') return 'ColumnInt';
-    if (isEnum) return 'ColumnEnum';
     if (className == 'double') return 'ColumnDouble';
     if (className == 'bool') return 'ColumnBool';
     if (className == 'String') return 'ColumnString';
@@ -317,6 +362,12 @@ class TypeDefinition {
         ...generics[1].generateDeserialization(serverCode, config: config),
       ];
     } else if (customClass) {
+      // This is the only place the customClass bool is used.
+      // It could be moved as we already know that we are working on custom classes
+      // when we generate the deserialization.
+      // But the additional functionality we get here is that we generate resolves for lists and maps
+      // if the custom class is used as a generic type. The day we create a more generic way to resolve generics
+      // in lists, maps, etc the customClass bool can be removed which will simplify the code.
       return [
         MapEntry(
             nullable
@@ -340,7 +391,7 @@ class TypeDefinition {
   /// protocol: prefix in types. Whenever no url is set and user specified a
   /// class/enum with the same symbol name it defaults to the protocol: prefix.
   TypeDefinition applyProtocolReferences(
-      List<SerializableEntityDefinition> classDefinitions) {
+      List<SerializableModelDefinition> classDefinitions) {
     return TypeDefinition(
         className: className,
         nullable: nullable,
@@ -349,10 +400,10 @@ class TypeDefinition {
         generics: generics
             .map((e) => e.applyProtocolReferences(classDefinitions))
             .toList(),
-        isEnum: isEnum,
+        serializeEnum: serializeEnum,
         url:
             url == null && classDefinitions.any((c) => c.className == className)
-                ? 'protocol'
+                ? defaultModuleAlias
                 : url);
   }
 
@@ -365,81 +416,62 @@ class TypeDefinition {
   }
 }
 
-/// Analyze the type at the start of [input].
-/// [input] must not contain spaces.
-/// Returns a [_TypeResult] containing the type,
-/// as well as the position of the last parsed character.
-/// So when calling with "List<List<String?>?>,database",
-/// the position will point at the ','.
+/// Parses a type from a string and deals with whitespace and generics.
 /// If [analyzingExtraClasses] is true, the root element might be marked as
 /// [TypeDefinition.customClass].
-TypeParseResult parseAndAnalyzeType(
+TypeDefinition parseType(
   String input, {
-  bool analyzingExtraClasses = false,
-  required SourceSpan sourceSpan,
+  required List<TypeDefinition>? extraClasses,
 }) {
-  String classname = '';
-  for (var i = 0; i < input.length; i++) {
-    switch (input[i]) {
-      case '<':
-        var generics = <TypeDefinition>[];
-        while (true) {
-          i++;
-          var result = parseAndAnalyzeType(
-            input.substring(i),
-            sourceSpan: sourceSpan.subspan(i),
-          );
-          generics.add(result.type);
-          i += result.parsedPosition;
-          if (input[i] == '>') {
-            var nullable = (i + 1 < input.length) && input[i + 1] == '?';
-            return TypeParseResult(
-                i + 1,
-                TypeDefinition.mixedUrlAndClassName(
-                  mixed: classname,
-                  nullable: nullable,
-                  generics: generics,
-                ));
-          } else if (i >= input.length - 1) {
-            throw SourceSpanException('Invalid Type', sourceSpan);
-          }
-        }
-      case '>':
-      case ',':
-        return TypeParseResult(
-            i,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname,
-                nullable: false,
-                customClass: analyzingExtraClasses));
-      case '?':
-        return TypeParseResult(
-            i + 1,
-            TypeDefinition.mixedUrlAndClassName(
-                mixed: classname,
-                nullable: true,
-                customClass: analyzingExtraClasses));
-      default:
-        classname += input[i];
-        break;
-    }
+  var trimmedInput = input.trim();
+
+  var start = trimmedInput.indexOf('<');
+  var end = trimmedInput.lastIndexOf('>');
+
+  var generics = <TypeDefinition>[];
+  if (start != -1 && end != -1) {
+    var internalTypes = trimmedInput.substring(start + 1, end);
+
+    var genericsInputs = splitIgnoringBrackets(internalTypes);
+
+    generics = genericsInputs
+        .map((generic) => parseType(generic, extraClasses: extraClasses))
+        .toList();
   }
-  return TypeParseResult(
-      input.length - 1,
-      TypeDefinition.mixedUrlAndClassName(
-          mixed: classname,
-          nullable: false,
-          customClass: analyzingExtraClasses));
+
+  bool isNullable = trimmedInput[trimmedInput.length - 1] == '?';
+  int terminatedAt = _findLastClassToken(start, trimmedInput, isNullable);
+
+  String className = trimmedInput.substring(0, terminatedAt).trim();
+
+  var extraClass = extraClasses
+      ?.cast<TypeDefinition?>()
+      .firstWhere((c) => c?.className == className, orElse: () => null);
+
+  if (extraClass != null) return extraClass;
+
+  return TypeDefinition.mixedUrlAndClassName(
+    mixed: className,
+    nullable: isNullable,
+    generics: generics,
+    customClass: extraClasses == null,
+  );
 }
 
-/// The result when running [parseAndAnalyzeType].
-class TypeParseResult {
-  /// The position of the next unparsed character.
-  final int parsedPosition;
+int _findLastClassToken(int start, String input, bool isNullable) {
+  if (start != -1) return start;
+  if (isNullable) return input.length - 1;
 
-  /// The type that was parsed.
-  final TypeDefinition type;
+  return input.length;
+}
 
-  /// Create a new [TypeParseResult].
-  const TypeParseResult(this.parsedPosition, this.type);
+class FromDartTypeClassNameException implements Exception {
+  final DartType type;
+
+  FromDartTypeClassNameException(this.type);
+
+  @override
+  String toString() {
+    return 'Failed to determine class name from type $type';
+  }
 }

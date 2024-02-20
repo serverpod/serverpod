@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod
 version: VERSION
@@ -9,35 +8,49 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 documentation: https://docs.serverpod.dev
 
+topics:
+  - backend
+  - server
+  - network
+  - rest
+  - database
+
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   args: ^2.4.0
   collection: ^1.17.1
   crypto: ^3.0.2
-  http: ^0.13.5
+  dio: ^5.4.0
   meta: ^1.8.0
   mustache_template: ^2.0.0
   path: ^1.8.2
   postgres: ^2.6.1
-  redis: ^3.1.0
+  redis: ^4.0.0
   retry: ^3.1.1
   synchronized: ^3.1.0
   postgres_pool: ^2.1.6
   system_resources: ^1.6.0
-  vm_service: ^11.4.0
+  vm_service: ">=13.0.0 <15.0.0"
   yaml: ^3.1.1
-  serverpod_shared: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_shared
-  serverpod_serialization: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_serialization
-  serverpod_service_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_service_client
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  serverpod_shared: VERSION
+  serverpod_serialization: VERSION
+  serverpod_service_client: VERSION
+  serverpod_client: VERSION
 
 dev_dependencies:
   test: ^1.24.2
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_lints: VERSION
+
+dependency_overrides:
+  serverpod_shared:
+    path: ../serverpod_shared
+  serverpod_serialization:
+    path: ../serverpod_serialization
+  serverpod_service_client:
+    path: ../serverpod_service_client
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints

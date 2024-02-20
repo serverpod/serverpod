@@ -5,17 +5,17 @@ void copyDirectory(Directory source, Directory destination) {
     destination.createSync(recursive: true);
   }
 
-  source.listSync(recursive: true).forEach((entity) {
-    if (entity is Directory) {
+  source.listSync(recursive: true).forEach((model) {
+    if (model is Directory) {
       var newDirectory = Directory(
-        '${destination.path}/${entity.path.split(source.path).last}',
+        '${destination.path}/${model.path.split(source.path).last}',
       );
       newDirectory.createSync(recursive: true);
-    } else if (entity is File) {
+    } else if (model is File) {
       var newFile = File(
-        '${destination.path}/${entity.path.split(source.path).last}',
+        '${destination.path}/${model.path.split(source.path).last}',
       );
-      entity.copySync(newFile.path);
+      model.copySync(newFile.path);
     }
   });
 }

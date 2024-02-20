@@ -24,8 +24,8 @@ class TextWithLinks extends StatefulWidget {
     required this.linkColor,
     required this.style,
     this.selectable = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   TextWithLinksState createState() => TextWithLinksState();

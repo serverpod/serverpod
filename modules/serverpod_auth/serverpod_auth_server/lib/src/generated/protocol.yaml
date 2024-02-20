@@ -1,0 +1,30 @@
+admin:
+  - getUserInfo:
+  - blockUser:
+  - unblockUser:
+apple:
+  - authenticate:
+email:
+  - authenticate:
+  - changePassword:
+  - initiatePasswordReset:
+  - verifyEmailPasswordReset:
+  - resetPassword:
+  - createAccountRequest:
+  - createAccount:
+facebook:
+  - authenticateWithAccessToken:
+firebase:
+  - authenticate:
+google:
+  - authenticateWithServerAuthCode:
+  - authenticateWithIdToken:
+status:
+  - isSignedIn:
+  - signOut:
+  - getUserInfo:
+  - getUserSettingsConfig:
+user:
+  - removeUserImage:
+  - setUserImage:
+  - changeUserName:

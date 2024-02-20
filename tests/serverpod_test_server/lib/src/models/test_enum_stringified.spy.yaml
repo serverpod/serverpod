@@ -1,0 +1,7 @@
+### Just an test enum.
+enum: TestEnumStringified
+serialized: byName
+values:
+  - one
+  - two
+  - three

@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
 /// Input control for the chat. Typically, a chat is setup using a [ChatInput]
@@ -37,7 +37,7 @@ class ChatInput extends StatefulWidget {
 
   /// Creates a new [ChatInput] associated with a [controller].
   const ChatInput({
-    Key? key,
+    super.key,
     required this.controller,
     this.inputDecoration,
     this.boxDecoration,
@@ -47,7 +47,7 @@ class ChatInput extends StatefulWidget {
     this.iconSend = Icons.send,
     this.iconAttach = Icons.attach_file,
     this.enableAttachments = true,
-  }) : super(key: key);
+  });
 
   @override
   ChatInputState createState() => ChatInputState();
@@ -208,15 +208,9 @@ class ChatInputState extends State<ChatInput> {
         });
       }
 
-      var stream = result.files.first.readStream;
-      // var stream = result.openRead();
-      Uint8List? bytes;
-      if (stream == null) {
-        bytes = result.files.first.bytes;
-        // bytes = await result.readAsBytes();
-      }
+      var bytes = result.files.first.bytes;
 
-      if (stream == null && bytes == null) {
+      if (bytes == null) {
         _uploadCancelled();
         return;
       }
@@ -229,14 +223,7 @@ class ChatInputState extends State<ChatInput> {
       }
 
       var uploader = FileUploader(uploadDescription.uploadDescription);
-      if (stream != null) {
-        await uploader.upload(stream, result.files.first.size);
-      } else if (bytes != null) {
-        await uploader.uploadByteData(ByteData.view(bytes.buffer));
-      } else {
-        _uploadCancelled();
-        return;
-      }
+      await uploader.uploadUint8List(bytes);
 
       var attachment = await widget.controller.module.chat
           .verifyAttachmentUpload(fileName, uploadDescription.filePath);
@@ -272,11 +259,10 @@ class _AttachmentTile extends StatelessWidget {
   final VoidCallback? onDelete;
 
   const _AttachmentTile({
-    Key? key,
     required this.fileName,
     this.loading = false,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

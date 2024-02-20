@@ -4,13 +4,15 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Log entry for a session.
-class SessionLogEntry extends _i1.SerializableEntity {
-  SessionLogEntry({
+abstract class SessionLogEntry extends _i1.SerializableEntity {
+  SessionLogEntry._({
     this.id,
     required this.serverId,
     required this.time,
@@ -26,6 +28,23 @@ class SessionLogEntry extends _i1.SerializableEntity {
     this.isOpen,
     required this.touched,
   });
+
+  factory SessionLogEntry({
+    int? id,
+    required String serverId,
+    required DateTime time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    required DateTime touched,
+  }) = _SessionLogEntryImpl;
 
   factory SessionLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -109,23 +128,113 @@ class SessionLogEntry extends _i1.SerializableEntity {
   /// Timestamp of the last time this record was modified.
   DateTime touched;
 
+  SessionLogEntry copyWith({
+    int? id,
+    String? serverId,
+    DateTime? time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    DateTime? touched,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
+      'time': time.toJson(),
+      if (module != null) 'module': module,
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (duration != null) 'duration': duration,
+      if (numQueries != null) 'numQueries': numQueries,
+      if (slow != null) 'slow': slow,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      if (authenticatedUserId != null)
+        'authenticatedUserId': authenticatedUserId,
+      if (isOpen != null) 'isOpen': isOpen,
+      'touched': touched.toJson(),
     };
+  }
+}
+
+class _Undefined {}
+
+class _SessionLogEntryImpl extends SessionLogEntry {
+  _SessionLogEntryImpl({
+    int? id,
+    required String serverId,
+    required DateTime time,
+    String? module,
+    String? endpoint,
+    String? method,
+    double? duration,
+    int? numQueries,
+    bool? slow,
+    String? error,
+    String? stackTrace,
+    int? authenticatedUserId,
+    bool? isOpen,
+    required DateTime touched,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          time: time,
+          module: module,
+          endpoint: endpoint,
+          method: method,
+          duration: duration,
+          numQueries: numQueries,
+          slow: slow,
+          error: error,
+          stackTrace: stackTrace,
+          authenticatedUserId: authenticatedUserId,
+          isOpen: isOpen,
+          touched: touched,
+        );
+
+  @override
+  SessionLogEntry copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? time,
+    Object? module = _Undefined,
+    Object? endpoint = _Undefined,
+    Object? method = _Undefined,
+    Object? duration = _Undefined,
+    Object? numQueries = _Undefined,
+    Object? slow = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    Object? authenticatedUserId = _Undefined,
+    Object? isOpen = _Undefined,
+    DateTime? touched,
+  }) {
+    return SessionLogEntry(
+      id: id is int? ? id : this.id,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      module: module is String? ? module : this.module,
+      endpoint: endpoint is String? ? endpoint : this.endpoint,
+      method: method is String? ? method : this.method,
+      duration: duration is double? ? duration : this.duration,
+      numQueries: numQueries is int? ? numQueries : this.numQueries,
+      slow: slow is bool? ? slow : this.slow,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      authenticatedUserId: authenticatedUserId is int?
+          ? authenticatedUserId
+          : this.authenticatedUserId,
+      isOpen: isOpen is bool? ? isOpen : this.isOpen,
+      touched: touched ?? this.touched,
+    );
   }
 }

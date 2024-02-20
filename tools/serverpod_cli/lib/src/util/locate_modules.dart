@@ -3,13 +3,16 @@ import 'dart:io';
 import 'package:package_config/package_config.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:yaml/yaml.dart';
+import 'package:path/path.dart' as path;
 
 const _serverSuffix = '_server';
 
 Future<List<ModuleConfig>?> locateModules({
   required Directory directory,
-  List<String> exludePackages = const [],
+  List<String> excludePackages = const [],
+  Map<String, String?> manualModules = const {},
 }) async {
   var modules = <ModuleConfig>[];
 
@@ -18,21 +21,23 @@ Future<List<ModuleConfig>?> locateModules({
     for (var packageInfo in packageConfig.packages) {
       try {
         var packageName = packageInfo.name;
-        if (exludePackages.contains(packageName)) {
+        if (excludePackages.contains(packageName)) {
           continue;
         }
 
-        if (!packageName.endsWith(_serverSuffix)) {
+        if (!packageName.endsWith(_serverSuffix) &&
+            packageName != 'serverpod') {
           continue;
         }
         var moduleName = moduleNameFromServerPackageName(packageName);
 
         var packageSrcRoot = packageInfo.packageUriRoot;
-        var generatorConfigSegments =
-            List<String>.from(packageSrcRoot.pathSegments)
-              ..removeLast()
-              ..removeLast()
-              ..addAll(['config', 'generator.yaml']);
+        var moduleProjectRoot = List<String>.from(packageSrcRoot.pathSegments)
+          ..removeLast()
+          ..removeLast();
+        var generatorConfigSegments = path
+            .joinAll([...moduleProjectRoot, 'config', 'generator.yaml']).split(
+                path.separator);
 
         var generatorConfigUri = packageSrcRoot.replace(
           pathSegments: generatorConfigSegments,
@@ -43,13 +48,28 @@ Future<List<ModuleConfig>?> locateModules({
           continue;
         }
 
-        var moduleInfo = _ModuleGeneratorConfigLite(generatorConfigFile);
-        if (moduleInfo.nickname == null) {
-          continue;
-        }
+        var moduleProjectUri = packageSrcRoot.replace(
+          pathSegments: moduleProjectRoot,
+        );
+
+        var migrationVersions = findAllMigrationVersionsSync(
+          directory: Directory.fromUri(moduleProjectUri),
+          moduleName: moduleName,
+        );
+
+        var moduleInfo = loadConfigFile(generatorConfigFile);
+
+        var manualNickname = manualModules[moduleName];
+        var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
 
         modules.add(
-          ModuleConfig(name: moduleName, nickname: moduleInfo.nickname!),
+          ModuleConfig(
+            type: GeneratorConfig.getPackageType(moduleInfo),
+            name: moduleName,
+            nickname: nickname,
+            migrationVersions: migrationVersions,
+            serverPackageDirectoryPathParts: moduleProjectRoot,
+          ),
         );
       } catch (e) {
         continue;
@@ -66,16 +86,27 @@ Future<List<ModuleConfig>?> locateModules({
   }
 }
 
-class _ModuleGeneratorConfigLite {
-  String? nickname;
+Map<dynamic, dynamic> loadConfigFile(File file) {
+  var yaml = file.readAsStringSync();
+  return loadYaml(yaml) as Map;
+}
 
-  _ModuleGeneratorConfigLite(File file) {
-    var yaml = file.readAsStringSync();
-    var map = loadYaml(yaml) as Map;
-    if (map['type'] != 'module') {
-      throw const FormatException('Not a module config');
-    }
-    nickname = map['nickname'];
+List<String> findAllMigrationVersionsSync({
+  required Directory directory,
+  required String moduleName,
+}) {
+  try {
+    var migrationRoot = MigrationConstants.migrationsBaseDirectory(directory);
+
+    var migrationsDir = migrationRoot.listSync().whereType<Directory>();
+
+    var migrationVersions =
+        migrationsDir.map((dir) => path.split(dir.path).last).toList();
+
+    migrationVersions.sort();
+    return migrationVersions;
+  } catch (e) {
+    return [];
   }
 }
 

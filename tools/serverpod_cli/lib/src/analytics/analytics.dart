@@ -11,9 +11,13 @@ const _projectToken = '05e8ab306c393c7482e0f41851a176d8';
 const _endpoint = 'https://api.mixpanel.com/track';
 
 class Analytics {
+  bool enabled = true;
+
   void track({
     required String event,
   }) {
+    if (!enabled) return;
+
     var payload = jsonEncode({
       'event': event,
       'properties': {

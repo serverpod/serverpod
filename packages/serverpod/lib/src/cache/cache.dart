@@ -15,7 +15,7 @@ abstract class Cache {
 
   /// Stores a copy of a [SerializableEntity] in the cache using the specified
   /// [key]. It's also possible to set the maximum [lifetime] of the stored
-  /// [object]. If a [group] is specified, all entities of the same group can be
+  /// [object]. If a [group] is specified, all models of the same group can be
   /// invalidated at the same time using the [invalidateGroup] method.
   Future<void> put(String key, SerializableEntity object,
       {Duration? lifetime, String? group});

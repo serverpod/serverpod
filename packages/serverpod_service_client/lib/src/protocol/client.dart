@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -17,17 +19,18 @@ import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
 import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
     as _i7;
-import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
+import 'package:serverpod_service_client/src/protocol/database/table_definition.dart'
     as _i8;
-import 'package:serverpod_service_client/src/protocol/database/database_definitions.dart'
+import 'package:serverpod_service_client/src/protocol/database/database_definition.dart'
     as _i9;
-import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
+import 'package:serverpod_service_client/src/protocol/database/database_definitions.dart'
     as _i10;
-import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
+import 'package:serverpod_service_client/src/protocol/database/bulk_data.dart'
     as _i11;
-import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+import 'package:serverpod_service_client/src/protocol/database/filter/filter.dart'
     as _i12;
-import 'dart:io' as _i13;
+import 'package:serverpod_service_client/src/protocol/database/bulk_query_result.dart'
+    as _i13;
 import 'protocol.dart' as _i14;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
@@ -143,10 +146,10 @@ class EndpointInsights extends _i1.EndpointRef {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  _i2.Future<_i8.DatabaseDefinition> getTargetDatabaseDefinition() =>
-      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+  _i2.Future<List<_i8.TableDefinition>> getTargetTableDefinition() =>
+      caller.callServerEndpoint<List<_i8.TableDefinition>>(
         'insights',
-        'getTargetDatabaseDefinition',
+        'getTargetTableDefinition',
         {},
       );
 
@@ -156,32 +159,32 @@ class EndpointInsights extends _i1.EndpointRef {
   /// This information can be used for database migration.
   ///
   /// See also:
-  /// - [getTargetDatabaseDefinition]
-  _i2.Future<_i8.DatabaseDefinition> getLiveDatabaseDefinition() =>
-      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+  /// - [getTargetTableDefinition]
+  _i2.Future<_i9.DatabaseDefinition> getLiveDatabaseDefinition() =>
+      caller.callServerEndpoint<_i9.DatabaseDefinition>(
         'insights',
         'getLiveDatabaseDefinition',
         {},
       );
 
   /// Returns the target and live database definitions. See
-  /// [getTargetDatabaseDefinition] and [getLiveDatabaseDefinition] for more
+  /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
-  _i2.Future<_i9.DatabaseDefinitions> getDatabaseDefinitions() =>
-      caller.callServerEndpoint<_i9.DatabaseDefinitions>(
+  _i2.Future<_i10.DatabaseDefinitions> getDatabaseDefinitions() =>
+      caller.callServerEndpoint<_i10.DatabaseDefinitions>(
         'insights',
         'getDatabaseDefinitions',
         {},
       );
 
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i10.BulkData> fetchDatabaseBulkData({
+  _i2.Future<_i11.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
-    _i11.Filter? filter,
+    _i12.Filter? filter,
   }) =>
-      caller.callServerEndpoint<_i10.BulkData>(
+      caller.callServerEndpoint<_i11.BulkData>(
         'insights',
         'fetchDatabaseBulkData',
         {
@@ -194,8 +197,8 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
-  _i2.Future<_i12.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i12.BulkQueryResult>(
+  _i2.Future<_i13.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_i13.BulkQueryResult>(
         'insights',
         'runQueries',
         {'queries': queries},
@@ -215,18 +218,33 @@ class EndpointInsights extends _i1.EndpointRef {
         'executeSql',
         {'sql': sql},
       );
+
+  /// Fetches a file from the server. Only whitelisted files in
+  /// [Serverpod.filesWhitelistedForInsights] can be fetched.
+  /// The file path must be in unix format and relative to the servers root
+  /// directory.
+  _i2.Future<String> fetchFile(String path) =>
+      caller.callServerEndpoint<String>(
+        'insights',
+        'fetchFile',
+        {'path': path},
+      );
 }
 
 class Client extends _i1.ServerpodClient {
   Client(
     String host, {
-    _i13.SecurityContext? context,
+    dynamic securityContext,
     _i1.AuthenticationKeyManager? authenticationKeyManager,
+    Duration? streamingConnectionTimeout,
+    Duration? connectionTimeout,
   }) : super(
           host,
           _i14.Protocol(),
-          context: context,
+          securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
+          streamingConnectionTimeout: streamingConnectionTimeout,
+          connectionTimeout: connectionTimeout,
         ) {
     insights = EndpointInsights(this);
   }

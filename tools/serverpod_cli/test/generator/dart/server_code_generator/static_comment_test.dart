@@ -11,7 +11,7 @@ const generator = DartServerCodeGenerator();
 
 void main() {
   group('Given generated code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName('Example')
           .withFileName('example')
@@ -23,8 +23,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
     test(
