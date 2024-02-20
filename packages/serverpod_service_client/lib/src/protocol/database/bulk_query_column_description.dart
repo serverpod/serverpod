@@ -11,61 +11,34 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 abstract class BulkQueryColumnDescription extends _i1.SerializableEntity {
-  BulkQueryColumnDescription._({
-    required this.name,
-    required this.table,
-  });
+  BulkQueryColumnDescription._({required this.name});
 
-  factory BulkQueryColumnDescription({
-    required String name,
-    required String table,
-  }) = _BulkQueryColumnDescriptionImpl;
+  factory BulkQueryColumnDescription({required String name}) =
+      _BulkQueryColumnDescriptionImpl;
 
   factory BulkQueryColumnDescription.fromJson(
     Map<String, dynamic> jsonSerialization,
     _i1.SerializationManager serializationManager,
   ) {
     return BulkQueryColumnDescription(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      table:
-          serializationManager.deserialize<String>(jsonSerialization['table']),
-    );
+        name: serializationManager
+            .deserialize<String>(jsonSerialization['name']));
   }
 
   String name;
 
-  String table;
-
-  BulkQueryColumnDescription copyWith({
-    String? name,
-    String? table,
-  });
+  BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'table': table,
-    };
+    return {'name': name};
   }
 }
 
 class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
-  _BulkQueryColumnDescriptionImpl({
-    required String name,
-    required String table,
-  }) : super._(
-          name: name,
-          table: table,
-        );
+  _BulkQueryColumnDescriptionImpl({required String name}) : super._(name: name);
 
   @override
-  BulkQueryColumnDescription copyWith({
-    String? name,
-    String? table,
-  }) {
-    return BulkQueryColumnDescription(
-      name: name ?? this.name,
-      table: table ?? this.table,
-    );
+  BulkQueryColumnDescription copyWith({String? name}) {
+    return BulkQueryColumnDescription(name: name ?? this.name);
   }
 }
