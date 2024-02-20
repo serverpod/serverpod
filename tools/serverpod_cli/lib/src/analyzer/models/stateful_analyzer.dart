@@ -84,7 +84,7 @@ class StatefulAnalyzer {
 
     var doc = SerializableModelAnalyzer.extractModelDefinition(
       state.source,
-      config,
+      config.extraClasses,
     );
     state.model = doc;
     if (doc != null) {
@@ -100,7 +100,7 @@ class StatefulAnalyzer {
     for (var state in _modelStates.values) {
       var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
-        config,
+        config.extraClasses,
       );
       state.model = model;
     }
