@@ -325,10 +325,12 @@ class DatabaseConnection {
     Transaction? transaction,
     Map<String, dynamic>? substitutionValues = const {},
   }) async {
-    var startTime = DateTime.now();
+    var postgresTransaction = _castToPostgresTransaction(transaction);
 
+    var startTime = DateTime.now();
     try {
-      var context = transaction?.postgresContext ?? _postgresConnection;
+      var context =
+          postgresTransaction?.executionContext ?? _postgresConnection;
 
       var result = await context.query(
         query,
@@ -357,10 +359,12 @@ class DatabaseConnection {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    var postgresTransaction = _castToPostgresTransaction(transaction);
 
+    var startTime = DateTime.now();
     try {
-      var context = transaction?.postgresContext ?? _postgresConnection;
+      var context =
+          postgresTransaction?.executionContext ?? _postgresConnection;
 
       var result = await context.execute(
         query,
@@ -648,9 +652,31 @@ Current type was $T''');
   return table!;
 }
 
+/// Throws an exception if the given [transaction] is not a Postgres transaction.
+_PostgresTransaction? _castToPostgresTransaction(
+  Transaction? transaction,
+) {
+  if (transaction == null) return null;
+  if (transaction is! _PostgresTransaction) {
+    throw ArgumentError.value(
+      transaction,
+      'transaction',
+      'Transaction type does not match the required database transaction type, $_PostgresTransaction. '
+          'You need to create the transaction from the database by calling '
+          'session.db.transaction();',
+    );
+  }
+  return transaction;
+}
+
 /// Postgres specific implementation of transactions.
-class _PostgresTransaction extends Transaction {
-  _PostgresTransaction(super.postgresContext);
+class _PostgresTransaction implements Transaction {
+  final PostgreSQLExecutionContext executionContext;
+
+  _PostgresTransaction(this.executionContext);
+
+  @override
+  void cancel() => executionContext.cancelTransaction();
 }
 
 /// Extracts all the primary keys from the result set that are referenced by
