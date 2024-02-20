@@ -204,7 +204,7 @@ void main() {
         ).build()
       ];
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(models, onErrorsCollector(collector)).validateAll();
+      StatefulAnalyzer(config, models, onErrorsCollector(collector)).validateAll();
 
       expect(collector.errors, isNotEmpty);
       var error = collector.errors.first;
