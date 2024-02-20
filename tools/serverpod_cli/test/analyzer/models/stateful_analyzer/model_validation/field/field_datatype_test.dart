@@ -1083,9 +1083,7 @@ void main() {
     });
   });
 
-  group(
-      'Given a class with a type set to a list of the class name of a custom type',
-      () {
+  group('Given a class with a type set to a list of custom classes', () {
     var type = TypeDefinition(
       className: 'CustomExample',
       generics: const [],
@@ -1138,9 +1136,7 @@ void main() {
     });
   });
 
-  group(
-      'Given a class with a type set to a map of the class name of a custom type',
-      () {
+  group('Given a class with a type set to a map of custom classes', () {
     var type = TypeDefinition(
       className: 'CustomExample',
       generics: const [],
