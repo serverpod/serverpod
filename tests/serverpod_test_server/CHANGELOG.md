@@ -1,3 +1,10 @@
+## 1.2.4
+- fix: Sets the correct output path for generated files on Windows.
+- fix: Prevents VS Code extension from crashing on startup.
+- fix: Marks file handling database methods as deprecated.
+- fix: Correctly handles transaction parameters for delete method.
+- fix: Correctly resolves and validates registered custom classes used as types in model fields.
+
 ## 1.2.3
 - fix: Correctly cleans up health check manager when shutting down server.
 - fix: Supports projects without a config generator file in CLI.
