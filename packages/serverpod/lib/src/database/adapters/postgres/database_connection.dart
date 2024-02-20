@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
-import 'package:postgres_pool/postgres_pool.dart';
+import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
@@ -26,7 +26,7 @@ class DatabaseConnection {
   final DatabasePoolManager _poolManager;
 
   /// Access to the raw Postgresql connection pool.
-  final PgPool _postgresConnection;
+  final pg.Pool _postgresConnection;
 
   /// Creates a new database connection from the configuration. For most cases
   /// this shouldn't be called directly, use the db object in the [Session] to
@@ -37,7 +37,10 @@ class DatabaseConnection {
   /// Tests the database connection.
   /// Throws an exception if the connection is not working.
   Future<bool> testConnection() async {
-    await _postgresConnection.query('SELECT 1;', timeoutInSeconds: 2);
+    await _postgresConnection.execute(
+      'SELECT 1;',
+      timeout: const Duration(seconds: 2),
+    );
     return true;
   }
 
@@ -293,7 +296,7 @@ class DatabaseConnection {
         .withWhere(where)
         .build();
 
-    var result = await this.query(session, query, transaction: transaction);
+    var result = await _query(session, query, transaction: transaction);
 
     return result.toList().map((r) => r.first as int).toList();
   }
@@ -313,7 +316,7 @@ class DatabaseConnection {
         .withLimit(limit)
         .build();
 
-    var result = await this.query(session, query, transaction: transaction);
+    var result = await _query(session, query, transaction: transaction);
 
     if (result.length != 1) return 0;
 
@@ -329,33 +332,48 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    Map<String, dynamic>? substitutionValues = const {},
+  }) async {
+    var result = await _query(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+
+    return PostgresDatabaseResult(result);
+  }
+
+  Future<pg.Result> _query(
+    Session session,
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
+    var timeout =
+        timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
 
     var startTime = DateTime.now();
     try {
       var context =
           postgresTransaction?.executionContext ?? _postgresConnection;
 
-      var result = await context.query(
+      var result = await context.execute(
         query,
-        allowReuse: false,
-        timeoutInSeconds: timeoutInSeconds,
-        substitutionValues: substitutionValues,
+        timeout: timeout,
       );
 
       _logQuery(
         session,
         query,
         startTime,
-        numRowsAffected: result.affectedRowCount,
+        numRowsAffected: result.affectedRows,
       );
-      return PostgresDatabaseResult(result);
+      return result;
     } catch (exception, trace) {
-      if (exception is PostgreSQLException) {
+      if (exception is pg.PgException) {
         var serverpodException = DatabaseException(
-          exception.message ?? '$exception',
+          exception.message,
         );
         _logQuery(
           session,
@@ -381,6 +399,9 @@ class DatabaseConnection {
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
 
+    var timeout =
+        timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
+
     var startTime = DateTime.now();
     try {
       var context =
@@ -388,15 +409,14 @@ class DatabaseConnection {
 
       var result = await context.execute(
         query,
-        timeoutInSeconds: timeoutInSeconds,
-        substitutionValues: {},
+        timeout: timeout,
       );
       _logQuery(session, query, startTime);
-      return result;
+      return result.affectedRows;
     } catch (exception, trace) {
-      if (exception is PostgreSQLException) {
+      if (exception is pg.PgException) {
         var serverpodException = DatabaseException(
-          exception.message ?? '$exception',
+          exception.message,
         );
         _logQuery(
           session,
@@ -419,7 +439,7 @@ class DatabaseConnection {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var result = await this.query(
+    var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
@@ -696,12 +716,14 @@ _PostgresTransaction? _castToPostgresTransaction(
 
 /// Postgres specific implementation of transactions.
 class _PostgresTransaction implements Transaction {
-  final PostgreSQLExecutionContext executionContext;
+  final pg.TxSession executionContext;
 
   _PostgresTransaction(this.executionContext);
 
   @override
-  Future<void> cancel() async => executionContext.cancelTransaction();
+  Future<void> cancel() async {
+    await executionContext.rollback();
+  }
 }
 
 /// Extracts all the primary keys from the result set that are referenced by
