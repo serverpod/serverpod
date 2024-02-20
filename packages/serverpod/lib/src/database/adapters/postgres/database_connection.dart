@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 import 'package:postgres_pool/postgres_pool.dart';
-import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
@@ -509,20 +508,12 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<R> transaction<R>(
-    TransactionFunction<R> transactionFunction, {
-    RetryOptions? retryOptions,
-    FutureOr<R> Function()? orElse,
-    FutureOr<bool> Function(Exception exception)? retryIf,
-  }) {
+  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) {
     return _postgresConnection.runTx<R>(
       (ctx) {
         var transaction = _PostgresTransaction(ctx);
         return transactionFunction(transaction);
       },
-      retryOptions: retryOptions,
-      orElse: orElse,
-      retryIf: retryIf,
     );
   }
 
