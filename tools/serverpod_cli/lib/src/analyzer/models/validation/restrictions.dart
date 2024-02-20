@@ -116,12 +116,14 @@ const _maxColumnNameLength =
     DatabaseConstants.pgsqlMaxNameLimitation - _reservedColumnSuffixChars;
 
 class Restrictions {
+  final GeneratorConfig config;
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
   ModelRelations? modelRelations;
 
   Restrictions({
+    required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,

@@ -1,9 +1,11 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   /*
   The following types are not explicitly tested here because they are
   interpreted as the respective type. We are already validating the type of our
@@ -119,6 +121,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -153,6 +156,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -188,6 +192,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -222,6 +227,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -256,6 +262,7 @@ void main() {
         ];
 
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
