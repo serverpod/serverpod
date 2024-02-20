@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:postgres_pool/postgres_pool.dart';
 import 'package:retry/retry.dart';
+import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/exceptions.dart';
@@ -324,7 +325,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<PostgreSQLResult> query(
+  Future<PostgresDatabaseResult> query(
     Session session,
     String query, {
     int? timeoutInSeconds,
@@ -351,7 +352,7 @@ class DatabaseConnection {
         startTime,
         numRowsAffected: result.affectedRowCount,
       );
-      return result;
+      return PostgresDatabaseResult(result);
     } catch (exception, trace) {
       if (exception is PostgreSQLException) {
         var serverpodException = DatabaseException(
