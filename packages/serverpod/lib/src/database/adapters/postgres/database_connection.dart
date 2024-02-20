@@ -327,7 +327,7 @@ class DatabaseConnection {
     Transaction? transaction,
     Map<String, dynamic>? substitutionValues = const {},
   }) async {
-    var postgresTransaction = _getPostgresTransactionOrAssert(transaction);
+    var postgresTransaction = _castToPostgresTransaction(transaction);
 
     var startTime = DateTime.now();
     try {
@@ -361,7 +361,7 @@ class DatabaseConnection {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var postgresTransaction = _getPostgresTransactionOrAssert(transaction);
+    var postgresTransaction = _castToPostgresTransaction(transaction);
 
     var startTime = DateTime.now();
     try {
@@ -389,7 +389,7 @@ class DatabaseConnection {
     Transaction? transaction,
   }) async {
     var startTime = DateTime.now();
-    var postgresTransaction = _getPostgresTransactionOrAssert(transaction);
+    var postgresTransaction = _castToPostgresTransaction(transaction);
 
     try {
       var context =
@@ -671,7 +671,8 @@ Current type was $T''');
   return table!;
 }
 
-_PostgresTransaction? _getPostgresTransactionOrAssert(
+/// Throws an exception if the given [transaction] is not a Postgres transaction.
+_PostgresTransaction? _castToPostgresTransaction(
   Transaction? transaction,
 ) {
   if (transaction == null) return null;
