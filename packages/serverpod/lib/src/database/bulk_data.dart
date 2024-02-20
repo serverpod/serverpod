@@ -131,7 +131,6 @@ class DatabaseBulkData {
         headers: result.columnDescriptions
             .map((e) => BulkQueryColumnDescription(
                   name: e.columnName,
-                  table: e.tableName,
                 ))
             .toList(),
         data: SerializationManager.encode(result),

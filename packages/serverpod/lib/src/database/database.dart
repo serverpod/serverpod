@@ -1,14 +1,17 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:postgres/postgres.dart';
 import 'package:retry/retry.dart';
-import 'package:serverpod/src/database/columns.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/includes.dart';
+import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/transaction.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 
 import '../server/session.dart';
-import 'database_connection.dart';
-import 'expressions.dart';
-import 'table.dart';
+import 'adapters/postgres/database_connection.dart';
+import 'concepts/expressions.dart';
+import 'concepts/table.dart';
 
 /// Provides easy access to the database in relation to the current [Session].
 class Database {
@@ -18,9 +21,9 @@ class Database {
 
   /// Creates a new [Database] object. Typically, this is done automatically
   /// when a [Session] is created.
-  Database({required Session session})
+  Database({required Session session, required DatabasePoolManager poolManager})
       : _session = session,
-        _databaseConnection = DatabaseConnection(session.server.databaseConfig);
+        _databaseConnection = DatabaseConnection(poolManager);
 
   /// Find a list of [TableRow]s from a table, using the provided [where]
   /// expression, optionally using [limit], [offset], and [orderBy]. To order by
@@ -202,49 +205,11 @@ class Database {
     );
   }
 
-  /// Stores a file in the database, specifically using the
-  /// serverpod_cloud_storage table. Used by the the [DatabaseCloudStorage].
-  Future<void> storeFile(
-    String storageId,
-    String path,
-    ByteData byteData,
-    DateTime? expiration,
-    bool verified,
-  ) async {
-    return await _databaseConnection.legacy.storeFile(
-        storageId, path, byteData, expiration, verified,
-        session: _session);
-  }
-
-  /// Retrieves a file stored in the database or null if it doesn't exist,
-  /// specifically using the serverpod_cloud_storage table. Used by the the
-  /// [DatabaseCloudStorage].
-  Future<ByteData?> retrieveFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy
-        .retrieveFile(storageId, path, session: _session);
-  }
-
-  /// Verifies that a file has been successfully uploaded.
-  Future<bool> verifyFile(
-    String storageId,
-    String path,
-  ) async {
-    return await _databaseConnection.legacy.verifyFile(
-      storageId,
-      path,
-      session: _session,
-    );
-  }
-
-  /// Executes a single SQL query. A [List] of rows represented of a [Map] with
-  /// the table name and value is another [Map] with the keys as column names and
-  /// the value as the contents of the column.
+  /// Executes a single SQL query.
+  /// Returns an [Iterable] with the result rows represented by a [Map] with
+  /// the column name as key and column row content as value.
   /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<List<Map<String, Map<String, dynamic>>>> unsafeQueryMappedResults(
-    Session session,
+  Future<Iterable<Map<String, dynamic>>> unsafeQueryMappedResults(
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,

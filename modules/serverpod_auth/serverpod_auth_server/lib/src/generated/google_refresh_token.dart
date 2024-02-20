@@ -65,160 +65,12 @@ abstract class GoogleRefreshToken extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'userId': userId,
-      'refreshToken': refreshToken,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       'userId': userId,
       'refreshToken': refreshToken,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'refreshToken':
-        refreshToken = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<GoogleRefreshToken>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<GoogleRefreshToken>(
-      where: where != null ? where(GoogleRefreshToken.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<GoogleRefreshToken?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<GoogleRefreshToken>(
-      where: where != null ? where(GoogleRefreshToken.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<GoogleRefreshToken?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<GoogleRefreshToken>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<GoogleRefreshToken>(
-      where: where(GoogleRefreshToken.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    GoogleRefreshToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    GoogleRefreshToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    GoogleRefreshToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<GoogleRefreshToken>(
-      where: where != null ? where(GoogleRefreshToken.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static GoogleRefreshTokenInclude include() {
@@ -300,9 +152,6 @@ class GoogleRefreshTokenTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use GoogleRefreshTokenTable.t instead.')
-GoogleRefreshTokenTable tGoogleRefreshToken = GoogleRefreshTokenTable();
-
 class GoogleRefreshTokenInclude extends _i1.IncludeObject {
   GoogleRefreshTokenInclude._();
 
@@ -346,7 +195,7 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<GoogleRefreshToken>(
+    return session.db.find<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -366,7 +215,7 @@ class GoogleRefreshTokenRepository {
     _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<GoogleRefreshToken>(
+    return session.db.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
@@ -381,7 +230,7 @@ class GoogleRefreshTokenRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<GoogleRefreshToken>(
+    return session.db.findById<GoogleRefreshToken>(
       id,
       transaction: transaction,
     );
@@ -392,7 +241,7 @@ class GoogleRefreshTokenRepository {
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<GoogleRefreshToken>(
+    return session.db.insert<GoogleRefreshToken>(
       rows,
       transaction: transaction,
     );
@@ -403,7 +252,7 @@ class GoogleRefreshTokenRepository {
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<GoogleRefreshToken>(
+    return session.db.insertRow<GoogleRefreshToken>(
       row,
       transaction: transaction,
     );
@@ -415,7 +264,7 @@ class GoogleRefreshTokenRepository {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<GoogleRefreshToken>(
+    return session.db.update<GoogleRefreshToken>(
       rows,
       columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
@@ -428,7 +277,7 @@ class GoogleRefreshTokenRepository {
     _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<GoogleRefreshToken>(
+    return session.db.updateRow<GoogleRefreshToken>(
       row,
       columns: columns?.call(GoogleRefreshToken.t),
       transaction: transaction,
@@ -440,7 +289,7 @@ class GoogleRefreshTokenRepository {
     List<GoogleRefreshToken> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<GoogleRefreshToken>(
+    return session.db.delete<GoogleRefreshToken>(
       rows,
       transaction: transaction,
     );
@@ -451,7 +300,7 @@ class GoogleRefreshTokenRepository {
     GoogleRefreshToken row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<GoogleRefreshToken>(
+    return session.db.deleteRow<GoogleRefreshToken>(
       row,
       transaction: transaction,
     );
@@ -462,7 +311,7 @@ class GoogleRefreshTokenRepository {
     required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<GoogleRefreshToken>(
+    return session.db.deleteWhere<GoogleRefreshToken>(
       where: where(GoogleRefreshToken.t),
       transaction: transaction,
     );
@@ -474,7 +323,7 @@ class GoogleRefreshTokenRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<GoogleRefreshToken>(
+    return session.db.count<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
       limit: limit,
       transaction: transaction,

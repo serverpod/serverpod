@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 import '../cache/caches.dart';
@@ -26,14 +28,17 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  final DatabasePoolManager? _databaseConfig;
+  final DatabasePoolManager? _databasePoolManager;
 
-  /// Current database configuration.
-  DatabasePoolManager get databaseConfig {
-    if (_databaseConfig == null) {
+  /// Creates a new [Database] object with a connection to the configured
+  /// database.
+  Database createDatabase(Session session) {
+    var databasePoolManager = _databasePoolManager;
+    if (databasePoolManager == null) {
       throw ArgumentError('Database config not set');
     }
-    return _databaseConfig!;
+
+    return Database(session: session, poolManager: databasePoolManager);
   }
 
   /// The [SerializationManager] used by the server.
@@ -87,7 +92,7 @@ class Server {
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required DatabasePoolManager? databaseConfig,
+    required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
     this.authenticationHandler,
@@ -99,7 +104,7 @@ class Server {
     required this.httpResponseHeaders,
     required this.httpOptionsResponseHeaders,
   })  : name = name ?? 'Server $serverId',
-        _databaseConfig = databaseConfig;
+        _databasePoolManager = databasePoolManager;
 
   /// Starts the server.
   /// Returns true if the server was started successfully.

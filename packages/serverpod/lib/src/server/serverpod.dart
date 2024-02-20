@@ -5,6 +5,7 @@ import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
 import 'package:serverpod/src/config/version.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/migrations/migration_manager.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod/src/server/features.dart';
@@ -80,20 +81,7 @@ class Serverpod {
   /// Definition of endpoints used by the server. This is typically generated.
   final EndpointDispatch endpoints;
 
-  DatabasePoolManager? _databaseConfig;
-
-  /// The database configuration.
-  DatabasePoolManager get databaseConfig {
-    var database = _databaseConfig;
-    if (database == null) {
-      throw StateError(
-        'Database is disabled, supply a database configuration to the '
-        'Serverpod constructor to enable this feature.',
-      );
-    }
-
-    return database;
-  }
+  DatabasePoolManager? _databasePoolManager;
 
   late Caches _caches;
 
@@ -321,11 +309,11 @@ class Serverpod {
     _logManager = LogManager(_defaultRuntimeSettings, _logWriter);
 
     // Setup database
-    var database = this.config.database;
-    if (Features.enableDatabase && database != null) {
-      _databaseConfig = DatabasePoolManager(
+    var databaseConfiguration = this.config.database;
+    if (Features.enableDatabase && databaseConfiguration != null) {
+      _databasePoolManager = DatabasePoolManager(
         serializationManager,
-        database,
+        databaseConfiguration,
       );
     }
 
@@ -365,7 +353,7 @@ class Serverpod {
       serverId: serverId,
       port: this.config.apiServer.port,
       serializationManager: serializationManager,
-      databaseConfig: _databaseConfig,
+      databasePoolManager: _databasePoolManager,
       passwords: _passwords,
       runMode: _runMode,
       caches: caches,
@@ -435,12 +423,18 @@ class Serverpod {
         CloudStoragePublicEndpoint().register(this);
       }
 
-      if (_databaseConfig == null) {
+      if (_databasePoolManager == null) {
         _runtimeSettings = _defaultRuntimeSettings;
       }
 
       if (Features.enableMigrations) {
         await _applyMigrations();
+      } else if (commandLineArgs.applyMigrations ||
+          commandLineArgs.applyRepairMigration) {
+        stderr.writeln(
+          'Migrations are disabled in this project, skipping applying migration(s).',
+        );
+        _exitCode = 1;
       }
 
       // Setup log manager.
@@ -653,7 +647,7 @@ class Serverpod {
       serverId: serverId,
       port: config.insightsServer!.port,
       serializationManager: _internalSerializationManager,
-      databaseConfig: _databaseConfig,
+      databasePoolManager: _databasePoolManager,
       passwords: _passwords,
       runMode: _runMode,
       name: 'Insights',
@@ -788,7 +782,7 @@ class Serverpod {
       attempts++;
       var session = await createSession(enableLogging: enableLogging);
       try {
-        await session.dbNext.testConnection();
+        await session.db.testConnection();
         return session;
       } catch (e, stackTrace) {
         // Write connection error to stderr.

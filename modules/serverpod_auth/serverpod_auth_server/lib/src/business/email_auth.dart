@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 /// Collection of utility methods when working with email authentication.

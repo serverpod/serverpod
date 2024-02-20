@@ -108,14 +108,26 @@ class FutureCallManager {
         enableLogging: false,
       );
 
-      // TODO: replace when we got batch ops.
-      // ignore: deprecated_member_use_from_same_package
-      var rows = await tempSession.db.deleteAndReturn<FutureCallEntry>(
-        where: (FutureCallEntry.t.time <= now),
-      );
+      var rows = await tempSession.db
+          .transaction<List<FutureCallEntry>>((transaction) async {
+        var activeFutureCalls = await FutureCallEntry.db.find(
+          tempSession,
+          where: (t) => t.time <= now,
+          transaction: transaction,
+        );
+
+        await FutureCallEntry.db.deleteWhere(
+          tempSession,
+          where: (t) => t.time <= now,
+          transaction: transaction,
+        );
+
+        return activeFutureCalls;
+      });
+
       await tempSession.close();
 
-      for (var entry in rows.cast<FutureCallEntry>()) {
+      for (var entry in rows) {
         var call = _futureCalls[entry.name];
         if (call == null) {
           continue;

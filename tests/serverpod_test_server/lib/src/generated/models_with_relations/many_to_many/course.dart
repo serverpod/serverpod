@@ -64,15 +64,6 @@ abstract class Course extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -80,149 +71,6 @@ abstract class Course extends _i1.TableRow {
       if (enrollments != null)
         'enrollments': enrollments?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Course>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CourseTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CourseInclude? include,
-  }) async {
-    return session.db.find<Course>(
-      where: where != null ? where(Course.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Course?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CourseTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CourseInclude? include,
-  }) async {
-    return session.db.findSingleRow<Course>(
-      where: where != null ? where(Course.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Course?> findById(
-    _i1.Session session,
-    int id, {
-    CourseInclude? include,
-  }) async {
-    return session.db.findById<Course>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CourseTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Course>(
-      where: where(Course.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Course row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Course row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Course row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CourseTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Course>(
-      where: where != null ? where(Course.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static CourseInclude include({_i2.EnrollmentIncludeList? enrollments}) {
@@ -339,9 +187,6 @@ class CourseTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use CourseTable.t instead.')
-CourseTable tCourse = CourseTable();
-
 class CourseInclude extends _i1.IncludeObject {
   CourseInclude._({_i2.EnrollmentIncludeList? enrollments}) {
     _enrollments = enrollments;
@@ -398,7 +243,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.dbNext.find<Course>(
+    return session.db.find<Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -420,7 +265,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Course>(
+    return session.db.findFirstRow<Course>(
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
@@ -437,7 +282,7 @@ class CourseRepository {
     _i1.Transaction? transaction,
     CourseInclude? include,
   }) async {
-    return session.dbNext.findById<Course>(
+    return session.db.findById<Course>(
       id,
       transaction: transaction,
       include: include,
@@ -449,7 +294,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Course>(
+    return session.db.insert<Course>(
       rows,
       transaction: transaction,
     );
@@ -460,7 +305,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Course>(
+    return session.db.insertRow<Course>(
       row,
       transaction: transaction,
     );
@@ -472,7 +317,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Course>(
+    return session.db.update<Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
@@ -485,7 +330,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Course>(
+    return session.db.updateRow<Course>(
       row,
       columns: columns?.call(Course.t),
       transaction: transaction,
@@ -497,7 +342,7 @@ class CourseRepository {
     List<Course> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Course>(
+    return session.db.delete<Course>(
       rows,
       transaction: transaction,
     );
@@ -508,7 +353,7 @@ class CourseRepository {
     Course row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Course>(
+    return session.db.deleteRow<Course>(
       row,
       transaction: transaction,
     );
@@ -519,7 +364,7 @@ class CourseRepository {
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Course>(
+    return session.db.deleteWhere<Course>(
       where: where(Course.t),
       transaction: transaction,
     );
@@ -531,7 +376,7 @@ class CourseRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Course>(
+    return session.db.count<Course>(
       where: where?.call(Course.t),
       limit: limit,
       transaction: transaction,
@@ -556,7 +401,7 @@ class CourseAttachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(courseId: course.id)).toList();
-    await session.dbNext.update<_i2.Enrollment>(
+    await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
     );
@@ -579,7 +424,7 @@ class CourseAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.dbNext.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
     );
@@ -599,7 +444,7 @@ class CourseDetachRepository {
 
     var $enrollment =
         enrollment.map((e) => e.copyWith(courseId: null)).toList();
-    await session.dbNext.update<_i2.Enrollment>(
+    await session.db.update<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
     );
@@ -618,7 +463,7 @@ class CourseDetachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: null);
-    await session.dbNext.updateRow<_i2.Enrollment>(
+    await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],
     );

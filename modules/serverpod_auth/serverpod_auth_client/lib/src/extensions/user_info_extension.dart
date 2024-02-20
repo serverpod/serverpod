@@ -1,4 +1,4 @@
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 
 /// Convenience methods for the [UserInfo] class.
 extension UserInfoExtension on UserInfo {

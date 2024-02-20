@@ -71,16 +71,6 @@ abstract class RelatedUniqueData extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'uniqueDataId': uniqueDataId,
-      'number': number,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -88,152 +78,6 @@ abstract class RelatedUniqueData extends _i1.TableRow {
       if (uniqueData != null) 'uniqueData': uniqueData?.allToJson(),
       'number': number,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'uniqueDataId':
-        uniqueDataId = value;
-        return;
-      case 'number':
-        number = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<RelatedUniqueData>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.find<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<RelatedUniqueData?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.findSingleRow<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<RelatedUniqueData?> findById(
-    _i1.Session session,
-    int id, {
-    RelatedUniqueDataInclude? include,
-  }) async {
-    return session.db.findById<RelatedUniqueData>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<RelatedUniqueData>(
-      where: where(RelatedUniqueData.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    RelatedUniqueData row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<RelatedUniqueData>(
-      where: where != null ? where(RelatedUniqueData.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
@@ -342,9 +186,6 @@ class RelatedUniqueDataTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use RelatedUniqueDataTable.t instead.')
-RelatedUniqueDataTable tRelatedUniqueData = RelatedUniqueDataTable();
-
 class RelatedUniqueDataInclude extends _i1.IncludeObject {
   RelatedUniqueDataInclude._({_i2.UniqueDataInclude? uniqueData}) {
     _uniqueData = uniqueData;
@@ -395,7 +236,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.find<RelatedUniqueData>(
+    return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -417,7 +258,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<RelatedUniqueData>(
+    return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
@@ -434,7 +275,7 @@ class RelatedUniqueDataRepository {
     _i1.Transaction? transaction,
     RelatedUniqueDataInclude? include,
   }) async {
-    return session.dbNext.findById<RelatedUniqueData>(
+    return session.db.findById<RelatedUniqueData>(
       id,
       transaction: transaction,
       include: include,
@@ -446,7 +287,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<RelatedUniqueData>(
+    return session.db.insert<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -457,7 +298,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<RelatedUniqueData>(
+    return session.db.insertRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -469,7 +310,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<RelatedUniqueData>(
+    return session.db.update<RelatedUniqueData>(
       rows,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -482,7 +323,7 @@ class RelatedUniqueDataRepository {
     _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<RelatedUniqueData>(
+    return session.db.updateRow<RelatedUniqueData>(
       row,
       columns: columns?.call(RelatedUniqueData.t),
       transaction: transaction,
@@ -494,7 +335,7 @@ class RelatedUniqueDataRepository {
     List<RelatedUniqueData> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<RelatedUniqueData>(
+    return session.db.delete<RelatedUniqueData>(
       rows,
       transaction: transaction,
     );
@@ -505,7 +346,7 @@ class RelatedUniqueDataRepository {
     RelatedUniqueData row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<RelatedUniqueData>(
+    return session.db.deleteRow<RelatedUniqueData>(
       row,
       transaction: transaction,
     );
@@ -516,7 +357,7 @@ class RelatedUniqueDataRepository {
     required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<RelatedUniqueData>(
+    return session.db.deleteWhere<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
       transaction: transaction,
     );
@@ -528,7 +369,7 @@ class RelatedUniqueDataRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<RelatedUniqueData>(
+    return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
       limit: limit,
       transaction: transaction,
@@ -553,7 +394,7 @@ class RelatedUniqueDataAttachRowRepository {
 
     var $relatedUniqueData =
         relatedUniqueData.copyWith(uniqueDataId: uniqueData.id);
-    await session.dbNext.updateRow<RelatedUniqueData>(
+    await session.db.updateRow<RelatedUniqueData>(
       $relatedUniqueData,
       columns: [RelatedUniqueData.t.uniqueDataId],
     );

@@ -1,5 +1,5 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
-import 'package:serverpod_test_module_client/module.dart';
+import 'package:serverpod_test_module_client/serverpod_test_module_client.dart';
 import 'package:serverpod_test_client/src/custom_classes.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:test/test.dart';

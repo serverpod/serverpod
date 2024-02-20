@@ -57,155 +57,11 @@ abstract class SimpleDateTime extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'dateTime': dateTime,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       'dateTime': dateTime.toJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'dateTime':
-        dateTime = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<SimpleDateTime>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<SimpleDateTime>(
-      where: where != null ? where(SimpleDateTime.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<SimpleDateTime?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<SimpleDateTime>(
-      where: where != null ? where(SimpleDateTime.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<SimpleDateTime?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<SimpleDateTime>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<SimpleDateTime>(
-      where: where(SimpleDateTime.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    SimpleDateTime row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    SimpleDateTime row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    SimpleDateTime row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<SimpleDateTime>(
-      where: where != null ? where(SimpleDateTime.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static SimpleDateTimeInclude include() {
@@ -275,9 +131,6 @@ class SimpleDateTimeTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use SimpleDateTimeTable.t instead.')
-SimpleDateTimeTable tSimpleDateTime = SimpleDateTimeTable();
-
 class SimpleDateTimeInclude extends _i1.IncludeObject {
   SimpleDateTimeInclude._();
 
@@ -321,7 +174,7 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<SimpleDateTime>(
+    return session.db.find<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -341,7 +194,7 @@ class SimpleDateTimeRepository {
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<SimpleDateTime>(
+    return session.db.findFirstRow<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
@@ -356,7 +209,7 @@ class SimpleDateTimeRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<SimpleDateTime>(
+    return session.db.findById<SimpleDateTime>(
       id,
       transaction: transaction,
     );
@@ -367,7 +220,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<SimpleDateTime>(
+    return session.db.insert<SimpleDateTime>(
       rows,
       transaction: transaction,
     );
@@ -378,7 +231,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<SimpleDateTime>(
+    return session.db.insertRow<SimpleDateTime>(
       row,
       transaction: transaction,
     );
@@ -390,7 +243,7 @@ class SimpleDateTimeRepository {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<SimpleDateTime>(
+    return session.db.update<SimpleDateTime>(
       rows,
       columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
@@ -403,7 +256,7 @@ class SimpleDateTimeRepository {
     _i1.ColumnSelections<SimpleDateTimeTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<SimpleDateTime>(
+    return session.db.updateRow<SimpleDateTime>(
       row,
       columns: columns?.call(SimpleDateTime.t),
       transaction: transaction,
@@ -415,7 +268,7 @@ class SimpleDateTimeRepository {
     List<SimpleDateTime> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<SimpleDateTime>(
+    return session.db.delete<SimpleDateTime>(
       rows,
       transaction: transaction,
     );
@@ -426,7 +279,7 @@ class SimpleDateTimeRepository {
     SimpleDateTime row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<SimpleDateTime>(
+    return session.db.deleteRow<SimpleDateTime>(
       row,
       transaction: transaction,
     );
@@ -437,7 +290,7 @@ class SimpleDateTimeRepository {
     required _i1.WhereExpressionBuilder<SimpleDateTimeTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<SimpleDateTime>(
+    return session.db.deleteWhere<SimpleDateTime>(
       where: where(SimpleDateTime.t),
       transaction: transaction,
     );
@@ -449,7 +302,7 @@ class SimpleDateTimeRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<SimpleDateTime>(
+    return session.db.count<SimpleDateTime>(
       where: where?.call(SimpleDateTime.t),
       limit: limit,
       transaction: transaction,

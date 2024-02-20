@@ -169,27 +169,6 @@ abstract class SessionLogEntry extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'time': time,
-      'module': module,
-      'endpoint': endpoint,
-      'method': method,
-      'duration': duration,
-      'numQueries': numQueries,
-      'slow': slow,
-      'error': error,
-      'stackTrace': stackTrace,
-      'authenticatedUserId': authenticatedUserId,
-      'isOpen': isOpen,
-      'touched': touched,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -208,177 +187,6 @@ abstract class SessionLogEntry extends _i1.TableRow {
       if (isOpen != null) 'isOpen': isOpen,
       'touched': touched.toJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'module':
-        module = value;
-        return;
-      case 'endpoint':
-        endpoint = value;
-        return;
-      case 'method':
-        method = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'numQueries':
-        numQueries = value;
-        return;
-      case 'slow':
-        slow = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'authenticatedUserId':
-        authenticatedUserId = value;
-        return;
-      case 'isOpen':
-        isOpen = value;
-        return;
-      case 'touched':
-        touched = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<SessionLogEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<SessionLogEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<SessionLogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<SessionLogEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<SessionLogEntry>(
-      where: where(SessionLogEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    SessionLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<SessionLogEntry>(
-      where: where != null ? where(SessionLogEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static SessionLogEntryInclude include() {
@@ -598,9 +406,6 @@ class SessionLogEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use SessionLogEntryTable.t instead.')
-SessionLogEntryTable tSessionLogEntry = SessionLogEntryTable();
-
 class SessionLogEntryInclude extends _i1.IncludeObject {
   SessionLogEntryInclude._();
 
@@ -644,7 +449,7 @@ class SessionLogEntryRepository {
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<SessionLogEntry>(
+    return session.db.find<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
@@ -664,7 +469,7 @@ class SessionLogEntryRepository {
     _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<SessionLogEntry>(
+    return session.db.findFirstRow<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
@@ -679,7 +484,7 @@ class SessionLogEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<SessionLogEntry>(
+    return session.db.findById<SessionLogEntry>(
       id,
       transaction: transaction,
     );
@@ -690,7 +495,7 @@ class SessionLogEntryRepository {
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<SessionLogEntry>(
+    return session.db.insert<SessionLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -701,7 +506,7 @@ class SessionLogEntryRepository {
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<SessionLogEntry>(
+    return session.db.insertRow<SessionLogEntry>(
       row,
       transaction: transaction,
     );
@@ -713,7 +518,7 @@ class SessionLogEntryRepository {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<SessionLogEntry>(
+    return session.db.update<SessionLogEntry>(
       rows,
       columns: columns?.call(SessionLogEntry.t),
       transaction: transaction,
@@ -726,7 +531,7 @@ class SessionLogEntryRepository {
     _i1.ColumnSelections<SessionLogEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<SessionLogEntry>(
+    return session.db.updateRow<SessionLogEntry>(
       row,
       columns: columns?.call(SessionLogEntry.t),
       transaction: transaction,
@@ -738,7 +543,7 @@ class SessionLogEntryRepository {
     List<SessionLogEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<SessionLogEntry>(
+    return session.db.delete<SessionLogEntry>(
       rows,
       transaction: transaction,
     );
@@ -749,7 +554,7 @@ class SessionLogEntryRepository {
     SessionLogEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<SessionLogEntry>(
+    return session.db.deleteRow<SessionLogEntry>(
       row,
       transaction: transaction,
     );
@@ -760,7 +565,7 @@ class SessionLogEntryRepository {
     required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<SessionLogEntry>(
+    return session.db.deleteWhere<SessionLogEntry>(
       where: where(SessionLogEntry.t),
       transaction: transaction,
     );
@@ -772,7 +577,7 @@ class SessionLogEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<SessionLogEntry>(
+    return session.db.count<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
       limit: limit,
       transaction: transaction,

@@ -33,96 +33,6 @@ s3CloudStorage:
   - getPublicUrlForFile:
   - getDirectFilePostUrl:
   - verifyDirectFileUpload:
-columnBoolLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-columnDateTimeLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-  - greaterThan:
-  - greaterOrEqualThan:
-  - lessThan:
-  - lessOrEqualThan:
-  - between:
-  - notBetween:
-columnDoubleLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-  - greaterThan:
-  - greaterOrEqualThan:
-  - lessThan:
-  - lessOrEqualThan:
-  - between:
-  - notBetween:
-columnDurationLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-  - greaterThan:
-  - greaterOrEqualThan:
-  - lessThan:
-  - lessOrEqualThan:
-  - between:
-  - notBetween:
-columnEnumLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-columnIntLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-  - greaterThan:
-  - greaterOrEqualThan:
-  - lessThan:
-  - lessOrEqualThan:
-  - between:
-  - notBetween:
-columnStringLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
-  - like:
-  - ilike:
-columnUuidLegacy:
-  - insert:
-  - deleteAll:
-  - findAll:
-  - equals:
-  - notEquals:
-  - inSet:
-  - notInSet:
 customTypes:
   - returnCustomClass:
   - returnCustomClassNullable:
@@ -133,9 +43,14 @@ customTypes:
   - returnFreezedCustomClass:
   - returnFreezedCustomClassNullable:
 basicDatabase:
+  - deleteAllSimpleTestData:
+  - deleteSimpleTestDataLessThan:
+  - findAndDeleteSimpleTestData:
+  - createSimpleTestData:
   - findSimpleData:
   - findFirstRowSimpleData:
   - findByIdSimpleData:
+  - findSimpleDataRowsLessThan:
   - insertRowSimpleData:
   - updateRowSimpleData:
   - deleteRowSimpleData:
@@ -143,26 +58,16 @@ basicDatabase:
   - countSimpleData:
   - insertTypes:
   - updateTypes:
-  - deleteAll:
-basicDatabaseLegacy:
-  - storeTypes:
-  - getTypes:
-  - storeObjectWithEnum:
-  - getObjectWithEnum:
-  - getTypesRawQuery:
   - countTypesRows:
   - deleteAllInTypes:
-  - createSimpleTestData:
-  - countSimpleData:
-  - deleteAllSimpleTestData:
-  - deleteSimpleTestDataLessThan:
-  - findAndDeleteSimpleTestData:
-  - findSimpleDataRowsLessThan:
-  - updateSimpleDataRow:
+  - getTypes:
+  - getTypesRawQuery:
+  - storeObjectWithEnum:
+  - getObjectWithEnum:
   - storeObjectWithObject:
   - getObjectWithObject:
+  - deleteAll:
   - testByteDataStore:
-  - testDurationStore:
 databaseBatch:
   - batchInsert:
   - batchInsertTypes:

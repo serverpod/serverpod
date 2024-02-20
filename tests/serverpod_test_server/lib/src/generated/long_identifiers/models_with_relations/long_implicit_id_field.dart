@@ -55,17 +55,6 @@ abstract class LongImplicitIdField extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
-          _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -75,144 +64,6 @@ abstract class LongImplicitIdField extends _i1.TableRow {
         '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
             _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case '_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id':
-        _longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<LongImplicitIdField>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<LongImplicitIdField>(
-      where: where != null ? where(LongImplicitIdField.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<LongImplicitIdField?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<LongImplicitIdField>(
-      where: where != null ? where(LongImplicitIdField.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<LongImplicitIdField?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<LongImplicitIdField>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<LongImplicitIdField>(
-      where: where(LongImplicitIdField.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    LongImplicitIdField row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    LongImplicitIdField row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    LongImplicitIdField row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<LongImplicitIdField>(
-      where: where != null ? where(LongImplicitIdField.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static LongImplicitIdFieldInclude include() {
@@ -325,9 +176,6 @@ class LongImplicitIdFieldTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use LongImplicitIdFieldTable.t instead.')
-LongImplicitIdFieldTable tLongImplicitIdField = LongImplicitIdFieldTable();
-
 class LongImplicitIdFieldInclude extends _i1.IncludeObject {
   LongImplicitIdFieldInclude._();
 
@@ -371,7 +219,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<LongImplicitIdField>(
+    return session.db.find<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -391,7 +239,7 @@ class LongImplicitIdFieldRepository {
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<LongImplicitIdField>(
+    return session.db.findFirstRow<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
@@ -406,7 +254,7 @@ class LongImplicitIdFieldRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<LongImplicitIdField>(
+    return session.db.findById<LongImplicitIdField>(
       id,
       transaction: transaction,
     );
@@ -417,7 +265,7 @@ class LongImplicitIdFieldRepository {
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<LongImplicitIdField>(
+    return session.db.insert<LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
@@ -428,7 +276,7 @@ class LongImplicitIdFieldRepository {
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<LongImplicitIdField>(
+    return session.db.insertRow<LongImplicitIdField>(
       row,
       transaction: transaction,
     );
@@ -440,7 +288,7 @@ class LongImplicitIdFieldRepository {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<LongImplicitIdField>(
+    return session.db.update<LongImplicitIdField>(
       rows,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -453,7 +301,7 @@ class LongImplicitIdFieldRepository {
     _i1.ColumnSelections<LongImplicitIdFieldTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<LongImplicitIdField>(
+    return session.db.updateRow<LongImplicitIdField>(
       row,
       columns: columns?.call(LongImplicitIdField.t),
       transaction: transaction,
@@ -465,7 +313,7 @@ class LongImplicitIdFieldRepository {
     List<LongImplicitIdField> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<LongImplicitIdField>(
+    return session.db.delete<LongImplicitIdField>(
       rows,
       transaction: transaction,
     );
@@ -476,7 +324,7 @@ class LongImplicitIdFieldRepository {
     LongImplicitIdField row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<LongImplicitIdField>(
+    return session.db.deleteRow<LongImplicitIdField>(
       row,
       transaction: transaction,
     );
@@ -487,7 +335,7 @@ class LongImplicitIdFieldRepository {
     required _i1.WhereExpressionBuilder<LongImplicitIdFieldTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<LongImplicitIdField>(
+    return session.db.deleteWhere<LongImplicitIdField>(
       where: where(LongImplicitIdField.t),
       transaction: transaction,
     );
@@ -499,7 +347,7 @@ class LongImplicitIdFieldRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<LongImplicitIdField>(
+    return session.db.count<LongImplicitIdField>(
       where: where?.call(LongImplicitIdField.t),
       limit: limit,
       transaction: transaction,

@@ -64,15 +64,6 @@ abstract class Customer extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -80,149 +71,6 @@ abstract class Customer extends _i1.TableRow {
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Customer>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CustomerInclude? include,
-  }) async {
-    return session.db.find<Customer>(
-      where: where != null ? where(Customer.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Customer?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CustomerInclude? include,
-  }) async {
-    return session.db.findSingleRow<Customer>(
-      where: where != null ? where(Customer.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Customer?> findById(
-    _i1.Session session,
-    int id, {
-    CustomerInclude? include,
-  }) async {
-    return session.db.findById<Customer>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CustomerTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Customer>(
-      where: where(Customer.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Customer row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Customer row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Customer row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Customer>(
-      where: where != null ? where(Customer.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static CustomerInclude include({_i2.OrderIncludeList? orders}) {
@@ -337,9 +185,6 @@ class CustomerTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use CustomerTable.t instead.')
-CustomerTable tCustomer = CustomerTable();
-
 class CustomerInclude extends _i1.IncludeObject {
   CustomerInclude._({_i2.OrderIncludeList? orders}) {
     _orders = orders;
@@ -396,7 +241,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.dbNext.find<Customer>(
+    return session.db.find<Customer>(
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
@@ -418,7 +263,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Customer>(
+    return session.db.findFirstRow<Customer>(
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
@@ -435,7 +280,7 @@ class CustomerRepository {
     _i1.Transaction? transaction,
     CustomerInclude? include,
   }) async {
-    return session.dbNext.findById<Customer>(
+    return session.db.findById<Customer>(
       id,
       transaction: transaction,
       include: include,
@@ -447,7 +292,7 @@ class CustomerRepository {
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Customer>(
+    return session.db.insert<Customer>(
       rows,
       transaction: transaction,
     );
@@ -458,7 +303,7 @@ class CustomerRepository {
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Customer>(
+    return session.db.insertRow<Customer>(
       row,
       transaction: transaction,
     );
@@ -470,7 +315,7 @@ class CustomerRepository {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Customer>(
+    return session.db.update<Customer>(
       rows,
       columns: columns?.call(Customer.t),
       transaction: transaction,
@@ -483,7 +328,7 @@ class CustomerRepository {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Customer>(
+    return session.db.updateRow<Customer>(
       row,
       columns: columns?.call(Customer.t),
       transaction: transaction,
@@ -495,7 +340,7 @@ class CustomerRepository {
     List<Customer> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Customer>(
+    return session.db.delete<Customer>(
       rows,
       transaction: transaction,
     );
@@ -506,7 +351,7 @@ class CustomerRepository {
     Customer row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Customer>(
+    return session.db.deleteRow<Customer>(
       row,
       transaction: transaction,
     );
@@ -517,7 +362,7 @@ class CustomerRepository {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Customer>(
+    return session.db.deleteWhere<Customer>(
       where: where(Customer.t),
       transaction: transaction,
     );
@@ -529,7 +374,7 @@ class CustomerRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Customer>(
+    return session.db.count<Customer>(
       where: where?.call(Customer.t),
       limit: limit,
       transaction: transaction,
@@ -553,7 +398,7 @@ class CustomerAttachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: customer.id)).toList();
-    await session.dbNext.update<_i2.Order>(
+    await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
     );
@@ -576,7 +421,7 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.dbNext.updateRow<_i2.Order>(
+    await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
     );
@@ -595,7 +440,7 @@ class CustomerDetachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.dbNext.update<_i2.Order>(
+    await session.db.update<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
     );
@@ -614,7 +459,7 @@ class CustomerDetachRowRepository {
     }
 
     var $order = order.copyWith(customerId: null);
-    await session.dbNext.updateRow<_i2.Order>(
+    await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],
     );

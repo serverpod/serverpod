@@ -55,155 +55,11 @@ abstract class ObjectWithDuration extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'duration': duration,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       'duration': duration.toJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ObjectWithDuration>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ObjectWithDuration?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ObjectWithDuration?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithDuration>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ObjectWithDuration>(
-      where: where(ObjectWithDuration.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ObjectWithDurationInclude include() {
@@ -272,9 +128,6 @@ class ObjectWithDurationTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ObjectWithDurationTable.t instead.')
-ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
-
 class ObjectWithDurationInclude extends _i1.IncludeObject {
   ObjectWithDurationInclude._();
 
@@ -318,7 +171,7 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithDuration>(
+    return session.db.find<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
@@ -338,7 +191,7 @@ class ObjectWithDurationRepository {
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithDuration>(
+    return session.db.findFirstRow<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
@@ -353,7 +206,7 @@ class ObjectWithDurationRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithDuration>(
+    return session.db.findById<ObjectWithDuration>(
       id,
       transaction: transaction,
     );
@@ -364,7 +217,7 @@ class ObjectWithDurationRepository {
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithDuration>(
+    return session.db.insert<ObjectWithDuration>(
       rows,
       transaction: transaction,
     );
@@ -375,7 +228,7 @@ class ObjectWithDurationRepository {
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithDuration>(
+    return session.db.insertRow<ObjectWithDuration>(
       row,
       transaction: transaction,
     );
@@ -387,7 +240,7 @@ class ObjectWithDurationRepository {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithDuration>(
+    return session.db.update<ObjectWithDuration>(
       rows,
       columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
@@ -400,7 +253,7 @@ class ObjectWithDurationRepository {
     _i1.ColumnSelections<ObjectWithDurationTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithDuration>(
+    return session.db.updateRow<ObjectWithDuration>(
       row,
       columns: columns?.call(ObjectWithDuration.t),
       transaction: transaction,
@@ -412,7 +265,7 @@ class ObjectWithDurationRepository {
     List<ObjectWithDuration> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithDuration>(
+    return session.db.delete<ObjectWithDuration>(
       rows,
       transaction: transaction,
     );
@@ -423,7 +276,7 @@ class ObjectWithDurationRepository {
     ObjectWithDuration row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithDuration>(
+    return session.db.deleteRow<ObjectWithDuration>(
       row,
       transaction: transaction,
     );
@@ -434,7 +287,7 @@ class ObjectWithDurationRepository {
     required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithDuration>(
+    return session.db.deleteWhere<ObjectWithDuration>(
       where: where(ObjectWithDuration.t),
       transaction: transaction,
     );
@@ -446,7 +299,7 @@ class ObjectWithDurationRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithDuration>(
+    return session.db.count<ObjectWithDuration>(
       where: where?.call(ObjectWithDuration.t),
       limit: limit,
       transaction: transaction,

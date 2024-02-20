@@ -71,16 +71,6 @@ abstract class Address extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'street': street,
-      'inhabitantId': inhabitantId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -88,152 +78,6 @@ abstract class Address extends _i1.TableRow {
       if (inhabitantId != null) 'inhabitantId': inhabitantId,
       if (inhabitant != null) 'inhabitant': inhabitant?.allToJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'street':
-        street = value;
-        return;
-      case 'inhabitantId':
-        inhabitantId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Address>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<AddressTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    AddressInclude? include,
-  }) async {
-    return session.db.find<Address>(
-      where: where != null ? where(Address.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Address?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<AddressTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    AddressInclude? include,
-  }) async {
-    return session.db.findSingleRow<Address>(
-      where: where != null ? where(Address.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Address?> findById(
-    _i1.Session session,
-    int id, {
-    AddressInclude? include,
-  }) async {
-    return session.db.findById<Address>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<AddressTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Address>(
-      where: where(Address.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Address row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Address row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Address row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<AddressTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Address>(
-      where: where != null ? where(Address.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
@@ -340,9 +184,6 @@ class AddressTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use AddressTable.t instead.')
-AddressTable tAddress = AddressTable();
-
 class AddressInclude extends _i1.IncludeObject {
   AddressInclude._({_i2.CitizenInclude? inhabitant}) {
     _inhabitant = inhabitant;
@@ -395,7 +236,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.dbNext.find<Address>(
+    return session.db.find<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -417,7 +258,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Address>(
+    return session.db.findFirstRow<Address>(
       where: where?.call(Address.t),
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
@@ -434,7 +275,7 @@ class AddressRepository {
     _i1.Transaction? transaction,
     AddressInclude? include,
   }) async {
-    return session.dbNext.findById<Address>(
+    return session.db.findById<Address>(
       id,
       transaction: transaction,
       include: include,
@@ -446,7 +287,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Address>(
+    return session.db.insert<Address>(
       rows,
       transaction: transaction,
     );
@@ -457,7 +298,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Address>(
+    return session.db.insertRow<Address>(
       row,
       transaction: transaction,
     );
@@ -469,7 +310,7 @@ class AddressRepository {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Address>(
+    return session.db.update<Address>(
       rows,
       columns: columns?.call(Address.t),
       transaction: transaction,
@@ -482,7 +323,7 @@ class AddressRepository {
     _i1.ColumnSelections<AddressTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Address>(
+    return session.db.updateRow<Address>(
       row,
       columns: columns?.call(Address.t),
       transaction: transaction,
@@ -494,7 +335,7 @@ class AddressRepository {
     List<Address> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Address>(
+    return session.db.delete<Address>(
       rows,
       transaction: transaction,
     );
@@ -505,7 +346,7 @@ class AddressRepository {
     Address row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Address>(
+    return session.db.deleteRow<Address>(
       row,
       transaction: transaction,
     );
@@ -516,7 +357,7 @@ class AddressRepository {
     required _i1.WhereExpressionBuilder<AddressTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Address>(
+    return session.db.deleteWhere<Address>(
       where: where(Address.t),
       transaction: transaction,
     );
@@ -528,7 +369,7 @@ class AddressRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Address>(
+    return session.db.count<Address>(
       where: where?.call(Address.t),
       limit: limit,
       transaction: transaction,
@@ -552,7 +393,7 @@ class AddressAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: inhabitant.id);
-    await session.dbNext.updateRow<Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );
@@ -571,7 +412,7 @@ class AddressDetachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: null);
-    await session.dbNext.updateRow<Address>(
+    await session.db.updateRow<Address>(
       $address,
       columns: [Address.t.inhabitantId],
     );

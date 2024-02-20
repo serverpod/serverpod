@@ -74,17 +74,6 @@ abstract class ChatReadMessage extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'channel': channel,
-      'userId': userId,
-      'lastReadMessageId': lastReadMessageId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -92,147 +81,6 @@ abstract class ChatReadMessage extends _i1.TableRow {
       'userId': userId,
       'lastReadMessageId': lastReadMessageId,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'channel':
-        channel = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'lastReadMessageId':
-        lastReadMessageId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ChatReadMessage>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ChatReadMessage>(
-      where: where != null ? where(ChatReadMessage.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ChatReadMessage?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ChatReadMessage>(
-      where: where != null ? where(ChatReadMessage.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ChatReadMessage?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ChatReadMessage>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ChatReadMessage>(
-      where: where(ChatReadMessage.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ChatReadMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ChatReadMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ChatReadMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatReadMessageTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ChatReadMessage>(
-      where: where != null ? where(ChatReadMessage.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ChatReadMessageInclude include() {
@@ -326,9 +174,6 @@ class ChatReadMessageTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ChatReadMessageTable.t instead.')
-ChatReadMessageTable tChatReadMessage = ChatReadMessageTable();
-
 class ChatReadMessageInclude extends _i1.IncludeObject {
   ChatReadMessageInclude._();
 
@@ -372,7 +217,7 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ChatReadMessage>(
+    return session.db.find<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
@@ -392,7 +237,7 @@ class ChatReadMessageRepository {
     _i1.OrderByListBuilder<ChatReadMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ChatReadMessage>(
+    return session.db.findFirstRow<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       orderBy: orderBy?.call(ChatReadMessage.t),
       orderByList: orderByList?.call(ChatReadMessage.t),
@@ -407,7 +252,7 @@ class ChatReadMessageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ChatReadMessage>(
+    return session.db.findById<ChatReadMessage>(
       id,
       transaction: transaction,
     );
@@ -418,7 +263,7 @@ class ChatReadMessageRepository {
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ChatReadMessage>(
+    return session.db.insert<ChatReadMessage>(
       rows,
       transaction: transaction,
     );
@@ -429,7 +274,7 @@ class ChatReadMessageRepository {
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ChatReadMessage>(
+    return session.db.insertRow<ChatReadMessage>(
       row,
       transaction: transaction,
     );
@@ -441,7 +286,7 @@ class ChatReadMessageRepository {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ChatReadMessage>(
+    return session.db.update<ChatReadMessage>(
       rows,
       columns: columns?.call(ChatReadMessage.t),
       transaction: transaction,
@@ -454,7 +299,7 @@ class ChatReadMessageRepository {
     _i1.ColumnSelections<ChatReadMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ChatReadMessage>(
+    return session.db.updateRow<ChatReadMessage>(
       row,
       columns: columns?.call(ChatReadMessage.t),
       transaction: transaction,
@@ -466,7 +311,7 @@ class ChatReadMessageRepository {
     List<ChatReadMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ChatReadMessage>(
+    return session.db.delete<ChatReadMessage>(
       rows,
       transaction: transaction,
     );
@@ -477,7 +322,7 @@ class ChatReadMessageRepository {
     ChatReadMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ChatReadMessage>(
+    return session.db.deleteRow<ChatReadMessage>(
       row,
       transaction: transaction,
     );
@@ -488,7 +333,7 @@ class ChatReadMessageRepository {
     required _i1.WhereExpressionBuilder<ChatReadMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ChatReadMessage>(
+    return session.db.deleteWhere<ChatReadMessage>(
       where: where(ChatReadMessage.t),
       transaction: transaction,
     );
@@ -500,7 +345,7 @@ class ChatReadMessageRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ChatReadMessage>(
+    return session.db.count<ChatReadMessage>(
       where: where?.call(ChatReadMessage.t),
       limit: limit,
       transaction: transaction,

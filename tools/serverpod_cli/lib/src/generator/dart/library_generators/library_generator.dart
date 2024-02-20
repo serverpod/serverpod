@@ -430,7 +430,7 @@ class LibraryGenerator {
                     refer('modules')
                         .index(literalString(module.name))
                         .assign(refer('Endpoints',
-                                'package:${module.serverPackage}/module.dart')
+                                'package:${module.serverPackage}/${module.serverPackage}.dart')
                             .call([])
                             .cascade('initializeEndpoints')
                             .call([refer('server')]))

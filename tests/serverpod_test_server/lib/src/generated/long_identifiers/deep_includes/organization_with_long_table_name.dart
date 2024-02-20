@@ -81,16 +81,6 @@ abstract class OrganizationWithLongTableName extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      'cityId': cityId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -100,153 +90,6 @@ abstract class OrganizationWithLongTableName extends _i1.TableRow {
       if (cityId != null) 'cityId': cityId,
       if (city != null) 'city': city?.allToJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'cityId':
-        cityId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<OrganizationWithLongTableName>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrganizationWithLongTableNameInclude? include,
-  }) async {
-    return session.db.find<OrganizationWithLongTableName>(
-      where: where != null ? where(OrganizationWithLongTableName.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<OrganizationWithLongTableName?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrganizationWithLongTableNameInclude? include,
-  }) async {
-    return session.db.findSingleRow<OrganizationWithLongTableName>(
-      where: where != null ? where(OrganizationWithLongTableName.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<OrganizationWithLongTableName?> findById(
-    _i1.Session session,
-    int id, {
-    OrganizationWithLongTableNameInclude? include,
-  }) async {
-    return session.db.findById<OrganizationWithLongTableName>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>
-        where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<OrganizationWithLongTableName>(
-      where: where(OrganizationWithLongTableName.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    OrganizationWithLongTableName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    OrganizationWithLongTableName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    OrganizationWithLongTableName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<OrganizationWithLongTableName>(
-      where: where != null ? where(OrganizationWithLongTableName.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static OrganizationWithLongTableNameInclude include({
@@ -405,10 +248,6 @@ class OrganizationWithLongTableNameTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use OrganizationWithLongTableNameTable.t instead.')
-OrganizationWithLongTableNameTable tOrganizationWithLongTableName =
-    OrganizationWithLongTableNameTable();
-
 class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
   OrganizationWithLongTableNameInclude._({
     _i2.PersonWithLongTableNameIncludeList? people,
@@ -474,7 +313,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.find<OrganizationWithLongTableName>(
+    return session.db.find<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -496,7 +335,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<OrganizationWithLongTableName>(
+    return session.db.findFirstRow<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
@@ -513,7 +352,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.Transaction? transaction,
     OrganizationWithLongTableNameInclude? include,
   }) async {
-    return session.dbNext.findById<OrganizationWithLongTableName>(
+    return session.db.findById<OrganizationWithLongTableName>(
       id,
       transaction: transaction,
       include: include,
@@ -525,7 +364,7 @@ class OrganizationWithLongTableNameRepository {
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<OrganizationWithLongTableName>(
+    return session.db.insert<OrganizationWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -536,7 +375,7 @@ class OrganizationWithLongTableNameRepository {
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<OrganizationWithLongTableName>(
+    return session.db.insertRow<OrganizationWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -548,7 +387,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<OrganizationWithLongTableName>(
+    return session.db.update<OrganizationWithLongTableName>(
       rows,
       columns: columns?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
@@ -561,7 +400,7 @@ class OrganizationWithLongTableNameRepository {
     _i1.ColumnSelections<OrganizationWithLongTableNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<OrganizationWithLongTableName>(
+    return session.db.updateRow<OrganizationWithLongTableName>(
       row,
       columns: columns?.call(OrganizationWithLongTableName.t),
       transaction: transaction,
@@ -573,7 +412,7 @@ class OrganizationWithLongTableNameRepository {
     List<OrganizationWithLongTableName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<OrganizationWithLongTableName>(
+    return session.db.delete<OrganizationWithLongTableName>(
       rows,
       transaction: transaction,
     );
@@ -584,7 +423,7 @@ class OrganizationWithLongTableNameRepository {
     OrganizationWithLongTableName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<OrganizationWithLongTableName>(
+    return session.db.deleteRow<OrganizationWithLongTableName>(
       row,
       transaction: transaction,
     );
@@ -596,7 +435,7 @@ class OrganizationWithLongTableNameRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<OrganizationWithLongTableName>(
+    return session.db.deleteWhere<OrganizationWithLongTableName>(
       where: where(OrganizationWithLongTableName.t),
       transaction: transaction,
     );
@@ -608,7 +447,7 @@ class OrganizationWithLongTableNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<OrganizationWithLongTableName>(
+    return session.db.count<OrganizationWithLongTableName>(
       where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       transaction: transaction,
@@ -635,7 +474,7 @@ class OrganizationWithLongTableNameAttachRepository {
         .map(
             (e) => e.copyWith(organizationId: organizationWithLongTableName.id))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -659,7 +498,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
 
     var $organizationWithLongTableName =
         organizationWithLongTableName.copyWith(cityId: city.id);
-    await session.dbNext.updateRow<OrganizationWithLongTableName>(
+    await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationWithLongTableName,
       columns: [OrganizationWithLongTableName.t.cityId],
     );
@@ -679,7 +518,7 @@ class OrganizationWithLongTableNameAttachRowRepository {
 
     var $personWithLongTableName = personWithLongTableName.copyWith(
         organizationId: organizationWithLongTableName.id);
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -700,7 +539,7 @@ class OrganizationWithLongTableNameDetachRepository {
     var $personWithLongTableName = personWithLongTableName
         .map((e) => e.copyWith(organizationId: null))
         .toList();
-    await session.dbNext.update<_i2.PersonWithLongTableName>(
+    await session.db.update<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );
@@ -720,7 +559,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
 
     var $organizationwithlongtablename =
         organizationwithlongtablename.copyWith(cityId: null);
-    await session.dbNext.updateRow<OrganizationWithLongTableName>(
+    await session.db.updateRow<OrganizationWithLongTableName>(
       $organizationwithlongtablename,
       columns: [OrganizationWithLongTableName.t.cityId],
     );
@@ -736,7 +575,7 @@ class OrganizationWithLongTableNameDetachRowRepository {
 
     var $personWithLongTableName =
         personWithLongTableName.copyWith(organizationId: null);
-    await session.dbNext.updateRow<_i2.PersonWithLongTableName>(
+    await session.db.updateRow<_i2.PersonWithLongTableName>(
       $personWithLongTableName,
       columns: [_i2.PersonWithLongTableName.t.organizationId],
     );

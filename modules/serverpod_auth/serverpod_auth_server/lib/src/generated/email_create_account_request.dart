@@ -83,18 +83,6 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'userName': userName,
-      'email': email,
-      'hash': hash,
-      'verificationCode': verificationCode,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -103,150 +91,6 @@ abstract class EmailCreateAccountRequest extends _i1.TableRow {
       'hash': hash,
       'verificationCode': verificationCode,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userName':
-        userName = value;
-        return;
-      case 'email':
-        email = value;
-        return;
-      case 'hash':
-        hash = value;
-        return;
-      case 'verificationCode':
-        verificationCode = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<EmailCreateAccountRequest>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<EmailCreateAccountRequest>(
-      where: where != null ? where(EmailCreateAccountRequest.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<EmailCreateAccountRequest?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<EmailCreateAccountRequest>(
-      where: where != null ? where(EmailCreateAccountRequest.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<EmailCreateAccountRequest?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<EmailCreateAccountRequest>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<EmailCreateAccountRequest>(
-      where: where(EmailCreateAccountRequest.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<EmailCreateAccountRequest>(
-      where: where != null ? where(EmailCreateAccountRequest.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static EmailCreateAccountRequestInclude include() {
@@ -352,10 +196,6 @@ class EmailCreateAccountRequestTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use EmailCreateAccountRequestTable.t instead.')
-EmailCreateAccountRequestTable tEmailCreateAccountRequest =
-    EmailCreateAccountRequestTable();
-
 class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
   EmailCreateAccountRequestInclude._();
 
@@ -399,7 +239,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<EmailCreateAccountRequest>(
+    return session.db.find<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -419,7 +259,7 @@ class EmailCreateAccountRequestRepository {
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<EmailCreateAccountRequest>(
+    return session.db.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
@@ -434,7 +274,7 @@ class EmailCreateAccountRequestRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<EmailCreateAccountRequest>(
+    return session.db.findById<EmailCreateAccountRequest>(
       id,
       transaction: transaction,
     );
@@ -445,7 +285,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<EmailCreateAccountRequest>(
+    return session.db.insert<EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -456,7 +296,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<EmailCreateAccountRequest>(
+    return session.db.insertRow<EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -468,7 +308,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<EmailCreateAccountRequest>(
+    return session.db.update<EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -481,7 +321,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<EmailCreateAccountRequest>(
+    return session.db.updateRow<EmailCreateAccountRequest>(
       row,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
@@ -493,7 +333,7 @@ class EmailCreateAccountRequestRepository {
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<EmailCreateAccountRequest>(
+    return session.db.delete<EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
     );
@@ -504,7 +344,7 @@ class EmailCreateAccountRequestRepository {
     EmailCreateAccountRequest row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<EmailCreateAccountRequest>(
+    return session.db.deleteRow<EmailCreateAccountRequest>(
       row,
       transaction: transaction,
     );
@@ -515,7 +355,7 @@ class EmailCreateAccountRequestRepository {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<EmailCreateAccountRequest>(
+    return session.db.deleteWhere<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
       transaction: transaction,
     );
@@ -527,7 +367,7 @@ class EmailCreateAccountRequestRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<EmailCreateAccountRequest>(
+    return session.db.count<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
       transaction: transaction,

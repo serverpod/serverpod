@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_legacy.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
@@ -41,25 +40,11 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  late final DatabaseLegacy? _db;
+  Database? _db;
 
   /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  DatabaseLegacy get db {
+  Database get db {
     var database = _db;
-    if (database == null) {
-      throw Exception('Database is not available in this session.');
-    }
-    return database;
-  }
-
-  /// Access to the database. Replaces db in the future.
-  late final Database? _dbNext;
-
-  /// Access to the database. Replaces db in the future.
-  Database get dbNext {
-    var database = _dbNext;
     if (database == null) {
       throw Exception('Database is not available in this session.');
     }
@@ -108,13 +93,7 @@ abstract class Session {
     messages = MessageCentralAccess._(this);
 
     if (Features.enableDatabase) {
-      // ignore: deprecated_member_use_from_same_package
-      _db = DatabaseLegacy(session: this);
-      _dbNext = Database(session: this);
-    } else {
-      // ignore: deprecated_member_use_from_same_package
-      _db = null;
-      _dbNext = null;
+      _db = server.createDatabase(this);
     }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
@@ -421,7 +400,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.dbNext
+    await _session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }

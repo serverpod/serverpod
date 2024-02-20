@@ -68,16 +68,6 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'normal': normal,
-      'database': database,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -85,144 +75,6 @@ abstract class ObjectFieldScopes extends _i1.TableRow {
       if (api != null) 'api': api,
       if (database != null) 'database': database,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'normal':
-        normal = value;
-        return;
-      case 'database':
-        database = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ObjectFieldScopes>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ObjectFieldScopes?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ObjectFieldScopes?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectFieldScopes>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ObjectFieldScopes>(
-      where: where(ObjectFieldScopes.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ObjectFieldScopes>(
-      where: where != null ? where(ObjectFieldScopes.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ObjectFieldScopesInclude include() {
@@ -306,9 +158,6 @@ class ObjectFieldScopesTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ObjectFieldScopesTable.t instead.')
-ObjectFieldScopesTable tObjectFieldScopes = ObjectFieldScopesTable();
-
 class ObjectFieldScopesInclude extends _i1.IncludeObject {
   ObjectFieldScopesInclude._();
 
@@ -352,7 +201,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectFieldScopes>(
+    return session.db.find<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -372,7 +221,7 @@ class ObjectFieldScopesRepository {
     _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectFieldScopes>(
+    return session.db.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
@@ -387,7 +236,7 @@ class ObjectFieldScopesRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectFieldScopes>(
+    return session.db.findById<ObjectFieldScopes>(
       id,
       transaction: transaction,
     );
@@ -398,7 +247,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectFieldScopes>(
+    return session.db.insert<ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -409,7 +258,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectFieldScopes>(
+    return session.db.insertRow<ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -421,7 +270,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectFieldScopes>(
+    return session.db.update<ObjectFieldScopes>(
       rows,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -434,7 +283,7 @@ class ObjectFieldScopesRepository {
     _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectFieldScopes>(
+    return session.db.updateRow<ObjectFieldScopes>(
       row,
       columns: columns?.call(ObjectFieldScopes.t),
       transaction: transaction,
@@ -446,7 +295,7 @@ class ObjectFieldScopesRepository {
     List<ObjectFieldScopes> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectFieldScopes>(
+    return session.db.delete<ObjectFieldScopes>(
       rows,
       transaction: transaction,
     );
@@ -457,7 +306,7 @@ class ObjectFieldScopesRepository {
     ObjectFieldScopes row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectFieldScopes>(
+    return session.db.deleteRow<ObjectFieldScopes>(
       row,
       transaction: transaction,
     );
@@ -468,7 +317,7 @@ class ObjectFieldScopesRepository {
     required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectFieldScopes>(
+    return session.db.deleteWhere<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),
       transaction: transaction,
     );
@@ -480,7 +329,7 @@ class ObjectFieldScopesRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectFieldScopes>(
+    return session.db.count<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       transaction: transaction,

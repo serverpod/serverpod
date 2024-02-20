@@ -5,11 +5,6 @@ import 'package:serverpod_test_server/test_util/config.dart';
 import 'package:serverpod_test_server/test_util/service_key_manager.dart';
 import 'package:test/test.dart';
 
-Future<void> setupTestData(Client client) async {
-  await client.basicDatabaseLegacy.deleteAllSimpleTestData();
-  await client.basicDatabaseLegacy.createSimpleTestData(100);
-}
-
 void main() {
   var client = Client(serverUrl);
   var serviceClient = service.Client(
@@ -163,7 +158,8 @@ void main() {
     });
 
     test('Transaction query log', () async {
-      await setupTestData(client);
+      await client.basicDatabase.deleteAllSimpleTestData();
+      await client.basicDatabase.createSimpleTestData(100);
       await client.transactionsDatabase.updateInsertDelete(50, 500, 0);
       await Future.delayed(const Duration(seconds: 1));
 

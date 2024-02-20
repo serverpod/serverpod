@@ -80,16 +80,6 @@ abstract class Cat extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      'motherId': motherId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -99,152 +89,6 @@ abstract class Cat extends _i1.TableRow {
       if (kittens != null)
         'kittens': kittens?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'motherId':
-        motherId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Cat>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CatInclude? include,
-  }) async {
-    return session.db.find<Cat>(
-      where: where != null ? where(Cat.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Cat?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    CatInclude? include,
-  }) async {
-    return session.db.findSingleRow<Cat>(
-      where: where != null ? where(Cat.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Cat?> findById(
-    _i1.Session session,
-    int id, {
-    CatInclude? include,
-  }) async {
-    return session.db.findById<Cat>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CatTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Cat>(
-      where: where(Cat.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Cat row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Cat row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Cat row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Cat>(
-      where: where != null ? where(Cat.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static CatInclude include({
@@ -398,9 +242,6 @@ class CatTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use CatTable.t instead.')
-CatTable tCat = CatTable();
-
 class CatInclude extends _i1.IncludeObject {
   CatInclude._({
     _i2.CatInclude? mother,
@@ -466,7 +307,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.dbNext.find<Cat>(
+    return session.db.find<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -488,7 +329,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Cat>(
+    return session.db.findFirstRow<Cat>(
       where: where?.call(Cat.t),
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
@@ -505,7 +346,7 @@ class CatRepository {
     _i1.Transaction? transaction,
     CatInclude? include,
   }) async {
-    return session.dbNext.findById<Cat>(
+    return session.db.findById<Cat>(
       id,
       transaction: transaction,
       include: include,
@@ -517,7 +358,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Cat>(
+    return session.db.insert<Cat>(
       rows,
       transaction: transaction,
     );
@@ -528,7 +369,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Cat>(
+    return session.db.insertRow<Cat>(
       row,
       transaction: transaction,
     );
@@ -540,7 +381,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Cat>(
+    return session.db.update<Cat>(
       rows,
       columns: columns?.call(Cat.t),
       transaction: transaction,
@@ -553,7 +394,7 @@ class CatRepository {
     _i1.ColumnSelections<CatTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Cat>(
+    return session.db.updateRow<Cat>(
       row,
       columns: columns?.call(Cat.t),
       transaction: transaction,
@@ -565,7 +406,7 @@ class CatRepository {
     List<Cat> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Cat>(
+    return session.db.delete<Cat>(
       rows,
       transaction: transaction,
     );
@@ -576,7 +417,7 @@ class CatRepository {
     Cat row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Cat>(
+    return session.db.deleteRow<Cat>(
       row,
       transaction: transaction,
     );
@@ -587,7 +428,7 @@ class CatRepository {
     required _i1.WhereExpressionBuilder<CatTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Cat>(
+    return session.db.deleteWhere<Cat>(
       where: where(Cat.t),
       transaction: transaction,
     );
@@ -599,7 +440,7 @@ class CatRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Cat>(
+    return session.db.count<Cat>(
       where: where?.call(Cat.t),
       limit: limit,
       transaction: transaction,
@@ -624,7 +465,7 @@ class CatAttachRepository {
 
     var $nestedCat =
         nestedCat.map((e) => e.copyWith(motherId: cat.id)).toList();
-    await session.dbNext.update<_i2.Cat>(
+    await session.db.update<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
     );
@@ -647,7 +488,7 @@ class CatAttachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: mother.id);
-    await session.dbNext.updateRow<Cat>(
+    await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
     );
@@ -666,7 +507,7 @@ class CatAttachRowRepository {
     }
 
     var $nestedCat = nestedCat.copyWith(motherId: cat.id);
-    await session.dbNext.updateRow<_i2.Cat>(
+    await session.db.updateRow<_i2.Cat>(
       $nestedCat,
       columns: [_i2.Cat.t.motherId],
     );
@@ -685,7 +526,7 @@ class CatDetachRepository {
     }
 
     var $cat = cat.map((e) => e.copyWith(motherId: null)).toList();
-    await session.dbNext.update<_i2.Cat>(
+    await session.db.update<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
     );
@@ -704,7 +545,7 @@ class CatDetachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.dbNext.updateRow<Cat>(
+    await session.db.updateRow<Cat>(
       $cat,
       columns: [Cat.t.motherId],
     );
@@ -719,7 +560,7 @@ class CatDetachRowRepository {
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.dbNext.updateRow<_i2.Cat>(
+    await session.db.updateRow<_i2.Cat>(
       $cat,
       columns: [_i2.Cat.t.motherId],
     );

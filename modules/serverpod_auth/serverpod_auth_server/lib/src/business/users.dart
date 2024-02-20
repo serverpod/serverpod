@@ -112,7 +112,7 @@ class Users {
 
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
-    await session.dbNext.unsafeQuery(
+    await session.db.unsafeQuery(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
     if (AuthConfig.current.onUserUpdated != null) {
@@ -134,7 +134,7 @@ class Users {
     }
     // Mark user as blocked in database
     userInfo.blocked = true;
-    await session.dbNext.updateRow(userInfo);
+    await session.db.updateRow(userInfo);
     await invalidateCacheForUser(session, userId);
     // Sign out user
     await session.auth.signOutUser(userId: userId);
@@ -149,7 +149,7 @@ class Users {
       throw 'userId $userId already unblocked';
     }
     userInfo.blocked = false;
-    await session.dbNext.updateRow(userInfo);
+    await session.db.updateRow(userInfo);
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user info

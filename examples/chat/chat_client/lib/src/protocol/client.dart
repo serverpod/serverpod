@@ -11,8 +11,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
 import 'package:chat_client/src/protocol/channel.dart' as _i3;
-import 'package:serverpod_auth_client/module.dart' as _i4;
-import 'package:serverpod_chat_client/module.dart' as _i5;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
+import 'package:serverpod_chat_client/serverpod_chat_client.dart' as _i5;
 import 'protocol.dart' as _i6;
 
 /// {@category Endpoint}

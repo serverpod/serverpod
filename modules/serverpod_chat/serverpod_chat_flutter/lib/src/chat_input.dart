@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 
 /// Input control for the chat. Typically, a chat is setup using a [ChatInput]

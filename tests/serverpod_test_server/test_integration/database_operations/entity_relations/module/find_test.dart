@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
 import 'package:test/test.dart';
