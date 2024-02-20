@@ -150,7 +150,6 @@ class DatabaseConnection {
         await mappedResultsQuery(session, query, transaction: transaction);
 
     return result
-        .map((t) => t[table.tableName])
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
         .toList();
   }
@@ -211,7 +210,6 @@ class DatabaseConnection {
         await mappedResultsQuery(session, query, transaction: transaction);
 
     return result
-        .map((t) => t[table.tableName])
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
         .toList();
   }
@@ -378,35 +376,20 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<Map<String, Map<String, dynamic>>>> mappedResultsQuery(
+  Future<Iterable<Map<String, dynamic>>> mappedResultsQuery(
     Session session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
   }) async {
-    var startTime = DateTime.now();
+    var result = await this.query(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
 
-    try {
-      var context = transaction?.postgresContext ?? _postgresConnection;
-
-      var result = await context.mappedResultsQuery(
-        query,
-        allowReuse: false,
-        timeoutInSeconds: timeoutInSeconds,
-        substitutionValues: {},
-      );
-
-      _logQuery(
-        session,
-        query,
-        startTime,
-        numRowsAffected: result.length,
-      );
-      return result;
-    } catch (exception, trace) {
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
+    return result.map((row) => row.toColumnMap());
   }
 
   Future<List<T>> _deserializedMappedQuery<T extends TableRow>(
@@ -509,7 +492,7 @@ class DatabaseConnection {
     Session session,
     Table table,
     Include? include,
-    List<Map<String, Map<String, dynamic>>> previousResultSet,
+    Iterable<Map<String, dynamic>> previousResultSet,
   ) async {
     if (include == null) return {};
 
@@ -673,15 +656,11 @@ class _PostgresTransaction extends Transaction {
 /// Extracts all the primary keys from the result set that are referenced by
 /// the given [relationTable].
 Set<T> _extractPrimaryKeyForRelation<T>(
-  List<Map<String, Map<String, dynamic>>> resultSet,
+  Iterable<Map<String, dynamic>> resultSet,
   TableRelation tableRelation,
 ) {
-  var foreignTableName = tableRelation.fieldTableName;
   var idFieldName = tableRelation.fieldQueryAliasWithJoins;
 
-  var ids = resultSet
-      .map((e) => e[foreignTableName]?[idFieldName] as T?)
-      .whereType<T>()
-      .toSet();
+  var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
   return ids;
 }
