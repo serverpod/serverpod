@@ -5,5 +5,5 @@ typedef TransactionFunction<R> = Future<R> Function(Transaction transaction);
 abstract interface class Transaction {
   /// Cancels the transaction.
   /// Subsequent calls to the database will have no effect.
-  void cancel();
+  Future<void> cancel();
 }

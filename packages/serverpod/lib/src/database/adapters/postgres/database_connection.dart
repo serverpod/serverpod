@@ -701,7 +701,7 @@ class _PostgresTransaction implements Transaction {
   _PostgresTransaction(this.executionContext);
 
   @override
-  void cancel() => executionContext.cancelTransaction();
+  Future<void> cancel() async => executionContext.cancelTransaction();
 }
 
 /// Extracts all the primary keys from the result set that are referenced by
