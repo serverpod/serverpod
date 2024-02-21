@@ -18,8 +18,13 @@ abstract class DatabaseResultRow extends UnmodifiableListView<dynamic> {
   DatabaseResultRow(super.values);
 
   /// Returns a single-level map that maps the column name to the value
-  /// returned on that position. When multiple columns have the same name,
+  /// on the corresponding index. When multiple columns have the same name,
   /// the later may override the previous values.
+  ///
+  /// As an example of how this works:
+  /// * Given a query 'SELECT id, name FROM table;'
+  /// * That returns the result row [1, 'John'],
+  /// * Then the column map would be {'id': 1, 'name': 'John'}
   Map<String, dynamic> toColumnMap();
 }
 
