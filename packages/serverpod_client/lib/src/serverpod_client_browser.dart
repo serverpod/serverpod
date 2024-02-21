@@ -1,8 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'serverpod_client_exception.dart';
@@ -14,7 +15,8 @@ import 'serverpod_client_shared_private.dart';
 /// This is the concrete implementation using the http library
 /// (for Flutter web).
 abstract class ServerpodClient extends ServerpodClientShared {
-  late http.Client _httpClient;
+  final _dio = Dio();
+
   bool _initialized = false;
 
   /// Creates a new ServerpodClient.
@@ -26,9 +28,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
-  }) {
-    _httpClient = http.Client();
-  }
+  });
 
   Future<void> _initialize() async {
     _initialized = true;
@@ -43,22 +43,21 @@ abstract class ServerpodClient extends ServerpodClientShared {
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
-      var url = Uri.parse('$host$endpoint');
 
-      var response = await _httpClient
+      var response = await _dio
           .post(
-            url,
-            body: body,
+            '$host$endpoint',
+            data: body,
           )
           .timeout(connectionTimeout);
 
-      data = response.body;
+      data = response.data.toString();
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != HttpStatus.ok) {
         throw getExceptionFrom(
           data: data,
           serializationManager: serializationManager,
-          statusCode: response.statusCode,
+          statusCode: response.statusCode ?? HttpStatus.badRequest,
         );
       }
 
@@ -68,9 +67,9 @@ abstract class ServerpodClient extends ServerpodClientShared {
         return parseData<T>(data, T, serializationManager);
       }
     } catch (e) {
-      if (e is http.ClientException) {
+      if (e is DioException) {
         var message = data ?? 'Unknown server response code. ($e)';
-        throw (ServerpodClientException(message, -1));
+        throw (ServerpodClientException(message, e.response?.statusCode ?? -1));
       }
 
       if (logFailedCalls) {
@@ -91,7 +90,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
   /// Closes the connection to the server.
   @override
   void close() {
-    _httpClient.close();
+    _dio.close();
     super.close();
   }
 }
