@@ -448,7 +448,9 @@ TypeDefinition parseType(
       ?.cast<TypeDefinition?>()
       .firstWhere((c) => c?.className == className, orElse: () => null);
 
-  if (extraClass != null) return extraClass;
+  if (extraClass != null) {
+    return isNullable ? extraClass.asNullable : extraClass;
+  }
 
   return TypeDefinition.mixedUrlAndClassName(
     mixed: className,
