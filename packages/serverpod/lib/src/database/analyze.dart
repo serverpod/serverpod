@@ -180,7 +180,7 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 // The first ARRAY resolves the column name for each of the columns in conkey.
 // The second ARRAY resolves the column name for each of the referenced columns in confkey.
         '''
-SELECT conname, confupdtype, confdeltype, confmatchtype,
+SELECT conname::text, confupdtype::text, confdeltype::text, confmatchtype::text,
 ARRAY(
        SELECT attname::text
        FROM unnest(conkey) as i
