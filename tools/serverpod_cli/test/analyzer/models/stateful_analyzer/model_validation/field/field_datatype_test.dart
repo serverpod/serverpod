@@ -1081,6 +1081,55 @@ void main() {
         'package:shared_package/src/lib/custom_example.dart',
       );
     });
+
+    test('then the type is not nullable', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.nullable, isFalse);
+    });
+  });
+
+  group(
+      'Given a class with a nullable type set to the class name of a custom type',
+      () {
+    var type = TypeDefinition(
+      className: 'CustomExample',
+      generics: const [],
+      nullable: false,
+      url: 'package:shared_package/src/lib/custom_example.dart',
+      customClass: true,
+    );
+
+    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: CustomExample?
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type is nullable.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.nullable, isTrue);
+    });
   });
 
   group('Given a class with a type set to a list of custom classes', () {
