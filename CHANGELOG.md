@@ -1,3 +1,11 @@
+## 2.0.0-alpha.1
+- feat: Serverpod mini. Allows running Serverpod without the database.
+- fix: Changes root file name in modules to follow Dart standards.
+- fix: BREAKING. Removes deprecated methods.
+- fix: BREAKING. Introduces `DatabaseException`.
+- fix: BREAKING. Introduces new types for database result sets.
+- fix: BREAKING. Updates transaction interface in database.
+
 ## 1.2.3
 - fix: Correctly cleans up health check manager when shutting down server.
 - fix: Supports projects without a config generator file in CLI.
