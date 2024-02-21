@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 class MockTransaction implements Transaction {
   @override
-  void cancel() {}
+  Future<void> cancel() async {}
 }
 
 void main() async {
@@ -69,7 +69,7 @@ void main() async {
     await session.db.transaction<void>(
       (transaction) async {
         await UniqueData.db.insertRow(session, data, transaction: transaction);
-        transaction.cancel();
+        await transaction.cancel();
       },
     );
 
@@ -90,7 +90,7 @@ void main() async {
     await session.db.transaction<void>(
       (transaction) async {
         await UniqueData.db.insertRow(session, data, transaction: transaction);
-        transaction.cancel();
+        await transaction.cancel();
         await UniqueData.db.insertRow(session, data2, transaction: transaction);
       },
     );

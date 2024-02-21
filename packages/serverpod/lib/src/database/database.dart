@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:retry/retry.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
@@ -255,17 +254,9 @@ class Database {
   }
 
   /// Executes a [Transaction].
-  Future<R> transaction<R>(
-    TransactionFunction<R> transactionFunction, {
-    RetryOptions? retryOptions,
-    FutureOr<R> Function()? orElse,
-    FutureOr<bool> Function(Exception exception)? retryIf,
-  }) async {
+  Future<R> transaction<R>(TransactionFunction<R> transactionFunction) async {
     return await _databaseConnection.transaction(
       transactionFunction,
-      retryOptions: retryOptions,
-      orElse: orElse,
-      retryIf: retryIf,
     );
   }
 
