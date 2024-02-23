@@ -205,25 +205,6 @@ class Database {
     );
   }
 
-  /// Executes a single SQL query.
-  /// Returns an [Iterable] with the result rows represented by a [Map] with
-  /// the column name as key and column row content as value.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<Iterable<Map<String, dynamic>>> unsafeQueryMappedResults(
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-    QueryMode? queryMode,
-  }) async {
-    return _databaseConnection.mappedResultsQuery(
-      _session,
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
-      queryMode: queryMode,
-    );
-  }
-
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   /// You are responsible to sanitize the query to avoid SQL injection.

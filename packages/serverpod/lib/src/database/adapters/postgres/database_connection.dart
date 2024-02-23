@@ -152,7 +152,7 @@ class DatabaseConnection {
         'INSERT INTO "${table.tableName}" ($columnNames) VALUES $values RETURNING *';
 
     var result =
-        await mappedResultsQuery(session, query, transaction: transaction);
+        await _mappedResultsQuery(session, query, transaction: transaction);
 
     return result
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
@@ -213,7 +213,7 @@ class DatabaseConnection {
         'UPDATE "${table.tableName}" AS t SET $setColumns FROM (VALUES $values) AS data($columnNames) WHERE data.id = t.id RETURNING *';
 
     var result =
-        await mappedResultsQuery(session, query, transaction: transaction);
+        await _mappedResultsQuery(session, query, transaction: transaction);
 
     return result
         .map((row) => _poolManager.serializationManager.deserialize<T>(row))
@@ -415,7 +415,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<Iterable<Map<String, dynamic>>> mappedResultsQuery(
+  Future<Iterable<Map<String, dynamic>>> _mappedResultsQuery(
     Session session,
     String query, {
     int? timeoutInSeconds,
@@ -441,7 +441,7 @@ class DatabaseConnection {
     Transaction? transaction,
     Include? include,
   }) async {
-    var result = await mappedResultsQuery(
+    var result = await _mappedResultsQuery(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
@@ -568,7 +568,7 @@ class DatabaseConnection {
             .withInclude(nestedInclude.include)
             .build();
 
-        var includeListResult = await mappedResultsQuery(session, query);
+        var includeListResult = await _mappedResultsQuery(session, query);
 
         var resolvedLists = await _queryIncludedLists(
           session,
