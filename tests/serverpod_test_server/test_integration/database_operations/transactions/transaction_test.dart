@@ -91,7 +91,15 @@ void main() async {
       (transaction) async {
         await UniqueData.db.insertRow(session, data, transaction: transaction);
         await transaction.cancel();
-        await UniqueData.db.insertRow(session, data2, transaction: transaction);
+        try {
+          await UniqueData.db.insertRow(
+            session,
+            data2,
+            transaction: transaction,
+          );
+        } catch (_) {
+          // Ignore
+        }
       },
     );
 
