@@ -403,40 +403,15 @@ class DatabaseConnection {
     Transaction? transaction,
     QueryMode? queryMode,
   }) async {
-    var postgresTransaction = _castToPostgresTransaction(transaction);
+    var result = await _query(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+      queryMode: queryMode,
+    );
 
-    var timeout =
-        timeoutInSeconds != null ? Duration(seconds: timeoutInSeconds) : null;
-
-    var startTime = DateTime.now();
-    try {
-      var context =
-          postgresTransaction?.executionContext ?? _postgresConnection;
-
-      var result = await context.execute(
-        query,
-        timeout: timeout,
-        queryMode: _resolveQueryMode(queryMode),
-      );
-      _logQuery(session, query, startTime);
-      return result.affectedRows;
-    } catch (exception, trace) {
-      if (exception is pg.PgException) {
-        var serverpodException = DatabaseException(
-          exception.message,
-        );
-        _logQuery(
-          session,
-          query,
-          startTime,
-          exception: serverpodException,
-          trace: trace,
-        );
-        throw serverpodException;
-      }
-      _logQuery(session, query, startTime, exception: exception, trace: trace);
-      rethrow;
-    }
+    return result.affectedRows;
   }
 
   /// For most cases use the corresponding method in [Database] instead.
