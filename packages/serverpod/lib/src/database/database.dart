@@ -204,23 +204,6 @@ class Database {
     );
   }
 
-  /// Executes a single SQL query.
-  /// Returns an [Iterable] with the result rows represented by a [Map] with
-  /// the column name as key and column row content as value.
-  /// You are responsible to sanitize the query to avoid SQL injection.
-  Future<Iterable<Map<String, dynamic>>> unsafeQueryMappedResults(
-    String query, {
-    int? timeoutInSeconds,
-    Transaction? transaction,
-  }) async {
-    return _databaseConnection.mappedResultsQuery(
-      _session,
-      query,
-      timeoutInSeconds: timeoutInSeconds,
-      transaction: transaction,
-    );
-  }
-
   /// Executes a single SQL query. A [List] of rows represented of another
   /// [List] with columns will be returned.
   /// You are responsible to sanitize the query to avoid SQL injection.
@@ -246,6 +229,43 @@ class Database {
     Transaction? transaction,
   }) async {
     return _databaseConnection.execute(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// A [List] of rows represented of another [List] with columns will be
+  /// returned.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<DatabaseResult> unsafeSimpleQuery(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleQuery(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// Returns the number of rows that were affected by the query.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<int> unsafeSimpleExecute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleExecute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,

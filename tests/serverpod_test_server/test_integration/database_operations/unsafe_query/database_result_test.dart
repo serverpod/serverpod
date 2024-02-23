@@ -45,7 +45,7 @@ void main() async {
     late Town town;
     late Company company;
     late DatabaseResult result;
-    setUp(() async {
+    setUpAll(() async {
       town = await Town.db.insertRow(
         session,
         Town(name: 'Stockholm'),
@@ -71,7 +71,7 @@ ORDER BY
       ''');
     });
 
-    tearDown(() async {
+    tearDownAll(() async {
       await Company.db.deleteWhere(session, where: (_) => Constant.bool(true));
       await Town.db.deleteWhere(session, where: (_) => Constant.bool(true));
     });

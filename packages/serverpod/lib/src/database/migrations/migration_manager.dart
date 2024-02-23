@@ -147,7 +147,9 @@ class MigrationManager {
       return null;
     }
 
-    await session.db.unsafeExecute(repairMigration.sqlMigration);
+    await session.db.unsafeSimpleExecute(
+      repairMigration.sqlMigration,
+    );
     return repairMigration.versionName;
   }
 
@@ -186,7 +188,7 @@ class MigrationManager {
     var migrationsApplied = <String>[];
     for (var code in sqlToExecute) {
       try {
-        await session.db.unsafeExecute(code.sql);
+        await session.db.unsafeSimpleExecute(code.sql);
         migrationsApplied.add(code.version);
       } catch (e) {
         stderr.writeln('Failed to apply migration ${code.version}.');
