@@ -6,7 +6,6 @@ export 'src/database/concepts/expressions.dart';
 export 'src/database/concepts/includes.dart';
 export 'src/database/concepts/many_relation.dart';
 export 'src/database/concepts/order.dart';
-export 'src/database/concepts/query_mode.dart';
 export 'src/database/concepts/table.dart';
 export 'src/database/concepts/transaction.dart';
 export 'src/database/exceptions.dart';

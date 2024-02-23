@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
-import 'package:serverpod/src/database/concepts/query_mode.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
@@ -328,19 +327,35 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<PostgresDatabaseResult> query(
+  Future<PostgresDatabaseResult> simpleQuery(
     Session session,
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      queryMode: queryMode,
+      simpleQueryMode: true,
+    );
+
+    return PostgresDatabaseResult(result);
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<PostgresDatabaseResult> query(
+    Session session,
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var result = await _query(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
     );
 
     return PostgresDatabaseResult(result);
@@ -351,8 +366,8 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
     bool ignoreRows = false,
+    bool simpleQueryMode = false,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
@@ -366,8 +381,8 @@ class DatabaseConnection {
       var result = await context.execute(
         query,
         timeout: timeout,
-        queryMode: _resolveQueryMode(queryMode),
         ignoreRows: ignoreRows,
+        queryMode: simpleQueryMode ? pg.QueryMode.simple : null,
       );
 
       _logQuery(
@@ -403,15 +418,32 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      queryMode: queryMode,
       ignoreRows: true,
+    );
+
+    return result.affectedRows;
+  }
+
+  /// For most cases use the corresponding method in [Database] instead.
+  Future<int> simpleExecute(
+    Session session,
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    var result = await _query(
+      session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+      ignoreRows: true,
+      simpleQueryMode: true,
     );
 
     return result.affectedRows;
@@ -423,14 +455,12 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      queryMode: queryMode,
     );
 
     return result.map((row) => row.toColumnMap());
@@ -723,15 +753,4 @@ Set<T> _extractPrimaryKeyForRelation<T>(
 
   var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
   return ids;
-}
-
-pg.QueryMode? _resolveQueryMode(QueryMode? queryMode) {
-  if (queryMode == null) return null;
-
-  switch (queryMode) {
-    case QueryMode.simple:
-      return pg.QueryMode.simple;
-    case QueryMode.extended:
-      return pg.QueryMode.extended;
-  }
 }

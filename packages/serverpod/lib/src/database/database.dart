@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
-import 'package:serverpod/src/database/concepts/query_mode.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
@@ -212,14 +211,12 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
   }) async {
     return _databaseConnection.query(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      queryMode: queryMode,
     );
   }
 
@@ -230,14 +227,49 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
-    QueryMode? queryMode,
   }) async {
     return _databaseConnection.execute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
-      queryMode: queryMode,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// A [List] of rows represented of another [List] with columns will be
+  /// returned.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<DatabaseResult> unsafeSimpleQuery(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleQuery(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+    );
+  }
+
+  /// Executes a single SQL query in simple query mode.
+  /// Returns the number of rows that were affected by the query.
+  /// You are responsible to sanitize the query to avoid SQL injection.
+  ///
+  /// Simple query mode is useful for queries that contain multiple statements.
+  Future<int> unsafeSimpleExecute(
+    String query, {
+    int? timeoutInSeconds,
+    Transaction? transaction,
+  }) async {
+    return _databaseConnection.simpleExecute(
+      _session,
+      query,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
     );
   }
 
