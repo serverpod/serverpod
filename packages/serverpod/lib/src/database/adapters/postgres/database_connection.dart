@@ -352,6 +352,7 @@ class DatabaseConnection {
     int? timeoutInSeconds,
     Transaction? transaction,
     QueryMode? queryMode,
+    bool ignoreRows = false,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
@@ -366,6 +367,7 @@ class DatabaseConnection {
         query,
         timeout: timeout,
         queryMode: _resolveQueryMode(queryMode),
+        ignoreRows: ignoreRows,
       );
 
       _logQuery(
@@ -409,6 +411,7 @@ class DatabaseConnection {
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
       queryMode: queryMode,
+      ignoreRows: true,
     );
 
     return result.affectedRows;
