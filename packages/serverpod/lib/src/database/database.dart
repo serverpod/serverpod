@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod/src/database/concepts/columns.dart';
 import 'package:serverpod/src/database/concepts/includes.dart';
 import 'package:serverpod/src/database/concepts/order.dart';
+import 'package:serverpod/src/database/concepts/query_mode.dart';
 import 'package:serverpod/src/database/concepts/transaction.dart';
 import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/database/concepts/database_result.dart';
@@ -212,12 +213,14 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     return _databaseConnection.mappedResultsQuery(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      queryMode: queryMode,
     );
   }
 
@@ -228,12 +231,14 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     return _databaseConnection.query(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      queryMode: queryMode,
     );
   }
 
@@ -244,12 +249,14 @@ class Database {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     return _databaseConnection.execute(
       _session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      queryMode: queryMode,
     );
   }
 

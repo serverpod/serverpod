@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod/src/database/adapters/postgres/postgres_database_result.dart';
 import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/query_mode.dart';
 import 'package:serverpod/src/database/concepts/table_relation.dart';
 import 'package:serverpod/src/database/exceptions.dart';
 import 'package:serverpod/src/database/sql_query_builder.dart';
@@ -332,12 +333,14 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      queryMode: queryMode,
     );
 
     return PostgresDatabaseResult(result);
@@ -348,6 +351,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
     var timeout =
@@ -361,6 +365,7 @@ class DatabaseConnection {
       var result = await context.execute(
         query,
         timeout: timeout,
+        queryMode: _resolveQueryMode(queryMode),
       );
 
       _logQuery(
@@ -396,6 +401,7 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     var postgresTransaction = _castToPostgresTransaction(transaction);
 
@@ -410,6 +416,7 @@ class DatabaseConnection {
       var result = await context.execute(
         query,
         timeout: timeout,
+        queryMode: _resolveQueryMode(queryMode),
       );
       _logQuery(session, query, startTime);
       return result.affectedRows;
@@ -438,12 +445,14 @@ class DatabaseConnection {
     String query, {
     int? timeoutInSeconds,
     Transaction? transaction,
+    QueryMode? queryMode,
   }) async {
     var result = await _query(
       session,
       query,
       timeoutInSeconds: timeoutInSeconds,
       transaction: transaction,
+      queryMode: queryMode,
     );
 
     return result.map((row) => row.toColumnMap());
@@ -736,4 +745,15 @@ Set<T> _extractPrimaryKeyForRelation<T>(
 
   var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
   return ids;
+}
+
+pg.QueryMode? _resolveQueryMode(QueryMode? queryMode) {
+  if (queryMode == null) return null;
+
+  switch (queryMode) {
+    case QueryMode.simple:
+      return pg.QueryMode.simple;
+    case QueryMode.extended:
+      return pg.QueryMode.extended;
+  }
 }
