@@ -1,0 +1,182 @@
+version: 0.0.1
+achievements:
+  # Releases
+  - achievement:
+      name: Art Nouveau
+      icon: https://serverpod.dev/badges/release-artnouveau.webp
+      description: For contributing to our very first release, Serverpod 1.0.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: merged = true & created_at <= 02-15-2023
+  - achievement:
+      name: Blueprint
+      icon: https://serverpod.dev/badges/release-blueprint.webp
+      description: For contributing to our second release, Serverpod 1.1.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: merged = true & created_at >= 02-15-2023 & created_at <= 05-24-2023
+  - achievement:
+      name: Cyberpunk
+      icon: https://serverpod.dev/badges/release-cyberpunk.webp
+      description: For contributing to our third release, Serverpod 1.2.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: merged = true & created_at >= 05-24-2023 & created_at <= 01-15-2024
+
+  # Starred the repo
+  - achievement:
+      name: Stellar Supporter
+      icon: https://serverpod.dev/badges/star.webp
+      description: For lighting up our universe by starring the Serverpod repo.
+      triggers:
+        - trigger:
+            actor: author
+            action: star
+            condition: starred = true
+  
+  # Merged PRs
+  - achievement:
+      name: Nebula Novice
+      icon: https://serverpod.dev/badges/pr-1.webp
+      description: For merging your first pull request.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: count(merged = true) >= 1
+  - achievement:
+      name: Quantum Queller
+      icon: https://serverpod.dev/badges/pr-5.webp
+      description: Harmonized code constellations, five PRs unified.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: count(merged = true) >= 5
+  - achievement:
+      name: Galactic Guardian
+      icon: https://serverpod.dev/badges/pr-25.webp
+      description: Guarded the integrity of our code through 25 cosmic merges.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: count(merged = true) >= 25
+  - achievement:
+      name: Supernova Strategist
+      icon: https://serverpod.dev/badges/pr-100.webp
+      description: Ignited 100 stellar merges, enlightening our code universe.
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: count(merged = true) >= 100
+  - achievement:
+      name: Universal Unifier
+      icon: https://serverpod.dev/badges/pr-250.webp
+      description: Mastered the art of cosmic unity, 250 merges. Just wow!
+      triggers:
+        - trigger:
+            actor: author
+            action: pull_request
+            condition: count(merged = true) >= 250
+
+  # Opened issues
+  - achievement:
+      name: Asteroid Identifier
+      icon: https://serverpod.dev/badges/issue-1.webp
+      description: For opening your first issue and getting a bug or enhancement tag.
+      triggers:
+        - trigger:
+            actor: author
+            action: issue
+            condition: count(labels in ['bug', 'enhancement']) >= 1
+  - achievement:
+      name: Cosmic Curator
+      icon: https://serverpod.dev/badges/issue-5.webp
+      description: Detected five space-time anomalies, preserving the codeverse integrity.
+      triggers:
+        - trigger:
+            actor: author
+            action: issue
+            condition: count(labels in ['bug', 'enhancement']) >= 5
+  - achievement:
+      name: Nebula Navigator
+      icon: https://serverpod.dev/badges/issue-25.webp
+      description: Charted through the murky depths of code, unveiling 25 mysteries.
+      triggers:
+        - trigger:
+            actor: author
+            action: issue
+            condition: count(labels in ['bug', 'enhancement']) >= 25
+  - achievement:
+      name: Quantum Questioner
+      icon: https://serverpod.dev/badges/issue-100.webp
+      description: Questioned the quantum fabric of our project, unveiling 100 enigmas.
+      triggers:
+        - trigger:
+            actor: author
+            action: issue
+            condition: count(labels in ['bug', 'enhancement']) >= 100
+  - achievement:
+      name: Interstellar Protector
+      icon: https://serverpod.dev/badges/issue-100.webp
+      description: Shielded our digital cosmos by unveiling 250 universal truths.
+      triggers:
+        - trigger:
+            actor: author
+            action: issue
+            condition: count(labels in ['bug', 'enhancement']) >= 250
+  
+  # Comments with 2 or more upvotes
+  - achievement:
+      name: Comet Commenter
+      icon: https://serverpod.dev/badges/answer-1.webp
+      description: For getting your first upvoted comment.
+      triggers:
+        - trigger:
+            actor: author
+            action: discussion
+            condition: count(upvotes >= 2) >= 1
+  - achievement:
+      name: Meteoric Mentor
+      icon: https://serverpod.dev/badges/answer-5.webp
+      description: Illuminated the knowledge nebula with five brilliant insights.
+      triggers:
+        - trigger:
+            actor: author
+            action: discussion
+            condition: count(upvotes >= 2) >= 5
+  - achievement:
+      name: Orbital Oracle
+      icon: https://serverpod.dev/badges/answer-25.webp
+      description: Your wisdom orbits around 25 discussions, enlightening as it goes.
+      triggers:
+        - trigger:
+            actor: author
+            action: discussion
+            condition: count(upvotes >= 2) >= 25
+  - achievement:
+      name: Celestial Sage
+      icon: https://serverpod.dev/badges/answer-100.webp
+      description: Bestowed 100 cosmic pearls of wisdom upon the open-source universe.
+      triggers:
+        - trigger:
+            actor: author
+            action: discussion
+            condition: count(upvotes >= 2) >= 100
+  - achievement:
+      name: Infinite Informer
+      icon: https://serverpod.dev/badges/answer-250.webp
+      description: Your boundless knowledge spans 250 discussions, a beacon in the code cosmos.
+      triggers:
+        - trigger:
+            actor: author
+            action: discussion
+            condition: count(upvotes >= 2) >= 250
