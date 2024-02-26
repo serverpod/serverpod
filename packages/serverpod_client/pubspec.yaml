@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_client
-version: 1.2.4
+version: 1.2.5
 description: Base classes for communication with the server.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -12,13 +12,13 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_serialization: 1.2.4
+  serverpod_serialization: 1.2.5
   http: ">=0.13.0 <2.0.0"
   meta: ^1.8.0
   web_socket_channel: ^2.4.0
 
 dev_dependencies:
-  serverpod_lints: 1.2.4
+  serverpod_lints: 1.2.5
   test: ^1.24.2
 
 dependency_overrides:

@@ -12,8 +12,8 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  serverpod_client: 1.2.4
-  serverpod_auth_client: 1.2.4
+  serverpod_client: 1.2.5
+  serverpod_auth_client: 1.2.5
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
   serverpod_test_shared:
