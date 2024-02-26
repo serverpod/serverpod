@@ -1,3 +1,6 @@
+## 1.2.5
+- fix: Custom classes respect nullable configuration.
+
 ## 1.2.4
 - fix: Sets the correct output path for generated files on Windows.
 - fix: Prevents VS Code extension from crashing on startup.

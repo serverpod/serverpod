@@ -3,7 +3,7 @@
 
 name: serverpod_auth_shared_flutter
 description: Shared widgets for Flutter side authentication with Serverpod.
-version: 1.2.4
+version: 1.2.5
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
@@ -15,8 +15,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_client: 1.2.4
-  serverpod_auth_client: 1.2.4
+  serverpod_client: 1.2.5
+  serverpod_auth_client: 1.2.5
   shared_preferences: ^2.1.0
   cached_network_image: ^3.2.3
   image: ^4.0.15
@@ -30,7 +30,7 @@ dependencies:
 
 
 dev_dependencies:
-  serverpod_lints: 1.2.4
+  serverpod_lints: 1.2.5
   flutter_test:
     sdk: flutter
 
