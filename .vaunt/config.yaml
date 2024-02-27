@@ -138,45 +138,45 @@ achievements:
   - achievement:
       name: Comet Commenter
       icon: https://serverpod.dev/badges/answer-1.webp
-      description: For getting your first upvoted comment.
+      description: For getting your first answer approved in discussions.
       triggers:
         - trigger:
-            actor: author
+            actor: resolved_by
             action: discussion
-            condition: count(upvotes >= 2) >= 1
+            condition: count() >= 1
   - achievement:
       name: Meteoric Mentor
       icon: https://serverpod.dev/badges/answer-5.webp
       description: Illuminated the knowledge nebula with five brilliant insights.
       triggers:
         - trigger:
-            actor: author
+            actor: resolved_by
             action: discussion
-            condition: count(upvotes >= 2) >= 5
+            condition: count() >= 5
   - achievement:
       name: Orbital Oracle
       icon: https://serverpod.dev/badges/answer-25.webp
       description: Your wisdom orbits around 25 discussions, enlightening as it goes.
       triggers:
         - trigger:
-            actor: author
+            actor: resolved_by
             action: discussion
-            condition: count(upvotes >= 2) >= 25
+            condition: count() >= 25
   - achievement:
       name: Celestial Sage
       icon: https://serverpod.dev/badges/answer-100.webp
       description: Bestowed 100 cosmic pearls of wisdom upon the open-source universe.
       triggers:
         - trigger:
-            actor: author
+            actor: resolved_by
             action: discussion
-            condition: count(upvotes >= 2) >= 100
+            condition: count() >= 100
   - achievement:
       name: Infinite Informer
       icon: https://serverpod.dev/badges/answer-250.webp
       description: Your boundless knowledge spans 250 discussions, a beacon in the code cosmos.
       triggers:
         - trigger:
-            actor: author
+            actor: resolved_by
             action: discussion
-            condition: count(upvotes >= 2) >= 250
+            condition: count() >= 250
