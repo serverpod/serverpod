@@ -305,6 +305,7 @@ class Serverpod {
       httpOptionsResponseHeaders: httpOptionsResponseHeaders,
     );
     endpoints.initializeEndpoints(server);
+    _validateEmailAuthSalt(endpoints, _passwords);
 
     // Setup future calls
     _futureCallManager = FutureCallManager(
@@ -699,5 +700,25 @@ class Serverpod {
 
   bool _isValidSecret(String? secret) {
     return secret != null && secret.isNotEmpty && secret.length > 20;
+  }
+
+  /// Validates that the emailPasswordSalt is if the authentication module is
+  /// used.
+  ///
+  /// If no emailPasswordSalt is configured, a warning is printed to stderr.
+  void _validateEmailAuthSalt(
+    EndpointDispatch endpoints,
+    Map<String, String> passwords,
+  ) {
+    if (!endpoints.modules.containsKey('serverpod_auth')) return;
+    if (passwords.containsKey('emailPasswordSalt')) return;
+    if (passwords.containsKey('email_password_salt')) return;
+
+    stderr.writeln(
+      'WARNING: The authentication module is used but the "emailPasswordSalt" '
+      'password is not configured. A default will be used which might render '
+      'stored hashed values less secure. It is strongly recommended to '
+      'generate a random salt and set it in the passwords.yaml file.',
+    );
   }
 }
