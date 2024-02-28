@@ -252,6 +252,18 @@ void _copyServerTemplates(
         replacement: randomAwsId,
       ),
       Replacement(
+        slotName: 'AUTH_KEY_SALT_DEVELOPMENT',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'AUTH_KEY_SALT_STAGING',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
+        slotName: 'AUTH_KEY_SALT_PRODUCTION',
+        replacement: generateRandomString(),
+      ),
+      Replacement(
         slotName: 'SERVICE_SECRET_DEVELOPMENT',
         replacement: generateRandomString(),
       ),
