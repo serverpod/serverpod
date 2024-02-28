@@ -358,7 +358,7 @@ class UserAuthetication {
   /// convenient to use the serverpod_auth module for authentication.
   Future<AuthKey> signInUser(int userId, String method,
       {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+    var signInSalt = _session.serverpod.config.authKeySalt;
 
     var key = generateRandomString();
     var hash = hashString(signInSalt, key);

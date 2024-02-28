@@ -30,7 +30,7 @@ Future<AuthenticationInfo?> defaultAuthenticationHandler(
     if (authKey == null) return null;
 
     // Hash the key from the user and check that it is what we expect
-    var signInSalt = session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
+    var signInSalt = session.serverpod.config.authKeySalt;
     var expectedHash = hashString(signInSalt, secret);
 
     if (authKey.hash != expectedHash) return null;

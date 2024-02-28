@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:yaml/yaml.dart';
 
+/// Default salt used for hashing authentication keys if no salt is provided.
+const _defaultAuthKeySalt = 'salty';
+
 /// Parser for the Serverpod configuration file.
 class ServerpodConfig {
   /// Path to the configuration file.
@@ -34,6 +37,9 @@ class ServerpodConfig {
   /// Authentication key for service protocol.
   late final String? serviceSecret;
 
+  /// Salt used for hashing authentication keys.
+  late final String authKeySalt;
+
   /// Loads and parses a server configuration file. Picks config file depending
   /// on run mode.
   ServerpodConfig(this.runMode, this.serverId, Map<String, String> passwords)
@@ -54,6 +60,9 @@ class ServerpodConfig {
     maxRequestSize = doc['maxRequestSize'] ?? 524288;
 
     serviceSecret = passwords['serviceSecret'];
+
+    // Get auth key salt
+    authKeySalt = _getAuthKeySalt(passwords);
 
     // Get database setup
     assert(doc['database'] is Map, 'Database setup is missing in config');
@@ -78,6 +87,20 @@ class ServerpodConfig {
     str += redis.toString();
 
     return str;
+  }
+
+  String _getAuthKeySalt(Map<String, String> passwords) {
+    var authKeySalt = passwords['authKeySalt'];
+    if (authKeySalt == null) {
+      stderr.writeln(
+        'WARNING: The "authKeySalt" password is not configured. A default '
+        'value will be used which might render hashed values less secure.'
+        'It is strongly recommended to generate a random salt and set it in '
+        'the passwords.yaml file.',
+      );
+      return _defaultAuthKeySalt;
+    }
+    return authKeySalt;
   }
 }
 
