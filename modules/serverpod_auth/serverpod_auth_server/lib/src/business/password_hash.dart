@@ -1,0 +1,294 @@
+import 'dart:convert';
+import 'dart:math';
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:pointycastle/key_derivators/api.dart';
+import 'package:pointycastle/key_derivators/argon2.dart';
+import 'package:serverpod_auth_server/module.dart';
+
+/// A class for handling password hashes.
+class PasswordHash {
+  static const int _saltLength = 16;
+  late final String _type;
+
+  late final _PasswordHashGenerator _hashGenerator;
+  late final String _hash;
+
+  /// Creates a new [PasswordHash] from a hash string that can be used to
+  /// validate passwords using the same hashing algorithm.
+  PasswordHash(
+    String passwordHash, {
+    required String legacySalt,
+    String? legacyEmail,
+    String? pepper,
+  }) {
+    var passwordHashParts = passwordHash.split('\$');
+    if (passwordHashParts.length < 2) {
+      _hash = passwordHash;
+      _type = _LegacyPasswordHashGenerator.identifier;
+      _hashGenerator = _LegacyPasswordHashGenerator(
+        salt: legacySalt,
+        email: legacyEmail,
+      );
+      return;
+    }
+
+    switch (passwordHashParts[1]) {
+      case _Argon2idPasswordHashGenerator.identifier:
+        var [_, _, salt, hash] = passwordHashParts;
+        _hash = hash;
+        _type = _Argon2idPasswordHashGenerator.identifier;
+        _hashGenerator = _Argon2idPasswordHashGenerator(
+          salt: salt,
+          pepper: pepper,
+        );
+        break;
+      case _LegacyToArgon2idPasswordHash.identifier:
+        var [_, _, salt, hash] = passwordHashParts;
+        _hash = hash;
+        _type = _LegacyToArgon2idPasswordHash.identifier;
+        _hashGenerator = _LegacyToArgon2idPasswordHash(
+          legacySalt: legacySalt,
+          salt: salt,
+          email: legacyEmail,
+          pepper: pepper,
+        );
+        break;
+    }
+  }
+
+  /// Returns true if the hash was generated using an outdated algorithm.
+  bool shouldUpdateHash() {
+    return [
+      _LegacyPasswordHashGenerator.identifier,
+      _LegacyToArgon2idPasswordHash.identifier,
+    ].contains(_type);
+  }
+
+  /// Returns true if the hash was generated using the legacy algorithm.
+  bool isLegacyHash() {
+    return _type == _LegacyPasswordHashGenerator.identifier;
+  }
+
+  /// Checks if a password matches the hash.
+  ///
+  /// If the password does not match the hash, the [onValidationFailure] function
+  /// will be called with the hash and the password hash as arguments.
+  bool validate(
+    String password, {
+    void Function(String hash, String passwordHash)? onValidationFailure,
+  }) {
+    var passwordHash = _hashGenerator.generateHash(password);
+
+    if (_hash != passwordHash) {
+      onValidationFailure?.call(passwordHash, _hash);
+      return false;
+    }
+
+    return true;
+  }
+
+  /// Creates a new password hash using the legacy algorithm.
+  ///
+  /// If the [email] parameter is provided, the email will be used as an
+  /// additional salt for the password hash.
+  static String legacyHash(String password, String salt, {String? email}) {
+    return _LegacyPasswordHashGenerator(salt: salt, email: email)
+        .generatePasswordHash(password);
+  }
+
+  /// Creates a Argon2id password hash expecting the passed in password hash to
+  /// be a legacy password hash.
+  ///
+  /// This is used to migrate legacy password hashes to Argon2id password
+  /// hashes.
+  ///
+  /// The [legacySalt] parameter is the salt used in the legacy password hash.
+  ///
+  /// The [salt] parameter should only be used in testing and development.
+  /// If omitted a random salt will be generated which is the recommended way
+  /// to use this function in production.
+  ///
+  /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
+  /// number generation. If set to false, an error will be thrown
+  /// if the platform does not support secure random number generation.
+  static String migratedLegacyToArgon2idHash(
+    String legacyHash, {
+    required String legacySalt,
+    String? salt,
+    String? pepper,
+    bool? allowUnsecureRandom,
+  }) {
+    var encodedSalt = _generateSalt(
+      salt: salt,
+      allowUnsecureRandom: allowUnsecureRandom,
+    );
+
+    return _LegacyToArgon2idPasswordHash(
+      legacySalt: legacySalt,
+      salt: encodedSalt,
+      pepper: pepper,
+    ).generatePasswordHash(legacyHash);
+  }
+
+  /// Creates a new password hash using the Argon2id algorithm.
+  ///
+  /// The [salt] parameter should only be used in testing and development.
+  /// If omitted a random salt will be generated which is the recommended way
+  /// to use this function in production.
+  ///
+  /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
+  /// number generation. If set to false, an error will be thrown
+  /// if the platform does not support secure random number generation.
+  static String argon2id(
+    String password, {
+    String? salt,
+    String? pepper,
+    bool? allowUnsecureRandom,
+  }) {
+    var encodedSalt = _generateSalt(
+      salt: salt,
+      allowUnsecureRandom: allowUnsecureRandom,
+    );
+
+    return _Argon2idPasswordHashGenerator(
+      salt: encodedSalt,
+      pepper: pepper,
+    ).generatePasswordHash(password);
+  }
+
+  static String _generateSalt({
+    String? salt,
+    bool? allowUnsecureRandom,
+  }) {
+    if (salt != null) {
+      return const Base64Encoder().convert(salt.codeUnits);
+    }
+
+    try {
+      return Random.secure().nextString(
+        length: _saltLength,
+      );
+    } on UnsupportedError {
+      if (allowUnsecureRandom == null || !allowUnsecureRandom) {
+        rethrow;
+      }
+    }
+
+    return Random().nextString(
+      length: _saltLength,
+    );
+  }
+}
+
+/// Interface for password hash generators.
+abstract interface class _PasswordHashGenerator {
+  /// Generates a hash from a password.
+  String generateHash(String password);
+}
+
+/// A password hash generator for legacy password hashes.
+class _LegacyPasswordHashGenerator implements _PasswordHashGenerator {
+  /// Creates a new legacy password hash generator from a hash string.
+  final String _salt;
+  final String? _email;
+
+  /// The identifier for this hash generator.
+  static const identifier = 'legacy';
+
+  _LegacyPasswordHashGenerator({required String salt, String? email})
+      : _salt = salt,
+        _email = email;
+
+  String generatePasswordHash(String password) {
+    return generateHash(password);
+  }
+
+  @override
+  String generateHash(String password) {
+    var salt = _salt;
+    if (_email != null) {
+      salt += ':$_email';
+    }
+
+    return sha256.convert(utf8.encode(password + salt)).toString();
+  }
+}
+
+/// A password hash generator for Argon2id password hashes.
+class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
+  /// The identifier for this hash generator.
+  static const identifier = 'argon2id';
+
+  final String _salt;
+  final String? _pepper;
+
+  _Argon2idPasswordHashGenerator({required String salt, String? pepper})
+      : _salt = salt,
+        _pepper = pepper;
+
+  String generatePasswordHash(String password) {
+    var hash = generateHash(password);
+    return '\$$identifier\$$_salt\$$hash';
+  }
+
+  @override
+  String generateHash(String password) {
+    var parameters = Argon2Parameters(
+      Argon2Parameters.ARGON2_id,
+      // Required cast because of a breaking change in dart 3.2: https://github.com/dart-lang/sdk/issues/52801
+      // ignore: unnecessary_cast
+      utf8.encode(_salt) as Uint8List,
+      desiredKeyLength: 256,
+      // Required cast because of a breaking change in dart 3.2: https://github.com/dart-lang/sdk/issues/52801
+      // ignore: unnecessary_cast
+      secret: _pepper != null ? utf8.encode(_pepper!) as Uint8List : null,
+    );
+
+    var generator = Argon2BytesGenerator()..init(parameters);
+    // Required cast because of a breaking change in dart 3.2: https://github.com/dart-lang/sdk/issues/52801
+    // ignore: unnecessary_cast
+    var hashBytes = generator.process(utf8.encode(password) as Uint8List);
+
+    return const Base64Encoder().convert(hashBytes);
+  }
+}
+
+class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
+  final String _legacySalt;
+  final String _salt;
+  final String? _email;
+  final String? _pepper;
+
+  static const identifier = 'migratedLegacy';
+
+  _LegacyToArgon2idPasswordHash({
+    required String legacySalt,
+    required String salt,
+    String? email,
+    String? pepper,
+  })  : _legacySalt = legacySalt,
+        _salt = salt,
+        _email = email,
+        _pepper = pepper;
+
+  String generatePasswordHash(String legacyHash) {
+    var hash = _Argon2idPasswordHashGenerator(
+      salt: _salt,
+      pepper: _pepper,
+    ).generateHash(legacyHash);
+    return '\$$identifier\$$_salt\$$hash';
+  }
+
+  @override
+  String generateHash(String password) {
+    var legacyHash =
+        _LegacyPasswordHashGenerator(salt: _legacySalt, email: _email)
+            .generateHash(password);
+    return _Argon2idPasswordHashGenerator(
+      salt: _salt,
+      pepper: _pepper,
+    ).generateHash(legacyHash);
+  }
+}
