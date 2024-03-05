@@ -1,24 +1,43 @@
-import 'dart:convert';
 import 'dart:math';
 
-import 'package:crypto/crypto.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 /// Collection of utility methods when working with email authentication.
 class Emails {
+  static String get _legacySalt =>
+      Serverpod.instance.getPassword('email_password_salt') ??
+      'serverpod password salt';
+
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
-  static String generatePasswordHash(String password, String email) {
-    var salt = Serverpod.instance.getPassword('email_password_salt') ??
-        'serverpod password salt';
-    if (AuthConfig.current.extraSaltyHash) {
-      salt += ':$email';
-    }
-    return sha256.convert(utf8.encode(password + salt)).toString();
+  static String generatePasswordHash(String password) {
+    return PasswordHash.argon2id(
+      password,
+    );
+  }
+
+  /// Generates a password hash from the password using the provided hash
+  /// algorithm and validates that they match.
+  ///
+  /// If the password hash does not match the provided hash, the
+  /// [onValidationFailure] function is called with the hash and the password
+  /// hash as arguments.
+  static bool validatePasswordHash(
+    String password,
+    String email,
+    String hash, {
+    void Function(String hash, String passwordHash)? onValidationFailure,
+  }) {
+    return PasswordHash(
+      hash,
+      legacySalt: _legacySalt,
+      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+    ).validate(password, onValidationFailure: onValidationFailure);
   }
 
   /// Creates a new user. Either password or hash needs to be provided.
@@ -58,7 +77,7 @@ class Emails {
     }
 
     session.log('creating email auth', level: LogLevel.debug);
-    hash = hash ?? generatePasswordHash(password!, email);
+    hash = hash ?? generatePasswordHash(password!);
     var auth = EmailAuth(
       userId: userInfo.id!,
       email: email,
@@ -91,12 +110,12 @@ class Emails {
     }
 
     // Check old password
-    if (auth.hash != generatePasswordHash(oldPassword, auth.email)) {
+    if (!validatePasswordHash(oldPassword, auth.email, auth.hash)) {
       return false;
     }
 
     // Update password
-    auth.hash = generatePasswordHash(newPassword, auth.email);
+    auth.hash = generatePasswordHash(newPassword);
     await EmailAuth.db.updateRow(session, auth);
 
     return true;
@@ -180,7 +199,7 @@ class Emails {
 
     if (emailAuth == null) return false;
 
-    emailAuth.hash = generatePasswordHash(password, emailAuth.email);
+    emailAuth.hash = generatePasswordHash(password);
     await EmailAuth.db.updateRow(session, emailAuth);
 
     return true;
@@ -226,7 +245,7 @@ class Emails {
         accountRequest = EmailCreateAccountRequest(
           userName: userName,
           email: email,
-          hash: generatePasswordHash(password, email),
+          hash: generatePasswordHash(password),
           verificationCode: _generateVerificationCode(),
         );
         await EmailCreateAccountRequest.db.insertRow(session, accountRequest);
@@ -292,10 +311,15 @@ class Emails {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    if (entry.hash != Emails.generatePasswordHash(password, email)) {
-      session.log(
-          ' - ${Emails.generatePasswordHash(password, email)} saved: ${entry.hash}',
-          level: LogLevel.debug);
+    if (!Emails.validatePasswordHash(
+      password,
+      email,
+      entry.hash,
+      onValidationFailure: (hash, passwordHash) => session.log(
+        ' - $passwordHash saved: $hash',
+        level: LogLevel.debug,
+      ),
+    )) {
       await _logFailedSignIn(session, email);
       return AuthenticationResponse(
         success: false,
