@@ -65,6 +65,50 @@ class Emails {
     return entry.copyWith(hash: newHash);
   }
 
+  /// Migrates legacy password hashes to the latest hash algorithm.
+  ///
+  ///[batchSize] is the number of entries to migrate in each batch.
+  ///
+  /// Returns the number of migrated entries.
+  static Future<int> migrateLegacyPasswordHashes(
+    Session session, {
+    int batchSize = 100,
+  }) async {
+    var updatedEntries = 0;
+    int lastEntryId = 0;
+
+    while (true) {
+      var entries = await EmailAuth.db.find(
+        session,
+        where: (t) => t.id > lastEntryId,
+        orderBy: (t) => t.id,
+        limit: batchSize,
+      );
+
+      if (entries.isEmpty) {
+        return updatedEntries;
+      }
+
+      lastEntryId = entries.last.id!;
+
+      var migratedEntries = entries
+          .where((entry) => PasswordHash(
+                entry.hash,
+                legacySalt: _legacySalt,
+              ).isLegacyHash())
+          .map((entry) => entry.copyWith(
+                hash: PasswordHash.migratedLegacyToArgon2idHash(
+                  entry.hash,
+                  legacySalt: _legacySalt,
+                ),
+              ))
+          .toList();
+
+      updatedEntries += migratedEntries.length;
+      await EmailAuth.db.update(session, migratedEntries);
+    }
+  }
+
   /// Creates a new user. Either password or hash needs to be provided.
   static Future<UserInfo?> createUser(
     Session session,
