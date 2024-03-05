@@ -108,6 +108,11 @@ databaseListRelationMethods:
 transactionsDatabase:
   - removeRow:
   - updateInsertDelete:
+emailAuthTestMethods:
+  - findVerificationCode:
+  - findResetCode:
+  - tearDown:
+  - createUser:
 relation:
   - citizenFindWhereCompanyNameIs:
   - citizenFindWhereCompanyTownNameIs:
