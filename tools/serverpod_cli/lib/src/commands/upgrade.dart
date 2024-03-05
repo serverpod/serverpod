@@ -15,10 +15,12 @@ class UpgradeCommand extends ServerpodCommand {
   @override
   void run() async {
     dynamic error;
-    var success = await log.progress('Running `dart pub global activate serverpod_cli`...', () async {
-      var process = await Process.run('dart', ['pub global activate serverpod_cli']);
+    var success = await log.progress(
+        'Running `dart pub global activate serverpod_cli`...', () async {
+      var process = await Process.run(
+          'dart', ['pub', 'global', 'activate', 'serverpod_cli']);
       error = process.stderr;
-      return !process.exitCode.isNegative;
+      return process.exitCode == 0;
     });
 
     if (success) {
