@@ -16,13 +16,13 @@ class UpgradeCommand extends ServerpodCommand {
   void run() async {
     dynamic error;
     var success = await log.progress('Running `dart pub global activate serverpod_cli`...', () async {
-      var process = await Process.run('dart', ['pub global activate serverpod_clipper']);
+      var process = await Process.run('dart', ['pub global activate serverpod_cli']);
       error = process.stderr;
       return !process.exitCode.isNegative;
     });
 
     if (success) {
-      log.info('Serverpod is already up to date: $templateVersion version.');
+      log.info('Serverpod is up to date: $templateVersion version.');
     } else {
       log.error('Serverpod upgrade failed: $error');
     }
