@@ -40,6 +40,25 @@ class Emails {
     ).validate(password, onValidationFailure: onValidationFailure);
   }
 
+  /// Migrates an EmailAuth entry if required.
+  ///
+  /// Returns the new [EmailAuth] object if a migration was required,
+  /// null otherwise.
+  static EmailAuth? tryMigrateAuthEntry({
+    required String password,
+    required EmailAuth entry,
+  }) {
+    if (!PasswordHash(entry.hash, legacySalt: _legacySalt).shouldUpdateHash()) {
+      return null;
+    }
+
+    var newHash = PasswordHash.argon2id(
+      password,
+    );
+
+    return entry.copyWith(hash: newHash);
+  }
+
   /// Creates a new user. Either password or hash needs to be provided.
   static Future<UserInfo?> createUser(
     Session session,
@@ -329,6 +348,16 @@ class Emails {
 
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
+
+    var migratedAuth = Emails.tryMigrateAuthEntry(
+      password: password,
+      entry: entry,
+    );
+
+    if (migratedAuth != null) {
+      session.log(' - migrated auth', level: LogLevel.debug);
+      await EmailAuth.db.updateRow(session, migratedAuth);
+    }
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
     if (userInfo == null) {
