@@ -267,5 +267,41 @@ void main() async {
         isTrue,
       );
     });
+
+    test(
+        'when migrating auth entries then updated rows matches legacy hashes stored.',
+        () async {
+      var updatedRows = await Emails.migrateLegacyPasswordHashes(
+        session,
+        batchSize: 2,
+      );
+      expect(updatedRows, 5);
+    });
+
+    test(
+        'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
+        () async {
+      await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
+
+      var emailAuth = await EmailAuth.db.find(
+        session,
+        where: (t) => t.email.inSet({
+          'test1@serverpod.dev',
+          'test2@serverpod.dev',
+          'test3@serverpod.dev',
+          'test4@serverpod.dev',
+          'test5@serverpod.dev',
+        }),
+      );
+
+      expect(emailAuth, hasLength(5));
+      var hashes = emailAuth.map((e) => e.hash).toList();
+      expect(
+        hashes,
+        everyElement(contains('migratedLegacy')),
+        reason:
+            'Not all legacy hashes where migrated to migratedLegacy algorithm',
+      );
+    });
   });
 }
