@@ -12,12 +12,16 @@ class Emails {
       Serverpod.instance.getPassword('email_password_salt') ??
       'serverpod password salt';
 
+  static String? get _pepper =>
+      Serverpod.instance.getPassword('emailPasswordPepper');
+
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static String generatePasswordHash(String password) {
     return PasswordHash.argon2id(
       password,
+      pepper: _pepper,
     );
   }
 
@@ -37,6 +41,7 @@ class Emails {
       hash,
       legacySalt: _legacySalt,
       legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+      pepper: _pepper,
     ).validate(password, onValidationFailure: onValidationFailure);
   }
 
@@ -54,6 +59,7 @@ class Emails {
 
     var newHash = PasswordHash.argon2id(
       password,
+      pepper: _pepper,
     );
 
     return entry.copyWith(hash: newHash);
