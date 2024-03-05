@@ -1628,6 +1628,55 @@ class EndpointTransactionsDatabase extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointEmailAuthTestMethods extends _i1.EndpointRef {
+  EndpointEmailAuthTestMethods(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'emailAuthTestMethods';
+
+  _i2.Future<String?> findVerificationCode(
+    String userName,
+    String email,
+  ) =>
+      caller.callServerEndpoint<String?>(
+        'emailAuthTestMethods',
+        'findVerificationCode',
+        {
+          'userName': userName,
+          'email': email,
+        },
+      );
+
+  _i2.Future<String?> findResetCode(String email) =>
+      caller.callServerEndpoint<String?>(
+        'emailAuthTestMethods',
+        'findResetCode',
+        {'email': email},
+      );
+
+  _i2.Future<void> tearDown() => caller.callServerEndpoint<void>(
+        'emailAuthTestMethods',
+        'tearDown',
+        {},
+      );
+
+  _i2.Future<bool> createUser(
+    String userName,
+    String email,
+    String password,
+  ) =>
+      caller.callServerEndpoint<bool>(
+        'emailAuthTestMethods',
+        'createUser',
+        {
+          'userName': userName,
+          'email': email,
+          'password': password,
+        },
+      );
+}
+
+/// {@category Endpoint}
 class EndpointRelation extends _i1.EndpointRef {
   EndpointRelation(_i1.EndpointCaller caller) : super(caller);
 
@@ -2750,6 +2799,7 @@ class Client extends _i1.ServerpodClient {
     databaseBatchGenerated = EndpointDatabaseBatchGenerated(this);
     databaseListRelationMethods = EndpointDatabaseListRelationMethods(this);
     transactionsDatabase = EndpointTransactionsDatabase(this);
+    emailAuthTestMethods = EndpointEmailAuthTestMethods(this);
     relation = EndpointRelation(this);
     exceptionTest = EndpointExceptionTest(this);
     failedCalls = EndpointFailedCalls(this);
@@ -2812,6 +2862,8 @@ class Client extends _i1.ServerpodClient {
   late final EndpointDatabaseListRelationMethods databaseListRelationMethods;
 
   late final EndpointTransactionsDatabase transactionsDatabase;
+
+  late final EndpointEmailAuthTestMethods emailAuthTestMethods;
 
   late final EndpointRelation relation;
 
@@ -2877,6 +2929,7 @@ class Client extends _i1.ServerpodClient {
         'databaseBatchGenerated': databaseBatchGenerated,
         'databaseListRelationMethods': databaseListRelationMethods,
         'transactionsDatabase': transactionsDatabase,
+        'emailAuthTestMethods': emailAuthTestMethods,
         'relation': relation,
         'exceptionTest': exceptionTest,
         'failedCalls': failedCalls,
