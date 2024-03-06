@@ -41,12 +41,12 @@ void run(List<String> args) async {
     postMessagesGlobally: false,
   ));
 
+  // Start the server.
+  await pod.start();
+
   // Create an initial set of entries in the database, if they do not exist
   // already.
   await _populateDatabase(pod);
-
-  // Start the server.
-  await pod.start();
 }
 
 Future<void> _populateDatabase(Serverpod pod) async {
