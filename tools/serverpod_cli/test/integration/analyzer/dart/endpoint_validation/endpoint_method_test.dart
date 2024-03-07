@@ -569,6 +569,24 @@ class ExampleEndpoint extends Endpoint {
       );
     });
 
+    test('then toString reports that the type is not supported.', () {
+      //These RegEx patterns are used to match the error message because the output
+      //is slightly different between Windows and macOS. Fox example, macOS outputs
+      //╷ in the error message, while Windows outputs ,. This may be something to review
+      var regexPattern = r'''Found 1 issue\.
+
+Error on line 6, column 31 of .+: The type "String Function\(\)" is not a supported endpoint return type\.
+.*6.*Future<TestFunctionBuilder> hello\(Session session\) async {
+.*\^\^\^\^\^
+.*''';
+
+      var actual = collector.toString();
+
+      expect(
+          RegExp(regexPattern, multiLine: true, dotAll: true).hasMatch(actual),
+          isTrue);
+    });
+
     test('then endpoint definition is created.', () {
       expect(endpointDefinitions, hasLength(1));
     });
