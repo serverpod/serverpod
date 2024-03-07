@@ -57,155 +57,11 @@ abstract class ReadWriteTestEntry extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'number': number,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       'number': number,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'number':
-        number = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ReadWriteTestEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ReadWriteTestEntry>(
-      where: where != null ? where(ReadWriteTestEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ReadWriteTestEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ReadWriteTestEntry>(
-      where: where != null ? where(ReadWriteTestEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ReadWriteTestEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ReadWriteTestEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ReadWriteTestEntry>(
-      where: where(ReadWriteTestEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ReadWriteTestEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ReadWriteTestEntry>(
-      where: where != null ? where(ReadWriteTestEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ReadWriteTestEntryInclude include() {
@@ -275,9 +131,6 @@ class ReadWriteTestEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ReadWriteTestEntryTable.t instead.')
-ReadWriteTestEntryTable tReadWriteTestEntry = ReadWriteTestEntryTable();
-
 class ReadWriteTestEntryInclude extends _i1.IncludeObject {
   ReadWriteTestEntryInclude._();
 
@@ -321,7 +174,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ReadWriteTestEntry>(
+    return session.db.find<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -341,7 +194,7 @@ class ReadWriteTestEntryRepository {
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ReadWriteTestEntry>(
+    return session.db.findFirstRow<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
@@ -356,7 +209,7 @@ class ReadWriteTestEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ReadWriteTestEntry>(
+    return session.db.findById<ReadWriteTestEntry>(
       id,
       transaction: transaction,
     );
@@ -367,7 +220,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ReadWriteTestEntry>(
+    return session.db.insert<ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -378,7 +231,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ReadWriteTestEntry>(
+    return session.db.insertRow<ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -390,7 +243,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ReadWriteTestEntry>(
+    return session.db.update<ReadWriteTestEntry>(
       rows,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -403,7 +256,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ReadWriteTestEntry>(
+    return session.db.updateRow<ReadWriteTestEntry>(
       row,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
@@ -415,7 +268,7 @@ class ReadWriteTestEntryRepository {
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ReadWriteTestEntry>(
+    return session.db.delete<ReadWriteTestEntry>(
       rows,
       transaction: transaction,
     );
@@ -426,7 +279,7 @@ class ReadWriteTestEntryRepository {
     ReadWriteTestEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ReadWriteTestEntry>(
+    return session.db.deleteRow<ReadWriteTestEntry>(
       row,
       transaction: transaction,
     );
@@ -437,7 +290,7 @@ class ReadWriteTestEntryRepository {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ReadWriteTestEntry>(
+    return session.db.deleteWhere<ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
       transaction: transaction,
     );
@@ -449,7 +302,7 @@ class ReadWriteTestEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ReadWriteTestEntry>(
+    return session.db.count<ReadWriteTestEntry>(
       where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       transaction: transaction,

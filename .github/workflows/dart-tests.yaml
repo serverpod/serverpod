@@ -6,12 +6,12 @@ on:
       - main
       - dev
       - tests
-      - stable-1.0
-      - stable-1.1
+      - stable-*
   pull_request:
     branches:
       - main
       - dev
+      - stable-*
 
 jobs:
   dart_format:

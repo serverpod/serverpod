@@ -139,7 +139,7 @@ Future<ServerProject?> _loadServerProject(
 ) async {
   var rootDir = Directory.fromUri(rootUri);
 
-  var serverRootDir = _findServerDirectory(rootDir);
+  var serverRootDir = findServerDirectory(rootDir);
   if (serverRootDir == null) return null;
 
   var config = await GeneratorConfig.load(serverRootDir.path);
@@ -149,6 +149,7 @@ Future<ServerProject?> _loadServerProject(
   );
 
   var analyzer = StatefulAnalyzer(
+    config,
     yamlSources,
     (filePath, errors) => _reportDiagnosticErrors(connection, filePath, errors),
   );
@@ -158,20 +159,6 @@ Future<ServerProject?> _loadServerProject(
     config: config,
     analyzer: analyzer,
   );
-}
-
-Directory? _findServerDirectory(Directory root) {
-  if (isServerDirectory(root)) return root;
-
-  var childDirs = root.listSync().where(
-        (dir) => isServerDirectory(Directory.fromUri(dir.uri)),
-      );
-
-  if (childDirs.isNotEmpty) {
-    return Directory.fromUri(childDirs.first.uri);
-  }
-
-  return null;
 }
 
 void _reportDiagnosticErrors(

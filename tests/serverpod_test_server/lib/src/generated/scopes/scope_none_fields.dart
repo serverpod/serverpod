@@ -39,155 +39,11 @@ abstract class ScopeNoneFields extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': _name,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       if (_name != null) 'name': _name,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        _name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ScopeNoneFields>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ScopeNoneFields>(
-      where: where != null ? where(ScopeNoneFields.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ScopeNoneFields?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ScopeNoneFields>(
-      where: where != null ? where(ScopeNoneFields.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ScopeNoneFields?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ScopeNoneFields>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ScopeNoneFields>(
-      where: where(ScopeNoneFields.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ScopeNoneFields row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ScopeNoneFields row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ScopeNoneFields row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ScopeNoneFields>(
-      where: where != null ? where(ScopeNoneFields.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ScopeNoneFieldsInclude include() {
@@ -270,9 +126,6 @@ class ScopeNoneFieldsTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ScopeNoneFieldsTable.t instead.')
-ScopeNoneFieldsTable tScopeNoneFields = ScopeNoneFieldsTable();
-
 class ScopeNoneFieldsInclude extends _i1.IncludeObject {
   ScopeNoneFieldsInclude._();
 
@@ -316,7 +169,7 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ScopeNoneFields>(
+    return session.db.find<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -336,7 +189,7 @@ class ScopeNoneFieldsRepository {
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ScopeNoneFields>(
+    return session.db.findFirstRow<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
@@ -351,7 +204,7 @@ class ScopeNoneFieldsRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ScopeNoneFields>(
+    return session.db.findById<ScopeNoneFields>(
       id,
       transaction: transaction,
     );
@@ -362,7 +215,7 @@ class ScopeNoneFieldsRepository {
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ScopeNoneFields>(
+    return session.db.insert<ScopeNoneFields>(
       rows,
       transaction: transaction,
     );
@@ -373,7 +226,7 @@ class ScopeNoneFieldsRepository {
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ScopeNoneFields>(
+    return session.db.insertRow<ScopeNoneFields>(
       row,
       transaction: transaction,
     );
@@ -385,7 +238,7 @@ class ScopeNoneFieldsRepository {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ScopeNoneFields>(
+    return session.db.update<ScopeNoneFields>(
       rows,
       columns: columns?.call(ScopeNoneFields.t),
       transaction: transaction,
@@ -398,7 +251,7 @@ class ScopeNoneFieldsRepository {
     _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ScopeNoneFields>(
+    return session.db.updateRow<ScopeNoneFields>(
       row,
       columns: columns?.call(ScopeNoneFields.t),
       transaction: transaction,
@@ -410,7 +263,7 @@ class ScopeNoneFieldsRepository {
     List<ScopeNoneFields> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ScopeNoneFields>(
+    return session.db.delete<ScopeNoneFields>(
       rows,
       transaction: transaction,
     );
@@ -421,7 +274,7 @@ class ScopeNoneFieldsRepository {
     ScopeNoneFields row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ScopeNoneFields>(
+    return session.db.deleteRow<ScopeNoneFields>(
       row,
       transaction: transaction,
     );
@@ -432,7 +285,7 @@ class ScopeNoneFieldsRepository {
     required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ScopeNoneFields>(
+    return session.db.deleteWhere<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),
       transaction: transaction,
     );
@@ -444,7 +297,7 @@ class ScopeNoneFieldsRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ScopeNoneFields>(
+    return session.db.count<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
       limit: limit,
       transaction: transaction,

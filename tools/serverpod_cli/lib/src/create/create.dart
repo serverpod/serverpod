@@ -8,12 +8,15 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
 import 'package:serverpod_cli/src/util/command_line_tools.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/project_name.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'copier.dart';
 
 enum ServerpodTemplateType {
+  mini('mini'),
   server('server'),
   module('module');
 
@@ -35,6 +38,12 @@ Future<bool> performCreate(
   ServerpodTemplateType template,
   bool force,
 ) async {
+  // If the name is a dot, we are upgrading an existing project
+  // Instead of creating a new one, we try to upgrade the current directory.
+  if (name == '.') {
+    return await _performUpgrade(template);
+  }
+
   // check if project name is valid
   if (!StringValidators.isValidProjectName(name)) {
     log.error(
@@ -43,13 +52,6 @@ Future<bool> performCreate(
     );
     return false;
   }
-
-  var dbPassword = generateRandomString();
-  var dbProductionPassword = generateRandomString();
-  var dbStagingPassword = generateRandomString();
-
-  var awsName = name.replaceAll('_', '-');
-  var randomAwsId = math.Random.secure().nextInt(10000000).toString();
 
   var serverpodDirs = ServerpodDirectories(
     projectDir: Directory(p.join(Directory.current.path, name)),
@@ -60,14 +62,14 @@ Future<bool> performCreate(
     return false;
   }
 
-  if (template == ServerpodTemplateType.server) {
-    log.info(
-      'Creating Serverpod project "$name".',
-      type: TextLogType.init,
-    );
-  } else if (template == ServerpodTemplateType.module) {
+  if (template == ServerpodTemplateType.module) {
     log.info(
       'Creating Serverpod module "$name".',
+      type: TextLogType.init,
+    );
+  } else {
+    log.info(
+      'Creating Serverpod project "$name".',
       type: TextLogType.init,
     );
   }
@@ -81,24 +83,36 @@ Future<bool> performCreate(
     newParagraph: true,
   );
 
-  if (template == ServerpodTemplateType.server) {
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.mini) {
     success &= await log.progress(
       'Writing project files.',
       () async {
         _copyServerTemplates(
           serverpodDirs,
           name: name,
-          awsName: awsName,
-          randomAwsId: randomAwsId,
-          dbPassword: dbPassword,
-          dbProductionPassword: dbProductionPassword,
-          dbStagingPassword: dbStagingPassword,
           customServerpodPath: productionMode ? null : serverpodHome,
         );
         return true;
       },
     );
+  }
 
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress(
+      'Writing additional project files.',
+      () async {
+        _copyServerUpgrade(
+          serverpodDirs,
+          name: name,
+        );
+        return true;
+      },
+    );
+  }
+
+  if (template == ServerpodTemplateType.server ||
+      template == ServerpodTemplateType.mini) {
     success &= await log.progress('Getting server package dependencies.', () {
       return CommandLineTools.dartPubGet(serverpodDirs.serverDir);
     });
@@ -108,13 +122,6 @@ Future<bool> performCreate(
     success &=
         await log.progress('Getting Flutter app package dependencies.', () {
       return CommandLineTools.flutterCreate(serverpodDirs.flutterDir);
-    });
-
-    success &= await log.progress('Creating default database migration.', () {
-      return DatabaseSetup.createDefaultMigration(
-        serverpodDirs.serverDir,
-        name,
-      );
     });
   } else if (template == ServerpodTemplateType.module) {
     success &= await log.progress(
@@ -129,6 +136,15 @@ Future<bool> performCreate(
             }));
   }
 
+  if (template == ServerpodTemplateType.server) {
+    success &= await log.progress('Creating default database migration.', () {
+      return DatabaseSetup.createDefaultMigration(
+        serverpodDirs.serverDir,
+        name,
+      );
+    });
+  }
+
   if (success || force) {
     log.info(
       'Serverpod project created.',
@@ -138,13 +154,112 @@ Future<bool> performCreate(
 
     if (template == ServerpodTemplateType.server) {
       _logStartInstructions(name);
+    } else if (template == ServerpodTemplateType.mini) {
+      _logMiniStartInstructions(name);
     }
   }
 
   return success;
 }
 
-void _logStartInstructions(name) {
+Future<bool> _performUpgrade(ServerpodTemplateType template) async {
+  if (template != ServerpodTemplateType.server) {
+    log.error(
+      'The upgrade command can only be used with server templates.',
+    );
+    return false;
+  }
+
+  var serverDir = findServerDirectory(Directory.current);
+  if (serverDir == null) {
+    log.error(
+      'Could not find a Serverpod project in the current directory.',
+    );
+    return false;
+  }
+
+  var name = await getProjectName(serverDir);
+  if (name == null) {
+    log.error(
+      'Could not find a project name in the pubspec.yaml file.',
+    );
+    return false;
+  }
+
+  var serverpodDir = ServerpodDirectories(
+    name: name,
+    projectDir: serverDir.parent,
+  );
+
+  var success = true;
+  success &= await log.progress(
+    'Upgrading project.',
+    () async {
+      _copyServerUpgrade(
+        serverpodDir,
+        name: name,
+        skipMain: true,
+      );
+      return true;
+    },
+  );
+
+  success &= await log.progress('Creating default database migration.', () {
+    return DatabaseSetup.createDefaultMigration(
+      serverpodDir.serverDir,
+      name,
+    );
+  });
+
+  if (success) {
+    log.info(
+      'Serverpod project upgraded.',
+      newParagraph: true,
+      type: TextLogType.success,
+    );
+
+    _logStartInstructions(name);
+  }
+
+  return success;
+}
+
+void _logMiniStartInstructions(String name) {
+  log.info(
+    'All setup. You are ready to rock! 🥳',
+    type: TextLogType.header,
+  );
+  log.info(
+    'Start your Serverpod by running:',
+    type: TextLogType.header,
+  );
+
+  if (Platform.isWindows) {
+    log.info(
+      'cd .\\${p.join(name, '${name}_server')}\\',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      'dart .\\bin\\main.dart',
+      type: TextLogType.command,
+    );
+  } else {
+    log.info(
+      'cd ${p.join(name, '${name}_server')}',
+      type: TextLogType.command,
+      newParagraph: true,
+    );
+    log.info(
+      'dart bin/main.dart',
+      type: TextLogType.command,
+    );
+  }
+
+  log.info(' ');
+}
+
+void _logStartInstructions(String name) {
   log.info(
     'All setup. You are ready to rock! 🥳',
     type: TextLogType.header,
@@ -223,21 +338,80 @@ void _createDirectory(Directory dir) {
   dir.createSync();
 }
 
-void _copyServerTemplates(
+void _copyServerUpgrade(
   ServerpodDirectories serverpodDirs, {
   required String name,
-  required String awsName,
-  required String randomAwsId,
-  required String dbPassword,
-  required String dbProductionPassword,
-  required String dbStagingPassword,
-  String? customServerpodPath,
+  bool skipMain = false,
 }) {
-  log.debug('Copying server files');
+  var dbPassword = generateRandomString();
+  var dbProductionPassword = generateRandomString();
+  var dbStagingPassword = generateRandomString();
+
+  var awsName = name.replaceAll('_', '-');
+  var randomAwsId = math.Random.secure().nextInt(10000000).toString();
+
+  log.debug('Copying upgrade files.', newParagraph: true);
   var copier = Copier(
-    srcDir: Directory(
-        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
-    dstDir: serverpodDirs.serverDir,
+      srcDir: Directory(p.join(resourceManager.templateDirectory.path,
+          'projectname_server_upgrade')),
+      dstDir: serverpodDirs.serverDir,
+      replacements: [
+        Replacement(
+          slotName: 'projectname',
+          replacement: name,
+        ),
+        Replacement(
+          slotName: 'awsname',
+          replacement: awsName,
+        ),
+        Replacement(
+          slotName: 'randomawsid',
+          replacement: randomAwsId,
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_DEVELOPMENT',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_STAGING',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'SERVICE_SECRET_PRODUCTION',
+          replacement: generateRandomString(),
+        ),
+        Replacement(
+          slotName: 'DB_PASSWORD',
+          replacement: dbPassword,
+        ),
+        Replacement(
+          slotName: 'DB_PRODUCTION_PASSWORD',
+          replacement: dbProductionPassword,
+        ),
+        Replacement(
+          slotName: 'DB_STAGING_PASSWORD',
+          replacement: dbStagingPassword,
+        ),
+        Replacement(
+          slotName: 'REDIS_PASSWORD',
+          replacement: generateRandomString(),
+        ),
+      ],
+      fileNameReplacements: [
+        Replacement(
+          slotName: 'gcloudignore',
+          replacement: '.gcloudignore',
+        ),
+      ],
+      ignoreFileNames: [
+        if (skipMain) 'server.dart'
+      ]);
+  copier.copyFiles();
+
+  log.debug('Copying .github files', newParagraph: true);
+  copier = Copier(
+    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'github')),
+    dstDir: serverpodDirs.githubDir,
     replacements: [
       Replacement(
         slotName: 'projectname',
@@ -251,33 +425,26 @@ void _copyServerTemplates(
         slotName: 'randomawsid',
         replacement: randomAwsId,
       ),
+    ],
+    fileNameReplacements: [],
+  );
+  copier.copyFiles();
+}
+
+void _copyServerTemplates(
+  ServerpodDirectories serverpodDirs, {
+  required String name,
+  String? customServerpodPath,
+}) {
+  log.debug('Copying server files');
+  var copier = Copier(
+    srcDir: Directory(
+        p.join(resourceManager.templateDirectory.path, 'projectname_server')),
+    dstDir: serverpodDirs.serverDir,
+    replacements: [
       Replacement(
-        slotName: 'SERVICE_SECRET_DEVELOPMENT',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'SERVICE_SECRET_STAGING',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'SERVICE_SECRET_PRODUCTION',
-        replacement: generateRandomString(),
-      ),
-      Replacement(
-        slotName: 'DB_PASSWORD',
-        replacement: dbPassword,
-      ),
-      Replacement(
-        slotName: 'DB_PRODUCTION_PASSWORD',
-        replacement: dbProductionPassword,
-      ),
-      Replacement(
-        slotName: 'DB_STAGING_PASSWORD',
-        replacement: dbStagingPassword,
-      ),
-      Replacement(
-        slotName: 'REDIS_PASSWORD',
-        replacement: generateRandomString(),
+        slotName: 'projectname',
+        replacement: name,
       ),
       if (customServerpodPath != null)
         Replacement(
@@ -293,10 +460,6 @@ void _copyServerTemplates(
       Replacement(
         slotName: 'gitignore',
         replacement: '.gitignore',
-      ),
-      Replacement(
-        slotName: 'gcloudignore',
-        replacement: '.gcloudignore',
       ),
     ],
     ignoreFileNames: ['pubspec.lock'],
@@ -367,28 +530,6 @@ void _copyServerTemplates(
       'macos',
       'build',
     ],
-  );
-  copier.copyFiles();
-
-  log.debug('Copying .github files', newParagraph: true);
-  copier = Copier(
-    srcDir: Directory(p.join(resourceManager.templateDirectory.path, 'github')),
-    dstDir: serverpodDirs.githubDir,
-    replacements: [
-      Replacement(
-        slotName: 'projectname',
-        replacement: name,
-      ),
-      Replacement(
-        slotName: 'awsname',
-        replacement: awsName,
-      ),
-      Replacement(
-        slotName: 'randomawsid',
-        replacement: randomAwsId,
-      ),
-    ],
-    fileNameReplacements: [],
   );
   copier.copyFiles();
 }

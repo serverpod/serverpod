@@ -18,6 +18,7 @@ GeneratorConfig createGeneratorConfig([
     relativeDartClientPackagePathParts: [],
     modules: [],
     extraClasses: [],
+    enabledFeatures: [],
   );
 }
 
@@ -208,7 +209,7 @@ void main() {
     var config = createGeneratorConfig(split(serverRootDir.path));
 
     test(
-        'Given a serverpod project with model files, then the converted model path has the file uri set.',
+        'Given a serverpod project with model files then the converted model path has the file uri set.',
         () async {
       var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
@@ -225,6 +226,40 @@ void main() {
         contains(
             'test/integration/util/test_assets/protocol_helper/has_serverpod_server_project/test_server/lib/src/protocol/test.spy.yaml'),
       );
+    });
+
+    test(
+        'Given a serverpod project with model files then the converted model path has the rootPathParts set to empty arrays.',
+        () async {
+      var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+
+      expect(rootPathParts.first, []);
+
+      expect(rootPathParts.last, []);
+    });
+
+    test(
+        'Given a serverpod project with model files in a nested folder then the converted model path has the rootPathParts set to the nested folder inside the models directory.',
+        () async {
+      var serverRootDir = Directory(join(
+        'test',
+        'integration',
+        'util',
+        'test_assets',
+        'protocol_helper',
+        'nested_directory_server_project',
+        'test_server',
+      ));
+
+      var config = createGeneratorConfig(split(serverRootDir.path));
+
+      var models = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+      var rootPathParts = models.map((e) => e.protocolRootPathParts);
+
+      expect(rootPathParts.first, ['nested', 'folder']);
     });
 
     test(

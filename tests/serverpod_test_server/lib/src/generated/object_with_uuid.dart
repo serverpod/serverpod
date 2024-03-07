@@ -63,160 +63,12 @@ abstract class ObjectWithUuid extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'uuid': uuid,
-      'uuidNullable': uuidNullable,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
       'uuid': uuid.toJson(),
       if (uuidNullable != null) 'uuidNullable': uuidNullable?.toJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'uuid':
-        uuid = value;
-        return;
-      case 'uuidNullable':
-        uuidNullable = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ObjectWithUuid>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ObjectWithUuid>(
-      where: where != null ? where(ObjectWithUuid.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ObjectWithUuid?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ObjectWithUuid>(
-      where: where != null ? where(ObjectWithUuid.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ObjectWithUuid?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithUuid>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ObjectWithUuid>(
-      where: where(ObjectWithUuid.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ObjectWithUuid row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ObjectWithUuid row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ObjectWithUuid row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ObjectWithUuid>(
-      where: where != null ? where(ObjectWithUuid.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ObjectWithUuidInclude include() {
@@ -297,9 +149,6 @@ class ObjectWithUuidTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ObjectWithUuidTable.t instead.')
-ObjectWithUuidTable tObjectWithUuid = ObjectWithUuidTable();
-
 class ObjectWithUuidInclude extends _i1.IncludeObject {
   ObjectWithUuidInclude._();
 
@@ -343,7 +192,7 @@ class ObjectWithUuidRepository {
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ObjectWithUuid>(
+    return session.db.find<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
@@ -363,7 +212,7 @@ class ObjectWithUuidRepository {
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ObjectWithUuid>(
+    return session.db.findFirstRow<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
@@ -378,7 +227,7 @@ class ObjectWithUuidRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ObjectWithUuid>(
+    return session.db.findById<ObjectWithUuid>(
       id,
       transaction: transaction,
     );
@@ -389,7 +238,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ObjectWithUuid>(
+    return session.db.insert<ObjectWithUuid>(
       rows,
       transaction: transaction,
     );
@@ -400,7 +249,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ObjectWithUuid>(
+    return session.db.insertRow<ObjectWithUuid>(
       row,
       transaction: transaction,
     );
@@ -412,7 +261,7 @@ class ObjectWithUuidRepository {
     _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ObjectWithUuid>(
+    return session.db.update<ObjectWithUuid>(
       rows,
       columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
@@ -425,7 +274,7 @@ class ObjectWithUuidRepository {
     _i1.ColumnSelections<ObjectWithUuidTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ObjectWithUuid>(
+    return session.db.updateRow<ObjectWithUuid>(
       row,
       columns: columns?.call(ObjectWithUuid.t),
       transaction: transaction,
@@ -437,7 +286,7 @@ class ObjectWithUuidRepository {
     List<ObjectWithUuid> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ObjectWithUuid>(
+    return session.db.delete<ObjectWithUuid>(
       rows,
       transaction: transaction,
     );
@@ -448,7 +297,7 @@ class ObjectWithUuidRepository {
     ObjectWithUuid row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ObjectWithUuid>(
+    return session.db.deleteRow<ObjectWithUuid>(
       row,
       transaction: transaction,
     );
@@ -459,7 +308,7 @@ class ObjectWithUuidRepository {
     required _i1.WhereExpressionBuilder<ObjectWithUuidTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ObjectWithUuid>(
+    return session.db.deleteWhere<ObjectWithUuid>(
       where: where(ObjectWithUuid.t),
       transaction: transaction,
     );
@@ -471,7 +320,7 @@ class ObjectWithUuidRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ObjectWithUuid>(
+    return session.db.count<ObjectWithUuid>(
       where: where?.call(ObjectWithUuid.t),
       limit: limit,
       transaction: transaction,

@@ -9,7 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_server/module.dart' as _i2;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'protocol.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -132,20 +132,6 @@ abstract class ChatMessage extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'channel': channel,
-      'message': message,
-      'time': time,
-      'sender': sender,
-      'removed': removed,
-      'attachments': attachments,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -160,156 +146,6 @@ abstract class ChatMessage extends _i1.TableRow {
       if (attachments != null)
         'attachments': attachments?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'channel':
-        channel = value;
-        return;
-      case 'message':
-        message = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'sender':
-        sender = value;
-        return;
-      case 'removed':
-        removed = value;
-        return;
-      case 'attachments':
-        attachments = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<ChatMessage>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatMessageTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<ChatMessage?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatMessageTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<ChatMessage?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ChatMessage>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<ChatMessageTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ChatMessage>(
-      where: where(ChatMessage.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    ChatMessage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<ChatMessageTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ChatMessage>(
-      where: where != null ? where(ChatMessage.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static ChatMessageInclude include() {
@@ -456,9 +292,6 @@ class ChatMessageTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ChatMessageTable.t instead.')
-ChatMessageTable tChatMessage = ChatMessageTable();
-
 class ChatMessageInclude extends _i1.IncludeObject {
   ChatMessageInclude._();
 
@@ -502,7 +335,7 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<ChatMessage>(
+    return session.db.find<ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
@@ -522,7 +355,7 @@ class ChatMessageRepository {
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<ChatMessage>(
+    return session.db.findFirstRow<ChatMessage>(
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
@@ -537,7 +370,7 @@ class ChatMessageRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<ChatMessage>(
+    return session.db.findById<ChatMessage>(
       id,
       transaction: transaction,
     );
@@ -548,7 +381,7 @@ class ChatMessageRepository {
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<ChatMessage>(
+    return session.db.insert<ChatMessage>(
       rows,
       transaction: transaction,
     );
@@ -559,7 +392,7 @@ class ChatMessageRepository {
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<ChatMessage>(
+    return session.db.insertRow<ChatMessage>(
       row,
       transaction: transaction,
     );
@@ -571,7 +404,7 @@ class ChatMessageRepository {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<ChatMessage>(
+    return session.db.update<ChatMessage>(
       rows,
       columns: columns?.call(ChatMessage.t),
       transaction: transaction,
@@ -584,7 +417,7 @@ class ChatMessageRepository {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<ChatMessage>(
+    return session.db.updateRow<ChatMessage>(
       row,
       columns: columns?.call(ChatMessage.t),
       transaction: transaction,
@@ -596,7 +429,7 @@ class ChatMessageRepository {
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<ChatMessage>(
+    return session.db.delete<ChatMessage>(
       rows,
       transaction: transaction,
     );
@@ -607,7 +440,7 @@ class ChatMessageRepository {
     ChatMessage row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<ChatMessage>(
+    return session.db.deleteRow<ChatMessage>(
       row,
       transaction: transaction,
     );
@@ -618,7 +451,7 @@ class ChatMessageRepository {
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<ChatMessage>(
+    return session.db.deleteWhere<ChatMessage>(
       where: where(ChatMessage.t),
       transaction: transaction,
     );
@@ -630,7 +463,7 @@ class ChatMessageRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<ChatMessage>(
+    return session.db.count<ChatMessage>(
       where: where?.call(ChatMessage.t),
       limit: limit,
       transaction: transaction,

@@ -18,7 +18,7 @@ Future<bool> performGenerate({
   log.debug('Analyzing serializable models in the protocol directory.');
   var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(config);
 
-  var analyzer = StatefulAnalyzer(protocols, (uri, collector) {
+  var analyzer = StatefulAnalyzer(config, protocols, (uri, collector) {
     collector.printErrors();
 
     if (collector.hasSeverErrors) {

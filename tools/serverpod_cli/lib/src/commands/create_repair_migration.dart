@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/exit_exception.dart';
@@ -62,6 +63,21 @@ class CreateRepairMigrationCommand extends ServerpodCommand {
       log.error(
         'Invalid tag name. Tag names can only contain lowercase letters, '
         'number, and dashes.',
+      );
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    GeneratorConfig config;
+    try {
+      config = await GeneratorConfig.load();
+    } catch (_) {
+      throw ExitException(ExitCodeType.commandInvokedCannotExecute);
+    }
+
+    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+      log.error(
+        'The database feature is not enabled in this project. '
+        'This command cannot be used.',
       );
       throw ExitException(ExitCodeType.commandInvokedCannotExecute);
     }

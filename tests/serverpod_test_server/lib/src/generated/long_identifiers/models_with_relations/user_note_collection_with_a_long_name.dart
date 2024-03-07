@@ -63,15 +63,6 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -79,150 +70,6 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow {
       if (notes != null)
         'notes': notes?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UserNoteCollectionWithALongName>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    UserNoteCollectionWithALongNameInclude? include,
-  }) async {
-    return session.db.find<UserNoteCollectionWithALongName>(
-      where: where != null ? where(UserNoteCollectionWithALongName.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UserNoteCollectionWithALongName?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    UserNoteCollectionWithALongNameInclude? include,
-  }) async {
-    return session.db.findSingleRow<UserNoteCollectionWithALongName>(
-      where: where != null ? where(UserNoteCollectionWithALongName.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UserNoteCollectionWithALongName?> findById(
-    _i1.Session session,
-    int id, {
-    UserNoteCollectionWithALongNameInclude? include,
-  }) async {
-    return session.db.findById<UserNoteCollectionWithALongName>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>
-        where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<UserNoteCollectionWithALongName>(
-      where: where(UserNoteCollectionWithALongName.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    UserNoteCollectionWithALongName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    UserNoteCollectionWithALongName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    UserNoteCollectionWithALongName row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<UserNoteCollectionWithALongName>(
-      where: where != null ? where(UserNoteCollectionWithALongName.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static UserNoteCollectionWithALongNameInclude include(
@@ -344,10 +191,6 @@ class UserNoteCollectionWithALongNameTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use UserNoteCollectionWithALongNameTable.t instead.')
-UserNoteCollectionWithALongNameTable tUserNoteCollectionWithALongName =
-    UserNoteCollectionWithALongNameTable();
-
 class UserNoteCollectionWithALongNameInclude extends _i1.IncludeObject {
   UserNoteCollectionWithALongNameInclude._(
       {_i2.UserNoteWithALongNameIncludeList? notes}) {
@@ -407,7 +250,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.find<UserNoteCollectionWithALongName>(
+    return session.db.find<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
@@ -429,7 +272,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<UserNoteCollectionWithALongName>(
+    return session.db.findFirstRow<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
@@ -446,7 +289,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionWithALongNameInclude? include,
   }) async {
-    return session.dbNext.findById<UserNoteCollectionWithALongName>(
+    return session.db.findById<UserNoteCollectionWithALongName>(
       id,
       transaction: transaction,
       include: include,
@@ -458,7 +301,7 @@ class UserNoteCollectionWithALongNameRepository {
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserNoteCollectionWithALongName>(
+    return session.db.insert<UserNoteCollectionWithALongName>(
       rows,
       transaction: transaction,
     );
@@ -469,7 +312,7 @@ class UserNoteCollectionWithALongNameRepository {
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserNoteCollectionWithALongName>(
+    return session.db.insertRow<UserNoteCollectionWithALongName>(
       row,
       transaction: transaction,
     );
@@ -481,7 +324,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserNoteCollectionWithALongName>(
+    return session.db.update<UserNoteCollectionWithALongName>(
       rows,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
       transaction: transaction,
@@ -494,7 +337,7 @@ class UserNoteCollectionWithALongNameRepository {
     _i1.ColumnSelections<UserNoteCollectionWithALongNameTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserNoteCollectionWithALongName>(
+    return session.db.updateRow<UserNoteCollectionWithALongName>(
       row,
       columns: columns?.call(UserNoteCollectionWithALongName.t),
       transaction: transaction,
@@ -506,7 +349,7 @@ class UserNoteCollectionWithALongNameRepository {
     List<UserNoteCollectionWithALongName> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserNoteCollectionWithALongName>(
+    return session.db.delete<UserNoteCollectionWithALongName>(
       rows,
       transaction: transaction,
     );
@@ -517,7 +360,7 @@ class UserNoteCollectionWithALongNameRepository {
     UserNoteCollectionWithALongName row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserNoteCollectionWithALongName>(
+    return session.db.deleteRow<UserNoteCollectionWithALongName>(
       row,
       transaction: transaction,
     );
@@ -529,7 +372,7 @@ class UserNoteCollectionWithALongNameRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserNoteCollectionWithALongName>(
+    return session.db.deleteWhere<UserNoteCollectionWithALongName>(
       where: where(UserNoteCollectionWithALongName.t),
       transaction: transaction,
     );
@@ -541,7 +384,7 @@ class UserNoteCollectionWithALongNameRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserNoteCollectionWithALongName>(
+    return session.db.count<UserNoteCollectionWithALongName>(
       where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
       transaction: transaction,
@@ -571,7 +414,7 @@ class UserNoteCollectionWithALongNameAttachRepository {
                   userNoteCollectionWithALongName.id,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNoteWithALongName>(
+    await session.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -601,7 +444,7 @@ class UserNoteCollectionWithALongNameAttachRowRepository {
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId:
           userNoteCollectionWithALongName.id,
     );
-    await session.dbNext.updateRow<_i2.UserNoteWithALongName>(
+    await session.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -629,7 +472,7 @@ class UserNoteCollectionWithALongNameDetachRepository {
                   null,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNoteWithALongName>(
+    await session.db.update<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t
@@ -654,7 +497,7 @@ class UserNoteCollectionWithALongNameDetachRowRepository {
       userNoteWithALongName,
       $_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId: null,
     );
-    await session.dbNext.updateRow<_i2.UserNoteWithALongName>(
+    await session.db.updateRow<_i2.UserNoteWithALongName>(
       $userNoteWithALongName,
       columns: [
         _i2.UserNoteWithALongName.t

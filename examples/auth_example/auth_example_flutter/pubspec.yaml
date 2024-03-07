@@ -27,11 +27,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: 1.2.2
-  serverpod_auth_email_flutter: 1.2.2
-  serverpod_auth_shared_flutter: 1.2.2
-  serverpod_auth_google_flutter: 1.2.2
-  serverpod_auth_apple_flutter: 1.2.2
+  serverpod_flutter: 2.0.0-alpha.1
+  serverpod_auth_email_flutter: 2.0.0-alpha.1
+  serverpod_auth_shared_flutter: 2.0.0-alpha.1
+  serverpod_auth_google_flutter: 2.0.0-alpha.1
+  serverpod_auth_apple_flutter: 2.0.0-alpha.1
   auth_example_client:
     path: ../auth_example_client
 

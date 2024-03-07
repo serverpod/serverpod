@@ -6,7 +6,7 @@ description: Starting point for a Serverpod module client.
 environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
-  serverpod_client: 1.2.2
+  serverpod_client: 2.0.0-alpha.1
 
 dependency_overrides: 
   serverpod_client: 

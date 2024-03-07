@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
@@ -116,7 +115,7 @@ class DatabaseBulkData {
     var result =
         await database.transaction<BulkQueryResult>((transaction) async {
       var startTime = DateTime.now();
-      PostgreSQLResult? result;
+      DatabaseResult? result;
       int numAffectedRows = 0;
 
       for (var query in queries) {
@@ -128,10 +127,9 @@ class DatabaseBulkData {
       var duration = DateTime.now().difference(startTime);
 
       return BulkQueryResult(
-        headers: result.columnDescriptions
+        headers: result.schema.columns
             .map((e) => BulkQueryColumnDescription(
-                  name: e.columnName,
-                  table: e.tableName,
+                  name: e.columnName ?? '',
                 ))
             .toList(),
         data: SerializationManager.encode(result),

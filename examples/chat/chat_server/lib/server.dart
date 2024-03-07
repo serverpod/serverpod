@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart' as auth;
-import 'package:serverpod_chat_server/module.dart' as chat;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
+import 'package:serverpod_chat_server/serverpod_chat_server.dart' as chat;
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -41,12 +41,12 @@ void run(List<String> args) async {
     postMessagesGlobally: false,
   ));
 
+  // Start the server.
+  await pod.start();
+
   // Create an initial set of entries in the database, if they do not exist
   // already.
   await _populateDatabase(pod);
-
-  // Start the server.
-  await pod.start();
 }
 
 Future<void> _populateDatabase(Serverpod pod) async {

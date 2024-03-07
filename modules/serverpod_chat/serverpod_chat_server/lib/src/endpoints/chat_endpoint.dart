@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import '../business/config.dart';
 import '../generated/protocol.dart';

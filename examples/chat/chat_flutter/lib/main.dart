@@ -22,7 +22,7 @@ void main() async {
   // the default port. You will need to modify this to connect to staging or
   // production servers.
   client = Client(
-    'http://localhost:8080/',
+    'http://$localhost:8080/',
     authenticationKeyManager: FlutterAuthenticationKeyManager(),
   )..connectivityMonitor = FlutterConnectivityMonitor();
 

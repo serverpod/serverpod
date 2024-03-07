@@ -1,5 +1,6 @@
-import 'package:serverpod/src/database/columns.dart';
-import 'package:serverpod/src/database/expressions.dart';
+import 'package:serverpod/src/database/concepts/columns.dart';
+import 'package:serverpod/src/database/concepts/expressions.dart';
+import 'package:serverpod/src/database/concepts/table.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -66,15 +66,6 @@ abstract class UserNoteCollection extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -83,149 +74,6 @@ abstract class UserNoteCollection extends _i1.TableRow {
         'userNotesPropertyName':
             userNotesPropertyName?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UserNoteCollection>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    UserNoteCollectionInclude? include,
-  }) async {
-    return session.db.find<UserNoteCollection>(
-      where: where != null ? where(UserNoteCollection.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UserNoteCollection?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    UserNoteCollectionInclude? include,
-  }) async {
-    return session.db.findSingleRow<UserNoteCollection>(
-      where: where != null ? where(UserNoteCollection.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UserNoteCollection?> findById(
-    _i1.Session session,
-    int id, {
-    UserNoteCollectionInclude? include,
-  }) async {
-    return session.db.findById<UserNoteCollection>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<UserNoteCollection>(
-      where: where(UserNoteCollection.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    UserNoteCollection row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    UserNoteCollection row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    UserNoteCollection row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<UserNoteCollection>(
-      where: where != null ? where(UserNoteCollection.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static UserNoteCollectionInclude include(
@@ -347,9 +195,6 @@ class UserNoteCollectionTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use UserNoteCollectionTable.t instead.')
-UserNoteCollectionTable tUserNoteCollection = UserNoteCollectionTable();
-
 class UserNoteCollectionInclude extends _i1.IncludeObject {
   UserNoteCollectionInclude._(
       {_i2.UserNoteIncludeList? userNotesPropertyName}) {
@@ -408,7 +253,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.find<UserNoteCollection>(
+    return session.db.find<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -430,7 +275,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<UserNoteCollection>(
+    return session.db.findFirstRow<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
@@ -447,7 +292,7 @@ class UserNoteCollectionRepository {
     _i1.Transaction? transaction,
     UserNoteCollectionInclude? include,
   }) async {
-    return session.dbNext.findById<UserNoteCollection>(
+    return session.db.findById<UserNoteCollection>(
       id,
       transaction: transaction,
       include: include,
@@ -459,7 +304,7 @@ class UserNoteCollectionRepository {
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserNoteCollection>(
+    return session.db.insert<UserNoteCollection>(
       rows,
       transaction: transaction,
     );
@@ -470,7 +315,7 @@ class UserNoteCollectionRepository {
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserNoteCollection>(
+    return session.db.insertRow<UserNoteCollection>(
       row,
       transaction: transaction,
     );
@@ -482,7 +327,7 @@ class UserNoteCollectionRepository {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserNoteCollection>(
+    return session.db.update<UserNoteCollection>(
       rows,
       columns: columns?.call(UserNoteCollection.t),
       transaction: transaction,
@@ -495,7 +340,7 @@ class UserNoteCollectionRepository {
     _i1.ColumnSelections<UserNoteCollectionTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserNoteCollection>(
+    return session.db.updateRow<UserNoteCollection>(
       row,
       columns: columns?.call(UserNoteCollection.t),
       transaction: transaction,
@@ -507,7 +352,7 @@ class UserNoteCollectionRepository {
     List<UserNoteCollection> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserNoteCollection>(
+    return session.db.delete<UserNoteCollection>(
       rows,
       transaction: transaction,
     );
@@ -518,7 +363,7 @@ class UserNoteCollectionRepository {
     UserNoteCollection row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserNoteCollection>(
+    return session.db.deleteRow<UserNoteCollection>(
       row,
       transaction: transaction,
     );
@@ -529,7 +374,7 @@ class UserNoteCollectionRepository {
     required _i1.WhereExpressionBuilder<UserNoteCollectionTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserNoteCollection>(
+    return session.db.deleteWhere<UserNoteCollection>(
       where: where(UserNoteCollection.t),
       transaction: transaction,
     );
@@ -541,7 +386,7 @@ class UserNoteCollectionRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserNoteCollection>(
+    return session.db.count<UserNoteCollection>(
       where: where?.call(UserNoteCollection.t),
       limit: limit,
       transaction: transaction,
@@ -571,7 +416,7 @@ class UserNoteCollectionAttachRepository {
                   userNoteCollection.id,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNote>(
+    await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -601,7 +446,7 @@ class UserNoteCollectionAttachRowRepository {
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId:
           userNoteCollection.id,
     );
-    await session.dbNext.updateRow<_i2.UserNote>(
+    await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -629,7 +474,7 @@ class UserNoteCollectionDetachRepository {
                   null,
             ))
         .toList();
-    await session.dbNext.update<_i2.UserNote>(
+    await session.db.update<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t
@@ -654,7 +499,7 @@ class UserNoteCollectionDetachRowRepository {
       userNote,
       $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId: null,
     );
-    await session.dbNext.updateRow<_i2.UserNote>(
+    await session.db.updateRow<_i2.UserNote>(
       $userNote,
       columns: [
         _i2.UserNote.t

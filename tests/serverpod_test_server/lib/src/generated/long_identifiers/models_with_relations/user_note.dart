@@ -55,17 +55,6 @@ abstract class UserNote extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-          _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -75,144 +64,6 @@ abstract class UserNote extends _i1.TableRow {
         '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
             _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId':
-        _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<UserNote>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<UserNote>(
-      where: where != null ? where(UserNote.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<UserNote?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<UserNote>(
-      where: where != null ? where(UserNote.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<UserNote?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<UserNote>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<UserNoteTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<UserNote>(
-      where: where(UserNote.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    UserNote row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    UserNote row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    UserNote row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<UserNote>(
-      where: where != null ? where(UserNote.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static UserNoteInclude include() {
@@ -324,9 +175,6 @@ class UserNoteTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use UserNoteTable.t instead.')
-UserNoteTable tUserNote = UserNoteTable();
-
 class UserNoteInclude extends _i1.IncludeObject {
   UserNoteInclude._();
 
@@ -370,7 +218,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<UserNote>(
+    return session.db.find<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -390,7 +238,7 @@ class UserNoteRepository {
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<UserNote>(
+    return session.db.findFirstRow<UserNote>(
       where: where?.call(UserNote.t),
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
@@ -405,7 +253,7 @@ class UserNoteRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<UserNote>(
+    return session.db.findById<UserNote>(
       id,
       transaction: transaction,
     );
@@ -416,7 +264,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<UserNote>(
+    return session.db.insert<UserNote>(
       rows,
       transaction: transaction,
     );
@@ -427,7 +275,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<UserNote>(
+    return session.db.insertRow<UserNote>(
       row,
       transaction: transaction,
     );
@@ -439,7 +287,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<UserNote>(
+    return session.db.update<UserNote>(
       rows,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -452,7 +300,7 @@ class UserNoteRepository {
     _i1.ColumnSelections<UserNoteTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<UserNote>(
+    return session.db.updateRow<UserNote>(
       row,
       columns: columns?.call(UserNote.t),
       transaction: transaction,
@@ -464,7 +312,7 @@ class UserNoteRepository {
     List<UserNote> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<UserNote>(
+    return session.db.delete<UserNote>(
       rows,
       transaction: transaction,
     );
@@ -475,7 +323,7 @@ class UserNoteRepository {
     UserNote row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<UserNote>(
+    return session.db.deleteRow<UserNote>(
       row,
       transaction: transaction,
     );
@@ -486,7 +334,7 @@ class UserNoteRepository {
     required _i1.WhereExpressionBuilder<UserNoteTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<UserNote>(
+    return session.db.deleteWhere<UserNote>(
       where: where(UserNote.t),
       transaction: transaction,
     );
@@ -498,7 +346,7 @@ class UserNoteRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<UserNote>(
+    return session.db.count<UserNote>(
       where: where?.call(UserNote.t),
       limit: limit,
       transaction: transaction,

@@ -79,16 +79,6 @@ abstract class Blocking extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'blockedId': blockedId,
-      'blockedById': blockedById,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -97,152 +87,6 @@ abstract class Blocking extends _i1.TableRow {
       'blockedById': blockedById,
       if (blockedBy != null) 'blockedBy': blockedBy?.allToJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'blockedId':
-        blockedId = value;
-        return;
-      case 'blockedById':
-        blockedById = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Blocking>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    BlockingInclude? include,
-  }) async {
-    return session.db.find<Blocking>(
-      where: where != null ? where(Blocking.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Blocking?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    BlockingInclude? include,
-  }) async {
-    return session.db.findSingleRow<Blocking>(
-      where: where != null ? where(Blocking.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Blocking?> findById(
-    _i1.Session session,
-    int id, {
-    BlockingInclude? include,
-  }) async {
-    return session.db.findById<Blocking>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<BlockingTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Blocking>(
-      where: where(Blocking.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Blocking row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Blocking row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Blocking row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Blocking>(
-      where: where != null ? where(Blocking.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static BlockingInclude include({
@@ -377,9 +221,6 @@ class BlockingTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use BlockingTable.t instead.')
-BlockingTable tBlocking = BlockingTable();
-
 class BlockingInclude extends _i1.IncludeObject {
   BlockingInclude._({
     _i2.MemberInclude? blocked,
@@ -439,7 +280,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.dbNext.find<Blocking>(
+    return session.db.find<Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -461,7 +302,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Blocking>(
+    return session.db.findFirstRow<Blocking>(
       where: where?.call(Blocking.t),
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
@@ -478,7 +319,7 @@ class BlockingRepository {
     _i1.Transaction? transaction,
     BlockingInclude? include,
   }) async {
-    return session.dbNext.findById<Blocking>(
+    return session.db.findById<Blocking>(
       id,
       transaction: transaction,
       include: include,
@@ -490,7 +331,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Blocking>(
+    return session.db.insert<Blocking>(
       rows,
       transaction: transaction,
     );
@@ -501,7 +342,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Blocking>(
+    return session.db.insertRow<Blocking>(
       row,
       transaction: transaction,
     );
@@ -513,7 +354,7 @@ class BlockingRepository {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Blocking>(
+    return session.db.update<Blocking>(
       rows,
       columns: columns?.call(Blocking.t),
       transaction: transaction,
@@ -526,7 +367,7 @@ class BlockingRepository {
     _i1.ColumnSelections<BlockingTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Blocking>(
+    return session.db.updateRow<Blocking>(
       row,
       columns: columns?.call(Blocking.t),
       transaction: transaction,
@@ -538,7 +379,7 @@ class BlockingRepository {
     List<Blocking> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Blocking>(
+    return session.db.delete<Blocking>(
       rows,
       transaction: transaction,
     );
@@ -549,7 +390,7 @@ class BlockingRepository {
     Blocking row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Blocking>(
+    return session.db.deleteRow<Blocking>(
       row,
       transaction: transaction,
     );
@@ -560,7 +401,7 @@ class BlockingRepository {
     required _i1.WhereExpressionBuilder<BlockingTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Blocking>(
+    return session.db.deleteWhere<Blocking>(
       where: where(Blocking.t),
       transaction: transaction,
     );
@@ -572,7 +413,7 @@ class BlockingRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Blocking>(
+    return session.db.count<Blocking>(
       where: where?.call(Blocking.t),
       limit: limit,
       transaction: transaction,
@@ -596,7 +437,7 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedId: blocked.id);
-    await session.dbNext.updateRow<Blocking>(
+    await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedId],
     );
@@ -615,7 +456,7 @@ class BlockingAttachRowRepository {
     }
 
     var $blocking = blocking.copyWith(blockedById: blockedBy.id);
-    await session.dbNext.updateRow<Blocking>(
+    await session.db.updateRow<Blocking>(
       $blocking,
       columns: [Blocking.t.blockedById],
     );

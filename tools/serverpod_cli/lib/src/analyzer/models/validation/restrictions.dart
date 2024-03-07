@@ -2,6 +2,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
@@ -116,12 +117,14 @@ const _maxColumnNameLength =
     DatabaseConstants.pgsqlMaxNameLimitation - _reservedColumnSuffixChars;
 
 class Restrictions {
+  final GeneratorConfig config;
   String documentType;
   YamlMap documentContents;
   SerializableModelDefinition? documentDefinition;
   ModelRelations? modelRelations;
 
   Restrictions({
+    required this.config,
     required this.documentType,
     required this.documentContents,
     this.documentDefinition,
@@ -170,6 +173,23 @@ class Restrictions {
           'The $documentType name "$className" is already used by another model class.',
           span,
         )
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateTableNameKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    if (!config.isFeatureEnabled(ServerpodFeature.database)) {
+      return [
+        SourceSpanSeverityException(
+            'The "table" property cannot be used when the database feature is disabled.',
+            span,
+            severity: SourceSpanSeverity.warning)
       ];
     }
 
@@ -638,6 +658,15 @@ class Restrictions {
   ) {
     if (content == null) return [];
 
+    if (content is! String) {
+      return [
+        SourceSpanSeverityException(
+          'The "parent" value must be a String.',
+          span,
+        )
+      ];
+    }
+
     var definition = documentDefinition;
     if (definition is ClassDefinition && definition.tableName == null) {
       return [
@@ -1105,7 +1134,9 @@ class Restrictions {
   }
 
   bool _isValidType(TypeDefinition type) {
-    return whiteListedTypes.contains(type.className) || _isModelType(type);
+    return whiteListedTypes.contains(type.className) ||
+        _isModelType(type) ||
+        _isCustomType(type);
   }
 
   bool _isUnsupportedType(TypeDefinition type) {
@@ -1140,6 +1171,10 @@ class Restrictions {
     }
 
     return true;
+  }
+
+  bool _isCustomType(TypeDefinition type) {
+    return config.extraClasses.any((c) => c.className == type.className);
   }
 
   bool _hasTableDefined(SerializableModelDefinition classDefinition) {

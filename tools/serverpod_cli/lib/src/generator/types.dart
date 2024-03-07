@@ -156,9 +156,9 @@ class TypeDefinition {
             throw FormatException(
                 'Module with nickname $moduleName not found in config!');
           }
-          t.url = 'package:'
-              '${serverCode ? module.serverPackage : module.dartClientPackage}'
-              '/module.dart';
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (url == 'serverpod' ||
             (url == null && ['UuidValue'].contains(className))) {
           // serverpod: reference
@@ -185,10 +185,10 @@ class TypeDefinition {
           // endpoint definition references from an module
           var module = config.modules.firstWhere(
               (m) => url?.startsWith('package:${m.serverPackage}') ?? false);
+          var packageName =
+              serverCode ? module.serverPackage : module.dartClientPackage;
           t.url = url!.contains('/src/generated/')
-              ? 'package:'
-                  '${serverCode ? module.serverPackage : module.dartClientPackage}'
-                  '/module.dart'
+              ? 'package:$packageName/$packageName.dart'
               : serverCode
                   ? url
                   : url?.replaceFirst('package:${module.serverPackage}',
@@ -362,6 +362,12 @@ class TypeDefinition {
         ...generics[1].generateDeserialization(serverCode, config: config),
       ];
     } else if (customClass) {
+      // This is the only place the customClass bool is used.
+      // It could be moved as we already know that we are working on custom classes
+      // when we generate the deserialization.
+      // But the additional functionality we get here is that we generate resolves for lists and maps
+      // if the custom class is used as a generic type. The day we create a more generic way to resolve generics
+      // in lists, maps, etc the customClass bool can be removed which will simplify the code.
       return [
         MapEntry(
             nullable
@@ -415,7 +421,7 @@ class TypeDefinition {
 /// [TypeDefinition.customClass].
 TypeDefinition parseType(
   String input, {
-  bool analyzingExtraClasses = false,
+  required List<TypeDefinition>? extraClasses,
 }) {
   var trimmedInput = input.trim();
 
@@ -428,7 +434,9 @@ TypeDefinition parseType(
 
     var genericsInputs = splitIgnoringBrackets(internalTypes);
 
-    generics = genericsInputs.map((generic) => parseType(generic)).toList();
+    generics = genericsInputs
+        .map((generic) => parseType(generic, extraClasses: extraClasses))
+        .toList();
   }
 
   bool isNullable = trimmedInput[trimmedInput.length - 1] == '?';
@@ -436,11 +444,19 @@ TypeDefinition parseType(
 
   String className = trimmedInput.substring(0, terminatedAt).trim();
 
+  var extraClass = extraClasses
+      ?.cast<TypeDefinition?>()
+      .firstWhere((c) => c?.className == className, orElse: () => null);
+
+  if (extraClass != null) {
+    return isNullable ? extraClass.asNullable : extraClass;
+  }
+
   return TypeDefinition.mixedUrlAndClassName(
     mixed: className,
     nullable: isNullable,
     generics: generics,
-    customClass: analyzingExtraClasses,
+    customClass: extraClasses == null,
   );
 }
 

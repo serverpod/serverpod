@@ -96,6 +96,7 @@ class ModelHelper {
     }
 
     var modelSourceDir = Directory(path);
+
     var isDirectoryAvailable = await modelSourceDir.exists();
 
     if (isDirectoryAvailable) {
@@ -120,6 +121,7 @@ class ModelHelper {
   ) {
     var sourceDir = Directory(joinAll(pathParts));
     var sourceDirPartsLength = split(sourceDir.path).length;
-    return split(dirname(fileUri.path)).skip(sourceDirPartsLength).toList();
+
+    return split(dirname(fromUri(fileUri))).skip(sourceDirPartsLength).toList();
   }
 }

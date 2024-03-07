@@ -1,3 +1,18 @@
+## 2.0.0-alpha.1
+- feat: Serverpod mini. Allows running Serverpod without the database.
+- fix: Changes root file name in modules to follow Dart standards.
+- fix: BREAKING. Removes deprecated methods.
+- fix: BREAKING. Introduces `DatabaseException`.
+- fix: BREAKING. Introduces new types for database result sets.
+- fix: BREAKING. Updates transaction interface in database.
+
+## 1.2.3
+- fix: Correctly cleans up health check manager when shutting down server.
+- fix: Supports projects without a config generator file in CLI.
+- fix: Adds additional requirements to Insights setup.
+- fix: Removes unnecessary database connection creation in pool manager.
+- fix: CLI gives error if non-string value is used as parent keyword.
+
 ## 1.2.2
 - fix: Makes it possible to create modules from templates in developer mode.
 - fix: Correctly marks nested enum types in the analyzer.

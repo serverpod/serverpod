@@ -65,7 +65,7 @@ class MigrationGenerator {
     var models = await ModelHelper.loadProjectYamlModelsFromDisk(
       config,
     );
-    var modelDefinitions = StatefulAnalyzer(models, (uri, collector) {
+    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
       collector.printErrors();
 
       if (collector.hasSeverErrors) {

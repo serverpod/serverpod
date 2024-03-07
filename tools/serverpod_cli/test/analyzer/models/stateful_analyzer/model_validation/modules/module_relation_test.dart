@@ -1,10 +1,12 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().withAuthModule().build();
   group('Given a class referencing a module class with a relation.', () {
     var models = [
       ModelSourceBuilder()
@@ -31,6 +33,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -79,6 +82,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -119,6 +123,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );

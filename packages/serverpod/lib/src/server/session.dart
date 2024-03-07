@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod/src/database/database_legacy.dart';
+import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
 
@@ -40,11 +40,16 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  @Deprecated('Will be replaced by dbNext in 2.0.0. Use dbNext instead.')
-  late final DatabaseLegacy db;
+  Database? _db;
 
-  /// Access to the database. Replaces db in the future.
-  late final Database dbNext;
+  /// Access to the database.
+  Database get db {
+    var database = _db;
+    if (database == null) {
+      throw Exception('Database is not available in this session.');
+    }
+    return database;
+  }
 
   String? _authenticationKey;
 
@@ -87,9 +92,9 @@ abstract class Session {
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    // ignore: deprecated_member_use_from_same_package
-    db = DatabaseLegacy(session: this);
-    dbNext = Database(session: this);
+    if (Features.enableDatabase) {
+      _db = server.createDatabase(this);
+    }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -99,12 +104,20 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
+    if (server.authenticationHandler == null) {
+      stderr.write(
+        'No authentication handler is set, authentication is disabled, '
+        'all requests to protected endpoints will be rejected.',
+      );
+    }
+
     if (server.authenticationHandler != null && _authenticationKey != null) {
       var authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
+
     _initialized = true;
   }
 
@@ -387,7 +400,7 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.dbNext
+    await _session.db
         .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }

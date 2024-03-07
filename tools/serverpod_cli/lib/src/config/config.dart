@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
@@ -52,6 +56,7 @@ class GeneratorConfig {
     required List<String> relativeDartClientPackagePathParts,
     required List<ModuleConfig> modules,
     required this.extraClasses,
+    required this.enabledFeatures,
   })  : _relativeDartClientPackagePathParts =
             relativeDartClientPackagePathParts,
         _modules = modules;
@@ -128,6 +133,12 @@ class GeneratorConfig {
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// All the features that are enabled in the serverpod project.
+  final List<ServerpodFeature> enabledFeatures;
+
+  bool isFeatureEnabled(ServerpodFeature feature) =>
+      enabledFeatures.contains(feature);
+
   /// All the modules defined in the config (of type module).
   List<ModuleConfig> get modules => _modules
       .where((module) => module.type == PackageType.module)
@@ -145,24 +156,23 @@ class GeneratorConfig {
   static Future<GeneratorConfig> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
-    Map? pubspec;
+    Pubspec? pubspec;
     try {
-      var file = File(p.join(dir, 'pubspec.yaml'));
-      var yamlStr = file.readAsStringSync();
-      pubspec = loadYaml(yamlStr);
-    } catch (_) {
+      pubspec = parsePubspec(File(p.join(dir, 'pubspec.yaml')));
+    } catch (_) {}
+
+    if (pubspec == null) {
       log.error(
         'Failed to load pubspec.yaml. Are you running serverpod from your '
         'projects root directory?',
       );
 
       throw const ServerpodProjectNotFoundException(
-        'Failed to load pubspec.yaml',
+        'Failed to load valid pubspec.yaml',
       );
     }
 
-    if (pubspec == null ||
-        pubspec['dependencies']?.containsKey('serverpod') != true) {
+    if (!isServerDirectory(Directory(dir))) {
       log.error(
         'Could not find the Serverpod dependency. Are you running serverpod from your '
         'projects root directory?',
@@ -173,15 +183,12 @@ class GeneratorConfig {
       );
     }
 
-    if (pubspec['name'] == null) {
-      throw const FormatException('Package name is missing in pubspec.yaml');
-    }
-    var serverPackage = pubspec['name'];
+    var serverPackage = pubspec.name;
     var name = _stripPackage(serverPackage);
 
+    var file = File(p.join(dir, 'config', 'generator.yaml'));
     Map generatorConfig = {};
     try {
-      var file = File(p.join(dir, 'config', 'generator.yaml'));
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
     } catch (_) {}
@@ -247,7 +254,7 @@ class GeneratorConfig {
           extraClasses.add(
             parseType(
               extraClassConfig,
-              analyzingExtraClasses: true,
+              extraClasses: null,
             ),
           );
         }
@@ -260,6 +267,8 @@ class GeneratorConfig {
       }
     }
 
+    var enabledFeatures = _enabledFeatures(file, generatorConfig);
+
     return GeneratorConfig(
       name: name,
       type: type,
@@ -270,7 +279,25 @@ class GeneratorConfig {
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
       modules: modules,
       extraClasses: extraClasses,
+      enabledFeatures: enabledFeatures,
     );
+  }
+
+  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
+    var enabledFeatures = <ServerpodFeature>[];
+    if (!file.existsSync()) return enabledFeatures;
+
+    if (!config.containsKey('features')) {
+      enabledFeatures.add(ServerpodFeature.database);
+    }
+
+    var features = config['features'];
+
+    if (features is! Map) return enabledFeatures;
+
+    return ServerpodFeature.values
+        .where((feature) => features[feature.name.toString()] == true)
+        .toList();
   }
 
   static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
@@ -346,8 +373,10 @@ class ModuleConfig {
         serverPackage = '${name}_server';
 
   /// The url when importing this module in dart code.
-  String dartImportUrl(bool serverCode) =>
-      'package:${serverCode ? serverPackage : dartClientPackage}/module.dart';
+  String dartImportUrl(bool serverCode) {
+    var packageName = serverCode ? serverPackage : dartClientPackage;
+    return 'package:$packageName/$packageName.dart';
+  }
 
   @override
   String toString() {

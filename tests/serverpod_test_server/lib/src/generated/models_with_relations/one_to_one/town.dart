@@ -70,16 +70,6 @@ abstract class Town extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      'mayorId': mayorId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -87,152 +77,6 @@ abstract class Town extends _i1.TableRow {
       if (mayorId != null) 'mayorId': mayorId,
       if (mayor != null) 'mayor': mayor?.allToJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'mayorId':
-        mayorId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Town>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TownTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    TownInclude? include,
-  }) async {
-    return session.db.find<Town>(
-      where: where != null ? where(Town.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Town?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TownTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    TownInclude? include,
-  }) async {
-    return session.db.findSingleRow<Town>(
-      where: where != null ? where(Town.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Town?> findById(
-    _i1.Session session,
-    int id, {
-    TownInclude? include,
-  }) async {
-    return session.db.findById<Town>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<TownTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Town>(
-      where: where(Town.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Town row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Town row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Town row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<TownTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Town>(
-      where: where != null ? where(Town.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static TownInclude include({_i2.CitizenInclude? mayor}) {
@@ -338,9 +182,6 @@ class TownTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use TownTable.t instead.')
-TownTable tTown = TownTable();
-
 class TownInclude extends _i1.IncludeObject {
   TownInclude._({_i2.CitizenInclude? mayor}) {
     _mayor = mayor;
@@ -393,7 +234,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.find<Town>(
+    return session.db.find<Town>(
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -415,7 +256,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Town>(
+    return session.db.findFirstRow<Town>(
       where: where?.call(Town.t),
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
@@ -432,7 +273,7 @@ class TownRepository {
     _i1.Transaction? transaction,
     TownInclude? include,
   }) async {
-    return session.dbNext.findById<Town>(
+    return session.db.findById<Town>(
       id,
       transaction: transaction,
       include: include,
@@ -444,7 +285,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Town>(
+    return session.db.insert<Town>(
       rows,
       transaction: transaction,
     );
@@ -455,7 +296,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Town>(
+    return session.db.insertRow<Town>(
       row,
       transaction: transaction,
     );
@@ -467,7 +308,7 @@ class TownRepository {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Town>(
+    return session.db.update<Town>(
       rows,
       columns: columns?.call(Town.t),
       transaction: transaction,
@@ -480,7 +321,7 @@ class TownRepository {
     _i1.ColumnSelections<TownTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Town>(
+    return session.db.updateRow<Town>(
       row,
       columns: columns?.call(Town.t),
       transaction: transaction,
@@ -492,7 +333,7 @@ class TownRepository {
     List<Town> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Town>(
+    return session.db.delete<Town>(
       rows,
       transaction: transaction,
     );
@@ -503,7 +344,7 @@ class TownRepository {
     Town row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Town>(
+    return session.db.deleteRow<Town>(
       row,
       transaction: transaction,
     );
@@ -514,7 +355,7 @@ class TownRepository {
     required _i1.WhereExpressionBuilder<TownTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Town>(
+    return session.db.deleteWhere<Town>(
       where: where(Town.t),
       transaction: transaction,
     );
@@ -526,7 +367,7 @@ class TownRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Town>(
+    return session.db.count<Town>(
       where: where?.call(Town.t),
       limit: limit,
       transaction: transaction,
@@ -550,7 +391,7 @@ class TownAttachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: mayor.id);
-    await session.dbNext.updateRow<Town>(
+    await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );
@@ -569,7 +410,7 @@ class TownDetachRowRepository {
     }
 
     var $town = town.copyWith(mayorId: null);
-    await session.dbNext.updateRow<Town>(
+    await session.db.updateRow<Town>(
       $town,
       columns: [Town.t.mayorId],
     );

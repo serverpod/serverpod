@@ -24,6 +24,7 @@ Create the local `password.yaml` file in the server `config` directory. `auth_ex
 development:
   database: '9S8rYW7XeIA8bmGY9FBzOSLwQZtQEFNr'
   redis: 'V7YogaG9K2rnIpS1odXIKrqsW8kkfddt'
+  serviceSecret: 'ybgnrRP6XpV7xKzLCAshHMZWBDNGSj2w'
 ```
 
 Then apply the database migrations to the database by running the following command from the `auth_example_server` directory:

@@ -25,8 +25,16 @@ class WebServer {
   WebServer({
     required this.serverpod,
   }) : serverId = serverpod.serverId {
-    _port = serverpod.config.webServer.port;
-    _hostname = serverpod.config.webServer.publicHost;
+    var config = serverpod.config.webServer;
+
+    if (config == null) {
+      throw StateError(
+        'No web server configuration found in Serverpod unable to create the WebServer.',
+      );
+    }
+
+    _port = config.port;
+    _hostname = config.publicHost;
   }
 
   bool _running = false;

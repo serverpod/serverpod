@@ -1,5 +1,5 @@
 import 'package:serverpod/database.dart';
-import 'package:serverpod/src/database/database_query.dart';
+import 'package:serverpod/src/database/sql_query_builder.dart';
 import 'package:serverpod/test_util/table_relation_builder.dart';
 import 'package:test/test.dart';
 

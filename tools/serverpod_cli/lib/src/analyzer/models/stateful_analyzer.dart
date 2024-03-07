@@ -9,12 +9,14 @@ var onErrorsCollector = (CodeGenerationCollector collector) {
 };
 
 class StatefulAnalyzer {
+  final GeneratorConfig config;
   final Map<String, _ModelState> _modelStates = {};
   List<SerializableModelDefinition> _models = [];
 
   Function(Uri, CodeGenerationCollector)? _onErrorsChangedNotifier;
 
   StatefulAnalyzer(
+    this.config,
     List<ModelSource> sources, [
     Function(Uri, CodeGenerationCollector)? onErrorsChangedNotifier,
   ]) {
@@ -80,7 +82,10 @@ class StatefulAnalyzer {
 
     state.source.yaml = yaml;
 
-    var doc = SerializableModelAnalyzer.extractModelDefinition(state.source);
+    var doc = SerializableModelAnalyzer.extractModelDefinition(
+      state.source,
+      config.extraClasses,
+    );
     state.model = doc;
     if (doc != null) {
       _upsertModel(doc, uri);
@@ -95,6 +100,7 @@ class StatefulAnalyzer {
     for (var state in _modelStates.values) {
       var model = SerializableModelAnalyzer.extractModelDefinition(
         state.source,
+        config.extraClasses,
       );
       state.model = model;
     }
@@ -131,6 +137,7 @@ class StatefulAnalyzer {
     for (var state in modelsToValidate) {
       var collector = CodeGenerationCollector();
       SerializableModelAnalyzer.validateYamlDefinition(
+        config,
         state.source.yaml,
         state.source.yamlSourceUri,
         collector,

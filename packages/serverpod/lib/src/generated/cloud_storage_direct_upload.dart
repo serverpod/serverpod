@@ -83,18 +83,6 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'storageId': storageId,
-      'path': path,
-      'expiration': expiration,
-      'authKey': authKey,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -103,151 +91,6 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
       'expiration': expiration.toJson(),
       'authKey': authKey,
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'storageId':
-        storageId = value;
-        return;
-      case 'path':
-        path = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      case 'authKey':
-        authKey = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<CloudStorageDirectUploadEntry>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<CloudStorageDirectUploadEntry>(
-      where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<CloudStorageDirectUploadEntry?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<CloudStorageDirectUploadEntry>(
-      where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<CloudStorageDirectUploadEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<CloudStorageDirectUploadEntry>(id);
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
-        where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<CloudStorageDirectUploadEntry>(
-      where: where(CloudStorageDirectUploadEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    CloudStorageDirectUploadEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    CloudStorageDirectUploadEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    CloudStorageDirectUploadEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<CloudStorageDirectUploadEntry>(
-      where: where != null ? where(CloudStorageDirectUploadEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static CloudStorageDirectUploadEntryInclude include() {
@@ -353,10 +196,6 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use CloudStorageDirectUploadEntryTable.t instead.')
-CloudStorageDirectUploadEntryTable tCloudStorageDirectUploadEntry =
-    CloudStorageDirectUploadEntryTable();
-
 class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
   CloudStorageDirectUploadEntryInclude._();
 
@@ -400,7 +239,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.find<CloudStorageDirectUploadEntry>(
+    return session.db.find<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -420,7 +259,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findFirstRow<CloudStorageDirectUploadEntry>(
+    return session.db.findFirstRow<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
@@ -435,7 +274,7 @@ class CloudStorageDirectUploadEntryRepository {
     int id, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.findById<CloudStorageDirectUploadEntry>(
+    return session.db.findById<CloudStorageDirectUploadEntry>(
       id,
       transaction: transaction,
     );
@@ -446,7 +285,7 @@ class CloudStorageDirectUploadEntryRepository {
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<CloudStorageDirectUploadEntry>(
+    return session.db.insert<CloudStorageDirectUploadEntry>(
       rows,
       transaction: transaction,
     );
@@ -457,7 +296,7 @@ class CloudStorageDirectUploadEntryRepository {
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<CloudStorageDirectUploadEntry>(
+    return session.db.insertRow<CloudStorageDirectUploadEntry>(
       row,
       transaction: transaction,
     );
@@ -469,7 +308,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<CloudStorageDirectUploadEntry>(
+    return session.db.update<CloudStorageDirectUploadEntry>(
       rows,
       columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
@@ -482,7 +321,7 @@ class CloudStorageDirectUploadEntryRepository {
     _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<CloudStorageDirectUploadEntry>(
+    return session.db.updateRow<CloudStorageDirectUploadEntry>(
       row,
       columns: columns?.call(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
@@ -494,7 +333,7 @@ class CloudStorageDirectUploadEntryRepository {
     List<CloudStorageDirectUploadEntry> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<CloudStorageDirectUploadEntry>(
+    return session.db.delete<CloudStorageDirectUploadEntry>(
       rows,
       transaction: transaction,
     );
@@ -505,7 +344,7 @@ class CloudStorageDirectUploadEntryRepository {
     CloudStorageDirectUploadEntry row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<CloudStorageDirectUploadEntry>(
+    return session.db.deleteRow<CloudStorageDirectUploadEntry>(
       row,
       transaction: transaction,
     );
@@ -517,7 +356,7 @@ class CloudStorageDirectUploadEntryRepository {
         where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<CloudStorageDirectUploadEntry>(
+    return session.db.deleteWhere<CloudStorageDirectUploadEntry>(
       where: where(CloudStorageDirectUploadEntry.t),
       transaction: transaction,
     );
@@ -529,7 +368,7 @@ class CloudStorageDirectUploadEntryRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<CloudStorageDirectUploadEntry>(
+    return session.db.count<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
       limit: limit,
       transaction: transaction,

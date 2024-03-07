@@ -1,10 +1,13 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
+import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_cli/src/test_util/builders/generator_config_builder.dart';
 import 'package:serverpod_cli/src/test_util/builders/model_source_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
+  var config = GeneratorConfigBuilder().build();
   group('Valid datatypes', () {
     var datatypes = [
       'String',
@@ -40,6 +43,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -78,6 +82,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -118,6 +123,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -156,6 +162,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -194,6 +201,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -243,6 +251,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -264,6 +273,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -305,6 +315,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -348,6 +359,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -383,6 +395,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -424,6 +437,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -466,6 +480,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -530,6 +545,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -593,6 +609,7 @@ void main() {
 
         var collector = CodeGenerationCollector();
         StatefulAnalyzer analyzer = StatefulAnalyzer(
+          config,
           models,
           onErrorsCollector(collector),
         );
@@ -628,6 +645,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -675,6 +693,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -709,6 +728,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -743,6 +763,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -777,6 +798,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -811,6 +833,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -844,6 +867,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -869,6 +893,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -896,6 +921,7 @@ void main() {
 
       var collector = CodeGenerationCollector();
       StatefulAnalyzer analyzer = StatefulAnalyzer(
+        config,
         models,
         onErrorsCollector(collector),
       );
@@ -931,6 +957,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -965,6 +992,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -992,6 +1020,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -1002,6 +1031,221 @@ void main() {
       isEmpty,
       reason: 'Expected no errors, but one was generated.',
     );
+  });
+
+  group('Given a class with a type set to the class name of a custom type', () {
+    var type = TypeDefinition(
+      className: 'CustomExample',
+      generics: const [],
+      nullable: false,
+      url: 'package:shared_package/src/lib/custom_example.dart',
+      customClass: true,
+    );
+
+    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: CustomExample
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type is set.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.className, 'CustomExample');
+    });
+
+    test('then the type url is set to the custom type.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.url,
+        'package:shared_package/src/lib/custom_example.dart',
+      );
+    });
+
+    test('then the type is not nullable', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.nullable, isFalse);
+    });
+  });
+
+  group(
+      'Given a class with a nullable type set to the class name of a custom type',
+      () {
+    var type = TypeDefinition(
+      className: 'CustomExample',
+      generics: const [],
+      nullable: false,
+      url: 'package:shared_package/src/lib/custom_example.dart',
+      customClass: true,
+    );
+
+    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: CustomExample?
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type is nullable.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.nullable, isTrue);
+    });
+  });
+
+  group('Given a class with a type set to a list of custom classes', () {
+    var type = TypeDefinition(
+      className: 'CustomExample',
+      generics: const [],
+      nullable: false,
+      url: 'package:shared_package/src/lib/custom_example.dart',
+      customClass: true,
+    );
+
+    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: List<CustomExample>
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type is set.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.className,
+        'CustomExample',
+      );
+    });
+
+    test('then the type url is set to the custom type.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.url,
+        'package:shared_package/src/lib/custom_example.dart',
+      );
+    });
+  });
+
+  group('Given a class with a type set to a map of custom classes', () {
+    var type = TypeDefinition(
+      className: 'CustomExample',
+      generics: const [],
+      nullable: false,
+      url: 'package:shared_package/src/lib/custom_example.dart',
+      customClass: true,
+    );
+
+    var config = GeneratorConfigBuilder().withExtraClasses([type]).build();
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+          class: Example
+          fields:
+            name: Map<CustomExample, CustomExample>
+          ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors, but one was generated.',
+      );
+    });
+
+    test('then the field type is set.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.className,
+        'CustomExample',
+      );
+
+      expect(
+        definition.fields.first.type.generics.last.className,
+        'CustomExample',
+      );
+    });
+
+    test('then the type url is set to the custom type.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(
+        definition.fields.first.type.generics.first.url,
+        'package:shared_package/src/lib/custom_example.dart',
+      );
+
+      expect(
+        definition.fields.first.type.generics.last.url,
+        'package:shared_package/src/lib/custom_example.dart',
+      );
+    });
   });
 
   group('Given a class with a field type to a module that is not imported', () {
@@ -1017,6 +1261,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );
@@ -1060,6 +1305,7 @@ void main() {
 
     var collector = CodeGenerationCollector();
     StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
       models,
       onErrorsCollector(collector),
     );

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod_client/serverpod_client.dart';
@@ -110,12 +111,12 @@ class HealthCheckManager {
       // Touch all sessions that have been opened by this server.
       var touchQuery =
           'UPDATE serverpod_session_log SET touched = $now WHERE "serverId" = $serverId AND "isOpen" = TRUE AND "time" > $serverStartTime';
-      await session.dbNext.unsafeQuery(touchQuery);
+      await session.db.unsafeQuery(touchQuery);
 
       // Close sessions that haven't been touched in 3 minutes.
       var closeQuery =
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
-      await session.dbNext.unsafeQuery(closeQuery);
+      await session.db.unsafeQuery(closeQuery);
     } catch (e, stackTrace) {
       stderr.writeln('Failed to cleanup closed sessions: $e');
       stderr.write('$stackTrace');

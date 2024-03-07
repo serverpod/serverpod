@@ -70,16 +70,6 @@ abstract class Player extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'name': name,
-      'teamId': teamId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -87,152 +77,6 @@ abstract class Player extends _i1.TableRow {
       if (teamId != null) 'teamId': teamId,
       if (team != null) 'team': team?.allToJson(),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'name':
-        name = value;
-        return;
-      case 'teamId':
-        teamId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Player>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<PlayerTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    PlayerInclude? include,
-  }) async {
-    return session.db.find<Player>(
-      where: where != null ? where(Player.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Player?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<PlayerTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    PlayerInclude? include,
-  }) async {
-    return session.db.findSingleRow<Player>(
-      where: where != null ? where(Player.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Player?> findById(
-    _i1.Session session,
-    int id, {
-    PlayerInclude? include,
-  }) async {
-    return session.db.findById<Player>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<PlayerTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Player>(
-      where: where(Player.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Player row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Player row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Player row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<PlayerTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Player>(
-      where: where != null ? where(Player.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static PlayerInclude include({_i2.TeamInclude? team}) {
@@ -338,9 +182,6 @@ class PlayerTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use PlayerTable.t instead.')
-PlayerTable tPlayer = PlayerTable();
-
 class PlayerInclude extends _i1.IncludeObject {
   PlayerInclude._({_i2.TeamInclude? team}) {
     _team = team;
@@ -393,7 +234,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.dbNext.find<Player>(
+    return session.db.find<Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -415,7 +256,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Player>(
+    return session.db.findFirstRow<Player>(
       where: where?.call(Player.t),
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
@@ -432,7 +273,7 @@ class PlayerRepository {
     _i1.Transaction? transaction,
     PlayerInclude? include,
   }) async {
-    return session.dbNext.findById<Player>(
+    return session.db.findById<Player>(
       id,
       transaction: transaction,
       include: include,
@@ -444,7 +285,7 @@ class PlayerRepository {
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Player>(
+    return session.db.insert<Player>(
       rows,
       transaction: transaction,
     );
@@ -455,7 +296,7 @@ class PlayerRepository {
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Player>(
+    return session.db.insertRow<Player>(
       row,
       transaction: transaction,
     );
@@ -467,7 +308,7 @@ class PlayerRepository {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Player>(
+    return session.db.update<Player>(
       rows,
       columns: columns?.call(Player.t),
       transaction: transaction,
@@ -480,7 +321,7 @@ class PlayerRepository {
     _i1.ColumnSelections<PlayerTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Player>(
+    return session.db.updateRow<Player>(
       row,
       columns: columns?.call(Player.t),
       transaction: transaction,
@@ -492,7 +333,7 @@ class PlayerRepository {
     List<Player> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Player>(
+    return session.db.delete<Player>(
       rows,
       transaction: transaction,
     );
@@ -503,7 +344,7 @@ class PlayerRepository {
     Player row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Player>(
+    return session.db.deleteRow<Player>(
       row,
       transaction: transaction,
     );
@@ -514,7 +355,7 @@ class PlayerRepository {
     required _i1.WhereExpressionBuilder<PlayerTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Player>(
+    return session.db.deleteWhere<Player>(
       where: where(Player.t),
       transaction: transaction,
     );
@@ -526,7 +367,7 @@ class PlayerRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Player>(
+    return session.db.count<Player>(
       where: where?.call(Player.t),
       limit: limit,
       transaction: transaction,
@@ -550,7 +391,7 @@ class PlayerAttachRowRepository {
     }
 
     var $player = player.copyWith(teamId: team.id);
-    await session.dbNext.updateRow<Player>(
+    await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
     );
@@ -569,7 +410,7 @@ class PlayerDetachRowRepository {
     }
 
     var $player = player.copyWith(teamId: null);
-    await session.dbNext.updateRow<Player>(
+    await session.db.updateRow<Player>(
       $player,
       columns: [Player.t.teamId],
     );

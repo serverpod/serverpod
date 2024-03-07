@@ -6,35 +6,35 @@ class DatabaseBatch extends Endpoint {
     Session session,
     List<UniqueData> value,
   ) async {
-    return session.dbNext.insert<UniqueData>(value);
+    return session.db.insert<UniqueData>(value);
   }
 
   Future<List<Types>> batchInsertTypes(
     Session session,
     List<Types> value,
   ) async {
-    return session.dbNext.insert<Types>(value);
+    return session.db.insert<Types>(value);
   }
 
   Future<List<UniqueData>> batchUpdate(
     Session session,
     List<UniqueData> value,
   ) async {
-    return session.dbNext.update<UniqueData>(value);
+    return session.db.update<UniqueData>(value);
   }
 
   Future<List<Types>> batchUpdateTypes(
     Session session,
     List<Types> value,
   ) async {
-    return session.dbNext.update<Types>(value);
+    return session.db.update<Types>(value);
   }
 
   Future<List<int>> batchDelete(
     Session session,
     List<UniqueData> value,
   ) async {
-    return session.dbNext.delete<UniqueData>(value);
+    return session.db.delete<UniqueData>(value);
   }
 
   Future<RelatedUniqueData> insertRelatedUniqueData(

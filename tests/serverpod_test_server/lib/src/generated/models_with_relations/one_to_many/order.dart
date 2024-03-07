@@ -81,16 +81,6 @@ abstract class Order extends _i1.TableRow {
   }
 
   @override
-  @Deprecated('Will be removed in 2.0.0')
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'description': description,
-      'customerId': customerId,
-    };
-  }
-
-  @override
   Map<String, dynamic> allToJson() {
     return {
       if (id != null) 'id': id,
@@ -100,152 +90,6 @@ abstract class Order extends _i1.TableRow {
       if (comments != null)
         'comments': comments?.toJson(valueToJson: (v) => v.allToJson()),
     };
-  }
-
-  @override
-  @Deprecated('Will be removed in 2.0.0')
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'description':
-        description = value;
-        return;
-      case 'customerId':
-        customerId = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.find instead.')
-  static Future<List<Order>> find(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrderTable>? where,
-    int? limit,
-    int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrderInclude? include,
-  }) async {
-    return session.db.find<Order>(
-      where: where != null ? where(Order.t) : null,
-      limit: limit,
-      offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findRow instead.')
-  static Future<Order?> findSingleRow(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrderTable>? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-    OrderInclude? include,
-  }) async {
-    return session.db.findSingleRow<Order>(
-      where: where != null ? where(Order.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.findById instead.')
-  static Future<Order?> findById(
-    _i1.Session session,
-    int id, {
-    OrderInclude? include,
-  }) async {
-    return session.db.findById<Order>(
-      id,
-      include: include,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteWhere instead.')
-  static Future<int> delete(
-    _i1.Session session, {
-    required _i1.WhereExpressionBuilder<OrderTable> where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<Order>(
-      where: where(Order.t),
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.deleteRow instead.')
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    Order row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.update instead.')
-  static Future<bool> update(
-    _i1.Session session,
-    Order row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated(
-      'Will be removed in 2.0.0. Use: db.insert instead. Important note: In db.insert, the object you pass in is no longer modified, instead a new copy with the added row is returned which contains the inserted id.')
-  static Future<void> insert(
-    _i1.Session session,
-    Order row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  @Deprecated('Will be removed in 2.0.0. Use: db.count instead.')
-  static Future<int> count(
-    _i1.Session session, {
-    _i1.WhereExpressionBuilder<OrderTable>? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<Order>(
-      where: where != null ? where(Order.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
-    );
   }
 
   static OrderInclude include({
@@ -401,9 +245,6 @@ class OrderTable extends _i1.Table {
   }
 }
 
-@Deprecated('Use OrderTable.t instead.')
-OrderTable tOrder = OrderTable();
-
 class OrderInclude extends _i1.IncludeObject {
   OrderInclude._({
     _i2.CustomerInclude? customer,
@@ -465,7 +306,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.dbNext.find<Order>(
+    return session.db.find<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -487,7 +328,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.dbNext.findFirstRow<Order>(
+    return session.db.findFirstRow<Order>(
       where: where?.call(Order.t),
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
@@ -504,7 +345,7 @@ class OrderRepository {
     _i1.Transaction? transaction,
     OrderInclude? include,
   }) async {
-    return session.dbNext.findById<Order>(
+    return session.db.findById<Order>(
       id,
       transaction: transaction,
       include: include,
@@ -516,7 +357,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insert<Order>(
+    return session.db.insert<Order>(
       rows,
       transaction: transaction,
     );
@@ -527,7 +368,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.insertRow<Order>(
+    return session.db.insertRow<Order>(
       row,
       transaction: transaction,
     );
@@ -539,7 +380,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.update<Order>(
+    return session.db.update<Order>(
       rows,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -552,7 +393,7 @@ class OrderRepository {
     _i1.ColumnSelections<OrderTable>? columns,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.updateRow<Order>(
+    return session.db.updateRow<Order>(
       row,
       columns: columns?.call(Order.t),
       transaction: transaction,
@@ -564,7 +405,7 @@ class OrderRepository {
     List<Order> rows, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.delete<Order>(
+    return session.db.delete<Order>(
       rows,
       transaction: transaction,
     );
@@ -575,7 +416,7 @@ class OrderRepository {
     Order row, {
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteRow<Order>(
+    return session.db.deleteRow<Order>(
       row,
       transaction: transaction,
     );
@@ -586,7 +427,7 @@ class OrderRepository {
     required _i1.WhereExpressionBuilder<OrderTable> where,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.deleteWhere<Order>(
+    return session.db.deleteWhere<Order>(
       where: where(Order.t),
       transaction: transaction,
     );
@@ -598,7 +439,7 @@ class OrderRepository {
     int? limit,
     _i1.Transaction? transaction,
   }) async {
-    return session.dbNext.count<Order>(
+    return session.db.count<Order>(
       where: where?.call(Order.t),
       limit: limit,
       transaction: transaction,
@@ -622,7 +463,7 @@ class OrderAttachRepository {
     }
 
     var $comment = comment.map((e) => e.copyWith(orderId: order.id)).toList();
-    await session.dbNext.update<_i2.Comment>(
+    await session.db.update<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
     );
@@ -645,7 +486,7 @@ class OrderAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.dbNext.updateRow<Order>(
+    await session.db.updateRow<Order>(
       $order,
       columns: [Order.t.customerId],
     );
@@ -664,7 +505,7 @@ class OrderAttachRowRepository {
     }
 
     var $comment = comment.copyWith(orderId: order.id);
-    await session.dbNext.updateRow<_i2.Comment>(
+    await session.db.updateRow<_i2.Comment>(
       $comment,
       columns: [_i2.Comment.t.orderId],
     );
