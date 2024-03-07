@@ -7,47 +7,79 @@ import 'package:pointycastle/key_derivators/api.dart';
 import 'package:pointycastle/key_derivators/argon2.dart';
 import 'package:serverpod_auth_server/module.dart';
 
+/// Password hash types.
+enum _PasswordHashType {
+  /// A legacy password hash.
+  legacy,
+
+  /// A password hash generated using the Argon2id algorithm.
+  /// See: https://en.wikipedia.org/wiki/Argon2
+  argon2id,
+
+  /// A password hash generated using the Argon2id algorithm, but expecting the
+  /// passed in password hash to be a legacy password hash.
+  ///
+  /// This is used to migrate legacy password hashes to safer Argon2id
+  /// password hashes without forcing users to change their passwords.
+  migratedLegacy;
+
+  factory _PasswordHashType.fromPasswordHash(String passwordHash) {
+    var passwordHashParts = passwordHash.split('\$');
+    if (passwordHashParts.length < 2) {
+      return _PasswordHashType.legacy;
+    }
+
+    var type = passwordHashParts[1];
+    if (type == _PasswordHashType.argon2id.name) {
+      return _PasswordHashType.argon2id;
+    } else if (type == _PasswordHashType.migratedLegacy.name) {
+      return _PasswordHashType.migratedLegacy;
+    }
+
+    throw ArgumentError('Unknown password hash type: $type', 'passwordHash');
+  }
+}
+
 /// A class for handling password hashes.
 class PasswordHash {
+  // Recommended salt length by ietf.
+  // https://www.ietf.org/archive/id/draft-ietf-kitten-password-storage-04.html#name-storage-2
   static const int _saltLength = 16;
-  late final String _type;
+  late final _PasswordHashType _type;
 
   late final _PasswordHashGenerator _hashGenerator;
   late final String _hash;
 
-  /// Creates a new [PasswordHash] from a hash string that can be used to
-  /// validate passwords using the same hashing algorithm.
+  /// Creates a new [PasswordHash] from a password hash string used to validate
+  /// passwords using the same hashing algorithm.
   PasswordHash(
     String passwordHash, {
     required String legacySalt,
     String? legacyEmail,
     String? pepper,
   }) {
+    _type = _PasswordHashType.fromPasswordHash(passwordHash);
     var passwordHashParts = passwordHash.split('\$');
-    if (passwordHashParts.length < 2) {
-      _hash = passwordHash;
-      _type = _LegacyPasswordHashGenerator.identifier;
-      _hashGenerator = _LegacyPasswordHashGenerator(
-        salt: legacySalt,
-        email: legacyEmail,
-      );
-      return;
-    }
 
-    switch (passwordHashParts[1]) {
-      case _Argon2idPasswordHashGenerator.identifier:
+    switch (_type) {
+      case _LegacyPasswordHashGenerator.type:
+        _hash = passwordHash;
+        _hashGenerator = _LegacyPasswordHashGenerator(
+          salt: legacySalt,
+          email: legacyEmail,
+        );
+        break;
+      case _Argon2idPasswordHashGenerator.type:
         var [_, _, salt, hash] = passwordHashParts;
         _hash = hash;
-        _type = _Argon2idPasswordHashGenerator.identifier;
         _hashGenerator = _Argon2idPasswordHashGenerator(
           salt: salt,
           pepper: pepper,
         );
         break;
-      case _LegacyToArgon2idPasswordHash.identifier:
+      case _LegacyToArgon2idPasswordHash.type:
         var [_, _, salt, hash] = passwordHashParts;
         _hash = hash;
-        _type = _LegacyToArgon2idPasswordHash.identifier;
         _hashGenerator = _LegacyToArgon2idPasswordHash(
           legacySalt: legacySalt,
           salt: salt,
@@ -61,14 +93,14 @@ class PasswordHash {
   /// Returns true if the hash was generated using an outdated algorithm.
   bool shouldUpdateHash() {
     return [
-      _LegacyPasswordHashGenerator.identifier,
-      _LegacyToArgon2idPasswordHash.identifier,
+      _LegacyPasswordHashGenerator.type,
+      _LegacyToArgon2idPasswordHash.type,
     ].contains(_type);
   }
 
   /// Returns true if the hash was generated using the legacy algorithm.
   bool isLegacyHash() {
-    return _type == _LegacyPasswordHashGenerator.identifier;
+    return _type == _LegacyPasswordHashGenerator.type;
   }
 
   /// Checks if a password matches the hash.
@@ -98,7 +130,7 @@ class PasswordHash {
         .generatePasswordHash(password);
   }
 
-  /// Creates a Argon2id password hash expecting the passed in password hash to
+  /// Creates an Argon2id password hash expecting the passed in password hash to
   /// be a legacy password hash.
   ///
   /// This is used to migrate legacy password hashes to Argon2id password
@@ -194,9 +226,6 @@ class _LegacyPasswordHashGenerator implements _PasswordHashGenerator {
   final String _salt;
   final String? _email;
 
-  /// The identifier for this hash generator.
-  static const identifier = 'legacy';
-
   _LegacyPasswordHashGenerator({required String salt, String? email})
       : _salt = salt,
         _email = email;
@@ -214,13 +243,12 @@ class _LegacyPasswordHashGenerator implements _PasswordHashGenerator {
 
     return sha256.convert(utf8.encode(password + salt)).toString();
   }
+
+  static const _PasswordHashType type = _PasswordHashType.legacy;
 }
 
 /// A password hash generator for Argon2id password hashes.
 class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
-  /// The identifier for this hash generator.
-  static const identifier = 'argon2id';
-
   final String _salt;
   final String? _pepper;
 
@@ -230,7 +258,7 @@ class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
 
   String generatePasswordHash(String password) {
     var hash = generateHash(password);
-    return '\$$identifier\$$_salt\$$hash';
+    return '\$${type.name}\$$_salt\$$hash';
   }
 
   @override
@@ -253,6 +281,8 @@ class _Argon2idPasswordHashGenerator implements _PasswordHashGenerator {
 
     return const Base64Encoder().convert(hashBytes);
   }
+
+  static const _PasswordHashType type = _PasswordHashType.argon2id;
 }
 
 class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
@@ -260,8 +290,6 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
   final String _salt;
   final String? _email;
   final String? _pepper;
-
-  static const identifier = 'migratedLegacy';
 
   _LegacyToArgon2idPasswordHash({
     required String legacySalt,
@@ -278,7 +306,7 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
       salt: _salt,
       pepper: _pepper,
     ).generateHash(legacyHash);
-    return '\$$identifier\$$_salt\$$hash';
+    return '\$${type.name}\$$_salt\$$hash';
   }
 
   @override
@@ -291,4 +319,6 @@ class _LegacyToArgon2idPasswordHash implements _PasswordHashGenerator {
       pepper: _pepper,
     ).generateHash(legacyHash);
   }
+
+  static const _PasswordHashType type = _PasswordHashType.migratedLegacy;
 }
