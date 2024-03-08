@@ -86,7 +86,7 @@ class Emails {
     while (true) {
       var entries = await EmailAuth.db.find(
         session,
-        where: (t) => t.id > lastEntryId,
+        where: (t) => t.hash.notLike(r'$') & (t.id > lastEntryId),
         orderBy: (t) => t.id,
         limit: batchSize,
       );
@@ -98,10 +98,18 @@ class Emails {
       lastEntryId = entries.last.id!;
 
       var migratedEntries = entries.where((entry) {
-        return PasswordHash(
-          entry.hash,
-          legacySalt: EmailSecrets.legacySalt,
-        ).isLegacyHash();
+        try {
+          return PasswordHash(
+            entry.hash,
+            legacySalt: EmailSecrets.legacySalt,
+          ).isLegacyHash();
+        } catch (e) {
+          session.log(
+            'Error when checking if hash is legacy: $e',
+            level: LogLevel.error,
+          );
+          return false;
+        }
       }).map((entry) {
         return entry.copyWith(
           hash: PasswordHash.migratedLegacyToArgon2idHash(

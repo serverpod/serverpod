@@ -52,6 +52,8 @@ class PasswordHash {
 
   /// Creates a new [PasswordHash] from a password hash string used to validate
   /// passwords using the same hashing algorithm.
+  ///
+  /// Throws an [ArgumentError] if the password hash is not recognized.
   PasswordHash(
     String passwordHash, {
     required String legacySalt,
