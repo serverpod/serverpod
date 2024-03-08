@@ -143,14 +143,14 @@ class PasswordHash {
   /// to use this function in production.
   ///
   /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
-  /// number generation. If set to false, an error will be thrown
+  /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
   static String migratedLegacyToArgon2idHash(
     String legacyHash, {
     required String legacySalt,
     String? salt,
     String? pepper,
-    bool? allowUnsecureRandom,
+    bool allowUnsecureRandom = false,
   }) {
     var encodedSalt = _generateSalt(
       salt: salt,
@@ -171,13 +171,13 @@ class PasswordHash {
   /// to use this function in production.
   ///
   /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
-  /// number generation. If set to false, an error will be thrown
+  /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
   static String argon2id(
     String password, {
     String? salt,
     String? pepper,
-    bool? allowUnsecureRandom,
+    bool allowUnsecureRandom = false,
   }) {
     var encodedSalt = _generateSalt(
       salt: salt,
@@ -191,8 +191,8 @@ class PasswordHash {
   }
 
   static String _generateSalt({
+    required bool allowUnsecureRandom,
     String? salt,
-    bool? allowUnsecureRandom,
   }) {
     if (salt != null) {
       return const Base64Encoder().convert(salt.codeUnits);
@@ -203,7 +203,7 @@ class PasswordHash {
         length: _saltLength,
       );
     } on UnsupportedError {
-      if (allowUnsecureRandom == null || !allowUnsecureRandom) {
+      if (!allowUnsecureRandom) {
         rethrow;
       }
     }
