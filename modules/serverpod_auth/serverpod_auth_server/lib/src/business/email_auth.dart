@@ -22,6 +22,7 @@ class Emails {
     return PasswordHash.argon2id(
       password,
       pepper: _pepper,
+      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
     );
   }
 
@@ -69,6 +70,7 @@ class Emails {
     var newHash = PasswordHash.argon2id(
       password,
       pepper: _pepper,
+      allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
     );
 
     return entry.copyWith(hash: newHash);
@@ -110,6 +112,8 @@ class Emails {
           hash: PasswordHash.migratedLegacyToArgon2idHash(
             entry.hash,
             legacySalt: _legacySalt,
+            pepper: _pepper,
+            allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
           ),
         );
       }).toList();
