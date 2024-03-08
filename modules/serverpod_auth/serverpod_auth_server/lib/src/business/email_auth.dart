@@ -31,18 +31,27 @@ class Emails {
   /// If the password hash does not match the provided hash, the
   /// [onValidationFailure] function is called with the hash and the password
   /// hash as arguments.
+  ///
+  /// If an error occurs, the [onError] function is called with the error as
+  /// argument.
   static bool validatePasswordHash(
     String password,
     String email,
     String hash, {
     void Function(String hash, String passwordHash)? onValidationFailure,
+    void Function(Object e)? onError,
   }) {
-    return PasswordHash(
-      hash,
-      legacySalt: _legacySalt,
-      legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-      pepper: _pepper,
-    ).validate(password, onValidationFailure: onValidationFailure);
+    try {
+      return PasswordHash(
+        hash,
+        legacySalt: _legacySalt,
+        legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
+        pepper: _pepper,
+      ).validate(password, onValidationFailure: onValidationFailure);
+    } catch (e) {
+      onError?.call(e);
+      return false;
+    }
   }
 
   /// Migrates an EmailAuth entry if required.
@@ -91,21 +100,29 @@ class Emails {
 
       lastEntryId = entries.last.id!;
 
-      var migratedEntries = entries
-          .where((entry) => PasswordHash(
-                entry.hash,
-                legacySalt: _legacySalt,
-              ).isLegacyHash())
-          .map((entry) => entry.copyWith(
-                hash: PasswordHash.migratedLegacyToArgon2idHash(
-                  entry.hash,
-                  legacySalt: _legacySalt,
-                ),
-              ))
-          .toList();
+      var migratedEntries = entries.where((entry) {
+        return PasswordHash(
+          entry.hash,
+          legacySalt: _legacySalt,
+        ).isLegacyHash();
+      }).map((entry) {
+        return entry.copyWith(
+          hash: PasswordHash.migratedLegacyToArgon2idHash(
+            entry.hash,
+            legacySalt: _legacySalt,
+          ),
+        );
+      }).toList();
 
-      updatedEntries += migratedEntries.length;
-      await EmailAuth.db.update(session, migratedEntries);
+      try {
+        await EmailAuth.db.update(session, migratedEntries);
+        updatedEntries += migratedEntries.length;
+      } catch (e) {
+        session.log(
+          'Failed to update migrated entries: $e',
+          level: LogLevel.error,
+        );
+      }
     }
   }
 
@@ -179,7 +196,17 @@ class Emails {
     }
 
     // Check old password
-    if (!validatePasswordHash(oldPassword, auth.email, auth.hash)) {
+    if (!validatePasswordHash(
+      oldPassword,
+      auth.email,
+      auth.hash,
+      onError: (e) {
+        session.log(
+          ' - error when validating password hash: $e',
+          level: LogLevel.error,
+        );
+      },
+    )) {
       return false;
     }
 
@@ -388,6 +415,12 @@ class Emails {
         ' - $passwordHash saved: $hash',
         level: LogLevel.debug,
       ),
+      onError: (e) {
+        session.log(
+          ' - error when validating password hash: $e',
+          level: LogLevel.error,
+        );
+      },
     )) {
       await _logFailedSignIn(session, email);
       return AuthenticationResponse(
@@ -405,8 +438,15 @@ class Emails {
     );
 
     if (migratedAuth != null) {
-      session.log(' - migrated auth', level: LogLevel.debug);
-      await EmailAuth.db.updateRow(session, migratedAuth);
+      session.log(' - migrating authentication entry', level: LogLevel.debug);
+      try {
+        await EmailAuth.db.updateRow(session, migratedAuth);
+      } catch (e) {
+        session.log(
+          ' - failed to update migrated auth: $e',
+          level: LogLevel.error,
+        );
+      }
     }
 
     var userInfo = await Users.findUserByUserId(session, entry.userId);
