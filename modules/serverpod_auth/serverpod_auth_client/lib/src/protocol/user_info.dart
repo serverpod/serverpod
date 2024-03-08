@@ -11,7 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
-/// itself as it may contain sensative information, such as the users email.
+/// itself as it may contain sensitive information, such as the users email.
 /// If you need to share a user's info with other users, use the
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
