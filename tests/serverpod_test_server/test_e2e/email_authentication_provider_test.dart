@@ -97,6 +97,19 @@ void main() {
         reason: 'Failed to authenticate user with new password',
       );
     });
+
+    test('when authenticating with wrong password then authentication fails',
+        () async {
+      var wrongPassword = '$password-wrong';
+      var authResponse =
+          await client.modules.auth.email.authenticate(email, wrongPassword);
+
+      expect(
+        authResponse.success,
+        isFalse,
+        reason: 'User authenticated with wrong password',
+      );
+    });
   });
 
   group('Given existing and authenticated user', () {
