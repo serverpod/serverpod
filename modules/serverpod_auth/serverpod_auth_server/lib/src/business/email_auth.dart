@@ -3,25 +3,19 @@ import 'dart:math';
 import 'package:email_validator/email_validator.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/src/business/email_secrets.dart';
 import 'package:serverpod_auth_server/src/business/password_hash.dart';
 import 'package:serverpod_auth_server/src/business/user_images.dart';
 
 /// Collection of utility methods when working with email authentication.
 class Emails {
-  static String get _legacySalt =>
-      Serverpod.instance.getPassword('email_password_salt') ??
-      'serverpod password salt';
-
-  static String? get _pepper =>
-      Serverpod.instance.getPassword('emailPasswordPepper');
-
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
   static String generatePasswordHash(String password) {
     return PasswordHash.argon2id(
       password,
-      pepper: _pepper,
+      pepper: EmailSecrets.pepper,
       allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
     );
   }
@@ -45,9 +39,9 @@ class Emails {
     try {
       return PasswordHash(
         hash,
-        legacySalt: _legacySalt,
+        legacySalt: EmailSecrets.legacySalt,
         legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
-        pepper: _pepper,
+        pepper: EmailSecrets.pepper,
       ).validate(password, onValidationFailure: onValidationFailure);
     } catch (e) {
       onError?.call(e);
@@ -63,13 +57,14 @@ class Emails {
     required String password,
     required EmailAuth entry,
   }) {
-    if (!PasswordHash(entry.hash, legacySalt: _legacySalt).shouldUpdateHash()) {
+    if (!PasswordHash(entry.hash, legacySalt: EmailSecrets.legacySalt)
+        .shouldUpdateHash()) {
       return null;
     }
 
     var newHash = PasswordHash.argon2id(
       password,
-      pepper: _pepper,
+      pepper: EmailSecrets.pepper,
       allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
     );
 
@@ -105,14 +100,14 @@ class Emails {
       var migratedEntries = entries.where((entry) {
         return PasswordHash(
           entry.hash,
-          legacySalt: _legacySalt,
+          legacySalt: EmailSecrets.legacySalt,
         ).isLegacyHash();
       }).map((entry) {
         return entry.copyWith(
           hash: PasswordHash.migratedLegacyToArgon2idHash(
             entry.hash,
-            legacySalt: _legacySalt,
-            pepper: _pepper,
+            legacySalt: EmailSecrets.legacySalt,
+            pepper: EmailSecrets.pepper,
             allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
           ),
         );
