@@ -34,4 +34,16 @@ void main() {
       expect(isValid, false);
     });
   });
+
+  group('Tag name validator', () {
+    test('isValidTagName returns true for valid tag names', () {
+      expect(StringValidators.isValidTagName('valid-tag-name'), isTrue);
+    });
+    test('returns false for invalid tag names', () {
+      expect(StringValidators.isValidTagName('InvalidTagName'), isFalse);
+      expect(StringValidators.isValidTagName('invalidTagName'), isFalse);
+      expect(StringValidators.isValidTagName('Invalid_Tag_Name'), isFalse);
+      expect(StringValidators.isValidTagName('Invalid-Tag-Name'), isFalse);
+    });
+  });
 }
