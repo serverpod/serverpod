@@ -26,6 +26,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
+    super.onFailedCall,
+    super.onSucceededCall,
   }) {
     _httpClient = http.Client();
   }

@@ -97,6 +97,14 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
   Duration connectionTimeout;
 
+  /// Callback called when any call to the server fails or an exception is
+  /// thrown.
+  /// The error object is passed as argument for the callback.
+  final void Function(Object error)? onFailedCall;
+
+  /// Callback called when any call to the server succeeds.
+  final void Function()? onSucceededCall;
+
   bool _firstMessageReceived = false;
 
   ConnectivityMonitor? _connectivityMonitor;
@@ -128,6 +136,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
+    this.onFailedCall,
+    this.onSucceededCall,
   })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
         streamingConnectionTimeout =
             streamingConnectionTimeout ?? const Duration(seconds: 5) {

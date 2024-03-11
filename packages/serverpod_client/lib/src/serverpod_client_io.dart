@@ -16,8 +16,6 @@ import 'serverpod_client_shared_private.dart';
 abstract class ServerpodClient extends ServerpodClientShared {
   late HttpClient _httpClient;
   bool _initialized = false;
-  void Function(Object error)? _onFailedCall;
-  void Function()? _onSucceededCall;
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
@@ -28,13 +26,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
-    void Function(Object error)? onFailedCall,
-    void Function()? onSucceededCall,
+    super.onFailedCall,
+    super.onSucceededCall,
   }) {
     assert(securityContext == null || securityContext is SecurityContext,
         'Context must be of type SecurityContext');
-    _onFailedCall = onFailedCall;
-    _onSucceededCall = onSucceededCall;
 
     // Setup client
     _httpClient = HttpClient(context: securityContext);
@@ -55,7 +51,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       if (logFailedCalls) {
         print('Failed to verify server certificate');
       }
-      _onFailedCall?.call(Exception('Failed to verify server certificate'));
+      onFailedCall?.call(Exception('Failed to verify server certificate'));
       return true;
     });
   }
@@ -101,14 +97,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
       } else {
         result = parseData<T>(data, T, serializationManager);
       }
-      _onSucceededCall?.call();
+      onSucceededCall?.call();
       return result;
     } catch (e) {
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
-      _onFailedCall?.call(e);
+      onFailedCall?.call(e);
 
       rethrow;
     }
@@ -122,14 +118,14 @@ abstract class ServerpodClient extends ServerpodClientShared {
     }, onDone: () //
         {
       var result = completer.complete(contents.toString());
-      _onSucceededCall?.call();
+      onSucceededCall?.call();
       return result;
     }, onError: (e) {
       if (logFailedCalls) {
         print('Request failed with response code: ${response.statusCode}');
         print('$e');
       }
-      _onFailedCall?.call(e);
+      onFailedCall?.call(e);
     });
     return completer.future;
   }
