@@ -48,10 +48,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
 //      print('host: $host');
 //      print('port: $port');
 //      return false;
-      if (logFailedCalls) {
-        print('Failed to verify server certificate');
-      }
-      onFailedCall?.call(Exception('Failed to verify server certificate'));
       return true;
     });
   }
