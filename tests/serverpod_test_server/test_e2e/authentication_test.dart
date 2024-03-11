@@ -1,5 +1,6 @@
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:serverpod_test_server/test_util/config.dart';
+import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -115,21 +116,4 @@ void main() {
       expect(newUserCount - oldUserCount, equals(0));
     });
   });
-}
-
-class TestAuthKeyManager extends AuthenticationKeyManager {
-  String? _key;
-
-  @override
-  Future<String?> get() async => _key;
-
-  @override
-  Future<void> put(String key) async {
-    _key = key;
-  }
-
-  @override
-  Future<void> remove() async {
-    _key = null;
-  }
 }
