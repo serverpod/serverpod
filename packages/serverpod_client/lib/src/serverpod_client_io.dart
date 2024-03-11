@@ -113,15 +113,7 @@ abstract class ServerpodClient extends ServerpodClientShared {
       contents.write(data);
     }, onDone: () //
         {
-      var result = completer.complete(contents.toString());
-      onSucceededCall?.call();
-      return result;
-    }, onError: (e) {
-      if (logFailedCalls) {
-        print('Request failed with response code: ${response.statusCode}');
-        print('$e');
-      }
-      onFailedCall?.call(e);
+      return completer.complete(contents.toString());
     });
     return completer.future;
   }
