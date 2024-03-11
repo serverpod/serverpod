@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 name: chat_flutter
 description: Demo project for the chat module.
 
@@ -25,6 +28,25 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
+  serverpod_auth_email_flutter: 2.0.0-alpha.1
+  serverpod_auth_shared_flutter: 2.0.0-alpha.1
+  serverpod_chat_flutter: 2.0.0-alpha.1
+  serverpod_client: 2.0.0-alpha.1
+  serverpod_flutter: 2.0.0-alpha.1
+  chat_client:
+    path: ../chat_client
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.5
+
+dev_dependencies:
+  flutter_lints: ^3.0.0
+  flutter_test:
+    sdk: flutter
+
+dependency_overrides:
   serverpod_auth_email_flutter:
     path: ../../../modules/serverpod_auth/serverpod_auth_email_flutter
   serverpod_auth_shared_flutter:
@@ -35,18 +57,12 @@ dependencies:
     path: ../../../packages/serverpod_client
   serverpod_flutter:
     path: ../../../packages/serverpod_flutter
-  chat_client:
-    path: ../chat_client
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.5
-
-dev_dependencies:
-  flutter_lints: ^2.0.1
-  flutter_test:
-    sdk: flutter
+  serverpod_auth_client:
+    path: ../../../modules/serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../../../modules/serverpod_chat/serverpod_chat_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

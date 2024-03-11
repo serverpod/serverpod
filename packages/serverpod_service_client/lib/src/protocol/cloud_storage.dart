@@ -4,14 +4,16 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 
 /// An entry in the database for an uploaded file.
-class CloudStorageEntry extends _i1.SerializableEntity {
-  CloudStorageEntry({
+abstract class CloudStorageEntry extends _i1.SerializableEntity {
+  CloudStorageEntry._({
     this.id,
     required this.storageId,
     required this.path,
@@ -20,6 +22,16 @@ class CloudStorageEntry extends _i1.SerializableEntity {
     required this.byteData,
     required this.verified,
   });
+
+  factory CloudStorageEntry({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) = _CloudStorageEntryImpl;
 
   factory CloudStorageEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -64,16 +76,68 @@ class CloudStorageEntry extends _i1.SerializableEntity {
   /// True if the file has been verified as uploaded.
   bool verified;
 
+  CloudStorageEntry copyWith({
+    int? id,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    DateTime? expiration,
+    _i2.ByteData? byteData,
+    bool? verified,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'storageId': storageId,
       'path': path,
-      'addedTime': addedTime,
-      'expiration': expiration,
-      'byteData': byteData,
+      'addedTime': addedTime.toJson(),
+      if (expiration != null) 'expiration': expiration?.toJson(),
+      'byteData': byteData.toJson(),
       'verified': verified,
     };
+  }
+}
+
+class _Undefined {}
+
+class _CloudStorageEntryImpl extends CloudStorageEntry {
+  _CloudStorageEntryImpl({
+    int? id,
+    required String storageId,
+    required String path,
+    required DateTime addedTime,
+    DateTime? expiration,
+    required _i2.ByteData byteData,
+    required bool verified,
+  }) : super._(
+          id: id,
+          storageId: storageId,
+          path: path,
+          addedTime: addedTime,
+          expiration: expiration,
+          byteData: byteData,
+          verified: verified,
+        );
+
+  @override
+  CloudStorageEntry copyWith({
+    Object? id = _Undefined,
+    String? storageId,
+    String? path,
+    DateTime? addedTime,
+    Object? expiration = _Undefined,
+    _i2.ByteData? byteData,
+    bool? verified,
+  }) {
+    return CloudStorageEntry(
+      id: id is int? ? id : this.id,
+      storageId: storageId ?? this.storageId,
+      path: path ?? this.path,
+      addedTime: addedTime ?? this.addedTime,
+      expiration: expiration is DateTime? ? expiration : this.expiration,
+      byteData: byteData ?? this.byteData.clone(),
+      verified: verified ?? this.verified,
+    );
   }
 }

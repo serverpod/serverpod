@@ -8,14 +8,21 @@ class ServiceKeyManager extends AuthenticationKeyManager {
   final String name;
 
   /// Server configuration.
-  final ServerpodConfig config;
+  final String? serviceSecret;
 
   /// Creates a new [ServiceKeyManager].
-  ServiceKeyManager(this.name, this.config);
+  ServiceKeyManager(this.name, ServerpodConfig config)
+      : serviceSecret = config.serviceSecret;
+
+  /// Creates a new [ServiceKeyManager] with a service secret.
+  ServiceKeyManager.withServiceSecret(
+    this.name,
+    this.serviceSecret,
+  );
 
   @override
   Future<String> get() async {
-    return '$name:${config.serviceSecret}';
+    return '$name:$serviceSecret';
   }
 
   @override

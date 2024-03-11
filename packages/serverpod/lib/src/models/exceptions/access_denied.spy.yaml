@@ -1,0 +1,3 @@
+exception: AccessDeniedException
+fields:
+  message: String

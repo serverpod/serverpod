@@ -12,13 +12,13 @@ typedef constructor<T> = T Function(
 
 /// The [SerializableEntity] is the base class for all serializable objects in
 /// Serverpod, except primitives.
-abstract class SerializableEntity {
-  /// Returns a serialized JSON structure of the entity, ready to be sent
+abstract mixin class SerializableEntity {
+  /// Returns a serialized JSON structure of the model, ready to be sent
   /// through the API. This does not include fields that are marked as
   /// database only.
   dynamic toJson();
 
-  /// Returns a serialized JSON structure of the entity which also includes
+  /// Returns a serialized JSON structure of the model which also includes
   /// fields used by the database.
   dynamic allToJson() => toJson();
 
@@ -46,35 +46,42 @@ abstract class SerializationManager {
     return deserializeByClassName(jsonDecode(data));
   }
 
+  bool _isType<T1, T2>(Type t) => t == T1 || t == T2;
+
+  bool _isNullableType<T>(Type t) => _isType<T, T?>(t);
+
   /// Deserialize the provided json [data] to an object of type [t] or [T].
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
     //TODO: all the "dart native" types should be listed here
-    if (t == int || t == getType<int?>()) {
+    if (_isNullableType<int>(t)) {
       return data;
-    } else if (t == double || t == getType<double?>()) {
+    } else if (_isNullableType<double>(t)) {
       return (data as num?)?.toDouble() as T;
-    } else if (t == String || t == getType<String?>()) {
+    } else if (_isNullableType<String>(t)) {
       return data;
-    } else if (t == bool || t == getType<bool?>()) {
+    } else if (_isNullableType<bool>(t)) {
       return data;
-    } else if (t == DateTime) {
-      return DateTime.parse(data).toUtc() as T;
-    } else if (t == getType<DateTime?>()) {
-      return DateTime.tryParse(data ?? '')?.toUtc() as T;
-    } else if (t == ByteData) {
-      return (data as String).base64DecodedByteData()! as T;
-    } else if (t == getType<ByteData?>()) {
-      return (data as String?)?.base64DecodedByteData() as T;
-    } else if (t == Duration) {
-      return Duration(milliseconds: (data as int)) as T;
-    } else if (t == getType<Duration?>()) {
+    } else if (_isNullableType<DateTime>(t)) {
+      if (data is DateTime) return data as T;
+      if (data == null) return null as T;
+      return DateTime.tryParse(data)?.toUtc() as T;
+    } else if (_isNullableType<ByteData>(t)) {
+      if (data is Uint8List) {
+        var byteData = ByteData.view(
+          data.buffer,
+          data.offsetInBytes,
+          data.lengthInBytes,
+        );
+        return byteData as T;
+      } else {
+        return (data as String?)?.base64DecodedByteData() as T;
+      }
+    } else if (_isNullableType<Duration>(t)) {
       return data == null ? data : Duration(milliseconds: (data as int)) as T;
-    } else if (t == UuidValue) {
-      return UuidValue(data as String) as T;
-    } else if (t == getType<UuidValue?>()) {
-      return (data == null ? null : UuidValue(data as String)) as T;
+    } else if (_isNullableType<UuidValue>(t)) {
+      return (data == null ? null : UuidValue.fromString(data as String)) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -141,12 +148,14 @@ abstract class SerializationManager {
   }
 
   /// Encode the provided [object] to a Json-formatted [String].
-  static String encode(Object? object) {
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation.
+  static String encode(Object? object, {bool formatted = false}) {
     // This is the only time [jsonEncode] should be used in the project.
-    return jsonEncode(
-      object,
-      toEncodable: (nonEncodable) {
-        //TODO: all the "dart native" types should be listed here
+    return JsonEncoder.withIndent(
+      formatted ? '  ' : null,
+      (nonEncodable) {
+        //TODO: Remove this in 2.0.0 as the extensions should be used instead.
         if (nonEncodable is DateTime) {
           return nonEncodable.toUtc().toIso8601String();
         } else if (nonEncodable is ByteData) {
@@ -163,16 +172,104 @@ abstract class SerializationManager {
           return (nonEncodable as dynamic)?.toJson();
         }
       },
+    ).convert(
+      object,
     );
   }
 
   /// Encode the provided [object] to a json-formatted [String], include class
   /// name so that it can be decoded even if th class is unknown.
-  String encodeWithType(Object object) {
-    return encode(wrapWithClassName(object));
+  /// If [formatted] is true, the output will be formatted with two spaces
+  /// indentation.
+  String encodeWithType(Object object, {bool formatted = false}) {
+    return encode(wrapWithClassName(object), formatted: formatted);
   }
 }
 
+/// All datatypes that are serialized by default.
+/// Used internally in Serverpod code generation.
+const autoSerializedTypes = ['int', 'bool', 'double', 'String'];
+
+/// All datatypes that has extensions to support serialization.
+/// Used internally in Serverpod code generation.
+const extensionSerializedTypes = [
+  'DateTime',
+  'ByteData',
+  'Duration',
+  'UuidValue',
+  'Map',
+  'List',
+];
+
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
+}
+
+/// Expose toJson on DateTime
+extension DateTimeToJson on DateTime {
+  /// Returns a serialized version of the [DateTime] in UTC.
+  String toJson() => toUtc().toIso8601String();
+}
+
+/// Expose toJson on Duration
+extension DurationToJson on Duration {
+  /// Returns a serialized version of the [Duration] in milliseconds.
+  int toJson() => inMilliseconds;
+}
+
+/// Expose toJson on UuidValue
+extension UuidValueToJson on UuidValue {
+  /// Returns a serialized version of the [UuidValue] as a [String].
+  String toJson() => uuid;
+}
+
+/// Expose toJson on ByteData
+extension ByteDataToJson on ByteData {
+  /// Returns a serialized version of the [ByteData] as a base64 encoded
+  /// [String].
+  String toJson() => base64encodedString();
+}
+
+/// Expose toJson on Map
+extension MapToJson<K, V> on Map<K, V> {
+  Type get _keyType => K;
+
+  /// Returns a serialized version of the [Map] with keys and values serialized.
+  dynamic toJson({
+    dynamic Function(K)? keyToJson,
+    dynamic Function(V)? valueToJson,
+  }) {
+    if (_keyType == String && keyToJson == null && valueToJson == null) {
+      return this;
+    }
+
+    // This implementation is here to support the old decoder behavior
+    // this should not be needed if the decoder is updated to not look for a nested
+    // map with 'k' and 'v' keys. If that is done the return type can be changed
+    // to Map<dynamic, dynamic>.
+    if (_keyType != String) {
+      return entries.map((e) {
+        var serializedKey = keyToJson != null ? keyToJson(e.key) : e.key;
+        var serializedValue =
+            valueToJson != null ? valueToJson(e.value) : e.value;
+        return {'k': serializedKey, 'v': serializedValue};
+      }).toList();
+    }
+
+    return map((key, value) {
+      var serializedKey = keyToJson != null ? keyToJson(key) : key;
+      var serializedValue = valueToJson != null ? valueToJson(value) : value;
+      return MapEntry(serializedKey, serializedValue);
+    });
+  }
+}
+
+/// Expose toJson on List
+extension ListToJson<T> on List<T> {
+  /// Returns a serialized version of the [List] with values serialized.
+  List<dynamic> toJson({dynamic Function(T)? valueToJson}) {
+    if (valueToJson == null) return this;
+
+    return map<dynamic>(valueToJson).toList();
+  }
 }

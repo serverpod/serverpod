@@ -23,7 +23,6 @@ class PubApiClient {
           .packageVersions(packageName)
           .timeout(_requestTimeout);
       latestStableVersion = _tryGetLatestStableVersion(packageVersions);
-      _pubClient.close();
     } catch (e) {
       log.error('Failed to fetch latest version for $packageName.');
       _logPubClientException(e);
@@ -59,5 +58,9 @@ class PubApiClient {
     } catch (_) {
       log.error(exception.runtimeType.toString());
     }
+  }
+
+  void close() {
+    _pubClient.close();
   }
 }

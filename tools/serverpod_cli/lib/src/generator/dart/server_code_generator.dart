@@ -1,7 +1,7 @@
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod_cli/src/generator/dart/library_generators/entities_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 
 /// A [CodeGenerator] that generates the server side dart code of a
@@ -10,22 +10,22 @@ class DartServerCodeGenerator extends CodeGenerator {
   const DartServerCodeGenerator();
 
   @override
-  Map<String, String> generateSerializableEntitiesCode({
-    required List<SerializableEntityDefinition> entities,
+  Map<String, String> generateSerializableModelsCode({
+    required List<SerializableModelDefinition> models,
     required GeneratorConfig config,
   }) {
-    var serverSideGenerator = SerializableEntityLibraryGenerator(
+    var serverSideGenerator = SerializableModelLibraryGenerator(
       serverCode: true,
       config: config,
     );
     return {
-      for (var protocolFile in entities)
+      for (var protocolFile in models)
         p.joinAll([
-          ...config.generatedServerProtocolPathParts,
+          ...config.generatedServeModelPathParts,
           ...protocolFile.subDirParts,
           '${protocolFile.fileName}.dart'
         ]): serverSideGenerator
-            .generateEntityLibrary(protocolFile)
+            .generateModelLibrary(protocolFile)
             .generateCode(),
     };
   }
@@ -42,9 +42,9 @@ class DartServerCodeGenerator extends CodeGenerator {
     );
 
     return {
-      p.joinAll([...config.generatedServerProtocolPathParts, 'protocol.dart']):
+      p.joinAll([...config.generatedServeModelPathParts, 'protocol.dart']):
           serverClassGenerator.generateProtocol().generateCode(),
-      p.joinAll([...config.generatedServerProtocolPathParts, 'endpoints.dart']):
+      p.joinAll([...config.generatedServeModelPathParts, 'endpoints.dart']):
           serverClassGenerator.generateServerEndpointDispatch().generateCode(),
     };
   }

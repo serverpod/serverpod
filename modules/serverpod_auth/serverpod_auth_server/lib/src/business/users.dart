@@ -20,7 +20,7 @@ class Users {
       if (!approved) return null;
     }
 
-    await session.db.insert(userInfo);
+    userInfo = await UserInfo.db.insertRow(session, userInfo);
     if (userInfo.id != null) {
       if (AuthConfig.current.onUserCreated != null) {
         await AuthConfig.current.onUserCreated!(session, userInfo);
@@ -33,8 +33,9 @@ class Users {
   /// Finds a user by its email address. Returns null if no user is found.
   static Future<UserInfo?> findUserByEmail(
       Session session, String email) async {
-    return await session.db.findSingleRow<UserInfo>(
-      where: UserInfo.t.email.equals(email),
+    return await UserInfo.db.findFirstRow(
+      session,
+      where: (t) => t.email.equals(email),
     );
   }
 
@@ -43,8 +44,9 @@ class Users {
   /// Returns null if no user is found.
   static Future<UserInfo?> findUserByIdentifier(
       Session session, String identifier) async {
-    return await session.db.findSingleRow<UserInfo>(
-      where: UserInfo.t.userIdentifier.equals(identifier),
+    return await UserInfo.db.findFirstRow(
+      session,
+      where: (t) => t.userIdentifier.equals(identifier),
     );
   }
 
@@ -62,7 +64,7 @@ class Users {
       if (userInfo != null) return userInfo;
     }
 
-    userInfo = await session.db.findById<UserInfo>(userId);
+    userInfo = await UserInfo.db.findById(session, userId);
 
     if (useCache && userInfo != null) {
       await session.caches.local.put(
@@ -82,7 +84,7 @@ class Users {
     if (userInfo == null) return null;
 
     userInfo.userName = newUserName;
-    await session.db.update(userInfo);
+    await UserInfo.db.updateRow(session, userInfo);
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);
@@ -106,11 +108,11 @@ class Users {
       if (scope.name != null) scopeStrs.add(scope.name!);
     }
     userInfo.scopeNames = scopeStrs;
-    await session.db.update(userInfo);
+    await UserInfo.db.updateRow(session, userInfo);
 
     // Update all authentication keys too.
     var json = SerializationManager.encode(scopeStrs);
-    await session.db.query(
+    await session.db.unsafeQuery(
         'UPDATE serverpod_auth_key SET "scopeNames"=\'$json\' WHERE "userId" = $userId');
 
     if (AuthConfig.current.onUserUpdated != null) {
@@ -119,6 +121,35 @@ class Users {
 
     await invalidateCacheForUser(session, userId);
     return userInfo;
+  }
+
+  /// Marks a user as blocked so that they can't log in, and invalidates the
+  /// cache for the user, and signs the user out.
+  static Future<void> blockUser(Session session, int userId) async {
+    var userInfo = await findUserByUserId(session, userId);
+    if (userInfo == null) {
+      throw 'userId $userId not found';
+    } else if (userInfo.blocked) {
+      throw 'userId $userId already blocked';
+    }
+    // Mark user as blocked in database
+    userInfo.blocked = true;
+    await session.db.updateRow(userInfo);
+    await invalidateCacheForUser(session, userId);
+    // Sign out user
+    await session.auth.signOutUser(userId: userId);
+  }
+
+  /// Unblocks a user so that they can log in again.
+  static Future<void> unblockUser(Session session, int userId) async {
+    var userInfo = await findUserByUserId(session, userId);
+    if (userInfo == null) {
+      throw 'userId $userId not found';
+    } else if (!userInfo.blocked) {
+      throw 'userId $userId already unblocked';
+    }
+    userInfo.blocked = false;
+    await session.db.updateRow(userInfo);
   }
 
   /// Invalidates the cache for a user and makes sure the next time a user info

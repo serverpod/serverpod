@@ -4,14 +4,17 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Bindings to a log entry in the database.
-class LogEntry extends _i1.TableRow {
-  LogEntry({
+abstract class LogEntry extends _i1.TableRow {
+  LogEntry._({
     int? id,
     required this.sessionLogId,
     this.messageId,
@@ -24,6 +27,20 @@ class LogEntry extends _i1.TableRow {
     this.stackTrace,
     required this.order,
   }) : super(id);
+
+  factory LogEntry({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) = _LogEntryImpl;
 
   factory LogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -54,6 +71,8 @@ class LogEntry extends _i1.TableRow {
   }
 
   static final t = LogEntryTable();
+
+  static const db = LogEntryRepository._();
 
   /// The id of the session this log entry is associated with.
   int sessionLogId;
@@ -86,37 +105,34 @@ class LogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get tableName => 'serverpod_log';
+  _i1.Table get table => t;
+
+  LogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    int? messageId,
+    String? reference,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    String? error,
+    String? stackTrace,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
+      if (messageId != null) 'messageId': messageId,
+      if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
-      'error': error,
-      'stackTrace': stackTrace,
-      'order': order,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
-      'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
-      'message': message,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'order': order,
     };
   }
@@ -124,212 +140,178 @@ class LogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'reference': reference,
+      if (messageId != null) 'messageId': messageId,
+      if (reference != null) 'reference': reference,
       'serverId': serverId,
-      'time': time,
-      'logLevel': logLevel,
+      'time': time.toJson(),
+      'logLevel': logLevel.toJson(),
       'message': message,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'order': order,
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'sessionLogId':
-        sessionLogId = value;
-        return;
-      case 'messageId':
-        messageId = value;
-        return;
-      case 'reference':
-        reference = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'time':
-        time = value;
-        return;
-      case 'logLevel':
-        logLevel = value;
-        return;
-      case 'message':
-        message = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'order':
-        order = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static LogEntryInclude include() {
+    return LogEntryInclude._();
   }
 
-  static Future<List<LogEntry>> find(
-    _i1.Session session, {
-    LogEntryExpressionBuilder? where,
+  static LogEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<LogEntryTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<LogEntry>(
-      where: where != null ? where(LogEntry.t) : null,
+    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
+    LogEntryInclude? include,
+  }) {
+    return LogEntryIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(LogEntry.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<LogEntry?> findSingleRow(
-    _i1.Session session, {
-    LogEntryExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<LogEntry>(
-      where: where != null ? where(LogEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<LogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<LogEntry>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required LogEntryExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<LogEntry>(
-      where: where(LogEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    LogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    LogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    LogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    LogEntryExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<LogEntry>(
-      where: where != null ? where(LogEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(LogEntry.t),
+      include: include,
     );
   }
 }
 
-typedef LogEntryExpressionBuilder = _i1.Expression Function(LogEntryTable);
+class _Undefined {}
+
+class _LogEntryImpl extends LogEntry {
+  _LogEntryImpl({
+    int? id,
+    required int sessionLogId,
+    int? messageId,
+    String? reference,
+    required String serverId,
+    required DateTime time,
+    required _i2.LogLevel logLevel,
+    required String message,
+    String? error,
+    String? stackTrace,
+    required int order,
+  }) : super._(
+          id: id,
+          sessionLogId: sessionLogId,
+          messageId: messageId,
+          reference: reference,
+          serverId: serverId,
+          time: time,
+          logLevel: logLevel,
+          message: message,
+          error: error,
+          stackTrace: stackTrace,
+          order: order,
+        );
+
+  @override
+  LogEntry copyWith({
+    Object? id = _Undefined,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    Object? reference = _Undefined,
+    String? serverId,
+    DateTime? time,
+    _i2.LogLevel? logLevel,
+    String? message,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    int? order,
+  }) {
+    return LogEntry(
+      id: id is int? ? id : this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId is int? ? messageId : this.messageId,
+      reference: reference is String? ? reference : this.reference,
+      serverId: serverId ?? this.serverId,
+      time: time ?? this.time,
+      logLevel: logLevel ?? this.logLevel,
+      message: message ?? this.message,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      order: order ?? this.order,
+    );
+  }
+}
 
 class LogEntryTable extends _i1.Table {
-  LogEntryTable() : super(tableName: 'serverpod_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  LogEntryTable({super.tableRelation}) : super(tableName: 'serverpod_log') {
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      this,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      this,
+    );
+    reference = _i1.ColumnString(
+      'reference',
+      this,
+    );
+    serverId = _i1.ColumnString(
+      'serverId',
+      this,
+    );
+    time = _i1.ColumnDateTime(
+      'time',
+      this,
+    );
+    logLevel = _i1.ColumnEnum(
+      'logLevel',
+      this,
+      _i1.EnumSerialization.byIndex,
+    );
+    message = _i1.ColumnString(
+      'message',
+      this,
+    );
+    error = _i1.ColumnString(
+      'error',
+      this,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      this,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      this,
+    );
+  }
 
   /// The id of the session this log entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
   /// The message id this entry is associated with, if in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// Currently unused.
-  final reference = _i1.ColumnString('reference');
+  late final _i1.ColumnString reference;
 
   /// The id of the server which created this log entry.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// Timpstamp of this log entry.
-  final time = _i1.ColumnDateTime('time');
+  late final _i1.ColumnDateTime time;
 
   /// The log level of this entry.
-  final logLevel = _i1.ColumnEnum<_i2.LogLevel>('logLevel');
+  late final _i1.ColumnEnum<_i2.LogLevel> logLevel;
 
   /// The logging message.
-  final message = _i1.ColumnString('message');
+  late final _i1.ColumnString message;
 
   /// Optional error associated with this log entry.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// Optional stack trace associated with this log entry.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// The order of this log entry, used for sorting.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [
@@ -347,5 +329,181 @@ class LogEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use LogEntryTable.t instead.')
-LogEntryTable tLogEntry = LogEntryTable();
+class LogEntryInclude extends _i1.IncludeObject {
+  LogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => LogEntry.t;
+}
+
+class LogEntryIncludeList extends _i1.IncludeList {
+  LogEntryIncludeList._({
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(LogEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => LogEntry.t;
+}
+
+class LogEntryRepository {
+  const LogEntryRepository._();
+
+  Future<List<LogEntry>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<LogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<LogEntry>(
+      where: where?.call(LogEntry.t),
+      orderBy: orderBy?.call(LogEntry.t),
+      orderByList: orderByList?.call(LogEntry.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<LogEntry?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<LogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<LogEntryTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<LogEntry>(
+      where: where?.call(LogEntry.t),
+      orderBy: orderBy?.call(LogEntry.t),
+      orderByList: orderByList?.call(LogEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<LogEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<LogEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<LogEntry>> insert(
+    _i1.Session session,
+    List<LogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<LogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<LogEntry> insertRow(
+    _i1.Session session,
+    LogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<LogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<LogEntry>> update(
+    _i1.Session session,
+    List<LogEntry> rows, {
+    _i1.ColumnSelections<LogEntryTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<LogEntry>(
+      rows,
+      columns: columns?.call(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<LogEntry> updateRow(
+    _i1.Session session,
+    LogEntry row, {
+    _i1.ColumnSelections<LogEntryTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<LogEntry>(
+      row,
+      columns: columns?.call(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<LogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<LogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    LogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<LogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<LogEntryTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<LogEntry>(
+      where: where(LogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<LogEntryTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<LogEntry>(
+      where: where?.call(LogEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

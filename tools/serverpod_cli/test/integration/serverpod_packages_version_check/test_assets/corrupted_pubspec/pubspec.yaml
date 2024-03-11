@@ -1,0 +1,13 @@
+# Test asset
+this_field_corrupts_the_file
+
+name: serverpod_cli
+version: 1.1.0
+description: Command line tools for Serverpod.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod_shared: 1.1.0

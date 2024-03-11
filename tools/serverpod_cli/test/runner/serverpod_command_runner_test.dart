@@ -1,6 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/logger/loggers/void_logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
@@ -49,14 +50,25 @@ class MockCommand extends Command {
   }
 }
 
+class LanguageServerMockCommand extends Command {
+  @override
+  final name = LanguageServerCommand.commandName;
+
+  @override
+  final description = 'Language Server Mock command used for testing.';
+
+  @override
+  void run() {}
+}
+
 class TestFixture {
   final MockAnalytics analytics;
-  final MockCommand command;
+  final MockCommand mockCommand;
   final ServerpodCommandRunner runner;
 
   TestFixture(
     this.analytics,
-    this.command,
+    this.mockCommand,
     this.runner,
   );
 }
@@ -69,9 +81,10 @@ TestFixture createTestFixture() {
     Version(1, 1, 0),
     onPreCommandEnvironmentCheck: () => Future(() => {}),
   );
-  var command = MockCommand();
-  runner.addCommand(command);
-  return TestFixture(analytics, command, runner);
+  var mockCommand = MockCommand();
+  runner.addCommand(mockCommand);
+  runner.addCommand(LanguageServerMockCommand());
+  return TestFixture(analytics, mockCommand, runner);
 }
 
 void main() {
@@ -134,7 +147,7 @@ void main() {
         fixture.analytics.trackedEvents.first,
         equals(MockCommand.commandName),
       );
-      expect(fixture.command.numberOfRuns, equals(1));
+      expect(fixture.mockCommand.numberOfRuns, equals(1));
     });
 
     test('when valid command but invalid option is provided', () async {
@@ -164,7 +177,44 @@ void main() {
         fixture.analytics.trackedEvents.first,
         equals(MockCommand.commandName),
       );
-      expect(fixture.command.numberOfRuns, equals(1));
+      expect(fixture.mockCommand.numberOfRuns, equals(1));
+    });
+
+    test('when analytics flag is omitted', () async {
+      List<String> args = [MockCommand.commandName, '--name', 'alex'];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.mockCommand.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isTrue);
+    });
+
+    test('when analytics flag is provided', () async {
+      List<String> args = [
+        '--${GlobalFlags.analytics}',
+        MockCommand.commandName,
+        '--name',
+        'alex',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.mockCommand.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isTrue);
+    });
+
+    test('when no-analytics flag is provided', () async {
+      List<String> args = [
+        '--no-${GlobalFlags.analytics}',
+        MockCommand.commandName,
+        '--name',
+        'alex',
+      ];
+
+      await fixture.runner.run(args);
+
+      expect(fixture.mockCommand.numberOfRuns, equals(1));
+      expect(fixture.analytics.enabled, isFalse);
     });
   });
   group('Logger Initialization - ', () {
@@ -206,6 +256,15 @@ void main() {
       await fixture.runner.run(args);
 
       expect(log.logLevel, equals(LogLevel.debug));
+    });
+
+    test('when ${LanguageServerCommand.commandName} command is provided',
+        () async {
+      List<String> args = [LanguageServerCommand.commandName];
+
+      await fixture.runner.run(args);
+
+      expect(log.logLevel, equals(LogLevel.nothing));
     });
   });
 }

@@ -1,4 +1,5 @@
 # Chat example
+
 This example showcases Serverpod's chat and auth modules. It demonstrates how to build a basic chat application with multiple chat channels.
 
 To run the example on your local machine, make sure you have Serverpod installed on your system. Then start the Docker containers associated with the project.
@@ -8,19 +9,10 @@ cd chat/chat_server
 docker compose up --build --detach
 ```
 
-Now, you need to add the required database tables to your docker container, which is running Postgres. You must add the tables from the chat module, the auth module, and the chat example itself. You can find the SQL code to do so here:
+Then apply the database migrations to the database by running the following command from the `chat_server` directory:
 
-[Chat module tables](https://github.com/serverpod/serverpod/blob/main/modules/serverpod_chat/serverpod_chat_server/generated/tables.pgsql)
-[Auth module tables](https://github.com/serverpod/serverpod/blob/main/modules/serverpod_auth/serverpod_auth_server/generated/tables.pgsql)
-[Chat example tables](https://github.com/serverpod/serverpod/blob/main/examples/chat/chat_server/generated/tables-serverpod.pgsql)
-
-Connect to the database with the following credentials:
-
-```yaml
-host: localhost
-user: postgres
-database: chat
-password: database_password
+```bash
+dart bin/main.dart --apply-migrations -r maintenance
 ```
 
 With the database tables installed, you can now start the server. Do this by running the following command from the `chat_server` directory:
@@ -36,4 +28,25 @@ cd chat/chat_flutter
 flutter run -d chrome
 ```
 
-If you want to run the example on a platform other than Chrome, you will need to run `flutter create .` to create projects for the different platforms.
+If you want to run the example on a platform other than Chrome, you will need to run `flutter create .` to create projects for the different platforms. For MacOS, you will need to update the credentials for the app to access the server from your settings in Xcode.
+
+When you are finished, you can shut down Serverpod with `Ctrl-C`, then stop Postgres and Redis.
+
+```bash
+docker compose stop
+```
+
+To completely clear all Docker containers, run:
+
+```bash
+docker compose down -v
+```
+
+If you want to connect to the local database from `pgsql` or another Postgres tool use these credentials:
+
+```yaml
+host: localhost
+user: postgres
+database: chat
+password: postgres_password
+```

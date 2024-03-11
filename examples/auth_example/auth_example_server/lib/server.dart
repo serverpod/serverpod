@@ -2,7 +2,7 @@ import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
 import 'package:serverpod/serverpod.dart';
 
-import 'package:serverpod_auth_server/module.dart' as auth;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 
 import 'package:auth_example_server/src/web/routes/root.dart';
 
@@ -85,7 +85,7 @@ void run(List<String> args) async {
         ..from = Address(gmailEmail)
         ..recipients.add(userInfo.email!)
         ..subject = 'Password reset link for Serverpod'
-        ..html = 'Here is your password reset code: $validationCode>';
+        ..html = 'Here is your password reset code: $validationCode';
 
       // Send the email message.
       try {

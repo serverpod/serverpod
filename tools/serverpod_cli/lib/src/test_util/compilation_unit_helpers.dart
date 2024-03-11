@@ -236,6 +236,7 @@ abstract class CompilationUnitHelpers {
     String? type,
     bool? isStatic,
     bool? isFinal,
+    bool? isLate,
     String? initializerMethod,
   }) {
     var member = classDeclaration.members
@@ -244,6 +245,7 @@ abstract class CompilationUnitHelpers {
         .where((member) => member._hasMatchingType(type))
         .where((member) => member._hasMatchingStatic(isStatic))
         .where((member) => member._hasMatchingFinal(isFinal))
+        .where((member) => member._hasMatchingLate(isLate))
         .where((member) =>
             member._hasMatchingInitializerMethod(initializerMethod));
 
@@ -261,9 +263,9 @@ abstract class CompilationUnitHelpers {
     ClassDeclaration classDeclaration, {
     required String name,
     String? type,
-    bool? isNullable,
     bool? isStatic,
     bool? isFinal,
+    bool? isLate,
     String? initializerMethod,
   }) {
     var maybeDeclaration = tryFindFieldDeclaration(
@@ -272,6 +274,7 @@ abstract class CompilationUnitHelpers {
       type: type,
       isStatic: isStatic,
       isFinal: isFinal,
+      isLate: isLate,
       initializerMethod: initializerMethod,
     );
 
@@ -375,6 +378,14 @@ extension _FieldDeclarationExtensions on FieldDeclaration {
     }
 
     return fields.isFinal == isFinal;
+  }
+
+  bool _hasMatchingLate(bool? isLate) {
+    if (isLate == null) {
+      return true;
+    }
+
+    return fields.isLate == isLate;
   }
 
   bool _hasMatchingInitializerMethod(String? initializerMethod) {

@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'auth_key_manager.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
@@ -22,26 +21,25 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
-    String host,
-    SerializationManager serializationManager, {
-    dynamic context,
-    AuthenticationKeyManager? authenticationKeyManager,
-    bool logFailedCalls = true,
+    super.host,
+    super.serializationManager, {
+    dynamic securityContext,
+    super.authenticationKeyManager,
+    super.logFailedCalls,
+    super.streamingConnectionTimeout,
+    super.connectionTimeout,
     void Function(Object error)? onFailedCall,
     void Function()? onSucceededCall,
-  }) : super(
-          host,
-          serializationManager,
-          authenticationKeyManager: authenticationKeyManager,
-          logFailedCalls: logFailedCalls,
-        ) {
-    assert(context == null || context is SecurityContext);
+  }) {
+    assert(securityContext == null || securityContext is SecurityContext,
+        'Context must be of type SecurityContext');
     _onFailedCall = onFailedCall;
     _onSucceededCall = onSucceededCall;
 
     // Setup client
-    _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = const Duration(seconds: 20);
+    _httpClient = HttpClient(context: securityContext);
+    _httpClient.connectionTimeout = connectionTimeout;
+
     // TODO: Generate working certificates
     _httpClient.badCertificateCallback =
         ((X509Certificate cert, String host, int port) {
@@ -85,7 +83,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       await request.flush();
 
-      var response = await request.close(); // done instead of close() ?
+      var response = await request.close().timeout(connectionTimeout);
+
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {

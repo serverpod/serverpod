@@ -1,5 +1,5 @@
-import 'package:serverpod/database.dart';
 import 'package:serverpod/protocol.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 
 /// Comparison methods for [DatabaseDefinition].
 extension DatabaseComparisons on DatabaseDefinition {

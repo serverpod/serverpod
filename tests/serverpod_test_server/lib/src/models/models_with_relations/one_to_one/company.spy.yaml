@@ -1,0 +1,5 @@
+class: Company
+table: company
+fields:
+  name: String
+  town: Town?, relation
