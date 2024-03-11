@@ -86,7 +86,7 @@ class Emails {
     while (true) {
       var entries = await EmailAuth.db.find(
         session,
-        where: (t) => t.hash.notLike(r'$') & (t.id > lastEntryId),
+        where: (t) => t.hash.notLike(r'%$%') & (t.id > lastEntryId),
         orderBy: (t) => t.id,
         limit: batchSize,
       );
