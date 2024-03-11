@@ -64,12 +64,18 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
+      T result;
       if (T == getType<void>()) {
-        return returnVoid() as T;
+        result = returnVoid() as T;
       } else {
-        return parseData<T>(data, T, serializationManager);
+        result = parseData<T>(data, T, serializationManager);
       }
+
+      onSucceededCall?.call();
+      return result;
     } catch (e) {
+      onFailedCall?.call(e);
+
       if (e is http.ClientException) {
         var message = data ?? 'Unknown server response code. ($e)';
         throw (ServerpodClientException(message, -1));

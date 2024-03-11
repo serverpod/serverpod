@@ -93,14 +93,16 @@ abstract class ServerpodClient extends ServerpodClientShared {
       } else {
         result = parseData<T>(data, T, serializationManager);
       }
+
       onSucceededCall?.call();
       return result;
     } catch (e) {
+      onFailedCall?.call(e);
+
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');
       }
-      onFailedCall?.call(e);
 
       rethrow;
     }
