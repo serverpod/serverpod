@@ -4,27 +4,54 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given client with onSucceededCall callback', () {
-    test('when successfully calling endpoint then callback is called.',
-        () async {
-      var succeededCallsCount = 0;
-      var client = Client(
-        serverUrl,
-        onSucceededCall: () {
-          succeededCallsCount++;
-        },
-      );
+    group('when successfully calling endpoint', () {
+      var succeededContexts = <MethodCallContext>[];
+      setUpAll(() async {
+        var client = Client(
+          serverUrl,
+          onSucceededCall: (MethodCallContext context) {
+            succeededContexts.add(context);
+          },
+        );
 
-      await client.simple.hello('test');
-      expect(succeededCallsCount, greaterThan(0),
-          reason: 'Callback was not called even if call succeeded.');
+        await client.simple.hello('test');
+      });
+
+      test('then callback is called.', () {
+        expect(
+          succeededContexts,
+          hasLength(1),
+          reason: 'Callback was not called even if call succeeded.',
+        );
+      });
+
+      test('then method call context has correct endpoint name.', () {
+        var callContext = succeededContexts.firstOrNull;
+
+        expect(
+          callContext?.endpointName,
+          'simple',
+          reason: 'Call context did not contain correct method name.',
+        );
+      });
+
+      test('then method call context has correct method name.', () {
+        var callContext = succeededContexts.firstOrNull;
+
+        expect(
+          callContext?.methodName,
+          'hello',
+          reason: 'Call context did not contain correct method name.',
+        );
+      });
     });
 
     test('when endpoint call fails then callback is not called.', () async {
-      var succeededCallsCount = 0;
+      var succeededContexts = <MethodCallContext>[];
       var client = Client(
         serverUrl,
-        onSucceededCall: () {
-          succeededCallsCount++;
+        onSucceededCall: (MethodCallContext context) {
+          succeededContexts.add(context);
         },
       );
 
@@ -32,42 +59,83 @@ void main() {
         await client.failedCalls.failedCall();
       } catch (_) {}
 
-      expect(succeededCallsCount, equals(0),
-          reason: 'Callback was called even if call failed.');
+      expect(
+        succeededContexts,
+        hasLength(0),
+        reason: 'Callback was called even if call failed.',
+      );
     });
   });
 
   group('Given client with onFailedCall callback', () {
-    test('when endpoint call fails then callback is called.', () async {
-      var onFailedCallCount = 0;
-      var client = Client(
-        serverUrl,
-        onFailedCall: (Object error) {
-          onFailedCallCount++;
-        },
-      );
+    group('when endpoint call fails ', () {
+      var failedContexts = <MethodCallContext>[];
+      setUpAll(() async {
+        var client = Client(
+          serverUrl,
+          onFailedCall: (
+            MethodCallContext context,
+            Object error,
+            StackTrace stackTrace,
+          ) {
+            failedContexts.add(context);
+          },
+        );
 
-      try {
-        await client.failedCalls.failedCall();
-      } catch (_) {}
+        try {
+          await client.failedCalls.failedCall();
+        } catch (_) {}
+      });
 
-      expect(onFailedCallCount, greaterThan(0),
-          reason: 'Callback was not called even if call succeeded.');
+      test('then callback is called.', () {
+        expect(
+          failedContexts,
+          hasLength(1),
+          reason: 'Callback was not called even if call succeeded.',
+        );
+      });
+
+      test('then method call context has correct endpoint name.', () {
+        var callContext = failedContexts.firstOrNull;
+
+        expect(
+          callContext?.endpointName,
+          'failedCalls',
+          reason: 'Call context did not contain correct method name.',
+        );
+      });
+
+      test('then method call context has correct method name.', () {
+        var callContext = failedContexts.firstOrNull;
+
+        expect(
+          callContext?.methodName,
+          'failedCall',
+          reason: 'Call context did not contain correct method name.',
+        );
+      });
     });
 
     test('when successfully calling endpoint then callback is not called.',
         () async {
-      var onFailedCallCount = 0;
+      var failedContexts = <MethodCallContext>[];
       var client = Client(
         serverUrl,
-        onFailedCall: (Object error) {
-          onFailedCallCount++;
+        onFailedCall: (
+          MethodCallContext context,
+          Object error,
+          StackTrace stackTrace,
+        ) {
+          failedContexts.add(context);
         },
       );
 
       await client.simple.hello('test');
-      expect(onFailedCallCount, equals(0),
-          reason: 'Callback was called even if call failed.');
+      expect(
+        failedContexts,
+        hasLength(0),
+        reason: 'Callback was called even if call failed.',
+      );
     });
   });
 }
