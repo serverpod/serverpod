@@ -631,14 +631,31 @@ class LibraryGenerator {
                       ..named = true
                       ..type = FunctionType((f) => f
                         ..isNullable = true
-                        ..requiredParameters.add(TypeReference((t) => t
-                          ..symbol = 'Object'
-                          ..url = 'dart:core'
-                          ..isNullable = false)))),
+                        ..requiredParameters.addAll([
+                          TypeReference((t) => t
+                            ..symbol = 'MethodCallContext'
+                            ..url = serverpodUrl(false)
+                            ..isNullable = false),
+                          TypeReference((t) => t
+                            ..symbol = 'Object'
+                            ..url = 'dart:core'
+                            ..isNullable = false),
+                          TypeReference((t) => t
+                            ..symbol = 'StackTrace'
+                            ..url = 'dart:core'
+                            ..isNullable = false),
+                        ]))),
                     Parameter((p) => p
                       ..name = 'onSucceededCall'
                       ..named = true
-                      ..type = FunctionType((f) => f..isNullable = true)),
+                      ..type = FunctionType((f) => f
+                        ..isNullable = true
+                        ..requiredParameters.add(
+                          TypeReference((t) => t
+                            ..symbol = 'MethodCallContext'
+                            ..url = serverpodUrl(false)
+                            ..isNullable = false),
+                        ))),
                   ])
                   ..initializers.add(refer('super').call([
                     refer('host'),

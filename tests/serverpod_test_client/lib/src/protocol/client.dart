@@ -2056,8 +2056,12 @@ class Client extends _i1.ServerpodClient {
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
-    Function(Object)? onFailedCall,
-    Function()? onSucceededCall,
+    Function(
+      _i1.MethodCallContext,
+      Object,
+      StackTrace,
+    )? onFailedCall,
+    Function(_i1.MethodCallContext)? onSucceededCall,
   }) : super(
           host,
           _i31.Protocol(),
