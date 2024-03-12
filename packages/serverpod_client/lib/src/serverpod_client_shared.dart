@@ -22,6 +22,25 @@ enum StreamingConnectionStatus {
   waitingToRetry,
 }
 
+/// Context for a method call.
+class MethodCallContext {
+  /// Name of the called endpoint.
+  final String endpointName;
+
+  /// Name of the called endpoint method.
+  final String methodName;
+
+  /// Arguments passed to the method.
+  final Map<String, dynamic> arguments;
+
+  /// Creates a new [MethodCallContext].
+  MethodCallContext({
+    required this.endpointName,
+    required this.methodName,
+    required this.arguments,
+  });
+}
+
 /// Superclass with shared methods for handling communication with the server.
 /// It's overridden i two different versions depending on if the dart:io library
 /// is available.
@@ -97,13 +116,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
   Duration connectionTimeout;
 
-  /// Callback called when any call to the server fails or an exception is
+  /// Callback when any call to the server fails or an exception is
   /// thrown.
-  /// The error object is passed as argument for the callback.
-  final void Function(Object error)? onFailedCall;
+  final void Function(
+    MethodCallContext callContext,
+    Object error,
+    StackTrace stackTrace,
+  )? onFailedCall;
 
-  /// Callback called when any call to the server succeeds.
-  final void Function()? onSucceededCall;
+  /// Callback when any call to the server succeeds.
+  final void Function(MethodCallContext callContext)? onSucceededCall;
 
   bool _firstMessageReceived = false;
 

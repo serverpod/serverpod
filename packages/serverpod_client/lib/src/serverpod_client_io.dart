@@ -61,6 +61,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
@@ -94,10 +99,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
         result = parseData<T>(data, T, serializationManager);
       }
 
-      onSucceededCall?.call();
+      onSucceededCall?.call(callContext);
       return result;
-    } catch (e) {
-      onFailedCall?.call(e);
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
 
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');

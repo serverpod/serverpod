@@ -41,6 +41,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
     String? data;
     try {
       var body =
@@ -71,10 +76,10 @@ abstract class ServerpodClient extends ServerpodClientShared {
         result = parseData<T>(data, T, serializationManager);
       }
 
-      onSucceededCall?.call();
+      onSucceededCall?.call(callContext);
       return result;
-    } catch (e) {
-      onFailedCall?.call(e);
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
 
       if (e is http.ClientException) {
         var message = data ?? 'Unknown server response code. ($e)';
