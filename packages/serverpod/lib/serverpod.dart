@@ -20,3 +20,6 @@ export 'package:serverpod/src/generated/log_level.dart';
 // Cloud storage
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
 export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
+
+// Cache
+export 'package:serverpod/src/cache/cache_miss_handler.dart';

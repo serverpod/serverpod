@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'cache.dart';
@@ -78,29 +79,34 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+  Future<T?> get<T extends SerializableEntity>(
+    String key, {
+    Type? t,
+    CacheMissHandler<T>? cacheMissHandler,
+  }) async {
     var entry = _entries[key];
 
-    if (entry == null) return null;
-
-    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+    if (entry != null &&
+        (entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
       await invalidateKey(key);
       return null;
     }
 
-    return serializationManager.decode<T>(entry.serializedObject);
-  }
-
-  @override
-  Future<T?> fetch<T extends SerializableEntity>(
-      String key, Future<T> Function() cacheMissHandler,
-      {Duration? lifetime, String? group}) async {
-    T? value = await get<T>(key);
-
-    if (value == null) {
-      value = await cacheMissHandler();
-      await put(key, value, lifetime: lifetime, group: group);
+    if (entry != null) {
+      return serializationManager.decode<T>(entry.serializedObject);
     }
+
+    if (cacheMissHandler == null) {
+      return null;
+    }
+
+    var value = await cacheMissHandler.valueProvider();
+    await put(
+      key,
+      value,
+      lifetime: cacheMissHandler.lifetime,
+      group: cacheMissHandler.group,
+    );
 
     return value;
   }

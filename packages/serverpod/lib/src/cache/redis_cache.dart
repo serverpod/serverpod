@@ -1,3 +1,4 @@
+import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod/src/cache/global_cache.dart';
 import 'package:serverpod/src/redis/controller.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -39,29 +40,32 @@ class RedisCache extends GlobalCache {
   }
 
   @override
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+  Future<T?> get<T extends SerializableEntity>(
+    String key, {
+    Type? t,
+    CacheMissHandler<T>? cacheMissHandler,
+  }) async {
     assert(
       redisController != null,
       'Redis needs to be enabled to use this method',
     );
+
     var data = await redisController!.get(key);
-    if (data == null) {
+    if (data != null) {
+      return serializationManager.decode<T>(data, t);
+    }
+
+    if (cacheMissHandler == null) {
       return null;
     }
 
-    return serializationManager.decode<T>(data, t);
-  }
-
-  @override
-  Future<T?> fetch<T extends SerializableEntity>(
-      String key, Future<T> Function() cacheMissHandler,
-      {Duration? lifetime, String? group}) async {
-    T? value = await get<T>(key);
-
-    if (value == null) {
-      value = await cacheMissHandler();
-      await put(key, value, lifetime: lifetime, group: group);
-    }
+    var value = await cacheMissHandler.valueProvider();
+    await put(
+      key,
+      value,
+      lifetime: cacheMissHandler.lifetime,
+      group: cacheMissHandler.group,
+    );
 
     return value;
   }
