@@ -26,6 +26,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
+    super.onFailedCall,
+    super.onSucceededCall,
   }) {
     assert(securityContext == null || securityContext is SecurityContext,
         'Context must be of type SecurityContext');
@@ -59,6 +61,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
@@ -85,12 +92,18 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
+      T result;
       if (T == getType<void>()) {
-        return returnVoid() as T;
+        result = returnVoid() as T;
       } else {
-        return parseData<T>(data, T, serializationManager);
+        result = parseData<T>(data, T, serializationManager);
       }
-    } catch (e) {
+
+      onSucceededCall?.call(callContext);
+      return result;
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
+
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');

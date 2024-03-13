@@ -9,7 +9,7 @@ typedef VoidCallback = void Function();
 
 /// Status of the streaming connection.
 enum StreamingConnectionStatus {
-  /// Streming connection is live.
+  /// Streaming connection is live.
   connected,
 
   /// Streaming connection is connecting.
@@ -20,6 +20,25 @@ enum StreamingConnectionStatus {
 
   /// Streaming connection is waiting to make a new connection attempt.
   waitingToRetry,
+}
+
+/// Context for a method call.
+class MethodCallContext {
+  /// Name of the called endpoint.
+  final String endpointName;
+
+  /// Name of the called endpoint method.
+  final String methodName;
+
+  /// Arguments passed to the method.
+  final Map<String, dynamic> arguments;
+
+  /// Creates a new [MethodCallContext].
+  const MethodCallContext({
+    required this.endpointName,
+    required this.methodName,
+    required this.arguments,
+  });
 }
 
 /// Superclass with shared methods for handling communication with the server.
@@ -97,6 +116,17 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
   Duration connectionTimeout;
 
+  /// Callback when any call to the server fails or an exception is
+  /// thrown.
+  final void Function(
+    MethodCallContext callContext,
+    Object error,
+    StackTrace stackTrace,
+  )? onFailedCall;
+
+  /// Callback when any call to the server succeeds.
+  final void Function(MethodCallContext callContext)? onSucceededCall;
+
   bool _firstMessageReceived = false;
 
   ConnectivityMonitor? _connectivityMonitor;
@@ -128,6 +158,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     this.logFailedCalls = true,
     required Duration? streamingConnectionTimeout,
     required Duration? connectionTimeout,
+    this.onFailedCall,
+    this.onSucceededCall,
   })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
         streamingConnectionTimeout =
             streamingConnectionTimeout ?? const Duration(seconds: 5) {

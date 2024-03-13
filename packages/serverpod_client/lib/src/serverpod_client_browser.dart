@@ -26,6 +26,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
     super.logFailedCalls,
     super.streamingConnectionTimeout,
     super.connectionTimeout,
+    super.onFailedCall,
+    super.onSucceededCall,
   }) {
     _httpClient = http.Client();
   }
@@ -39,6 +41,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
     String? data;
     try {
       var body =
@@ -62,12 +69,18 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
+      T result;
       if (T == getType<void>()) {
-        return returnVoid() as T;
+        result = returnVoid() as T;
       } else {
-        return parseData<T>(data, T, serializationManager);
+        result = parseData<T>(data, T, serializationManager);
       }
-    } catch (e) {
+
+      onSucceededCall?.call(callContext);
+      return result;
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
+
       if (e is http.ClientException) {
         var message = data ?? 'Unknown server response code. ($e)';
         throw (ServerpodClientException(message, -1));

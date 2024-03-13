@@ -238,6 +238,12 @@ class Client extends _i1.ServerpodClient {
     _i1.AuthenticationKeyManager? authenticationKeyManager,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
+    Function(
+      _i1.MethodCallContext,
+      Object,
+      StackTrace,
+    )? onFailedCall,
+    Function(_i1.MethodCallContext)? onSucceededCall,
   }) : super(
           host,
           _i14.Protocol(),
@@ -245,6 +251,8 @@ class Client extends _i1.ServerpodClient {
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,
           connectionTimeout: connectionTimeout,
+          onFailedCall: onFailedCall,
+          onSucceededCall: onSucceededCall,
         ) {
     insights = EndpointInsights(this);
   }
