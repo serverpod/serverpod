@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 import 'package:test/test.dart';
@@ -74,22 +75,6 @@ void main() {
     expect(last!.num, equals(numEntries - 1));
   });
 
-  test('Fetch an object from cache and write it to cache if it is missing', () async {
-    var entry = SimpleData(num: 0);
-
-    var retrieved = await cache.fetch('entry', () async {
-      return entry;
-    });
-    expect(retrieved!.num, equals(0));
-    expect(cache.localSize, equals(1));
-
-    retrieved = await cache.fetch('entry', () async {
-      return SimpleData(num: 1);
-    });
-    expect(retrieved!.num, equals(0));
-    expect(cache.localSize, equals(1));
-  });
-
   test('Invalidate keys', () async {
     for (var i = 0; i < cacheMaxSize; i++) {
       var entry = SimpleData(num: i);
@@ -162,5 +147,56 @@ void main() {
     }
 
     expect(cache.localSize, equals(0));
+  });
+
+  test('get object not in cache then null is returned', () async {
+    var retrieved = await cache.get<SimpleData>('invalidEntry');
+    expect(retrieved, isNull);
+  });
+
+  group('get object not in cache when cache miss handler is specified', () {
+    const cacheKey = 'testKey';
+    SimpleData? retrieved;
+    setUp(() async {
+      retrieved = await cache.get<SimpleData>(cacheKey,
+          cacheMissHandler: CacheMissHandler(
+        () async {
+          return SimpleData(num: 1337);
+        },
+      ));
+    });
+    test('then object from cache miss handler is returned', () {
+      expect(retrieved?.num, equals(1337));
+    });
+
+    test('then cache miss handler value is retrievable from the cache',
+        () async {
+      var value = await cache.get<SimpleData>(cacheKey);
+      expect(value?.num, equals(1337));
+    });
+  });
+
+  group('get object already in cache when cache miss handler is specified', () {
+    const cacheKey = 'testKey';
+    SimpleData? retrieved;
+    setUp(() async {
+      await cache.put(cacheKey, SimpleData(num: 1));
+      retrieved = await cache.get<SimpleData>(cacheKey,
+          cacheMissHandler: CacheMissHandler(
+        () async {
+          return SimpleData(num: 1337);
+        },
+      ));
+    });
+
+    test('then object already in cache is returned', () {
+      expect(retrieved?.num, equals(1));
+    });
+
+    test('then object already in cache is still retrievable from the cache',
+        () async {
+      var value = await cache.get<SimpleData>(cacheKey);
+      expect(value?.num, equals(1));
+    });
   });
 }
