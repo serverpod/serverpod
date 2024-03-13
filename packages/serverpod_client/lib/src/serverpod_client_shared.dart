@@ -9,7 +9,7 @@ typedef VoidCallback = void Function();
 
 /// Status of the streaming connection.
 enum StreamingConnectionStatus {
-  /// Streming connection is live.
+  /// Streaming connection is live.
   connected,
 
   /// Streaming connection is connecting.
@@ -34,7 +34,7 @@ class MethodCallContext {
   final Map<String, dynamic> arguments;
 
   /// Creates a new [MethodCallContext].
-  MethodCallContext({
+  const MethodCallContext({
     required this.endpointName,
     required this.methodName,
     required this.arguments,
