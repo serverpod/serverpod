@@ -4,15 +4,22 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-class ObjectWithSelfParent extends _i1.SerializableEntity {
-  ObjectWithSelfParent({
+abstract class ObjectWithSelfParent extends _i1.SerializableEntity {
+  ObjectWithSelfParent._({
     this.id,
     this.other,
   });
+
+  factory ObjectWithSelfParent({
+    int? id,
+    int? other,
+  }) = _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -31,11 +38,38 @@ class ObjectWithSelfParent extends _i1.SerializableEntity {
 
   int? other;
 
+  ObjectWithSelfParent copyWith({
+    int? id,
+    int? other,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'other': other,
+      if (id != null) 'id': id,
+      if (other != null) 'other': other,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ObjectWithSelfParentImpl extends ObjectWithSelfParent {
+  _ObjectWithSelfParentImpl({
+    int? id,
+    int? other,
+  }) : super._(
+          id: id,
+          other: other,
+        );
+
+  @override
+  ObjectWithSelfParent copyWith({
+    Object? id = _Undefined,
+    Object? other = _Undefined,
+  }) {
+    return ObjectWithSelfParent(
+      id: id is int? ? id : this.id,
+      other: other is int? ? other : this.other,
+    );
   }
 }

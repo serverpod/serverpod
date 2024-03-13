@@ -1,87 +1,93 @@
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
-import 'package:serverpod_cli/src/generator/code_generator.dart';
-import 'package:serverpod_cli/src/util/print.dart';
+import 'package:serverpod_cli/src/generator/serverpod_code_generator.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
 
 /// Analyze the server package and generate the code.
-Future<void> performGenerate({
-  required bool verbose,
+Future<bool> performGenerate({
   bool dartFormat = true,
-  String? changedFile,
   required GeneratorConfig config,
   required EndpointsAnalyzer endpointsAnalyzer,
+  String? changedFilePath,
 }) async {
   var collector = CodeGenerationCollector();
+  bool success = true;
 
-  if (verbose) {
-    printww('Analyzing serializable entities in the protocol directory.');
-  }
-  var entities = await SerializableEntityAnalyzer.analyzeAllFiles(
-    verbose: verbose,
-    collector: collector,
+  log.debug('Analyzing serializable models in the protocol directory.');
+  var protocols = await ModelHelper.loadProjectYamlModelsFromDisk(config);
+
+  var analyzer = StatefulAnalyzer(config, protocols, (uri, collector) {
+    collector.printErrors();
+
+    if (collector.hasSeverErrors) {
+      success = false;
+    }
+  });
+
+  var models = analyzer.validateAll();
+
+  log.debug('Generating files for serializable models.');
+
+  var generatedModelFiles =
+      await ServerpodCodeGenerator.generateSerializableModels(
+    models: models,
     config: config,
+    collector: collector,
   );
 
+  if (collector.hasSeverErrors) {
+    success = false;
+  }
   collector.printErrors();
   collector.clearErrors();
 
-  if (verbose) {
-    printww('Generating files for serializable entities.');
-  }
+  log.debug('Analyzing the endpoints.');
 
-  var generatedEntityFiles = await CodeGenerator.generateSerializableEntities(
-    verbose: verbose,
-    entities: entities,
-    config: config,
-    collector: collector,
-  );
-
-  collector.printErrors();
-  collector.clearErrors();
-
-  if (verbose) {
-    printww('Analyzing the endpoints.');
+  var changedFiles = generatedModelFiles.toSet();
+  if (changedFilePath != null) {
+    changedFiles.add(changedFilePath);
   }
 
   var endpoints = await endpointsAnalyzer.analyze(
-    verbose: verbose,
     collector: collector,
-    changedFiles: generatedEntityFiles.toSet(),
+    changedFiles: changedFiles,
   );
 
+  if (collector.hasSeverErrors) {
+    success = false;
+  }
   collector.printErrors();
   collector.clearErrors();
 
-  if (verbose) {
-    printww('Generating the protocol.');
-  }
+  log.debug('Generating the protocol.');
 
   var protocolDefinition = ProtocolDefinition(
     endpoints: endpoints,
-    entities: entities,
+    models: models,
   );
 
-  var generatedProtocolFiles = await CodeGenerator.generateProtocolDefinition(
-    verbose: verbose,
+  var generatedProtocolFiles =
+      await ServerpodCodeGenerator.generateProtocolDefinition(
     protocolDefinition: protocolDefinition,
     config: config,
     collector: collector,
   );
 
+  if (collector.hasSeverErrors) {
+    success = false;
+  }
   collector.printErrors();
   collector.clearErrors();
 
-  if (verbose) {
-    printww('Cleaning old files.');
-  }
+  log.debug('Cleaning old files.');
 
-  await CodeGenerator.cleanPreviouslyGeneratedFiles(
-    generatedFiles: <String>{
-      ...generatedEntityFiles,
-      ...generatedProtocolFiles
-    },
+  await ServerpodCodeGenerator.cleanPreviouslyGeneratedDartFiles(
+    generatedFiles: <String>{...generatedModelFiles, ...generatedProtocolFiles},
     protocolDefinition: protocolDefinition,
     config: config,
-    verbose: verbose,
   );
+
+  return success;
 }

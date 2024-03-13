@@ -18,14 +18,13 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
-  flutter: ">=3.3.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  serverpod_flutter: #^VERSION
-    path: ../../../packages/serverpod_flutter
+  serverpod_flutter: 2.0.0-alpha.1
   projectname_client:
     path: ../projectname_client
 
@@ -35,9 +34,17 @@ dependencies:
   cupertino_icons: ^1.0.5
 
 dev_dependencies:
-  flutter_lints: ^2.0.1
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
+
+dependency_overrides: 
+  serverpod_flutter: 
+    path: ../../../packages/serverpod_flutter 
+  serverpod_client: 
+    path: ../../../packages/serverpod_client 
+  serverpod_serialization: 
+    path: ../../../packages/serverpod_serialization 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

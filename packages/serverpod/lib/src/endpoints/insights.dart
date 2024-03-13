@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:serverpod/src/database/analyze.dart';
 import 'package:serverpod/src/database/bulk_data.dart';
+import 'package:serverpod/src/database/migrations/migrations.dart';
 import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
+import 'package:serverpod/src/util/path_util.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../../serverpod.dart';
 import '../cache/cache.dart';
@@ -34,8 +37,8 @@ class InsightsEndpoint extends Endpoint {
 
   /// Clear all server logs.
   Future<void> clearAllLogs(Session session) async {
-    await session.db.delete<SessionLogEntry>(
-      where: Constant(true),
+    await session.db.deleteWhere<SessionLogEntry>(
+      where: Constant.bool(true),
     );
   }
 
@@ -45,7 +48,7 @@ class InsightsEndpoint extends Endpoint {
     // Filter for errors and slow
     Expression where;
     if (filter == null || (!filter.slow && !filter.error && !filter.open)) {
-      where = Constant(true);
+      where = Constant.bool(true);
     } else if (filter.open) {
       where = SessionLogEntry.t.isOpen.equals(true);
     } else {
@@ -151,16 +154,16 @@ class InsightsEndpoint extends Endpoint {
     DateTime end,
   ) async {
     // Load metrics and connection information.
-    var metrics = await ServerHealthMetric.find(
+    var metrics = await ServerHealthMetric.db.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
-      orderBy: ServerHealthMetric.t.timestamp,
+      orderBy: (t) => t.timestamp,
     );
 
-    var connectionInfos = await ServerHealthConnectionInfo.find(
+    var connectionInfos = await ServerHealthConnectionInfo.db.find(
       session,
       where: (t) => (t.timestamp >= start) & (t.timestamp <= end),
-      orderBy: ServerHealthMetric.t.timestamp,
+      orderBy: (t) => t.timestamp,
     );
 
     return ServerHealthResult(
@@ -189,9 +192,9 @@ class InsightsEndpoint extends Endpoint {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  Future<DatabaseDefinition> getTargetDatabaseDefinition(
+  Future<List<TableDefinition>> getTargetTableDefinition(
       Session session) async {
-    return session.serverpod.serializationManager.getTargetDatabaseDefinition();
+    return session.serverpod.serializationManager.getTargetTableDefinitions();
   }
 
   /// Returns the structure of the live database by
@@ -200,23 +203,142 @@ class InsightsEndpoint extends Endpoint {
   /// This information can be used for database migration.
   ///
   /// See also:
-  /// - [getTargetDatabaseDefinition]
-  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) {
-    return DatabaseAnalyzer.analyze(session.db);
+  /// - [getTargetTableDefinition]
+  Future<DatabaseDefinition> getLiveDatabaseDefinition(Session session) async {
+    // Get database definition of the live database.
+    var databaseDefinition = await DatabaseAnalyzer.analyze(session.db);
+
+    // Make sure that the migration manager is up-to-date.
+    await session.serverpod.migrationManager.initialize(session);
+
+    return databaseDefinition;
+  }
+
+  /// Returns the target and live database definitions. See
+  /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
+  /// details.
+  Future<DatabaseDefinitions> getDatabaseDefinitions(Session session) async {
+    var targetTables = await getTargetTableDefinition(session);
+    var live = await getLiveDatabaseDefinition(session);
+    var installedMigrations =
+        await DatabaseAnalyzer.getInstalledMigrationVersions(session);
+
+    var versions = MigrationVersions.listVersions();
+
+    var latestAvailableMigrations = <DatabaseMigrationVersion>[];
+    if (versions.isNotEmpty) {
+      var version = versions.last;
+      var file = MigrationConstants.databaseDefinitionJSONPath(
+        Directory.current,
+        version,
+      );
+      var data = await file.readAsString();
+      var databaseDefinition = session.serverpod.serializationManager
+          .decode<DatabaseDefinition>(data);
+
+      latestAvailableMigrations = databaseDefinition.installedModules;
+    }
+
+    return DatabaseDefinitions(
+      target: targetTables,
+      live: live.tables,
+      installedMigrations: installedMigrations,
+      latestAvailableMigrations: latestAvailableMigrations,
+    );
   }
 
   /// Exports raw data serialized in JSON from the database.
-  Future<String> fetchDatabaseBulkData(
+  Future<BulkData> fetchDatabaseBulkData(
     Session session, {
     required String table,
     required int startingId,
     required int limit,
+    Filter? filter,
   }) async {
-    return DatabaseBulkData.exportTableData(
+    try {
+      return DatabaseBulkData.exportTableData(
+        database: session.db,
+        table: table,
+        lastId: startingId,
+        limit: limit,
+        filter: filter,
+      );
+    } catch (e) {
+      throw BulkDataException(
+        message: 'Failed to fetch bulk data. ($e)',
+      );
+    }
+  }
+
+  /// Executes a list of queries on the database and returns the last result.
+  /// The queries are executed in a single transaction.
+  Future<BulkQueryResult> runQueries(
+    Session session,
+    List<String> queries,
+  ) async {
+    try {
+      var result = await DatabaseBulkData.executeQueries(
+        database: session.db,
+        queries: queries,
+      );
+      return result;
+    } catch (e) {
+      if (e is DatabaseException) {
+        throw BulkDataException(
+          message: 'Failed to execute query: ${e.message}',
+        );
+      } else {
+        throw BulkDataException(
+          message: 'Failed to execute query: $e',
+        );
+      }
+    }
+  }
+
+  /// Returns the approximate number of rows in the provided [table].
+  Future<int> getDatabaseRowCount(
+    Session session, {
+    required String table,
+  }) async {
+    return DatabaseBulkData.approximateRowCount(
       database: session.db,
       table: table,
-      startingId: startingId,
-      limit: limit,
     );
+  }
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  Future<int> executeSql(Session session, String sql) async {
+    try {
+      return await session.db.unsafeExecute(sql);
+    } catch (e) {
+      throw ServerpodSqlException(
+        message: '$e',
+        sql: sql,
+      );
+    }
+  }
+
+  /// Fetches a file from the server. Only whitelisted files in
+  /// [Serverpod.filesWhitelistedForInsights] can be fetched.
+  /// The file path must be in unix format and relative to the servers root
+  /// directory.
+  Future<String> fetchFile(Session session, String path) async {
+    // Test the file in unix format.
+    if (!PathUtil.isFileWhitelisted(
+        path, session.serverpod.filesWhitelistedForInsights)) {
+      throw AccessDeniedException(
+        message: 'File is not in whitelist: $path',
+      );
+    }
+
+    // Convert the path to platform specific format and fetch the file.
+    var file = File(PathUtil.relativePathToPlatformPath(path));
+    if (!await file.exists()) {
+      throw FileNotFoundException(
+        message: 'File not found: $path',
+      );
+    }
+
+    return await file.readAsString();
   }
 }

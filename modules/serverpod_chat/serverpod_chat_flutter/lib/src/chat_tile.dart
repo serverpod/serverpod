@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/src/text_with_links.dart';
 import 'package:serverpod_chat_flutter/src/web_util/web_util.dart';
 
@@ -21,11 +21,11 @@ class DefaultChatTile extends StatelessWidget {
 
   /// Creates a new [DefaultChatTile].
   DefaultChatTile({
-    Key? key,
+    super.key,
     required this.message,
     this.previous,
     required this.horizontalPadding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +199,9 @@ class _AttachmentTile extends StatefulWidget {
   final bool preview;
 
   const _AttachmentTile({
-    Key? key,
     required this.attachment,
     this.preview = false,
-  }) : super(key: key);
+  });
 
   @override
   _AttachmentTileState createState() => _AttachmentTileState();

@@ -1,10 +1,13 @@
 import 'dart:io';
 
-import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:source_span/source_span.dart';
 
 /// A [CodeAnalysisCollector] that also keeps track of generated files.
 class CodeGenerationCollector extends CodeAnalysisCollector {
   /// All the errors reported.
+  @override
   final List<SourceSpanException> errors = [];
 
   /// All the generated files reported.
@@ -24,7 +27,7 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
   String toString() {
     var out = '';
 
-    out += 'Found ${errors.length} error${errors.length == 1 ? '' : 's'}.\n';
+    out += 'Found ${errors.length} issue${errors.length == 1 ? '' : 's'}.\n';
     out += '\n';
 
     for (var error in errors) {
@@ -39,7 +42,31 @@ class CodeGenerationCollector extends CodeAnalysisCollector {
     if (errors.isEmpty) {
       return;
     }
-    stdout.write(toString());
+
+    var logMessage =
+        'Found ${errors.length} issue${errors.length == 1 ? '' : 's'}.';
+
+    var severityErrors = errors.whereType<SourceSpanSeverityException>();
+
+    var hasErrors = severityErrors.isEmpty ||
+        severityErrors
+            .where((error) => error.severity == SourceSpanSeverity.error)
+            .isNotEmpty;
+    var hasWarnings = severityErrors
+        .where((error) => error.severity == SourceSpanSeverity.warning)
+        .isNotEmpty;
+
+    if (hasErrors) {
+      log.error(logMessage, newParagraph: true);
+    } else if (hasWarnings) {
+      log.warning(logMessage, newParagraph: true);
+    } else {
+      log.info(logMessage, newParagraph: true);
+    }
+
+    for (var error in errors) {
+      log.sourceSpanException(error);
+    }
   }
 
   @override

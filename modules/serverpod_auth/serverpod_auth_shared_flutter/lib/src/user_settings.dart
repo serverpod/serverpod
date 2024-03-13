@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 
 import 'session_manager.dart';
 import 'user_image_button.dart';
@@ -17,6 +17,7 @@ class UserSettings extends StatefulWidget {
   const UserSettings({
     required this.sessionManager,
     this.compact = true,
+    super.key,
   });
 
   @override

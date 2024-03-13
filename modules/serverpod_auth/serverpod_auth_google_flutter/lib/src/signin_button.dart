@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_google_flutter/serverpod_auth_google_flutter.dart';
 
 /// Sign in with Google button. When pressed, attempts to sign in with Google.
@@ -48,6 +48,7 @@ class SignInWithGoogleButton extends StatefulWidget {
     this.additionalScopes = const [],
     this.alignment = Alignment.centerLeft,
     required this.redirectUri,
+    super.key,
   });
 
   @override
@@ -70,6 +71,7 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
+        var navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithGoogle(
@@ -80,20 +82,17 @@ class SignInWithGoogleButtonState extends State<SignInWithGoogleButton> {
           additionalScopes: widget.additionalScopes,
           redirectUri: widget.redirectUri,
         ).then((UserInfo? userInfo) {
-          // Pop the loading barrier
-          Navigator.of(context).pop();
-
           // Notify the parent.
           if (userInfo != null) {
-            if (widget.onSignedIn != null) {
-              widget.onSignedIn!();
-            }
+            widget.onSignedIn?.call();
           } else {
-            if (widget.onFailure != null) {
-              widget.onFailure!();
-            }
+            widget.onFailure?.call();
           }
-        });
+        }).onError((error, stackTrace) {
+          widget.onFailure?.call();
+        }).whenComplete(() =>
+            // Pop the loading barrier
+            navigator.pop());
       },
       label: const Text('Sign in with Google'),
       icon: Image.asset(

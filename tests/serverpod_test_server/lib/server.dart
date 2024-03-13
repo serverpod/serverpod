@@ -1,5 +1,5 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart' as auth;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
 import 'package:serverpod_test_server/src/custom_classes.dart';
@@ -38,6 +38,14 @@ void run(List<String> args) async {
   auth.AuthConfig.set(auth.AuthConfig(
     onUserWillBeCreated: (session, userInfo, authMethod) async {
       return (userInfo.email!.endsWith('.bar'));
+    },
+    sendValidationEmail: (session, email, validationCode) async {
+      print('Sending validation email to $email with code $validationCode');
+      return true;
+    },
+    sendPasswordResetEmail: (session, userInfo, resetCode) async {
+      print('Sending reset email to ${userInfo.email} with code $resetCode');
+      return true;
     },
   ));
 

@@ -10,10 +10,7 @@ import 'package:serverpod/src/cache/cache.dart';
 abstract class GlobalCache extends Cache {
   /// Creates a new global cache.
   GlobalCache(
-    int maxLocalEntries,
-    SerializationManager serializationManager,
-  ) : super(
-          maxLocalEntries,
-          serializationManager,
-        );
+    super.maxLocalEntries,
+    super.serializationManager,
+  );
 }

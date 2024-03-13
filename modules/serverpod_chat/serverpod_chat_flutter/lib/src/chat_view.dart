@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 import 'package:serverpod_chat_flutter/src/chat_tile.dart';
 
@@ -24,11 +24,11 @@ class ChatView extends StatefulWidget {
 
   /// Creates a new [ChatView].
   const ChatView({
-    Key? key,
+    super.key,
     required this.controller,
     this.tileBuilder,
     this.leading,
-  }) : super(key: key);
+  });
 
   @override
   ChatViewState createState() => ChatViewState();

@@ -27,11 +27,14 @@ class GoogleEndpoint extends Endpoint {
     String authenticationCode,
     String? redirectUri,
   ) async {
-    assert(
-        GoogleAuth.clientSecret != null, 'Google client secret is not loaded.');
+    var clientSecret = GoogleAuth.clientSecret;
+
+    if (clientSecret == null) {
+      throw StateError('The server side Google client secret is not loaded.');
+    }
 
     var authClient = await _GoogleUtils.clientViaClientSecretAndCode(
-      GoogleAuth.clientSecret!,
+      clientSecret,
       authenticationCode,
       [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -70,11 +73,16 @@ class GoogleEndpoint extends Endpoint {
         success: false,
         failReason: AuthenticationFailReason.userCreationDenied,
       );
+    } else if (userInfo.blocked) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.blocked,
+      );
     }
 
     if (authClient.credentials.refreshToken != null) {
       // Store refresh token, so that we can access this data at a later time.
-      var token = await GoogleRefreshToken.findSingleRow(
+      var token = await GoogleRefreshToken.db.findFirstRow(
         session,
         where: (t) => t.userId.equals(userInfo.id!),
       );
@@ -83,10 +91,10 @@ class GoogleEndpoint extends Endpoint {
           userId: userInfo.id!,
           refreshToken: jsonEncode(authClient.credentials.toJson()),
         );
-        await GoogleRefreshToken.insert(session, token);
+        await GoogleRefreshToken.db.insertRow(session, token);
       } else {
         token.refreshToken = jsonEncode(authClient.credentials.toJson());
-        await GoogleRefreshToken.update(session, token);
+        await GoogleRefreshToken.db.updateRow(session, token);
       }
     }
 

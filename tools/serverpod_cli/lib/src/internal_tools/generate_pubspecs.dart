@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:serverpod_cli/src/logger/logger.dart';
+
 import '../create/copier.dart';
 
 /// The internal tool for generating the pubspec.yaml files in the Serverpod
@@ -13,11 +15,11 @@ void performGeneratePubspecs(String version, String mode) {
   if (!dirPackages.existsSync() ||
       !dirTemplates.existsSync() ||
       !dirRoot.existsSync()) {
-    print('Must be run from the serverpod repository root');
+    log.error('Must be run from the serverpod repository root');
     return;
   }
 
-  print('Doing some fancy generation');
+  log.info('Doing some fancy generation');
 
   if (mode == 'development') {
     // Development mode
@@ -25,10 +27,6 @@ void performGeneratePubspecs(String version, String mode) {
       srcDir: dirTemplates,
       dstDir: dirRoot,
       replacements: [
-        Replacement(
-          slotName: 'PUBLISH_TO',
-          replacement: 'publish_to: none',
-        ),
         Replacement(
           slotName: 'VERSION',
           replacement: version,
@@ -43,6 +41,10 @@ void performGeneratePubspecs(String version, String mode) {
           slotName: 'PRODUCTION_MODE',
           replacement: 'false',
         ),
+        Replacement(
+          slotName: '#--CONDITIONALLY_REMOVE_LINE--#',
+          replacement: '',
+        )
       ],
       fileNameReplacements: [],
     );
@@ -54,10 +56,6 @@ void performGeneratePubspecs(String version, String mode) {
       dstDir: dirRoot,
       replacements: [
         Replacement(
-          slotName: 'PUBLISH_TO',
-          replacement: '',
-        ),
-        Replacement(
           slotName: 'VERSION',
           replacement: version,
         ),
@@ -67,16 +65,14 @@ void performGeneratePubspecs(String version, String mode) {
               '# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.\n# Mode: $mode',
         ),
         Replacement(
-          slotName: '#^',
-          replacement: '^',
-        ),
-        Replacement(
           slotName: 'PRODUCTION_MODE',
           replacement: 'true',
         ),
       ],
+      removePatterns: [
+        '#--CONDITIONALLY_REMOVE_LINE--#',
+      ],
       fileNameReplacements: [],
-      removePrefixes: ['path'],
     );
     copier.copyFiles();
   }

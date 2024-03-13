@@ -1,0 +1,5 @@
+class: PersonWithLongTableName
+table: person_with_long_table_name_that_is_still_valid
+fields:
+  name: String
+  organization: OrganizationWithLongTableName?, relation(name=org_person, optional)

@@ -1,8 +1,0 @@
-### Defines the structure of the database used by Serverpod.
-class: DatabaseDefinition
-fields:
-  ### The name of the database.
-  ### Null if the name is not available.
-  name: String?
-  ### The tables of the database.
-  tables: List<TableDefinition>

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/src/image_uploader.dart';
 
 import 'circular_user_image.dart';
@@ -32,6 +32,7 @@ class UserImageButton extends StatefulWidget {
     this.elevation = 0,
     this.borderWidth = 0,
     this.borderColor = Colors.white,
+    super.key,
   });
 
   @override

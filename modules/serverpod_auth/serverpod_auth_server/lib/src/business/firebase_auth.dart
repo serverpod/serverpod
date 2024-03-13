@@ -1,5 +1,5 @@
 import 'package:firebase_admin/firebase_admin.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 /// Convenience methods for handling authentication with Firebase.
 class FirebaseAuth {

@@ -1,0 +1,33 @@
+### A chat message.
+class: ChatMessage
+table: serverpod_chat_message
+fields:
+  ### The channel this message was posted to.
+  channel: String
+
+  ### The body of the message.
+  message: String
+
+  ### The time when this message was posted.
+  time: DateTime
+
+  ### The user id of the sender.
+  sender: int
+
+  ### Information about the sender.
+  senderInfo: module:auth:UserInfoPublic?, !persist
+
+  ### True, if this message has been removed.
+  removed: bool
+
+  ### The client message id, used to track if a message has been delivered.
+  clientMessageId: int?, !persist
+
+  ### True if the message has been sent.
+  sent: bool?, !persist
+
+  ### List of attachments associated with this message.
+  attachments: List<ChatMessageAttachment>?
+indexes:
+  serverpod_chat_message_channel_idx:
+    fields: channel

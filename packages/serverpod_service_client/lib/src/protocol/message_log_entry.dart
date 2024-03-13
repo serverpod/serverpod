@@ -4,13 +4,15 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a message sent in a streaming session.
-class MessageLogEntry extends _i1.SerializableEntity {
-  MessageLogEntry({
+abstract class MessageLogEntry extends _i1.SerializableEntity {
+  MessageLogEntry._({
     this.id,
     required this.sessionLogId,
     required this.serverId,
@@ -23,6 +25,20 @@ class MessageLogEntry extends _i1.SerializableEntity {
     required this.slow,
     required this.order,
   });
+
+  factory MessageLogEntry({
+    int? id,
+    required int sessionLogId,
+    required String serverId,
+    required int messageId,
+    required String endpoint,
+    required String messageName,
+    required double duration,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _MessageLogEntryImpl;
 
   factory MessageLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -62,7 +78,7 @@ class MessageLogEntry extends _i1.SerializableEntity {
   /// The id of the server that handled the message.
   String serverId;
 
-  /// The id of the message this entry is associcated with.
+  /// The id of the message this entry is associated with.
   int messageId;
 
   /// The entpoint this message is associated with.
@@ -88,20 +104,92 @@ class MessageLogEntry extends _i1.SerializableEntity {
   /// Used for sorting the message log.
   int order;
 
+  MessageLogEntry copyWith({
+    int? id,
+    int? sessionLogId,
+    String? serverId,
+    int? messageId,
+    String? endpoint,
+    String? messageName,
+    double? duration,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'sessionLogId': sessionLogId,
       'serverId': serverId,
       'messageId': messageId,
       'endpoint': endpoint,
       'messageName': messageName,
       'duration': duration,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
+  }
+}
+
+class _Undefined {}
+
+class _MessageLogEntryImpl extends MessageLogEntry {
+  _MessageLogEntryImpl({
+    int? id,
+    required int sessionLogId,
+    required String serverId,
+    required int messageId,
+    required String endpoint,
+    required String messageName,
+    required double duration,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) : super._(
+          id: id,
+          sessionLogId: sessionLogId,
+          serverId: serverId,
+          messageId: messageId,
+          endpoint: endpoint,
+          messageName: messageName,
+          duration: duration,
+          error: error,
+          stackTrace: stackTrace,
+          slow: slow,
+          order: order,
+        );
+
+  @override
+  MessageLogEntry copyWith({
+    Object? id = _Undefined,
+    int? sessionLogId,
+    String? serverId,
+    int? messageId,
+    String? endpoint,
+    String? messageName,
+    double? duration,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    bool? slow,
+    int? order,
+  }) {
+    return MessageLogEntry(
+      id: id is int? ? id : this.id,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      serverId: serverId ?? this.serverId,
+      messageId: messageId ?? this.messageId,
+      endpoint: endpoint ?? this.endpoint,
+      messageName: messageName ?? this.messageName,
+      duration: duration ?? this.duration,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
   }
 }

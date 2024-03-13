@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 import 'auth.dart';
@@ -25,6 +25,7 @@ class SignInWithAppleButton extends StatefulWidget {
     this.onSignedIn,
     this.onFailure,
     this.style,
+    super.key,
   });
 
   @override
@@ -47,25 +48,23 @@ class SignInWithAppleButtonState extends State<SignInWithAppleButton> {
         // Open a dialog with just the progress indicator that isn't
         // dismissable.
         showLoadingBarrier(context: context);
+        var navigator = Navigator.of(context, rootNavigator: true);
 
         // Attempt to sign in the user.
         signInWithApple(
           widget.caller,
         ).then((UserInfo? userInfo) {
-          // Pop the loading barrier
-          Navigator.of(context).pop();
-
           // Notify the parent.
           if (userInfo != null) {
-            if (widget.onSignedIn != null) {
-              widget.onSignedIn!();
-            }
+            widget.onSignedIn?.call();
           } else {
-            if (widget.onFailure != null) {
-              widget.onFailure!();
-            }
+            widget.onFailure?.call();
           }
-        });
+        }).onError((error, stackTrace) {
+          widget.onFailure?.call();
+        }).whenComplete(() =>
+            // Pop the loading barrier
+            navigator.pop());
       },
       label: const Text('Sign in with Apple'),
       icon: const Icon(MdiIcons.apple),

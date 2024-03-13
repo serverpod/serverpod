@@ -4,13 +4,15 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// A log entry for a database query.
-class QueryLogEntry extends _i1.TableRow {
-  QueryLogEntry({
+abstract class QueryLogEntry extends _i1.TableRow {
+  QueryLogEntry._({
     int? id,
     required this.serverId,
     required this.sessionLogId,
@@ -23,6 +25,20 @@ class QueryLogEntry extends _i1.TableRow {
     required this.slow,
     required this.order,
   }) : super(id);
+
+  factory QueryLogEntry({
+    int? id,
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) = _QueryLogEntryImpl;
 
   factory QueryLogEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -53,13 +69,15 @@ class QueryLogEntry extends _i1.TableRow {
 
   static final t = QueryLogEntryTable();
 
+  static const db = QueryLogEntryRepository._();
+
   /// The id of the server that handled the query.
   String serverId;
 
   /// Id of the session this entry is associated with.
   int sessionLogId;
 
-  /// The id of the message this entry is associcated with, if the query was
+  /// The id of the message this entry is associated with, if the query was
   /// executed in a streaming session.
   int? messageId;
 
@@ -86,36 +104,33 @@ class QueryLogEntry extends _i1.TableRow {
   int order;
 
   @override
-  String get tableName => 'serverpod_query_log';
+  _i1.Table get table => t;
+
+  QueryLogEntry copyWith({
+    int? id,
+    String? serverId,
+    int? sessionLogId,
+    int? messageId,
+    String? query,
+    double? duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    bool? slow,
+    int? order,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
+      if (messageId != null) 'messageId': messageId,
       'query': query,
       'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
-      'slow': slow,
-      'order': order,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'serverId': serverId,
-      'sessionLogId': sessionLogId,
-      'messageId': messageId,
-      'query': query,
-      'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
@@ -124,215 +139,180 @@ class QueryLogEntry extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
       'sessionLogId': sessionLogId,
-      'messageId': messageId,
+      if (messageId != null) 'messageId': messageId,
       'query': query,
       'duration': duration,
-      'numRows': numRows,
-      'error': error,
-      'stackTrace': stackTrace,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
       'slow': slow,
       'order': order,
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'serverId':
-        serverId = value;
-        return;
-      case 'sessionLogId':
-        sessionLogId = value;
-        return;
-      case 'messageId':
-        messageId = value;
-        return;
-      case 'query':
-        query = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      case 'numRows':
-        numRows = value;
-        return;
-      case 'error':
-        error = value;
-        return;
-      case 'stackTrace':
-        stackTrace = value;
-        return;
-      case 'slow':
-        slow = value;
-        return;
-      case 'order':
-        order = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static QueryLogEntryInclude include() {
+    return QueryLogEntryInclude._();
   }
 
-  static Future<List<QueryLogEntry>> find(
-    _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
+  static QueryLogEntryIncludeList includeList({
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<QueryLogEntry>(
-      where: where != null ? where(QueryLogEntry.t) : null,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    QueryLogEntryInclude? include,
+  }) {
+    return QueryLogEntryIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(QueryLogEntry.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<QueryLogEntry?> findSingleRow(
-    _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<QueryLogEntry>(
-      where: where != null ? where(QueryLogEntry.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<QueryLogEntry?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<QueryLogEntry>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required QueryLogEntryExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<QueryLogEntry>(
-      where: where(QueryLogEntry.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    QueryLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    QueryLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    QueryLogEntry row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    QueryLogEntryExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<QueryLogEntry>(
-      where: where != null ? where(QueryLogEntry.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      include: include,
     );
   }
 }
 
-typedef QueryLogEntryExpressionBuilder = _i1.Expression Function(
-    QueryLogEntryTable);
+class _Undefined {}
+
+class _QueryLogEntryImpl extends QueryLogEntry {
+  _QueryLogEntryImpl({
+    int? id,
+    required String serverId,
+    required int sessionLogId,
+    int? messageId,
+    required String query,
+    required double duration,
+    int? numRows,
+    String? error,
+    String? stackTrace,
+    required bool slow,
+    required int order,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          sessionLogId: sessionLogId,
+          messageId: messageId,
+          query: query,
+          duration: duration,
+          numRows: numRows,
+          error: error,
+          stackTrace: stackTrace,
+          slow: slow,
+          order: order,
+        );
+
+  @override
+  QueryLogEntry copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    int? sessionLogId,
+    Object? messageId = _Undefined,
+    String? query,
+    double? duration,
+    Object? numRows = _Undefined,
+    Object? error = _Undefined,
+    Object? stackTrace = _Undefined,
+    bool? slow,
+    int? order,
+  }) {
+    return QueryLogEntry(
+      id: id is int? ? id : this.id,
+      serverId: serverId ?? this.serverId,
+      sessionLogId: sessionLogId ?? this.sessionLogId,
+      messageId: messageId is int? ? messageId : this.messageId,
+      query: query ?? this.query,
+      duration: duration ?? this.duration,
+      numRows: numRows is int? ? numRows : this.numRows,
+      error: error is String? ? error : this.error,
+      stackTrace: stackTrace is String? ? stackTrace : this.stackTrace,
+      slow: slow ?? this.slow,
+      order: order ?? this.order,
+    );
+  }
+}
 
 class QueryLogEntryTable extends _i1.Table {
-  QueryLogEntryTable() : super(tableName: 'serverpod_query_log');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  QueryLogEntryTable({super.tableRelation})
+      : super(tableName: 'serverpod_query_log') {
+    serverId = _i1.ColumnString(
+      'serverId',
+      this,
+    );
+    sessionLogId = _i1.ColumnInt(
+      'sessionLogId',
+      this,
+    );
+    messageId = _i1.ColumnInt(
+      'messageId',
+      this,
+    );
+    query = _i1.ColumnString(
+      'query',
+      this,
+    );
+    duration = _i1.ColumnDouble(
+      'duration',
+      this,
+    );
+    numRows = _i1.ColumnInt(
+      'numRows',
+      this,
+    );
+    error = _i1.ColumnString(
+      'error',
+      this,
+    );
+    stackTrace = _i1.ColumnString(
+      'stackTrace',
+      this,
+    );
+    slow = _i1.ColumnBool(
+      'slow',
+      this,
+    );
+    order = _i1.ColumnInt(
+      'order',
+      this,
+    );
+  }
 
   /// The id of the server that handled the query.
-  final serverId = _i1.ColumnString('serverId');
+  late final _i1.ColumnString serverId;
 
   /// Id of the session this entry is associated with.
-  final sessionLogId = _i1.ColumnInt('sessionLogId');
+  late final _i1.ColumnInt sessionLogId;
 
-  /// The id of the message this entry is associcated with, if the query was
+  /// The id of the message this entry is associated with, if the query was
   /// executed in a streaming session.
-  final messageId = _i1.ColumnInt('messageId');
+  late final _i1.ColumnInt messageId;
 
   /// The query that was executed.
-  final query = _i1.ColumnString('query');
+  late final _i1.ColumnString query;
 
   /// The time it took to execute the query, in seconds.
-  final duration = _i1.ColumnDouble('duration');
+  late final _i1.ColumnDouble duration;
 
   /// Number of rows returned by this query. This can be null if the number is
   /// not relevant.
-  final numRows = _i1.ColumnInt('numRows');
+  late final _i1.ColumnInt numRows;
 
   /// Set if an exception was thrown during the execution of this query.
-  final error = _i1.ColumnString('error');
+  late final _i1.ColumnString error;
 
   /// The stack trace of this query.
-  final stackTrace = _i1.ColumnString('stackTrace');
+  late final _i1.ColumnString stackTrace;
 
   /// True if the execution of this query was considered slow.
-  final slow = _i1.ColumnBool('slow');
+  late final _i1.ColumnBool slow;
 
   /// used for sorting the query log.
-  final order = _i1.ColumnInt('order');
+  late final _i1.ColumnInt order;
 
   @override
   List<_i1.Column> get columns => [
@@ -350,5 +330,181 @@ class QueryLogEntryTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use QueryLogEntryTable.t instead.')
-QueryLogEntryTable tQueryLogEntry = QueryLogEntryTable();
+class QueryLogEntryInclude extends _i1.IncludeObject {
+  QueryLogEntryInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => QueryLogEntry.t;
+}
+
+class QueryLogEntryIncludeList extends _i1.IncludeList {
+  QueryLogEntryIncludeList._({
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(QueryLogEntry.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => QueryLogEntry.t;
+}
+
+class QueryLogEntryRepository {
+  const QueryLogEntryRepository._();
+
+  Future<List<QueryLogEntry>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<QueryLogEntry?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<QueryLogEntry?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<QueryLogEntry>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<QueryLogEntry>> insert(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<QueryLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<QueryLogEntry> insertRow(
+    _i1.Session session,
+    QueryLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<QueryLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<QueryLogEntry>> update(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.ColumnSelections<QueryLogEntryTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<QueryLogEntry>(
+      rows,
+      columns: columns?.call(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<QueryLogEntry> updateRow(
+    _i1.Session session,
+    QueryLogEntry row, {
+    _i1.ColumnSelections<QueryLogEntryTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<QueryLogEntry>(
+      row,
+      columns: columns?.call(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<QueryLogEntry> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<QueryLogEntry>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    QueryLogEntry row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<QueryLogEntry>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<QueryLogEntryTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<QueryLogEntry>(
+      where: where(QueryLogEntry.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

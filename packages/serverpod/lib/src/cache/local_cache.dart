@@ -11,8 +11,7 @@ class LocalCache extends Cache {
   final Map<String, Set<String>> _groups = <String, Set<String>>{};
 
   /// Creates a new [LocalCache].
-  LocalCache(int maxEntries, SerializationManager serializationManager)
-      : super(maxEntries, serializationManager);
+  LocalCache(super.maxEntries, super.serializationManager);
 
   @override
   Future<void> put(String key, SerializableEntity object,

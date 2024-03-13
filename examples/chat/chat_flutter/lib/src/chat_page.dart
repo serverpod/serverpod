@@ -5,8 +5,8 @@ import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
 class ChatPage extends StatelessWidget {
   const ChatPage({
     required this.controller,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final ChatController controller;
 

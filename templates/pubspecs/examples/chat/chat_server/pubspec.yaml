@@ -1,0 +1,31 @@
+# TEMPLATE
+
+name: chat_server
+description: Starting point for a Serverpod server.
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  serverpod: VERSION
+  serverpod_auth_server: VERSION
+  serverpod_chat_server: VERSION
+
+dev_dependencies:
+  lints: ^3.0.0
+
+dependency_overrides:
+  serverpod:
+    path: ../../../packages/serverpod
+  serverpod_auth_server:
+    path: ../../../modules/serverpod_auth/serverpod_auth_server
+  serverpod_chat_server:
+    path: ../../../modules/serverpod_chat/serverpod_chat_server
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../../packages/serverpod_shared

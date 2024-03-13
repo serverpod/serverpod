@@ -1,0 +1,37 @@
+#!/bin/sh
+
+if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests"
+    exit 1
+fi
+
+
+# Add projects that has unit tests here
+declare -a projectPaths=(
+    "tools/serverpod_cli" 
+    "packages/serverpod" 
+    "packages/serverpod_shared" 
+    "packages/serverpod_serialization"
+    "tests/serverpod_test_client"
+    "tests/serverpod_test_server"
+    "modules/serverpod_auth/serverpod_auth_server"
+)
+
+exit_code=0
+
+for i in "${projectPaths[@]}"
+do
+   echo "Running unit tests in $i"
+   cd $i
+
+   dart test 
+
+   if [ $? != 0 ]; then
+     exit_code=1
+   fi
+
+   cd -
+done
+
+exit $exit_code

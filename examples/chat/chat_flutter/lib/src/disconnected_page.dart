@@ -7,8 +7,8 @@ class DisconnectedPage extends StatelessWidget {
 
   const DisconnectedPage({
     required this.onReconnect,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

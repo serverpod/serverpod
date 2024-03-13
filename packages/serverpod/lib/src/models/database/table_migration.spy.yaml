@@ -1,0 +1,18 @@
+class: TableMigration
+fields:
+  name: String
+  dartName: String?
+  module: String?
+  schema: String
+
+  addColumns: List<ColumnDefinition>
+  deleteColumns: List<String>
+  modifyColumns: List<ColumnMigration>
+
+  addIndexes: List<IndexDefinition>
+  deleteIndexes: List<String>
+
+  addForeignKeys: List<ForeignKeyDefinition>
+  deleteForeignKeys: List<String>
+
+  warnings: List<DatabaseMigrationWarning>

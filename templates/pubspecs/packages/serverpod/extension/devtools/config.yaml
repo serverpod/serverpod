@@ -1,0 +1,6 @@
+# TEMPLATE
+
+name: serverpod
+issueTracker: https://github.com/serverpod/serverpod/issues
+version: VERSION
+materialIconCodePoint: '0xf0372'

@@ -1,5 +1,11 @@
 import 'dart:io';
 
+import 'package:pubspec_parse/pubspec_parse.dart';
+import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/logger/logger.dart';
+import 'package:serverpod_cli/src/util/directory.dart';
+import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as p;
@@ -14,6 +20,28 @@ enum PackageType {
 
   /// Indicating a module, that is used in other Serverpod based projects.
   module,
+
+  /// Indicating a package that is used internally by Serverpod (e.g. the
+  /// serverpod package).
+  internal,
+}
+
+class ServerpodProjectNotFoundException implements Exception {
+  final String message;
+
+  const ServerpodProjectNotFoundException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class ServerpodModulesNotFoundException implements Exception {
+  final String message;
+
+  const ServerpodModulesNotFoundException(this.message);
+
+  @override
+  String toString() => message;
 }
 
 /// The configuration of the generation and analyzing process.
@@ -26,9 +54,12 @@ class GeneratorConfig {
     required this.dartClientDependsOnServiceClient,
     required this.serverPackageDirectoryPathParts,
     required List<String> relativeDartClientPackagePathParts,
-    required this.modules,
+    required List<ModuleConfig> modules,
     required this.extraClasses,
-  }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts;
+    required this.enabledFeatures,
+  })  : _relativeDartClientPackagePathParts =
+            relativeDartClientPackagePathParts,
+        _modules = modules;
 
   /// The name of the serverpod project.
   ///
@@ -69,13 +100,17 @@ class GeneratorConfig {
   List<String> get protocolSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
 
+  /// Path parts to the model directory of the server package.
+  List<String> get modelSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
+
   /// Path parts to the endpoints directory of the server package.
   List<String> get endpointsSourcePathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'endpoints'];
 
   /// The path parts of the directory, where the generated code is stored in the
   /// server package.
-  List<String> get generatedServerProtocolPathParts =>
+  List<String> get generatedServeModelPathParts =>
       [...serverPackageDirectoryPathParts, 'lib', 'src', 'generated'];
 
   /// Path parts from the server package to the dart client package.
@@ -88,62 +123,84 @@ class GeneratorConfig {
       ];
 
   /// The path parts to the protocol directory in the dart client package.
-  List<String> get generatedDartClientProtocolPathParts =>
+  List<String> get generatedDartClientModelPathParts =>
       [...clientPackagePathParts, 'lib', 'src', 'protocol'];
 
   /// All the modules defined in the config.
-  final List<ModuleConfig> modules;
+  final List<ModuleConfig> _modules;
 
   /// User defined class names for complex types.
   /// Useful for types used in caching and streams.
   final List<TypeDefinition> extraClasses;
 
+  /// All the features that are enabled in the serverpod project.
+  final List<ServerpodFeature> enabledFeatures;
+
+  bool isFeatureEnabled(ServerpodFeature feature) =>
+      enabledFeatures.contains(feature);
+
+  /// All the modules defined in the config (of type module).
+  List<ModuleConfig> get modules => _modules
+      .where((module) => module.type == PackageType.module)
+      .where((module) => module.name != name)
+      .toList();
+
+  /// All the modules excluding my self
+  List<ModuleConfig> get modulesDependent =>
+      _modules.where((module) => module.name != name).toList();
+
+  /// All the modules including my self and internal modules.
+  List<ModuleConfig> get modulesAll => _modules;
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [dir].
-  static GeneratorConfig? load([String dir = '']) {
+  static Future<GeneratorConfig> load([String dir = '']) async {
     var serverPackageDirectoryPathParts = p.split(dir);
 
-    Map? pubspec;
+    Pubspec? pubspec;
     try {
-      var file = File(p.join(dir, 'pubspec.yaml'));
-      var yamlStr = file.readAsStringSync();
-      pubspec = loadYaml(yamlStr);
-    } catch (_) {
-      print(
-          'Failed to load pubspec.yaml. Are you running serverpod from your projects root directory?');
-      return null;
+      pubspec = parsePubspec(File(p.join(dir, 'pubspec.yaml')));
+    } catch (_) {}
+
+    if (pubspec == null) {
+      log.error(
+        'Failed to load pubspec.yaml. Are you running serverpod from your '
+        'projects root directory?',
+      );
+
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load valid pubspec.yaml',
+      );
     }
 
-    if (pubspec!['name'] == null) {
-      throw const FormatException('Package name is missing in pubspec.yaml');
+    if (!isServerDirectory(Directory(dir))) {
+      log.error(
+        'Could not find the Serverpod dependency. Are you running serverpod from your '
+        'projects root directory?',
+      );
+
+      throw const ServerpodProjectNotFoundException(
+        'Serverpod dependency not found.',
+      );
     }
-    var serverPackage = pubspec['name'];
+
+    var serverPackage = pubspec.name;
     var name = _stripPackage(serverPackage);
 
-    Map? generatorConfig;
+    var file = File(p.join(dir, 'config', 'generator.yaml'));
+    Map generatorConfig = {};
     try {
-      var file = File(p.join(dir, 'config', 'generator.yaml'));
       var yamlStr = file.readAsStringSync();
       generatorConfig = loadYaml(yamlStr);
-    } catch (_) {
-      print(
-          'Failed to load config/generator.yaml. Is this a Serverpod project?');
-      return null;
-    }
+    } catch (_) {}
 
-    var typeStr = generatorConfig!['type'];
-    late PackageType type;
-    if (typeStr == 'module') {
-      type = PackageType.module;
-    } else {
-      type = PackageType.server;
-    }
+    PackageType type = getPackageType(generatorConfig);
 
-    if (generatorConfig['client_package_path'] == null) {
-      throw const FormatException(
-          'Option "client_package_path" is required in config/generator.yaml');
+    var relativeDartClientPackagePathParts = ['..', '${name}_client'];
+
+    if (generatorConfig['client_package_path'] != null) {
+      relativeDartClientPackagePathParts =
+          p.split(generatorConfig['client_package_path']);
     }
-    var relativeDartClientPackagePathParts =
-        p.split(generatorConfig['client_package_path']);
 
     late String dartClientPackage;
     late bool dartClientDependsOnServiceClient;
@@ -160,22 +217,33 @@ class GeneratorConfig {
       dartClientDependsOnServiceClient =
           yaml['dependencies'].containsKey('serverpod_service_client');
     } catch (_) {
-      print(
-          'Failed to load client pubspec.yaml. Is your client_package_path set correctly?');
-      return null;
+      log.error(
+        'Failed to load client pubspec.yaml. If you are using a none default '
+        'path it has to be specified in the config/generator.yaml file!',
+      );
+      throw const ServerpodProjectNotFoundException(
+        'Failed to load client pubspec.yaml',
+      );
     }
 
-    // Load module settings
-    var modules = <ModuleConfig>[];
-    try {
-      if (generatorConfig['modules'] != null) {
-        Map modulesData = generatorConfig['modules'];
-        for (var package in modulesData.keys) {
-          modules.add(ModuleConfig._withMap(package, modulesData[package]));
-        }
+    var manualModules = <String, String?>{};
+    if (generatorConfig['modules'] != null) {
+      Map modulesData = generatorConfig['modules'];
+      for (var package in modulesData.keys) {
+        var nickname = modulesData[package]?['nickname'];
+        manualModules[package] = nickname is String ? nickname : null;
       }
-    } catch (e) {
-      throw const FormatException('Failed to load module config');
+    }
+
+    var modules = await locateModules(
+      directory: Directory(dir),
+      manualModules: manualModules,
+    );
+
+    if (modules == null) {
+      throw const ServerpodModulesNotFoundException(
+        'Failed to locate modules',
+      );
     }
 
     // Load extraClasses
@@ -184,11 +252,10 @@ class GeneratorConfig {
       try {
         for (var extraClassConfig in generatorConfig['extraClasses']) {
           extraClasses.add(
-            parseAndAnalyzeType(
+            parseType(
               extraClassConfig,
-              analyzingExtraClasses: true,
-              sourceSpan: generatorConfig['extraClasses'].span,
-            ).type,
+              extraClasses: null,
+            ),
           );
         }
       } on SourceSpanException catch (_) {
@@ -200,25 +267,60 @@ class GeneratorConfig {
       }
     }
 
+    var enabledFeatures = _enabledFeatures(file, generatorConfig);
+
     return GeneratorConfig(
-        name: name,
-        type: type,
-        serverPackage: serverPackage,
-        dartClientPackage: dartClientPackage,
-        dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
-        serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
-        relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-        modules: modules,
-        extraClasses: extraClasses);
+      name: name,
+      type: type,
+      serverPackage: serverPackage,
+      dartClientPackage: dartClientPackage,
+      dartClientDependsOnServiceClient: dartClientDependsOnServiceClient,
+      serverPackageDirectoryPathParts: serverPackageDirectoryPathParts,
+      relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
+      modules: modules,
+      extraClasses: extraClasses,
+      enabledFeatures: enabledFeatures,
+    );
+  }
+
+  static List<ServerpodFeature> _enabledFeatures(File file, Map config) {
+    var enabledFeatures = <ServerpodFeature>[];
+    if (!file.existsSync()) return enabledFeatures;
+
+    if (!config.containsKey('features')) {
+      enabledFeatures.add(ServerpodFeature.database);
+    }
+
+    var features = config['features'];
+
+    if (features is! Map) return enabledFeatures;
+
+    return ServerpodFeature.values
+        .where((feature) => features[feature.name.toString()] == true)
+        .toList();
+  }
+
+  static PackageType getPackageType(Map<dynamic, dynamic> generatorConfig) {
+    var typeStr = generatorConfig['type'];
+    PackageType type;
+    if (typeStr == 'module') {
+      type = PackageType.module;
+    } else if (typeStr == 'internal') {
+      type = PackageType.internal;
+    } else {
+      type = PackageType.server;
+    }
+    return type;
   }
 
   @override
   String toString() {
     var str = '''type: $type
 sourceProtocol: ${p.joinAll(protocolSourcePathParts)}
+sourceModel: ${p.joinAll(modelSourcePathParts)}
 sourceEndpoints: ${p.joinAll(endpointsSourcePathParts)}
-generatedClientDart: ${p.joinAll(generatedDartClientProtocolPathParts)}
-generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
+generatedClientDart: ${p.joinAll(generatedDartClientModelPathParts)}
+generatedServerModel: ${p.joinAll(generatedServeModelPathParts)}
 ''';
     if (modules.isNotEmpty) {
       str += '\nmodules:\n\n';
@@ -232,6 +334,8 @@ generatedServerProtocol: ${p.joinAll(generatedServerProtocolPathParts)}
 
 /// Describes the configuration of a Serverpod module a package depends on.
 class ModuleConfig {
+  PackageType type;
+
   /// The user defined nickname of the module.
   String nickname;
 
@@ -244,21 +348,44 @@ class ModuleConfig {
   /// The name of the server package.
   String serverPackage;
 
-  ModuleConfig._withMap(this.name, Map map)
-      : dartClientPackage = '${name}_client',
-        serverPackage = '${name}_server',
-        nickname = map['nickname']!;
+  /// The parts of the path where the server package is located at.
+  /// Might be relative.
+  final List<String> serverPackageDirectoryPathParts;
+
+  /// Path parts to the protocol directory of the server package.
+  List<String> get protocolSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'protocol'];
+
+  /// Path parts to the model directory of the server package.
+  List<String> get modelSourcePathParts =>
+      [...serverPackageDirectoryPathParts, 'lib', 'src', 'models'];
+
+  /// The migration versions of the module.
+  List<String> migrationVersions;
+
+  ModuleConfig({
+    required this.type,
+    required this.name,
+    required this.nickname,
+    required this.migrationVersions,
+    required this.serverPackageDirectoryPathParts,
+  })  : dartClientPackage = '${name}_client',
+        serverPackage = '${name}_server';
 
   /// The url when importing this module in dart code.
-  String dartImportUrl(bool serverCode) =>
-      'package:${serverCode ? serverPackage : dartClientPackage}/module.dart';
+  String dartImportUrl(bool serverCode) {
+    var packageName = serverCode ? serverPackage : dartClientPackage;
+    return 'package:$packageName/$packageName.dart';
+  }
 
   @override
   String toString() {
-    return '''name: $name
+    return '''type: $type
+name: $name
 nickname: $nickname
 clientPackage: $dartClientPackage
-serverPackage: $serverPackage;
+serverPackage: $serverPackage
+migrationVersions: $migrationVersions 
 ''';
   }
 }

@@ -1,0 +1,15 @@
+### Defines the current state of the database, including information about
+### installed modules and migrations.
+class: DatabaseDefinitions
+fields:
+  ### The target database definition.
+  target: List<TableDefinition>
+
+  ### A definition of the database as it is currently.
+  live: List<TableDefinition>
+
+  ### The migrations that are installed in the database.
+  installedMigrations: List<DatabaseMigrationVersion>
+
+  ### The latest available migrations that can be applied.
+  latestAvailableMigrations: List<DatabaseMigrationVersion>

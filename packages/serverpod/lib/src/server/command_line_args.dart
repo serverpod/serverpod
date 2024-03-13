@@ -53,6 +53,12 @@ class CommandLineArgs {
   /// multiple servers in a cluster.
   late final String serverId;
 
+  /// If true, the server will apply database migrations on startup.
+  late final bool applyMigrations;
+
+  /// If true, the server will apply database repair migration on startup.
+  late final bool applyRepairMigration;
+
   /// Parses the command line arguments passed to Serverpod and creates a
   /// [CommandLineArgs] object.
   CommandLineArgs(List<String> args) {
@@ -84,6 +90,16 @@ class CommandLineArgs {
           abbr: 'r',
           allowed: ['monolith', 'serverless', 'maintenance'],
           defaultsTo: 'monolith',
+        )
+        ..addFlag(
+          'apply-migrations',
+          abbr: 'a',
+          defaultsTo: false,
+        )
+        ..addFlag(
+          'apply-repair-migration',
+          abbr: 'A',
+          defaultsTo: false,
         );
       var results = argParser.parse(args);
 
@@ -110,6 +126,9 @@ class CommandLineArgs {
           role = ServerpodRole.maintenance;
           break;
       }
+
+      applyMigrations = results['apply-migrations'] ?? false;
+      applyRepairMigration = results['apply-repair-migration'] ?? false;
     } catch (e) {
       stdout.writeln(
         'Failed to parse command line arguments. Using default values. $e',
@@ -118,6 +137,8 @@ class CommandLineArgs {
       serverId = 'default';
       loggingMode = ServerpodLoggingMode.normal;
       role = ServerpodRole.monolith;
+      applyMigrations = false;
+      applyRepairMigration = false;
     }
   }
 

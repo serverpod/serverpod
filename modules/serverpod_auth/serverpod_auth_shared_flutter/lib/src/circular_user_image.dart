@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 
 /// A circular image that represents a user, based on a [UserInfo] or
 /// [UserInfoPublic]. If the user info is missing a link to an image, a default
@@ -36,6 +36,7 @@ class CircularUserImage extends StatelessWidget {
     this.elevation = 0,
     this.borderColor = Colors.white,
     this.borderWidth = 0,
+    super.key,
   });
 
   @override
