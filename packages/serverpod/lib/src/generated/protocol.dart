@@ -951,7 +951,7 @@ class Protocol extends _i1.SerializationManagerServer {
       columns: [
         _i2.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.integer,
+          columnType: _i2.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'nextval(\'serverpod_migrations_id_seq\'::regclass)',
