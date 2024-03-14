@@ -150,7 +150,9 @@ void main() {
     expect(retrieved, isNull);
   });
 
-  group('get object not in cache when cache miss handler is specified', () {
+  group(
+      'get object not in cache when cache miss handler is specified to return object',
+      () {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
@@ -167,6 +169,27 @@ void main() {
         () async {
       var value = await cache.get<SimpleData>(cacheKey);
       expect(value?.num, equals(1337));
+    });
+  });
+
+  group(
+      'get object not in cache when cache miss handler is specified to return null',
+      () {
+    const cacheKey = 'testKey';
+    SimpleData? retrieved;
+    setUp(() async {
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => null),
+      );
+    });
+    test('then null is returned', () {
+      expect(retrieved, isNull);
+    });
+
+    test('then no value is set in cache', () async {
+      var value = await cache.get<SimpleData>(cacheKey);
+      expect(value, isNull);
     });
   });
 

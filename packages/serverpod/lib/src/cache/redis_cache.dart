@@ -54,11 +54,11 @@ class RedisCache extends GlobalCache {
       return serializationManager.decode<T>(data);
     }
 
-    if (cacheMissHandler == null) {
-      return null;
-    }
+    if (cacheMissHandler == null) return null;
 
     var value = await cacheMissHandler.valueProvider();
+    if (value == null) return null;
+
     await put(
       key,
       value,

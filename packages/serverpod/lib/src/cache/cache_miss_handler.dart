@@ -5,7 +5,8 @@ import 'package:serverpod/serverpod.dart';
 /// will be stored in the cache.
 class CacheMissHandler<T extends SerializableEntity> {
   /// Function called when a cache miss occurs.
-  final Future<T> Function() valueProvider;
+  /// If the function returns null, no object will be stored in the cache.
+  final Future<T?> Function() valueProvider;
 
   /// The maximum lifetime of the object in the cache.
   final Duration? lifetime;
