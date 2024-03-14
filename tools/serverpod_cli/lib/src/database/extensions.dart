@@ -85,7 +85,7 @@ extension ColumnComparisons on ColumnDefinition {
     }
 
     return (other.isNullable == isNullable &&
-        other.columnType == columnType &&
+        other.columnType.like(columnType) &&
         other.name == name &&
         other.columnDefault == columnDefault);
   }
@@ -615,4 +615,15 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   out += '\n';
 
   return out;
+}
+
+extension ColumnTypeComparison on ColumnType {
+  bool like(ColumnType other) {
+    // Integer and bigint are considered the same type.
+    if (this == ColumnType.integer || this == ColumnType.bigint) {
+      return other == ColumnType.integer || other == ColumnType.bigint;
+    }
+
+    return this == other;
+  }
 }
