@@ -6,13 +6,9 @@ import 'package:test/test.dart';
 const cacheMaxSize = 10;
 
 void main() {
-  Protocol serializationManager;
-  late LocalCache cache;
+  var cache = LocalCache(cacheMaxSize, Protocol());
 
-  setUp(() {
-    serializationManager = Protocol();
-    cache = LocalCache(cacheMaxSize, serializationManager);
-  });
+  tearDown(() async => await cache.clear());
 
   test('Put and get object', () async {
     var entry = SimpleData(num: 0);
@@ -158,12 +154,10 @@ void main() {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
-      retrieved = await cache.get<SimpleData>(cacheKey,
-          cacheMissHandler: CacheMissHandler(
-        () async {
-          return SimpleData(num: 1337);
-        },
-      ));
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => SimpleData(num: 1337)),
+      );
     });
     test('then object from cache miss handler is returned', () {
       expect(retrieved?.num, equals(1337));
@@ -181,12 +175,10 @@ void main() {
     SimpleData? retrieved;
     setUp(() async {
       await cache.put(cacheKey, SimpleData(num: 1));
-      retrieved = await cache.get<SimpleData>(cacheKey,
-          cacheMissHandler: CacheMissHandler(
-        () async {
-          return SimpleData(num: 1337);
-        },
-      ));
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => SimpleData(num: 1337)),
+      );
     });
 
     test('then object already in cache is returned', () {

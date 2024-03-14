@@ -29,10 +29,9 @@ abstract class Cache {
   /// If no matching object can be found, the [CacheMissHandler] is used to
   /// write a new object to the cache before it is returned.
   Future<T?> get<T extends SerializableEntity>(
-    String key, {
-    Type? t,
+    String key, [
     CacheMissHandler<T>? cacheMissHandler,
-  });
+  ]);
 
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);

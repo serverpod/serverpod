@@ -80,10 +80,9 @@ class LocalCache extends Cache {
 
   @override
   Future<T?> get<T extends SerializableEntity>(
-    String key, {
-    Type? t,
+    String key, [
     CacheMissHandler<T>? cacheMissHandler,
-  }) async {
+  ]) async {
     var entry = _entries[key];
 
     if (entry != null &&

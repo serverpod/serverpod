@@ -65,12 +65,10 @@ void main() async {
     const cacheKey = 'testKey';
     SimpleData? retrieved;
     setUp(() async {
-      retrieved = await cache.get<SimpleData>(cacheKey,
-          cacheMissHandler: CacheMissHandler(
-        () async {
-          return SimpleData(num: 1337);
-        },
-      ));
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => SimpleData(num: 1337)),
+      );
     });
 
     test('then object from cacheMissHandler is returned', () {
@@ -88,12 +86,10 @@ void main() async {
     SimpleData? retrieved;
     setUp(() async {
       await cache.put(cacheKey, SimpleData(num: 1));
-      retrieved = await cache.get<SimpleData>(cacheKey,
-          cacheMissHandler: CacheMissHandler(
-        () async {
-          return SimpleData(num: 1337);
-        },
-      ));
+      retrieved = await cache.get(
+        cacheKey,
+        CacheMissHandler(() async => SimpleData(num: 1337)),
+      );
     });
 
     test('then object already in cache is returned', () {
