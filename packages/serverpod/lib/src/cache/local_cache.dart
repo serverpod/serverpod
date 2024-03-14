@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 import 'cache.dart';
@@ -78,17 +79,35 @@ class LocalCache extends Cache {
   }
 
   @override
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]) async {
+  Future<T?> get<T extends SerializableEntity>(
+    String key, [
+    CacheMissHandler<T>? cacheMissHandler,
+  ]) async {
     var entry = _entries[key];
 
-    if (entry == null) return null;
-
-    if ((entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
+    if (entry != null &&
+        (entry.expirationTime?.compareTo(DateTime.now()) ?? 0) < 0) {
       await invalidateKey(key);
       return null;
     }
 
-    return serializationManager.decode<T>(entry.serializedObject);
+    if (entry != null) {
+      return serializationManager.decode<T>(entry.serializedObject);
+    }
+
+    if (cacheMissHandler == null) return null;
+
+    var value = await cacheMissHandler.valueProvider();
+    if (value == null) return null;
+
+    await put(
+      key,
+      value,
+      lifetime: cacheMissHandler.lifetime,
+      group: cacheMissHandler.group,
+    );
+
+    return value;
   }
 
   @override
@@ -110,17 +129,19 @@ class LocalCache extends Cache {
       return b.creationTime.compareTo(a.creationTime);
     });
 
-    assert(idx != -1);
+    if (idx == -1) return;
 
     // Step backwards in case entries have the exact same time
     while (idx > 0 && _keyList[idx - 1].creationTime == time) {
       idx--;
     }
 
+    // Step forward until we find the key
     while (idx < _keyList.length && _keyList[idx].creationTime == time) {
       if (_keyList[idx].key == key) {
         break;
       }
+      idx++;
     }
 
     _keyList.removeAt(idx);
