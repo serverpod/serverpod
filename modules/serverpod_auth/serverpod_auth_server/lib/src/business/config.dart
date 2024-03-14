@@ -1,6 +1,6 @@
 import 'package:image/image.dart';
 import 'package:serverpod/server.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import 'user_images.dart';
 
@@ -128,6 +128,11 @@ class AuthConfig {
   /// Default is 8 characters.
   final int minPasswordLength;
 
+  /// True if unsecure random number generation is allowed. If set to false, an
+  /// error will be thrown if the platform does not support secure random number
+  /// generation. Default is true but will be changed to false in Serverpod 2.0.
+  final bool allowUnsecureRandom;
+
   /// Creates a new Auth configuration. Use the [set] method to replace the
   /// default settings. Defaults to `config/firebase_service_account_key.json`.
   AuthConfig({
@@ -156,5 +161,6 @@ class AuthConfig {
         'config/firebase_service_account_key.json',
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
+    this.allowUnsecureRandom = true,
   });
 }

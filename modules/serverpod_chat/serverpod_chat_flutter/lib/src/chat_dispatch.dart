@@ -1,4 +1,4 @@
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 
 /// Callback for received chat messages.
 typedef ChatMessageListener = void Function(SerializableEntity message);

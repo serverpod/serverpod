@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
@@ -11,8 +13,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
-class ServerHealthConnectionInfo extends _i1.SerializableEntity {
-  ServerHealthConnectionInfo({
+abstract class ServerHealthConnectionInfo extends _i1.SerializableEntity {
+  ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
     required this.timestamp,
@@ -21,6 +23,16 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
     required this.idle,
     required this.granularity,
   });
+
+  factory ServerHealthConnectionInfo({
+    int? id,
+    required String serverId,
+    required DateTime timestamp,
+    required int active,
+    required int closing,
+    required int idle,
+    required int granularity,
+  }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -66,16 +78,68 @@ class ServerHealthConnectionInfo extends _i1.SerializableEntity {
   /// values are 60 minutes and 1440 minutes (one day).
   int granularity;
 
+  ServerHealthConnectionInfo copyWith({
+    int? id,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'serverId': serverId,
-      'timestamp': timestamp,
+      'timestamp': timestamp.toJson(),
       'active': active,
       'closing': closing,
       'idle': idle,
       'granularity': granularity,
     };
+  }
+}
+
+class _Undefined {}
+
+class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
+  _ServerHealthConnectionInfoImpl({
+    int? id,
+    required String serverId,
+    required DateTime timestamp,
+    required int active,
+    required int closing,
+    required int idle,
+    required int granularity,
+  }) : super._(
+          id: id,
+          serverId: serverId,
+          timestamp: timestamp,
+          active: active,
+          closing: closing,
+          idle: idle,
+          granularity: granularity,
+        );
+
+  @override
+  ServerHealthConnectionInfo copyWith({
+    Object? id = _Undefined,
+    String? serverId,
+    DateTime? timestamp,
+    int? active,
+    int? closing,
+    int? idle,
+    int? granularity,
+  }) {
+    return ServerHealthConnectionInfo(
+      id: id is int? ? id : this.id,
+      serverId: serverId ?? this.serverId,
+      timestamp: timestamp ?? this.timestamp,
+      active: active ?? this.active,
+      closing: closing ?? this.closing,
+      idle: idle ?? this.idle,
+      granularity: granularity ?? this.granularity,
+    );
   }
 }

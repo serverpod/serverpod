@@ -1,0 +1,10 @@
+class: Enrollment
+table: enrollment
+fields:
+  student: Student?, relation(name=student_enrollments, onDelete=Cascade)
+  course: Course?, relation(name=course_enrollments, onDelete=Cascade)
+
+indexes:
+  enrollment_index_idx:
+    fields: studentId, courseId
+    unique: true

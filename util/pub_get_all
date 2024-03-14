@@ -6,155 +6,167 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     exit 1
 fi
 
+set -e
+
 BASE=`pwd`
 
-echo "serverpod"
+echo "PUB UPGRADE ALL"
+
+echo "\n### serverpod"
 cd $BASE/packages/serverpod
-dart pub get
+dart pub upgrade
 
-echo "examples/auth_example/auth_example_client"
+echo "\n### examples/auth_example/auth_example_client"
 cd $BASE/examples/auth_example/auth_example_client
-dart pub get
+dart pub upgrade
 
-echo "examples/auth_example/auth_example_flutter"
+echo "\n### examples/auth_example/auth_example_flutter"
 cd $BASE/examples/auth_example/auth_example_flutter
-dart pub get
+dart pub upgrade
 
-echo "examples/auth_example/auth_example_server"
+echo "\n### examples/auth_example/auth_example_server"
 cd $BASE/examples/auth_example/auth_example_server
-dart pub get
+dart pub upgrade
 
-echo "examples/chat/chat_client"
+echo "\n### examples/chat/chat_client"
 cd $BASE/examples/chat/chat_client
-dart pub get
+dart pub upgrade
 
-echo "examples/chat/chat_flutter"
+echo "\n### examples/chat/chat_flutter"
 cd $BASE/examples/chat/chat_flutter
-dart pub get
+dart pub upgrade
 
-echo "examples/chat/chat_server"
+echo "\n### examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_client"
+echo "\n### serverpod_client"
 cd $BASE/packages/serverpod_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_serialization"
+echo "\n### serverpod_serialization"
 cd $BASE/packages/serverpod_serialization
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_service_client"
+echo "\n### serverpod_service_client"
 cd $BASE/packages/serverpod_service_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_shared"
+echo "\n### serverpod_shared"
 cd $BASE/packages/serverpod_shared
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_flutter"
+echo "\n### serverpod_flutter"
 cd $BASE/packages/serverpod_flutter
-dart pub get
+dart pub upgrade
 
 # Tests
 
-echo "\nserverpod_test_client"
+echo "\n### serverpod_test_client"
 cd $BASE/tests/serverpod_test_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_test_server"
+echo "\n### serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_test_shared"
+echo "\n### serverpod_test_shared"
 cd $BASE/tests/serverpod_test_shared
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_test_module_client"
+echo "\n### serverpod_test_module_client"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_test_module_server"
+echo "\n### serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart pub get
+dart pub upgrade
+
+echo "\n### bootstrap_project"
+cd $BASE/tests/bootstrap_project
+dart pub upgrade
+
+echo "\n### serverpod_cli_e2e_test"
+cd $BASE/tests/serverpod_cli_e2e_test
+dart pub upgrade
 
 # Templates
 
-echo "\nprojectname_server"
+echo "\n### projectname_server"
 cd $BASE/templates/serverpod_templates/projectname_server
-dart pub get
+dart pub upgrade
 
-echo "\nprojectname_client"
+echo "\n### projectname_client"
 cd $BASE/templates/serverpod_templates/projectname_client
-dart pub get
+dart pub upgrade
 
-echo "\nprojectname_flutter"
+echo "\n### projectname_flutter"
 cd $BASE/templates/serverpod_templates/projectname_flutter
-dart pub get
+dart pub upgrade
 
-echo "\nmodulename_server"
+echo "\n### modulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
-dart pub get
+dart pub upgrade
 
-echo "\nmodulename_client"
+echo "\n### modulename_client"
 cd $BASE/templates/serverpod_templates/modulename_client
-dart pub get
+dart pub upgrade
 
 # Auth module
 
-echo "\nserverpod_auth_server"
+echo "\n### serverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_client"
+echo "\n### serverpod_auth_client"
 cd $BASE/modules/serverpod_auth/serverpod_auth_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_shared_flutter"
+echo "\n### serverpod_auth_shared_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_shared_flutter
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_apple_flutter"
+echo "\n### serverpod_auth_apple_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_apple_flutter
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_google_flutter"
+echo "\n### serverpod_auth_google_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_google_flutter
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_email_flutter"
+echo "\n### serverpod_auth_email_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_email_flutter
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_auth_firebase_flutter"
+echo "\n### serverpod_auth_firebase_flutter"
 cd $BASE/modules/serverpod_auth/serverpod_auth_firebase_flutter
-dart pub get
+dart pub upgrade
 
 # Chat module
 
-echo "\nserverpod_chat_server"
+echo "\n### serverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_chat_client"
+echo "\n### serverpod_chat_client"
 cd $BASE/modules/serverpod_chat/serverpod_chat_client
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_chat_flutter"
+echo "\n### serverpod_chat_flutter"
 cd $BASE/modules/serverpod_chat/serverpod_chat_flutter
-dart pub get
+dart pub upgrade
 
 # Integrations
 
-echo "\nserverpod_cloud_storage_s3"
+echo "\n### serverpod_cloud_storage_s3"
 cd $BASE/integrations/serverpod_cloud_storage_s3
-dart pub get
+dart pub upgrade
 
-echo "\nserverpod_cloud_storage_gcp"
+echo "\n### serverpod_cloud_storage_gcp"
 cd $BASE/integrations/serverpod_cloud_storage_gcp
-dart pub get
+dart pub upgrade
 
 # Tooling
-echo "\nserverpod_cli"
+echo "\n### serverpod_cli"
 cd $BASE/tools/serverpod_cli
-dart pub get
+dart pub upgrade

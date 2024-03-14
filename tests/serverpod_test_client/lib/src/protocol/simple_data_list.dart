@@ -4,13 +4,18 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 
-class SimpleDataList extends _i1.SerializableEntity {
-  SimpleDataList({required this.rows});
+abstract class SimpleDataList extends _i1.SerializableEntity {
+  SimpleDataList._({required this.rows});
+
+  factory SimpleDataList({required List<_i2.SimpleData> rows}) =
+      _SimpleDataListImpl;
 
   factory SimpleDataList.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -23,8 +28,19 @@ class SimpleDataList extends _i1.SerializableEntity {
 
   List<_i2.SimpleData> rows;
 
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
-    return {'rows': rows};
+    return {'rows': rows.toJson(valueToJson: (v) => v.toJson())};
+  }
+}
+
+class _SimpleDataListImpl extends SimpleDataList {
+  _SimpleDataListImpl({required List<_i2.SimpleData> rows})
+      : super._(rows: rows);
+
+  @override
+  SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
+    return SimpleDataList(rows: rows ?? this.rows.clone());
   }
 }

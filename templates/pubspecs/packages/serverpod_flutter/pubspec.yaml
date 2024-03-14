@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
@@ -9,20 +8,26 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
-  flutter: ">=3.7.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
 
 dependencies:
-  connectivity_plus: ^3.0.4
-  serverpod_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_client
+  connectivity_plus: ^5.0.0
+  serverpod_client: VERSION
   flutter:
     sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_lints: VERSION
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization
 
 flutter:

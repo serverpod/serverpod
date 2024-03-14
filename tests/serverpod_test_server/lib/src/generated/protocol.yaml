@@ -1,0 +1,252 @@
+asyncTasks:
+  - insertRowToSimpleDataAfterDelay:
+  - throwExceptionAfterDelay:
+authentication:
+  - removeAllUsers:
+  - countUsers:
+  - createUser:
+  - authenticate:
+  - signOut:
+basicTypes:
+  - testInt:
+  - testDouble:
+  - testBool:
+  - testDateTime:
+  - testString:
+  - testByteData:
+  - testDuration:
+  - testUuid:
+cloudStorage:
+  - reset:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
+s3CloudStorage:
+  - storePublicFile:
+  - retrievePublicFile:
+  - existsPublicFile:
+  - deletePublicFile:
+  - getPublicUrlForFile:
+  - getDirectFilePostUrl:
+  - verifyDirectFileUpload:
+customTypes:
+  - returnCustomClass:
+  - returnCustomClassNullable:
+  - returnCustomClass2:
+  - returnCustomClass2Nullable:
+  - returnExternalCustomClass:
+  - returnExternalCustomClassNullable:
+  - returnFreezedCustomClass:
+  - returnFreezedCustomClassNullable:
+basicDatabase:
+  - deleteAllSimpleTestData:
+  - deleteSimpleTestDataLessThan:
+  - findAndDeleteSimpleTestData:
+  - createSimpleTestData:
+  - findSimpleData:
+  - findFirstRowSimpleData:
+  - findByIdSimpleData:
+  - findSimpleDataRowsLessThan:
+  - insertRowSimpleData:
+  - updateRowSimpleData:
+  - deleteRowSimpleData:
+  - deleteWhereSimpleData:
+  - countSimpleData:
+  - insertTypes:
+  - updateTypes:
+  - countTypesRows:
+  - deleteAllInTypes:
+  - getTypes:
+  - getTypesRawQuery:
+  - storeObjectWithEnum:
+  - getObjectWithEnum:
+  - storeObjectWithObject:
+  - getObjectWithObject:
+  - deleteAll:
+  - testByteDataStore:
+databaseBatch:
+  - batchInsert:
+  - batchInsertTypes:
+  - batchUpdate:
+  - batchUpdateTypes:
+  - batchDelete:
+  - insertRelatedUniqueData:
+  - findByEmail:
+  - findById:
+  - findAll:
+  - deleteAll:
+databaseBatchGenerated:
+  - batchInsert:
+  - batchInsertTypes:
+  - batchUpdate:
+  - batchUpdateTypes:
+  - batchDelete:
+  - insertRelatedUniqueData:
+  - findByEmail:
+  - findById:
+  - findAll:
+  - deleteAll:
+databaseListRelationMethods:
+  - insertCity:
+  - insertOrganization:
+  - insertPerson:
+  - implicitAttachRowCitizen:
+  - implicitAttachCitizens:
+  - implicitDetachRowCitizens:
+  - implicitDetachCitizens:
+  - cityFindById:
+  - explicitAttachRowPeople:
+  - explicitAttachPeople:
+  - explicitDetachRowPeople:
+  - explicitDetachPeople:
+  - organizationFindById:
+  - deleteAll:
+transactionsDatabase:
+  - removeRow:
+  - updateInsertDelete:
+emailAuthTestMethods:
+  - findVerificationCode:
+  - findResetCode:
+  - tearDown:
+  - createUser:
+relation:
+  - citizenFindWhereCompanyNameIs:
+  - citizenFindWhereCompanyTownNameIs:
+  - citizenFindOrderedByCompanyName:
+  - citizenFindOrderedByCompanyTownName:
+  - citizenDeleteWhereCompanyNameIs:
+  - citizenDeleteWhereCompanyTownNameIs:
+  - citizenCountWhereCompanyNameIs:
+  - citizenCountWhereCompanyTownNameIs:
+  - citizenFindAll:
+  - citizenFindAllWithDeepIncludes:
+  - citizenFindAllWithNamedRelationNoneOriginSide:
+  - citizenFindAllWithShallowIncludes:
+  - citizenFindByIdWithIncludes:
+  - addressFindAll:
+  - addressFindById:
+  - findAllPostsIncludingNextAndPrevious:
+  - citizenAttachCompany:
+  - citizenAttachAddress:
+  - citizenDetachAddress:
+  - addressAttachCitizen:
+  - addressDetachCitizen:
+  - companyFindAll:
+  - citizenInsert:
+  - companyInsert:
+  - townInsert:
+  - addressInsert:
+  - postInsert:
+  - deleteAll:
+exceptionTest:
+  - throwNormalException:
+  - throwExceptionWithData:
+  - workingWithoutException:
+failedCalls:
+  - failedCall:
+  - failedDatabaseQuery:
+  - failedDatabaseQueryCaughtException:
+  - slowCall:
+  - caughtException:
+fieldScopes:
+  - storeObject:
+  - retrieveObject:
+futureCalls:
+  - makeFutureCall:
+listParameters:
+  - returnIntList:
+  - returnIntListList:
+  - returnIntListNullable:
+  - returnIntListNullableList:
+  - returnIntListListNullable:
+  - returnIntListNullableInts:
+  - returnNullableIntListNullableInts:
+  - returnDoubleList:
+  - returnDoubleListNullableDoubles:
+  - returnBoolList:
+  - returnBoolListNullableBools:
+  - returnStringList:
+  - returnStringListNullableStrings:
+  - returnDateTimeList:
+  - returnDateTimeListNullableDateTimes:
+  - returnByteDataList:
+  - returnByteDataListNullableByteDatas:
+  - returnSimpleDataList:
+  - returnSimpleDataListNullableSimpleData:
+  - returnSimpleDataListNullable:
+  - returnNullableSimpleDataListNullableSimpleData:
+  - returnDurationList:
+  - returnDurationListNullableDurations:
+logging:
+  - logInfo:
+  - logDebugAndInfoAndError:
+  - twoQueries:
+loggingDisabled:
+  - logInfo:
+mapParameters:
+  - returnIntMap:
+  - returnIntMapNullable:
+  - returnNestedIntMap:
+  - returnIntMapNullableInts:
+  - returnNullableIntMapNullableInts:
+  - returnIntIntMap:
+  - returnEnumIntMap:
+  - returnEnumMap:
+  - returnDoubleMap:
+  - returnDoubleMapNullableDoubles:
+  - returnBoolMap:
+  - returnBoolMapNullableBools:
+  - returnStringMap:
+  - returnStringMapNullableStrings:
+  - returnDateTimeMap:
+  - returnDateTimeMapNullableDateTimes:
+  - returnByteDataMap:
+  - returnByteDataMapNullableByteDatas:
+  - returnSimpleDataMap:
+  - returnSimpleDataMapNullableSimpleData:
+  - returnSimpleDataMapNullable:
+  - returnNullableSimpleDataMapNullableSimpleData:
+  - returnDurationMap:
+  - returnDurationMapNullableDurations:
+oneToMany:
+  - customerOrderByOrderCountAscending:
+  - customerOrderByOrderCountAscendingWhereDescriptionIs:
+  - commentInsert:
+  - orderInsert:
+  - customerInsert:
+  - deleteAll:
+moduleSerialization:
+  - serializeModuleObject:
+  - modifyModuleObject:
+  - serializeNestedModuleObject:
+namedParameters:
+  - namedParametersMethod:
+  - namedParametersMethodEqualInts:
+optionalParameters:
+  - returnOptionalInt:
+redis:
+  - setSimpleData:
+  - setSimpleDataWithLifetime:
+  - getSimpleData:
+  - deleteSimpleData:
+  - resetMessageCentralTest:
+  - listenToChannel:
+  - postToChannel:
+  - countSubscribedChannels:
+signInRequired:
+  - testMethod:
+simple:
+  - setGlobalInt:
+  - addToGlobalInt:
+  - getGlobalInt:
+  - hello:
+streaming:
+streamingLogging:
+subSubDirTest:
+  - testMethod:
+subDirTest:
+  - testMethod:

@@ -4,15 +4,23 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-class ObjectWithDuration extends _i1.TableRow {
-  ObjectWithDuration({
+abstract class ObjectWithDuration extends _i1.TableRow {
+  ObjectWithDuration._({
     int? id,
     required this.duration,
   }) : super(id);
+
+  factory ObjectWithDuration({
+    int? id,
+    required Duration duration,
+  }) = _ObjectWithDurationImpl;
 
   factory ObjectWithDuration.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -27,172 +35,91 @@ class ObjectWithDuration extends _i1.TableRow {
 
   static final t = ObjectWithDurationTable();
 
+  static const db = ObjectWithDurationRepository._();
+
   Duration duration;
 
   @override
-  String get tableName => 'object_with_duration';
+  _i1.Table get table => t;
+
+  ObjectWithDuration copyWith({
+    int? id,
+    Duration? duration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'duration': duration,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'duration': duration,
+      if (id != null) 'id': id,
+      'duration': duration.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
-      'duration': duration,
+      if (id != null) 'id': id,
+      'duration': duration.toJson(),
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'duration':
-        duration = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static ObjectWithDurationInclude include() {
+    return ObjectWithDurationInclude._();
   }
 
-  static Future<List<ObjectWithDuration>> find(
-    _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
+  static ObjectWithDurationIncludeList includeList({
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    ObjectWithDurationInclude? include,
+  }) {
+    return ObjectWithDurationIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(ObjectWithDuration.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<ObjectWithDuration?> findSingleRow(
-    _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<ObjectWithDuration?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<ObjectWithDuration>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required ObjectWithDurationExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<ObjectWithDuration>(
-      where: where(ObjectWithDuration.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    ObjectWithDuration row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    ObjectWithDurationExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<ObjectWithDuration>(
-      where: where != null ? where(ObjectWithDuration.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      include: include,
     );
   }
 }
 
-typedef ObjectWithDurationExpressionBuilder = _i1.Expression Function(
-    ObjectWithDurationTable);
+class _Undefined {}
+
+class _ObjectWithDurationImpl extends ObjectWithDuration {
+  _ObjectWithDurationImpl({
+    int? id,
+    required Duration duration,
+  }) : super._(
+          id: id,
+          duration: duration,
+        );
+
+  @override
+  ObjectWithDuration copyWith({
+    Object? id = _Undefined,
+    Duration? duration,
+  }) {
+    return ObjectWithDuration(
+      id: id is int? ? id : this.id,
+      duration: duration ?? this.duration,
+    );
+  }
+}
 
 class ObjectWithDurationTable extends _i1.Table {
-  ObjectWithDurationTable() : super(tableName: 'object_with_duration');
+  ObjectWithDurationTable({super.tableRelation})
+      : super(tableName: 'object_with_duration') {
+    duration = _i1.ColumnDuration(
+      'duration',
+      this,
+    );
+  }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
-
-  final duration = _i1.ColumnDuration('duration');
+  late final _i1.ColumnDuration duration;
 
   @override
   List<_i1.Column> get columns => [
@@ -201,5 +128,181 @@ class ObjectWithDurationTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use ObjectWithDurationTable.t instead.')
-ObjectWithDurationTable tObjectWithDuration = ObjectWithDurationTable();
+class ObjectWithDurationInclude extends _i1.IncludeObject {
+  ObjectWithDurationInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => ObjectWithDuration.t;
+}
+
+class ObjectWithDurationIncludeList extends _i1.IncludeList {
+  ObjectWithDurationIncludeList._({
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(ObjectWithDuration.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => ObjectWithDuration.t;
+}
+
+class ObjectWithDurationRepository {
+  const ObjectWithDurationRepository._();
+
+  Future<List<ObjectWithDuration>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<ObjectWithDuration>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithDuration>> insert(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<ObjectWithDuration>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration> insertRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<ObjectWithDuration>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<ObjectWithDuration>> update(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.ColumnSelections<ObjectWithDurationTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<ObjectWithDuration>(
+      rows,
+      columns: columns?.call(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<ObjectWithDuration> updateRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.ColumnSelections<ObjectWithDurationTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<ObjectWithDuration>(
+      row,
+      columns: columns?.call(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<ObjectWithDuration> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<ObjectWithDuration>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    ObjectWithDuration row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<ObjectWithDuration>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<ObjectWithDurationTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<ObjectWithDuration>(
+      where: where(ObjectWithDuration.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

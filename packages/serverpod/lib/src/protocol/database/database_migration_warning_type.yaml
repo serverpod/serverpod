@@ -1,6 +1,0 @@
-enum: DatabaseMigrationWarningType
-values:
- - tableDropped
- - columnDropped
- - notNullAdded
- - uniqueIndexCreated

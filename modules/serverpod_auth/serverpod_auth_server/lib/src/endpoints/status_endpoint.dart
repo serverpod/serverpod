@@ -25,7 +25,7 @@ class StatusEndpoint extends Endpoint {
   Future<UserInfo?> getUserInfo(Session session) async {
     var userId = await session.auth.authenticatedUserId;
     if (userId == null) return null;
-    return await session.db.findById<UserInfo>(userId);
+    return await UserInfo.db.findById(session, userId);
   }
 
   /// Gets the server configuration.

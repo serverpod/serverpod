@@ -26,15 +26,15 @@ void main() {
   );
 
   group('Given an empty class named $testClassName when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -62,14 +62,14 @@ void main() {
     });
 
     group('then the class named $testClassName', () {
-      test('inherits from SerializableEntity.', () {
+      test('inherits from SerializableModel.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
               name: 'SerializableEntity',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing extends clause for SerializableModel.');
       });
 
       test('has a fromJson factory.', () {
@@ -99,15 +99,15 @@ void main() {
       '// This is an example documentation',
       '// This is another example'
     ];
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withDocumentation(documentation)
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -119,15 +119,15 @@ void main() {
   });
 
   group('Given a class with table name when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withTableName('example_table')
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -137,14 +137,14 @@ void main() {
       name: testClassName,
     );
     group('then the class named $testClassName', () {
-      test('still inherits from SerializableEntity.', () {
+      test('still inherits from SerializableModel.', () {
         expect(
             CompilationUnitHelpers.hasExtendsClause(
               maybeClassNamedExample!,
               name: 'SerializableEntity',
             ),
             isTrue,
-            reason: 'Missing extends clause for SerializableEntity.');
+            reason: 'Missing extends clause for SerializableModel.');
       });
 
       test('has id in constructor.', () {
@@ -152,7 +152,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.id'],
+              parameters: ['int? id'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -172,10 +172,18 @@ void main() {
         skip: maybeClassNamedExample == null
             ? 'Could not run test because $testClassName class was not found.'
             : false);
+
+    test('then a class named ${testClassName}Include does NOT exist.', () {
+      expect(
+          CompilationUnitHelpers.hasClassDeclaration(compilationUnit,
+              name: '${testClassName}Include'),
+          isFalse,
+          reason: 'Class ${testClassName}Include should not be generated.');
+    });
   });
 
   group('Given a class with a none nullable field when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -183,8 +191,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -200,7 +208,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['required this.title'],
+              parameters: ['required String title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -224,7 +232,7 @@ void main() {
   });
 
   group('Given a class with a nullable field when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -232,8 +240,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -249,7 +257,7 @@ void main() {
             CompilationUnitHelpers.hasConstructorDeclaration(
               maybeClassNamedExample!,
               name: null,
-              parameters: ['this.title'],
+              parameters: ['String? title'],
             ),
             isTrue,
             reason: 'Missing declaration for $testClassName constructor.');
@@ -275,22 +283,22 @@ void main() {
   group(
       'Given a class with a non persistent field with scope all when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withField(
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.all)
+                .withScope(ModelFieldScopeDefinition.all)
                 .withShouldPersist(false)
                 .build(),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -319,22 +327,22 @@ void main() {
   group(
       'Given a class with a non persistent field with scope server only when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withField(
             FieldDefinitionBuilder()
                 .withName('title')
                 .withTypeDefinition('String', true)
-                .withScope(EntityFieldScopeDefinition.serverOnly)
+                .withScope(ModelFieldScopeDefinition.serverOnly)
                 .withShouldPersist(false)
                 .build(),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -364,21 +372,21 @@ void main() {
   group(
       'Given a class with a non persistent field with scope none when generating code',
       () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withFileName(testClassFileName)
           .withField(
-            SerializableEntityFieldDefinition(
+            SerializableModelFieldDefinition(
                 name: 'title',
                 type: TypeDefinition(className: 'String', nullable: true),
-                scope: EntityFieldScopeDefinition.none,
+                scope: ModelFieldScopeDefinition.none,
                 shouldPersist: false),
           )
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 
@@ -402,7 +410,7 @@ void main() {
   });
 
   group('Given exception class when generating code', () {
-    var entities = [
+    var models = [
       ClassDefinitionBuilder()
           .withClassName(testClassName)
           .withFileName(testClassFileName)
@@ -410,8 +418,8 @@ void main() {
           .build()
     ];
 
-    var codeMap = generator.generateSerializableEntitiesCode(
-      entities: entities,
+    var codeMap = generator.generateSerializableModelsCode(
+      models: models,
       config: config,
     );
 

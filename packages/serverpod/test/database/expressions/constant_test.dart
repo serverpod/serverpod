@@ -3,30 +3,25 @@ import 'package:test/test.dart';
 
 void main() {
   group('Given a Constant expression', () {
-    test('when initialized with null value then output is NULL.', () {
-      var expression = Constant(null);
+    test('when null static is retrieved then output is NULL.', () {
+      var expression = Constant.nullValue;
 
       expect(expression.toString(), 'NULL');
     });
 
     test(
-        'when initialized with bool value then output is uppercase bool value.',
+        'when bool constructor is used value then output is uppercase bool value.',
         () {
-      var expression = Constant(true);
+      var expression = Constant.bool(true);
 
       expect(expression.toString(), 'TRUE');
     });
 
     test('when initialized with String value then output is escaped string.',
         () {
-      var expression = Constant('test');
+      var expression = Constant.string('test');
 
       expect(expression.toString(), '\'test\'');
-    });
-
-    test('when initialized with unknown type then FormatException is thrown.',
-        () {
-      expect(() => Constant(DateTime.now()), throwsFormatException);
     });
   });
 }

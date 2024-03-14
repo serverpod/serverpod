@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart' as auth;
-import 'package:serverpod_chat_server/module.dart' as chat;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
+import 'package:serverpod_chat_server/serverpod_chat_server.dart' as chat;
 
 import 'src/generated/protocol.dart';
 import 'src/generated/endpoints.dart';
@@ -41,19 +41,19 @@ void run(List<String> args) async {
     postMessagesGlobally: false,
   ));
 
+  // Start the server.
+  await pod.start();
+
   // Create an initial set of entries in the database, if they do not exist
   // already.
   await _populateDatabase(pod);
-
-  // Start the server.
-  await pod.start();
 }
 
 Future<void> _populateDatabase(Serverpod pod) async {
   // Create a session so that we can access the database.
   var session = await pod.createSession();
 
-  var numChannels = await Channel.count(session);
+  var numChannels = await Channel.db.count(session);
   if (numChannels != 0) {
     // There are already entries in the database, whe shouldn't add them again.
     await session.close();
@@ -61,15 +61,15 @@ Future<void> _populateDatabase(Serverpod pod) async {
   }
 
   // Insert an initial set of channels.
-  await Channel.insert(
+  await Channel.db.insertRow(
     session,
     Channel(name: 'General', channel: 'general'),
   );
-  await Channel.insert(
+  await Channel.db.insertRow(
     session,
     Channel(name: 'Serverpod', channel: 'serverpod'),
   );
-  await Channel.insert(
+  await Channel.db.insertRow(
     session,
     Channel(name: 'Introductions', channel: 'intros'),
   );
