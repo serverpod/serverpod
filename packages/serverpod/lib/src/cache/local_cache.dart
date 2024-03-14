@@ -129,17 +129,19 @@ class LocalCache extends Cache {
       return b.creationTime.compareTo(a.creationTime);
     });
 
-    assert(idx != -1);
+    if (idx == -1) return;
 
     // Step backwards in case entries have the exact same time
     while (idx > 0 && _keyList[idx - 1].creationTime == time) {
       idx--;
     }
 
+    // Step forward until we find the key
     while (idx < _keyList.length && _keyList[idx].creationTime == time) {
       if (_keyList[idx].key == key) {
         break;
       }
+      idx++;
     }
 
     _keyList.removeAt(idx);
