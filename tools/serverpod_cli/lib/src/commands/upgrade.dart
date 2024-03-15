@@ -1,9 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-
-import '../generated/version.dart';
 
 class UpgradeCommand extends ServerpodCommand {
   @override
@@ -14,19 +13,17 @@ class UpgradeCommand extends ServerpodCommand {
 
   @override
   void run() async {
-    dynamic error;
-    var success = await log.progress(
-        'Running `dart pub global activate serverpod_cli`...', () async {
-      var process = await Process.run(
-          'dart', ['pub', 'global', 'activate', 'serverpod_cli']);
-      error = process.stderr;
-      return process.exitCode == 0;
-    });
+    log.info('Updating Serverpod Cli...');
 
-    if (success) {
-      log.info('Serverpod is up to date: $templateVersion version.');
+    var startProcess = await Process.start(
+        'dart', ['pub', 'global', 'activate', 'serverpod_cli']);
+    var exitCode = await startProcess.exitCode;
+
+    if (exitCode == 0) {
+      startProcess.stdout.transform(const Utf8Decoder()).listen(log.info);
     } else {
-      log.error('Serverpod upgrade failed: $error');
+      log.error('Serverpod upgrade failed');
+      startProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
     }
   }
 }
