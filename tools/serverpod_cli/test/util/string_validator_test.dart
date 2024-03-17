@@ -36,13 +36,23 @@ void main() {
   });
 
   group('Tag name validator', () {
-    test('isValidTagName returns true for valid tag names', () {
+    test('Returns true for valid tag names', () {
       expect(StringValidators.isValidTagName('valid-tag-name'), isTrue);
     });
-    test('returns false for invalid tag names', () {
+
+    test('Returns false for tag name with uppercase letters', () {
       expect(StringValidators.isValidTagName('InvalidTagName'), isFalse);
+    });
+
+    test('Returns false for tag name with camelcase letters', () {
       expect(StringValidators.isValidTagName('invalidTagName'), isFalse);
+    });
+
+    test('Returns false for tag name with underscores', () {
       expect(StringValidators.isValidTagName('Invalid_Tag_Name'), isFalse);
+    });
+
+    test('Returns false for tag name with hyphens and uppercase letters', () {
       expect(StringValidators.isValidTagName('Invalid-Tag-Name'), isFalse);
     });
   });
