@@ -25,7 +25,9 @@ class UpgradeCommand extends ServerpodCommand {
     });
 
     if (success) {
-      log.info('Serverpod is already up to date: $templateVersion version.');
+      log.info('Serverpod is up to date: $templateVersion version.');
+    } else {
+      log.info('Failed updating Serverpod.');
     }
   }
 }
