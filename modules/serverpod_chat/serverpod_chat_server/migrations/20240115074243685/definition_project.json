@@ -9,7 +9,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('serverpod_chat_message_id_seq'::regclass)",
           "dartType": "int?"
@@ -34,7 +34,7 @@
         },
         {
           "name": "sender",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
@@ -88,7 +88,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('serverpod_chat_read_message_id_seq'::regclass)",
           "dartType": "int?"
@@ -101,13 +101,13 @@
         },
         {
           "name": "userId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "lastReadMessageId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
