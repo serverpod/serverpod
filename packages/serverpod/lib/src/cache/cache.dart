@@ -1,3 +1,4 @@
+import 'package:serverpod/src/cache/cache_miss_handler.dart';
 import 'package:serverpod/src/cache/local_cache.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
@@ -25,7 +26,12 @@ abstract class Cache {
 
   /// Retrieves a cached [SerializableEntity] using the specified [key]. If no
   /// matching object can be found, null is returned.
-  Future<T?> get<T extends SerializableEntity>(String key, [Type? t]);
+  /// If no matching object can be found, the [CacheMissHandler] is used to
+  /// write a new object to the cache before it is returned.
+  Future<T?> get<T extends SerializableEntity>(
+    String key, [
+    CacheMissHandler<T>? cacheMissHandler,
+  ]);
 
   /// Removes a single object from the cache if it matches the [key].
   Future<void> invalidateKey(String key);

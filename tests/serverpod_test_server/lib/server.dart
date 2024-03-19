@@ -39,6 +39,14 @@ void run(List<String> args) async {
     onUserWillBeCreated: (session, userInfo, authMethod) async {
       return (userInfo.email!.endsWith('.bar'));
     },
+    sendValidationEmail: (session, email, validationCode) async {
+      print('Sending validation email to $email with code $validationCode');
+      return true;
+    },
+    sendPasswordResetEmail: (session, userInfo, resetCode) async {
+      print('Sending reset email to ${userInfo.email} with code $resetCode');
+      return true;
+    },
   ));
 
   // Add route to web server
