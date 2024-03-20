@@ -23,7 +23,7 @@ class UserImages {
   /// Sets a user's image from image data. The image is resized before being
   /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(
-      Session session, int userId, Uint8List imageBytes) async {
+      Session session, int userId, Uint8List imageBytes,) async {
     var reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes);
       if (image == null) return null;
