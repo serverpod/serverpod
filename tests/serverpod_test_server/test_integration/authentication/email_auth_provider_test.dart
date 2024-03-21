@@ -217,34 +217,34 @@ void main() async {
     });
 
     test(
-        'when migrating auth entries with a limit then updated rows matches limit legacy hashes stored.',
+        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
         () async {
       var updatedRows = await Emails.migrateLegacyPasswordHashes(
         session,
         batchSize: 2,
-        limit: 0,
+        maxMigratedEntries: 0,
       );
       expect(updatedRows, 0);
     });
 
     test(
-        'when migrating auth entries with a limit then updated rows matches limit legacy hashes stored.',
+        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
         () async {
       var updatedRows = await Emails.migrateLegacyPasswordHashes(
         session,
         batchSize: 2,
-        limit: 3,
+        maxMigratedEntries: 3,
       );
       expect(updatedRows, 3);
     });
 
     test(
-        'when migrating auth entries multiple times with a limit then total updated rows matches total legacy hashes stored.',
+        'when migrating auth entries multiple times with maxMigratedEntries defined then total updated rows matches total legacy hashes stored.',
         () async {
       var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
             session,
             batchSize: 2,
-            limit: 3,
+            maxMigratedEntries: 3,
           );
       var updatedRows1 = await migrateHashes();
       var updatedRows2 = await migrateHashes();
