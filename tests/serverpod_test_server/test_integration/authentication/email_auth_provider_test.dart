@@ -217,6 +217,44 @@ void main() async {
     });
 
     test(
+        'when migrating auth entries with a limit then updated rows matches limit legacy hashes stored.',
+        () async {
+      var updatedRows = await Emails.migrateLegacyPasswordHashes(
+        session,
+        batchSize: 2,
+        limit: 0,
+      );
+      expect(updatedRows, 0);
+    });
+
+    test(
+        'when migrating auth entries with a limit then updated rows matches limit legacy hashes stored.',
+        () async {
+      var updatedRows = await Emails.migrateLegacyPasswordHashes(
+        session,
+        batchSize: 2,
+        limit: 3,
+      );
+      expect(updatedRows, 3);
+    });
+
+    test(
+        'when migrating auth entries multiple times with a limit then total updated rows matches total legacy hashes stored.',
+        () async {
+      var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
+            session,
+            batchSize: 2,
+            limit: 3,
+          );
+      var updatedRows1 = await migrateHashes();
+      var updatedRows2 = await migrateHashes();
+      var updatedRows3 = await migrateHashes();
+
+      var totalUpdatedRows = updatedRows1 + updatedRows2 + updatedRows3;
+      expect(totalUpdatedRows, 5);
+    });
+
+    test(
         'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
         () async {
       await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
