@@ -1,9 +1,9 @@
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 class AuthenticationEndpoint extends Endpoint {
   Future<void> removeAllUsers(Session session) async {
-    await session.db.delete<UserInfo>(where: Expression('true'));
+    await session.db.deleteWhere<UserInfo>(where: Constant.bool(true));
   }
 
   Future<int> countUsers(Session session) async {

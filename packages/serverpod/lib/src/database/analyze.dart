@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:serverpod/src/server/session.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/src/database/database.dart';
 
@@ -7,35 +10,89 @@ import '../util/column_type_extension.dart';
 class DatabaseAnalyzer {
   /// Analyze the structure of the [database].
   static Future<DatabaseDefinition> analyze(Database database) async {
+    var currentDb = await database.unsafeQuery('SELECT current_database();');
+
+    var name = currentDb.first.first;
+    var installedModules = await _getInstalledMigrationVersions(database);
+
     return DatabaseDefinition(
-      name: (await database.query('SELECT current_database();')).first.first,
-      tables: await Future.wait((await database.query(
+      moduleName: Protocol().getModuleName(),
+      name: name,
+      tables: await _getTableDefinitions(database),
+      migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      installedModules: installedModules,
+    );
+  }
+
+  static Future<List<TableDefinition>> _getTableDefinitions(
+    Database database,
+  ) async {
+    var tableSchemas = await database.unsafeQuery(
 // Get list of all tables and the schema they are in.
-          '''
+        '''
 SELECT schemaname, tablename
 FROM pg_catalog.pg_tables
 WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
-''')).map((tableInfo) async {
-        var schemaName = tableInfo.first;
-        var tableName = tableInfo.last;
+''');
 
-        var columns = (await database.query(
+    return await Future.wait(tableSchemas.map((tableSchema) async {
+      var schemaName = tableSchema.first;
+      var tableName = tableSchema.last;
+
+      var columns = _getColumnDefinitions(database, schemaName, tableName);
+
+      var foreignKeys = _getForeignKeyDefinitions(
+        database,
+        schemaName,
+        tableName,
+      );
+
+      var indexes = _getIndexDefinitions(
+        database,
+        schemaName,
+        tableName,
+      );
+
+      return TableDefinition(
+        name: tableName,
+        schema: schemaName,
+        columns: await columns,
+        foreignKeys: await foreignKeys,
+        indexes: await indexes,
+      );
+    }));
+  }
+
+  static Future<List<ColumnDefinition>> _getColumnDefinitions(
+    Database database,
+    String schemaName,
+    String tableName,
+  ) async {
+    var queryResult = await database.unsafeQuery(
 // Get the columns of this table and sort them based on their position.
-                '''
+        '''
 SELECT column_name, column_default, is_nullable, data_type
 FROM information_schema.columns
 WHERE table_schema = '$schemaName' AND table_name = '$tableName'
 ORDER BY ordinal_position;
-'''))
-            .map((e) => ColumnDefinition(
-                name: e[0],
-                columnDefault: e[1],
-                columnType: ExtendedColumnType.fromSqlType(e[3]),
-                // SQL outputs YES or NO. So we have to convert it to a bool manually.
-                isNullable: e[2] == 'YES'))
-            .toList();
+''');
 
-        var indexes = (await database.query(
+    return queryResult
+        .map((e) => ColumnDefinition(
+            name: e[0],
+            columnDefault: e[1],
+            columnType: ExtendedColumnType.fromSqlType(e[3]),
+            // SQL outputs YES or NO. So we have to convert it to a bool manually.
+            isNullable: e[2] == 'YES'))
+        .toList();
+  }
+
+  static Future<List<IndexDefinition>> _getIndexDefinitions(
+    Database database,
+    String schemaName,
+    String tableName,
+  ) async {
+    var queryResult = await database.unsafeQuery(
 // We want to get the name (0), tablespace (1), isUnique (2), isPrimary (3),
 // elements (4), isElementAColumn (5), predicate (6) and type of each index for this table.
 //
@@ -66,7 +123,7 @@ ORDER BY ordinal_position;
 // So we check if the value is greater then zero to get a bool that tells us if it is a column.
 //
 // pg_get_expr gets us the expression for the predicate.
-            '''
+        '''
 SELECT i.relname, ts.spcname, indisunique, indisprimary,
 ARRAY(
        SELECT pg_get_indexdef(indexrelid, k + 1, true)
@@ -81,27 +138,34 @@ JOIN pg_class i ON i.oid = indexrelid
 LEFT JOIN pg_tablespace as ts ON i.reltablespace = ts.oid
 JOIN pg_am am ON am.oid=i.relam
 WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
-''')).map((index) {
-          return IndexDefinition(
-            indexName: index[0],
-            tableSpace: index[1],
-            elements: List.generate(
-                index[4].length,
-                (i) => IndexElementDefinition(
-                    type: index[5][i]
-                        ? IndexElementDefinitionType.column
-                        : IndexElementDefinitionType.expression,
-                    definition:
-                        (index[4][i] as String).removeSurroundingQuotes)),
-            type: index[7],
-            isUnique: index[2],
-            isPrimary: index[3],
-            //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
-            predicate: index[6],
-          );
-        }).toList();
+''');
 
-        var foreignKeys = (await database.query(
+    return queryResult.map((index) {
+      return IndexDefinition(
+        indexName: index[0],
+        tableSpace: index[1],
+        elements: List.generate(
+            index[4].length,
+            (i) => IndexElementDefinition(
+                type: index[5][i]
+                    ? IndexElementDefinitionType.column
+                    : IndexElementDefinitionType.expression,
+                definition: (index[4][i] as String).removeSurroundingQuotes)),
+        type: index[7],
+        isUnique: index[2],
+        isPrimary: index[3],
+        //TODO: Maybe unquote in the future. Should be considered when Serverpod introduces partial indexes.
+        predicate: index[6],
+      );
+    }).toList();
+  }
+
+  static Future<List<ForeignKeyDefinition>> _getForeignKeyDefinitions(
+    Database database,
+    String schemaName,
+    String tableName,
+  ) async {
+    var queryResult = await database.unsafeQuery(
 // We want to get the constraint name (0), on update type (1),
 // on delete type (2), match type (3), constraint columns (4)
 // referenced table (5), namespace / schema of the referenced table (6),
@@ -115,8 +179,8 @@ WHERE t.relname = '$tableName' AND n.nspname = '$schemaName';
 //
 // The first ARRAY resolves the column name for each of the columns in conkey.
 // The second ARRAY resolves the column name for each of the referenced columns in confkey.
-                '''
-SELECT conname, confupdtype, confdeltype, confmatchtype,
+        '''
+SELECT conname::text, confupdtype::text, confdeltype::text, confmatchtype::text,
 ARRAY(
        SELECT attname::text
        FROM unnest(conkey) as i
@@ -134,28 +198,46 @@ JOIN pg_class r ON r.oid = confrelid
 JOIN pg_namespace nt ON nt.oid = t.relnamespace
 JOIN pg_namespace nr ON nr.oid = r.relnamespace
 WHERE contype = 'f' AND t.relname = '$tableName' AND nt.nspname = '$schemaName';
-'''))
-            .map((key) => ForeignKeyDefinition(
-                  constraintName: key[0],
-                  columns: key[4],
-                  referenceTable: key[5],
-                  referenceTableSchema: key[6],
-                  referenceColumns: key[7],
-                  onUpdate: (key[1] as String).toForeignKeyAction(),
-                  onDelete: (key[2] as String).toForeignKeyAction(),
-                  matchType: (key[3] as String).toForeignKeyMatchType(),
-                ))
-            .toList();
+''');
 
-        return TableDefinition(
-          name: tableName,
-          schema: schemaName,
-          columns: columns,
-          foreignKeys: foreignKeys,
-          indexes: indexes,
-        );
-      })),
-    );
+    return queryResult
+        .map((key) => ForeignKeyDefinition(
+              constraintName: key[0],
+              columns: key[4],
+              referenceTable: key[5],
+              referenceTableSchema: key[6],
+              referenceColumns: key[7],
+              onUpdate: (key[1] as String).toForeignKeyAction(),
+              onDelete: (key[2] as String).toForeignKeyAction(),
+              matchType: (key[3] as String).toForeignKeyMatchType(),
+            ))
+        .toList();
+  }
+
+  /// Retrieves a list of installed database migrations.
+  static Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
+    Database database,
+  ) async {
+    try {
+      return await database.find<DatabaseMigrationVersion>();
+    } catch (e) {
+      // Ignore if the table does not exist.
+      stderr.writeln('Failed to get installed migrations: $e');
+      return [];
+    }
+  }
+
+  /// Retrieves a list of installed database migrations.
+  static Future<List<DatabaseMigrationVersion>> getInstalledMigrationVersions(
+    Session session,
+  ) async {
+    try {
+      return await DatabaseMigrationVersion.db.find(session);
+    } catch (e) {
+      // Ignore if the table does not exist.
+      stderr.writeln('Failed to get installed migrations: $e');
+      return [];
+    }
   }
 }
 

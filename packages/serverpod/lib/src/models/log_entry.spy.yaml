@@ -1,0 +1,36 @@
+### Bindings to a log entry in the database.
+class: LogEntry
+table: serverpod_log
+fields:
+  ### The id of the session this log entry is associated with.
+  sessionLogId: int, relation(parent=serverpod_session_log, onDelete=Cascade)
+
+  ### The message id this entry is associated with, if in a streaming session.
+  messageId: int?
+
+  ### Currently unused.
+  reference: String?
+
+  ### The id of the server which created this log entry.
+  serverId: String
+
+  ### Timpstamp of this log entry.
+  time: DateTime
+
+  ### The log level of this entry.
+  logLevel: LogLevel
+
+  ### The logging message.
+  message: String
+
+  ### Optional error associated with this log entry.
+  error: String?
+
+  ### Optional stack trace associated with this log entry.
+  stackTrace: String?
+
+  ### The order of this log entry, used for sorting.
+  order: int
+indexes:
+  serverpod_log_sessionLogId_idx:
+    fields: sessionLogId

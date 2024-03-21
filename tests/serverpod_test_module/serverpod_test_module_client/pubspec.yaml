@@ -1,3 +1,6 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
 publish_to: none
 
 name: serverpod_test_module_client
@@ -6,11 +9,16 @@ description: Tests for Serverpod modules
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client:
-    path: ../../../packages/serverpod_client
+  serverpod_client: 2.0.0-alpha.1
 
 dev_dependencies:
-  lints: ^2.0.1
+  lints: ^3.0.0
+
+dependency_overrides:
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization

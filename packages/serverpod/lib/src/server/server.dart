@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/database/database.dart';
+import 'package:serverpod/src/database/database_pool_manager.dart';
 import 'package:serverpod/src/server/health_check.dart';
 
 import '../cache/caches.dart';
@@ -26,7 +28,18 @@ class Server {
   final String runMode;
 
   /// Current database configuration.
-  DatabasePoolManager databaseConfig;
+  final DatabasePoolManager? _databasePoolManager;
+
+  /// Creates a new [Database] object with a connection to the configured
+  /// database.
+  Database createDatabase(Session session) {
+    var databasePoolManager = _databasePoolManager;
+    if (databasePoolManager == null) {
+      throw ArgumentError('Database config not set');
+    }
+
+    return Database(session: session, poolManager: databasePoolManager);
+  }
 
   /// The [SerializationManager] used by the server.
   final SerializationManager serializationManager;
@@ -65,13 +78,21 @@ class Server {
   /// Central message dispatch for real time messages.
   MessageCentral messageCentral = MessageCentral();
 
+  /// HTTP headers used by all API responses. Defaults to allowing any
+  /// cross origin resource sharing (CORS).
+  final Map<String, dynamic> httpResponseHeaders;
+
+  /// HTTP headers used for OPTIONS responses. These headers are sent in
+  /// addition to the [httpResponseHeaders] when the request method is OPTIONS.
+  final Map<String, dynamic> httpOptionsResponseHeaders;
+
   /// Creates a new [Server] object.
   Server({
     required this.serverpod,
     required this.serverId,
     required this.port,
     required this.serializationManager,
-    required this.databaseConfig,
+    required DatabasePoolManager? databasePoolManager,
     required this.passwords,
     required this.runMode,
     this.authenticationHandler,
@@ -80,38 +101,47 @@ class Server {
     this.securityContext,
     this.whitelistedExternalCalls,
     required this.endpoints,
-  }) : name = name ?? 'Server $serverId';
+    required this.httpResponseHeaders,
+    required this.httpOptionsResponseHeaders,
+  })  : name = name ?? 'Server $serverId',
+        _databasePoolManager = databasePoolManager;
 
   /// Starts the server.
-  Future<void> start() async {
-    if (securityContext != null) {
-      try {
-        var httpServer = await HttpServer.bindSecure(
+  /// Returns true if the server was started successfully.
+  Future<bool> start() async {
+    HttpServer httpServer;
+    try {
+      if (securityContext != null) {
+        httpServer = await HttpServer.bindSecure(
           InternetAddress.anyIPv6,
           port,
           securityContext!,
         );
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
+      } else {
+        httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
       }
-    } else {
-      try {
-        var httpServer = await HttpServer.bind(InternetAddress.anyIPv6, port);
-        _runServer(httpServer);
-      } catch (e, stackTrace) {
-        stderr.writeln(
-            '${DateTime.now().toUtc()} Internal server error. Failed to bind socket.');
-        stderr.writeln('$e');
-        stderr.writeln('$stackTrace');
-      }
+    } catch (e) {
+      stderr.writeln(
+        '${DateTime.now().toUtc()} ERROR: Failed to bind socket, port $port '
+        'may already be in use.',
+      );
+      stderr.writeln('${DateTime.now().toUtc()} ERROR: $e');
+      return false;
+    }
+
+    try {
+      _runServer(httpServer);
+    } catch (e, stackTrace) {
+      stderr.writeln(
+          '${DateTime.now().toUtc()} Internal server error. Failed to run server.');
+      stderr.writeln('$e');
+      stderr.writeln('$stackTrace');
+      return false;
     }
 
     _running = true;
     stdout.writeln('$name listening on port $port');
+    return _running;
   }
 
   void _runServer(HttpServer httpServer) async {
@@ -152,8 +182,9 @@ class Server {
     serverpod
         .logVerbose('handleRequest: ${request.method} ${request.uri.path}');
 
-    // Set Access-Control-Allow-Origin, required for Flutter web.
-    request.response.headers.add('Access-Control-Allow-Origin', '*');
+    for (var header in httpResponseHeaders.entries) {
+      request.response.headers.add(header.key, header.value);
+    }
 
     Uri uri;
 
@@ -203,6 +234,21 @@ class Server {
       return;
     } else if (uri.path == '/serverpod_cloud_storage') {
       readBody = false;
+    }
+
+    // This OPTIONS check is necessary when making requests from
+    // eg `editor.swagger.io`. It ensures proper handling of preflight requests
+    // with the OPTIONS method.
+    if (request.method == 'OPTIONS') {
+      for (var header in httpOptionsResponseHeaders.entries) {
+        request.response.headers.add(header.key, header.value);
+      }
+
+      // Safari and potentially other browsers require Content-Length=0.
+      request.response.headers.add('Content-Length', 0);
+      request.response.statusCode = HttpStatus.ok;
+      await request.response.close();
+      return;
     }
 
     // TODO: Limit check external calls
@@ -272,8 +318,8 @@ class Server {
       request.response.headers.contentType = ContentType.json;
       request.response.statusCode = HttpStatus.internalServerError;
 
-      var serializedEntity = serializationManager.encodeWithType(result.entity);
-      request.response.write(serializedEntity);
+      var serializedModel = serializationManager.encodeWithType(result.model);
+      request.response.write(serializedModel);
       await request.response.close();
     } else if (result is ResultSuccess) {
       // Set content type.
@@ -289,8 +335,8 @@ class Server {
           request.response.add(byteData.buffer.asUint8List());
         }
       } else {
-        var serializedEntity = SerializationManager.encode(result.returnValue);
-        request.response.write(serializedEntity);
+        var serializedModel = SerializationManager.encode(result.returnValue);
+        request.response.write(serializedModel);
       }
       await request.response.close();
       return;
@@ -311,8 +357,8 @@ class Server {
 
   Future<Result> _handleUriCall(
       Uri uri, String body, HttpRequest request) async {
-    var endpointName = uri.path.substring(1);
-    return endpoints.handleUriCall(this, endpointName, uri, body, request);
+    var path = uri.pathSegments.join('/');
+    return endpoints.handleUriCall(this, path, uri, body, request);
   }
 
   Future<void> _handleWebsocket(

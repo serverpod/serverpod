@@ -1,0 +1,3 @@
+class: Example
+fields:
+  name: String

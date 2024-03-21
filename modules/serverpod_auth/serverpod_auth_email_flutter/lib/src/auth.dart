@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 /// Controller for email authentication.
@@ -19,6 +19,14 @@ class EmailAuthController {
           serverResponse.userInfo == null ||
           serverResponse.keyId == null ||
           serverResponse.key == null) {
+        if (kDebugMode) {
+          print(
+            'serverpod_auth_email: Failed to authenticate with '
+            'Serverpod backend: '
+            '${serverResponse.failReason ?? 'reason unknown'}'
+            '. Aborting.',
+          );
+        }
         return null;
       }
 

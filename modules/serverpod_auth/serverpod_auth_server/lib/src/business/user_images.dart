@@ -58,10 +58,11 @@ class UserImages {
   static Future<bool> _setUserImage(
       Session session, int userId, Uint8List imageBytes) async {
     // Find the latest version of the user image if any.
-    var oldImageRef = await session.db.findSingleRow<UserImage>(
-      where: UserImage.t.userId.equals(userId),
+    var oldImageRef = await UserImage.db.findFirstRow(
+      session,
+      where: (t) => t.userId.equals(userId),
       orderDescending: true,
-      orderBy: UserImage.t.version,
+      orderBy: (t) => t.version,
     );
 
     // Add one to the version number or create a new version 1.
@@ -87,14 +88,14 @@ class UserImages {
     // Store the path to the image.
     var imageRef =
         UserImage(userId: userId, version: version, url: publicUrl.toString());
-    await session.db.insert(imageRef);
+    await UserImage.db.insertRow(session, imageRef);
 
     // Update the UserInfo with the new image path.
     var userInfo =
         await Users.findUserByUserId(session, userId, useCache: false);
     if (userInfo == null) return false;
     userInfo.imageUrl = publicUrl.toString();
-    await session.db.update(userInfo);
+    await UserInfo.db.updateRow(session, userInfo);
 
     if (AuthConfig.current.onUserUpdated != null) {
       await AuthConfig.current.onUserUpdated!(session, userInfo);

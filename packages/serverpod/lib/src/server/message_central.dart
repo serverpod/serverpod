@@ -28,12 +28,12 @@ class MessageCentral {
     if (global) {
       // Send to Redis
       assert(
-        Serverpod.instance!.redisController != null,
+        Serverpod.instance.redisController != null,
         'Redis needs to be enabled to use this method',
       );
       var data =
-          Serverpod.instance!.serializationManager.encodeWithType(message);
-      Serverpod.instance!.redisController!.publish(channelName, data);
+          Serverpod.instance.serializationManager.encodeWithType(message);
+      Serverpod.instance.redisController!.publish(channelName, data);
     } else {
       // Handle internally in this server instance
       var channel = _channels[channelName];
@@ -91,7 +91,7 @@ class MessageCentral {
   void _receivedRedisMessage(String channelName, String message) {
     // var serialization = jsonDecode(message);
     var messageObj =
-        Serverpod.instance!.serializationManager.decodeWithType(message);
+        Serverpod.instance.serializationManager.decodeWithType(message);
     if (messageObj == null) {
       return;
     }

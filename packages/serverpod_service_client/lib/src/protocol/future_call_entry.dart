@@ -4,13 +4,15 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A serialized future call with bindings to the database.
-class FutureCallEntry extends _i1.SerializableEntity {
-  FutureCallEntry({
+abstract class FutureCallEntry extends _i1.SerializableEntity {
+  FutureCallEntry._({
     this.id,
     required this.name,
     required this.time,
@@ -18,6 +20,15 @@ class FutureCallEntry extends _i1.SerializableEntity {
     required this.serverId,
     this.identifier,
   });
+
+  factory FutureCallEntry({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -57,15 +68,64 @@ class FutureCallEntry extends _i1.SerializableEntity {
   /// An optional identifier which can be used to cancel the call.
   String? identifier;
 
+  FutureCallEntry copyWith({
+    int? id,
+    String? name,
+    DateTime? time,
+    String? serializedObject,
+    String? serverId,
+    String? identifier,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'name': name,
-      'time': time,
-      'serializedObject': serializedObject,
+      'time': time.toJson(),
+      if (serializedObject != null) 'serializedObject': serializedObject,
       'serverId': serverId,
-      'identifier': identifier,
+      if (identifier != null) 'identifier': identifier,
     };
+  }
+}
+
+class _Undefined {}
+
+class _FutureCallEntryImpl extends FutureCallEntry {
+  _FutureCallEntryImpl({
+    int? id,
+    required String name,
+    required DateTime time,
+    String? serializedObject,
+    required String serverId,
+    String? identifier,
+  }) : super._(
+          id: id,
+          name: name,
+          time: time,
+          serializedObject: serializedObject,
+          serverId: serverId,
+          identifier: identifier,
+        );
+
+  @override
+  FutureCallEntry copyWith({
+    Object? id = _Undefined,
+    String? name,
+    DateTime? time,
+    Object? serializedObject = _Undefined,
+    String? serverId,
+    Object? identifier = _Undefined,
+  }) {
+    return FutureCallEntry(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      time: time ?? this.time,
+      serializedObject: serializedObject is String?
+          ? serializedObject
+          : this.serializedObject,
+      serverId: serverId ?? this.serverId,
+      identifier: identifier is String? ? identifier : this.identifier,
+    );
   }
 }

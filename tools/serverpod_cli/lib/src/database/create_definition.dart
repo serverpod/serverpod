@@ -1,14 +1,20 @@
-import 'package:serverpod_cli/src/analyzer/entities/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
-/// Create the target [DatabaseDefinition] based on the [serializableEntities].
-DatabaseDefinition createDatabaseDefinitionFromEntities(
-    List<SerializableEntityDefinition> serializableEntities) {
+/// Create the target [DatabaseDefinition] based on the [serializableModel].
+DatabaseDefinition createDatabaseDefinitionFromModels(
+  List<SerializableModelDefinition> serializableModels,
+  String moduleName,
+  List<ModuleConfig> allModules,
+) {
   var tables = <TableDefinition>[
-    for (var classDefinition in serializableEntities)
+    for (var classDefinition in serializableModels)
       if (classDefinition is ClassDefinition &&
           classDefinition.tableName != null)
         TableDefinition(
+          module: moduleName,
           name: classDefinition.tableName!,
           dartName: classDefinition.className,
           schema: 'public',
@@ -39,8 +45,7 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
               isUnique: true,
               isPrimary: true,
             ),
-            for (var index in classDefinition.indexes ??
-                <SerializableEntityIndexDefinition>[])
+            for (var index in classDefinition.indexes)
               IndexDefinition(
                 indexName: index.name,
                 elements: [
@@ -54,15 +59,27 @@ DatabaseDefinition createDatabaseDefinitionFromEntities(
                 isPrimary: false,
               ),
           ],
-          //TODO: Add an option in the class specification for this.
-          managed: true,
+          managed: classDefinition.manageMigration,
         ),
   ];
 
   // Sort the database definitions
   _sortTableDefinitions(tables);
 
-  return DatabaseDefinition(tables: tables);
+  return DatabaseDefinition(
+    moduleName: moduleName,
+    tables: tables,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
+    installedModules:
+        allModules.where((module) => module.migrationVersions.isNotEmpty).map(
+      (module) {
+        return DatabaseMigrationVersion(
+          module: module.name,
+          version: module.migrationVersions.last,
+        );
+      },
+    ).toList(),
+  );
 }
 
 List<ForeignKeyDefinition> _createForeignKeys(ClassDefinition classDefinition) {

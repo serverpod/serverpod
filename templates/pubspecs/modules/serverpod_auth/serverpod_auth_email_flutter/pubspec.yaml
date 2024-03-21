@@ -1,5 +1,4 @@
 # TEMPLATE
-PUBLISH_TO
 
 name: serverpod_auth_email_flutter
 description: Sign in with email for the Serverpod auth module.
@@ -7,23 +6,32 @@ version: VERSION
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=3.7.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
   email_validator: ^2.1.17
-  serverpod_auth_client: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_auth_client
-  serverpod_auth_shared_flutter: #--CONDITIONAL_COMMENT--#VERSION
-    path: ../serverpod_auth_shared_flutter
+  serverpod_auth_client: VERSION
+  serverpod_auth_shared_flutter: VERSION
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #--CONDITIONAL_COMMENT--#VERSION
+  serverpod_lints: VERSION
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../serverpod_auth_client
+  serverpod_auth_shared_flutter:
+    path: ../serverpod_auth_shared_flutter
+  serverpod_lints:
     path: ../../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

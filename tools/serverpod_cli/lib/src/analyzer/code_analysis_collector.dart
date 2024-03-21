@@ -4,13 +4,17 @@ import 'package:super_string/super_string.dart';
 abstract class CodeAnalysisCollector {
   List<SourceSpanException> get errors;
 
-  bool get hasSeverErrors => errors.where(
-        (error) {
-          return error is! SourceSpanSeverityException ||
-              error.severity == SourceSpanSeverity.error ||
-              error.severity == SourceSpanSeverity.warning;
-        },
-      ).isNotEmpty;
+  static bool containsSeverErrors(List<SourceSpanException> errors) {
+    return errors.where(
+      (error) {
+        return error is! SourceSpanSeverityException ||
+            error.severity == SourceSpanSeverity.error ||
+            error.severity == SourceSpanSeverity.warning;
+      },
+    ).isNotEmpty;
+  }
+
+  bool get hasSeverErrors => containsSeverErrors(errors);
 
   void addError(SourceSpanException error);
 
@@ -38,11 +42,11 @@ class SourceSpanSeverityException extends SourceSpanException {
   final List<SourceSpanTag>? tags;
 
   SourceSpanSeverityException(
-    String message,
-    SourceSpan? span, {
+    super.message,
+    super.span, {
     this.severity = SourceSpanSeverity.error,
     this.tags,
-  }) : super(message, span);
+  });
 
   @override
   String toString({Object? color}) {

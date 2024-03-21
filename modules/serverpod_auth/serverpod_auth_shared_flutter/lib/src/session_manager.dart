@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 
 const _prefsKey = 'serverpod_userinfo_key';
@@ -50,17 +50,6 @@ class SessionManager with ChangeNotifier {
   /// Returns information about the signed in user or null if no user is
   /// currently signed in.
   UserInfo? get signedInUser => _signedInUser;
-
-  @Deprecated('Use setSignedInUser instead.')
-  set signedInUser(UserInfo? userInfo) {
-    _signedInUser = userInfo;
-    // TODO: Avoid doing asynchronously.
-    keyManager.get().then((String? key) async {
-      await caller.client.updateStreamingConnectionAuthenticationKey(key);
-    });
-    _storeSharedPrefs();
-    notifyListeners();
-  }
 
   /// Registers the signed in user, updates the [keyManager], and upgrades the
   /// streaming connection if it is open.

@@ -6,14 +6,20 @@ class ConfigInfo {
   late ServerpodConfig config;
   ConfigInfo(String runMode, {this.serverId}) {
     var passwords = PasswordManager(runMode: runMode).loadPasswords() ?? {};
-    config = ServerpodConfig(runMode, serverId ?? 'undefined', passwords);
+    config = ServerpodConfig.load(runMode, serverId ?? 'undefined', passwords);
   }
 
   Client createServiceClient() {
     var keyManager = ServiceKeyManager('CLI', config);
+
+    var insightsServer = config.insightsServer;
+    if (insightsServer == null) {
+      throw StateError('Insights server not configured.');
+    }
+
     return Client(
-      '${config.insightsServer.publicScheme}://'
-      '${config.insightsServer.publicHost}:${config.insightsServer.port}/',
+      '${insightsServer.publicScheme}://'
+      '${insightsServer.publicHost}:${insightsServer.port}/',
       authenticationKeyManager: keyManager,
     );
   }

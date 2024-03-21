@@ -3,7 +3,7 @@
 // the documentation on how to add endpoints to your server.
 
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 // const _configFilePath = 'config/google_client_secret.json';
 
@@ -16,94 +16,7 @@ class EmailEndpoint extends Endpoint {
     String email,
     String password,
   ) async {
-    email = email.toLowerCase();
-    password = password.trim();
-
-    session.log('authenticate $email / XXXXXXXX', level: LogLevel.debug);
-
-    // Fetch password entry
-    var entry = await session.db.findSingleRow<EmailAuth>(
-      where: EmailAuth.t.email.equals(email),
-    );
-    if (entry == null) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-
-    if (await _hasTooManyFailedSignIns(session, email)) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.tooManyFailedAttempts,
-      );
-    }
-
-    session.log(' - found entry ', level: LogLevel.debug);
-
-    // Check that password is correct
-    if (entry.hash != Emails.generatePasswordHash(password, email)) {
-      session.log(
-          ' - ${Emails.generatePasswordHash(password, email)} saved: ${entry.hash}',
-          level: LogLevel.debug);
-      await _logFailedSignIn(session, email);
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-
-    session.log(' - password is correct, userId: ${entry.userId})',
-        level: LogLevel.debug);
-
-    var userInfo = await Users.findUserByUserId(session, entry.userId);
-    if (userInfo == null) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-
-    session.log(' - user found', level: LogLevel.debug);
-
-    // Sign in user and return user info
-    var auth = await session.auth.signInUser(
-      entry.userId,
-      'email',
-      scopes: userInfo.scopes,
-    );
-
-    session.log(' - user signed in', level: LogLevel.debug);
-
-    return AuthenticationResponse(
-      success: true,
-      userInfo: userInfo,
-      key: auth.key,
-      keyId: auth.id,
-    );
-  }
-
-  Future<void> _logFailedSignIn(Session session, String email) async {
-    session as MethodCallSession;
-    var failedSignIn = EmailFailedSignIn(
-      email: email,
-      time: DateTime.now(),
-      ipAddress: session.httpRequest.remoteIpAddress,
-    );
-    await EmailFailedSignIn.insert(session, failedSignIn);
-  }
-
-  Future<bool> _hasTooManyFailedSignIns(Session session, String email) async {
-    var numFailedSignIns = await EmailFailedSignIn.count(
-      session,
-      where: (t) =>
-          t.email.equals(email) &
-          (t.time >
-              DateTime.now()
-                  .toUtc()
-                  .subtract(AuthConfig.current.emailSignInFailureResetTime)),
-    );
-    return numFailedSignIns >= AuthConfig.current.maxAllowedEmailSignInAttempts;
+    return Emails.authenticate(session, email, password);
   }
 
   /// Changes a users password.

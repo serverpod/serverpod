@@ -1,0 +1,6 @@
+class: Organization
+table: organization
+fields:
+  name: String
+  people: List<Person>?, relation(name=org_person)
+  city: City?, relation(name=city_org, optional)

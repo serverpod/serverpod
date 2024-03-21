@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import '../business/config.dart';
 import '../generated/protocol.dart';
@@ -62,6 +62,7 @@ class ChatEndpoint extends Endpoint {
             ChatJoinChannelFailed(
                 channel: message.channel,
                 reason: 'User must be authenticated'));
+        return;
       }
 
       if (message.userName != null && chatSession.userInfo == null) {
@@ -145,7 +146,7 @@ class ChatEndpoint extends Endpoint {
       );
 
       if (!_isEphemeralChannel(message.channel)) {
-        await session.db.insert(chatMessage);
+        await ChatMessage.db.insertRow(session, chatMessage);
       }
 
       session.messages.postMessage(
@@ -191,18 +192,18 @@ class ChatEndpoint extends Endpoint {
 
     List<ChatMessage> messages;
     if (lastId != null) {
-      messages = await ChatMessage.find(
+      messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel) & (t.id < lastId),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );
     } else {
-      messages = await ChatMessage.find(
+      messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );
@@ -235,7 +236,7 @@ class ChatEndpoint extends Endpoint {
     String channel,
     int userId,
   ) async {
-    var readMessageRow = await ChatReadMessage.findSingleRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );
@@ -248,7 +249,7 @@ class ChatEndpoint extends Endpoint {
 
   Future<void> _setLastReadMessage(Session session, String channel, int userId,
       int lastReadMessageId) async {
-    var readMessageRow = await ChatReadMessage.findSingleRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );
@@ -259,10 +260,10 @@ class ChatEndpoint extends Endpoint {
         userId: userId,
         lastReadMessageId: lastReadMessageId,
       );
-      await session.db.insert(readMessageRow);
+      await ChatReadMessage.db.insertRow(session, readMessageRow);
     } else {
       readMessageRow.lastReadMessageId = lastReadMessageId;
-      await session.db.update(readMessageRow);
+      await ChatReadMessage.db.updateRow(session, readMessageRow);
     }
   }
 

@@ -1,0 +1,19 @@
+insights:
+  - getRuntimeSettings:
+  - setRuntimeSettings:
+  - clearAllLogs:
+  - getSessionLog:
+  - getOpenSessionLog:
+  - getCachesInfo:
+  - shutdown:
+  - checkHealth:
+  - getHealthData:
+  - hotReload:
+  - getTargetTableDefinition:
+  - getLiveDatabaseDefinition:
+  - getDatabaseDefinitions:
+  - fetchDatabaseBulkData:
+  - runQueries:
+  - getDatabaseRowCount:
+  - executeSql:
+  - fetchFile:

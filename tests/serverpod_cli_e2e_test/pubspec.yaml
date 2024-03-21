@@ -1,0 +1,36 @@
+# This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
+# Mode: development
+
+publish_to: none
+
+name: serverpod_cli_e2e_test
+version: 1.0.0
+description: E2e tests for Serverpod CLI.
+repository: https://github.com/serverpod/serverpod
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dev_dependencies:
+  async: ^2.11.0
+  collection: ^1.17.1
+  lints: ^3.0.0
+  path: ^1.8.2
+  test: ^1.24.2
+  uuid: ^4.0.0
+  serverpod_cli: 2.0.0-alpha.1 
+  serverpod_lints: 2.0.0-alpha.1 
+
+dependency_overrides:
+  serverpod_cli:
+    path: ../../tools/serverpod_cli
+  serverpod_lints:
+    path: ../../packages/serverpod_lints
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client

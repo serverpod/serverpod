@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
-import 'package:serverpod_chat_client/module.dart';
+import 'package:serverpod_chat_client/serverpod_chat_client.dart';
 import 'package:serverpod_chat_flutter/serverpod_chat_flutter.dart';
-import 'package:serverpod_auth_client/module.dart' as auth;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as auth;
 
 /// Callback for when a message is received from the server. If [addedByUser] is
 /// true, the message was added by the current user.

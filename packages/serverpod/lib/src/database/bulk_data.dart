@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:postgres_pool/postgres_pool.dart';
 import 'package:serverpod/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/database/analyze.dart';
@@ -68,7 +67,7 @@ class DatabaseBulkData {
     var query = 'SELECT ${columnSelects.join(', ')} FROM "$table" '
         'WHERE id > $lastId$filterQuery ORDER BY "id" LIMIT $limit';
     try {
-      data = await database.query(query);
+      data = await database.unsafeQuery(query);
     } catch (e) {
       throw BulkDataException(
         message: 'Failed to query database ($e).',
@@ -98,7 +97,7 @@ class DatabaseBulkData {
         'JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace '
         'WHERE relname = \'$table\' AND nspname = \'public\'';
 
-    var result = await database.query(query);
+    var result = await database.unsafeQuery(query);
 
     if (result.isEmpty) {
       return 0;
@@ -116,11 +115,11 @@ class DatabaseBulkData {
     var result =
         await database.transaction<BulkQueryResult>((transaction) async {
       var startTime = DateTime.now();
-      PostgreSQLResult? result;
+      DatabaseResult? result;
       int numAffectedRows = 0;
 
       for (var query in queries) {
-        result = await database.query(query, transaction: transaction);
+        result = await database.unsafeQuery(query, transaction: transaction);
         numAffectedRows += result.affectedRowCount;
       }
       result!;
@@ -128,10 +127,9 @@ class DatabaseBulkData {
       var duration = DateTime.now().difference(startTime);
 
       return BulkQueryResult(
-        headers: result.columnDescriptions
+        headers: result.schema.columns
             .map((e) => BulkQueryColumnDescription(
-                  name: e.columnName,
-                  table: e.tableName,
+                  name: e.columnName ?? '',
                 ))
             .toList(),
         data: SerializationManager.encode(result),
@@ -147,11 +145,11 @@ class DatabaseBulkData {
     Database database,
     String table,
   ) async {
-    var databaseDefinition =
-        Serverpod.instance!.serializationManager.getTargetDatabaseDefinition();
+    var tableDefinitions =
+        Serverpod.instance.serializationManager.getTargetTableDefinitions();
 
     var tableDefinition =
-        databaseDefinition.tables.firstWhereOrNull((e) => e.name == table);
+        tableDefinitions.firstWhereOrNull((e) => e.name == table);
 
     return tableDefinition;
   }

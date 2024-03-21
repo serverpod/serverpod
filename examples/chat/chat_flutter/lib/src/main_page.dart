@@ -13,8 +13,8 @@ class MainPage extends StatefulWidget {
   const MainPage({
     required this.channels,
     required this.chatControllers,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   MainPageState createState() => MainPageState();
@@ -78,8 +78,7 @@ class _ChannelDrawer extends StatelessWidget {
     required this.channels,
     required this.selectedChannel,
     required this.onSelectChannel,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

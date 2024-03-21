@@ -55,7 +55,7 @@ class CloudStoragePublicEndpoint extends Endpoint {
       String key) async {
     // Confirm that we are allowed to do the upload
     var uploadInfo =
-        await session.db.findSingleRow<CloudStorageDirectUploadEntry>(
+        await session.db.findFirstRow<CloudStorageDirectUploadEntry>(
       where: CloudStorageDirectUploadEntry.t.storageId.equals(storageId) &
           CloudStorageDirectUploadEntry.t.path.equals(path),
     );
