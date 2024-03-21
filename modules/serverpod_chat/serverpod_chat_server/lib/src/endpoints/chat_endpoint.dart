@@ -326,9 +326,10 @@ class ChatEndpoint extends Endpoint {
         if (thumbnail != null) {
           var thumbPath = _generateAttachmentFilePath(userId, fileName);
           await session.storage.storeFile(
-              storageId: 'public',
-              path: thumbPath,
-              byteData: thumbnail.byteData);
+            storageId: 'public',
+            path: thumbPath,
+            byteData: thumbnail.byteData,
+          );
           thumbUrl = await session.storage
               .getPublicUrl(storageId: 'public', path: thumbPath);
           if (thumbUrl != null) {

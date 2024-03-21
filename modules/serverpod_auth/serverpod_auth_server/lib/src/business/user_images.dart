@@ -23,14 +23,20 @@ class UserImages {
   /// Sets a user's image from image data. The image is resized before being
   /// stored in the cloud and associated with the user.
   static Future<bool> setUserImageFromBytes(
-      Session session, int userId, Uint8List imageBytes,) async {
+    Session session,
+    int userId,
+    Uint8List imageBytes,
+  ) async {
     var reEncodedImageBytes = await Isolate.run(() async {
       var image = decodeImage(imageBytes);
       if (image == null) return null;
       var imageSize = AuthConfig.current.userImageSize;
       if (image.width != imageSize || image.height != imageSize) {
-        image = copyResizeCropSquare(image,
-            size: imageSize, interpolation: Interpolation.average);
+        image = copyResizeCropSquare(
+          image,
+          size: imageSize,
+          interpolation: Interpolation.average,
+        );
       }
       return _encodeImage(image);
     });
@@ -56,7 +62,10 @@ class UserImages {
           : encodePng(image);
 
   static Future<bool> _setUserImage(
-      Session session, int userId, Uint8List imageBytes) async {
+    Session session,
+    int userId,
+    Uint8List imageBytes,
+  ) async {
     // Find the latest version of the user image if any.
     var oldImageRef = await UserImage.db.findFirstRow(
       session,
@@ -78,9 +87,10 @@ class UserImages {
     // Store the image.
     var path = 'serverpod/user_images/$userId-$version$pathExtension';
     await session.storage.storeFile(
-        storageId: 'public',
-        path: path,
-        byteData: ByteData.view(imageBytes.buffer));
+      storageId: 'public',
+      path: path,
+      byteData: ByteData.view(imageBytes.buffer),
+    );
     var publicUrl =
         await session.storage.getPublicUrl(storageId: 'public', path: path);
     if (publicUrl == null) return false;
@@ -170,8 +180,13 @@ Future<Image> defaultUserImageGenerator(UserInfo userInfo) => Isolate.run(() {
               color & 0xff, (color >> 24) & 0xff));
 
       // Draw the character on top of the solid filled image.
-      drawString(image, String.fromCharCode(charCode),
-          font: font, x: xPos - chOffsetX, y: yPos - chOffsetY);
+      drawString(
+        image,
+        String.fromCharCode(charCode),
+        font: font,
+        x: xPos - chOffsetX,
+        y: yPos - chOffsetY,
+      );
 
       // Resize image if it's not the preferred size.
       return imageSize == 256
