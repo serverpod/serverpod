@@ -75,10 +75,14 @@ class Emails {
   ///
   ///[batchSize] is the number of entries to migrate in each batch.
   ///
+  /// [limit] is the maximum number of entries to migrate. If null,
+  /// all entries will be migrated.
+  ///
   /// Returns the number of migrated entries.
   static Future<int> migrateLegacyPasswordHashes(
     Session session, {
     int batchSize = 100,
+    int? limit,
   }) async {
     var updatedEntries = 0;
     int lastEntryId = 0;
@@ -93,6 +97,17 @@ class Emails {
 
       if (entries.isEmpty) {
         return updatedEntries;
+      }
+
+      if (limit != null) {
+        if (limit == updatedEntries) {
+          return updatedEntries;
+        }
+
+        var entrySurplus = (updatedEntries + entries.length) - limit;
+        if (entrySurplus > 0) {
+          entries = entries.sublist(0, entries.length - entrySurplus);
+        }
       }
 
       lastEntryId = entries.last.id!;
