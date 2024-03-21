@@ -12,8 +12,7 @@ import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import '../business/config.dart';
 import '../generated/protocol.dart';
 
-const _maxImageWidth = 256;
-const _maxImageHeight = _maxImageWidth;
+const _maxImageSide = 256;
 
 class _Thumbnail {
   final int width;
@@ -310,11 +309,10 @@ class ChatEndpoint extends Endpoint {
           if (image == null) {
             return null;
           }
-          if (image.width > _maxImageWidth || image.height > _maxImageHeight) {
-            image = copyResize(
+          if (image.width > _maxImageSide || image.height > _maxImageSide) {
+            image = copyResizeCropSquare(
               image,
-              width: _maxImageWidth,
-              height: _maxImageHeight,
+              size: _maxImageSide,
               interpolation: Interpolation.average,
             );
           }
