@@ -6,34 +6,41 @@ import 'package:test/test.dart';
 void main() {
   group('Given password and fixed salt', () {
     group('when generating password hash', () {
-      test('then hash has 4 sections split by \$.', () {
-        var passwordHash = PasswordHash.argon2id('hunter2', salt: 'saltySalt');
+      test('then hash has 4 sections split by \$.', () async {
+        var passwordHash = await PasswordHash.argon2id(
+          'hunter2',
+          salt: 'saltySalt',
+        );
 
         var parts = passwordHash.split('\$');
         expect(parts, hasLength(4));
       });
 
-      test('then second section contains algorithm name.', () {
-        var passwordHash = PasswordHash.argon2id('hunter2', salt: 'saltySalt');
+      test('then second section contains algorithm name.', () async {
+        var passwordHash = await PasswordHash.argon2id(
+          'hunter2',
+          salt: 'saltySalt',
+        );
 
         var parts = passwordHash.split('\$');
         expect(parts[1], 'argon2id');
       });
 
-      test('then third section contains encoded salt.', () {
+      test('then third section contains encoded salt.', () async {
         var salt = 'saltySalt';
 
-        var passwordHash = PasswordHash.argon2id('hunter2', salt: salt);
+        var passwordHash = await PasswordHash.argon2id('hunter2', salt: salt);
 
         var parts = passwordHash.split('\$');
         expect(parts[2], const Base64Encoder().convert(salt.codeUnits));
       });
 
-      test('then fourth section contains hash.', () {
+      test('then fourth section contains hash.', () async {
         var expectedHash =
             'XE1myFwU/BfI2wTVT3Idp2htwbXRLkY3L5ysvmAR+iJJVfHMJEMFP7eFrRwMvsP0dygxYopuCiDGNHhJaIuE0Bm6SIIAJt/LoktWA+JzMdVAQQDF08anztJL8db3nIjqiRr7fTsEnH88zIMx0z+6X22ZIJoKHQ37wI7jTVhPgtEX8OSubOHA8JSKaGko9GoXa1IEO4PXZ/OWoCf+PELDySMIK5UvakJg4Rx6gjuQQJ612VfB0lI+Dw//h5mdbypxIQWBUp+cc8VYwOtKod2BOhEzn/h0R158/n9NaW4Zxz7mteja3K2Kl/fZwGpronzItYZMbw5j7pS96r/Jf227IQ==';
 
-        var passwordHash = PasswordHash.argon2id('hunter2', salt: 'saltySalt');
+        var passwordHash =
+            await PasswordHash.argon2id('hunter2', salt: 'saltySalt');
 
         var parts = passwordHash.split('\$');
         expect(parts[3], expectedHash);
@@ -44,10 +51,17 @@ void main() {
       var password = 'hunter2';
       var salt = 'saltySalt';
       var pepper = 'pepper';
+      late String withoutPepper;
+      late String withPepper;
 
-      var withoutPepper = PasswordHash.argon2id(password, salt: salt);
-      var withPepper =
-          PasswordHash.argon2id(password, salt: salt, pepper: pepper);
+      setUpAll(() async {
+        withoutPepper = await PasswordHash.argon2id(password, salt: salt);
+        withPepper = await PasswordHash.argon2id(
+          password,
+          salt: salt,
+          pepper: pepper,
+        );
+      });
       test('then salt is same.', () {
         var withoutPepperSalt = withoutPepper.split('\$')[2];
         var withPepperSalt = withPepper.split('\$')[2];
@@ -65,8 +79,13 @@ void main() {
   group('Given password', () {
     group('when generating password hash multiple times', () {
       var password = 'hunter2';
-      var firstPasswordHash = PasswordHash.argon2id(password);
-      var secondPasswordHash = PasswordHash.argon2id(password);
+      late String firstPasswordHash;
+      late String secondPasswordHash;
+
+      setUpAll(() async {
+        firstPasswordHash = await PasswordHash.argon2id(password);
+        secondPasswordHash = await PasswordHash.argon2id(password);
+      });
       test('then unique salt is generated.', () {
         var firstSalt = firstPasswordHash.split('\$')[2];
         var secondSalt = secondPasswordHash.split('\$')[2];
@@ -83,18 +102,19 @@ void main() {
 
   group('Given password hash', () {
     test('when checking if hash should be updated then no update is needed.',
-        () {
+        () async {
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id('hunter2'),
+        await PasswordHash.argon2id('hunter2'),
         legacySalt: 'saltySalt',
       );
 
       expect(passwordHash.shouldUpdateHash(), isFalse);
     });
 
-    test('when checking if hash is legacy hash then method returns false.', () {
+    test('when checking if hash is legacy hash then method returns false.',
+        () async {
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id('hunter2'),
+        await PasswordHash.argon2id('hunter2'),
         legacySalt: 'saltySalt',
       );
 
@@ -102,47 +122,48 @@ void main() {
     });
 
     test('when validating with correct password then validator returns true',
-        () {
+        () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: salt),
+        await PasswordHash.argon2id(password, salt: salt),
         legacySalt: salt,
       );
 
-      expect(passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password), isTrue);
     });
 
     test(
         'when validating with correct password but different legacy salt then validator returns true',
-        () {
+        () async {
       var password = 'hunter2';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: 'saltySalt'),
+        await PasswordHash.argon2id(password, salt: 'saltySalt'),
         legacySalt: 'differentSalt' /* field is ignored */,
       );
 
-      expect(passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password), isTrue);
     });
 
     test('when validating with incorrect password then validator returns false',
-        () {
+        () async {
       var salt = 'saltySalt';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id('hunter2', salt: salt),
+        await PasswordHash.argon2id('hunter2', salt: salt),
         legacySalt: salt,
       );
 
-      expect(passwordHash.validate('chaser1'), isFalse);
+      expect(await passwordHash.validate('chaser1'), isFalse);
     });
 
-    test('when validating with modified salt then validator returns false', () {
+    test('when validating with modified salt then validator returns false',
+        () async {
       var password = 'hunter2';
       var originalPasswordHash =
-          PasswordHash.argon2id(password, salt: 'original salt');
+          await PasswordHash.argon2id(password, salt: 'original salt');
 
       // Replace the salt in the password hash with a different one
       var parts = originalPasswordHash.split('\$');
@@ -154,72 +175,78 @@ void main() {
         legacySalt: 'original salt' /* field is ignored */,
       );
 
-      expect(passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password), isFalse);
     });
 
-    test('when validating with valid pepper then validator returns true.', () {
+    test('when validating with valid pepper then validator returns true.',
+        () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
       var pepper = 'pepper';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: salt, pepper: pepper),
+        await PasswordHash.argon2id(password, salt: salt, pepper: pepper),
         legacySalt: salt,
         pepper: pepper,
       );
 
-      expect(passwordHash.validate(password), isTrue);
+      expect(await passwordHash.validate(password), isTrue);
     });
 
     test('when validating with invalid pepper then validator returns false.',
-        () {
+        () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: salt, pepper: 'firstPepper'),
+        await PasswordHash.argon2id(
+          password,
+          salt: salt,
+          pepper: 'firstPepper',
+        ),
         legacySalt: salt,
         pepper: 'differentPepper',
       );
 
-      expect(passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password), isFalse);
     });
 
     test('when validating with missing pepper then validator returns false.',
-        () {
+        () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: salt, pepper: 'pepper'),
+        await PasswordHash.argon2id(password, salt: salt, pepper: 'pepper'),
         legacySalt: salt,
       );
 
-      expect(passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password), isFalse);
     });
 
-    test('when validating with added pepper then validator returns false.', () {
+    test('when validating with added pepper then validator returns false.',
+        () async {
       var salt = 'saltySalt';
       var password = 'hunter2';
 
       var passwordHash = PasswordHash(
-        PasswordHash.argon2id(password, salt: salt),
+        await PasswordHash.argon2id(password, salt: salt),
         legacySalt: salt,
         pepper: 'pepper',
       );
 
-      expect(passwordHash.validate(password), isFalse);
+      expect(await passwordHash.validate(password), isFalse);
     });
   });
 
   group('Given salt that contains \$', () {
     test(
         'when generating password hash then hash still only has 4 parts split by \$.',
-        () {
+        () async {
       var password = 'hunter2';
       var salt = 'salty\$salt';
 
-      var passwordHash = PasswordHash.argon2id(password, salt: salt);
+      var passwordHash = await PasswordHash.argon2id(password, salt: salt);
       var parts = passwordHash.split('\$');
 
       expect(parts, hasLength(4));
