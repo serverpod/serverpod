@@ -36,20 +36,6 @@ abstract class ServerpodClient extends ServerpodClientShared {
     // Setup client
     _httpClient = HttpClient(context: context);
     _httpClient.connectionTimeout = const Duration(seconds: 20);
-    // TODO: Generate working certificates
-    _httpClient.badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-//      print('Failed to verify server certificate');
-//      print('pem: ${cert.pem}');
-//      print('subject: ${cert.subject}');
-//      print('issuer: ${cert.issuer}');
-//      print('valid from: ${cert.startValidity}');
-//      print('valid to: ${cert.endValidity}');
-//      print('host: $host');
-//      print('port: $port');
-//      return false;
-      return true;
-    });
   }
 
   Future<void> _initialize() async {
