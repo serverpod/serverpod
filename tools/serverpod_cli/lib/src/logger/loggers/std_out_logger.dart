@@ -124,7 +124,16 @@ class StdOutLogger extends Logger {
 
     _stopAnimationInProgress();
 
-    if (newParagraph) _write('', LogLevel.info, newParagraph: newParagraph);
+    // Write an empty line before the progress message if a new paragraph is
+    // requested.
+    if (newParagraph) {
+      _write(
+        '',
+        LogLevel.info,
+        newParagraph: false,
+        newLine: true,
+      );
+    }
 
     var progress = Progress(message, stdout);
     trackedAnimationInProgress = progress;

@@ -153,7 +153,7 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   void printUsage() {
-    log.info(usage, type: const RawLogType());
+    log.info(usage);
   }
 
   @override

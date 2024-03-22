@@ -5,7 +5,7 @@ import 'package:serverpod_cli/src/logger/logger.dart';
 abstract class ServerpodCommand extends Command {
   @override
   void printUsage() {
-    log.info(usage, type: const RawLogType());
+    log.info(usage);
   }
 
   @override
