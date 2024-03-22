@@ -344,4 +344,46 @@ void main() async {
       });
     });
   });
+
+  group('Given password not matching the hash when validating password', () {
+    // This is the hash from the password 'hunter4'
+    var hunter4PasswordHash =
+        '2ee3dc6432300eabf9630ac7827d6dd23fd23cc9120ec4cd58f8f66bd3ce2db9';
+    var notHunter4PasswordHash =
+        '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
+
+    test('then validation fails.', () async {
+      expect(
+        await Emails.validatePasswordHash(
+          'notHunter4',
+          'test7@serverpod.dev',
+          hunter4PasswordHash,
+        ),
+        isFalse,
+      );
+    });
+
+    test(
+        'then validation failure callback is called with generated hash and passed in hash.',
+        () async {
+      late String actualStoredHash;
+      late String actualPasswordHash;
+
+      await Emails.validatePasswordHash(
+        'notHunter4',
+        'test7@serverpod.dev',
+        hunter4PasswordHash,
+        onValidationFailure: ({
+          required String storedHash,
+          required String passwordHash,
+        }) {
+          actualStoredHash = storedHash;
+          actualPasswordHash = passwordHash;
+        },
+      );
+
+      expect(actualStoredHash, hunter4PasswordHash);
+      expect(actualPasswordHash, notHunter4PasswordHash);
+    });
+  });
 }
