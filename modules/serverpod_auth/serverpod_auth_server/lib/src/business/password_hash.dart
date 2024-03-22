@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -109,11 +110,12 @@ class PasswordHash {
   ///
   /// If the password does not match the hash, the [onValidationFailure] function
   /// will be called with the hash and the password hash as arguments.
-  bool validate(
+  Future<bool> validate(
     String password, {
     void Function(String hash, String passwordHash)? onValidationFailure,
-  }) {
-    var passwordHash = _hashGenerator.generateHash(password);
+  }) async {
+    var passwordHash =
+        await Isolate.run(() => _hashGenerator.generateHash(password));
 
     if (_hash != passwordHash) {
       onValidationFailure?.call(passwordHash, _hash);
@@ -127,10 +129,13 @@ class PasswordHash {
   ///
   /// If the [email] parameter is provided, the email will be used as an
   /// additional salt for the password hash.
-  static String legacyHash(String password, String salt, {String? email}) {
-    return _LegacyPasswordHashGenerator(salt: salt, email: email)
-        .generatePasswordHash(password);
-  }
+  static Future<String> legacyHash(
+    String password,
+    String salt, {
+    String? email,
+  }) async =>
+      Isolate.run(() => _LegacyPasswordHashGenerator(salt: salt, email: email)
+          .generatePasswordHash(password));
 
   /// Creates an Argon2id password hash expecting the passed in password hash to
   /// be a legacy password hash.
@@ -147,24 +152,25 @@ class PasswordHash {
   /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
   /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
-  static String migratedLegacyToArgon2idHash(
+  static Future<String> migratedLegacyToArgon2idHash(
     String legacyHash, {
     required String legacySalt,
     String? salt,
     String? pepper,
     bool allowUnsecureRandom = false,
-  }) {
-    var encodedSalt = _generateSalt(
-      salt: salt,
-      allowUnsecureRandom: allowUnsecureRandom,
-    );
+  }) async =>
+      Isolate.run(() {
+        var encodedSalt = _generateSalt(
+          salt: salt,
+          allowUnsecureRandom: allowUnsecureRandom,
+        );
 
-    return _LegacyToArgon2idPasswordHash(
-      legacySalt: legacySalt,
-      salt: encodedSalt,
-      pepper: pepper,
-    ).generatePasswordHash(legacyHash);
-  }
+        return _LegacyToArgon2idPasswordHash(
+          legacySalt: legacySalt,
+          salt: encodedSalt,
+          pepper: pepper,
+        ).generatePasswordHash(legacyHash);
+      });
 
   /// Creates a new password hash using the Argon2id algorithm.
   ///
@@ -175,22 +181,23 @@ class PasswordHash {
   /// The [allowUnsecureRandom] parameter can be used to allow unsecure random
   /// number generation. If set to false (default value), an error will be thrown
   /// if the platform does not support secure random number generation.
-  static String argon2id(
+  static Future<String> argon2id(
     String password, {
     String? salt,
     String? pepper,
     bool allowUnsecureRandom = false,
-  }) {
-    var encodedSalt = _generateSalt(
-      salt: salt,
-      allowUnsecureRandom: allowUnsecureRandom,
-    );
+  }) async =>
+      Isolate.run(() {
+        var encodedSalt = _generateSalt(
+          salt: salt,
+          allowUnsecureRandom: allowUnsecureRandom,
+        );
 
-    return _Argon2idPasswordHashGenerator(
-      salt: encodedSalt,
-      pepper: pepper,
-    ).generatePasswordHash(password);
-  }
+        return _Argon2idPasswordHashGenerator(
+          salt: encodedSalt,
+          pepper: pepper,
+        ).generatePasswordHash(password);
+      });
 
   static String _generateSalt({
     required bool allowUnsecureRandom,
