@@ -33,7 +33,8 @@ class Emails {
     String password,
     String email,
     String hash, {
-    void Function(String hash, String passwordHash)? onValidationFailure,
+    void Function({required String passwordHash, required String storedHash})?
+        onValidationFailure,
     void Function(Object e)? onError,
   }) async {
     try {
@@ -434,8 +435,12 @@ class Emails {
       password,
       email,
       entry.hash,
-      onValidationFailure: (hash, passwordHash) => session.log(
-        ' - $passwordHash saved: $hash',
+      onValidationFailure: ({
+        required String passwordHash,
+        required String storedHash,
+      }) =>
+          session.log(
+        ' - $passwordHash saved: $storedHash',
         level: LogLevel.debug,
       ),
       onError: (e) {

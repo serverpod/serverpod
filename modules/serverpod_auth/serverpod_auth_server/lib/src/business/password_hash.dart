@@ -112,13 +112,19 @@ class PasswordHash {
   /// will be called with the hash and the password hash as arguments.
   Future<bool> validate(
     String password, {
-    void Function(String hash, String passwordHash)? onValidationFailure,
+    void Function({
+      required String storedHash,
+      required String passwordHash,
+    })? onValidationFailure,
   }) async {
     var passwordHash =
         await Isolate.run(() => _hashGenerator.generateHash(password));
 
     if (_hash != passwordHash) {
-      onValidationFailure?.call(passwordHash, _hash);
+      onValidationFailure?.call(
+        storedHash: _hash,
+        passwordHash: passwordHash,
+      );
       return false;
     }
 
