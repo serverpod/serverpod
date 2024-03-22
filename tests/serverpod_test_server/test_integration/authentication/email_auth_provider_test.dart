@@ -217,6 +217,44 @@ void main() async {
     });
 
     test(
+        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+        () async {
+      var updatedRows = await Emails.migrateLegacyPasswordHashes(
+        session,
+        batchSize: 2,
+        maxMigratedEntries: 0,
+      );
+      expect(updatedRows, 0);
+    });
+
+    test(
+        'when migrating auth entries with a maxMigratedEntries then updated rows matches maxMigratedEntries legacy hashes stored.',
+        () async {
+      var updatedRows = await Emails.migrateLegacyPasswordHashes(
+        session,
+        batchSize: 2,
+        maxMigratedEntries: 3,
+      );
+      expect(updatedRows, 3);
+    });
+
+    test(
+        'when migrating auth entries multiple times with maxMigratedEntries defined then total updated rows matches total legacy hashes stored.',
+        () async {
+      var migrateHashes = () => Emails.migrateLegacyPasswordHashes(
+            session,
+            batchSize: 2,
+            maxMigratedEntries: 3,
+          );
+      var updatedRows1 = await migrateHashes();
+      var updatedRows2 = await migrateHashes();
+      var updatedRows3 = await migrateHashes();
+
+      var totalUpdatedRows = updatedRows1 + updatedRows2 + updatedRows3;
+      expect(totalUpdatedRows, 5);
+    });
+
+    test(
         'when migrating auth entries then all legacy hashes are stored with migrate algorithm.',
         () async {
       await Emails.migrateLegacyPasswordHashes(session, batchSize: 2);
@@ -255,7 +293,7 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter0',
             'test1@serverpod.dev',
             passwordHash,
@@ -276,7 +314,7 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter2',
             'test6@serverpod.dev',
             passwordHash,
@@ -296,7 +334,7 @@ void main() async {
         var passwordHash = emailAuth!.hash;
 
         expect(
-          Emails.validatePasswordHash(
+          await Emails.validatePasswordHash(
             'hunter2',
             'test7@serverpod.dev',
             passwordHash,
@@ -304,6 +342,48 @@ void main() async {
           isTrue,
         );
       });
+    });
+  });
+
+  group('Given password not matching the hash when validating password', () {
+    // This is the hash from the password 'hunter4'
+    var hunter4PasswordHash =
+        '2ee3dc6432300eabf9630ac7827d6dd23fd23cc9120ec4cd58f8f66bd3ce2db9';
+    var notHunter4PasswordHash =
+        '1d24f0d21861e659c50c87ae03b679dc66ac7dd5fb1b03140e53f9331eeb0a31';
+
+    test('then validation fails.', () async {
+      expect(
+        await Emails.validatePasswordHash(
+          'notHunter4',
+          'test7@serverpod.dev',
+          hunter4PasswordHash,
+        ),
+        isFalse,
+      );
+    });
+
+    test(
+        'then validation failure callback is called with generated hash and passed in hash.',
+        () async {
+      late String actualStoredHash;
+      late String actualPasswordHash;
+
+      await Emails.validatePasswordHash(
+        'notHunter4',
+        'test7@serverpod.dev',
+        hunter4PasswordHash,
+        onValidationFailure: ({
+          required String storedHash,
+          required String passwordHash,
+        }) {
+          actualStoredHash = storedHash;
+          actualPasswordHash = passwordHash;
+        },
+      );
+
+      expect(actualStoredHash, hunter4PasswordHash);
+      expect(actualPasswordHash, notHunter4PasswordHash);
     });
   });
 }
