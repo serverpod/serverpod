@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/exit_exception.dart';
 
 import '../generated/version.dart';
 
@@ -24,10 +25,11 @@ class UpgradeCommand extends ServerpodCommand {
       return await startProcess.exitCode == 0;
     });
 
-    if (success) {
-      log.info('Serverpod is up to date: $templateVersion version.');
-    } else {
+    if (!success) {
       log.info('Failed to update Serverpod.');
+      throw ExitException();
     }
+
+    log.info('Serverpod is up to date: $templateVersion version.');
   }
 }
