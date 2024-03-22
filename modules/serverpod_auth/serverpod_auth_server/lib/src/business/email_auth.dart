@@ -12,7 +12,7 @@ class Emails {
   /// Generates a password hash from a users password and email. This value
   /// can safely be stored in the database without the risk of exposing
   /// passwords.
-  static String generatePasswordHash(String password) {
+  static Future<String> generatePasswordHash(String password) async {
     return PasswordHash.argon2id(
       password,
       pepper: EmailSecrets.pepper,
@@ -29,15 +29,16 @@ class Emails {
   ///
   /// If an error occurs, the [onError] function is called with the error as
   /// argument.
-  static bool validatePasswordHash(
+  static Future<bool> validatePasswordHash(
     String password,
     String email,
     String hash, {
-    void Function(String hash, String passwordHash)? onValidationFailure,
+    void Function({required String passwordHash, required String storedHash})?
+        onValidationFailure,
     void Function(Object e)? onError,
-  }) {
+  }) async {
     try {
-      return PasswordHash(
+      return await PasswordHash(
         hash,
         legacySalt: EmailSecrets.legacySalt,
         legacyEmail: AuthConfig.current.extraSaltyHash ? email : null,
@@ -53,16 +54,16 @@ class Emails {
   ///
   /// Returns the new [EmailAuth] object if a migration was required,
   /// null otherwise.
-  static EmailAuth? tryMigrateAuthEntry({
+  static Future<EmailAuth?> tryMigrateAuthEntry({
     required String password,
     required EmailAuth entry,
-  }) {
+  }) async {
     if (!PasswordHash(entry.hash, legacySalt: EmailSecrets.legacySalt)
         .shouldUpdateHash()) {
       return null;
     }
 
-    var newHash = PasswordHash.argon2id(
+    var newHash = await PasswordHash.argon2id(
       password,
       pepper: EmailSecrets.pepper,
       allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
@@ -75,10 +76,14 @@ class Emails {
   ///
   ///[batchSize] is the number of entries to migrate in each batch.
   ///
+  /// [maxMigratedEntries] is the maximum number of entries that will be
+  /// migrated. If null, all entries in the database will be migrated.
+  ///
   /// Returns the number of migrated entries.
   static Future<int> migrateLegacyPasswordHashes(
     Session session, {
     int batchSize = 100,
+    int? maxMigratedEntries,
   }) async {
     var updatedEntries = 0;
     int lastEntryId = 0;
@@ -95,9 +100,21 @@ class Emails {
         return updatedEntries;
       }
 
+      if (maxMigratedEntries != null) {
+        if (maxMigratedEntries == updatedEntries) {
+          return updatedEntries;
+        }
+
+        var entrySurplus =
+            (updatedEntries + entries.length) - maxMigratedEntries;
+        if (entrySurplus > 0) {
+          entries = entries.sublist(0, entries.length - entrySurplus);
+        }
+      }
+
       lastEntryId = entries.last.id!;
 
-      var migratedEntries = entries.where((entry) {
+      var migratedEntries = await Future.wait(entries.where((entry) {
         try {
           return PasswordHash(
             entry.hash,
@@ -110,16 +127,16 @@ class Emails {
           );
           return false;
         }
-      }).map((entry) {
+      }).map((entry) async {
         return entry.copyWith(
-          hash: PasswordHash.migratedLegacyToArgon2idHash(
+          hash: await PasswordHash.migratedLegacyToArgon2idHash(
             entry.hash,
             legacySalt: EmailSecrets.legacySalt,
             pepper: EmailSecrets.pepper,
             allowUnsecureRandom: AuthConfig.current.allowUnsecureRandom,
           ),
         );
-      }).toList();
+      }).toList());
 
       try {
         await EmailAuth.db.update(session, migratedEntries);
@@ -170,7 +187,7 @@ class Emails {
     }
 
     session.log('creating email auth', level: LogLevel.debug);
-    hash = hash ?? generatePasswordHash(password!);
+    hash = hash ?? await generatePasswordHash(password!);
     var auth = EmailAuth(
       userId: userInfo.id!,
       email: email,
@@ -203,7 +220,7 @@ class Emails {
     }
 
     // Check old password
-    if (!validatePasswordHash(
+    if (!await validatePasswordHash(
       oldPassword,
       auth.email,
       auth.hash,
@@ -218,7 +235,7 @@ class Emails {
     }
 
     // Update password
-    auth.hash = generatePasswordHash(newPassword);
+    auth.hash = await generatePasswordHash(newPassword);
     await EmailAuth.db.updateRow(session, auth);
 
     return true;
@@ -302,7 +319,7 @@ class Emails {
 
     if (emailAuth == null) return false;
 
-    emailAuth.hash = generatePasswordHash(password);
+    emailAuth.hash = await generatePasswordHash(password);
     await EmailAuth.db.updateRow(session, emailAuth);
 
     return true;
@@ -348,7 +365,7 @@ class Emails {
         accountRequest = EmailCreateAccountRequest(
           userName: userName,
           email: email,
-          hash: generatePasswordHash(password),
+          hash: await generatePasswordHash(password),
           verificationCode: _generateVerificationCode(),
         );
         await EmailCreateAccountRequest.db.insertRow(session, accountRequest);
@@ -414,12 +431,16 @@ class Emails {
     session.log(' - found entry ', level: LogLevel.debug);
 
     // Check that password is correct
-    if (!Emails.validatePasswordHash(
+    if (!await Emails.validatePasswordHash(
       password,
       email,
       entry.hash,
-      onValidationFailure: (hash, passwordHash) => session.log(
-        ' - $passwordHash saved: $hash',
+      onValidationFailure: ({
+        required String passwordHash,
+        required String storedHash,
+      }) =>
+          session.log(
+        ' - $passwordHash saved: $storedHash',
         level: LogLevel.debug,
       ),
       onError: (e) {
@@ -439,7 +460,7 @@ class Emails {
     session.log(' - password is correct, userId: ${entry.userId})',
         level: LogLevel.debug);
 
-    var migratedAuth = Emails.tryMigrateAuthEntry(
+    var migratedAuth = await Emails.tryMigrateAuthEntry(
       password: password,
       entry: entry,
     );
