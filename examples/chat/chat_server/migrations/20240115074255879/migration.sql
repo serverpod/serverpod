@@ -4,7 +4,7 @@ BEGIN;
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "channel" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
     "channel" text NOT NULL
 );
@@ -13,8 +13,8 @@ CREATE TABLE "channel" (
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_email_auth" (
-    "id" serial PRIMARY KEY,
-    "userId" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "userId" bigint NOT NULL,
     "email" text NOT NULL,
     "hash" text NOT NULL
 );
@@ -26,7 +26,7 @@ CREATE UNIQUE INDEX "serverpod_email_auth_email" ON "serverpod_email_auth" USING
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_email_create_request" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "userName" text NOT NULL,
     "email" text NOT NULL,
     "hash" text NOT NULL,
@@ -40,7 +40,7 @@ CREATE UNIQUE INDEX "serverpod_email_auth_create_account_request_idx" ON "server
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_email_failed_sign_in" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "email" text NOT NULL,
     "time" timestamp without time zone NOT NULL,
     "ipAddress" text NOT NULL
@@ -54,8 +54,8 @@ CREATE INDEX "serverpod_email_failed_sign_in_time_idx" ON "serverpod_email_faile
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_email_reset" (
-    "id" serial PRIMARY KEY,
-    "userId" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "userId" bigint NOT NULL,
     "verificationCode" text NOT NULL,
     "expiration" timestamp without time zone NOT NULL
 );
@@ -67,8 +67,8 @@ CREATE UNIQUE INDEX "serverpod_email_reset_verification_idx" ON "serverpod_email
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_google_refresh_token" (
-    "id" serial PRIMARY KEY,
-    "userId" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "userId" bigint NOT NULL,
     "refreshToken" text NOT NULL
 );
 
@@ -79,9 +79,9 @@ CREATE UNIQUE INDEX "serverpod_google_refresh_token_userId_idx" ON "serverpod_go
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_user_image" (
-    "id" serial PRIMARY KEY,
-    "userId" integer NOT NULL,
-    "version" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "userId" bigint NOT NULL,
+    "version" bigint NOT NULL,
     "url" text NOT NULL
 );
 
@@ -92,7 +92,7 @@ CREATE INDEX "serverpod_user_image_user_id" ON "serverpod_user_image" USING btre
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_user_info" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "userIdentifier" text NOT NULL,
     "userName" text NOT NULL,
     "fullName" text,
@@ -111,11 +111,11 @@ CREATE INDEX "serverpod_user_info_email" ON "serverpod_user_info" USING btree ("
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_chat_message" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "channel" text NOT NULL,
     "message" text NOT NULL,
     "time" timestamp without time zone NOT NULL,
-    "sender" integer NOT NULL,
+    "sender" bigint NOT NULL,
     "removed" boolean NOT NULL,
     "attachments" json
 );
@@ -127,10 +127,10 @@ CREATE INDEX "serverpod_chat_message_channel_idx" ON "serverpod_chat_message" US
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_chat_read_message" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "channel" text NOT NULL,
-    "userId" integer NOT NULL,
-    "lastReadMessageId" integer NOT NULL
+    "userId" bigint NOT NULL,
+    "lastReadMessageId" bigint NOT NULL
 );
 
 -- Indexes
@@ -140,8 +140,8 @@ CREATE UNIQUE INDEX "serverpod_chat_read_message_channel_user_idx" ON "serverpod
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_auth_key" (
-    "id" serial PRIMARY KEY,
-    "userId" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "userId" bigint NOT NULL,
     "hash" text NOT NULL,
     "scopeNames" json NOT NULL,
     "method" text NOT NULL
@@ -154,7 +154,7 @@ CREATE INDEX "serverpod_auth_key_userId_idx" ON "serverpod_auth_key" USING btree
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_cloud_storage" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "storageId" text NOT NULL,
     "path" text NOT NULL,
     "addedTime" timestamp without time zone NOT NULL,
@@ -171,7 +171,7 @@ CREATE INDEX "serverpod_cloud_storage_expiration" ON "serverpod_cloud_storage" U
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_cloud_storage_direct_upload" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "storageId" text NOT NULL,
     "path" text NOT NULL,
     "expiration" timestamp without time zone NOT NULL,
@@ -185,7 +185,7 @@ CREATE UNIQUE INDEX "serverpod_cloud_storage_direct_upload_storage_path" ON "ser
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_future_call" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
     "time" timestamp without time zone NOT NULL,
     "serializedObject" text,
@@ -202,13 +202,13 @@ CREATE INDEX "serverpod_future_call_identifier_idx" ON "serverpod_future_call" U
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_health_connection_info" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "serverId" text NOT NULL,
     "timestamp" timestamp without time zone NOT NULL,
-    "active" integer NOT NULL,
-    "closing" integer NOT NULL,
-    "idle" integer NOT NULL,
-    "granularity" integer NOT NULL
+    "active" bigint NOT NULL,
+    "closing" bigint NOT NULL,
+    "idle" bigint NOT NULL,
+    "granularity" bigint NOT NULL
 );
 
 -- Indexes
@@ -218,13 +218,13 @@ CREATE UNIQUE INDEX "serverpod_health_connection_info_timestamp_idx" ON "serverp
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_health_metric" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "name" text NOT NULL,
     "serverId" text NOT NULL,
     "timestamp" timestamp without time zone NOT NULL,
     "isHealthy" boolean NOT NULL,
     "value" double precision NOT NULL,
-    "granularity" integer NOT NULL
+    "granularity" bigint NOT NULL
 );
 
 -- Indexes
@@ -234,17 +234,17 @@ CREATE UNIQUE INDEX "serverpod_health_metric_timestamp_idx" ON "serverpod_health
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_log" (
-    "id" serial PRIMARY KEY,
-    "sessionLogId" integer NOT NULL,
-    "messageId" integer,
+    "id" bigserial PRIMARY KEY,
+    "sessionLogId" bigint NOT NULL,
+    "messageId" bigint,
     "reference" text,
     "serverId" text NOT NULL,
     "time" timestamp without time zone NOT NULL,
-    "logLevel" integer NOT NULL,
+    "logLevel" bigint NOT NULL,
     "message" text NOT NULL,
     "error" text,
     "stackTrace" text,
-    "order" integer NOT NULL
+    "order" bigint NOT NULL
 );
 
 -- Indexes
@@ -254,24 +254,24 @@ CREATE INDEX "serverpod_log_sessionLogId_idx" ON "serverpod_log" USING btree ("s
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_message_log" (
-    "id" serial PRIMARY KEY,
-    "sessionLogId" integer NOT NULL,
+    "id" bigserial PRIMARY KEY,
+    "sessionLogId" bigint NOT NULL,
     "serverId" text NOT NULL,
-    "messageId" integer NOT NULL,
+    "messageId" bigint NOT NULL,
     "endpoint" text NOT NULL,
     "messageName" text NOT NULL,
     "duration" double precision NOT NULL,
     "error" text,
     "stackTrace" text,
     "slow" boolean NOT NULL,
-    "order" integer NOT NULL
+    "order" bigint NOT NULL
 );
 
 --
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_method" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "endpoint" text NOT NULL,
     "method" text NOT NULL
 );
@@ -283,7 +283,7 @@ CREATE UNIQUE INDEX "serverpod_method_endpoint_method_idx" ON "serverpod_method"
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_migrations" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "module" text NOT NULL,
     "version" text NOT NULL,
     "timestamp" timestamp without time zone
@@ -296,17 +296,17 @@ CREATE UNIQUE INDEX "serverpod_migrations_ids" ON "serverpod_migrations" USING b
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_query_log" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "serverId" text NOT NULL,
-    "sessionLogId" integer NOT NULL,
-    "messageId" integer,
+    "sessionLogId" bigint NOT NULL,
+    "messageId" bigint,
     "query" text NOT NULL,
     "duration" double precision NOT NULL,
-    "numRows" integer,
+    "numRows" bigint,
     "error" text,
     "stackTrace" text,
     "slow" boolean NOT NULL,
-    "order" integer NOT NULL
+    "order" bigint NOT NULL
 );
 
 -- Indexes
@@ -316,15 +316,15 @@ CREATE INDEX "serverpod_query_log_sessionLogId_idx" ON "serverpod_query_log" USI
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_readwrite_test" (
-    "id" serial PRIMARY KEY,
-    "number" integer NOT NULL
+    "id" bigserial PRIMARY KEY,
+    "number" bigint NOT NULL
 );
 
 --
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_runtime_settings" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "logSettings" json NOT NULL,
     "logSettingsOverrides" json NOT NULL,
     "logServiceCalls" boolean NOT NULL,
@@ -335,18 +335,18 @@ CREATE TABLE "serverpod_runtime_settings" (
 -- ACTION CREATE TABLE
 --
 CREATE TABLE "serverpod_session_log" (
-    "id" serial PRIMARY KEY,
+    "id" bigserial PRIMARY KEY,
     "serverId" text NOT NULL,
     "time" timestamp without time zone NOT NULL,
     "module" text,
     "endpoint" text,
     "method" text,
     "duration" double precision,
-    "numQueries" integer,
+    "numQueries" bigint,
     "slow" boolean,
     "error" text,
     "stackTrace" text,
-    "authenticatedUserId" integer,
+    "authenticatedUserId" bigint,
     "isOpen" boolean,
     "touched" timestamp without time zone NOT NULL
 );

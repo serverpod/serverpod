@@ -1321,4 +1321,33 @@ void main() {
 
     expect(error.message, 'The referenced module "serverpod" is not found.');
   });
+
+  group('Given a class with an int field when analyzing', () {
+    var models = [
+      ModelSourceBuilder().withYaml(
+        '''
+            class: Example
+            fields:
+              name: int 
+            ''',
+      ).build()
+    ];
+
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer analyzer = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    );
+    var definitions = analyzer.validateAll();
+
+    test('then no errors was generated', () {
+      expect(collector.errors, isEmpty);
+    });
+
+    test('then a definition column type is set to bigint.', () {
+      var definition = definitions.first as ClassDefinition;
+      expect(definition.fields.first.type.databaseType, 'bigint');
+    });
+  });
 }

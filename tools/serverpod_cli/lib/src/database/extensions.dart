@@ -85,7 +85,7 @@ extension ColumnComparisons on ColumnDefinition {
     }
 
     return (other.isNullable == isNullable &&
-        other.columnType == columnType &&
+        other.columnType.like(columnType) &&
         other.name == name &&
         other.columnDefault == columnDefault);
   }
@@ -307,14 +307,19 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
   String toPgSqlFragment() {
     String out = '';
 
+    // The id column is special.
     if (name == 'id') {
-      // The id column is special.
-      assert(isNullable == false);
-      assert(
-        columnType == ColumnType.integer || columnType == ColumnType.bigint,
-      );
-      // TODO: Migrate to bigserial / bigint
-      return '"id" serial PRIMARY KEY';
+      if (isNullable != false) {
+        throw (const FormatException('The id column must be non-nullable'));
+      }
+
+      if (columnType != ColumnType.integer && columnType != ColumnType.bigint) {
+        throw (const FormatException(
+          'The id column must be of type integer or bigint',
+        ));
+      }
+
+      return '"id" bigserial PRIMARY KEY';
     }
 
     var nullable = isNullable ? '' : ' NOT NULL';
@@ -615,4 +620,15 @@ String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
   out += '\n';
 
   return out;
+}
+
+extension ColumnTypeComparison on ColumnType {
+  bool like(ColumnType other) {
+    // Integer and bigint are considered the same type.
+    if (this == ColumnType.integer || this == ColumnType.bigint) {
+      return other == ColumnType.integer || other == ColumnType.bigint;
+    }
+
+    return this == other;
+  }
 }

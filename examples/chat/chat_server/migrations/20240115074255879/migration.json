@@ -10,7 +10,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('channel_id_seq'::regclass)",
             "dartType": "int?"
@@ -56,14 +56,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_email_auth_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -120,7 +120,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_email_create_request_id_seq'::regclass)",
             "dartType": "int?"
@@ -190,7 +190,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_email_failed_sign_in_id_seq'::regclass)",
             "dartType": "int?"
@@ -266,14 +266,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_email_reset_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -330,14 +330,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_google_refresh_token_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -388,20 +388,20 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_user_image_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "version",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -456,7 +456,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_user_info_id_seq'::regclass)",
             "dartType": "int?"
@@ -562,7 +562,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_chat_message_id_seq'::regclass)",
             "dartType": "int?"
@@ -587,7 +587,7 @@
           },
           {
             "name": "sender",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -644,7 +644,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_chat_read_message_id_seq'::regclass)",
             "dartType": "int?"
@@ -657,13 +657,13 @@
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "lastReadMessageId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -712,14 +712,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_auth_key_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "userId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -782,7 +782,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_cloud_storage_id_seq'::regclass)",
             "dartType": "int?"
@@ -880,7 +880,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_cloud_storage_direct_upload_id_seq'::regclass)",
             "dartType": "int?"
@@ -954,7 +954,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_future_call_id_seq'::regclass)",
             "dartType": "int?"
@@ -1054,7 +1054,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_health_connection_info_id_seq'::regclass)",
             "dartType": "int?"
@@ -1073,25 +1073,25 @@
           },
           {
             "name": "active",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "closing",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "idle",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "granularity",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1144,7 +1144,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_health_metric_id_seq'::regclass)",
             "dartType": "int?"
@@ -1181,7 +1181,7 @@
           },
           {
             "name": "granularity",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1238,20 +1238,20 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_log_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "sessionLogId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "messageId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": true,
             "dartType": "int?"
           },
@@ -1275,7 +1275,7 @@
           },
           {
             "name": "logLevel",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "protocol:LogLevel"
           },
@@ -1299,7 +1299,7 @@
           },
           {
             "name": "order",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1358,14 +1358,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_message_log_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "sessionLogId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -1377,7 +1377,7 @@
           },
           {
             "name": "messageId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
@@ -1419,7 +1419,7 @@
           },
           {
             "name": "order",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1466,7 +1466,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_method_id_seq'::regclass)",
             "dartType": "int?"
@@ -1528,7 +1528,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_migrations_id_seq'::regclass)",
             "dartType": "int?"
@@ -1592,7 +1592,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_query_log_id_seq'::regclass)",
             "dartType": "int?"
@@ -1605,13 +1605,13 @@
           },
           {
             "name": "sessionLogId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           },
           {
             "name": "messageId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": true,
             "dartType": "int?"
           },
@@ -1629,7 +1629,7 @@
           },
           {
             "name": "numRows",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": true,
             "dartType": "int?"
           },
@@ -1653,7 +1653,7 @@
           },
           {
             "name": "order",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1712,14 +1712,14 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_readwrite_test_id_seq'::regclass)",
             "dartType": "int?"
           },
           {
             "name": "number",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "dartType": "int"
           }
@@ -1752,7 +1752,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_runtime_settings_id_seq'::regclass)",
             "dartType": "int?"
@@ -1810,7 +1810,7 @@
         "columns": [
           {
             "name": "id",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": false,
             "columnDefault": "nextval('serverpod_session_log_id_seq'::regclass)",
             "dartType": "int?"
@@ -1853,7 +1853,7 @@
           },
           {
             "name": "numQueries",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": true,
             "dartType": "int?"
           },
@@ -1877,7 +1877,7 @@
           },
           {
             "name": "authenticatedUserId",
-            "columnType": 2,
+            "columnType": 6,
             "isNullable": true,
             "dartType": "int?"
           },

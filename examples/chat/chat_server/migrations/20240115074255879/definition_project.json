@@ -9,7 +9,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('channel_id_seq'::regclass)",
           "dartType": "int?"

@@ -9,7 +9,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('address_id_seq'::regclass)",
           "dartType": "int?"
@@ -22,7 +22,7 @@
         },
         {
           "name": "inhabitantId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -78,7 +78,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('arena_id_seq'::regclass)",
           "dartType": "int?"
@@ -115,20 +115,20 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('blocking_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "blockedId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "blockedById",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -201,7 +201,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('cat_id_seq'::regclass)",
           "dartType": "int?"
@@ -214,7 +214,7 @@
         },
         {
           "name": "motherId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -258,7 +258,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('citizen_id_seq'::regclass)",
           "dartType": "int?"
@@ -271,13 +271,13 @@
         },
         {
           "name": "companyId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "oldCompanyId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -334,7 +334,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('city_id_seq'::regclass)",
           "dartType": "int?"
@@ -371,7 +371,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('city_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
           "dartType": "int?"
@@ -408,7 +408,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('comment_id_seq'::regclass)",
           "dartType": "int?"
@@ -421,7 +421,7 @@
         },
         {
           "name": "orderId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -465,7 +465,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('company_id_seq'::regclass)",
           "dartType": "int?"
@@ -478,7 +478,7 @@
         },
         {
           "name": "townId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -522,7 +522,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('course_id_seq'::regclass)",
           "dartType": "int?"
@@ -559,7 +559,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('customer_id_seq'::regclass)",
           "dartType": "int?"
@@ -596,20 +596,20 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('enrollment_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "studentId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "courseId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -682,7 +682,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('long_implicit_id_field_id_seq'::regclass)",
           "dartType": "int?"
@@ -695,7 +695,7 @@
         },
         {
           "name": "_longImplicitIdFieldCollectionThisfieldisexactly61charact0008Id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -739,7 +739,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('long_implicit_id_field_collection_id_seq'::regclass)",
           "dartType": "int?"
@@ -776,7 +776,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('max_field_name_id_seq'::regclass)",
           "dartType": "int?"
@@ -813,7 +813,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('member_id_seq'::regclass)",
           "dartType": "int?"
@@ -850,7 +850,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('multiple_max_field_name_id_seq'::regclass)",
           "dartType": "int?"
@@ -869,7 +869,7 @@
         },
         {
           "name": "_relationToMultipleMaxFieldNameMultiplemaxfieldnamesRelat674eId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -913,7 +913,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_field_scopes_id_seq'::regclass)",
           "dartType": "int?"
@@ -956,7 +956,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_user_id_seq'::regclass)",
           "dartType": "int?"
@@ -969,7 +969,7 @@
         },
         {
           "name": "userInfoId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -1013,7 +1013,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_bytedata_id_seq'::regclass)",
           "dartType": "int?"
@@ -1050,7 +1050,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_duration_id_seq'::regclass)",
           "dartType": "int?"
@@ -1087,20 +1087,20 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_enum_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "testEnum",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "protocol:TestEnum"
         },
         {
           "name": "nullableEnum",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnum?"
         },
@@ -1148,20 +1148,20 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_index_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "indexed",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "indexed2",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -1207,7 +1207,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_object_id_seq'::regclass)",
           "dartType": "int?"
@@ -1274,14 +1274,14 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_parent_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "other",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -1325,14 +1325,14 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_self_parent_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "other",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1376,7 +1376,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('object_with_uuid_id_seq'::regclass)",
           "dartType": "int?"
@@ -1419,7 +1419,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('order_id_seq'::regclass)",
           "dartType": "int?"
@@ -1432,7 +1432,7 @@
         },
         {
           "name": "customerId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -1476,7 +1476,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('organization_id_seq'::regclass)",
           "dartType": "int?"
@@ -1489,7 +1489,7 @@
         },
         {
           "name": "cityId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1533,7 +1533,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('organization_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
           "dartType": "int?"
@@ -1546,7 +1546,7 @@
         },
         {
           "name": "cityId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1590,7 +1590,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('parent_user_id_seq'::regclass)",
           "dartType": "int?"
@@ -1603,7 +1603,7 @@
         },
         {
           "name": "userInfoId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1647,7 +1647,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('person_id_seq'::regclass)",
           "dartType": "int?"
@@ -1660,13 +1660,13 @@
         },
         {
           "name": "organizationId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         },
         {
           "name": "_cityCitizensCityId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1723,7 +1723,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('person_with_long_table_name_that_is_still_valid_id_seq'::regclass)",
           "dartType": "int?"
@@ -1736,13 +1736,13 @@
         },
         {
           "name": "organizationId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         },
         {
           "name": "_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1799,7 +1799,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('player_id_seq'::regclass)",
           "dartType": "int?"
@@ -1812,7 +1812,7 @@
         },
         {
           "name": "teamId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1856,7 +1856,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('post_id_seq'::regclass)",
           "dartType": "int?"
@@ -1869,7 +1869,7 @@
         },
         {
           "name": "nextId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -1925,20 +1925,20 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('related_unique_data_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "uniqueDataId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
         {
           "name": "number",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -1982,7 +1982,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('relation_to_multiple_max_field_name_id_seq'::regclass)",
           "dartType": "int?"
@@ -2019,7 +2019,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('scope_none_fields_id_seq'::regclass)",
           "dartType": "int?"
@@ -2056,14 +2056,14 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('simple_data_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "num",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         }
@@ -2093,7 +2093,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('simple_date_time_id_seq'::regclass)",
           "dartType": "int?"
@@ -2130,7 +2130,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('student_id_seq'::regclass)",
           "dartType": "int?"
@@ -2167,7 +2167,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('team_id_seq'::regclass)",
           "dartType": "int?"
@@ -2180,7 +2180,7 @@
         },
         {
           "name": "arenaId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -2236,7 +2236,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('town_id_seq'::regclass)",
           "dartType": "int?"
@@ -2249,7 +2249,7 @@
         },
         {
           "name": "mayorId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -2293,14 +2293,14 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('types_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "anInt",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         },
@@ -2348,7 +2348,7 @@
         },
         {
           "name": "anEnum",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "protocol:TestEnum?"
         },
@@ -2384,14 +2384,14 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('unique_data_id_seq'::regclass)",
           "dartType": "int?"
         },
         {
           "name": "number",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "dartType": "int"
         },
@@ -2439,7 +2439,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('user_note_id_seq'::regclass)",
           "dartType": "int?"
@@ -2452,7 +2452,7 @@
         },
         {
           "name": "_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }
@@ -2496,7 +2496,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('user_note_collection_with_a_long_name_id_seq'::regclass)",
           "dartType": "int?"
@@ -2533,7 +2533,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('user_note_collections_id_seq'::regclass)",
           "dartType": "int?"
@@ -2570,7 +2570,7 @@
       "columns": [
         {
           "name": "id",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": false,
           "columnDefault": "nextval('user_note_with_a_long_name_id_seq'::regclass)",
           "dartType": "int?"
@@ -2583,7 +2583,7 @@
         },
         {
           "name": "_userNoteCollectionWithALongNameNotesUserNoteCollectionWi06adId",
-          "columnType": 2,
+          "columnType": 6,
           "isNullable": true,
           "dartType": "int?"
         }

@@ -216,10 +216,10 @@ class TypeDefinition {
         case EnumSerialization.byName:
           return 'text';
         case EnumSerialization.byIndex:
-          return 'integer';
+          return 'bigint';
       }
     }
-    if (className == 'int') return 'integer';
+    if (className == 'int') return 'bigint';
     if (className == 'double') return 'double precision';
     if (className == 'bool') return 'boolean';
     if (className == 'String') return 'text';

@@ -110,7 +110,9 @@ class MigrationGenerator {
     }
 
     if (migration.isEmpty && !force) {
-      log.info('No changes detected.');
+      log.info(
+        'No changes detected. Use --force to create an empty migration.',
+      );
       return null;
     }
 
@@ -203,7 +205,9 @@ class MigrationGenerator {
     bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
 
     if (migration.isEmpty && !versionsMismatch && !force) {
-      log.info('No changes detected.');
+      log.info(
+        'No changes detected. Use --force to create an empty repair migration.',
+      );
       return null;
     }
 

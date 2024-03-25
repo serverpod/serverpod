@@ -685,7 +685,7 @@ class DatabaseConnection {
   String _convertToPostgresType(Column column) {
     if (column is ColumnString) return 'text';
     if (column is ColumnBool) return 'boolean';
-    if (column is ColumnInt) return 'integer';
+    if (column is ColumnInt) return 'bigint';
     if (column is ColumnDouble) return 'double precision';
     if (column is ColumnDateTime) return 'timestamp without time zone';
     if (column is ColumnByteData) return 'bytea';
@@ -695,7 +695,7 @@ class DatabaseConnection {
     if (column is ColumnEnumExtended) {
       switch (column.serialized) {
         case EnumSerialization.byIndex:
-          return 'integer';
+          return 'bigint';
         case EnumSerialization.byName:
           return 'text';
       }
