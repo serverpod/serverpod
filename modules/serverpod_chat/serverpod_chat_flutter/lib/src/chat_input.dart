@@ -62,9 +62,10 @@ class ChatInputState extends State<ChatInput> {
   List<ChatMessageAttachment> _attachments = [];
 
   late final _focusNode = FocusNode(
-    onKey: (FocusNode node, RawKeyEvent evt) {
-      if (!evt.isShiftPressed && evt.logicalKey.keyLabel == 'Enter') {
-        if (evt is RawKeyDownEvent) {
+    onKeyEvent: (FocusNode node, KeyEvent evt) {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          evt.logicalKey.keyLabel == 'Enter') {
+        if (evt is KeyDownEvent) {
           _sendTextMessage();
         }
         return KeyEventResult.handled;
