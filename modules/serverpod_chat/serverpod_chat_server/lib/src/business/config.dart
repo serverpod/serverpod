@@ -1,5 +1,5 @@
 import 'package:serverpod/server.dart';
-import 'package:serverpod_auth_server/serverpod_auth_server.dart';
+import 'package:serverpod_auth_server/module.dart';
 
 /// Callback for verifying if a user is allowed to join a channel. Return
 /// true if the user is allowed to join the channel.
