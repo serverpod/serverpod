@@ -237,7 +237,12 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates and [Expression] checking if the value in the column is included
   /// in the specified set of values.
+  /// If the set is empty the expression will match no rows.
   Expression inSet(Set<T> values) {
+    if (values.isEmpty) {
+      return Constant.bool(false);
+    }
+
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
@@ -246,7 +251,12 @@ mixin _ColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates and [Expression] checking if the value in the column is NOT
   /// included in the specified set of values.
+  /// If the set is empty the expression will match all rows.
   Expression notInSet(Set<T> values) {
+    if (values.isEmpty) {
+      return Constant.bool(true);
+    }
+
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
@@ -279,7 +289,13 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates and [Expression] checking if the value in the column is included
   /// in the specified set of values.
+  /// If the set is empty, the expression will always be false and match no
+  /// rows.
   Expression inSet(Set<T> values) {
+    if (values.isEmpty) {
+      return Constant.bool(false);
+    }
+
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
@@ -288,7 +304,13 @@ mixin _NullableColumnDefaultOperations<T> on _ValueOperatorColumn<T> {
 
   /// Creates and [Expression] checking if the value in the column is NOT
   /// included in the specified set of values.
+  /// If the set is empty, the expression will always be true and match all
+  /// rows.
   Expression notInSet(Set<T> values) {
+    if (values.isEmpty) {
+      return Constant.bool(true);
+    }
+
     var valuesAsExpressions =
         values.map((e) => _encodeValueForQuery(e)).toList();
 
