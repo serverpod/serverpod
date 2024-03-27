@@ -2,7 +2,7 @@
 - feat: Adds `upgrade` command to Serverpod CLI.
 - feat: Introduces `CacheMissHandler` to improve cache API.
 - fix: Maps Dart `int` to `bigint` in database.
-- fix: Generates thumbnails in isolates fo auth and chat module.
+- fix: Generates thumbnails in isolates for auth and chat module.
 - fix: Improved logging in CLI.
 - docs: Corrects spelling mistakes.
 - docs: Improved documentation for chat module.
