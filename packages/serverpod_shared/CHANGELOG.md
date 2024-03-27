@@ -1,5 +1,12 @@
 ## 2.0.0-alpha.2
-- 
+- feat: Adds `upgrade` command to Serverpod CLI.
+- feat: Introduces `CacheMissHandler` to improve cache API.
+- fix: Maps Dart `int` to `bigint` in database.
+- fix: Generates thumbnails in isolates fo auth and chat module.
+- fix: Improved logging in CLI.
+- docs: Corrects spelling mistakes.
+- docs: Improved documentation for chat module.
+- chore: BREAKING. Updates Postgres library to new major version.
 
 ## 2.0.0-alpha.1
 - feat: Serverpod mini. Allows running Serverpod without the database.
