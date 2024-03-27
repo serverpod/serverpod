@@ -1,3 +1,10 @@
+## 1.2.6
+- feat: Adds missing callbacks when sending chat messages in chat module.
+- fix: Updates password hash algorithm for email authentication. (Security Advisories)[https://github.com/serverpod/serverpod/security/advisories]
+- fix: Improves client certificate security. (Security Advisories)[https://github.com/serverpod/serverpod/security/advisories]
+- fix: Fixes issue when passing empty set in `inSet` and `notInSet`.
+- fix: Fixes issue with incorrect line breaks in CLI.
+
 ## 1.2.5
 - fix: Custom classes respect nullable configuration.
 
