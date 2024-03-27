@@ -1,4 +1,5 @@
 import 'package:serverpod/server.dart';
+import 'package:serverpod_auth_server/module.dart';
 
 /// Callback for verifying if a user is allowed to join a channel. Return
 /// true if the user is allowed to join the channel.
@@ -27,11 +28,28 @@ class ChatConfig {
   /// Post messages globally in the server cluster (i.e. use Redis).
   final bool postMessagesGlobally;
 
+  /// Callback for when a message is about to be sent to a user. Return false
+  /// to prevent the message from being sent.
+  final Future<bool> Function(
+    Session session,
+    UserInfo userInfo,
+    String channel,
+  )? onWillSendMessage;
+
+  /// Callback for when a message has been sent to a user.
+  final Future<void> Function(
+    Session session,
+    UserInfo userInfo,
+    String channel,
+  )? onDidSendMessage;
+
   /// Create a new [ChatConfig].
   ChatConfig({
     ChatChannelAccessVerificationCallback? channelAccessVerification,
     this.allowUnauthenticatedUsers = false,
     this.postMessagesGlobally = false,
+    this.onWillSendMessage,
+    this.onDidSendMessage,
   }) {
     this.channelAccessVerification =
         channelAccessVerification ?? (session, userId, channel) async => true;
