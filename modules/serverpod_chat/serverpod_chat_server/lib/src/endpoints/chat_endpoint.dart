@@ -130,6 +130,15 @@ class ChatEndpoint extends Endpoint {
         return;
       }
 
+      if (ChatConfig.current.onWillSendMessage != null &&
+          !await ChatConfig.current.onWillSendMessage!(
+            session,
+            chatSession.userInfo!,
+            message.channel,
+          )) {
+        return;
+      }
+
       // Write the message to the database, then pass it on to this and other clients.
       var chatMessage = ChatMessage(
         channel: message.channel,
@@ -152,6 +161,14 @@ class ChatEndpoint extends Endpoint {
         chatMessage,
         global: ChatConfig.current.postMessagesGlobally,
       );
+
+      if (ChatConfig.current.onDidSendMessage != null) {
+        await ChatConfig.current.onDidSendMessage!(
+          session,
+          chatSession.userInfo!,
+          message.channel,
+        );
+      }
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
