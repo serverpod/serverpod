@@ -86,6 +86,16 @@ void main() async {
       expect(result.length, 2);
     });
 
+    test('when filtering using empty inSet then no rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid.inSet({}),
+      );
+
+      expect(result, isEmpty);
+    });
+
     test('when filtering using notInSet then matching row is returned.',
         () async {
       var result = await Types.db.find(
@@ -94,6 +104,16 @@ void main() async {
       );
 
       expect(result.length, 2);
+    });
+
+    test('when filtering using empty notInSet then no rows are returned.',
+        () async {
+      var result = await Types.db.find(
+        session,
+        where: (t) => t.aUuid.notInSet({}),
+      );
+
+      expect(result.length, 3);
     });
   });
 }
