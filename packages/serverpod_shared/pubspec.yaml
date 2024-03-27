@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_shared
-version: 1.2.5
+version: 1.2.6
 description: Severpod code that is shared between serverpod and tooling.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
@@ -15,11 +15,11 @@ dependencies:
   yaml: ^3.1.1
   path: ^1.8.2
   super_string: ^1.0.3
-  serverpod_client: 1.2.5
+  serverpod_client: 1.2.6
   crypto: ^3.0.2
 
 dev_dependencies:
-  serverpod_lints: 1.2.5
+  serverpod_lints: 1.2.6
   test: ^1.24.2
 
 dependency_overrides:
