@@ -136,6 +136,29 @@ void main() async {
       expect(resultNames, contains(customers[2].name));
     });
 
+    test('when filtering with an empty inSet then no rows are.', () async {
+      var customers = await Customer.db.insert(session, [
+        Customer(name: 'Customer 1'),
+        Customer(name: 'Customer 2'),
+        Customer(name: 'Customer 3'),
+      ]);
+
+      await Order.db.insert(session, [
+        // Customer 1 orders
+        Order(description: 'Order 1', customerId: customers[0].id!),
+        // Customer 2 orders
+        Order(description: 'Order 2', customerId: customers[1].id!),
+        Order(description: 'Order 3', customerId: customers[1].id!),
+      ]);
+
+      var result = await Customer.db.find(
+        session,
+        where: (c) => c.orders.count().inSet({}),
+      );
+
+      expect(result, isEmpty);
+    });
+
     test('when filtering on notInSet then matching row is returned.', () async {
       var customers = await Customer.db.insert(session, [
         Customer(name: 'Customer 1'),
@@ -160,6 +183,32 @@ void main() async {
       var resultNames = result.map((e) => e.name);
       expect(resultNames, contains(customers[1].name));
       expect(resultNames, contains(customers[2].name));
+    });
+
+    test('when filtering with empty notInSet then all rows are returned.',
+        () async {
+      var customers = await Customer.db.insert(session, [
+        Customer(name: 'Customer 1'),
+        Customer(name: 'Customer 2'),
+        Customer(name: 'Customer 3'),
+      ]);
+
+      await Order.db.insert(session, [
+        // Customer 1 orders
+        Order(description: 'Order 1', customerId: customers[0].id!),
+        // Customer 2 orders
+        Order(description: 'Order 2', customerId: customers[1].id!),
+        Order(description: 'Order 3', customerId: customers[1].id!),
+      ]);
+
+      var result = await Customer.db.find(
+        session,
+        where: (c) => c.orders.count().notInSet({}),
+      );
+
+      expect(result, hasLength(3));
+      var resultNames = result.map((e) => e.name);
+      expect(resultNames, containsAll(customers.map((e) => e.name)));
     });
 
     test('when filtering on greater than then matching rows are returned.',
