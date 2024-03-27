@@ -12,9 +12,9 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 dependencies:
   http: ">=0.13.0 <2.0.0"
-  serverpod: 2.0.0-alpha.1
-  serverpod_auth_server: 2.0.0-alpha.1
-  serverpod_cloud_storage_s3: 2.0.0-alpha.1
+  serverpod: 2.0.0-alpha.2
+  serverpod_auth_server: 2.0.0-alpha.2
+  serverpod_cloud_storage_s3: 2.0.0-alpha.2
   serverpod_test_shared:
     path: ../serverpod_test_shared
   serverpod_test_module_server:
@@ -26,8 +26,8 @@ dev_dependencies:
   lints: ^3.0.0
   test: ^1.24.2
   path: ^1.8.2
-  serverpod_cli: 2.0.0-alpha.1
-  serverpod_service_client: 2.0.0-alpha.1
+  serverpod_cli: 2.0.0-alpha.2
+  serverpod_service_client: 2.0.0-alpha.2
   serverpod_test_client:
     path: ../serverpod_test_client
   serverpod_test_module_client:

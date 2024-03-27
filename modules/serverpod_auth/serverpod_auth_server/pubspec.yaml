@@ -3,15 +3,15 @@
 
 name: serverpod_auth_server
 description: Serverpod authentication server module.
-version: 2.0.0-alpha.1
+version: 2.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod: 2.0.0-alpha.1
-  serverpod_serialization: 2.0.0-alpha.1
+  serverpod: 2.0.0-alpha.2
+  serverpod_serialization: 2.0.0-alpha.2
   crypto: ^3.0.2
   email_validator: ^2.1.17
   firebase_admin: ^0.2.0
@@ -23,7 +23,7 @@ dependencies:
   pointycastle: ^3.7.4
 
 dev_dependencies:
-  serverpod_lints: 2.0.0-alpha.1
+  serverpod_lints: 2.0.0-alpha.2
   test: ^1.24.2
 
 dependency_overrides:

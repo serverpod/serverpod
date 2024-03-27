@@ -1,3 +1,6 @@
+## 2.0.0-alpha.2
+- 
+
 ## 2.0.0-alpha.1
 - feat: Serverpod mini. Allows running Serverpod without the database.
 - fix: Changes root file name in modules to follow Dart standards.
@@ -5,6 +8,23 @@
 - fix: BREAKING. Introduces `DatabaseException`.
 - fix: BREAKING. Introduces new types for database result sets.
 - fix: BREAKING. Updates transaction interface in database.
+
+## 1.2.6
+- feat: Adds missing callbacks when sending chat messages in chat module.
+- fix: Updates password hash algorithm for email authentication. [Security Advisories](https://github.com/serverpod/serverpod/security/advisories)
+- fix: Improves client certificate security. [Security Advisories](https://github.com/serverpod/serverpod/security/advisories)
+- fix: Fixes issue when passing empty set in `inSet` and `notInSet`.
+- fix: Fixes issue with incorrect line breaks in CLI.
+
+## 1.2.5
+- fix: Custom classes respect nullable configuration.
+
+## 1.2.4
+- fix: Sets the correct output path for generated files on Windows.
+- fix: Prevents VS Code extension from crashing on startup.
+- fix: Marks file handling database methods as deprecated.
+- fix: Correctly handles transaction parameters for delete method.
+- fix: Correctly resolves and validates registered custom classes used as types in model fields.
 
 ## 1.2.3
 - fix: Correctly cleans up health check manager when shutting down server.

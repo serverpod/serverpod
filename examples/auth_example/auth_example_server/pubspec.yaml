@@ -11,8 +11,8 @@ environment:
 
 dependencies:
   mailer: ^6.0.1
-  serverpod: 2.0.0-alpha.1
-  serverpod_auth_server: 2.0.0-alpha.1
+  serverpod: 2.0.0-alpha.2
+  serverpod_auth_server: 2.0.0-alpha.2
 
 dev_dependencies:
   lints: ^3.0.0

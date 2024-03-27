@@ -28,11 +28,11 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
-  serverpod_auth_email_flutter: 2.0.0-alpha.1
-  serverpod_auth_shared_flutter: 2.0.0-alpha.1
-  serverpod_chat_flutter: 2.0.0-alpha.1
-  serverpod_client: 2.0.0-alpha.1
-  serverpod_flutter: 2.0.0-alpha.1
+  serverpod_auth_email_flutter: 2.0.0-alpha.2
+  serverpod_auth_shared_flutter: 2.0.0-alpha.2
+  serverpod_chat_flutter: 2.0.0-alpha.2
+  serverpod_client: 2.0.0-alpha.2
+  serverpod_flutter: 2.0.0-alpha.2
   chat_client:
     path: ../chat_client
 
