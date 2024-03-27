@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_cli
-version: 2.0.0-alpha.1
+version: 2.0.0-alpha.2
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
@@ -29,9 +29,9 @@ dependencies:
   pub_api_client: ^2.4.0
   uuid: ^4.0.0
   yaml: ^3.1.1
-  serverpod_shared: 2.0.0-alpha.1
-  serverpod_serialization: 2.0.0-alpha.1
-  serverpod_service_client: 2.0.0-alpha.1
+  serverpod_shared: 2.0.0-alpha.2
+  serverpod_serialization: 2.0.0-alpha.2
+  serverpod_service_client: 2.0.0-alpha.2
   async: ^2.11.0
   meta: ^1.8.0
   json_rpc_2: ^3.0.2
@@ -41,7 +41,7 @@ dependencies:
 
 
 dev_dependencies:
-  serverpod_lints: 2.0.0-alpha.1
+  serverpod_lints: 2.0.0-alpha.2
   test: ^1.24.2
 
 dependency_overrides:
