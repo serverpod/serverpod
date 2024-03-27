@@ -63,12 +63,28 @@ void main() {
       });
 
       test(
+          'when checking if expression is in empty value set then output is FALSE expression.',
+          () {
+        var comparisonExpression = column.inSet(<bool>{});
+
+        expect(comparisonExpression.toString(), 'FALSE');
+      });
+
+      test(
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
         var comparisonExpression = column.notInSet(<bool>{true, false});
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (true, false) OR $column IS NULL)');
+      });
+
+      test(
+          'when checking if expression is NOT in empty value set then output is TRUE expression.',
+          () {
+        var comparisonExpression = column.notInSet(<bool>{});
+
+        expect(comparisonExpression.toString(), 'TRUE');
       });
     });
   });

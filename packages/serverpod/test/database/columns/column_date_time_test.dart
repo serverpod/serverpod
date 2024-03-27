@@ -69,6 +69,14 @@ void main() {
       });
 
       test(
+          'when checking if expression is in empty value set then output is FALSE expression.',
+          () {
+        var comparisonExpression = column.inSet(<DateTime>{});
+
+        expect(comparisonExpression.toString(), 'FALSE');
+      });
+
+      test(
           'when checking if expression is NOT in value set then output is NOT IN expression.',
           () {
         var comparisonExpression = column.notInSet(<DateTime>{
@@ -79,6 +87,17 @@ void main() {
 
         expect(comparisonExpression.toString(),
             '($column NOT IN (\'"1991-05-28T00:00:00.000Z"\', \'"1991-05-29T00:00:00.000Z"\', \'"1991-05-30T00:00:00.000Z"\') OR $column IS NULL)');
+      });
+
+      test(
+          'when checking if expression is NOT in empty value set then output is TRUE expression.',
+          () {
+        var comparisonExpression = column.notInSet(<DateTime>{});
+
+        expect(
+          comparisonExpression.toString(),
+          'TRUE',
+        );
       });
     });
 
