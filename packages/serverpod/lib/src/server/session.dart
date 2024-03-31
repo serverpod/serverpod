@@ -353,7 +353,6 @@ class FutureCallSession extends Session {
 }
 
 /// Collects methods for authenticating users.
-@Deprecated('Will be Removed it 2.0.0, use UserAuthentication instead')
 class UserAuthentication {
   final Session _session;
 
@@ -408,6 +407,7 @@ class UserAuthentication {
 }
 
 /// Collects methods for authenticating users.
+@Deprecated('Will be Removed it 2.0.0, use UserAuthentication instead')
 class UserAuthetication {
   final Session _session;
 
