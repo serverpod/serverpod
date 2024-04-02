@@ -761,17 +761,18 @@ class SerializableModelLibraryGenerator {
           p.name = 'jsonSerialization';
           p.type = refer('Map<String,dynamic>');
         }),
-        Parameter((p) {
+        /*  Parameter((p) {
           p.name = 'serializationManager';
           p.type = refer('SerializationManager', serverpodUrl(serverCode));
-        }),
+        }),*/
       ]);
       c.body = refer(className)
           .call([], {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
-                field.name:
-                    refer('serializationManager').property('deserialize').call([
+                field.name: refer('Protocol()', serverpodProtocolUrl(serverCode))
+                    .property('deserialize')
+                    .call([
                   refer('jsonSerialization').index(literalString(field.name))
                 ], {}, [
                   field.type.reference(serverCode,

@@ -122,8 +122,7 @@ class LibraryGenerator {
             for (var classInfo in models)
               refer(classInfo.className, classInfo.fileRef()): Code.scope(
                   (a) => '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                      '.fromJson(data'
-                      '${classInfo is ClassDefinition ? ',this' : ''}) as T'),
+                      '.fromJson(data) as T'),
             for (var classInfo in models)
               refer('getType', serverpodUrl(serverCode)).call([], {}, [
                 TypeReference(
@@ -134,9 +133,7 @@ class LibraryGenerator {
                 )
               ]): Code.scope((a) => '(data!=null?'
                   '${a(refer(classInfo.className, classInfo.fileRef()))}'
-                  '.fromJson(data'
-                  '${classInfo is ClassDefinition ? ',this' : ''})'
-                  ':null)as T'),
+                  '.fromJson(data) :null) as T'),
           }..addEntries([
                   for (var classInfo in models)
                     if (classInfo is ClassDefinition)
