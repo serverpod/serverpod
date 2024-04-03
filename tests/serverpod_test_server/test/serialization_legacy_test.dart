@@ -19,7 +19,7 @@ void main() {
     test('Simple data', () {
       var data = SimpleData(num: 42);
       var s = SerializationManager.encode(data);
-      var unpacked = SimpleData.fromJson(jsonDecode(s), protocol);
+      var unpacked = SimpleData.fromJson(jsonDecode(s));
       expect(unpacked.num, equals(42));
     });
 

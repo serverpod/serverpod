@@ -54,6 +54,14 @@ abstract class SerializationManager {
   T deserialize<T>(dynamic data, [Type? t]) {
     t ??= T;
 
+    if (data == null) {
+      if (null is! T) {
+        throw FormatException(
+          'Failed to deserialize data. The provided data is null, and the target type $T cannot be instantiated.',
+        );
+      }
+    }
+
     //TODO: all the "dart native" types should be listed here
     if (_isNullableType<int>(t)) {
       return data;
