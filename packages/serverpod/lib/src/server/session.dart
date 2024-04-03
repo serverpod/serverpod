@@ -394,7 +394,7 @@ class UserAuthentication {
 }
 
 /// Collects methods for authenticating users.
-@Deprecated('Will be Removed it 2.0.0, use UserAuthentication instead')
+@Deprecated('Will be removed in 2.0.0, use UserAuthentication instead')
 class UserAuthetication {
   final Session _session;
 
