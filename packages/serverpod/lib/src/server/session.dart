@@ -406,61 +406,6 @@ class UserAuthentication {
   }
 }
 
-/// Collects methods for authenticating users.
-@Deprecated('Will be Removed it 2.0.0, use UserAuthentication instead')
-class UserAuthetication {
-  final Session _session;
-
-  UserAuthetication._(this._session);
-
-  /// Returns the id of an authenticated user or null if the user isn't signed
-  /// in.
-  Future<int?> get authenticatedUserId async {
-    if (!_session._initialized) await _session._initialize();
-    return _session._authenticatedUser;
-  }
-
-  /// Signs in an user to the server. The user should have been authenticated
-  /// before signing them in. Send the AuthKey.id and key to the client and
-  /// use that to authenticate in future calls. In most cases, it's more
-  /// convenient to use the serverpod_auth module for authentication.
-  Future<AuthKey> signInUser(int userId, String method,
-      {Set<Scope> scopes = const {}}) async {
-    var signInSalt = _session.passwords['authKeySalt'] ?? defaultAuthKeySalt;
-
-    var key = generateRandomString();
-    var hash = hashString(signInSalt, key);
-
-    var scopeNames = <String>[];
-    for (var scope in scopes) {
-      if (scope.name != null) scopeNames.add(scope.name!);
-    }
-
-    var authKey = AuthKey(
-      userId: userId,
-      hash: hash,
-      key: key,
-      scopeNames: scopeNames,
-      method: method,
-    );
-
-    _session._authenticatedUser = userId;
-    var result = await AuthKey.db.insertRow(_session, authKey);
-    return result.copyWith(key: key);
-  }
-
-  /// Signs out a user from the server and deletes all authentication keys.
-  /// This means that the user will be signed out from all connected devices.
-  Future<void> signOutUser({int? userId}) async {
-    userId ??= await authenticatedUserId;
-    if (userId == null) return;
-
-    await _session.db
-        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
-    _session._authenticatedUser = null;
-  }
-}
-
 /// Collects methods for accessing cloud storage.
 class StorageAccess {
   final Session _session;
