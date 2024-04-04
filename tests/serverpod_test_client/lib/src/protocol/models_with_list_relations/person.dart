@@ -26,17 +26,15 @@ abstract class Person extends _i1.SerializableEntity {
     _i2.Organization? organization,
   }) = _PersonImpl;
 
-  factory Person.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Person.fromJson(Map<String, dynamic> jsonSerialization) {
     return Person(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      organizationId: serializationManager
-          .deserialize<int?>(jsonSerialization['organizationId']),
-      organization: serializationManager
-          .deserialize<_i2.Organization?>(jsonSerialization['organization']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      organizationId: jsonSerialization['organizationId'] as int?,
+      organization: jsonSerialization.containsKey('organization')
+          ? _i2.Organization.fromJson(
+              jsonSerialization['organization'] as Map<String, dynamic>)
+          : null,
     );
   }
 

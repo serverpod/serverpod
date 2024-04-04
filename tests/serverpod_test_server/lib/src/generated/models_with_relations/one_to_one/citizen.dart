@@ -32,23 +32,24 @@ abstract class Citizen extends _i1.TableRow {
     _i2.Company? oldCompany,
   }) = _CitizenImpl;
 
-  factory Citizen.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
     return Citizen(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      address: serializationManager
-          .deserialize<_i2.Address?>(jsonSerialization['address']),
-      companyId:
-          serializationManager.deserialize<int>(jsonSerialization['companyId']),
-      company: serializationManager
-          .deserialize<_i2.Company?>(jsonSerialization['company']),
-      oldCompanyId: serializationManager
-          .deserialize<int?>(jsonSerialization['oldCompanyId']),
-      oldCompany: serializationManager
-          .deserialize<_i2.Company?>(jsonSerialization['oldCompany']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      address: jsonSerialization.containsKey('address')
+          ? _i2.Address.fromJson(
+              jsonSerialization['address'] as Map<String, dynamic>)
+          : null,
+      companyId: jsonSerialization['companyId'] as int,
+      company: jsonSerialization.containsKey('company')
+          ? _i2.Company.fromJson(
+              jsonSerialization['company'] as Map<String, dynamic>)
+          : null,
+      oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
+      oldCompany: jsonSerialization.containsKey('oldCompany')
+          ? _i2.Company.fromJson(
+              jsonSerialization['oldCompany'] as Map<String, dynamic>)
+          : null,
     );
   }
 

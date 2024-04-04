@@ -17,13 +17,13 @@ abstract class SimpleDataMap extends _i1.SerializableEntity {
   factory SimpleDataMap({required Map<String, _i2.SimpleData> data}) =
       _SimpleDataMapImpl;
 
-  factory SimpleDataMap.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleDataMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataMap(
-        data: serializationManager.deserialize<Map<String, _i2.SimpleData>>(
-            jsonSerialization['data']));
+        data: (jsonSerialization['data'] as Map<dynamic, dynamic>)
+            .map((k, v) => MapEntry(
+                  k as String,
+                  _i2.SimpleData.fromJson(v as Map<String, dynamic>),
+                )));
   }
 
   Map<String, _i2.SimpleData> data;

@@ -28,19 +28,13 @@ abstract class LogSettingsOverride extends _i1.SerializableEntity {
     required _i2.LogSettings logSettings,
   }) = _LogSettingsOverrideImpl;
 
-  factory LogSettingsOverride.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogSettingsOverride.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettingsOverride(
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      logSettings: serializationManager
-          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
+      module: jsonSerialization['module'] as String?,
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      logSettings: _i2.LogSettings.fromJson(
+          jsonSerialization['logSettings'] as Map<String, dynamic>),
     );
   }
 

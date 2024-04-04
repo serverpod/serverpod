@@ -28,20 +28,18 @@ abstract class Order extends _i1.SerializableEntity {
     List<_i2.Comment>? comments,
   }) = _OrderImpl;
 
-  factory Order.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Order.fromJson(Map<String, dynamic> jsonSerialization) {
     return Order(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      description: serializationManager
-          .deserialize<String>(jsonSerialization['description']),
-      customerId: serializationManager
-          .deserialize<int>(jsonSerialization['customerId']),
-      customer: serializationManager
-          .deserialize<_i2.Customer?>(jsonSerialization['customer']),
-      comments: serializationManager
-          .deserialize<List<_i2.Comment>?>(jsonSerialization['comments']),
+      id: jsonSerialization['id'] as int?,
+      description: jsonSerialization['description'] as String,
+      customerId: jsonSerialization['customerId'] as int,
+      customer: jsonSerialization.containsKey('customer')
+          ? _i2.Customer.fromJson(
+              jsonSerialization['customer'] as Map<String, dynamic>)
+          : null,
+      comments: (jsonSerialization['comments'] as List<dynamic>?)
+          ?.map((e) => _i2.Comment.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

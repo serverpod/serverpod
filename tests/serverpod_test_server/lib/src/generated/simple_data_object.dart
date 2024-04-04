@@ -17,13 +17,10 @@ abstract class SimpleDataObject extends _i1.SerializableEntity {
   factory SimpleDataObject({required _i2.SimpleData object}) =
       _SimpleDataObjectImpl;
 
-  factory SimpleDataObject.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleDataObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataObject(
-        object: serializationManager
-            .deserialize<_i2.SimpleData>(jsonSerialization['object']));
+        object: _i2.SimpleData.fromJson(
+            jsonSerialization['object'] as Map<String, dynamic>));
   }
 
   _i2.SimpleData object;

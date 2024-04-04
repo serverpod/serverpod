@@ -41,28 +41,19 @@ abstract class UserInfo extends _i1.TableRow {
     required bool blocked,
   }) = _UserInfoImpl;
 
-  factory UserInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userIdentifier: serializationManager
-          .deserialize<String>(jsonSerialization['userIdentifier']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      fullName: serializationManager
-          .deserialize<String?>(jsonSerialization['fullName']),
-      email:
-          serializationManager.deserialize<String?>(jsonSerialization['email']),
-      created: serializationManager
-          .deserialize<DateTime>(jsonSerialization['created']),
-      imageUrl: serializationManager
-          .deserialize<String?>(jsonSerialization['imageUrl']),
-      scopeNames: serializationManager
-          .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      blocked:
-          serializationManager.deserialize<bool>(jsonSerialization['blocked']),
+      id: jsonSerialization['id'] as int?,
+      userIdentifier: jsonSerialization['userIdentifier'] as String,
+      userName: jsonSerialization['userName'] as String,
+      fullName: jsonSerialization['fullName'] as String?,
+      email: jsonSerialization['email'] as String?,
+      created: DateTime.parse(jsonSerialization['created']),
+      imageUrl: jsonSerialization['imageUrl'] as String?,
+      scopeNames: (jsonSerialization['scopeNames'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      blocked: jsonSerialization['blocked'] as bool,
     );
   }
 

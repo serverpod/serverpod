@@ -32,22 +32,15 @@ abstract class SessionLogFilter extends _i1.SerializableEntity {
     int? lastSessionLogId,
   }) = _SessionLogFilterImpl;
 
-  factory SessionLogFilter.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogFilter.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogFilter(
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      futureCall: serializationManager
-          .deserialize<String?>(jsonSerialization['futureCall']),
-      slow: serializationManager.deserialize<bool>(jsonSerialization['slow']),
-      error: serializationManager.deserialize<bool>(jsonSerialization['error']),
-      open: serializationManager.deserialize<bool>(jsonSerialization['open']),
-      lastSessionLogId: serializationManager
-          .deserialize<int?>(jsonSerialization['lastSessionLogId']),
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      futureCall: jsonSerialization['futureCall'] as String?,
+      slow: jsonSerialization['slow'] as bool,
+      error: jsonSerialization['error'] as bool,
+      open: jsonSerialization['open'] as bool,
+      lastSessionLogId: jsonSerialization['lastSessionLogId'] as int?,
     );
   }
 

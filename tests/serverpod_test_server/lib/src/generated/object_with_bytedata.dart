@@ -23,14 +23,18 @@ abstract class ObjectWithByteData extends _i1.TableRow {
     required _i2.ByteData byteData,
   }) = _ObjectWithByteDataImpl;
 
-  factory ObjectWithByteData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      byteData: serializationManager
-          .deserialize<_i2.ByteData>(jsonSerialization['byteData']),
+      id: jsonSerialization['id'] as int?,
+      byteData: (jsonSerialization['byteData'] != null &&
+              jsonSerialization['byteData'] is _i2.Uint8List
+          ? _i2.ByteData.view(
+              jsonSerialization['byteData'].buffer,
+              jsonSerialization['byteData'].offsetInBytes,
+              jsonSerialization['byteData'].lengthInBytes,
+            )
+          : (jsonSerialization['byteData'] as String?)
+              ?.base64DecodedByteData())!,
     );
   }
 

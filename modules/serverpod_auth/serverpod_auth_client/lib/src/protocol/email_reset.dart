@@ -26,18 +26,12 @@ abstract class EmailReset extends _i1.SerializableEntity {
     required DateTime expiration,
   }) = _EmailResetImpl;
 
-  factory EmailReset.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailReset.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailReset(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      verificationCode: serializationManager
-          .deserialize<String>(jsonSerialization['verificationCode']),
-      expiration: serializationManager
-          .deserialize<DateTime>(jsonSerialization['expiration']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      verificationCode: jsonSerialization['verificationCode'] as String,
+      expiration: DateTime.parse(jsonSerialization['expiration']),
     );
   }
 

@@ -28,20 +28,18 @@ abstract class Post extends _i1.TableRow {
     _i2.Post? next,
   }) = _PostImpl;
 
-  factory Post.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
     return Post(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      content: serializationManager
-          .deserialize<String>(jsonSerialization['content']),
-      previous: serializationManager
-          .deserialize<_i2.Post?>(jsonSerialization['previous']),
-      nextId:
-          serializationManager.deserialize<int?>(jsonSerialization['nextId']),
-      next: serializationManager
-          .deserialize<_i2.Post?>(jsonSerialization['next']),
+      id: jsonSerialization['id'] as int?,
+      content: jsonSerialization['content'] as String,
+      previous: jsonSerialization.containsKey('previous')
+          ? _i2.Post.fromJson(
+              jsonSerialization['previous'] as Map<String, dynamic>)
+          : null,
+      nextId: jsonSerialization['nextId'] as int?,
+      next: jsonSerialization.containsKey('next')
+          ? _i2.Post.fromJson(jsonSerialization['next'] as Map<String, dynamic>)
+          : null,
     );
   }
 

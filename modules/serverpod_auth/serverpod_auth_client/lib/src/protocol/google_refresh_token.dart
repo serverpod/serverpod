@@ -24,16 +24,11 @@ abstract class GoogleRefreshToken extends _i1.SerializableEntity {
     required String refreshToken,
   }) = _GoogleRefreshTokenImpl;
 
-  factory GoogleRefreshToken.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory GoogleRefreshToken.fromJson(Map<String, dynamic> jsonSerialization) {
     return GoogleRefreshToken(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      refreshToken: serializationManager
-          .deserialize<String>(jsonSerialization['refreshToken']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      refreshToken: jsonSerialization['refreshToken'] as String,
     );
   }
 

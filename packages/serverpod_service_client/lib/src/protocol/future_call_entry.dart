@@ -30,21 +30,14 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
     String? identifier,
   }) = _FutureCallEntryImpl;
 
-  factory FutureCallEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return FutureCallEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      serializedObject: serializationManager
-          .deserialize<String?>(jsonSerialization['serializedObject']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      identifier: serializationManager
-          .deserialize<String?>(jsonSerialization['identifier']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      time: DateTime.parse(jsonSerialization['time']),
+      serializedObject: jsonSerialization['serializedObject'] as String?,
+      serverId: jsonSerialization['serverId'] as String,
+      identifier: jsonSerialization['identifier'] as String?,
     );
   }
 

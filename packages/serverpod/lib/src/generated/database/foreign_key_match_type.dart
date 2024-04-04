@@ -24,7 +24,7 @@ enum ForeignKeyMatchType with _i1.SerializableEntity {
   /// match in the referenced table. (Default)
   simple;
 
-  static ForeignKeyMatchType? fromJson(int index) {
+  static ForeignKeyMatchType fromJson(int index) {
     switch (index) {
       case 0:
         return full;
@@ -33,7 +33,8 @@ enum ForeignKeyMatchType with _i1.SerializableEntity {
       case 2:
         return simple;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "ForeignKeyMatchType"');
     }
   }
 

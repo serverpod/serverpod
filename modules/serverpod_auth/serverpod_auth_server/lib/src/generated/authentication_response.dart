@@ -30,19 +30,19 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
   }) = _AuthenticationResponseImpl;
 
   factory AuthenticationResponse.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return AuthenticationResponse(
-      success:
-          serializationManager.deserialize<bool>(jsonSerialization['success']),
-      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
-      keyId: serializationManager.deserialize<int?>(jsonSerialization['keyId']),
-      userInfo: serializationManager
-          .deserialize<_i2.UserInfo?>(jsonSerialization['userInfo']),
-      failReason:
-          serializationManager.deserialize<_i2.AuthenticationFailReason?>(
-              jsonSerialization['failReason']),
+      success: jsonSerialization['success'] as bool,
+      key: jsonSerialization['key'] as String?,
+      keyId: jsonSerialization['keyId'] as int?,
+      userInfo: jsonSerialization.containsKey('userInfo')
+          ? _i2.UserInfo.fromJson(
+              jsonSerialization['userInfo'] as Map<String, dynamic>)
+          : null,
+      failReason: jsonSerialization.containsKey('failReason')
+          ? _i2.AuthenticationFailReason.fromJson(
+              (jsonSerialization['failReason'] as int))
+          : null,
     );
   }
 

@@ -22,14 +22,11 @@ abstract class BulkData extends _i1.SerializableEntity {
     required String data,
   }) = _BulkDataImpl;
 
-  factory BulkData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
-      tableDefinition: serializationManager.deserialize<_i2.TableDefinition>(
-          jsonSerialization['tableDefinition']),
-      data: serializationManager.deserialize<String>(jsonSerialization['data']),
+      tableDefinition: _i2.TableDefinition.fromJson(
+          jsonSerialization['tableDefinition'] as Map<String, dynamic>),
+      data: jsonSerialization['data'] as String,
     );
   }
 

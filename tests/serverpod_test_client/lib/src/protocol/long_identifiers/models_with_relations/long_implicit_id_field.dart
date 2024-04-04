@@ -21,13 +21,10 @@ abstract class LongImplicitIdField extends _i1.SerializableEntity {
     required String name,
   }) = _LongImplicitIdFieldImpl;
 
-  factory LongImplicitIdField.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LongImplicitIdField.fromJson(Map<String, dynamic> jsonSerialization) {
     return LongImplicitIdField(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
     );
   }
 

@@ -26,17 +26,17 @@ abstract class MultipleMaxFieldName extends _i1.SerializableEntity {
   }) = _MultipleMaxFieldNameImpl;
 
   factory MultipleMaxFieldName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return MultipleMaxFieldName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1:
-          serializationManager.deserialize<String>(jsonSerialization[
-              'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1']),
+          jsonSerialization[
+                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames1']
+              as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2:
-          serializationManager.deserialize<String>(jsonSerialization[
-              'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2']),
+          jsonSerialization[
+                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNames2']
+              as String,
     );
   }
 

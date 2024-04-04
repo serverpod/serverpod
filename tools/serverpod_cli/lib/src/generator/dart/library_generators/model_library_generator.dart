@@ -4,6 +4,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/type_generators_util.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
@@ -770,14 +771,8 @@ class SerializableModelLibraryGenerator {
           .call([], {
             for (var field in fields)
               if (field.shouldIncludeField(serverCode))
-                field.name: refer('Protocol()', serverpodProtocolUrl(serverCode))
-                    .property('deserialize')
-                    .call([
-                  refer('jsonSerialization').index(literalString(field.name))
-                ], {}, [
-                  field.type.reference(serverCode,
-                      subDirParts: classDefinition.subDirParts, config: config)
-                ])
+                field.name: expressionFromJsonBuilder(
+                    field, serverCode, config, classDefinition)
           })
           .returned
           .statement;
@@ -1653,7 +1648,7 @@ class SerializableModelLibraryGenerator {
     return [
       Method((m) => m
         ..static = true
-        ..returns = refer('${enumDefinition.className}?')
+        ..returns = refer(enumDefinition.className)
         ..name = 'fromJson'
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'index'
@@ -1663,7 +1658,9 @@ class SerializableModelLibraryGenerator {
                 const Code('switch(index){'),
                 for (int i = 0; i < enumDefinition.values.length; i++)
                   Code('case $i: return ${enumDefinition.values[i].name};'),
-                const Code('default: return null;'),
+                Code(
+                  'default: throw ArgumentError(\'Value "\$index" cannot be converted to "${enumDefinition.className}"\');',
+                ),
                 const Code('}'),
               ]))
             .build()),
@@ -1682,7 +1679,7 @@ class SerializableModelLibraryGenerator {
     return [
       Method((m) => m
         ..static = true
-        ..returns = refer('${enumDefinition.className}?')
+        ..returns = refer(enumDefinition.className)
         ..name = 'fromJson'
         ..requiredParameters.add(Parameter((p) => p
           ..name = 'name'
@@ -1692,7 +1689,9 @@ class SerializableModelLibraryGenerator {
                 const Code('switch(name){'),
                 for (var value in enumDefinition.values)
                   Code("case '${value.name}': return ${value.name};"),
-                const Code('default: return null;'),
+                Code(
+                  'default: throw ArgumentError(\'Value "\$name" cannot be converted to "${enumDefinition.className}"\');',
+                ),
                 const Code('}'),
               ]))
             .build()),

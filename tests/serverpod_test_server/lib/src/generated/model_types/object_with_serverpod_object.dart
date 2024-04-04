@@ -22,14 +22,10 @@ abstract class ObjectWithServerpodObject extends _i1.SerializableEntity {
   }) = _ObjectWithServerpodObjectImpl;
 
   factory ObjectWithServerpodObject.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ObjectWithServerpodObject(
-      logLevel1: serializationManager
-          .deserialize<_i1.LogLevel>(jsonSerialization['logLevel1']),
-      logLevel2: serializationManager
-          .deserialize<_i1.LogLevel>(jsonSerialization['logLevel2']),
+      logLevel1: _i1.LogLevel.fromJson((jsonSerialization['logLevel1'] as int)),
+      logLevel2: _i1.LogLevel.fromJson((jsonSerialization['logLevel2'] as int)),
     );
   }
 

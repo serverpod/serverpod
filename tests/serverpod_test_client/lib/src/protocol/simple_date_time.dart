@@ -22,14 +22,10 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
     required DateTime dateTime,
   }) = _SimpleDateTimeImpl;
 
-  factory SimpleDateTime.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      dateTime: serializationManager
-          .deserialize<DateTime>(jsonSerialization['dateTime']),
+      id: jsonSerialization['id'] as int?,
+      dateTime: DateTime.parse(jsonSerialization['dateTime']),
     );
   }
 

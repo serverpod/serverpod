@@ -41,30 +41,24 @@ abstract class ChatMessage extends _i1.TableRow {
     List<_i3.ChatMessageAttachment>? attachments,
   }) = _ChatMessageImpl;
 
-  factory ChatMessage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatMessage.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      sender:
-          serializationManager.deserialize<int>(jsonSerialization['sender']),
-      senderInfo: serializationManager
-          .deserialize<_i2.UserInfoPublic?>(jsonSerialization['senderInfo']),
-      removed:
-          serializationManager.deserialize<bool>(jsonSerialization['removed']),
-      clientMessageId: serializationManager
-          .deserialize<int?>(jsonSerialization['clientMessageId']),
-      sent: serializationManager.deserialize<bool?>(jsonSerialization['sent']),
-      attachments:
-          serializationManager.deserialize<List<_i3.ChatMessageAttachment>?>(
-              jsonSerialization['attachments']),
+      id: jsonSerialization['id'] as int?,
+      channel: jsonSerialization['channel'] as String,
+      message: jsonSerialization['message'] as String,
+      time: DateTime.parse(jsonSerialization['time']),
+      sender: jsonSerialization['sender'] as int,
+      senderInfo: jsonSerialization.containsKey('senderInfo')
+          ? _i2.UserInfoPublic.fromJson(
+              jsonSerialization['senderInfo'] as Map<String, dynamic>)
+          : null,
+      removed: jsonSerialization['removed'] as bool,
+      clientMessageId: jsonSerialization['clientMessageId'] as int?,
+      sent: jsonSerialization['sent'] as bool?,
+      attachments: (jsonSerialization['attachments'] as List<dynamic>?)
+          ?.map((e) =>
+              _i3.ChatMessageAttachment.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

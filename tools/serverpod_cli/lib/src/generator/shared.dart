@@ -11,3 +11,16 @@ String serverpodProtocolUrl(bool serverCode) {
       ? 'package:serverpod/protocol.dart'
       : 'package:serverpod_client/serverpod_client.dart';
 }
+
+/// The import url of the serverpod protocol.
+String protocolUrl(bool serverCode) {
+  return serverCode
+      ? 'package:serverpod/protocol.dart'
+      : 'package:serverpod_client/serverpod_client.dart';
+}
+
+/// The import url of the ByteData type.
+String get byteDataUrl => 'dart:typed_data';
+
+/// The import url of the UuidValue type.
+String get uuidValueUrl =>  'package:uuid/uuid_value.dart';

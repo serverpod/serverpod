@@ -28,20 +28,15 @@ abstract class ChatMessagePost extends _i1.SerializableEntity {
     List<_i2.ChatMessageAttachment>? attachments,
   }) = _ChatMessagePostImpl;
 
-  factory ChatMessagePost.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatMessagePost.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessagePost(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      clientMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['clientMessageId']),
-      attachments:
-          serializationManager.deserialize<List<_i2.ChatMessageAttachment>?>(
-              jsonSerialization['attachments']),
+      channel: jsonSerialization['channel'] as String,
+      message: jsonSerialization['message'] as String,
+      clientMessageId: jsonSerialization['clientMessageId'] as int,
+      attachments: (jsonSerialization['attachments'] as List<dynamic>?)
+          ?.map((e) =>
+              _i2.ChatMessageAttachment.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

@@ -28,20 +28,19 @@ abstract class Enrollment extends _i1.TableRow {
     _i2.Course? course,
   }) = _EnrollmentImpl;
 
-  factory Enrollment.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
     return Enrollment(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      studentId:
-          serializationManager.deserialize<int>(jsonSerialization['studentId']),
-      student: serializationManager
-          .deserialize<_i2.Student?>(jsonSerialization['student']),
-      courseId:
-          serializationManager.deserialize<int>(jsonSerialization['courseId']),
-      course: serializationManager
-          .deserialize<_i2.Course?>(jsonSerialization['course']),
+      id: jsonSerialization['id'] as int?,
+      studentId: jsonSerialization['studentId'] as int,
+      student: jsonSerialization.containsKey('student')
+          ? _i2.Student.fromJson(
+              jsonSerialization['student'] as Map<String, dynamic>)
+          : null,
+      courseId: jsonSerialization['courseId'] as int,
+      course: jsonSerialization.containsKey('course')
+          ? _i2.Course.fromJson(
+              jsonSerialization['course'] as Map<String, dynamic>)
+          : null,
     );
   }
 

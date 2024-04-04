@@ -11,6 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:uuid/uuid_value.dart' as _i4;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class TypesList extends _i1.SerializableEntity {
@@ -46,38 +47,59 @@ abstract class TypesList extends _i1.SerializableEntity {
     List<List<_i3.Types>>? aList,
   }) = _TypesListImpl;
 
-  factory TypesList.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesList(
-      anInt: serializationManager
-          .deserialize<List<int>?>(jsonSerialization['anInt']),
-      aBool: serializationManager
-          .deserialize<List<bool>?>(jsonSerialization['aBool']),
-      aDouble: serializationManager
-          .deserialize<List<double>?>(jsonSerialization['aDouble']),
-      aDateTime: serializationManager
-          .deserialize<List<DateTime>?>(jsonSerialization['aDateTime']),
-      aString: serializationManager
-          .deserialize<List<String>?>(jsonSerialization['aString']),
-      aByteData: serializationManager
-          .deserialize<List<_i2.ByteData>?>(jsonSerialization['aByteData']),
-      aDuration: serializationManager
-          .deserialize<List<Duration>?>(jsonSerialization['aDuration']),
-      aUuid: serializationManager
-          .deserialize<List<_i1.UuidValue>?>(jsonSerialization['aUuid']),
-      anEnum: serializationManager
-          .deserialize<List<_i3.TestEnum>?>(jsonSerialization['anEnum']),
+      anInt: (jsonSerialization['anInt'] as List<dynamic>?)
+          ?.map((e) => e as int)
+          .toList(),
+      aBool: (jsonSerialization['aBool'] as List<dynamic>?)
+          ?.map((e) => e as bool)
+          .toList(),
+      aDouble: (jsonSerialization['aDouble'] as List<dynamic>?)
+          ?.map((e) => e as double)
+          .toList(),
+      aDateTime: (jsonSerialization['aDateTime'] as List<dynamic>?)
+          ?.map((e) => DateTime.parse(e))
+          .toList(),
+      aString: (jsonSerialization['aString'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      aByteData: (jsonSerialization['aByteData'] as List<dynamic>?)
+          ?.map((e) => (e != null && e is _i2.Uint8List
+              ? _i2.ByteData.view(
+                  e.buffer,
+                  e.offsetInBytes,
+                  e.lengthInBytes,
+                )
+              : (e as String?)?.base64DecodedByteData())!)
+          .toList(),
+      aDuration: (jsonSerialization['aDuration'] as List<dynamic>?)
+          ?.map((e) => Duration(milliseconds: e))
+          .toList(),
+      aUuid: (jsonSerialization['aUuid'] as List<dynamic>?)
+          ?.map((e) => _i4.UuidValue.fromString(e))
+          .toList(),
+      anEnum: (jsonSerialization['anEnum'] as List<dynamic>?)
+          ?.map((e) => _i3.TestEnum.fromJson((e as int)))
+          .toList(),
       aStringifiedEnum:
-          serializationManager.deserialize<List<_i3.TestEnumStringified>?>(
-              jsonSerialization['aStringifiedEnum']),
-      anObject: serializationManager
-          .deserialize<List<_i3.Types>?>(jsonSerialization['anObject']),
-      aMap: serializationManager.deserialize<List<Map<String, _i3.Types>>?>(
-          jsonSerialization['aMap']),
-      aList: serializationManager
-          .deserialize<List<List<_i3.Types>>?>(jsonSerialization['aList']),
+          (jsonSerialization['aStringifiedEnum'] as List<dynamic>?)
+              ?.map((e) => _i3.TestEnumStringified.fromJson((e as String)))
+              .toList(),
+      anObject: (jsonSerialization['anObject'] as List<dynamic>?)
+          ?.map((e) => _i3.Types.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      aMap: (jsonSerialization['aMap'] as List<dynamic>?)
+          ?.map((e) => (e as Map<dynamic, dynamic>).map((k, v) => MapEntry(
+                k as String,
+                _i3.Types.fromJson(v as Map<String, dynamic>),
+              )))
+          .toList(),
+      aList: (jsonSerialization['aList'] as List<dynamic>?)
+          ?.map((e) => (e as List<dynamic>)
+              .map((e) => _i3.Types.fromJson(e as Map<String, dynamic>))
+              .toList())
+          .toList(),
     );
   }
 

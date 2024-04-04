@@ -17,13 +17,11 @@ abstract class SimpleDataList extends _i1.SerializableEntity {
   factory SimpleDataList({required List<_i2.SimpleData> rows}) =
       _SimpleDataListImpl;
 
-  factory SimpleDataList.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SimpleDataList.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataList(
-        rows: serializationManager
-            .deserialize<List<_i2.SimpleData>>(jsonSerialization['rows']));
+        rows: (jsonSerialization['rows'] as List<dynamic>)
+            .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+            .toList());
   }
 
   List<_i2.SimpleData> rows;

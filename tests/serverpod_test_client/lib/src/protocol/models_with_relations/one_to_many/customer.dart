@@ -24,15 +24,13 @@ abstract class Customer extends _i1.SerializableEntity {
     List<_i2.Order>? orders,
   }) = _CustomerImpl;
 
-  factory Customer.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Customer.fromJson(Map<String, dynamic> jsonSerialization) {
     return Customer(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      orders: serializationManager
-          .deserialize<List<_i2.Order>?>(jsonSerialization['orders']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      orders: (jsonSerialization['orders'] as List<dynamic>?)
+          ?.map((e) => _i2.Order.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

@@ -30,22 +30,18 @@ abstract class DatabaseDefinition extends _i1.SerializableEntity {
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
-  factory DatabaseDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory DatabaseDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinition(
-      name:
-          serializationManager.deserialize<String?>(jsonSerialization['name']),
-      moduleName: serializationManager
-          .deserialize<String>(jsonSerialization['moduleName']),
-      tables: serializationManager
-          .deserialize<List<_i2.TableDefinition>>(jsonSerialization['tables']),
-      installedModules:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationVersion>>(
-              jsonSerialization['installedModules']),
-      migrationApiVersion: serializationManager
-          .deserialize<int>(jsonSerialization['migrationApiVersion']),
+      name: jsonSerialization['name'] as String?,
+      moduleName: jsonSerialization['moduleName'] as String,
+      tables: (jsonSerialization['tables'] as List<dynamic>)
+          .map((e) => _i2.TableDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      installedModules: (jsonSerialization['installedModules'] as List<dynamic>)
+          .map((e) =>
+              _i2.DatabaseMigrationVersion.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
 

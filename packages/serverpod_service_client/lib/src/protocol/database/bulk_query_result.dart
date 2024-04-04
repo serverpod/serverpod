@@ -26,18 +26,15 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
     required Duration duration,
   }) = _BulkQueryResultImpl;
 
-  factory BulkQueryResult.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory BulkQueryResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkQueryResult(
-      headers: serializationManager.deserialize<
-          List<_i2.BulkQueryColumnDescription>>(jsonSerialization['headers']),
-      data: serializationManager.deserialize<String>(jsonSerialization['data']),
-      numAffectedRows: serializationManager
-          .deserialize<int>(jsonSerialization['numAffectedRows']),
-      duration: serializationManager
-          .deserialize<Duration>(jsonSerialization['duration']),
+      headers: (jsonSerialization['headers'] as List<dynamic>)
+          .map((e) => _i2.BulkQueryColumnDescription.fromJson(
+              e as Map<String, dynamic>))
+          .toList(),
+      data: jsonSerialization['data'] as String,
+      numAffectedRows: jsonSerialization['numAffectedRows'] as int,
+      duration: Duration(milliseconds: jsonSerialization['duration']),
     );
   }
 

@@ -26,18 +26,15 @@ abstract class Address extends _i1.SerializableEntity {
     _i2.Citizen? inhabitant,
   }) = _AddressImpl;
 
-  factory Address.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Address.fromJson(Map<String, dynamic> jsonSerialization) {
     return Address(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      street:
-          serializationManager.deserialize<String>(jsonSerialization['street']),
-      inhabitantId: serializationManager
-          .deserialize<int?>(jsonSerialization['inhabitantId']),
-      inhabitant: serializationManager
-          .deserialize<_i2.Citizen?>(jsonSerialization['inhabitant']),
+      id: jsonSerialization['id'] as int?,
+      street: jsonSerialization['street'] as String,
+      inhabitantId: jsonSerialization['inhabitantId'] as int?,
+      inhabitant: jsonSerialization.containsKey('inhabitant')
+          ? _i2.Citizen.fromJson(
+              jsonSerialization['inhabitant'] as Map<String, dynamic>)
+          : null,
     );
   }
 

@@ -22,15 +22,10 @@ abstract class EmailPasswordReset extends _i1.SerializableEntity {
     required String email,
   }) = _EmailPasswordResetImpl;
 
-  factory EmailPasswordReset.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailPasswordReset.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailPasswordReset(
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
+      userName: jsonSerialization['userName'] as String,
+      email: jsonSerialization['email'] as String,
     );
   }
 

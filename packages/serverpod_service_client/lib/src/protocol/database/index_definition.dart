@@ -33,25 +33,18 @@ abstract class IndexDefinition extends _i1.SerializableEntity {
     String? predicate,
   }) = _IndexDefinitionImpl;
 
-  factory IndexDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory IndexDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return IndexDefinition(
-      indexName: serializationManager
-          .deserialize<String>(jsonSerialization['indexName']),
-      tableSpace: serializationManager
-          .deserialize<String?>(jsonSerialization['tableSpace']),
-      elements:
-          serializationManager.deserialize<List<_i2.IndexElementDefinition>>(
-              jsonSerialization['elements']),
-      type: serializationManager.deserialize<String>(jsonSerialization['type']),
-      isUnique:
-          serializationManager.deserialize<bool>(jsonSerialization['isUnique']),
-      isPrimary: serializationManager
-          .deserialize<bool>(jsonSerialization['isPrimary']),
-      predicate: serializationManager
-          .deserialize<String?>(jsonSerialization['predicate']),
+      indexName: jsonSerialization['indexName'] as String,
+      tableSpace: jsonSerialization['tableSpace'] as String?,
+      elements: (jsonSerialization['elements'] as List<dynamic>)
+          .map((e) =>
+              _i2.IndexElementDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      type: jsonSerialization['type'] as String,
+      isUnique: jsonSerialization['isUnique'] as bool,
+      isPrimary: jsonSerialization['isPrimary'] as bool,
+      predicate: jsonSerialization['predicate'] as String?,
     );
   }
 

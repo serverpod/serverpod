@@ -15,12 +15,8 @@ abstract class ScopeNoneFields extends _i1.TableRow {
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
 
-  factory ScopeNoneFields.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ScopeNoneFields(
-        id: serializationManager.deserialize<int?>(jsonSerialization['id']));
+  factory ScopeNoneFields.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ScopeNoneFields(id: jsonSerialization['id'] as int?);
   }
 
   static final t = ScopeNoneFieldsTable();

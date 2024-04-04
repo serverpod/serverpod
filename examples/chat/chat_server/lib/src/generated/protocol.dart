@@ -86,10 +86,10 @@ class Protocol extends _i1.SerializationManagerServer {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i5.Channel) {
-      return _i5.Channel.fromJson(data, this) as T;
+      return _i5.Channel.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.Channel?>()) {
-      return (data != null ? _i5.Channel.fromJson(data, this) : null) as T;
+      return (data != null ? _i5.Channel.fromJson(data) : null) as T;
     }
     if (t == List<_i6.Channel>) {
       return (data as List).map((e) => deserialize<_i6.Channel>(e)).toList()

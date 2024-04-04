@@ -27,18 +27,18 @@ abstract class CityWithLongTableName extends _i1.SerializableEntity {
   }) = _CityWithLongTableNameImpl;
 
   factory CityWithLongTableName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return CityWithLongTableName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      citizens:
-          serializationManager.deserialize<List<_i2.PersonWithLongTableName>?>(
-              jsonSerialization['citizens']),
-      organizations: serializationManager
-          .deserialize<List<_i2.OrganizationWithLongTableName>?>(
-              jsonSerialization['organizations']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      citizens: (jsonSerialization['citizens'] as List<dynamic>?)
+          ?.map((e) =>
+              _i2.PersonWithLongTableName.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      organizations: (jsonSerialization['organizations'] as List<dynamic>?)
+          ?.map((e) => _i2.OrganizationWithLongTableName.fromJson(
+              e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

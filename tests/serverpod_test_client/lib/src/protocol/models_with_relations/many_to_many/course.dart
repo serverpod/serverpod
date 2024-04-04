@@ -24,15 +24,13 @@ abstract class Course extends _i1.SerializableEntity {
     List<_i2.Enrollment>? enrollments,
   }) = _CourseImpl;
 
-  factory Course.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Course.fromJson(Map<String, dynamic> jsonSerialization) {
     return Course(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      enrollments: serializationManager
-          .deserialize<List<_i2.Enrollment>?>(jsonSerialization['enrollments']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      enrollments: (jsonSerialization['enrollments'] as List<dynamic>?)
+          ?.map((e) => _i2.Enrollment.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

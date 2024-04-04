@@ -24,15 +24,11 @@ abstract class Channel extends _i1.TableRow {
     required String channel,
   }) = _ChannelImpl;
 
-  factory Channel.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Channel.fromJson(Map<String, dynamic> jsonSerialization) {
     return Channel(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      channel: jsonSerialization['channel'] as String,
     );
   }
 

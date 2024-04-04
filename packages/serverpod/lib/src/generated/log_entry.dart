@@ -42,31 +42,19 @@ abstract class LogEntry extends _i1.TableRow {
     required int order,
   }) = _LogEntryImpl;
 
-  factory LogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      sessionLogId: serializationManager
-          .deserialize<int>(jsonSerialization['sessionLogId']),
-      messageId: serializationManager
-          .deserialize<int?>(jsonSerialization['messageId']),
-      reference: serializationManager
-          .deserialize<String?>(jsonSerialization['reference']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      logLevel: serializationManager
-          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      order: serializationManager.deserialize<int>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      sessionLogId: jsonSerialization['sessionLogId'] as int,
+      messageId: jsonSerialization['messageId'] as int?,
+      reference: jsonSerialization['reference'] as String?,
+      serverId: jsonSerialization['serverId'] as String,
+      time: DateTime.parse(jsonSerialization['time']),
+      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      message: jsonSerialization['message'] as String,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      order: jsonSerialization['order'] as int,
     );
   }
 

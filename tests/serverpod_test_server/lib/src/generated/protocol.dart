@@ -2820,190 +2820,190 @@ class Protocol extends _i1.SerializationManagerServer {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i5.ExceptionWithData) {
-      return _i5.ExceptionWithData.fromJson(data, this) as T;
+      return _i5.ExceptionWithData.fromJson(data) as T;
     }
     if (t == _i6.CityWithLongTableName) {
-      return _i6.CityWithLongTableName.fromJson(data, this) as T;
+      return _i6.CityWithLongTableName.fromJson(data) as T;
     }
     if (t == _i7.OrganizationWithLongTableName) {
-      return _i7.OrganizationWithLongTableName.fromJson(data, this) as T;
+      return _i7.OrganizationWithLongTableName.fromJson(data) as T;
     }
     if (t == _i8.PersonWithLongTableName) {
-      return _i8.PersonWithLongTableName.fromJson(data, this) as T;
+      return _i8.PersonWithLongTableName.fromJson(data) as T;
     }
     if (t == _i9.MaxFieldName) {
-      return _i9.MaxFieldName.fromJson(data, this) as T;
+      return _i9.MaxFieldName.fromJson(data) as T;
     }
     if (t == _i10.LongImplicitIdField) {
-      return _i10.LongImplicitIdField.fromJson(data, this) as T;
+      return _i10.LongImplicitIdField.fromJson(data) as T;
     }
     if (t == _i11.LongImplicitIdFieldCollection) {
-      return _i11.LongImplicitIdFieldCollection.fromJson(data, this) as T;
+      return _i11.LongImplicitIdFieldCollection.fromJson(data) as T;
     }
     if (t == _i12.RelationToMultipleMaxFieldName) {
-      return _i12.RelationToMultipleMaxFieldName.fromJson(data, this) as T;
+      return _i12.RelationToMultipleMaxFieldName.fromJson(data) as T;
     }
     if (t == _i13.UserNote) {
-      return _i13.UserNote.fromJson(data, this) as T;
+      return _i13.UserNote.fromJson(data) as T;
     }
     if (t == _i14.UserNoteCollection) {
-      return _i14.UserNoteCollection.fromJson(data, this) as T;
+      return _i14.UserNoteCollection.fromJson(data) as T;
     }
     if (t == _i15.UserNoteCollectionWithALongName) {
-      return _i15.UserNoteCollectionWithALongName.fromJson(data, this) as T;
+      return _i15.UserNoteCollectionWithALongName.fromJson(data) as T;
     }
     if (t == _i16.UserNoteWithALongName) {
-      return _i16.UserNoteWithALongName.fromJson(data, this) as T;
+      return _i16.UserNoteWithALongName.fromJson(data) as T;
     }
     if (t == _i17.MultipleMaxFieldName) {
-      return _i17.MultipleMaxFieldName.fromJson(data, this) as T;
+      return _i17.MultipleMaxFieldName.fromJson(data) as T;
     }
     if (t == _i18.ObjectWithServerpodObject) {
-      return _i18.ObjectWithServerpodObject.fromJson(data, this) as T;
+      return _i18.ObjectWithServerpodObject.fromJson(data) as T;
     }
     if (t == _i19.City) {
-      return _i19.City.fromJson(data, this) as T;
+      return _i19.City.fromJson(data) as T;
     }
     if (t == _i20.Organization) {
-      return _i20.Organization.fromJson(data, this) as T;
+      return _i20.Organization.fromJson(data) as T;
     }
     if (t == _i21.Person) {
-      return _i21.Person.fromJson(data, this) as T;
+      return _i21.Person.fromJson(data) as T;
     }
     if (t == _i22.Course) {
-      return _i22.Course.fromJson(data, this) as T;
+      return _i22.Course.fromJson(data) as T;
     }
     if (t == _i23.Enrollment) {
-      return _i23.Enrollment.fromJson(data, this) as T;
+      return _i23.Enrollment.fromJson(data) as T;
     }
     if (t == _i24.Student) {
-      return _i24.Student.fromJson(data, this) as T;
+      return _i24.Student.fromJson(data) as T;
     }
     if (t == _i25.ObjectUser) {
-      return _i25.ObjectUser.fromJson(data, this) as T;
+      return _i25.ObjectUser.fromJson(data) as T;
     }
     if (t == _i26.ParentUser) {
-      return _i26.ParentUser.fromJson(data, this) as T;
+      return _i26.ParentUser.fromJson(data) as T;
     }
     if (t == _i27.Arena) {
-      return _i27.Arena.fromJson(data, this) as T;
+      return _i27.Arena.fromJson(data) as T;
     }
     if (t == _i28.Player) {
-      return _i28.Player.fromJson(data, this) as T;
+      return _i28.Player.fromJson(data) as T;
     }
     if (t == _i29.Team) {
-      return _i29.Team.fromJson(data, this) as T;
+      return _i29.Team.fromJson(data) as T;
     }
     if (t == _i30.Comment) {
-      return _i30.Comment.fromJson(data, this) as T;
+      return _i30.Comment.fromJson(data) as T;
     }
     if (t == _i31.Customer) {
-      return _i31.Customer.fromJson(data, this) as T;
+      return _i31.Customer.fromJson(data) as T;
     }
     if (t == _i32.Order) {
-      return _i32.Order.fromJson(data, this) as T;
+      return _i32.Order.fromJson(data) as T;
     }
     if (t == _i33.Address) {
-      return _i33.Address.fromJson(data, this) as T;
+      return _i33.Address.fromJson(data) as T;
     }
     if (t == _i34.Citizen) {
-      return _i34.Citizen.fromJson(data, this) as T;
+      return _i34.Citizen.fromJson(data) as T;
     }
     if (t == _i35.Company) {
-      return _i35.Company.fromJson(data, this) as T;
+      return _i35.Company.fromJson(data) as T;
     }
     if (t == _i36.Town) {
-      return _i36.Town.fromJson(data, this) as T;
+      return _i36.Town.fromJson(data) as T;
     }
     if (t == _i37.Blocking) {
-      return _i37.Blocking.fromJson(data, this) as T;
+      return _i37.Blocking.fromJson(data) as T;
     }
     if (t == _i38.Member) {
-      return _i38.Member.fromJson(data, this) as T;
+      return _i38.Member.fromJson(data) as T;
     }
     if (t == _i39.Cat) {
-      return _i39.Cat.fromJson(data, this) as T;
+      return _i39.Cat.fromJson(data) as T;
     }
     if (t == _i40.Post) {
-      return _i40.Post.fromJson(data, this) as T;
+      return _i40.Post.fromJson(data) as T;
     }
     if (t == _i41.ModuleDatatype) {
-      return _i41.ModuleDatatype.fromJson(data, this) as T;
+      return _i41.ModuleDatatype.fromJson(data) as T;
     }
     if (t == _i42.Nullability) {
-      return _i42.Nullability.fromJson(data, this) as T;
+      return _i42.Nullability.fromJson(data) as T;
     }
     if (t == _i43.ObjectFieldScopes) {
-      return _i43.ObjectFieldScopes.fromJson(data, this) as T;
+      return _i43.ObjectFieldScopes.fromJson(data) as T;
     }
     if (t == _i44.ObjectWithByteData) {
-      return _i44.ObjectWithByteData.fromJson(data, this) as T;
+      return _i44.ObjectWithByteData.fromJson(data) as T;
     }
     if (t == _i45.ObjectWithDuration) {
-      return _i45.ObjectWithDuration.fromJson(data, this) as T;
+      return _i45.ObjectWithDuration.fromJson(data) as T;
     }
     if (t == _i46.ObjectWithEnum) {
-      return _i46.ObjectWithEnum.fromJson(data, this) as T;
+      return _i46.ObjectWithEnum.fromJson(data) as T;
     }
     if (t == _i47.ObjectWithIndex) {
-      return _i47.ObjectWithIndex.fromJson(data, this) as T;
+      return _i47.ObjectWithIndex.fromJson(data) as T;
     }
     if (t == _i48.ObjectWithMaps) {
-      return _i48.ObjectWithMaps.fromJson(data, this) as T;
+      return _i48.ObjectWithMaps.fromJson(data) as T;
     }
     if (t == _i49.ObjectWithObject) {
-      return _i49.ObjectWithObject.fromJson(data, this) as T;
+      return _i49.ObjectWithObject.fromJson(data) as T;
     }
     if (t == _i50.ObjectWithParent) {
-      return _i50.ObjectWithParent.fromJson(data, this) as T;
+      return _i50.ObjectWithParent.fromJson(data) as T;
     }
     if (t == _i51.ObjectWithSelfParent) {
-      return _i51.ObjectWithSelfParent.fromJson(data, this) as T;
+      return _i51.ObjectWithSelfParent.fromJson(data) as T;
     }
     if (t == _i52.ObjectWithUuid) {
-      return _i52.ObjectWithUuid.fromJson(data, this) as T;
+      return _i52.ObjectWithUuid.fromJson(data) as T;
     }
     if (t == _i53.RelatedUniqueData) {
-      return _i53.RelatedUniqueData.fromJson(data, this) as T;
+      return _i53.RelatedUniqueData.fromJson(data) as T;
     }
     if (t == _i54.ScopeNoneFields) {
-      return _i54.ScopeNoneFields.fromJson(data, this) as T;
+      return _i54.ScopeNoneFields.fromJson(data) as T;
     }
     if (t == _i55.ScopeServerOnlyField) {
-      return _i55.ScopeServerOnlyField.fromJson(data, this) as T;
+      return _i55.ScopeServerOnlyField.fromJson(data) as T;
     }
     if (t == _i56.DefaultServerOnlyClass) {
-      return _i56.DefaultServerOnlyClass.fromJson(data, this) as T;
+      return _i56.DefaultServerOnlyClass.fromJson(data) as T;
     }
     if (t == _i57.DefaultServerOnlyEnum) {
       return _i57.DefaultServerOnlyEnum.fromJson(data) as T;
     }
     if (t == _i58.NotServerOnlyClass) {
-      return _i58.NotServerOnlyClass.fromJson(data, this) as T;
+      return _i58.NotServerOnlyClass.fromJson(data) as T;
     }
     if (t == _i59.NotServerOnlyEnum) {
       return _i59.NotServerOnlyEnum.fromJson(data) as T;
     }
     if (t == _i60.ServerOnlyClass) {
-      return _i60.ServerOnlyClass.fromJson(data, this) as T;
+      return _i60.ServerOnlyClass.fromJson(data) as T;
     }
     if (t == _i61.ServerOnlyEnum) {
       return _i61.ServerOnlyEnum.fromJson(data) as T;
     }
     if (t == _i62.SimpleData) {
-      return _i62.SimpleData.fromJson(data, this) as T;
+      return _i62.SimpleData.fromJson(data) as T;
     }
     if (t == _i63.SimpleDataList) {
-      return _i63.SimpleDataList.fromJson(data, this) as T;
+      return _i63.SimpleDataList.fromJson(data) as T;
     }
     if (t == _i64.SimpleDataMap) {
-      return _i64.SimpleDataMap.fromJson(data, this) as T;
+      return _i64.SimpleDataMap.fromJson(data) as T;
     }
     if (t == _i65.SimpleDataObject) {
-      return _i65.SimpleDataObject.fromJson(data, this) as T;
+      return _i65.SimpleDataObject.fromJson(data) as T;
     }
     if (t == _i66.SimpleDateTime) {
-      return _i66.SimpleDateTime.fromJson(data, this) as T;
+      return _i66.SimpleDateTime.fromJson(data) as T;
     }
     if (t == _i67.TestEnum) {
       return _i67.TestEnum.fromJson(data) as T;
@@ -3012,254 +3012,225 @@ class Protocol extends _i1.SerializationManagerServer {
       return _i68.TestEnumStringified.fromJson(data) as T;
     }
     if (t == _i69.Types) {
-      return _i69.Types.fromJson(data, this) as T;
+      return _i69.Types.fromJson(data) as T;
     }
     if (t == _i70.TypesList) {
-      return _i70.TypesList.fromJson(data, this) as T;
+      return _i70.TypesList.fromJson(data) as T;
     }
     if (t == _i71.TypesMap) {
-      return _i71.TypesMap.fromJson(data, this) as T;
+      return _i71.TypesMap.fromJson(data) as T;
     }
     if (t == _i72.UniqueData) {
-      return _i72.UniqueData.fromJson(data, this) as T;
+      return _i72.UniqueData.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.ExceptionWithData?>()) {
-      return (data != null ? _i5.ExceptionWithData.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i5.ExceptionWithData.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i6.CityWithLongTableName?>()) {
-      return (data != null
-          ? _i6.CityWithLongTableName.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i6.CityWithLongTableName.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i7.OrganizationWithLongTableName?>()) {
       return (data != null
-          ? _i7.OrganizationWithLongTableName.fromJson(data, this)
+          ? _i7.OrganizationWithLongTableName.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i8.PersonWithLongTableName?>()) {
-      return (data != null
-          ? _i8.PersonWithLongTableName.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i8.PersonWithLongTableName.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i9.MaxFieldName?>()) {
-      return (data != null ? _i9.MaxFieldName.fromJson(data, this) : null) as T;
+      return (data != null ? _i9.MaxFieldName.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i10.LongImplicitIdField?>()) {
-      return (data != null
-          ? _i10.LongImplicitIdField.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i10.LongImplicitIdField.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i11.LongImplicitIdFieldCollection?>()) {
       return (data != null
-          ? _i11.LongImplicitIdFieldCollection.fromJson(data, this)
+          ? _i11.LongImplicitIdFieldCollection.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i12.RelationToMultipleMaxFieldName?>()) {
       return (data != null
-          ? _i12.RelationToMultipleMaxFieldName.fromJson(data, this)
+          ? _i12.RelationToMultipleMaxFieldName.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i13.UserNote?>()) {
-      return (data != null ? _i13.UserNote.fromJson(data, this) : null) as T;
+      return (data != null ? _i13.UserNote.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i14.UserNoteCollection?>()) {
-      return (data != null
-          ? _i14.UserNoteCollection.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i14.UserNoteCollection.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i15.UserNoteCollectionWithALongName?>()) {
       return (data != null
-          ? _i15.UserNoteCollectionWithALongName.fromJson(data, this)
+          ? _i15.UserNoteCollectionWithALongName.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i16.UserNoteWithALongName?>()) {
-      return (data != null
-          ? _i16.UserNoteWithALongName.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i16.UserNoteWithALongName.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i17.MultipleMaxFieldName?>()) {
-      return (data != null
-          ? _i17.MultipleMaxFieldName.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i17.MultipleMaxFieldName.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i18.ObjectWithServerpodObject?>()) {
       return (data != null
-          ? _i18.ObjectWithServerpodObject.fromJson(data, this)
+          ? _i18.ObjectWithServerpodObject.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i19.City?>()) {
-      return (data != null ? _i19.City.fromJson(data, this) : null) as T;
+      return (data != null ? _i19.City.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i20.Organization?>()) {
-      return (data != null ? _i20.Organization.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i20.Organization.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i21.Person?>()) {
-      return (data != null ? _i21.Person.fromJson(data, this) : null) as T;
+      return (data != null ? _i21.Person.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i22.Course?>()) {
-      return (data != null ? _i22.Course.fromJson(data, this) : null) as T;
+      return (data != null ? _i22.Course.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i23.Enrollment?>()) {
-      return (data != null ? _i23.Enrollment.fromJson(data, this) : null) as T;
+      return (data != null ? _i23.Enrollment.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i24.Student?>()) {
-      return (data != null ? _i24.Student.fromJson(data, this) : null) as T;
+      return (data != null ? _i24.Student.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i25.ObjectUser?>()) {
-      return (data != null ? _i25.ObjectUser.fromJson(data, this) : null) as T;
+      return (data != null ? _i25.ObjectUser.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i26.ParentUser?>()) {
-      return (data != null ? _i26.ParentUser.fromJson(data, this) : null) as T;
+      return (data != null ? _i26.ParentUser.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i27.Arena?>()) {
-      return (data != null ? _i27.Arena.fromJson(data, this) : null) as T;
+      return (data != null ? _i27.Arena.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i28.Player?>()) {
-      return (data != null ? _i28.Player.fromJson(data, this) : null) as T;
+      return (data != null ? _i28.Player.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i29.Team?>()) {
-      return (data != null ? _i29.Team.fromJson(data, this) : null) as T;
+      return (data != null ? _i29.Team.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i30.Comment?>()) {
-      return (data != null ? _i30.Comment.fromJson(data, this) : null) as T;
+      return (data != null ? _i30.Comment.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i31.Customer?>()) {
-      return (data != null ? _i31.Customer.fromJson(data, this) : null) as T;
+      return (data != null ? _i31.Customer.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i32.Order?>()) {
-      return (data != null ? _i32.Order.fromJson(data, this) : null) as T;
+      return (data != null ? _i32.Order.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i33.Address?>()) {
-      return (data != null ? _i33.Address.fromJson(data, this) : null) as T;
+      return (data != null ? _i33.Address.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i34.Citizen?>()) {
-      return (data != null ? _i34.Citizen.fromJson(data, this) : null) as T;
+      return (data != null ? _i34.Citizen.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i35.Company?>()) {
-      return (data != null ? _i35.Company.fromJson(data, this) : null) as T;
+      return (data != null ? _i35.Company.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i36.Town?>()) {
-      return (data != null ? _i36.Town.fromJson(data, this) : null) as T;
+      return (data != null ? _i36.Town.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i37.Blocking?>()) {
-      return (data != null ? _i37.Blocking.fromJson(data, this) : null) as T;
+      return (data != null ? _i37.Blocking.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i38.Member?>()) {
-      return (data != null ? _i38.Member.fromJson(data, this) : null) as T;
+      return (data != null ? _i38.Member.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i39.Cat?>()) {
-      return (data != null ? _i39.Cat.fromJson(data, this) : null) as T;
+      return (data != null ? _i39.Cat.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i40.Post?>()) {
-      return (data != null ? _i40.Post.fromJson(data, this) : null) as T;
+      return (data != null ? _i40.Post.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i41.ModuleDatatype?>()) {
-      return (data != null ? _i41.ModuleDatatype.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i41.ModuleDatatype.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i42.Nullability?>()) {
-      return (data != null ? _i42.Nullability.fromJson(data, this) : null) as T;
+      return (data != null ? _i42.Nullability.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i43.ObjectFieldScopes?>()) {
-      return (data != null ? _i43.ObjectFieldScopes.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i43.ObjectFieldScopes.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i44.ObjectWithByteData?>()) {
-      return (data != null
-          ? _i44.ObjectWithByteData.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i44.ObjectWithByteData.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i45.ObjectWithDuration?>()) {
-      return (data != null
-          ? _i45.ObjectWithDuration.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i45.ObjectWithDuration.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i46.ObjectWithEnum?>()) {
-      return (data != null ? _i46.ObjectWithEnum.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i46.ObjectWithEnum.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i47.ObjectWithIndex?>()) {
-      return (data != null ? _i47.ObjectWithIndex.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i47.ObjectWithIndex.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i48.ObjectWithMaps?>()) {
-      return (data != null ? _i48.ObjectWithMaps.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i48.ObjectWithMaps.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i49.ObjectWithObject?>()) {
-      return (data != null ? _i49.ObjectWithObject.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i49.ObjectWithObject.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i50.ObjectWithParent?>()) {
-      return (data != null ? _i50.ObjectWithParent.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i50.ObjectWithParent.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i51.ObjectWithSelfParent?>()) {
-      return (data != null
-          ? _i51.ObjectWithSelfParent.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i51.ObjectWithSelfParent.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i52.ObjectWithUuid?>()) {
-      return (data != null ? _i52.ObjectWithUuid.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i52.ObjectWithUuid.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i53.RelatedUniqueData?>()) {
-      return (data != null ? _i53.RelatedUniqueData.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i53.RelatedUniqueData.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i54.ScopeNoneFields?>()) {
-      return (data != null ? _i54.ScopeNoneFields.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i54.ScopeNoneFields.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i55.ScopeServerOnlyField?>()) {
-      return (data != null
-          ? _i55.ScopeServerOnlyField.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i55.ScopeServerOnlyField.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i56.DefaultServerOnlyClass?>()) {
-      return (data != null
-          ? _i56.DefaultServerOnlyClass.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i56.DefaultServerOnlyClass.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i57.DefaultServerOnlyEnum?>()) {
       return (data != null ? _i57.DefaultServerOnlyEnum.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i58.NotServerOnlyClass?>()) {
-      return (data != null
-          ? _i58.NotServerOnlyClass.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i58.NotServerOnlyClass.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i59.NotServerOnlyEnum?>()) {
       return (data != null ? _i59.NotServerOnlyEnum.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i60.ServerOnlyClass?>()) {
-      return (data != null ? _i60.ServerOnlyClass.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i60.ServerOnlyClass.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i61.ServerOnlyEnum?>()) {
       return (data != null ? _i61.ServerOnlyEnum.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i62.SimpleData?>()) {
-      return (data != null ? _i62.SimpleData.fromJson(data, this) : null) as T;
+      return (data != null ? _i62.SimpleData.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i63.SimpleDataList?>()) {
-      return (data != null ? _i63.SimpleDataList.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i63.SimpleDataList.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i64.SimpleDataMap?>()) {
-      return (data != null ? _i64.SimpleDataMap.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i64.SimpleDataMap.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i65.SimpleDataObject?>()) {
-      return (data != null ? _i65.SimpleDataObject.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i65.SimpleDataObject.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i66.SimpleDateTime?>()) {
-      return (data != null ? _i66.SimpleDateTime.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i66.SimpleDateTime.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i67.TestEnum?>()) {
       return (data != null ? _i67.TestEnum.fromJson(data) : null) as T;
@@ -3269,16 +3240,16 @@ class Protocol extends _i1.SerializationManagerServer {
           as T;
     }
     if (t == _i1.getType<_i69.Types?>()) {
-      return (data != null ? _i69.Types.fromJson(data, this) : null) as T;
+      return (data != null ? _i69.Types.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i70.TypesList?>()) {
-      return (data != null ? _i70.TypesList.fromJson(data, this) : null) as T;
+      return (data != null ? _i70.TypesList.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i71.TypesMap?>()) {
-      return (data != null ? _i71.TypesMap.fromJson(data, this) : null) as T;
+      return (data != null ? _i71.TypesMap.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i72.UniqueData?>()) {
-      return (data != null ? _i72.UniqueData.fromJson(data, this) : null) as T;
+      return (data != null ? _i72.UniqueData.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()

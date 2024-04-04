@@ -42,37 +42,39 @@ abstract class TableMigration extends _i1.SerializableEntity {
     required List<_i2.DatabaseMigrationWarning> warnings,
   }) = _TableMigrationImpl;
 
-  factory TableMigration.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory TableMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return TableMigration(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      dartName: serializationManager
-          .deserialize<String?>(jsonSerialization['dartName']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      schema:
-          serializationManager.deserialize<String>(jsonSerialization['schema']),
-      addColumns: serializationManager.deserialize<List<_i2.ColumnDefinition>>(
-          jsonSerialization['addColumns']),
-      deleteColumns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['deleteColumns']),
-      modifyColumns:
-          serializationManager.deserialize<List<_i2.ColumnMigration>>(
-              jsonSerialization['modifyColumns']),
-      addIndexes: serializationManager.deserialize<List<_i2.IndexDefinition>>(
-          jsonSerialization['addIndexes']),
-      deleteIndexes: serializationManager
-          .deserialize<List<String>>(jsonSerialization['deleteIndexes']),
-      addForeignKeys:
-          serializationManager.deserialize<List<_i2.ForeignKeyDefinition>>(
-              jsonSerialization['addForeignKeys']),
-      deleteForeignKeys: serializationManager
-          .deserialize<List<String>>(jsonSerialization['deleteForeignKeys']),
-      warnings:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationWarning>>(
-              jsonSerialization['warnings']),
+      name: jsonSerialization['name'] as String,
+      dartName: jsonSerialization['dartName'] as String?,
+      module: jsonSerialization['module'] as String?,
+      schema: jsonSerialization['schema'] as String,
+      addColumns: (jsonSerialization['addColumns'] as List<dynamic>)
+          .map((e) => _i2.ColumnDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      deleteColumns: (jsonSerialization['deleteColumns'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      modifyColumns: (jsonSerialization['modifyColumns'] as List<dynamic>)
+          .map((e) => _i2.ColumnMigration.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      addIndexes: (jsonSerialization['addIndexes'] as List<dynamic>)
+          .map((e) => _i2.IndexDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      deleteIndexes: (jsonSerialization['deleteIndexes'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      addForeignKeys: (jsonSerialization['addForeignKeys'] as List<dynamic>)
+          .map((e) =>
+              _i2.ForeignKeyDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      deleteForeignKeys:
+          (jsonSerialization['deleteForeignKeys'] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
+      warnings: (jsonSerialization['warnings'] as List<dynamic>)
+          .map((e) =>
+              _i2.DatabaseMigrationWarning.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

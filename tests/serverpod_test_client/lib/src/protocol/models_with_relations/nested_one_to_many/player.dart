@@ -26,17 +26,14 @@ abstract class Player extends _i1.SerializableEntity {
     _i2.Team? team,
   }) = _PlayerImpl;
 
-  factory Player.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
     return Player(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      teamId:
-          serializationManager.deserialize<int?>(jsonSerialization['teamId']),
-      team: serializationManager
-          .deserialize<_i2.Team?>(jsonSerialization['team']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      teamId: jsonSerialization['teamId'] as int?,
+      team: jsonSerialization.containsKey('team')
+          ? _i2.Team.fromJson(jsonSerialization['team'] as Map<String, dynamic>)
+          : null,
     );
   }
 

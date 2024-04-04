@@ -25,17 +25,13 @@ abstract class ChatMessageChunk extends _i1.SerializableEntity {
     required bool hasOlderMessages,
   }) = _ChatMessageChunkImpl;
 
-  factory ChatMessageChunk.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatMessageChunk.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatMessageChunk(
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      messages: serializationManager
-          .deserialize<List<_i2.ChatMessage>>(jsonSerialization['messages']),
-      hasOlderMessages: serializationManager
-          .deserialize<bool>(jsonSerialization['hasOlderMessages']),
+      channel: jsonSerialization['channel'] as String,
+      messages: (jsonSerialization['messages'] as List<dynamic>)
+          .map((e) => _i2.ChatMessage.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      hasOlderMessages: jsonSerialization['hasOlderMessages'] as bool,
     );
   }
 

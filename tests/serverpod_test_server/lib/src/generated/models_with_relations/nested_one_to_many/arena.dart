@@ -24,15 +24,13 @@ abstract class Arena extends _i1.TableRow {
     _i2.Team? team,
   }) = _ArenaImpl;
 
-  factory Arena.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
     return Arena(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      team: serializationManager
-          .deserialize<_i2.Team?>(jsonSerialization['team']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      team: jsonSerialization.containsKey('team')
+          ? _i2.Team.fromJson(jsonSerialization['team'] as Map<String, dynamic>)
+          : null,
     );
   }
 

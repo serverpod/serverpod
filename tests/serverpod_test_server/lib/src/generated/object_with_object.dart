@@ -33,26 +33,30 @@ abstract class ObjectWithObject extends _i1.TableRow {
     List<_i2.SimpleData?>? nullableListWithNullableData,
   }) = _ObjectWithObjectImpl;
 
-  factory ObjectWithObject.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithObject(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      data: serializationManager
-          .deserialize<_i2.SimpleData>(jsonSerialization['data']),
-      nullableData: serializationManager
-          .deserialize<_i2.SimpleData?>(jsonSerialization['nullableData']),
-      dataList: serializationManager
-          .deserialize<List<_i2.SimpleData>>(jsonSerialization['dataList']),
-      nullableDataList: serializationManager.deserialize<List<_i2.SimpleData>?>(
-          jsonSerialization['nullableDataList']),
+      id: jsonSerialization['id'] as int?,
+      data: _i2.SimpleData.fromJson(
+          jsonSerialization['data'] as Map<String, dynamic>),
+      nullableData: jsonSerialization.containsKey('nullableData')
+          ? _i2.SimpleData.fromJson(
+              jsonSerialization['nullableData'] as Map<String, dynamic>)
+          : null,
+      dataList: (jsonSerialization['dataList'] as List<dynamic>)
+          .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      nullableDataList:
+          (jsonSerialization['nullableDataList'] as List<dynamic>?)
+              ?.map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+              .toList(),
       listWithNullableData:
-          serializationManager.deserialize<List<_i2.SimpleData?>>(
-              jsonSerialization['listWithNullableData']),
+          (jsonSerialization['listWithNullableData'] as List<dynamic>)
+              .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+              .toList(),
       nullableListWithNullableData:
-          serializationManager.deserialize<List<_i2.SimpleData?>?>(
-              jsonSerialization['nullableListWithNullableData']),
+          (jsonSerialization['nullableListWithNullableData'] as List<dynamic>?)
+              ?.map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 

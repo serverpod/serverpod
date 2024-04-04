@@ -28,20 +28,19 @@ abstract class Blocking extends _i1.TableRow {
     _i2.Member? blockedBy,
   }) = _BlockingImpl;
 
-  factory Blocking.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Blocking.fromJson(Map<String, dynamic> jsonSerialization) {
     return Blocking(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      blockedId:
-          serializationManager.deserialize<int>(jsonSerialization['blockedId']),
-      blocked: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blocked']),
-      blockedById: serializationManager
-          .deserialize<int>(jsonSerialization['blockedById']),
-      blockedBy: serializationManager
-          .deserialize<_i2.Member?>(jsonSerialization['blockedBy']),
+      id: jsonSerialization['id'] as int?,
+      blockedId: jsonSerialization['blockedId'] as int,
+      blocked: jsonSerialization.containsKey('blocked')
+          ? _i2.Member.fromJson(
+              jsonSerialization['blocked'] as Map<String, dynamic>)
+          : null,
+      blockedById: jsonSerialization['blockedById'] as int,
+      blockedBy: jsonSerialization.containsKey('blockedBy')
+          ? _i2.Member.fromJson(
+              jsonSerialization['blockedBy'] as Map<String, dynamic>)
+          : null,
     );
   }
 

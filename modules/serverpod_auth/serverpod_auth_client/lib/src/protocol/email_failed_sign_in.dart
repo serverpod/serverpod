@@ -27,18 +27,12 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
     required String ipAddress,
   }) = _EmailFailedSignInImpl;
 
-  factory EmailFailedSignIn.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory EmailFailedSignIn.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailFailedSignIn(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      email:
-          serializationManager.deserialize<String>(jsonSerialization['email']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      ipAddress: serializationManager
-          .deserialize<String>(jsonSerialization['ipAddress']),
+      id: jsonSerialization['id'] as int?,
+      email: jsonSerialization['email'] as String,
+      time: DateTime.parse(jsonSerialization['time']),
+      ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }
 

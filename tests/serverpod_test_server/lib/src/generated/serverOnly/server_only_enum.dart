@@ -14,14 +14,15 @@ enum ServerOnlyEnum with _i1.SerializableEntity {
   foo,
   bar;
 
-  static ServerOnlyEnum? fromJson(int index) {
+  static ServerOnlyEnum fromJson(int index) {
     switch (index) {
       case 0:
         return foo;
       case 1:
         return bar;
       default:
-        return null;
+        throw ArgumentError(
+            'Value "$index" cannot be converted to "ServerOnlyEnum"');
     }
   }
 

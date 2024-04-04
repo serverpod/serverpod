@@ -26,14 +26,14 @@ abstract class UserNoteCollectionWithALongName extends _i1.TableRow {
   }) = _UserNoteCollectionWithALongNameImpl;
 
   factory UserNoteCollectionWithALongName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return UserNoteCollectionWithALongName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      notes: serializationManager.deserialize<List<_i2.UserNoteWithALongName>?>(
-          jsonSerialization['notes']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      notes: (jsonSerialization['notes'] as List<dynamic>?)
+          ?.map((e) =>
+              _i2.UserNoteWithALongName.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

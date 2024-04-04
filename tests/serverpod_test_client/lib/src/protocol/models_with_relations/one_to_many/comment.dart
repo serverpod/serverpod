@@ -26,18 +26,15 @@ abstract class Comment extends _i1.SerializableEntity {
     _i2.Order? order,
   }) = _CommentImpl;
 
-  factory Comment.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Comment.fromJson(Map<String, dynamic> jsonSerialization) {
     return Comment(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      description: serializationManager
-          .deserialize<String>(jsonSerialization['description']),
-      orderId:
-          serializationManager.deserialize<int>(jsonSerialization['orderId']),
-      order: serializationManager
-          .deserialize<_i2.Order?>(jsonSerialization['order']),
+      id: jsonSerialization['id'] as int?,
+      description: jsonSerialization['description'] as String,
+      orderId: jsonSerialization['orderId'] as int,
+      order: jsonSerialization.containsKey('order')
+          ? _i2.Order.fromJson(
+              jsonSerialization['order'] as Map<String, dynamic>)
+          : null,
     );
   }
 

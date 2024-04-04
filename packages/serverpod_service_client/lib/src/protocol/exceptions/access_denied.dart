@@ -18,12 +18,9 @@ abstract class AccessDeniedException extends _i1.SerializableEntity
       _AccessDeniedExceptionImpl;
 
   factory AccessDeniedException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return AccessDeniedException(
-        message: serializationManager
-            .deserialize<String>(jsonSerialization['message']));
+        message: jsonSerialization['message'] as String);
   }
 
   String message;

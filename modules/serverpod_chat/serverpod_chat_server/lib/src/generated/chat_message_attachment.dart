@@ -31,21 +31,14 @@ abstract class ChatMessageAttachment extends _i1.SerializableEntity {
   }) = _ChatMessageAttachmentImpl;
 
   factory ChatMessageAttachment.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ChatMessageAttachment(
-      fileName: serializationManager
-          .deserialize<String>(jsonSerialization['fileName']),
-      url: serializationManager.deserialize<String>(jsonSerialization['url']),
-      contentType: serializationManager
-          .deserialize<String>(jsonSerialization['contentType']),
-      previewImage: serializationManager
-          .deserialize<String?>(jsonSerialization['previewImage']),
-      previewWidth: serializationManager
-          .deserialize<int?>(jsonSerialization['previewWidth']),
-      previewHeight: serializationManager
-          .deserialize<int?>(jsonSerialization['previewHeight']),
+      fileName: jsonSerialization['fileName'] as String,
+      url: jsonSerialization['url'] as String,
+      contentType: jsonSerialization['contentType'] as String,
+      previewImage: jsonSerialization['previewImage'] as String?,
+      previewWidth: jsonSerialization['previewWidth'] as int?,
+      previewHeight: jsonSerialization['previewHeight'] as int?,
     );
   }
 

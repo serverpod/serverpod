@@ -24,14 +24,10 @@ abstract class ChatMessageAttachmentUploadDescription
   }) = _ChatMessageAttachmentUploadDescriptionImpl;
 
   factory ChatMessageAttachmentUploadDescription.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ChatMessageAttachmentUploadDescription(
-      filePath: serializationManager
-          .deserialize<String>(jsonSerialization['filePath']),
-      uploadDescription: serializationManager
-          .deserialize<String>(jsonSerialization['uploadDescription']),
+      filePath: jsonSerialization['filePath'] as String,
+      uploadDescription: jsonSerialization['uploadDescription'] as String,
     );
   }
 

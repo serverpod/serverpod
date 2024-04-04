@@ -37,29 +37,24 @@ abstract class TableDefinition extends _i1.SerializableEntity {
     bool? managed,
   }) = _TableDefinitionImpl;
 
-  factory TableDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory TableDefinition.fromJson(Map<String, dynamic> jsonSerialization) {
     return TableDefinition(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      dartName: serializationManager
-          .deserialize<String?>(jsonSerialization['dartName']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      schema:
-          serializationManager.deserialize<String>(jsonSerialization['schema']),
-      tableSpace: serializationManager
-          .deserialize<String?>(jsonSerialization['tableSpace']),
-      columns: serializationManager.deserialize<List<_i2.ColumnDefinition>>(
-          jsonSerialization['columns']),
-      foreignKeys:
-          serializationManager.deserialize<List<_i2.ForeignKeyDefinition>>(
-              jsonSerialization['foreignKeys']),
-      indexes: serializationManager
-          .deserialize<List<_i2.IndexDefinition>>(jsonSerialization['indexes']),
-      managed:
-          serializationManager.deserialize<bool?>(jsonSerialization['managed']),
+      name: jsonSerialization['name'] as String,
+      dartName: jsonSerialization['dartName'] as String?,
+      module: jsonSerialization['module'] as String?,
+      schema: jsonSerialization['schema'] as String,
+      tableSpace: jsonSerialization['tableSpace'] as String?,
+      columns: (jsonSerialization['columns'] as List<dynamic>)
+          .map((e) => _i2.ColumnDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      foreignKeys: (jsonSerialization['foreignKeys'] as List<dynamic>)
+          .map((e) =>
+              _i2.ForeignKeyDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      indexes: (jsonSerialization['indexes'] as List<dynamic>)
+          .map((e) => _i2.IndexDefinition.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      managed: jsonSerialization['managed'] as bool?,
     );
   }
 

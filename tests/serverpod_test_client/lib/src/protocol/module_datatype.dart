@@ -25,17 +25,18 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
     required Map<String, _i2.ModuleClass> map,
   }) = _ModuleDatatypeImpl;
 
-  factory ModuleDatatype.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ModuleDatatype.fromJson(Map<String, dynamic> jsonSerialization) {
     return ModuleDatatype(
-      model: serializationManager
-          .deserialize<_i2.ModuleClass>(jsonSerialization['model']),
-      list: serializationManager
-          .deserialize<List<_i2.ModuleClass>>(jsonSerialization['list']),
-      map: serializationManager
-          .deserialize<Map<String, _i2.ModuleClass>>(jsonSerialization['map']),
+      model: _i2.ModuleClass.fromJson(
+          jsonSerialization['model'] as Map<String, dynamic>),
+      list: (jsonSerialization['list'] as List<dynamic>)
+          .map((e) => _i2.ModuleClass.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      map: (jsonSerialization['map'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                _i2.ModuleClass.fromJson(v as Map<String, dynamic>),
+              )),
     );
   }
 

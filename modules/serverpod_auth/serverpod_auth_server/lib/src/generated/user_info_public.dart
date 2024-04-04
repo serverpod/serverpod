@@ -29,20 +29,13 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
     String? imageUrl,
   }) = _UserInfoPublicImpl;
 
-  factory UserInfoPublic.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserInfoPublic.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserInfoPublic(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userName: serializationManager
-          .deserialize<String>(jsonSerialization['userName']),
-      fullName: serializationManager
-          .deserialize<String?>(jsonSerialization['fullName']),
-      created: serializationManager
-          .deserialize<DateTime>(jsonSerialization['created']),
-      imageUrl: serializationManager
-          .deserialize<String?>(jsonSerialization['imageUrl']),
+      id: jsonSerialization['id'] as int?,
+      userName: jsonSerialization['userName'] as String,
+      fullName: jsonSerialization['fullName'] as String?,
+      created: DateTime.parse(jsonSerialization['created']),
+      imageUrl: jsonSerialization['imageUrl'] as String?,
     );
   }
 

@@ -31,20 +31,16 @@ abstract class AuthKey extends _i1.TableRow {
     required String method,
   }) = _AuthKeyImpl;
 
-  factory AuthKey.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory AuthKey.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthKey(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      hash: serializationManager.deserialize<String>(jsonSerialization['hash']),
-      key: serializationManager.deserialize<String?>(jsonSerialization['key']),
-      scopeNames: serializationManager
-          .deserialize<List<String>>(jsonSerialization['scopeNames']),
-      method:
-          serializationManager.deserialize<String>(jsonSerialization['method']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      hash: jsonSerialization['hash'] as String,
+      key: jsonSerialization['key'] as String?,
+      scopeNames: (jsonSerialization['scopeNames'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      method: jsonSerialization['method'] as String,
     );
   }
 
@@ -55,7 +51,6 @@ abstract class AuthKey extends _i1.TableRow {
   /// The id of the user to provide access to.
   int userId;
 
-  /// The hashed version of the key.
   String hash;
 
   /// The key sent to the server to authenticate.
@@ -190,7 +185,6 @@ class AuthKeyTable extends _i1.Table {
   /// The id of the user to provide access to.
   late final _i1.ColumnInt userId;
 
-  /// The hashed version of the key.
   late final _i1.ColumnString hash;
 
   /// The scopes this key provides access to.

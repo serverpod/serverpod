@@ -25,19 +25,17 @@ abstract class DatabaseMigration extends _i1.SerializableEntity {
     required int migrationApiVersion,
   }) = _DatabaseMigrationImpl;
 
-  factory DatabaseMigration.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory DatabaseMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseMigration(
-      actions:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationAction>>(
-              jsonSerialization['actions']),
-      warnings:
-          serializationManager.deserialize<List<_i2.DatabaseMigrationWarning>>(
-              jsonSerialization['warnings']),
-      migrationApiVersion: serializationManager
-          .deserialize<int>(jsonSerialization['migrationApiVersion']),
+      actions: (jsonSerialization['actions'] as List<dynamic>)
+          .map((e) =>
+              _i2.DatabaseMigrationAction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      warnings: (jsonSerialization['warnings'] as List<dynamic>)
+          .map((e) =>
+              _i2.DatabaseMigrationWarning.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
 

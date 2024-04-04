@@ -26,17 +26,15 @@ abstract class Town extends _i1.TableRow {
     _i2.Citizen? mayor,
   }) = _TownImpl;
 
-  factory Town.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Town.fromJson(Map<String, dynamic> jsonSerialization) {
     return Town(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      mayorId:
-          serializationManager.deserialize<int?>(jsonSerialization['mayorId']),
-      mayor: serializationManager
-          .deserialize<_i2.Citizen?>(jsonSerialization['mayor']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      mayorId: jsonSerialization['mayorId'] as int?,
+      mayor: jsonSerialization.containsKey('mayor')
+          ? _i2.Citizen.fromJson(
+              jsonSerialization['mayor'] as Map<String, dynamic>)
+          : null,
     );
   }
 

@@ -27,21 +27,13 @@ abstract class ColumnMigration extends _i1.SerializableEntity {
     String? newDefault,
   }) = _ColumnMigrationImpl;
 
-  factory ColumnMigration.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ColumnMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnMigration(
-      columnName: serializationManager
-          .deserialize<String>(jsonSerialization['columnName']),
-      addNullable: serializationManager
-          .deserialize<bool>(jsonSerialization['addNullable']),
-      removeNullable: serializationManager
-          .deserialize<bool>(jsonSerialization['removeNullable']),
-      changeDefault: serializationManager
-          .deserialize<bool>(jsonSerialization['changeDefault']),
-      newDefault: serializationManager
-          .deserialize<String?>(jsonSerialization['newDefault']),
+      columnName: jsonSerialization['columnName'] as String,
+      addNullable: jsonSerialization['addNullable'] as bool,
+      removeNullable: jsonSerialization['removeNullable'] as bool,
+      changeDefault: jsonSerialization['changeDefault'] as bool,
+      newDefault: jsonSerialization['newDefault'] as String?,
     );
   }
 

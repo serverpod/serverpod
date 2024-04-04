@@ -20,4 +20,16 @@ void main() {
     );
   });
 
+  test(
+    'Given a class with nullable fields and missing values provided when calling fromJson, then it throws a FormatException.',
+    () {
+      final oWithO = ObjectWithObject.fromJson({
+        "data": SimpleData.fromJson({
+          "num": 1,
+        }),
+      });
+
+      expect(oWithO.nullableData, isNotNull);
+    },
+  );
 }

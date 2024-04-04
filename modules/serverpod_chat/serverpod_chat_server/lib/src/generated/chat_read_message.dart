@@ -26,18 +26,12 @@ abstract class ChatReadMessage extends _i1.TableRow {
     required int lastReadMessageId,
   }) = _ChatReadMessageImpl;
 
-  factory ChatReadMessage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ChatReadMessage.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChatReadMessage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      channel: serializationManager
-          .deserialize<String>(jsonSerialization['channel']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      lastReadMessageId: serializationManager
-          .deserialize<int>(jsonSerialization['lastReadMessageId']),
+      id: jsonSerialization['id'] as int?,
+      channel: jsonSerialization['channel'] as String,
+      userId: jsonSerialization['userId'] as int,
+      lastReadMessageId: jsonSerialization['lastReadMessageId'] as int,
     );
   }
 

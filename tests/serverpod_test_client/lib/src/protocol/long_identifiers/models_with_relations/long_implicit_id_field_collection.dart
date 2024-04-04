@@ -26,17 +26,17 @@ abstract class LongImplicitIdFieldCollection extends _i1.SerializableEntity {
   }) = _LongImplicitIdFieldCollectionImpl;
 
   factory LongImplicitIdFieldCollection.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return LongImplicitIdFieldCollection(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
-          serializationManager.deserialize<
-              List<
-                  _i2.LongImplicitIdField>?>(jsonSerialization[
-              'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']),
+          (jsonSerialization[
+                      'thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa']
+                  as List<dynamic>?)
+              ?.map((e) =>
+                  _i2.LongImplicitIdField.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 

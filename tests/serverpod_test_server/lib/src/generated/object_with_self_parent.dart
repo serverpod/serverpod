@@ -22,12 +22,10 @@ abstract class ObjectWithSelfParent extends _i1.TableRow {
   }) = _ObjectWithSelfParentImpl;
 
   factory ObjectWithSelfParent.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ObjectWithSelfParent(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      other: serializationManager.deserialize<int?>(jsonSerialization['other']),
+      id: jsonSerialization['id'] as int?,
+      other: jsonSerialization['other'] as int?,
     );
   }
 

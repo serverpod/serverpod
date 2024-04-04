@@ -29,21 +29,18 @@ abstract class RuntimeSettings extends _i1.SerializableEntity {
     required bool logMalformedCalls,
   }) = _RuntimeSettingsImpl;
 
-  factory RuntimeSettings.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      logSettings: serializationManager
-          .deserialize<_i2.LogSettings>(jsonSerialization['logSettings']),
+      id: jsonSerialization['id'] as int?,
+      logSettings: _i2.LogSettings.fromJson(
+          jsonSerialization['logSettings'] as Map<String, dynamic>),
       logSettingsOverrides:
-          serializationManager.deserialize<List<_i2.LogSettingsOverride>>(
-              jsonSerialization['logSettingsOverrides']),
-      logServiceCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logServiceCalls']),
-      logMalformedCalls: serializationManager
-          .deserialize<bool>(jsonSerialization['logMalformedCalls']),
+          (jsonSerialization['logSettingsOverrides'] as List<dynamic>)
+              .map((e) =>
+                  _i2.LogSettingsOverride.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      logServiceCalls: jsonSerialization['logServiceCalls'] as bool,
+      logMalformedCalls: jsonSerialization['logMalformedCalls'] as bool,
     );
   }
 

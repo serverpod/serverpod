@@ -47,37 +47,22 @@ abstract class SessionLogEntry extends _i1.TableRow {
     required DateTime touched,
   }) = _SessionLogEntryImpl;
 
-  factory SessionLogEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      time:
-          serializationManager.deserialize<DateTime>(jsonSerialization['time']),
-      module: serializationManager
-          .deserialize<String?>(jsonSerialization['module']),
-      endpoint: serializationManager
-          .deserialize<String?>(jsonSerialization['endpoint']),
-      method: serializationManager
-          .deserialize<String?>(jsonSerialization['method']),
-      duration: serializationManager
-          .deserialize<double?>(jsonSerialization['duration']),
-      numQueries: serializationManager
-          .deserialize<int?>(jsonSerialization['numQueries']),
-      slow: serializationManager.deserialize<bool?>(jsonSerialization['slow']),
-      error:
-          serializationManager.deserialize<String?>(jsonSerialization['error']),
-      stackTrace: serializationManager
-          .deserialize<String?>(jsonSerialization['stackTrace']),
-      authenticatedUserId: serializationManager
-          .deserialize<int?>(jsonSerialization['authenticatedUserId']),
-      isOpen:
-          serializationManager.deserialize<bool?>(jsonSerialization['isOpen']),
-      touched: serializationManager
-          .deserialize<DateTime>(jsonSerialization['touched']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      time: DateTime.parse(jsonSerialization['time']),
+      module: jsonSerialization['module'] as String?,
+      endpoint: jsonSerialization['endpoint'] as String?,
+      method: jsonSerialization['method'] as String?,
+      duration: jsonSerialization['duration'] as double?,
+      numQueries: jsonSerialization['numQueries'] as int?,
+      slow: jsonSerialization['slow'] as bool?,
+      error: jsonSerialization['error'] as String?,
+      stackTrace: jsonSerialization['stackTrace'] as String?,
+      authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
+      isOpen: jsonSerialization['isOpen'] as bool?,
+      touched: DateTime.parse(jsonSerialization['touched']),
     );
   }
 

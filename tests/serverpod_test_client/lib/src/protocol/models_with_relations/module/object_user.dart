@@ -26,18 +26,15 @@ abstract class ObjectUser extends _i1.SerializableEntity {
     _i2.UserInfo? userInfo,
   }) = _ObjectUserImpl;
 
-  factory ObjectUser.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectUser(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name:
-          serializationManager.deserialize<String?>(jsonSerialization['name']),
-      userInfoId: serializationManager
-          .deserialize<int>(jsonSerialization['userInfoId']),
-      userInfo: serializationManager
-          .deserialize<_i2.UserInfo?>(jsonSerialization['userInfo']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String?,
+      userInfoId: jsonSerialization['userInfoId'] as int,
+      userInfo: jsonSerialization.containsKey('userInfo')
+          ? _i2.UserInfo.fromJson(
+              jsonSerialization['userInfo'] as Map<String, dynamic>)
+          : null,
     );
   }
 

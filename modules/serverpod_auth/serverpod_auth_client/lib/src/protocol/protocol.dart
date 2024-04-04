@@ -57,95 +57,88 @@ class Protocol extends _i1.SerializationManager {
       return customConstructors[t]!(data, this) as T;
     }
     if (t == _i2.AppleAuthInfo) {
-      return _i2.AppleAuthInfo.fromJson(data, this) as T;
+      return _i2.AppleAuthInfo.fromJson(data) as T;
     }
     if (t == _i3.AuthenticationFailReason) {
       return _i3.AuthenticationFailReason.fromJson(data) as T;
     }
     if (t == _i4.AuthenticationResponse) {
-      return _i4.AuthenticationResponse.fromJson(data, this) as T;
+      return _i4.AuthenticationResponse.fromJson(data) as T;
     }
     if (t == _i5.EmailAuth) {
-      return _i5.EmailAuth.fromJson(data, this) as T;
+      return _i5.EmailAuth.fromJson(data) as T;
     }
     if (t == _i6.EmailCreateAccountRequest) {
-      return _i6.EmailCreateAccountRequest.fromJson(data, this) as T;
+      return _i6.EmailCreateAccountRequest.fromJson(data) as T;
     }
     if (t == _i7.EmailFailedSignIn) {
-      return _i7.EmailFailedSignIn.fromJson(data, this) as T;
+      return _i7.EmailFailedSignIn.fromJson(data) as T;
     }
     if (t == _i8.EmailPasswordReset) {
-      return _i8.EmailPasswordReset.fromJson(data, this) as T;
+      return _i8.EmailPasswordReset.fromJson(data) as T;
     }
     if (t == _i9.EmailReset) {
-      return _i9.EmailReset.fromJson(data, this) as T;
+      return _i9.EmailReset.fromJson(data) as T;
     }
     if (t == _i10.GoogleRefreshToken) {
-      return _i10.GoogleRefreshToken.fromJson(data, this) as T;
+      return _i10.GoogleRefreshToken.fromJson(data) as T;
     }
     if (t == _i11.UserImage) {
-      return _i11.UserImage.fromJson(data, this) as T;
+      return _i11.UserImage.fromJson(data) as T;
     }
     if (t == _i12.UserInfo) {
-      return _i12.UserInfo.fromJson(data, this) as T;
+      return _i12.UserInfo.fromJson(data) as T;
     }
     if (t == _i13.UserInfoPublic) {
-      return _i13.UserInfoPublic.fromJson(data, this) as T;
+      return _i13.UserInfoPublic.fromJson(data) as T;
     }
     if (t == _i14.UserSettingsConfig) {
-      return _i14.UserSettingsConfig.fromJson(data, this) as T;
+      return _i14.UserSettingsConfig.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AppleAuthInfo?>()) {
-      return (data != null ? _i2.AppleAuthInfo.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i2.AppleAuthInfo.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i3.AuthenticationFailReason?>()) {
       return (data != null ? _i3.AuthenticationFailReason.fromJson(data) : null)
           as T;
     }
     if (t == _i1.getType<_i4.AuthenticationResponse?>()) {
-      return (data != null
-          ? _i4.AuthenticationResponse.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i4.AuthenticationResponse.fromJson(data) : null)
+          as T;
     }
     if (t == _i1.getType<_i5.EmailAuth?>()) {
-      return (data != null ? _i5.EmailAuth.fromJson(data, this) : null) as T;
+      return (data != null ? _i5.EmailAuth.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i6.EmailCreateAccountRequest?>()) {
       return (data != null
-          ? _i6.EmailCreateAccountRequest.fromJson(data, this)
+          ? _i6.EmailCreateAccountRequest.fromJson(data)
           : null) as T;
     }
     if (t == _i1.getType<_i7.EmailFailedSignIn?>()) {
-      return (data != null ? _i7.EmailFailedSignIn.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i7.EmailFailedSignIn.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i8.EmailPasswordReset?>()) {
-      return (data != null ? _i8.EmailPasswordReset.fromJson(data, this) : null)
-          as T;
+      return (data != null ? _i8.EmailPasswordReset.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i9.EmailReset?>()) {
-      return (data != null ? _i9.EmailReset.fromJson(data, this) : null) as T;
+      return (data != null ? _i9.EmailReset.fromJson(data) : null) as T;
     }
     if (t == _i1.getType<_i10.GoogleRefreshToken?>()) {
-      return (data != null
-          ? _i10.GoogleRefreshToken.fromJson(data, this)
-          : null) as T;
-    }
-    if (t == _i1.getType<_i11.UserImage?>()) {
-      return (data != null ? _i11.UserImage.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i12.UserInfo?>()) {
-      return (data != null ? _i12.UserInfo.fromJson(data, this) : null) as T;
-    }
-    if (t == _i1.getType<_i13.UserInfoPublic?>()) {
-      return (data != null ? _i13.UserInfoPublic.fromJson(data, this) : null)
+      return (data != null ? _i10.GoogleRefreshToken.fromJson(data) : null)
           as T;
     }
+    if (t == _i1.getType<_i11.UserImage?>()) {
+      return (data != null ? _i11.UserImage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.UserInfo?>()) {
+      return (data != null ? _i12.UserInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i13.UserInfoPublic?>()) {
+      return (data != null ? _i13.UserInfoPublic.fromJson(data) : null) as T;
+    }
     if (t == _i1.getType<_i14.UserSettingsConfig?>()) {
-      return (data != null
-          ? _i14.UserSettingsConfig.fromJson(data, this)
-          : null) as T;
+      return (data != null ? _i14.UserSettingsConfig.fromJson(data) : null)
+          as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()

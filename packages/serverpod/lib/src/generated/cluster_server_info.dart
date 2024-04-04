@@ -17,13 +17,8 @@ abstract class ClusterServerInfo extends _i1.SerializableEntity {
   factory ClusterServerInfo({required String serverId}) =
       _ClusterServerInfoImpl;
 
-  factory ClusterServerInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return ClusterServerInfo(
-        serverId: serializationManager
-            .deserialize<String>(jsonSerialization['serverId']));
+  factory ClusterServerInfo.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ClusterServerInfo(serverId: jsonSerialization['serverId'] as String);
   }
 
   /// The id of the server.

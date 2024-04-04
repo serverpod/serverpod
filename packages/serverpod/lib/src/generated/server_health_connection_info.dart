@@ -36,22 +36,15 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
   }) = _ServerHealthConnectionInfoImpl;
 
   factory ServerHealthConnectionInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ServerHealthConnectionInfo(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      timestamp: serializationManager
-          .deserialize<DateTime>(jsonSerialization['timestamp']),
-      active:
-          serializationManager.deserialize<int>(jsonSerialization['active']),
-      closing:
-          serializationManager.deserialize<int>(jsonSerialization['closing']),
-      idle: serializationManager.deserialize<int>(jsonSerialization['idle']),
-      granularity: serializationManager
-          .deserialize<int>(jsonSerialization['granularity']),
+      id: jsonSerialization['id'] as int?,
+      serverId: jsonSerialization['serverId'] as String,
+      timestamp: DateTime.parse(jsonSerialization['timestamp']),
+      active: jsonSerialization['active'] as int,
+      closing: jsonSerialization['closing'] as int,
+      idle: jsonSerialization['idle'] as int,
+      granularity: jsonSerialization['granularity'] as int,
     );
   }
 

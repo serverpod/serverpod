@@ -27,17 +27,15 @@ abstract class PersonWithLongTableName extends _i1.TableRow {
   }) = _PersonWithLongTableNameImpl;
 
   factory PersonWithLongTableName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return PersonWithLongTableName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      organizationId: serializationManager
-          .deserialize<int?>(jsonSerialization['organizationId']),
-      organization:
-          serializationManager.deserialize<_i2.OrganizationWithLongTableName?>(
-              jsonSerialization['organization']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      organizationId: jsonSerialization['organizationId'] as int?,
+      organization: jsonSerialization.containsKey('organization')
+          ? _i2.OrganizationWithLongTableName.fromJson(
+              jsonSerialization['organization'] as Map<String, dynamic>)
+          : null,
     );
   }
 

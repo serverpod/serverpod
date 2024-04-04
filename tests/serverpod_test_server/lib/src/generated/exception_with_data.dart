@@ -27,19 +27,14 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
     int? someNullableField,
   }) = _ExceptionWithDataImpl;
 
-  factory ExceptionWithData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      creationDate: serializationManager
-          .deserialize<DateTime>(jsonSerialization['creationDate']),
-      errorFields: serializationManager
-          .deserialize<List<String>>(jsonSerialization['errorFields']),
-      someNullableField: serializationManager
-          .deserialize<int?>(jsonSerialization['someNullableField']),
+      message: jsonSerialization['message'] as String,
+      creationDate: DateTime.parse(jsonSerialization['creationDate']),
+      errorFields: (jsonSerialization['errorFields'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      someNullableField: jsonSerialization['someNullableField'] as int?,
     );
   }
 

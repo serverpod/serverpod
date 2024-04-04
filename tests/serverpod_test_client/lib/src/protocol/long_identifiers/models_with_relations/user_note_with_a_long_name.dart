@@ -22,12 +22,10 @@ abstract class UserNoteWithALongName extends _i1.SerializableEntity {
   }) = _UserNoteWithALongNameImpl;
 
   factory UserNoteWithALongName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return UserNoteWithALongName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
     );
   }
 

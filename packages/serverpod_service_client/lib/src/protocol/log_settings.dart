@@ -39,31 +39,19 @@ abstract class LogSettings extends _i1.SerializableEntity {
     required double slowQueryDuration,
   }) = _LogSettingsImpl;
 
-  factory LogSettings.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory LogSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettings(
-      logLevel: serializationManager
-          .deserialize<_i2.LogLevel>(jsonSerialization['logLevel']),
-      logAllSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logAllSessions']),
-      logAllQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logAllQueries']),
-      logSlowSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logSlowSessions']),
-      logStreamingSessionsContinuously: serializationManager.deserialize<bool>(
-          jsonSerialization['logStreamingSessionsContinuously']),
-      logSlowQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logSlowQueries']),
-      logFailedSessions: serializationManager
-          .deserialize<bool>(jsonSerialization['logFailedSessions']),
-      logFailedQueries: serializationManager
-          .deserialize<bool>(jsonSerialization['logFailedQueries']),
-      slowSessionDuration: serializationManager
-          .deserialize<double>(jsonSerialization['slowSessionDuration']),
-      slowQueryDuration: serializationManager
-          .deserialize<double>(jsonSerialization['slowQueryDuration']),
+      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      logAllSessions: jsonSerialization['logAllSessions'] as bool,
+      logAllQueries: jsonSerialization['logAllQueries'] as bool,
+      logSlowSessions: jsonSerialization['logSlowSessions'] as bool,
+      logStreamingSessionsContinuously:
+          jsonSerialization['logStreamingSessionsContinuously'] as bool,
+      logSlowQueries: jsonSerialization['logSlowQueries'] as bool,
+      logFailedSessions: jsonSerialization['logFailedSessions'] as bool,
+      logFailedQueries: jsonSerialization['logFailedQueries'] as bool,
+      slowSessionDuration: jsonSerialization['slowSessionDuration'] as double,
+      slowQueryDuration: jsonSerialization['slowQueryDuration'] as double,
     );
   }
 

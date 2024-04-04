@@ -26,17 +26,16 @@ abstract class City extends _i1.SerializableEntity {
     List<_i2.Organization>? organizations,
   }) = _CityImpl;
 
-  factory City.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory City.fromJson(Map<String, dynamic> jsonSerialization) {
     return City(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      citizens: serializationManager
-          .deserialize<List<_i2.Person>?>(jsonSerialization['citizens']),
-      organizations: serializationManager.deserialize<List<_i2.Organization>?>(
-          jsonSerialization['organizations']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      citizens: (jsonSerialization['citizens'] as List<dynamic>?)
+          ?.map((e) => _i2.Person.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      organizations: (jsonSerialization['organizations'] as List<dynamic>?)
+          ?.map((e) => _i2.Organization.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

@@ -37,26 +37,29 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ForeignKeyDefinition(
-      constraintName: serializationManager
-          .deserialize<String>(jsonSerialization['constraintName']),
-      columns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['columns']),
-      referenceTable: serializationManager
-          .deserialize<String>(jsonSerialization['referenceTable']),
-      referenceTableSchema: serializationManager
-          .deserialize<String>(jsonSerialization['referenceTableSchema']),
-      referenceColumns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['referenceColumns']),
-      onUpdate: serializationManager
-          .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onUpdate']),
-      onDelete: serializationManager
-          .deserialize<_i2.ForeignKeyAction?>(jsonSerialization['onDelete']),
-      matchType: serializationManager.deserialize<_i2.ForeignKeyMatchType?>(
-          jsonSerialization['matchType']),
+      constraintName: jsonSerialization['constraintName'] as String,
+      columns: (jsonSerialization['columns'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      referenceTable: jsonSerialization['referenceTable'] as String,
+      referenceTableSchema: jsonSerialization['referenceTableSchema'] as String,
+      referenceColumns: (jsonSerialization['referenceColumns'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      onUpdate: jsonSerialization.containsKey('onUpdate')
+          ? _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onUpdate'] as int))
+          : null,
+      onDelete: jsonSerialization.containsKey('onDelete')
+          ? _i2.ForeignKeyAction.fromJson(
+              (jsonSerialization['onDelete'] as int))
+          : null,
+      matchType: jsonSerialization.containsKey('matchType')
+          ? _i2.ForeignKeyMatchType.fromJson(
+              (jsonSerialization['matchType'] as int))
+          : null,
     );
   }
 

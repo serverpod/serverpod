@@ -28,19 +28,17 @@ abstract class Organization extends _i1.SerializableEntity {
     _i2.City? city,
   }) = _OrganizationImpl;
 
-  factory Organization.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
     return Organization(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      people: serializationManager
-          .deserialize<List<_i2.Person>?>(jsonSerialization['people']),
-      cityId:
-          serializationManager.deserialize<int?>(jsonSerialization['cityId']),
-      city: serializationManager
-          .deserialize<_i2.City?>(jsonSerialization['city']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      people: (jsonSerialization['people'] as List<dynamic>?)
+          ?.map((e) => _i2.Person.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      cityId: jsonSerialization['cityId'] as int?,
+      city: jsonSerialization.containsKey('city')
+          ? _i2.City.fromJson(jsonSerialization['city'] as Map<String, dynamic>)
+          : null,
     );
   }
 

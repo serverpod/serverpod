@@ -29,19 +29,18 @@ abstract class Cat extends _i1.TableRow {
     List<_i2.Cat>? kittens,
   }) = _CatImpl;
 
-  factory Cat.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Cat.fromJson(Map<String, dynamic> jsonSerialization) {
     return Cat(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      motherId:
-          serializationManager.deserialize<int?>(jsonSerialization['motherId']),
-      mother: serializationManager
-          .deserialize<_i2.Cat?>(jsonSerialization['mother']),
-      kittens: serializationManager
-          .deserialize<List<_i2.Cat>?>(jsonSerialization['kittens']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      motherId: jsonSerialization['motherId'] as int?,
+      mother: jsonSerialization.containsKey('mother')
+          ? _i2.Cat.fromJson(
+              jsonSerialization['mother'] as Map<String, dynamic>)
+          : null,
+      kittens: (jsonSerialization['kittens'] as List<dynamic>?)
+          ?.map((e) => _i2.Cat.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

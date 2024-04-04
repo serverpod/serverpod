@@ -27,17 +27,16 @@ abstract class Member extends _i1.TableRow {
     List<_i2.Blocking>? blockedBy,
   }) = _MemberImpl;
 
-  factory Member.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Member.fromJson(Map<String, dynamic> jsonSerialization) {
     return Member(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      blocking: serializationManager
-          .deserialize<List<_i2.Blocking>?>(jsonSerialization['blocking']),
-      blockedBy: serializationManager
-          .deserialize<List<_i2.Blocking>?>(jsonSerialization['blockedBy']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      blocking: (jsonSerialization['blocking'] as List<dynamic>?)
+          ?.map((e) => _i2.Blocking.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      blockedBy: (jsonSerialization['blockedBy'] as List<dynamic>?)
+          ?.map((e) => _i2.Blocking.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

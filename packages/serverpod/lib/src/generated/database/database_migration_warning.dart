@@ -30,20 +30,16 @@ abstract class DatabaseMigrationWarning extends _i1.SerializableEntity {
   }) = _DatabaseMigrationWarningImpl;
 
   factory DatabaseMigrationWarning.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return DatabaseMigrationWarning(
-      type: serializationManager.deserialize<_i2.DatabaseMigrationWarningType>(
-          jsonSerialization['type']),
-      message: serializationManager
-          .deserialize<String>(jsonSerialization['message']),
-      table:
-          serializationManager.deserialize<String>(jsonSerialization['table']),
-      columns: serializationManager
-          .deserialize<List<String>>(jsonSerialization['columns']),
-      destrucive: serializationManager
-          .deserialize<bool>(jsonSerialization['destrucive']),
+      type: _i2.DatabaseMigrationWarningType.fromJson(
+          (jsonSerialization['type'] as String)),
+      message: jsonSerialization['message'] as String,
+      table: jsonSerialization['table'] as String,
+      columns: (jsonSerialization['columns'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      destrucive: jsonSerialization['destrucive'] as bool,
     );
   }
 

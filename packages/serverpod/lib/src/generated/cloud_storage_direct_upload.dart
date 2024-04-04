@@ -30,18 +30,13 @@ abstract class CloudStorageDirectUploadEntry extends _i1.TableRow {
   }) = _CloudStorageDirectUploadEntryImpl;
 
   factory CloudStorageDirectUploadEntry.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return CloudStorageDirectUploadEntry(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      storageId: serializationManager
-          .deserialize<String>(jsonSerialization['storageId']),
-      path: serializationManager.deserialize<String>(jsonSerialization['path']),
-      expiration: serializationManager
-          .deserialize<DateTime>(jsonSerialization['expiration']),
-      authKey: serializationManager
-          .deserialize<String>(jsonSerialization['authKey']),
+      id: jsonSerialization['id'] as int?,
+      storageId: jsonSerialization['storageId'] as String,
+      path: jsonSerialization['path'] as String,
+      expiration: DateTime.parse(jsonSerialization['expiration']),
+      authKey: jsonSerialization['authKey'] as String,
     );
   }
 

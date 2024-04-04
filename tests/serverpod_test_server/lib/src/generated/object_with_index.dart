@@ -23,16 +23,11 @@ abstract class ObjectWithIndex extends _i1.TableRow {
     required int indexed2,
   }) = _ObjectWithIndexImpl;
 
-  factory ObjectWithIndex.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithIndex.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithIndex(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      indexed:
-          serializationManager.deserialize<int>(jsonSerialization['indexed']),
-      indexed2:
-          serializationManager.deserialize<int>(jsonSerialization['indexed2']),
+      id: jsonSerialization['id'] as int?,
+      indexed: jsonSerialization['indexed'] as int,
+      indexed2: jsonSerialization['indexed2'] as int,
     );
   }
 

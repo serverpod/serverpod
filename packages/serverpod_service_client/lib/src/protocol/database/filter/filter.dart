@@ -24,16 +24,13 @@ abstract class Filter extends _i1.SerializableEntity {
     required List<_i2.FilterConstraint> constraints,
   }) = _FilterImpl;
 
-  factory Filter.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Filter.fromJson(Map<String, dynamic> jsonSerialization) {
     return Filter(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      table:
-          serializationManager.deserialize<String>(jsonSerialization['table']),
-      constraints: serializationManager.deserialize<List<_i2.FilterConstraint>>(
-          jsonSerialization['constraints']),
+      name: jsonSerialization['name'] as String,
+      table: jsonSerialization['table'] as String,
+      constraints: (jsonSerialization['constraints'] as List<dynamic>)
+          .map((e) => _i2.FilterConstraint.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

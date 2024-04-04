@@ -28,19 +28,19 @@ abstract class SessionLogInfo extends _i1.SerializableEntity {
     required List<_i2.MessageLogEntry> messages,
   }) = _SessionLogInfoImpl;
 
-  factory SessionLogInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory SessionLogInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogInfo(
-      sessionLogEntry: serializationManager.deserialize<_i2.SessionLogEntry>(
-          jsonSerialization['sessionLogEntry']),
-      queries: serializationManager
-          .deserialize<List<_i2.QueryLogEntry>>(jsonSerialization['queries']),
-      logs: serializationManager
-          .deserialize<List<_i2.LogEntry>>(jsonSerialization['logs']),
-      messages: serializationManager.deserialize<List<_i2.MessageLogEntry>>(
-          jsonSerialization['messages']),
+      sessionLogEntry: _i2.SessionLogEntry.fromJson(
+          jsonSerialization['sessionLogEntry'] as Map<String, dynamic>),
+      queries: (jsonSerialization['queries'] as List<dynamic>)
+          .map((e) => _i2.QueryLogEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      logs: (jsonSerialization['logs'] as List<dynamic>)
+          .map((e) => _i2.LogEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      messages: (jsonSerialization['messages'] as List<dynamic>)
+          .map((e) => _i2.MessageLogEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

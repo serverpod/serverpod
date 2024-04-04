@@ -15,13 +15,8 @@ abstract class NotServerOnlyClass extends _i1.SerializableEntity {
 
   factory NotServerOnlyClass({required String foo}) = _NotServerOnlyClassImpl;
 
-  factory NotServerOnlyClass.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
-    return NotServerOnlyClass(
-        foo:
-            serializationManager.deserialize<String>(jsonSerialization['foo']));
+  factory NotServerOnlyClass.fromJson(Map<String, dynamic> jsonSerialization) {
+    return NotServerOnlyClass(foo: jsonSerialization['foo'] as String);
   }
 
   String foo;

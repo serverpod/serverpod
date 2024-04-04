@@ -132,6 +132,17 @@ class TypeDefinition {
         serializeEnum: serializeEnum,
       );
 
+  /// Get this [TypeDefinition], but non nullable.
+  TypeDefinition get asNonNullable => TypeDefinition(
+        className: className,
+        url: url,
+        nullable: false,
+        customClass: customClass,
+        dartType: dartType,
+        generics: generics,
+        serializeEnum: serializeEnum,
+      );
+
   /// Generate a [TypeReference] from this definition.
   TypeReference reference(
     bool serverCode, {

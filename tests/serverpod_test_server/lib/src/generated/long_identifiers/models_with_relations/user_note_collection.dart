@@ -25,16 +25,14 @@ abstract class UserNoteCollection extends _i1.TableRow {
     List<_i2.UserNote>? userNotesPropertyName,
   }) = _UserNoteCollectionImpl;
 
-  factory UserNoteCollection.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserNoteCollection.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserNoteCollection(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
       userNotesPropertyName:
-          serializationManager.deserialize<List<_i2.UserNote>?>(
-              jsonSerialization['userNotesPropertyName']),
+          (jsonSerialization['userNotesPropertyName'] as List<dynamic>?)
+              ?.map((e) => _i2.UserNote.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 

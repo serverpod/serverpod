@@ -18,12 +18,9 @@ abstract class FileNotFoundException extends _i1.SerializableEntity
       _FileNotFoundExceptionImpl;
 
   factory FileNotFoundException.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return FileNotFoundException(
-        message: serializationManager
-            .deserialize<String>(jsonSerialization['message']));
+        message: jsonSerialization['message'] as String);
   }
 
   String message;

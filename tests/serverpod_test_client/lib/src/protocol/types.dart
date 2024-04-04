@@ -11,6 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:uuid/uuid_value.dart' as _i4;
 
 abstract class Types extends _i1.SerializableEntity {
   Types._({
@@ -41,32 +42,37 @@ abstract class Types extends _i1.SerializableEntity {
     _i3.TestEnumStringified? aStringifiedEnum,
   }) = _TypesImpl;
 
-  factory Types.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Types.fromJson(Map<String, dynamic> jsonSerialization) {
     return Types(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      anInt: serializationManager.deserialize<int?>(jsonSerialization['anInt']),
-      aBool:
-          serializationManager.deserialize<bool?>(jsonSerialization['aBool']),
-      aDouble: serializationManager
-          .deserialize<double?>(jsonSerialization['aDouble']),
-      aDateTime: serializationManager
-          .deserialize<DateTime?>(jsonSerialization['aDateTime']),
-      aString: serializationManager
-          .deserialize<String?>(jsonSerialization['aString']),
-      aByteData: serializationManager
-          .deserialize<_i2.ByteData?>(jsonSerialization['aByteData']),
-      aDuration: serializationManager
-          .deserialize<Duration?>(jsonSerialization['aDuration']),
-      aUuid: serializationManager
-          .deserialize<_i1.UuidValue?>(jsonSerialization['aUuid']),
-      anEnum: serializationManager
-          .deserialize<_i3.TestEnum?>(jsonSerialization['anEnum']),
-      aStringifiedEnum:
-          serializationManager.deserialize<_i3.TestEnumStringified?>(
-              jsonSerialization['aStringifiedEnum']),
+      id: jsonSerialization['id'] as int?,
+      anInt: jsonSerialization['anInt'] as int?,
+      aBool: jsonSerialization['aBool'] as bool?,
+      aDouble: jsonSerialization['aDouble'] as double?,
+      aDateTime: DateTime.tryParse(jsonSerialization['aDateTime']),
+      aString: jsonSerialization['aString'] as String?,
+      aByteData: jsonSerialization.containsKey('aByteData')
+          ? jsonSerialization['aByteData'] is _i2.Uint8List
+              ? _i2.ByteData.view(
+                  jsonSerialization['aByteData'].buffer,
+                  jsonSerialization['aByteData'].offsetInBytes,
+                  jsonSerialization['aByteData'].lengthInBytes,
+                )
+              : (jsonSerialization['aByteData'] as String?)
+                  ?.base64DecodedByteData()
+          : null,
+      aDuration: jsonSerialization.containsKey('aDuration')
+          ? Duration(milliseconds: jsonSerialization['aDuration'])
+          : null,
+      aUuid: jsonSerialization.containsKey('aUuid')
+          ? _i4.UuidValue.fromString(jsonSerialization['aUuid'])
+          : null,
+      anEnum: jsonSerialization.containsKey('anEnum')
+          ? _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int))
+          : null,
+      aStringifiedEnum: jsonSerialization.containsKey('aStringifiedEnum')
+          ? _i3.TestEnumStringified.fromJson(
+              (jsonSerialization['aStringifiedEnum'] as String))
+          : null,
     );
   }
 

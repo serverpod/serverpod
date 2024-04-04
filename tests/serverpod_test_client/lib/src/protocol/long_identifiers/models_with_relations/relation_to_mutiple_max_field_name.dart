@@ -25,15 +25,15 @@ abstract class RelationToMultipleMaxFieldName extends _i1.SerializableEntity {
   }) = _RelationToMultipleMaxFieldNameImpl;
 
   factory RelationToMultipleMaxFieldName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return RelationToMultipleMaxFieldName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
       multipleMaxFieldNames:
-          serializationManager.deserialize<List<_i2.MultipleMaxFieldName>?>(
-              jsonSerialization['multipleMaxFieldNames']),
+          (jsonSerialization['multipleMaxFieldNames'] as List<dynamic>?)
+              ?.map((e) =>
+                  _i2.MultipleMaxFieldName.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 

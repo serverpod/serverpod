@@ -23,14 +23,16 @@ abstract class ScopeServerOnlyField extends _i1.SerializableEntity {
   }) = _ScopeServerOnlyFieldImpl;
 
   factory ScopeServerOnlyField.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+      Map<String, dynamic> jsonSerialization) {
     return ScopeServerOnlyField(
-      allScope: serializationManager
-          .deserialize<_i2.Types?>(jsonSerialization['allScope']),
-      nested: serializationManager
-          .deserialize<_i2.ScopeServerOnlyField?>(jsonSerialization['nested']),
+      allScope: jsonSerialization.containsKey('allScope')
+          ? _i2.Types.fromJson(
+              jsonSerialization['allScope'] as Map<String, dynamic>)
+          : null,
+      nested: jsonSerialization.containsKey('nested')
+          ? _i2.ScopeServerOnlyField.fromJson(
+              jsonSerialization['nested'] as Map<String, dynamic>)
+          : null,
     );
   }
 

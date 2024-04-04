@@ -25,17 +25,14 @@ abstract class CachesInfo extends _i1.SerializableEntity {
     required _i2.CacheInfo global,
   }) = _CachesInfoImpl;
 
-  factory CachesInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CachesInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CachesInfo(
-      local: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['local']),
-      localPrio: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['localPrio']),
-      global: serializationManager
-          .deserialize<_i2.CacheInfo>(jsonSerialization['global']),
+      local: _i2.CacheInfo.fromJson(
+          jsonSerialization['local'] as Map<String, dynamic>),
+      localPrio: _i2.CacheInfo.fromJson(
+          jsonSerialization['localPrio'] as Map<String, dynamic>),
+      global: _i2.CacheInfo.fromJson(
+          jsonSerialization['global'] as Map<String, dynamic>),
     );
   }
 

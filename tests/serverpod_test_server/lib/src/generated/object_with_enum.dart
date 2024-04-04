@@ -31,22 +31,24 @@ abstract class ObjectWithEnum extends _i1.TableRow {
     required List<List<_i2.TestEnum>> enumListList,
   }) = _ObjectWithEnumImpl;
 
-  factory ObjectWithEnum.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ObjectWithEnum.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithEnum(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      testEnum: serializationManager
-          .deserialize<_i2.TestEnum>(jsonSerialization['testEnum']),
-      nullableEnum: serializationManager
-          .deserialize<_i2.TestEnum?>(jsonSerialization['nullableEnum']),
-      enumList: serializationManager
-          .deserialize<List<_i2.TestEnum>>(jsonSerialization['enumList']),
-      nullableEnumList: serializationManager.deserialize<List<_i2.TestEnum?>>(
-          jsonSerialization['nullableEnumList']),
-      enumListList: serializationManager.deserialize<List<List<_i2.TestEnum>>>(
-          jsonSerialization['enumListList']),
+      id: jsonSerialization['id'] as int?,
+      testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
+      nullableEnum: jsonSerialization.containsKey('nullableEnum')
+          ? _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int))
+          : null,
+      enumList: (jsonSerialization['enumList'] as List<dynamic>)
+          .map((e) => _i2.TestEnum.fromJson((e as int)))
+          .toList(),
+      nullableEnumList: (jsonSerialization['nullableEnumList'] as List<dynamic>)
+          .map((e) => _i2.TestEnum.fromJson((e as int)))
+          .toList(),
+      enumListList: (jsonSerialization['enumListList'] as List<dynamic>)
+          .map((e) => (e as List<dynamic>)
+              .map((e) => _i2.TestEnum.fromJson((e as int)))
+              .toList())
+          .toList(),
     );
   }
 

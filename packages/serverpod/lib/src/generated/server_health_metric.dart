@@ -35,23 +35,15 @@ abstract class ServerHealthMetric extends _i1.TableRow {
     required int granularity,
   }) = _ServerHealthMetricImpl;
 
-  factory ServerHealthMetric.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ServerHealthMetric.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthMetric(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      serverId: serializationManager
-          .deserialize<String>(jsonSerialization['serverId']),
-      timestamp: serializationManager
-          .deserialize<DateTime>(jsonSerialization['timestamp']),
-      isHealthy: serializationManager
-          .deserialize<bool>(jsonSerialization['isHealthy']),
-      value:
-          serializationManager.deserialize<double>(jsonSerialization['value']),
-      granularity: serializationManager
-          .deserialize<int>(jsonSerialization['granularity']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      serverId: jsonSerialization['serverId'] as String,
+      timestamp: DateTime.parse(jsonSerialization['timestamp']),
+      isHealthy: jsonSerialization['isHealthy'] as bool,
+      value: jsonSerialization['value'] as double,
+      granularity: jsonSerialization['granularity'] as int,
     );
   }
 

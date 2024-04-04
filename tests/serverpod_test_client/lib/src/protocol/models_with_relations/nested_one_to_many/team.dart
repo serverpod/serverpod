@@ -28,19 +28,18 @@ abstract class Team extends _i1.SerializableEntity {
     List<_i2.Player>? players,
   }) = _TeamImpl;
 
-  factory Team.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory Team.fromJson(Map<String, dynamic> jsonSerialization) {
     return Team(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      arenaId:
-          serializationManager.deserialize<int?>(jsonSerialization['arenaId']),
-      arena: serializationManager
-          .deserialize<_i2.Arena?>(jsonSerialization['arena']),
-      players: serializationManager
-          .deserialize<List<_i2.Player>?>(jsonSerialization['players']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      arenaId: jsonSerialization['arenaId'] as int?,
+      arena: jsonSerialization.containsKey('arena')
+          ? _i2.Arena.fromJson(
+              jsonSerialization['arena'] as Map<String, dynamic>)
+          : null,
+      players: (jsonSerialization['players'] as List<dynamic>?)
+          ?.map((e) => _i2.Player.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 

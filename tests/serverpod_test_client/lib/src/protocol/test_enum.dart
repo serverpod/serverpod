@@ -21,7 +21,7 @@ enum TestEnum with _i1.SerializableEntity {
   two,
   three;
 
-  static TestEnum? fromJson(int index) {
+  static TestEnum fromJson(int index) {
     switch (index) {
       case 0:
         return one;
@@ -30,7 +30,7 @@ enum TestEnum with _i1.SerializableEntity {
       case 2:
         return three;
       default:
-        return null;
+        throw ArgumentError('Value "$index" cannot be converted to "TestEnum"');
     }
   }
 

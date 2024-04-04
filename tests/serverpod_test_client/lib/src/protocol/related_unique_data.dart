@@ -26,18 +26,15 @@ abstract class RelatedUniqueData extends _i1.SerializableEntity {
     required int number,
   }) = _RelatedUniqueDataImpl;
 
-  factory RelatedUniqueData.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory RelatedUniqueData.fromJson(Map<String, dynamic> jsonSerialization) {
     return RelatedUniqueData(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      uniqueDataId: serializationManager
-          .deserialize<int>(jsonSerialization['uniqueDataId']),
-      uniqueData: serializationManager
-          .deserialize<_i2.UniqueData?>(jsonSerialization['uniqueData']),
-      number:
-          serializationManager.deserialize<int>(jsonSerialization['number']),
+      id: jsonSerialization['id'] as int?,
+      uniqueDataId: jsonSerialization['uniqueDataId'] as int,
+      uniqueData: jsonSerialization.containsKey('uniqueData')
+          ? _i2.UniqueData.fromJson(
+              jsonSerialization['uniqueData'] as Map<String, dynamic>)
+          : null,
+      number: jsonSerialization['number'] as int,
     );
   }
 

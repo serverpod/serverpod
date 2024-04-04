@@ -23,16 +23,11 @@ abstract class ParentUser extends _i1.SerializableEntity {
     int? userInfoId,
   }) = _ParentUserImpl;
 
-  factory ParentUser.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ParentUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentUser(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name:
-          serializationManager.deserialize<String?>(jsonSerialization['name']),
-      userInfoId: serializationManager
-          .deserialize<int?>(jsonSerialization['userInfoId']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String?,
+      userInfoId: jsonSerialization['userInfoId'] as int?,
     );
   }
 

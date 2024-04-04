@@ -21,13 +21,10 @@ abstract class ModuleClass extends _i1.SerializableEntity {
     required int data,
   }) = _ModuleClassImpl;
 
-  factory ModuleClass.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory ModuleClass.fromJson(Map<String, dynamic> jsonSerialization) {
     return ModuleClass(
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
-      data: serializationManager.deserialize<int>(jsonSerialization['data']),
+      name: jsonSerialization['name'] as String,
+      data: jsonSerialization['data'] as int,
     );
   }
 

@@ -22,15 +22,13 @@ abstract class MaxFieldName extends _i1.TableRow {
         thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   }) = _MaxFieldNameImpl;
 
-  factory MaxFieldName.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory MaxFieldName.fromJson(Map<String, dynamic> jsonSerialization) {
     return MaxFieldName(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
+      id: jsonSerialization['id'] as int?,
       thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo:
-          serializationManager.deserialize<String>(jsonSerialization[
-              'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']),
+          jsonSerialization[
+                  'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo']
+              as String,
     );
   }
 

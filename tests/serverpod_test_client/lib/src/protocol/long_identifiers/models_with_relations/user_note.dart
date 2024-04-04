@@ -21,13 +21,10 @@ abstract class UserNote extends _i1.SerializableEntity {
     required String name,
   }) = _UserNoteImpl;
 
-  factory UserNote.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserNote.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserNote(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      name: serializationManager.deserialize<String>(jsonSerialization['name']),
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
     );
   }
 

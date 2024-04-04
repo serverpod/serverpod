@@ -24,17 +24,13 @@ abstract class CacheInfo extends _i1.SerializableEntity {
     List<String>? keys,
   }) = _CacheInfoImpl;
 
-  factory CacheInfo.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory CacheInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CacheInfo(
-      numEntries: serializationManager
-          .deserialize<int>(jsonSerialization['numEntries']),
-      maxEntries: serializationManager
-          .deserialize<int>(jsonSerialization['maxEntries']),
-      keys: serializationManager
-          .deserialize<List<String>?>(jsonSerialization['keys']),
+      numEntries: jsonSerialization['numEntries'] as int,
+      maxEntries: jsonSerialization['maxEntries'] as int,
+      keys: (jsonSerialization['keys'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
   }
 

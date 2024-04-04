@@ -26,17 +26,12 @@ abstract class UserImage extends _i1.TableRow {
     required String url,
   }) = _UserImageImpl;
 
-  factory UserImage.fromJson(
-    Map<String, dynamic> jsonSerialization,
-    _i1.SerializationManager serializationManager,
-  ) {
+  factory UserImage.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserImage(
-      id: serializationManager.deserialize<int?>(jsonSerialization['id']),
-      userId:
-          serializationManager.deserialize<int>(jsonSerialization['userId']),
-      version:
-          serializationManager.deserialize<int>(jsonSerialization['version']),
-      url: serializationManager.deserialize<String>(jsonSerialization['url']),
+      id: jsonSerialization['id'] as int?,
+      userId: jsonSerialization['userId'] as int,
+      version: jsonSerialization['version'] as int,
+      url: jsonSerialization['url'] as String,
     );
   }
 
