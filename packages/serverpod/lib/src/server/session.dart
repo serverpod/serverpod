@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/server/features.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:meta/meta.dart';
 
 import '../authentication/util.dart';
 import '../cache/caches.dart';
@@ -63,7 +63,7 @@ abstract class Session {
   Map<String, String> get passwords => server.passwords;
 
   /// Methods related to user authentication.
-  late final UserAuthetication auth;
+  late final UserAuthentication auth;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
@@ -88,7 +88,7 @@ abstract class Session {
   }) {
     _startTime = DateTime.now();
 
-    auth = UserAuthetication._(this);
+    auth = UserAuthentication._(this);
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
@@ -353,10 +353,10 @@ class FutureCallSession extends Session {
 }
 
 /// Collects methods for authenticating users.
-class UserAuthetication {
+class UserAuthentication {
   final Session _session;
 
-  UserAuthetication._(this._session);
+  UserAuthentication._(this._session);
 
   /// Returns the id of an authenticated user or null if the user isn't signed
   /// in.
