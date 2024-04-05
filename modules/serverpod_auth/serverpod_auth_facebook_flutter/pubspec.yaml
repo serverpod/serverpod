@@ -18,7 +18,7 @@ dependencies:
     path: ../serverpod_auth_client
   serverpod_auth_shared_flutter: #^1.0.0
     path: ../serverpod_auth_shared_flutter
-  flutter_facebook_auth: ^6.0.4
+  flutter_facebook_auth: ^6.2.0
 
 dev_dependencies:
   lints: ^2.0.0
