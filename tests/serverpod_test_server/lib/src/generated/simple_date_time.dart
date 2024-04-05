@@ -26,7 +26,7 @@ abstract class SimpleDateTime extends _i1.TableRow {
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime: DateTime.parse(jsonSerialization['dateTime']),
+      dateTime: DateTime.parse((jsonSerialization['dateTime'] as String)),
     );
   }
 

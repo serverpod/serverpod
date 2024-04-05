@@ -49,7 +49,7 @@ abstract class LogEntry extends _i1.TableRow {
       messageId: jsonSerialization['messageId'] as int?,
       reference: jsonSerialization['reference'] as String?,
       serverId: jsonSerialization['serverId'] as String,
-      time: DateTime.parse(jsonSerialization['time']),
+      time: DateTime.parse((jsonSerialization['time'] as String)),
       logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
       message: jsonSerialization['message'] as String,
       error: jsonSerialization['error'] as String?,

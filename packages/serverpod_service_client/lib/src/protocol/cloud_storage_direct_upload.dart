@@ -34,7 +34,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration: DateTime.parse(jsonSerialization['expiration']),
+      expiration: DateTime.parse((jsonSerialization['expiration'] as String)),
       authKey: jsonSerialization['authKey'] as String,
     );
   }

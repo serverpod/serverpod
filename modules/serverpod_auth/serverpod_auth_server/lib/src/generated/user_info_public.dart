@@ -34,7 +34,7 @@ abstract class UserInfoPublic extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       userName: jsonSerialization['userName'] as String,
       fullName: jsonSerialization['fullName'] as String?,
-      created: DateTime.parse(jsonSerialization['created']),
+      created: DateTime.parse((jsonSerialization['created'] as String)),
       imageUrl: jsonSerialization['imageUrl'] as String?,
     );
   }

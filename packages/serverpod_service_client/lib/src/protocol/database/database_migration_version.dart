@@ -32,7 +32,7 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       module: jsonSerialization['module'] as String,
       version: jsonSerialization['version'] as String,
-      timestamp: DateTime.tryParse(jsonSerialization['timestamp']),
+      timestamp: DateTime.tryParse(jsonSerialization['timestamp'] ?? ''),
     );
   }
 

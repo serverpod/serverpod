@@ -31,7 +31,7 @@ abstract class EmailReset extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration: DateTime.parse(jsonSerialization['expiration']),
+      expiration: DateTime.parse((jsonSerialization['expiration'] as String)),
     );
   }
 

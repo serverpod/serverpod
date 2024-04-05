@@ -49,7 +49,7 @@ abstract class Types extends _i1.TableRow {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
       aDouble: jsonSerialization['aDouble'] as double?,
-      aDateTime: DateTime.tryParse(jsonSerialization['aDateTime']),
+      aDateTime: DateTime.tryParse(jsonSerialization['aDateTime'] ?? ''),
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization.containsKey('aByteData')
           ? jsonSerialization['aByteData'] is _i2.Uint8List

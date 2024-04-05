@@ -48,7 +48,7 @@ abstract class UserInfo extends _i1.TableRow {
       userName: jsonSerialization['userName'] as String,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created: DateTime.parse(jsonSerialization['created']),
+      created: DateTime.parse((jsonSerialization['created'] as String)),
       imageUrl: jsonSerialization['imageUrl'] as String?,
       scopeNames: (jsonSerialization['scopeNames'] as List<dynamic>)
           .map((e) => e as String)

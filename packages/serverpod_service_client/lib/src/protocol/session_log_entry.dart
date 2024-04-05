@@ -50,7 +50,7 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
     return SessionLogEntry(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      time: DateTime.parse(jsonSerialization['time']),
+      time: DateTime.parse((jsonSerialization['time'] as String)),
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
@@ -61,7 +61,7 @@ abstract class SessionLogEntry extends _i1.SerializableEntity {
       stackTrace: jsonSerialization['stackTrace'] as String?,
       authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
       isOpen: jsonSerialization['isOpen'] as bool?,
-      touched: DateTime.parse(jsonSerialization['touched']),
+      touched: DateTime.parse((jsonSerialization['touched'] as String)),
     );
   }
 

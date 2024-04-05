@@ -122,9 +122,9 @@ abstract class Nullability extends _i1.SerializableEntity {
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
-      aDateTime: DateTime.parse(jsonSerialization['aDateTime']),
+      aDateTime: DateTime.parse((jsonSerialization['aDateTime'] as String)),
       aNullableDateTime:
-          DateTime.tryParse(jsonSerialization['aNullableDateTime']),
+          DateTime.tryParse(jsonSerialization['aNullableDateTime'] ?? ''),
       aByteData: (jsonSerialization['aByteData'] != null &&
               jsonSerialization['aByteData'] is _i2.Uint8List
           ? _i2.ByteData.view(
@@ -190,20 +190,20 @@ abstract class Nullability extends _i1.SerializableEntity {
               ?.map((e) => _i3.SimpleData.fromJson(e as Map<String, dynamic>))
               .toList(),
       aDateTimeList: (jsonSerialization['aDateTimeList'] as List<dynamic>)
-          .map((e) => DateTime.parse(e))
+          .map((e) => DateTime.parse((e as String)))
           .toList(),
       aNullableDateTimeList:
           (jsonSerialization['aNullableDateTimeList'] as List<dynamic>?)
-              ?.map((e) => DateTime.parse(e))
+              ?.map((e) => DateTime.parse((e as String)))
               .toList(),
       aListWithNullableDateTimes:
           (jsonSerialization['aListWithNullableDateTimes'] as List<dynamic>)
-              .map((e) => DateTime.tryParse(e))
+              .map((e) => DateTime.tryParse(e ?? ''))
               .toList(),
       aNullableListWithNullableDateTimes:
           (jsonSerialization['aNullableListWithNullableDateTimes']
                   as List<dynamic>?)
-              ?.map((e) => DateTime.tryParse(e))
+              ?.map((e) => DateTime.tryParse(e ?? ''))
               .toList(),
       aByteDataList: (jsonSerialization['aByteDataList'] as List<dynamic>)
           .map((e) => (e != null && e is _i2.Uint8List

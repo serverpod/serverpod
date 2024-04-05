@@ -39,7 +39,7 @@ abstract class ServerHealthMetric extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: DateTime.parse(jsonSerialization['timestamp']),
+      timestamp: DateTime.parse((jsonSerialization['timestamp'] as String)),
       isHealthy: jsonSerialization['isHealthy'] as bool,
       value: jsonSerialization['value'] as double,
       granularity: jsonSerialization['granularity'] as int,

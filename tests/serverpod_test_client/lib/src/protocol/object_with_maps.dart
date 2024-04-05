@@ -70,7 +70,7 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
       dateTimeMap: (jsonSerialization['dateTimeMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
                 k as String,
-                DateTime.parse(v),
+                DateTime.parse((v as String)),
               )),
       byteDataMap: (jsonSerialization['byteDataMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
@@ -115,7 +115,7 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
           (jsonSerialization['nullableDateTimeMap'] as Map<dynamic, dynamic>)
               .map((k, v) => MapEntry(
                     k as String,
-                    DateTime.tryParse(v),
+                    DateTime.tryParse(v ?? ''),
                   )),
       nullableByteDataMap:
           (jsonSerialization['nullableByteDataMap'] as Map<dynamic, dynamic>)

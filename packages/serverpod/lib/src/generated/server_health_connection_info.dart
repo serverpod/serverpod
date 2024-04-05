@@ -40,7 +40,7 @@ abstract class ServerHealthConnectionInfo extends _i1.TableRow {
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: DateTime.parse(jsonSerialization['timestamp']),
+      timestamp: DateTime.parse((jsonSerialization['timestamp'] as String)),
       active: jsonSerialization['active'] as int,
       closing: jsonSerialization['closing'] as int,
       idle: jsonSerialization['idle'] as int,

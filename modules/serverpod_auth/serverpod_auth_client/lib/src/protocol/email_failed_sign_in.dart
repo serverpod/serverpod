@@ -31,7 +31,7 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
     return EmailFailedSignIn(
       id: jsonSerialization['id'] as int?,
       email: jsonSerialization['email'] as String,
-      time: DateTime.parse(jsonSerialization['time']),
+      time: DateTime.parse((jsonSerialization['time'] as String)),
       ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }

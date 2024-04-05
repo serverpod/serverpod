@@ -93,7 +93,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
       aDateTimeKey:
           (jsonSerialization['aDateTimeKey'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(
-                    DateTime.parse(k),
+                    DateTime.parse((k as String)),
                     v as String,
                   )),
       aStringKey: (jsonSerialization['aStringKey'] as Map<dynamic, dynamic>?)
@@ -175,7 +175,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
           (jsonSerialization['aDateTimeValue'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(
                     k as String,
-                    DateTime.parse(v),
+                    DateTime.parse((v as String)),
                   )),
       aStringValue:
           (jsonSerialization['aStringValue'] as Map<dynamic, dynamic>?)

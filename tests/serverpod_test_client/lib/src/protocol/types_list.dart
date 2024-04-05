@@ -58,7 +58,7 @@ abstract class TypesList extends _i1.SerializableEntity {
           ?.map((e) => e as double)
           .toList(),
       aDateTime: (jsonSerialization['aDateTime'] as List<dynamic>?)
-          ?.map((e) => DateTime.parse(e))
+          ?.map((e) => DateTime.parse((e as String)))
           .toList(),
       aString: (jsonSerialization['aString'] as List<dynamic>?)
           ?.map((e) => e as String)

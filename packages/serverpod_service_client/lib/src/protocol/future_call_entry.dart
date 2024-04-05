@@ -34,7 +34,7 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
     return FutureCallEntry(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      time: DateTime.parse(jsonSerialization['time']),
+      time: DateTime.parse((jsonSerialization['time'] as String)),
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,

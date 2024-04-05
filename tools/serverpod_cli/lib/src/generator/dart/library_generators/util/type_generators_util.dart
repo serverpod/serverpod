@@ -193,9 +193,13 @@ Expression _expressionDateTimeTypeBuilder(
   Expression valueExpression,
 ) {
   return CodeExpression(
-    refer('DateTime')
-        .property(type.nullable ? 'tryParse' : 'parse')
-        .call([valueExpression]).code,
+    refer('DateTime').property(type.nullable ? 'tryParse' : 'parse').call(
+      [
+        type.nullable
+            ? valueExpression.ifNullThen(const CodeExpression(Code('\'\'')))
+            : valueExpression.asA(const CodeExpression(Code('String'))),
+      ],
+    ).code,
   );
 }
 
