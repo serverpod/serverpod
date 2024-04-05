@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 /// The file uploader uploads files to Serverpods cloud storage. On the server
 /// you can setup a custom storage service, such as S3 or Google Cloud. To
@@ -20,80 +20,59 @@ class FileUploader {
 
   /// Uploads a file contained by a [ByteData] object, returns true if
   /// successful.
-  Future<bool> uploadByteData(ByteData byteData) async {
-    var stream = http.ByteStream.fromBytes(byteData.buffer.asUint8List());
-    return upload(stream, byteData.lengthInBytes);
-  }
+  @Deprecated('Use uploadUint8List instead')
+  Future<bool> uploadByteData(ByteData byteData) =>
+      uploadUint8List(byteData.buffer.asUint8List());
 
   /// Uploads a file from a [Stream], returns true if successful.
+  @Deprecated('Use uploadUint8List instead')
   Future<bool> upload(Stream<List<int>> stream, int length) async {
+    var data = <int>[];
+    await for (var segment in stream) {
+      data += segment;
+    }
+    return await uploadUint8List(Uint8List.fromList(data));
+  }
+
+  /// Uploads a file contained by a [Uint8List] object, returns true if
+  /// successful.
+  Future<bool> uploadUint8List(Uint8List data) async {
     if (_attemptedUpload) {
       throw Exception(
           'Data has already been uploaded using this FileUploader.');
     }
     _attemptedUpload = true;
 
+    Object? dataToPost;
     if (_uploadDescription.type == _UploadType.binary) {
-      try {
-        var result = await http.post(
-          _uploadDescription.url,
-          body: await _readStreamData(stream),
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Accept': '*/*',
-          },
-        );
-        return result.statusCode == 200;
-      } catch (e) {
-        return false;
-      }
+      dataToPost = data;
     } else if (_uploadDescription.type == _UploadType.multipart) {
-      // final stream = http.ByteStream(Stream.castFrom(file.openRead()));
-      // final length = await file.length();
-
-      // final stream = http.ByteStream.fromBytes(data.buffer.asUint8List());
-      // final length = await data.lengthInBytes;
-
-      var request = http.MultipartRequest('POST', _uploadDescription.url);
-      var multipartFile = http.MultipartFile(
-          _uploadDescription.field!, stream, length,
-          filename: _uploadDescription.fileName);
-
-      request.files.add(multipartFile);
-      for (var key in _uploadDescription.requestFields.keys) {
-        request.fields[key] = _uploadDescription.requestFields[key]!;
-      }
-
-      try {
-        var result = await request.send();
-        // var body = await _readBody(result.stream);
-        // print('body: $body');
-        return result.statusCode == 204;
-      } catch (e) {
-        return false;
-      }
+      dataToPost = FormData.fromMap({
+        'name': 'dio',
+        'date': DateTime.now().toIso8601String(),
+        'file': MultipartFile.fromBytes(
+          data,
+          filename: _uploadDescription.fileName,
+        ),
+      });
+    } else {
+      throw UnimplementedError('Unknown upload type');
     }
-    throw UnimplementedError('Unknown upload type');
-  }
-
-  // Future<String?> _readBody(http.ByteStream stream) async {
-  //   // TODO: Find more efficient solution?
-  //   var len = 0;
-  //   var data = <int>[];
-  //   await for (var segment in stream) {
-  //     len += segment.length;
-  //     data += segment;
-  //   }
-  //   return Utf8Decoder().convert(data);
-  // }
-
-  Future<List<int>> _readStreamData(Stream<List<int>> stream) async {
-    // TODO: Find more efficient solution?
-    var data = <int>[];
-    await for (var segment in stream) {
-      data += segment;
+    var dio = Dio();
+    dio.options.contentType = 'application/octet-stream';
+    dio.options.headers['Accept'] = '*/*';
+    try {
+      var result = await dio.post(_uploadDescription.url, data: dataToPost);
+      // var body = result.data == null ? '' : result.data.toString();
+      // print('body: $body');
+      return _uploadDescription.type == _UploadType.binary
+          ? result.statusCode == 200
+          : result.statusCode == 204;
+    } catch (e) {
+      return false;
+    } finally {
+      dio.close();
     }
-    return data;
   }
 }
 
@@ -104,7 +83,7 @@ enum _UploadType {
 
 class _UploadDescription {
   late _UploadType type;
-  late Uri url;
+  late String url;
   String? field;
   String? fileName;
   Map<String, String> requestFields = {};
@@ -119,7 +98,10 @@ class _UploadDescription {
       throw const FormatException('Missing type, can be binary or multipart');
     }
 
-    url = Uri.parse(data['url']);
+    if (data['url'] == null) {
+      throw const FormatException('Missing url');
+    }
+    url = data['url'];
 
     if (type == _UploadType.multipart) {
       field = data['field'];
