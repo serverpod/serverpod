@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -6,10 +7,20 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_server/module.dart';
+import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 
 import '../business/config.dart';
 import '../generated/protocol.dart';
+
+const _maxImageSide = 256;
+
+class _Thumbnail {
+  final int width;
+  final int height;
+  final ByteData byteData;
+
+  _Thumbnail(this.width, this.height, this.byteData);
+}
 
 /// Connect to the chat endpoint to send and receive chat messages.
 class ChatEndpoint extends Endpoint {
@@ -49,6 +60,7 @@ class ChatEndpoint extends Endpoint {
             ChatJoinChannelFailed(
                 channel: message.channel,
                 reason: 'User must be authenticated'));
+        return;
       }
 
       if (message.userName != null && chatSession.userInfo == null) {
@@ -118,6 +130,15 @@ class ChatEndpoint extends Endpoint {
         return;
       }
 
+      if (ChatConfig.current.onWillSendMessage != null &&
+          !await ChatConfig.current.onWillSendMessage!(
+            session,
+            chatSession.userInfo!,
+            message.channel,
+          )) {
+        return;
+      }
+
       // Write the message to the database, then pass it on to this and other clients.
       var chatMessage = ChatMessage(
         channel: message.channel,
@@ -132,7 +153,7 @@ class ChatEndpoint extends Endpoint {
       );
 
       if (!_isEphemeralChannel(message.channel)) {
-        await session.db.insert(chatMessage);
+        await ChatMessage.db.insertRow(session, chatMessage);
       }
 
       session.messages.postMessage(
@@ -140,6 +161,14 @@ class ChatEndpoint extends Endpoint {
         chatMessage,
         global: ChatConfig.current.postMessagesGlobally,
       );
+
+      if (ChatConfig.current.onDidSendMessage != null) {
+        await ChatConfig.current.onDidSendMessage!(
+          session,
+          chatSession.userInfo!,
+          message.channel,
+        );
+      }
     } else if (message is ChatReadMessage) {
       // Check that the message is in a channel we're subscribed to
       if (!chatSession.messageListeners.containsKey(message.channel)) {
@@ -178,18 +207,18 @@ class ChatEndpoint extends Endpoint {
 
     List<ChatMessage> messages;
     if (lastId != null) {
-      messages = await ChatMessage.find(
+      messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel) & (t.id < lastId),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );
     } else {
-      messages = await ChatMessage.find(
+      messages = await ChatMessage.db.find(
         session,
         where: (t) => t.channel.equals(channel),
-        orderBy: ChatMessage.t.id,
+        orderBy: (t) => t.id,
         orderDescending: true,
         limit: size + 1,
       );
@@ -222,7 +251,7 @@ class ChatEndpoint extends Endpoint {
     String channel,
     int userId,
   ) async {
-    var readMessageRow = await ChatReadMessage.findSingleRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );
@@ -235,7 +264,7 @@ class ChatEndpoint extends Endpoint {
 
   Future<void> _setLastReadMessage(Session session, String channel, int userId,
       int lastReadMessageId) async {
-    var readMessageRow = await ChatReadMessage.findSingleRow(
+    var readMessageRow = await ChatReadMessage.db.findFirstRow(
       session,
       where: (t) => t.channel.equals(channel) & t.userId.equals(userId),
     );
@@ -246,10 +275,10 @@ class ChatEndpoint extends Endpoint {
         userId: userId,
         lastReadMessageId: lastReadMessageId,
       );
-      await session.db.insert(readMessageRow);
+      await ChatReadMessage.db.insertRow(session, readMessageRow);
     } else {
       readMessageRow.lastReadMessageId = lastReadMessageId;
-      await session.db.update(readMessageRow);
+      await ChatReadMessage.db.updateRow(session, readMessageRow);
     }
   }
 
@@ -287,27 +316,40 @@ class ChatEndpoint extends Endpoint {
     int? thumbHeight;
 
     try {
-      const maxImageWidth = 256;
-
       var ext = path.extension(filePath.toLowerCase());
       if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
         var response = await http.get(url!);
         var bytes = response.bodyBytes;
-        var image = decodeImage(bytes);
-        if (image != null) {
-          if (image.width > maxImageWidth) {
-            image = copyResize(image, width: maxImageWidth);
+        // Run thumbnail generation in an isolate, because it is CPU-intensive
+        var thumbnail = await Isolate.run(() {
+          var image = decodeImage(bytes);
+          if (image == null) {
+            return null;
           }
-          var thumbPath = _generateAttachmentFilePath(userId, fileName);
+          if (image.width > _maxImageSide || image.height > _maxImageSide) {
+            image = copyResizeCropSquare(
+              image,
+              size: _maxImageSide,
+              interpolation: Interpolation.average,
+            );
+          }
+          // Convert thumbnail to jpeg
           var encodedBytes = Uint8List.fromList(encodeJpg(image, quality: 70));
           var byteData = ByteData.view(encodedBytes.buffer);
+          return _Thumbnail(image.width, image.height, byteData);
+        });
+        if (thumbnail != null) {
+          var thumbPath = _generateAttachmentFilePath(userId, fileName);
           await session.storage.storeFile(
-              storageId: 'public', path: thumbPath, byteData: byteData);
+            storageId: 'public',
+            path: thumbPath,
+            byteData: thumbnail.byteData,
+          );
           thumbUrl = await session.storage
               .getPublicUrl(storageId: 'public', path: thumbPath);
           if (thumbUrl != null) {
-            thumbWidth = image.width;
-            thumbHeight = image.height;
+            thumbWidth = thumbnail.width;
+            thumbHeight = thumbnail.height;
           }
         }
       }

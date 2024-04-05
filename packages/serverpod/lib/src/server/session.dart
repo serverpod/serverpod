@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:meta/meta.dart';
+import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/server/features.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../authentication/util.dart';
 import '../cache/caches.dart';
@@ -21,9 +22,6 @@ abstract class Session {
 
   /// The [Serverpod] this session is running on.
   Serverpod get serverpod => server.serverpod;
-
-  /// Max lifetime of the session, after it will be forcefully terminated.
-  final Duration maxLifeTime;
 
   late DateTime _startTime;
 
@@ -42,7 +40,16 @@ abstract class Session {
   dynamic userObject;
 
   /// Access to the database.
-  late final Database db;
+  Database? _db;
+
+  /// Access to the database.
+  Database get db {
+    var database = _db;
+    if (database == null) {
+      throw Exception('Database is not available in this session.');
+    }
+    return database;
+  }
 
   String? _authenticationKey;
 
@@ -56,7 +63,7 @@ abstract class Session {
   Map<String, String> get passwords => server.passwords;
 
   /// Methods related to user authentication.
-  late final UserAuthetication auth;
+  late final UserAuthentication auth;
 
   /// Provides access to the cloud storages used by this [Serverpod].
   late final StorageAccess storage;
@@ -75,19 +82,19 @@ abstract class Session {
   Session({
     required this.server,
     String? authenticationKey,
-    this.maxLifeTime = const Duration(minutes: 1),
     HttpRequest? httpRequest,
     WebSocket? webSocket,
-    String? futureCallName,
     required this.enableLogging,
   }) {
     _startTime = DateTime.now();
 
-    auth = UserAuthetication._(this);
+    auth = UserAuthentication._(this);
     storage = StorageAccess._(this);
     messages = MessageCentralAccess._(this);
 
-    db = Database(session: this);
+    if (Features.enableDatabase) {
+      _db = server.createDatabase(this);
+    }
 
     sessionLogs = server.serverpod.logManager.initializeSessionLog(this);
     sessionLogs.temporarySessionId =
@@ -97,12 +104,20 @@ abstract class Session {
   bool _initialized = false;
 
   Future<void> _initialize() async {
+    if (server.authenticationHandler == null) {
+      stderr.write(
+        'No authentication handler is set, authentication is disabled, '
+        'all requests to protected endpoints will be rejected.',
+      );
+    }
+
     if (server.authenticationHandler != null && _authenticationKey != null) {
       var authenticationInfo =
           await server.authenticationHandler!(this, _authenticationKey!);
       _scopes = authenticationInfo?.scopes;
       _authenticatedUser = authenticationInfo?.authenticatedUserId;
     }
+
     _initialized = true;
   }
 
@@ -204,12 +219,9 @@ class InternalSession extends Session {
   /// Creates a new [InternalSession]. Consider using the createSession
   /// method of [ServerPod] to create a new session.
   InternalSession({
-    required Server server,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    required super.server,
+    super.enableLogging = true,
+  });
 }
 
 /// When a call is made to the [Server] a [MethodCallSession] object is created.
@@ -226,7 +238,7 @@ class MethodCallSession extends Session {
   late final Map<String, dynamic> queryParameters;
 
   /// The name of the called [Endpoint].
-  final String endpointName;
+  late final String endpointName;
 
   /// The name of the method that is being called.
   late final String methodName;
@@ -236,17 +248,14 @@ class MethodCallSession extends Session {
 
   /// Creates a new [Session] for a method call to an endpoint.
   MethodCallSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.body,
-    required this.endpointName,
+    required String path,
     required this.httpRequest,
     String? authenticationKey,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
     var queryParameters = <String, dynamic>{};
     if (body != '' && body != 'null') {
@@ -257,9 +266,25 @@ class MethodCallSession extends Session {
     queryParameters.addAll(uri.queryParameters);
     this.queryParameters = queryParameters;
 
-    var methodName = queryParameters['method'];
-    if (methodName == null && endpointName == 'webserver') methodName = '';
-    this.methodName = methodName!;
+    if (path.contains('/')) {
+      // Using the new path format (for OpenAPI)
+      var pathComponents = path.split('/');
+      endpointName = pathComponents[0];
+      methodName = pathComponents[1];
+    } else {
+      // Using the standard format with query parameters
+      endpointName = path;
+      var methodName = queryParameters['method'];
+      if (methodName == null && path == 'webserver') {
+        this.methodName = '';
+      } else if (methodName != null) {
+        this.methodName = methodName;
+      } else {
+        throw FormatException(
+          'No method name specified in call to $endpointName',
+        );
+      }
+    }
 
     // Get the the authentication key, if any
     _authenticationKey = authenticationKey ?? queryParameters['auth'];
@@ -291,15 +316,12 @@ class StreamingSession extends Session {
 
   /// Creates a new [Session] for the web socket stream.
   StreamingSession({
-    required Server server,
+    required super.server,
     required this.uri,
     required this.httpRequest,
     required this.webSocket,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        ) {
+    super.enableLogging = true,
+  }) {
     // Read query parameters
     var queryParameters = <String, String>{};
     queryParameters.addAll(uri.queryParameters);
@@ -324,20 +346,17 @@ class FutureCallSession extends Session {
 
   /// Creates a new [Session] for a [FutureCall].
   FutureCallSession({
-    required Server server,
+    required super.server,
     required this.futureCallName,
-    bool enableLogging = true,
-  }) : super(
-          server: server,
-          enableLogging: enableLogging,
-        );
+    super.enableLogging = true,
+  });
 }
 
 /// Collects methods for authenticating users.
-class UserAuthetication {
+class UserAuthentication {
   final Session _session;
 
-  UserAuthetication._(this._session);
+  UserAuthentication._(this._session);
 
   /// Returns the id of an authenticated user or null if the user isn't signed
   /// in.
@@ -370,11 +389,9 @@ class UserAuthetication {
       method: method,
     );
 
-    await _session.db.insert(authKey);
-
     _session._authenticatedUser = userId;
-
-    return authKey;
+    var result = await AuthKey.db.insertRow(_session, authKey);
+    return result.copyWith(key: key);
   }
 
   /// Signs out a user from the server and deletes all authentication keys.
@@ -383,7 +400,8 @@ class UserAuthetication {
     userId ??= await authenticatedUserId;
     if (userId == null) return;
 
-    await _session.db.delete<AuthKey>(where: AuthKey.t.userId.equals(userId));
+    await _session.db
+        .deleteWhere<AuthKey>(where: AuthKey.t.userId.equals(userId));
     _session._authenticatedUser = null;
   }
 }

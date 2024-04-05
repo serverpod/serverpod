@@ -2,9 +2,8 @@ import 'package:serverpod_cli/src/database/migration.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 //
-// Comparisons of database entities
+// Comparisons of database models
 //
-
 extension DatabaseComparisons on DatabaseDefinition {
   bool containsTableNamed(String tableName) {
     return (findTableNamed(tableName) != null);
@@ -21,10 +20,8 @@ extension DatabaseComparisons on DatabaseDefinition {
 
   bool like(DatabaseDefinition other) {
     var diff = generateDatabaseMigration(
-      srcDatabase: this,
-      dstDatabase: other,
-      warnings: [],
-      priority: -1,
+      databaseSource: this,
+      databaseTarget: other,
     );
     return diff.isEmpty;
   }
@@ -88,7 +85,7 @@ extension ColumnComparisons on ColumnDefinition {
     }
 
     return (other.isNullable == isNullable &&
-        other.columnType == columnType &&
+        other.columnType.like(columnType) &&
         other.name == name &&
         other.columnDefault == columnDefault);
   }
@@ -194,20 +191,20 @@ extension TableDiffComparisons on TableMigration {
   }
 }
 
+extension TableDefinitionExtension on TableDefinition {
+  bool get isManaged => managed != false;
+}
+
 //
 // SQL generation
 //
-
 extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
-  String toPgSql({
-    required String version,
-    required String module,
-  }) {
+  String toPgSql({required List<DatabaseMigrationVersion> installedModules}) {
     String out = '';
 
     var tableCreation = '';
     var foreignRelations = '';
-    for (var table in tables) {
+    for (var table in tables.where((table) => table.isManaged)) {
       tableCreation += '--\n';
       tableCreation += '-- Class ${table.dartName} as table ${table.name}\n';
       tableCreation += '--\n';
@@ -230,11 +227,16 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
     // Create foreign relations
     out += foreignRelations;
 
-    out += _sqlStoreMigrationVersion(
-      module: module,
-      version: version,
-      priority: priority!,
-    );
+    if (installedModules.isNotEmpty) {
+      out += '\n';
+    }
+
+    for (var module in installedModules) {
+      out += _sqlStoreMigrationVersion(
+        module: module.module,
+        version: module.version,
+      );
+    }
 
     out += '\n';
     out += 'COMMIT;\n';
@@ -244,11 +246,15 @@ extension DatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
 }
 
 extension TableDefinitionPgSqlGeneration on TableDefinition {
-  String tableCreationToPgsql() {
+  String tableCreationToPgsql({bool ifNotExists = false}) {
     String out = '';
 
     // Table
-    out += 'CREATE TABLE "$name" (\n';
+    if (ifNotExists) {
+      out += 'CREATE TABLE IF NOT EXISTS "$name" (\n';
+    } else {
+      out += 'CREATE TABLE "$name" (\n';
+    }
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
@@ -272,7 +278,7 @@ extension TableDefinitionPgSqlGeneration on TableDefinition {
       out += '\n';
       out += '-- Indexes\n';
       for (var index in indexesExceptId) {
-        out += index.toPgSql(tableName: name);
+        out += index.toPgSql(tableName: name, ifNotExists: ifNotExists);
       }
     }
 
@@ -301,14 +307,19 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
   String toPgSqlFragment() {
     String out = '';
 
+    // The id column is special.
     if (name == 'id') {
-      // The id column is special.
-      assert(isNullable == false);
-      assert(
-        columnType == ColumnType.integer || columnType == ColumnType.bigint,
-      );
-      // TODO: Migrate to bigserial / bigint
-      return '"id" serial PRIMARY KEY';
+      if (isNullable != false) {
+        throw (const FormatException('The id column must be non-nullable'));
+      }
+
+      if (columnType != ColumnType.integer && columnType != ColumnType.bigint) {
+        throw (const FormatException(
+          'The id column must be of type integer or bigint',
+        ));
+      }
+
+      return '"id" bigserial PRIMARY KEY';
     }
 
     var nullable = isNullable ? '' : ' NOT NULL';
@@ -353,13 +364,16 @@ extension ColumnDefinitionPgSqlGeneration on ColumnDefinition {
 extension IndexDefinitionPgSqlGeneration on IndexDefinition {
   String toPgSql({
     required String tableName,
+    bool ifNotExists = false,
   }) {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
     var elementStrs = elements.map((e) => '"${e.definition}"');
+    var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
-    out += 'CREATE$uniqueStr INDEX "$indexName" ON "$tableName" USING $type'
+    out +=
+        'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" USING $type'
         ' (${elementStrs.join(', ')});\n';
 
     return out;
@@ -416,7 +430,8 @@ extension on ForeignKeyAction {
 
 extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
   String toPgSql({
-    required Map<String, String> versions,
+    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersion> removedModules,
   }) {
     var out = '';
 
@@ -433,13 +448,20 @@ extension DatabaseMigrationPgSqlGenerator on DatabaseMigration {
     // Append all foreign key operations at the end
     out += foreignKeyActions;
 
-    for (var module in versions.keys) {
-      var version = versions[module]!;
+    if (installedModules.isNotEmpty) {
+      out += '\n';
+    }
+
+    for (var module in installedModules) {
       out += _sqlStoreMigrationVersion(
-        module: module,
-        version: version,
-        priority: priority,
+        module: module.module,
+        version: module.version,
       );
+    }
+
+    if (removedModules.isNotEmpty) {
+      out += '\n';
+      out += _sqlRemoveMigrationVersion(removedModules);
     }
 
     out += '\n';
@@ -467,6 +489,12 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
         out += '--\n';
         out += createTable!.tableCreationToPgsql();
         break;
+      case DatabaseMigrationActionType.createTableIfNotExists:
+        out += '--\n';
+        out += '-- ACTION CREATE TABLE IF NOT EXISTS\n';
+        out += '--\n';
+        out += createTable!.tableCreationToPgsql(ifNotExists: true);
+        break;
       case DatabaseMigrationActionType.alterTable:
         out += '--\n';
         out += '-- ACTION ALTER TABLE\n';
@@ -482,6 +510,8 @@ extension MigrationActionPgSqlGeneration on DatabaseMigrationAction {
     var out = '';
 
     if (createTable == null) return out;
+
+    if (createTable!.foreignKeys.isEmpty) return out;
 
     out += '--\n';
     out += '-- ACTION CREATE FOREIGN KEY\n';
@@ -564,19 +594,41 @@ extension ColumnMigrationPgSqlGenerator on ColumnMigration {
 String _sqlStoreMigrationVersion({
   required String module,
   required String version,
-  required int priority,
 }) {
   String out = '';
   out += '--\n';
-  out += '-- MIGRATION VERSION\n';
+  out += '-- MIGRATION VERSION FOR $module\n';
   out += '--\n';
   out += 'INSERT INTO "serverpod_migrations" '
-      '("module", "version", "priority", "timestamp")\n';
-  out += '    VALUES (\'$module\', \'$version\', $priority, now())\n';
+      '("module", "version", "timestamp")\n';
+  out += '    VALUES (\'$module\', \'$version\', now())\n';
   out += '    ON CONFLICT ("module")\n';
-  out += '    DO UPDATE SET "version" = \'$version\', '
-      '"priority" = $priority;\n';
+  out += '    DO UPDATE SET "version" = \'$version\', "timestamp" = now();\n';
   out += '\n';
 
   return out;
+}
+
+String _sqlRemoveMigrationVersion(List<DatabaseMigrationVersion> modules) {
+  var moduleNames = modules.map((e) => "'${e.module}'").toList().join(', ');
+  String out = '';
+  out += '--\n';
+  out += '-- MIGRATION VERSION FOR $moduleNames\n';
+  out += '--\n';
+  out += 'DELETE FROM "serverpod_migrations"';
+  out += 'WHERE "module" IN ($moduleNames);';
+  out += '\n';
+
+  return out;
+}
+
+extension ColumnTypeComparison on ColumnType {
+  bool like(ColumnType other) {
+    // Integer and bigint are considered the same type.
+    if (this == ColumnType.integer || this == ColumnType.bigint) {
+      return other == ColumnType.integer || other == ColumnType.bigint;
+    }
+
+    return this == other;
+  }
 }

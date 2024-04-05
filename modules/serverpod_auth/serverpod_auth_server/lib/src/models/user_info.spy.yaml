@@ -1,0 +1,38 @@
+### Information about a user. The [UserInfo] should only be shared with the user
+### itself as it may contain sensitive information, such as the users email.
+### If you need to share a user's info with other users, use the
+### [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
+### toPublic() method.
+class: UserInfo
+table: serverpod_user_info
+fields:
+  ### Unique identifier of the user, may contain different information depending
+  ### on how the user was created.
+  userIdentifier: String
+
+  ### The first name of the user or the user's nickname.
+  userName: String
+
+  ### The full name of the user.
+  fullName: String?
+
+  ### The email of the user.
+  email: String?
+
+  ### The time when this user was created.
+  created: DateTime
+
+  ### A URL to the user's avatar.
+  imageUrl: String?
+
+  ### List of scopes that this user can access.
+  scopeNames: List<String>
+
+  ### True if the user is blocked from signing in.
+  blocked: bool
+indexes:
+  serverpod_user_info_user_identifier:
+    fields: userIdentifier
+    unique: true
+  serverpod_user_info_email:
+    fields: email

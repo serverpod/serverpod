@@ -155,6 +155,9 @@
           "include": "#params"
         },
         {
+          "include": "#comments"
+        },
+        {
           "include": "#basic_value_types"
         },
         {

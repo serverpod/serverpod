@@ -1,5 +1,0 @@
-class: DatabaseMigration
-fields:
-  actions: List<DatabaseMigrationAction>
-  warnings: List<DatabaseMigrationWarning>
-  priority: int

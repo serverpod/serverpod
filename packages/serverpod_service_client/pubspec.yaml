@@ -1,22 +1,27 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_service_client
-version: 1.1.0
+version: 2.0.0-alpha.2
 description: Generated client for the Severpod service protocol.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  serverpod_client: #1.1.0
-    path: ../serverpod_client
+  serverpod_client: 2.0.0-alpha.2
   meta: ^1.8.0
 
 dev_dependencies:
-  serverpod_lints: #1.1.0
+  serverpod_lints: 2.0.0-alpha.2
+
+dependency_overrides:
+  serverpod_client:
+    path: ../serverpod_client
+  serverpod_lints:
     path: ../serverpod_lints
+  serverpod_serialization:
+    path: ../serverpod_serialization

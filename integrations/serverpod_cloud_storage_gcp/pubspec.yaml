@@ -1,27 +1,37 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_cloud_storage_gcp
 description: Serverpod integration for Google Cloud Storage
-version: 1.1.0
+version: 2.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 
 dependencies:
-  serverpod: #1.1.0
-    path: ../../packages/serverpod
-  amazon_cognito_identity_dart_2: ^1.0.3
-  http: ^0.13.5
+  serverpod: 2.0.0-alpha.2
+  amazon_cognito_identity_dart_2: ^3.0.0
+  http: ">=0.13.0 <2.0.0"
   built_collection: ^5.1.1
   built_value: ^8.4.4
   path: ^1.8.2
-  xml2json: ^5.3.6
+  xml2json: ^6.0.0
 
 dev_dependencies:
-  lints: ^2.0.1
+  lints: ^3.0.0
+
+dependency_overrides:
+  serverpod:
+    path: ../../packages/serverpod
+  serverpod_client:
+    path: ../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client
+  serverpod_shared:
+    path: ../../packages/serverpod_shared

@@ -6,7 +6,6 @@ import 'dart:io';
 
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
-import 'auth_key_manager.dart';
 import 'serverpod_client_shared.dart';
 import 'serverpod_client_shared_private.dart';
 
@@ -20,36 +19,22 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
   /// Creates a new ServerpodClient.
   ServerpodClient(
-    String host,
-    SerializationManager serializationManager, {
-    dynamic context,
-    AuthenticationKeyManager? authenticationKeyManager,
-    bool logFailedCalls = true,
-  }) : super(
-          host,
-          serializationManager,
-          authenticationKeyManager: authenticationKeyManager,
-          logFailedCalls: logFailedCalls,
-        ) {
-    assert(context == null || context is SecurityContext);
+    super.host,
+    super.serializationManager, {
+    dynamic securityContext,
+    super.authenticationKeyManager,
+    super.logFailedCalls,
+    super.streamingConnectionTimeout,
+    super.connectionTimeout,
+    super.onFailedCall,
+    super.onSucceededCall,
+  }) {
+    assert(securityContext == null || securityContext is SecurityContext,
+        'Context must be of type SecurityContext');
 
     // Setup client
-    _httpClient = HttpClient(context: context);
-    _httpClient.connectionTimeout = const Duration(seconds: 20);
-    // TODO: Generate working certificates
-    _httpClient.badCertificateCallback =
-        ((X509Certificate cert, String host, int port) {
-//      print('Failed to verify server certificate');
-//      print('pem: ${cert.pem}');
-//      print('subject: ${cert.subject}');
-//      print('issuer: ${cert.issuer}');
-//      print('valid from: ${cert.startValidity}');
-//      print('valid to: ${cert.endValidity}');
-//      print('host: $host');
-//      print('port: $port');
-//      return false;
-      return true;
-    });
+    _httpClient = HttpClient(context: securityContext);
+    _httpClient.connectionTimeout = connectionTimeout;
   }
 
   Future<void> _initialize() async {
@@ -61,6 +46,11 @@ abstract class ServerpodClient extends ServerpodClientShared {
       String endpoint, String method, Map<String, dynamic> args) async {
     if (!_initialized) await _initialize();
 
+    var callContext = MethodCallContext(
+      endpointName: endpoint,
+      methodName: method,
+      arguments: args,
+    );
     try {
       var body =
           formatArgs(args, await authenticationKeyManager?.get(), method);
@@ -75,7 +65,8 @@ abstract class ServerpodClient extends ServerpodClientShared {
 
       await request.flush();
 
-      var response = await request.close(); // done instead of close() ?
+      var response = await request.close().timeout(connectionTimeout);
+
       var data = await _readResponse(response);
 
       if (response.statusCode != HttpStatus.ok) {
@@ -86,12 +77,18 @@ abstract class ServerpodClient extends ServerpodClientShared {
         );
       }
 
+      T result;
       if (T == getType<void>()) {
-        return returnVoid() as T;
+        result = returnVoid() as T;
       } else {
-        return parseData<T>(data, T, serializationManager);
+        result = parseData<T>(data, T, serializationManager);
       }
-    } catch (e) {
+
+      onSucceededCall?.call(callContext);
+      return result;
+    } catch (e, s) {
+      onFailedCall?.call(callContext, e, s);
+
       if (logFailedCalls) {
         print('Failed call: $endpoint.$method');
         print('$e');

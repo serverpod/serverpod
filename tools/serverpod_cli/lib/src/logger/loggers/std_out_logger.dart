@@ -16,7 +16,7 @@ class StdOutLogger extends Logger {
 
   Progress? trackedAnimationInProgress;
 
-  StdOutLogger(LogLevel logLevel) : super(logLevel);
+  StdOutLogger(super.logLevel);
 
   @override
   int? get wrapTextColumn => stdout.hasTerminal ? stdout.terminalColumns : null;
@@ -124,7 +124,16 @@ class StdOutLogger extends Logger {
 
     _stopAnimationInProgress();
 
-    if (newParagraph) _write('', LogLevel.info, newParagraph: newParagraph);
+    // Write an empty line before the progress message if a new paragraph is
+    // requested.
+    if (newParagraph) {
+      _write(
+        '',
+        LogLevel.info,
+        newParagraph: false,
+        newLine: true,
+      );
+    }
 
     var progress = Progress(message, stdout);
     trackedAnimationInProgress = progress;
@@ -250,7 +259,7 @@ class StdOutLogger extends Logger {
 /// The operates in the same way but filters out emojis not compatible with
 /// Windows.
 class WindowsStdOutLogger extends StdOutLogger {
-  WindowsStdOutLogger(LogLevel logLevel) : super(logLevel);
+  WindowsStdOutLogger(super.logLevel);
 
   @override
   void _write(

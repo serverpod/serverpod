@@ -1,5 +1,6 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 class TypeDefinitionBuilder {
   String _className;
@@ -8,7 +9,7 @@ class TypeDefinitionBuilder {
   String? _url;
   DartType? _dartType;
   bool _customClass;
-  bool _isEnum;
+  EnumSerialization? _serialized;
 
   TypeDefinitionBuilder()
       : _className = 'DefaultClassName',
@@ -16,8 +17,7 @@ class TypeDefinitionBuilder {
         _nullable = false,
         _url = null,
         _dartType = null,
-        _customClass = false,
-        _isEnum = false;
+        _customClass = false;
 
   TypeDefinitionBuilder withClassName(String className) {
     _className = className;
@@ -26,6 +26,41 @@ class TypeDefinitionBuilder {
 
   TypeDefinitionBuilder withGenerics(List<TypeDefinition> generics) {
     _generics = generics;
+    return this;
+  }
+
+  TypeDefinitionBuilder withFutureOf(
+    String className, [
+    bool nullable = false,
+  ]) {
+    _className = 'Future';
+    _generics.add(TypeDefinitionBuilder()
+        .withClassName(className)
+        .withNullable(nullable)
+        .build());
+    return this;
+  }
+
+  TypeDefinitionBuilder withListOf(String className, [bool nullable = false]) {
+    _className = 'List';
+    _generics.add(TypeDefinitionBuilder()
+        .withClassName(className)
+        .withNullable(nullable)
+        .build());
+    return this;
+  }
+
+  TypeDefinitionBuilder withMapOf(
+    String keyClassName,
+    String valueClassName, [
+    bool nullable = false,
+  ]) {
+    _className = 'Map';
+    _generics.add(TypeDefinitionBuilder().withClassName(keyClassName).build());
+    _generics.add(TypeDefinitionBuilder()
+        .withClassName(valueClassName)
+        .withNullable(nullable)
+        .build());
     return this;
   }
 
@@ -49,8 +84,8 @@ class TypeDefinitionBuilder {
     return this;
   }
 
-  TypeDefinitionBuilder withIsEnum(bool isEnum) {
-    _isEnum = isEnum;
+  TypeDefinitionBuilder withEnumSerialized(EnumSerialization serialized) {
+    _serialized = serialized;
     return this;
   }
 
@@ -62,7 +97,7 @@ class TypeDefinitionBuilder {
       url: _url,
       dartType: _dartType,
       customClass: _customClass,
-      isEnum: _isEnum,
+      serializeEnum: _serialized,
     );
   }
 }

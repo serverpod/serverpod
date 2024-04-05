@@ -4,18 +4,28 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database bindings for an email reset.
-class EmailReset extends _i1.TableRow {
-  EmailReset({
+abstract class EmailReset extends _i1.TableRow {
+  EmailReset._({
     int? id,
     required this.userId,
     required this.verificationCode,
     required this.expiration,
   }) : super(id);
+
+  factory EmailReset({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) = _EmailResetImpl;
 
   factory EmailReset.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -34,6 +44,8 @@ class EmailReset extends _i1.TableRow {
 
   static final t = EmailResetTable();
 
+  static const db = EmailResetRepository._();
+
   /// The id of the user that is resetting his/her password.
   int userId;
 
@@ -44,188 +56,115 @@ class EmailReset extends _i1.TableRow {
   DateTime expiration;
 
   @override
-  String get tableName => 'serverpod_email_reset';
+  _i1.Table get table => t;
 
+  EmailReset copyWith({
+    int? id,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'userId': userId,
-      'verificationCode': verificationCode,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'verificationCode': verificationCode,
-      'expiration': expiration,
+      'expiration': expiration.toJson(),
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'verificationCode':
-        verificationCode = value;
-        return;
-      case 'expiration':
-        expiration = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static EmailResetInclude include() {
+    return EmailResetInclude._();
   }
 
-  static Future<List<EmailReset>> find(
-    _i1.Session session, {
-    EmailResetExpressionBuilder? where,
+  static EmailResetIncludeList includeList({
+    _i1.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<EmailReset>(
-      where: where != null ? where(EmailReset.t) : null,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    EmailResetInclude? include,
+  }) {
+    return EmailResetIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(EmailReset.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<EmailReset?> findSingleRow(
-    _i1.Session session, {
-    EmailResetExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<EmailReset>(
-      where: where != null ? where(EmailReset.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<EmailReset?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<EmailReset>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required EmailResetExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<EmailReset>(
-      where: where(EmailReset.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    EmailReset row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    EmailReset row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    EmailReset row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    EmailResetExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<EmailReset>(
-      where: where != null ? where(EmailReset.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(EmailReset.t),
+      include: include,
     );
   }
 }
 
-typedef EmailResetExpressionBuilder = _i1.Expression Function(EmailResetTable);
+class _Undefined {}
+
+class _EmailResetImpl extends EmailReset {
+  _EmailResetImpl({
+    int? id,
+    required int userId,
+    required String verificationCode,
+    required DateTime expiration,
+  }) : super._(
+          id: id,
+          userId: userId,
+          verificationCode: verificationCode,
+          expiration: expiration,
+        );
+
+  @override
+  EmailReset copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? verificationCode,
+    DateTime? expiration,
+  }) {
+    return EmailReset(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      verificationCode: verificationCode ?? this.verificationCode,
+      expiration: expiration ?? this.expiration,
+    );
+  }
+}
 
 class EmailResetTable extends _i1.Table {
-  EmailResetTable() : super(tableName: 'serverpod_email_reset');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  EmailResetTable({super.tableRelation})
+      : super(tableName: 'serverpod_email_reset') {
+    userId = _i1.ColumnInt(
+      'userId',
+      this,
+    );
+    verificationCode = _i1.ColumnString(
+      'verificationCode',
+      this,
+    );
+    expiration = _i1.ColumnDateTime(
+      'expiration',
+      this,
+    );
+  }
 
   /// The id of the user that is resetting his/her password.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The verification code for the password reset.
-  final verificationCode = _i1.ColumnString('verificationCode');
+  late final _i1.ColumnString verificationCode;
 
   /// The expiration time for the password reset.
-  final expiration = _i1.ColumnDateTime('expiration');
+  late final _i1.ColumnDateTime expiration;
 
   @override
   List<_i1.Column> get columns => [
@@ -236,5 +175,181 @@ class EmailResetTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use EmailResetTable.t instead.')
-EmailResetTable tEmailReset = EmailResetTable();
+class EmailResetInclude extends _i1.IncludeObject {
+  EmailResetInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => EmailReset.t;
+}
+
+class EmailResetIncludeList extends _i1.IncludeList {
+  EmailResetIncludeList._({
+    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(EmailReset.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => EmailReset.t;
+}
+
+class EmailResetRepository {
+  const EmailResetRepository._();
+
+  Future<List<EmailReset>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<EmailResetTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<EmailReset>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<EmailReset>> insert(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<EmailReset>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> insertRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<EmailReset>> update(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.ColumnSelections<EmailResetTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<EmailReset>(
+      rows,
+      columns: columns?.call(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<EmailReset> updateRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.ColumnSelections<EmailResetTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<EmailReset>(
+      row,
+      columns: columns?.call(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<EmailReset> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<EmailReset>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    EmailReset row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<EmailReset>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<EmailResetTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<EmailReset>(
+      where: where(EmailReset.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<EmailReset>(
+      where: where?.call(EmailReset.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

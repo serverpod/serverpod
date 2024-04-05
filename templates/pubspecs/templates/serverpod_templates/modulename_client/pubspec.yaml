@@ -1,0 +1,15 @@
+name: modulename_client
+description: Starting point for a Serverpod module client.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  serverpod_client: VERSION
+
+dependency_overrides: #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_client: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_client #--CONDITIONALLY_REMOVE_LINE--#
+  serverpod_serialization: #--CONDITIONALLY_REMOVE_LINE--#
+    path: ../../../packages/serverpod_serialization #--CONDITIONALLY_REMOVE_LINE--#

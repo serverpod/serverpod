@@ -1,14 +1,13 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_cli
-version: 1.1.0
+version: 2.0.0-alpha.2
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   archive: ^3.3.7
@@ -16,8 +15,8 @@ dependencies:
   ci: ^0.1.0
   code_builder: ^4.4.0
   dart_style: ^2.3.0
-  http: ^0.13.5
-  intl: ^0.17.0
+  http: ">=0.13.0 <2.0.0"
+  intl: ^0.18.0
   recase: ^4.1.0
   built_collection: ^5.1.1
   package_config: ^2.1.0
@@ -25,26 +24,37 @@ dependencies:
   source_span: ^1.10.0
   super_string: ^1.0.3
   watcher: ^1.0.2
-  analyzer: ^5.13.0
+  analyzer: ^6.0.0
   path: ^1.8.2
   pub_api_client: ^2.4.0
-  uuid: ^3.0.7
+  uuid: ^4.0.0
   yaml: ^3.1.1
-  serverpod_shared: #1.1.0
-    path: ../../packages/serverpod_shared
-  serverpod_service_client: #1.1.0
-    path: ../../packages/serverpod_service_client
+  serverpod_shared: 2.0.0-alpha.2
+  serverpod_serialization: 2.0.0-alpha.2
+  serverpod_service_client: 2.0.0-alpha.2
   async: ^2.11.0
   meta: ^1.8.0
   json_rpc_2: ^3.0.2
   stream_channel: ^2.1.1
-  lsp_server: ^0.2.0
+  lsp_server: ^0.3.0
   pub_semver: ^2.1.4
 
+
 dev_dependencies:
-  serverpod_lints: #1.1.0
-    path: ../../packages/serverpod_lints
+  serverpod_lints: 2.0.0-alpha.2
   test: ^1.24.2
+
+dependency_overrides:
+  serverpod_shared:
+    path: ../../packages/serverpod_shared
+  serverpod_serialization:
+    path: ../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client
+  serverpod_lints:
+    path: ../../packages/serverpod_lints
+  serverpod_client:
+    path: ../../packages/serverpod_client
 
 executables:
   serverpod: serverpod_cli

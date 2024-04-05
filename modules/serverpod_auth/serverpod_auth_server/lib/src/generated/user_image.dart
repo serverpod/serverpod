@@ -4,18 +4,27 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 
 /// Database bindings for a user image.
-class UserImage extends _i1.TableRow {
-  UserImage({
+abstract class UserImage extends _i1.TableRow {
+  UserImage._({
     int? id,
     required this.userId,
     required this.version,
     required this.url,
   }) : super(id);
+
+  factory UserImage({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) = _UserImageImpl;
 
   factory UserImage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -33,6 +42,8 @@ class UserImage extends _i1.TableRow {
 
   static final t = UserImageTable();
 
+  static const db = UserImageRepository._();
+
   /// The id of the user.
   int userId;
 
@@ -43,22 +54,18 @@ class UserImage extends _i1.TableRow {
   String url;
 
   @override
-  String get tableName => 'serverpod_user_image';
+  _i1.Table get table => t;
 
+  UserImage copyWith({
+    int? id,
+    int? userId,
+    int? version,
+    String? url,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'userId': userId,
-      'version': version,
-      'url': url,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'version': version,
       'url': url,
@@ -68,163 +75,94 @@ class UserImage extends _i1.TableRow {
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'version': version,
       'url': url,
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'version':
-        version = value;
-        return;
-      case 'url':
-        url = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static UserImageInclude include() {
+    return UserImageInclude._();
   }
 
-  static Future<List<UserImage>> find(
-    _i1.Session session, {
-    UserImageExpressionBuilder? where,
+  static UserImageIncludeList includeList({
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
+    UserImageInclude? include,
+  }) {
+    return UserImageIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(UserImage.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<UserImage?> findSingleRow(
-    _i1.Session session, {
-    UserImageExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<UserImage?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<UserImage>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required UserImageExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<UserImage>(
-      where: where(UserImage.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    UserImage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    UserImage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    UserImage row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    UserImageExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<UserImage>(
-      where: where != null ? where(UserImage.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(UserImage.t),
+      include: include,
     );
   }
 }
 
-typedef UserImageExpressionBuilder = _i1.Expression Function(UserImageTable);
+class _Undefined {}
+
+class _UserImageImpl extends UserImage {
+  _UserImageImpl({
+    int? id,
+    required int userId,
+    required int version,
+    required String url,
+  }) : super._(
+          id: id,
+          userId: userId,
+          version: version,
+          url: url,
+        );
+
+  @override
+  UserImage copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    int? version,
+    String? url,
+  }) {
+    return UserImage(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      version: version ?? this.version,
+      url: url ?? this.url,
+    );
+  }
+}
 
 class UserImageTable extends _i1.Table {
-  UserImageTable() : super(tableName: 'serverpod_user_image');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  UserImageTable({super.tableRelation})
+      : super(tableName: 'serverpod_user_image') {
+    userId = _i1.ColumnInt(
+      'userId',
+      this,
+    );
+    version = _i1.ColumnInt(
+      'version',
+      this,
+    );
+    url = _i1.ColumnString(
+      'url',
+      this,
+    );
+  }
 
   /// The id of the user.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// Version of the image. Increased by one for every uploaded image.
-  final version = _i1.ColumnInt('version');
+  late final _i1.ColumnInt version;
 
   /// The URL to the image.
-  final url = _i1.ColumnString('url');
+  late final _i1.ColumnString url;
 
   @override
   List<_i1.Column> get columns => [
@@ -235,5 +173,181 @@ class UserImageTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use UserImageTable.t instead.')
-UserImageTable tUserImage = UserImageTable();
+class UserImageInclude extends _i1.IncludeObject {
+  UserImageInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => UserImage.t;
+}
+
+class UserImageIncludeList extends _i1.IncludeList {
+  UserImageIncludeList._({
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(UserImage.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => UserImage.t;
+}
+
+class UserImageRepository {
+  const UserImageRepository._();
+
+  Future<List<UserImage>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<UserImage>(
+      where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<UserImageTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<UserImageTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<UserImage>(
+      where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<UserImage>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<UserImage>> insert(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<UserImage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage> insertRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<UserImage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<UserImage>> update(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.ColumnSelections<UserImageTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<UserImage>(
+      rows,
+      columns: columns?.call(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<UserImage> updateRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.ColumnSelections<UserImageTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<UserImage>(
+      row,
+      columns: columns?.call(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<UserImage> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<UserImage>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    UserImage row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<UserImage>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<UserImageTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<UserImage>(
+      where: where(UserImage.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<UserImageTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<UserImage>(
+      where: where?.call(UserImage.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

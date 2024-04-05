@@ -1,6 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_email_flutter/src/auth.dart';
 
 const _defaultMaxPasswordLength = 128;
@@ -30,12 +30,12 @@ class SignInWithEmailDialog extends StatefulWidget {
 
   /// Creates a new sign in with email dialog.
   const SignInWithEmailDialog({
-    Key? key,
+    super.key,
     required this.caller,
     required this.onSignedIn,
     this.maxPasswordLength = _defaultMaxPasswordLength,
     this.minPasswordLength = _defaultMinPasswordLength,
-  }) : super(key: key);
+  });
 
   @override
   SignInWithEmailDialogState createState() => SignInWithEmailDialogState();

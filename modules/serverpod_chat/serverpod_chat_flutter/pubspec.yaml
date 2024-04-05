@@ -1,37 +1,46 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
-publish_to: none
 
 name: serverpod_chat_flutter
 description: Flutter widgets for the Serverpod chat module.
-version: 1.1.0
+version: 2.0.0-alpha.2
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
-  flutter: ">=3.7.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  file_picker: ^5.2.10
-  intl: ^0.17.0
+  file_picker: ^6.0.0
+  intl: ^0.18.0
   url_launcher: ^6.1.10
   path: ^1.8.2
-  serverpod_auth_client: #1.1.0
-    path: ../../serverpod_auth/serverpod_auth_client
-  serverpod_chat_client: #1.1.0
-    path: ../serverpod_chat_client
-  serverpod_auth_shared_flutter: #1.1.0
-    path: ../../serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_auth_client: 2.0.0-alpha.2
+  serverpod_chat_client: 2.0.0-alpha.2
+  serverpod_auth_shared_flutter: 2.0.0-alpha.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: #1.1.0
+  serverpod_lints: 2.0.0-alpha.2
+  mocktail: ^1.0.0
+
+dependency_overrides:
+  serverpod_auth_client:
+    path: ../../serverpod_auth/serverpod_auth_client
+  serverpod_chat_client:
+    path: ../serverpod_chat_client
+  serverpod_auth_shared_flutter:
+    path: ../../serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_lints:
     path: ../../../packages/serverpod_lints
-  mocktail: ^0.3.0
+  serverpod_client:
+    path: ../../../packages/serverpod_client
+  serverpod_serialization:
+    path: ../../../packages/serverpod_serialization
 
 flutter:

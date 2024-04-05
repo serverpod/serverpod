@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:serverpod_auth_client/module.dart';
+import 'package:serverpod_auth_client/serverpod_auth_client.dart';
 import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 
@@ -33,9 +34,16 @@ Future<UserInfo?> signInWithFirebase({
                     var serverResponse =
                         await caller.firebase.authenticate(idToken!);
 
-                    if (!serverResponse.success &&
-                        serverResponse.userInfo != null) {
+                    if (!serverResponse.success) {
                       // Failed to sign in.
+                      if (kDebugMode) {
+                        print(
+                          'serverpod_auth_firebase: Failed to authenticate '
+                          'with Serverpod backend: '
+                          '${serverResponse.failReason ?? 'reason unknown'}'
+                          '. Aborting.',
+                        );
+                      }
                       completer.complete(null);
                       return;
                     }
@@ -64,8 +72,6 @@ Future<UserInfo?> signInWithFirebase({
   );
 
   var result = await completer.future;
-  // TODO: Fixme?
-  // ignore: use_build_context_synchronously
-  Navigator.of(context).pop();
+
   return result;
 }

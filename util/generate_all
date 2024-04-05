@@ -6,6 +6,9 @@ if [ ! -f tests/docker/tests_single_server/docker-compose.yml ]; then
     exit 1
 fi
 
+# Makes script exit on first non-zero error code
+set -e
+
 BASE=`pwd`
 CLI_DIR=$BASE/tools/serverpod_cli
 CLI=$CLI_DIR/bin/serverpod_cli.dart
@@ -16,41 +19,45 @@ dart pub get
 
 echo "serverpod"
 cd $BASE/packages/serverpod
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 echo "examples/chat/chat_server"
 cd $BASE/examples/chat/chat_server
-dart $CLI generate
+dart $CLI generate --no-analytics
+
+echo "examples/auth_example/auth_example_server"
+cd $BASE/examples/auth_example/auth_example_server
+dart $CLI generate --no-analytics
 
 # Templates
 
 echo "\nmodulename_server"
 cd $BASE/templates/serverpod_templates/modulename_server
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 echo "\nprojectname_server"
 cd $BASE/templates/serverpod_templates/projectname_server
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 # Auth module
 
 echo "\nserverpod_auth_server"
 cd $BASE/modules/serverpod_auth/serverpod_auth_server
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 # Chat module
 
 echo "\nserverpod_chat_server"
 cd $BASE/modules/serverpod_chat/serverpod_chat_server
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 
 # Tests
 
 echo "\ntests/serverpod_test_server"
 cd $BASE/tests/serverpod_test_server
-dart $CLI generate
+dart $CLI generate --no-analytics
 
 echo "\ntests/serverpod_test_module/serverpod_test_module_server"
 cd $BASE/tests/serverpod_test_module/serverpod_test_module_server
-dart $CLI generate
+dart $CLI generate --no-analytics

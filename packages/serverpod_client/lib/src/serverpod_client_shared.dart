@@ -9,7 +9,7 @@ typedef VoidCallback = void Function();
 
 /// Status of the streaming connection.
 enum StreamingConnectionStatus {
-  /// Streming connection is live.
+  /// Streaming connection is live.
   connected,
 
   /// Streaming connection is connecting.
@@ -20,6 +20,25 @@ enum StreamingConnectionStatus {
 
   /// Streaming connection is waiting to make a new connection attempt.
   waitingToRetry,
+}
+
+/// Context for a method call.
+class MethodCallContext {
+  /// Name of the called endpoint.
+  final String endpointName;
+
+  /// Name of the called endpoint method.
+  final String methodName;
+
+  /// Arguments passed to the method.
+  final Map<String, dynamic> arguments;
+
+  /// Creates a new [MethodCallContext].
+  const MethodCallContext({
+    required this.endpointName,
+    required this.methodName,
+    required this.arguments,
+  });
 }
 
 /// Superclass with shared methods for handling communication with the server.
@@ -94,6 +113,20 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// received within the timeout duration the socket will be closed.
   final Duration streamingConnectionTimeout;
 
+  /// Timeout when calling a server endpoint. If no response has been received, defaults to 20 seconds.
+  Duration connectionTimeout;
+
+  /// Callback when any call to the server fails or an exception is
+  /// thrown.
+  final void Function(
+    MethodCallContext callContext,
+    Object error,
+    StackTrace stackTrace,
+  )? onFailedCall;
+
+  /// Callback when any call to the server succeeds.
+  final void Function(MethodCallContext callContext)? onSucceededCall;
+
   bool _firstMessageReceived = false;
 
   ConnectivityMonitor? _connectivityMonitor;
@@ -120,11 +153,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
   ServerpodClientShared(
     this.host,
     this.serializationManager, {
-    dynamic context,
-    this.authenticationKeyManager,
+    dynamic securityContext,
+    required this.authenticationKeyManager,
     this.logFailedCalls = true,
-    this.streamingConnectionTimeout = const Duration(seconds: 5),
-  }) {
+    required Duration? streamingConnectionTimeout,
+    required Duration? connectionTimeout,
+    this.onFailedCall,
+    this.onSucceededCall,
+  })  : connectionTimeout = connectionTimeout ?? const Duration(seconds: 20),
+        streamingConnectionTimeout =
+            streamingConnectionTimeout ?? const Duration(seconds: 5) {
     assert(host.endsWith('/'),
         'host must end with a slash, eg: https://example.com/');
     assert(host.startsWith('http://') || host.startsWith('https://'),
@@ -146,16 +184,16 @@ abstract class ServerpodClientShared extends EndpointCaller {
 
     String endpoint = data['endpoint'];
     Map<String, dynamic> objectData = data['object'];
-    var entity = serializationManager.deserializeByClassName(objectData);
-    if (entity == null) {
-      throw const ServerpodClientException('serializable entity is null', 0);
+    var model = serializationManager.deserializeByClassName(objectData);
+    if (model == null) {
+      throw const ServerpodClientException('serializable model is null', 0);
     }
 
     var endpointRef = _consolidatedEndpointRefLookup[endpoint];
     if (endpointRef == null) {
       throw ServerpodClientException('Endpoint $endpoint was not found', 0);
     }
-    endpointRef._streamController.sink.add(entity);
+    endpointRef._streamController.sink.add(model);
   }
 
   /// Sends a message to the servers WebSocket stream. Typically, this method
@@ -198,12 +236,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   void _cancelConnectionTimer() {
     _connectionTimer?.cancel();
     _connectionTimer = null;
-  }
-
-  /// Open a streaming connection to the server.
-  @Deprecated('Renamed to openStreamingConnection')
-  Future<void> connectWebSocket() async {
-    await openStreamingConnection();
   }
 
   /// Open a streaming connection to the server.
@@ -263,18 +295,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     await Future.delayed(const Duration(milliseconds: 100));
   }
 
-  /// Closes the current web socket connection (if open), then connects again.
-  @Deprecated('Use closeStreamingConnection / openStreamingConnection instead.')
-  Future<void> reconnectWebSocket() async {
-    if (_webSocket == null) return;
-
-    await _webSocket?.sink.close();
-    _webSocket = null;
-    _cancelConnectionTimer();
-
-    await openStreamingConnection();
-  }
-
   Future<void> _listenToWebSocketStream() async {
     if (_webSocket == null) return;
 
@@ -295,19 +315,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     _notifyWebSocketConnectionStatusListeners();
   }
 
-  /// Adds a callback for when the [isWebSocketConnected] property is
-  /// changed.
-  @Deprecated('Use addStreamingConnectionStatusListener instead.')
-  void addWebSocketConnectionStatusListener(VoidCallback listener) {
-    addStreamingConnectionStatusListener(listener);
-  }
-
-  /// Removes a connection status listener.
-  @Deprecated('Use removeStreamingConnectionStatusListener instead.')
-  void removeWebSocketConnectionStatusListener(VoidCallback listener) {
-    removeStreamingConnectionStatusListener(listener);
-  }
-
   /// Adds a callback for when the [streamingConnectionStatus] property is
   /// changed.
   void addStreamingConnectionStatusListener(VoidCallback listener) {
@@ -323,12 +330,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
     for (var listener in _websocketConnectionStatusListeners) {
       listener();
     }
-  }
-
-  /// Returns true if the web socket is connected.
-  @Deprecated('Use streamingConnectionStatus instead.')
-  bool get isWebSocketConnected {
-    return _webSocket != null;
   }
 
   /// Returns the current status of the streaming connection. It can be one of

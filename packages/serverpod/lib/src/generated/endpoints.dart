@@ -4,6 +4,8 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
@@ -185,15 +187,15 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['insights'] as _i2.InsightsEndpoint)
                   .hotReload(session),
         ),
-        'getTargetDatabaseDefinition': _i1.MethodConnector(
-          name: 'getTargetDatabaseDefinition',
+        'getTargetTableDefinition': _i1.MethodConnector(
+          name: 'getTargetTableDefinition',
           params: {},
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
               (endpoints['insights'] as _i2.InsightsEndpoint)
-                  .getTargetDatabaseDefinition(session),
+                  .getTargetTableDefinition(session),
         ),
         'getLiveDatabaseDefinition': _i1.MethodConnector(
           name: 'getLiveDatabaseDefinition',
@@ -305,6 +307,24 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
             session,
             params['sql'],
+          ),
+        ),
+        'fetchFile': _i1.MethodConnector(
+          name: 'fetchFile',
+          params: {
+            'path': _i1.ParameterDescription(
+              name: 'path',
+              type: _i1.getType<String>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['insights'] as _i2.InsightsEndpoint).fetchFile(
+            session,
+            params['path'],
           ),
         ),
       },

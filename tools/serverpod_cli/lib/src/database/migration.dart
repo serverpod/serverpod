@@ -1,22 +1,21 @@
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'extensions.dart';
 
 DatabaseMigration generateDatabaseMigration({
-  required DatabaseDefinition srcDatabase,
-  required DatabaseDefinition dstDatabase,
-  required List<DatabaseMigrationWarning> warnings,
-  required int priority,
+  required DatabaseDefinition databaseSource,
+  required DatabaseDefinition databaseTarget,
 }) {
+  var warnings = <DatabaseMigrationWarning>[];
   var actions = <DatabaseMigrationAction>[];
 
   // Find deleted tables
   var deleteTables = <String>[];
-  for (var srcTable in srcDatabase.tables) {
-    if (srcTable.name == 'serverpod_migrations') {
-      continue;
-    }
+  var sourceTables = databaseSource.tables.where((table) => table.isManaged);
+  var targetTables = databaseTarget.tables.where((table) => table.isManaged);
 
-    if (!dstDatabase.containsTableNamed(srcTable.name)) {
+  for (var srcTable in sourceTables) {
+    if (!databaseTarget.containsTableNamed(srcTable.name)) {
       deleteTables.add(srcTable.name);
     }
   }
@@ -30,7 +29,7 @@ DatabaseMigration generateDatabaseMigration({
     warnings.add(
       DatabaseMigrationWarning(
         type: DatabaseMigrationWarningType.tableDropped,
-        message: 'Table $tableName was dropped.',
+        message: 'Table "$tableName" will be dropped.',
         table: tableName,
         destrucive: true,
         columns: [],
@@ -39,13 +38,19 @@ DatabaseMigration generateDatabaseMigration({
   }
 
   // Find added or modified tables
-  for (var dstTable in dstDatabase.tables) {
-    var srcTable = srcDatabase.findTableNamed(dstTable.name);
-    if (srcTable == null) {
+  for (var dstTable in targetTables) {
+    var srcTable = databaseSource.tables.cast<TableDefinition?>().firstWhere(
+        (table) => table?.name == dstTable.name,
+        orElse: () => null);
+
+    if (srcTable == null || srcTable.managed == false) {
       // Added table
+
       actions.add(
         DatabaseMigrationAction(
-          type: DatabaseMigrationActionType.createTable,
+          type: srcTable == null
+              ? DatabaseMigrationActionType.createTable
+              : DatabaseMigrationActionType.createTableIfNotExists,
           createTable: dstTable,
         ),
       );
@@ -66,7 +71,6 @@ DatabaseMigration generateDatabaseMigration({
             createTable: dstTable,
           ),
         );
-        continue;
       } else if (!diff.isEmpty) {
         // Table was modified
         // TODO: Check if table can be modified
@@ -83,8 +87,8 @@ DatabaseMigration generateDatabaseMigration({
 
   return DatabaseMigration(
     actions: actions,
-    warnings: [],
-    priority: priority,
+    warnings: warnings,
+    migrationApiVersion: DatabaseConstants.migrationApiVersion,
   );
 }
 
@@ -111,8 +115,8 @@ TableMigration? generateTableMigration(
           type: DatabaseMigrationWarningType.columnDropped,
           table: srcTable.name,
           columns: [srcColumn.name],
-          message: 'Column ${srcColumn.name} of table ${srcTable.name} was '
-              'dropped.',
+          message: 'Column "${srcColumn.name}" of table "${srcTable.name}" '
+              'will be dropped.',
           destrucive: true,
         ),
       );
@@ -150,7 +154,7 @@ TableMigration? generateTableMigration(
               type: DatabaseMigrationWarningType.notNullAdded,
               table: srcTable.name,
               columns: [srcColumn.name],
-              message: 'Column ${srcColumn.name} of table ${srcTable.name} was '
+              message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
                   'modified to be not null. If there are existing rows with '
                   'null values, this migration will fail.',
               destrucive: false,
@@ -166,9 +170,8 @@ TableMigration? generateTableMigration(
             type: DatabaseMigrationWarningType.columnDropped,
             table: srcTable.name,
             columns: [srcColumn.name],
-            message:
-                'Column ${srcColumn.name} of table ${srcTable.name} was modified '
-                'in a way that it must be deleted and recreated.',
+            message: 'Column ${srcColumn.name} of table ${srcTable.name} is '
+                'modified in a way that it must be deleted and recreated.',
             destrucive: true,
           ),
         );
@@ -211,8 +214,8 @@ TableMigration? generateTableMigration(
           type: DatabaseMigrationWarningType.uniqueIndexCreated,
           table: srcTable.name,
           columns: index.elements.map((e) => e.definition).toList(),
-          message: 'Unique index ${index.indexName} was added to table '
-              '${srcTable.name}. If there are existing rows with duplicate '
+          message: 'Unique index "${index.indexName}" is added to table '
+              '"${srcTable.name}". If there are existing rows with duplicate '
               'values, this migration will fail.',
           destrucive: false,
         ),
@@ -257,9 +260,9 @@ TableMigration? generateTableMigration(
           table: srcTable.name,
           columns: [column.name],
           message:
-              'One or more columns were added to table ${srcTable.name} that '
-              'cannot be added in a table migration. The complete table will be '
-              'deleted and recreated.',
+              'One or more columns are added to table "${srcTable.name}" which '
+              'cannot be added in a table migration. The complete table will '
+              'be deleted and recreated.',
           destrucive: true,
         ),
       );

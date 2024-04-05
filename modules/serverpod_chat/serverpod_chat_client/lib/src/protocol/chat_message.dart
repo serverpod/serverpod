@@ -4,15 +4,17 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_client/module.dart' as _i2;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 import 'protocol.dart' as _i3;
 
 /// A chat message.
-class ChatMessage extends _i1.SerializableEntity {
-  ChatMessage({
+abstract class ChatMessage extends _i1.SerializableEntity {
+  ChatMessage._({
     this.id,
     required this.channel,
     required this.message,
@@ -24,6 +26,19 @@ class ChatMessage extends _i1.SerializableEntity {
     this.sent,
     this.attachments,
   });
+
+  factory ChatMessage({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) = _ChatMessageImpl;
 
   factory ChatMessage.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -84,19 +99,92 @@ class ChatMessage extends _i1.SerializableEntity {
   /// List of attachments associated with this message.
   List<_i3.ChatMessageAttachment>? attachments;
 
+  ChatMessage copyWith({
+    int? id,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    _i2.UserInfoPublic? senderInfo,
+    bool? removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'channel': channel,
       'message': message,
-      'time': time,
+      'time': time.toJson(),
       'sender': sender,
-      'senderInfo': senderInfo,
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
-      'clientMessageId': clientMessageId,
-      'sent': sent,
-      'attachments': attachments,
+      if (clientMessageId != null) 'clientMessageId': clientMessageId,
+      if (sent != null) 'sent': sent,
+      if (attachments != null)
+        'attachments': attachments?.toJson(valueToJson: (v) => v.toJson()),
     };
+  }
+}
+
+class _Undefined {}
+
+class _ChatMessageImpl extends ChatMessage {
+  _ChatMessageImpl({
+    int? id,
+    required String channel,
+    required String message,
+    required DateTime time,
+    required int sender,
+    _i2.UserInfoPublic? senderInfo,
+    required bool removed,
+    int? clientMessageId,
+    bool? sent,
+    List<_i3.ChatMessageAttachment>? attachments,
+  }) : super._(
+          id: id,
+          channel: channel,
+          message: message,
+          time: time,
+          sender: sender,
+          senderInfo: senderInfo,
+          removed: removed,
+          clientMessageId: clientMessageId,
+          sent: sent,
+          attachments: attachments,
+        );
+
+  @override
+  ChatMessage copyWith({
+    Object? id = _Undefined,
+    String? channel,
+    String? message,
+    DateTime? time,
+    int? sender,
+    Object? senderInfo = _Undefined,
+    bool? removed,
+    Object? clientMessageId = _Undefined,
+    Object? sent = _Undefined,
+    Object? attachments = _Undefined,
+  }) {
+    return ChatMessage(
+      id: id is int? ? id : this.id,
+      channel: channel ?? this.channel,
+      message: message ?? this.message,
+      time: time ?? this.time,
+      sender: sender ?? this.sender,
+      senderInfo: senderInfo is _i2.UserInfoPublic?
+          ? senderInfo
+          : this.senderInfo?.copyWith(),
+      removed: removed ?? this.removed,
+      clientMessageId:
+          clientMessageId is int? ? clientMessageId : this.clientMessageId,
+      sent: sent is bool? ? sent : this.sent,
+      attachments: attachments is List<_i3.ChatMessageAttachment>?
+          ? attachments
+          : this.attachments?.clone(),
+    );
   }
 }

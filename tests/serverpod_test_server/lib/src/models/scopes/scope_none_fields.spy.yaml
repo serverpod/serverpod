@@ -1,0 +1,4 @@
+class: ScopeNoneFields
+table: scope_none_fields
+fields:
+  name: String?, scope=none

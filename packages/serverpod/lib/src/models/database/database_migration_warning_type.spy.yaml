@@ -1,0 +1,7 @@
+enum: DatabaseMigrationWarningType
+serialized: byName
+values:
+ - tableDropped
+ - columnDropped
+ - notNullAdded
+ - uniqueIndexCreated

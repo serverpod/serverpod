@@ -3,14 +3,17 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
+import 'package:serverpod_cli/src/database/create_definition.dart';
+import 'package:serverpod_cli/src/migrations/migration_registry.dart';
+import 'package:serverpod_cli/src/util/locate_modules.dart';
+import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
-
-const _fileNameMigrationJson = 'migration.json';
-const _fileNameDefinitionJson = 'definition.json';
-const _fileNameMigrationSql = 'migration.sql';
-const _fileNameDefinitionSql = 'definition.sql';
 
 class MigrationGenerator {
   MigrationGenerator({
@@ -22,7 +25,7 @@ class MigrationGenerator {
 
   static String createVersionName(String? tag) {
     var now = DateTime.now().toUtc();
-    var fmt = DateFormat('yyyyMMddHHmmss');
+    var fmt = DateFormat('yyyyMMddHHmmssSSS');
     var versionName = fmt.format(now);
     if (tag != null) {
       versionName += '-$tag';
@@ -30,106 +33,75 @@ class MigrationGenerator {
     return versionName;
   }
 
-  Directory get migrationsBaseDirectory =>
-      Directory(path.join(directory.path, 'migrations'));
-
-  Directory get migrationsProjectDirectory =>
-      Directory(path.join(directory.path, 'migrations', projectName));
-
-  List<String> getMigrationModules() {
-    if (!migrationsBaseDirectory.existsSync()) {
-      return [];
-    }
-    var names = <String>[];
-    var fileEntities = migrationsBaseDirectory.listSync();
-    for (var entity in fileEntities) {
-      if (entity is Directory) {
-        names.add(path.basename(entity.path));
-      }
-    }
-    names.sort();
-    return names;
-  }
-
-  List<String> getMigrationVersions({
-    String? module,
-  }) {
-    var migrationsDirectory = Directory(
-      path.join(
-        migrationsBaseDirectory.path,
-        module ?? projectName,
-      ),
-    );
-    if (!migrationsDirectory.existsSync()) {
-      return [];
-    }
-    var versions = <String>[];
-    var fileEntities = migrationsDirectory.listSync();
-    for (var entity in fileEntities) {
-      if (entity is Directory) {
-        versions.add(path.basename(entity.path));
-      }
-    }
-    versions.sort();
-    return versions;
-  }
-
-  Future<MigrationVersion> getMigrationVersion(
-    String versionName, {
-    String? module,
-  }) async {
-    var migrationsDirectory = Directory(
-      path.join(
-        migrationsBaseDirectory.path,
-        module ?? projectName,
-      ),
-    );
-    return await MigrationVersion.load(
-      versionName: versionName,
-      migrationsDirectory: migrationsDirectory,
-    );
-  }
-
-  Future<MigrationVersion?> getLatestMigrationVersion({
-    String? module,
-  }) async {
-    var versions = getMigrationVersions(module: module);
-    if (versions.isEmpty) {
-      return null;
-    }
-    return await getMigrationVersion(
-      versions.last,
-      module: module,
-    );
-  }
-
+  /// Creates a new migration version.
+  /// If [tag] is specified, the migration will be tagged with the given name.
+  /// If [force] is true, the migration will be created even if there are
+  /// warnings.
+  /// If [write] is false, the migration will not be written to disk.
+  ///
+  /// Returns the migration version, or null if no migration was created.
+  ///
+  /// Throws [MigrationVersionLoadException] if the a migration version
+  /// could not be loaded.
+  /// Throws [GenerateMigrationDatabaseDefinitionException] if the database
+  /// definition could not be created from project models.
+  /// Throws [MigrationVersionAlreadyExistsException] if the migration version
+  /// already exists.
   Future<MigrationVersion?> createMigration({
     String? tag,
     required bool force,
-    required int priority,
+    required GeneratorConfig config,
+    bool write = true,
   }) async {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+
+    var databaseDefinitionLatest = await _getSourceDatabaseDefinition(
+      projectName,
+      migrationRegistry.getLatest(),
+    );
+
+    var models = await ModelHelper.loadProjectYamlModelsFromDisk(
+      config,
+    );
+    var modelDefinitions = StatefulAnalyzer(config, models, (uri, collector) {
+      collector.printErrors();
+
+      if (collector.hasSeverErrors) {
+        throw GenerateMigrationDatabaseDefinitionException();
+      }
+    }).validateAll();
+
+    var databaseDefinitionProject = createDatabaseDefinitionFromModels(
+      modelDefinitions,
+      config.name,
+      config.modulesAll,
+    );
+
+    var databaseDefinitions = await _loadModuleDatabaseDefinitions(
+      config.modulesDependent,
+      directory,
+    );
+
     var versionName = createVersionName(tag);
-
-    var latest = await getLatestMigrationVersion();
-
-    var srcDatabase = latest?.databaseDefinition ??
-        DatabaseDefinition(
-          tables: [],
-          priority: priority,
-        );
-    var dstDatabase = await generateDatabaseDefinition(
-      directory: directory,
-      priority: priority,
+    var nextMigrationVersion = DatabaseMigrationVersion(
+      module: projectName,
+      version: versionName,
     );
 
-    var warnings = <DatabaseMigrationWarning>[];
+    var databaseDefinitionNext = _mergeDatabaseDefinitions(
+      databaseDefinitionProject,
+      databaseDefinitions,
+      nextMigrationVersion,
+    );
+
     var migration = generateDatabaseMigration(
-      srcDatabase: srcDatabase,
-      dstDatabase: dstDatabase,
-      warnings: warnings,
-      priority: priority,
+      databaseSource: databaseDefinitionLatest,
+      databaseTarget: databaseDefinitionNext,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
 
     if (warnings.isNotEmpty && !force) {
@@ -137,85 +109,286 @@ class MigrationGenerator {
       return null;
     }
 
-    if (migration.isEmpty) {
-      log.info('No changes detected.');
+    if (migration.isEmpty && !force) {
+      log.info(
+        'No changes detected. Use --force to create an empty migration.',
+      );
       return null;
     }
 
     var migrationVersion = MigrationVersion(
-      migrationsDirectory: migrationsProjectDirectory,
+      moduleName: projectName,
+      projectDirectory: directory,
       versionName: versionName,
       migration: migration,
-      databaseDefinition: dstDatabase,
+      databaseDefinitionProject: databaseDefinitionProject,
+      databaseDefinitionFull: databaseDefinitionNext,
     );
 
-    await migrationVersion.write(module: projectName);
+    if (write) {
+      var removedModules = _removedModulesDiff(
+        databaseDefinitionLatest.installedModules,
+        databaseDefinitionNext.installedModules,
+      );
+
+      await migrationVersion.write(
+        installedModules: databaseDefinitionNext.installedModules,
+        removedModules: removedModules,
+      );
+      migrationRegistry.add(versionName);
+      await migrationRegistry.write();
+    }
 
     return migrationVersion;
   }
 
-  Future<String?> repairMigration({
+  Future<Iterable<DatabaseDefinition>> _loadModuleDatabaseDefinitions(
+    List<ModuleConfig> modules,
+    Directory projectFolder,
+  ) async {
+    var versions = await _loadMigrationVersionsFromModules(
+      modules,
+      directory: projectFolder,
+    );
+    return versions.map((e) => e.databaseDefinitionProject);
+  }
+
+  /// Creates a repair migration that will bring the database up to date with
+  /// the targeted migration version.
+  ///
+  /// If [targetMigrationVersion] is not specified, the latest migration version
+  /// will be used.
+  ///
+  /// Returns the repair migration file, or null if no migration was
+  /// created.
+  Future<File?> repairMigration({
     String? tag,
     required bool force,
     required String runMode,
+    String? targetMigrationVersion,
   }) async {
-    var client = ConfigInfo(runMode).createServiceClient();
-    var versions = <String, String>{};
+    var migrationVersion =
+        targetMigrationVersion ?? _getLatestMigrationVersion();
 
-    // Load the latest migration from all modules.
-    var modules = getMigrationModules();
-    var dstDefinitions = <DatabaseDefinition>[];
-    for (var module in modules) {
-      var version = await getLatestMigrationVersion(module: module);
-      if (version == null) {
-        continue;
-      }
-      versions[module] = version.versionName;
-      dstDefinitions.add(version.databaseDefinition);
+    _validateRepairMigrationVersion(migrationVersion);
+
+    DatabaseDefinition dstDatabase = await _getSourceDatabaseDefinition(
+      projectName,
+      migrationVersion,
+    );
+
+    var client = ConfigInfo(runMode).createServiceClient();
+    DatabaseDefinition liveDatabase;
+    try {
+      liveDatabase = await client.insights.getLiveDatabaseDefinition();
+    } catch (e) {
+      throw MigrationLiveDatabaseDefinitionException(
+        exception: e.toString(),
+      );
+    } finally {
+      client.close();
     }
 
-    var dstDatabase = DatabaseDefinition(
-      tables: dstDefinitions.expand((e) => e.tables).toList(),
-    );
-
-    // Get the live database definition from the server.
-    var liveDatabase = await client.insights.getLiveDatabaseDefinition();
-
-    // Print warnings, if any exists.
-    var warnings = <DatabaseMigrationWarning>[];
     var migration = generateDatabaseMigration(
-      srcDatabase: liveDatabase,
-      dstDatabase: dstDatabase,
-      warnings: warnings,
-      priority: 0,
+      databaseSource: liveDatabase,
+      databaseTarget: dstDatabase,
     );
 
+    var warnings = migration.warnings;
     _printWarnings(warnings);
+
     if (warnings.isNotEmpty && !force) {
       log.info('Migration aborted. Use --force to ignore warnings.');
       return null;
     }
 
-    // Check if there are any changes.
-    var versionsChanged = false;
-    if (liveDatabase.installedModules == null) {
-      versionsChanged = true;
-    } else {
-      for (var module in liveDatabase.installedModules!.keys) {
-        if (versions[module] != liveDatabase.installedModules![module]) {
-          versionsChanged = true;
-        }
-      }
-    }
-    if (migration.isEmpty && !versionsChanged) {
-      log.info('-- No changes detected.');
+    bool versionsMismatch = _moduleVersionMismatch(liveDatabase, dstDatabase);
+
+    if (migration.isEmpty && !versionsMismatch && !force) {
+      log.info(
+        'No changes detected. Use --force to create an empty repair migration.',
+      );
       return null;
     }
 
-    // Output the migration.
-    var sql = migration.toPgSql(versions: versions);
-    log.info(sql);
-    return sql;
+    var repairMigrationName = createVersionName(tag);
+
+    var installedModules = [
+      ...dstDatabase.installedModules,
+      DatabaseMigrationVersion(
+        module: MigrationConstants.repairMigrationModuleName,
+        version: repairMigrationName,
+      )
+    ];
+
+    List<DatabaseMigrationVersion> removedModules = _removedModulesDiff(
+      liveDatabase.installedModules,
+      installedModules,
+    );
+
+    return _writeRepairMigration(
+      repairMigrationName,
+      migration,
+      installedModules,
+      removedModules,
+    );
+  }
+
+  void _validateRepairMigrationVersion(String? migrationVersion) {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+
+    if (migrationVersion == null ||
+        !migrationRegistry.versions.contains(migrationVersion)) {
+      throw MigrationRepairTargetNotFoundException(
+        targetName: migrationVersion,
+        versionsFound: migrationRegistry.versions,
+      );
+    }
+  }
+
+  List<DatabaseMigrationVersion> _removedModulesDiff(
+    List<DatabaseMigrationVersion> preInstalledModules,
+    List<DatabaseMigrationVersion> postInstalledModules,
+  ) {
+    var removedModules = preInstalledModules
+        .where(
+          (module) => !postInstalledModules.any(
+            (installedModule) => installedModule.module == module.module,
+          ),
+        )
+        .toList();
+    return removedModules;
+  }
+
+  Future<DatabaseDefinition> _getSourceDatabaseDefinition(
+    String moduleName,
+    String? migrationVersionName,
+  ) async {
+    if (migrationVersionName == null) {
+      return DatabaseDefinition(
+        moduleName: moduleName,
+        tables: [],
+        installedModules: [],
+        migrationApiVersion: DatabaseConstants.migrationApiVersion,
+      );
+    }
+
+    var migrationVersion = await MigrationVersion.load(
+      moduleName: projectName,
+      versionName: migrationVersionName,
+      projectDirectory: directory,
+    );
+
+    return migrationVersion.databaseDefinitionFull;
+  }
+
+  String? _getLatestMigrationVersion() {
+    var migrationRegistry = MigrationRegistry.load(
+      MigrationConstants.migrationsBaseDirectory(directory),
+    );
+    return migrationRegistry.getLatest();
+  }
+
+  bool _moduleVersionMismatch(
+    DatabaseDefinition liveDatabase,
+    DatabaseDefinition targetDatabase,
+  ) {
+    var installedModules = liveDatabase.installedModules.where(
+      (module) => module.module != MigrationConstants.repairMigrationModuleName,
+    );
+
+    var targetModules = targetDatabase.installedModules.where(
+      (module) => module.module != MigrationConstants.repairMigrationModuleName,
+    );
+
+    if (installedModules.length != targetModules.length) {
+      return true;
+    }
+
+    for (var module in installedModules) {
+      if (targetModules.any((version) =>
+          version.module == module.module &&
+          version.version != module.version)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  Future<List<MigrationVersion>> _loadMigrationVersionsFromModules(
+    List<ModuleConfig> modules, {
+    required Directory directory,
+  }) async {
+    var modulePaths = await locateAllModulePaths(
+      directory: directory,
+    );
+
+    var selectedModules = modules.where(
+      (module) => module.migrationVersions.isNotEmpty,
+    );
+
+    var selectedPaths = modulePaths.where(
+      (modulePath) {
+        var moduleName = _extractModuleNameFromPath(modulePath);
+        return selectedModules.any((module) => module.name == moduleName);
+      },
+    );
+
+    var moduleMigrationVersions = <MigrationVersion>[];
+
+    for (var modulePath in selectedPaths) {
+      var moduleName = _extractModuleNameFromPath(modulePath);
+
+      var versionName = selectedModules
+          .firstWhere((e) => e.name == moduleName)
+          .migrationVersions
+          .last;
+
+      var migrationVersion = await MigrationVersion.load(
+        moduleName: moduleName,
+        versionName: versionName,
+        projectDirectory: Directory.fromUri(modulePath),
+      );
+      moduleMigrationVersions.add(migrationVersion);
+    }
+
+    return moduleMigrationVersions;
+  }
+
+  DatabaseDefinition _mergeDatabaseDefinitions(
+    DatabaseDefinition databaseDefinitionProject,
+    Iterable<DatabaseDefinition> databaseDefinitions,
+    DatabaseMigrationVersion nextProjectMigrationVersion,
+  ) {
+    var tables = [
+      ...databaseDefinitionProject.tables,
+      ...databaseDefinitions.fold(
+        <TableDefinition>[],
+        (aggregate, item) => [...aggregate, ...item.tables],
+      ),
+    ];
+
+    var installedModules = [
+      nextProjectMigrationVersion,
+      ...databaseDefinitionProject.installedModules.where(
+        (module) => module.module != nextProjectMigrationVersion.module,
+      ),
+    ];
+
+    return DatabaseDefinition(
+      moduleName: databaseDefinitionProject.moduleName,
+      tables: tables,
+      installedModules: installedModules,
+      migrationApiVersion: databaseDefinitionProject.migrationApiVersion,
+    );
+  }
+
+  String _extractModuleNameFromPath(Uri path) {
+    var packageName = path.pathSegments.last;
+    return moduleNameFromServerPackageName(packageName);
   }
 
   void _printWarnings(List<DatabaseMigrationWarning> warnings) {
@@ -229,111 +402,201 @@ class MigrationGenerator {
       }
     }
   }
+
+  File _writeRepairMigration(
+    String repairMigrationName,
+    DatabaseMigration migration,
+    List<DatabaseMigrationVersion> installedModules,
+    List<DatabaseMigrationVersion> removedModules,
+  ) {
+    var repairMigrationSql = migration.toPgSql(
+      installedModules: installedModules,
+      removedModules: removedModules,
+    );
+
+    var repairMigrationFile = File(path.join(
+      MigrationConstants.repairMigrationDirectory(directory).path,
+      '$repairMigrationName.sql',
+    ));
+
+    var targetDirectory =
+        MigrationConstants.repairMigrationDirectory(directory);
+
+    if (targetDirectory.existsSync()) {
+      targetDirectory.deleteSync(recursive: true);
+    }
+
+    targetDirectory.createSync(recursive: true);
+
+    try {
+      repairMigrationFile.writeAsStringSync(repairMigrationSql);
+    } catch (e) {
+      throw MigrationRepairWriteException(exception: e.toString());
+    }
+
+    return repairMigrationFile;
+  }
 }
 
 class MigrationVersion {
   MigrationVersion({
-    required this.migrationsDirectory,
+    required this.moduleName,
+    required this.projectDirectory,
     required this.versionName,
     required this.migration,
-    required this.databaseDefinition,
+    required this.databaseDefinitionProject,
+    required this.databaseDefinitionFull,
   });
 
-  final Directory migrationsDirectory;
+  final Directory projectDirectory;
+
+  final String moduleName;
   final String versionName;
   final DatabaseMigration migration;
-  final DatabaseDefinition databaseDefinition;
-  int get priority => migration.priority;
+  final DatabaseDefinition databaseDefinitionProject;
+  final DatabaseDefinition databaseDefinitionFull;
 
   static Future<MigrationVersion> load({
+    required String moduleName,
     required String versionName,
-    required Directory migrationsDirectory,
+    required Directory projectDirectory,
   }) async {
-    var versionDir = Directory(
-      path.join(migrationsDirectory.path, versionName),
+    try {
+      // Get the serialization manager
+      var serializationManager = Protocol();
+
+      // Load the database definition
+      var databaseDefinitionProjectPath =
+          MigrationConstants.databaseDefinitionProjectJSONPath(
+        projectDirectory,
+        versionName,
+      );
+
+      var databaseDefinitionProject =
+          await _readMigrationDataFile<DatabaseDefinition>(
+        databaseDefinitionProjectPath,
+        serializationManager,
+      );
+
+      var databaseDefinitionPath =
+          MigrationConstants.databaseDefinitionJSONPath(
+        projectDirectory,
+        versionName,
+      );
+      var databaseDefinition = await _readMigrationDataFile<DatabaseDefinition>(
+        databaseDefinitionPath,
+        serializationManager,
+      );
+
+      // Load the migration definition
+      var migrationPath = MigrationConstants.databaseMigrationJSONPath(
+        projectDirectory,
+        versionName,
+      );
+      var migrationDefinition = await _readMigrationDataFile<DatabaseMigration>(
+        migrationPath,
+        serializationManager,
+      );
+
+      return MigrationVersion(
+        moduleName: moduleName,
+        projectDirectory: projectDirectory,
+        versionName: versionName,
+        migration: migrationDefinition,
+        databaseDefinitionProject: databaseDefinitionProject,
+        databaseDefinitionFull: databaseDefinition,
+      );
+    } catch (e) {
+      throw MigrationVersionLoadException(
+        versionName: versionName,
+        moduleName: moduleName,
+        exception: e.toString(),
+      );
+    }
+  }
+
+  static Future<T> _readMigrationDataFile<T>(
+    File definitionFile,
+    Protocol serializationManager,
+  ) async {
+    var data = await definitionFile.readAsString();
+    var content = serializationManager.decode<T>(
+      data,
     );
-
-    // Get the serialization manager
-    var serializationManager = Protocol();
-
-    // Load the database definition
-    var definitionFile = File(path.join(
-      versionDir.path,
-      _fileNameDefinitionJson,
-    ));
-    var definitionData = await definitionFile.readAsString();
-    var databaseDefinition = serializationManager.decodeWithType(
-      definitionData,
-    ) as DatabaseDefinition;
-
-    // Load the migration definition
-    var migrationFile = File(path.join(
-      versionDir.path,
-      _fileNameMigrationJson,
-    ));
-    var migrationData = await migrationFile.readAsString();
-    var migrationDefinition = serializationManager.decodeWithType(
-      migrationData,
-    ) as DatabaseMigration;
-
-    return MigrationVersion(
-      migrationsDirectory: migrationsDirectory,
-      versionName: versionName,
-      migration: migrationDefinition,
-      databaseDefinition: databaseDefinition,
-    );
+    return content;
   }
 
   Future<void> write({
-    required String module,
+    required List<DatabaseMigrationVersion> installedModules,
+    required List<DatabaseMigrationVersion> removedModules,
   }) async {
+    var migrationDirectory = MigrationConstants.migrationVersionDirectory(
+      projectDirectory,
+      versionName,
+    );
+
+    if (migrationDirectory.existsSync()) {
+      throw MigrationVersionAlreadyExistsException(
+        directoryPath: migrationDirectory.path,
+      );
+    }
+    await migrationDirectory.create(recursive: true);
+
     // Create sql for definition and migration
-    var definitionSql = databaseDefinition.toPgSql(
-      module: module,
-      version: versionName,
+    var definitionSql = databaseDefinitionFull.toPgSql(
+      installedModules: installedModules,
     );
+
     var migrationSql = migration.toPgSql(
-      versions: {module: versionName},
+      installedModules: installedModules,
+      removedModules: removedModules,
     );
-
-    var versionDir = Directory(
-      path.join(migrationsDirectory.path, versionName),
-    );
-    await versionDir.create(recursive: true);
-
-    // Get the serialization manager
-    var serializationManager = Protocol();
 
     // Write the database definition JSON file
-    var definitionFile = File(path.join(
-      versionDir.path,
-      _fileNameDefinitionJson,
-    ));
-    var definitionData = serializationManager.encodeWithType(
-      databaseDefinition,
+    var definitionFile = MigrationConstants.databaseDefinitionProjectJSONPath(
+      projectDirectory,
+      versionName,
+    );
+    var definitionData = SerializationManager.encode(
+      databaseDefinitionProject,
+      formatted: true,
     );
     await definitionFile.writeAsString(definitionData);
 
+    // Write the database full definition JSON file
+    var definitionFullFile = MigrationConstants.databaseDefinitionJSONPath(
+      projectDirectory,
+      versionName,
+    );
+    var definitionFullData = SerializationManager.encode(
+      databaseDefinitionFull,
+      formatted: true,
+    );
+    await definitionFullFile.writeAsString(definitionFullData);
+
     // Write the database definition SQL file
-    var definitionSqlFile = File(path.join(
-      versionDir.path,
-      _fileNameDefinitionSql,
-    ));
+    var definitionSqlFile = MigrationConstants.databaseDefinitionSQLPath(
+      projectDirectory,
+      versionName,
+    );
     await definitionSqlFile.writeAsString(definitionSql);
 
     // Write the migration definition JSON file
-    var migrationFile = File(path.join(
-      versionDir.path,
-      _fileNameMigrationJson,
-    ));
-    var migrationData = serializationManager.encodeWithType(migration);
+    var migrationFile = MigrationConstants.databaseMigrationJSONPath(
+      projectDirectory,
+      versionName,
+    );
+    var migrationData = SerializationManager.encode(
+      migration,
+      formatted: true,
+    );
     await migrationFile.writeAsString(migrationData);
 
     // Write the migration definition SQL file
-    var migrationSqlFile = File(path.join(
-      versionDir.path,
-      _fileNameMigrationSql,
-    ));
+    var migrationSqlFile = MigrationConstants.databaseMigrationSQLPath(
+      projectDirectory,
+      versionName,
+    );
     await migrationSqlFile.writeAsString(migrationSql);
   }
 }

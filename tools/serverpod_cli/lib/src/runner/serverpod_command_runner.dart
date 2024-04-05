@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/src/analytics/analytics.dart';
+import 'package:serverpod_cli/src/commands/language_server.dart';
 import 'package:serverpod_cli/src/downloads/resource_manager.dart';
 import 'package:serverpod_cli/src/logger/logger.dart';
 import 'package:serverpod_cli/src/shared/environment.dart';
@@ -16,25 +15,21 @@ abstract class GlobalFlags {
   static const quietAbbr = 'q';
   static const verbose = 'verbose';
   static const verboseAbbr = 'v';
+  static const analytics = 'analytics';
+  static const analyticsAbbr = 'a';
 }
 
 typedef LoggerInit = void Function(LogLevel);
 typedef PreCommandEnvironmentCheck = Future<void> Function();
 
 Future<void> _preCommandEnvironmentChecks() async {
-  if (Platform.isWindows) {
-    log.warning(
-        'Windows is not officially supported yet. Things may or may not work '
-        'as expected.');
-  }
-
   // Check that required tools are installed
-  if (!await CommandLineTools.existsCommand('dart')) {
+  if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have dart installed and in your \$PATH');
     throw ExitException();
   }
-  if (!await CommandLineTools.existsCommand('flutter')) {
+  if (!await CommandLineTools.existsCommand('flutter', ['--version'])) {
     log.error(
         'Failed to run serverpod. You need to have flutter installed and in your \$PATH');
     throw ExitException();
@@ -96,6 +91,14 @@ class ServerpodCommandRunner extends CommandRunner {
       help: 'Prints additional information useful for development. '
           'Overrides --q, --quiet.',
     );
+
+    argParser.addFlag(
+      GlobalFlags.analytics,
+      abbr: GlobalFlags.analyticsAbbr,
+      defaultsTo: true,
+      negatable: true,
+      help: 'Toggles if analytics data is sent to Serverpod. ',
+    );
   }
 
   static ServerpodCommandRunner createCommandRunner(
@@ -129,6 +132,7 @@ class ServerpodCommandRunner extends CommandRunner {
   @override
   Future<void> runCommand(ArgResults topLevelResults) async {
     _setLogLevel(topLevelResults);
+    _analytics.enabled = topLevelResults[GlobalFlags.analytics];
 
     await _onPreCommandEnvironmentCheck();
     await _preCommandPrints();
@@ -149,7 +153,7 @@ class ServerpodCommandRunner extends CommandRunner {
 
   @override
   void printUsage() {
-    log.info(usage, type: const RawLogType());
+    log.info(usage);
   }
 
   @override
@@ -162,6 +166,9 @@ class ServerpodCommandRunner extends CommandRunner {
     if (topLevelResults[GlobalFlags.verbose]) {
       logLevel = LogLevel.debug;
     } else if (topLevelResults[GlobalFlags.quiet]) {
+      logLevel = LogLevel.nothing;
+    } else if (topLevelResults.command?.name ==
+        LanguageServerCommand.commandName) {
       logLevel = LogLevel.nothing;
     }
 

@@ -4,19 +4,30 @@
 // ignore_for_file: library_private_types_in_public_api
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: implementation_imports
+// ignore_for_file: use_super_parameters
+// ignore_for_file: type_literal_in_constant_pattern
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Database bindings for a Facebook long-lived server token.
-class FacebookLongLivedToken extends _i1.TableRow {
-  FacebookLongLivedToken({
+abstract class FacebookLongLivedToken extends _i1.TableRow {
+  FacebookLongLivedToken._({
     int? id,
     required this.userId,
     required this.fbProfileId,
     required this.token,
     required this.expiresAt,
   }) : super(id);
+
+  factory FacebookLongLivedToken({
+    int? id,
+    required int userId,
+    required String fbProfileId,
+    required String token,
+    required DateTime expiresAt,
+  }) = _FacebookLongLivedTokenImpl;
 
   factory FacebookLongLivedToken.fromJson(
     Map<String, dynamic> jsonSerialization,
@@ -37,6 +48,8 @@ class FacebookLongLivedToken extends _i1.TableRow {
 
   static final t = FacebookLongLivedTokenTable();
 
+  static const db = FacebookLongLivedTokenRepository._();
+
   /// The Serverpod user id associated with the token.
   int userId;
 
@@ -50,199 +63,129 @@ class FacebookLongLivedToken extends _i1.TableRow {
   DateTime expiresAt;
 
   @override
-  String get tableName => 'serverpod_facebook_long_lived_token';
+  _i1.Table get table => t;
 
+  FacebookLongLivedToken copyWith({
+    int? id,
+    int? userId,
+    String? fbProfileId,
+    String? token,
+    DateTime? expiresAt,
+  });
   @override
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'fbProfileId': fbProfileId,
       'token': token,
-      'expiresAt': expiresAt,
-    };
-  }
-
-  @override
-  Map<String, dynamic> toJsonForDatabase() {
-    return {
-      'id': id,
-      'userId': userId,
-      'fbProfileId': fbProfileId,
-      'token': token,
-      'expiresAt': expiresAt,
+      'expiresAt': expiresAt.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> allToJson() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'userId': userId,
       'fbProfileId': fbProfileId,
       'token': token,
-      'expiresAt': expiresAt,
+      'expiresAt': expiresAt.toJson(),
     };
   }
 
-  @override
-  void setColumn(
-    String columnName,
-    value,
-  ) {
-    switch (columnName) {
-      case 'id':
-        id = value;
-        return;
-      case 'userId':
-        userId = value;
-        return;
-      case 'fbProfileId':
-        fbProfileId = value;
-        return;
-      case 'token':
-        token = value;
-        return;
-      case 'expiresAt':
-        expiresAt = value;
-        return;
-      default:
-        throw UnimplementedError();
-    }
+  static FacebookLongLivedTokenInclude include() {
+    return FacebookLongLivedTokenInclude._();
   }
 
-  static Future<List<FacebookLongLivedToken>> find(
-    _i1.Session session, {
-    FacebookLongLivedTokenExpressionBuilder? where,
+  static FacebookLongLivedTokenIncludeList includeList({
+    _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.Column? orderBy,
-    List<_i1.Order>? orderByList,
+    _i1.OrderByBuilder<FacebookLongLivedTokenTable>? orderBy,
     bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.find<FacebookLongLivedToken>(
-      where: where != null ? where(FacebookLongLivedToken.t) : null,
+    _i1.OrderByListBuilder<FacebookLongLivedTokenTable>? orderByList,
+    FacebookLongLivedTokenInclude? include,
+  }) {
+    return FacebookLongLivedTokenIncludeList._(
+      where: where,
       limit: limit,
       offset: offset,
-      orderBy: orderBy,
-      orderByList: orderByList,
+      orderBy: orderBy?.call(FacebookLongLivedToken.t),
       orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<FacebookLongLivedToken?> findSingleRow(
-    _i1.Session session, {
-    FacebookLongLivedTokenExpressionBuilder? where,
-    int? offset,
-    _i1.Column? orderBy,
-    bool orderDescending = false,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.findSingleRow<FacebookLongLivedToken>(
-      where: where != null ? where(FacebookLongLivedToken.t) : null,
-      offset: offset,
-      orderBy: orderBy,
-      orderDescending: orderDescending,
-      useCache: useCache,
-      transaction: transaction,
-    );
-  }
-
-  static Future<FacebookLongLivedToken?> findById(
-    _i1.Session session,
-    int id,
-  ) async {
-    return session.db.findById<FacebookLongLivedToken>(id);
-  }
-
-  static Future<int> delete(
-    _i1.Session session, {
-    required FacebookLongLivedTokenExpressionBuilder where,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.delete<FacebookLongLivedToken>(
-      where: where(FacebookLongLivedToken.t),
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> deleteRow(
-    _i1.Session session,
-    FacebookLongLivedToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.deleteRow(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<bool> update(
-    _i1.Session session,
-    FacebookLongLivedToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.update(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<void> insert(
-    _i1.Session session,
-    FacebookLongLivedToken row, {
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.insert(
-      row,
-      transaction: transaction,
-    );
-  }
-
-  static Future<int> count(
-    _i1.Session session, {
-    FacebookLongLivedTokenExpressionBuilder? where,
-    int? limit,
-    bool useCache = true,
-    _i1.Transaction? transaction,
-  }) async {
-    return session.db.count<FacebookLongLivedToken>(
-      where: where != null ? where(FacebookLongLivedToken.t) : null,
-      limit: limit,
-      useCache: useCache,
-      transaction: transaction,
+      orderByList: orderByList?.call(FacebookLongLivedToken.t),
+      include: include,
     );
   }
 }
 
-typedef FacebookLongLivedTokenExpressionBuilder = _i1.Expression Function(
-    FacebookLongLivedTokenTable);
+class _Undefined {}
+
+class _FacebookLongLivedTokenImpl extends FacebookLongLivedToken {
+  _FacebookLongLivedTokenImpl({
+    int? id,
+    required int userId,
+    required String fbProfileId,
+    required String token,
+    required DateTime expiresAt,
+  }) : super._(
+          id: id,
+          userId: userId,
+          fbProfileId: fbProfileId,
+          token: token,
+          expiresAt: expiresAt,
+        );
+
+  @override
+  FacebookLongLivedToken copyWith({
+    Object? id = _Undefined,
+    int? userId,
+    String? fbProfileId,
+    String? token,
+    DateTime? expiresAt,
+  }) {
+    return FacebookLongLivedToken(
+      id: id is int? ? id : this.id,
+      userId: userId ?? this.userId,
+      fbProfileId: fbProfileId ?? this.fbProfileId,
+      token: token ?? this.token,
+      expiresAt: expiresAt ?? this.expiresAt,
+    );
+  }
+}
 
 class FacebookLongLivedTokenTable extends _i1.Table {
-  FacebookLongLivedTokenTable()
-      : super(tableName: 'serverpod_facebook_long_lived_token');
-
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  final id = _i1.ColumnInt('id');
+  FacebookLongLivedTokenTable({super.tableRelation})
+      : super(tableName: 'serverpod_facebook_long_lived_token') {
+    userId = _i1.ColumnInt(
+      'userId',
+      this,
+    );
+    fbProfileId = _i1.ColumnString(
+      'fbProfileId',
+      this,
+    );
+    token = _i1.ColumnString(
+      'token',
+      this,
+    );
+    expiresAt = _i1.ColumnDateTime(
+      'expiresAt',
+      this,
+    );
+  }
 
   /// The Serverpod user id associated with the token.
-  final userId = _i1.ColumnInt('userId');
+  late final _i1.ColumnInt userId;
 
   /// The Facebook profile id.
-  final fbProfileId = _i1.ColumnString('fbProfileId');
+  late final _i1.ColumnString fbProfileId;
 
   /// The Facebook long-lived token.
-  final token = _i1.ColumnString('token');
+  late final _i1.ColumnString token;
 
   /// The expiry date of the token.
-  final expiresAt = _i1.ColumnDateTime('expiresAt');
+  late final _i1.ColumnDateTime expiresAt;
 
   @override
   List<_i1.Column> get columns => [
@@ -254,6 +197,181 @@ class FacebookLongLivedTokenTable extends _i1.Table {
       ];
 }
 
-@Deprecated('Use FacebookLongLivedTokenTable.t instead.')
-FacebookLongLivedTokenTable tFacebookLongLivedToken =
-    FacebookLongLivedTokenTable();
+class FacebookLongLivedTokenInclude extends _i1.IncludeObject {
+  FacebookLongLivedTokenInclude._();
+
+  @override
+  Map<String, _i1.Include?> get includes => {};
+
+  @override
+  _i1.Table get table => FacebookLongLivedToken.t;
+}
+
+class FacebookLongLivedTokenIncludeList extends _i1.IncludeList {
+  FacebookLongLivedTokenIncludeList._({
+    _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+  }) {
+    super.where = where?.call(FacebookLongLivedToken.t);
+  }
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table get table => FacebookLongLivedToken.t;
+}
+
+class FacebookLongLivedTokenRepository {
+  const FacebookLongLivedTokenRepository._();
+
+  Future<List<FacebookLongLivedToken>> find(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<FacebookLongLivedTokenTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FacebookLongLivedTokenTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.find<FacebookLongLivedToken>(
+      where: where?.call(FacebookLongLivedToken.t),
+      orderBy: orderBy?.call(FacebookLongLivedToken.t),
+      orderByList: orderByList?.call(FacebookLongLivedToken.t),
+      orderDescending: orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<FacebookLongLivedToken?> findFirstRow(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<FacebookLongLivedTokenTable>? orderBy,
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<FacebookLongLivedTokenTable>? orderByList,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findFirstRow<FacebookLongLivedToken>(
+      where: where?.call(FacebookLongLivedToken.t),
+      orderBy: orderBy?.call(FacebookLongLivedToken.t),
+      orderByList: orderByList?.call(FacebookLongLivedToken.t),
+      orderDescending: orderDescending,
+      offset: offset,
+      transaction: transaction,
+    );
+  }
+
+  Future<FacebookLongLivedToken?> findById(
+    _i1.Session session,
+    int id, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.findById<FacebookLongLivedToken>(
+      id,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<FacebookLongLivedToken>> insert(
+    _i1.Session session,
+    List<FacebookLongLivedToken> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insert<FacebookLongLivedToken>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<FacebookLongLivedToken> insertRow(
+    _i1.Session session,
+    FacebookLongLivedToken row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<FacebookLongLivedToken>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<FacebookLongLivedToken>> update(
+    _i1.Session session,
+    List<FacebookLongLivedToken> rows, {
+    _i1.ColumnSelections<FacebookLongLivedTokenTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.update<FacebookLongLivedToken>(
+      rows,
+      columns: columns?.call(FacebookLongLivedToken.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<FacebookLongLivedToken> updateRow(
+    _i1.Session session,
+    FacebookLongLivedToken row, {
+    _i1.ColumnSelections<FacebookLongLivedTokenTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<FacebookLongLivedToken>(
+      row,
+      columns: columns?.call(FacebookLongLivedToken.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> delete(
+    _i1.Session session,
+    List<FacebookLongLivedToken> rows, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.delete<FacebookLongLivedToken>(
+      rows,
+      transaction: transaction,
+    );
+  }
+
+  Future<int> deleteRow(
+    _i1.Session session,
+    FacebookLongLivedToken row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<FacebookLongLivedToken>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  Future<List<int>> deleteWhere(
+    _i1.Session session, {
+    required _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable> where,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteWhere<FacebookLongLivedToken>(
+      where: where(FacebookLongLivedToken.t),
+      transaction: transaction,
+    );
+  }
+
+  Future<int> count(
+    _i1.Session session, {
+    _i1.WhereExpressionBuilder<FacebookLongLivedTokenTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<FacebookLongLivedToken>(
+      where: where?.call(FacebookLongLivedToken.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+}

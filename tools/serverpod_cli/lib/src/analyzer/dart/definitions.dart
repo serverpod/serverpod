@@ -1,5 +1,3 @@
-import 'package:analyzer/dart/element/element.dart';
-
 import '../../generator/types.dart';
 
 /// Describes a single endpoint.
@@ -79,14 +77,10 @@ class ParameterDefinition {
   /// Whether this parameter is required.
   final bool required;
 
-  /// Maybe the actual element received by the analyzer.
-  final ParameterElement? dartParameter;
-
   /// Create a new [ParameterDefinition].
   const ParameterDefinition({
     required this.name,
     required this.type,
     required this.required,
-    this.dartParameter,
   });
 }
