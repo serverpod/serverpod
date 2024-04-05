@@ -146,8 +146,7 @@ void main() {
       var byteData = createByteData(1024);
 
       var uploader = FileUploader(uploadDescription!);
-      var result =
-          await uploader.uploadUint8List(byteData.buffer.asUint8List());
+      var result = await uploader.uploadByteData(byteData);
 
       expect(result, equals(true));
 
