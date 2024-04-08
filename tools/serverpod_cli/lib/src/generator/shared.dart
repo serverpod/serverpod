@@ -23,4 +23,4 @@ String protocolUrl(bool serverCode) {
 String get byteDataUrl => 'dart:typed_data';
 
 /// The import url of the UuidValue type.
-String get uuidValueUrl =>  'package:uuid/uuid_value.dart';
+String get uuidValueUrl => 'package:uuid/uuid_value.dart';
