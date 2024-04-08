@@ -39,8 +39,10 @@ abstract class OrganizationWithLongTableName extends _i1.SerializableEntity {
           .toList(),
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization.containsKey('city')
-          ? _i2.CityWithLongTableName.fromJson(
-              jsonSerialization['city'] as Map<String, dynamic>)
+          ? jsonSerialization['city'] != null
+              ? _i2.CityWithLongTableName.fromJson(
+                  jsonSerialization['city'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

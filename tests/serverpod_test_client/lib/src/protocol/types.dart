@@ -48,7 +48,9 @@ abstract class Types extends _i1.SerializableEntity {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
       aDouble: jsonSerialization['aDouble'] as double?,
-      aDateTime: DateTime.tryParse(jsonSerialization['aDateTime'] ?? ''),
+      aDateTime: jsonSerialization['aDateTime'] != null
+          ? DateTime.tryParse(jsonSerialization['aDateTime'])
+          : null,
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization.containsKey('aByteData')
           ? jsonSerialization['aByteData'] is _i2.Uint8List
@@ -61,17 +63,25 @@ abstract class Types extends _i1.SerializableEntity {
                   ?.base64DecodedByteData()
           : null,
       aDuration: jsonSerialization.containsKey('aDuration')
-          ? Duration(milliseconds: jsonSerialization['aDuration'])
+          ? jsonSerialization['aDuration'] != null
+              ? Duration(milliseconds: jsonSerialization['aDuration'])
+              : null
           : null,
       aUuid: jsonSerialization.containsKey('aUuid')
-          ? _i4.UuidValue.fromString(jsonSerialization['aUuid'])
+          ? jsonSerialization['aUuid'] != null
+              ? _i4.UuidValue.fromString(jsonSerialization['aUuid'])
+              : null
           : null,
       anEnum: jsonSerialization.containsKey('anEnum')
-          ? _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int))
+          ? jsonSerialization['anEnum'] != null
+              ? _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int))
+              : null
           : null,
       aStringifiedEnum: jsonSerialization.containsKey('aStringifiedEnum')
-          ? _i3.TestEnumStringified.fromJson(
-              (jsonSerialization['aStringifiedEnum'] as String))
+          ? jsonSerialization['aStringifiedEnum'] != null
+              ? _i3.TestEnumStringified.fromJson(
+                  (jsonSerialization['aStringifiedEnum'] as String))
+              : null
           : null,
     );
   }

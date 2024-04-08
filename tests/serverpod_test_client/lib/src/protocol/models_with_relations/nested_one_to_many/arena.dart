@@ -29,7 +29,10 @@ abstract class Arena extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       team: jsonSerialization.containsKey('team')
-          ? _i2.Team.fromJson(jsonSerialization['team'] as Map<String, dynamic>)
+          ? jsonSerialization['team'] != null
+              ? _i2.Team.fromJson(
+                  jsonSerialization['team'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

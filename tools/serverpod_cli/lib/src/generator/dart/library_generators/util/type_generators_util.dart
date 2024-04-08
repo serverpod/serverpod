@@ -85,6 +85,7 @@ Expression _expressionTypeBuilder(
       );
     case ValueType.duration:
       return _expressionDurationTypeBuilder(
+        type,
         valueExpression,
         containsKeyExpression,
       );
@@ -96,6 +97,7 @@ Expression _expressionTypeBuilder(
       );
     case ValueType.uuidValue:
       return _expressionUuidValueTypeBuilder(
+        type,
         valueExpression,
         containsKeyExpression,
       );
@@ -145,7 +147,7 @@ Expression _expressionTypeBuilder(
   }
 }
 
-List<Code> _nullCheckWrapper(
+List<Code> _containsKeyWrapper(
   Expression? containsKeyExpression,
   List<Code> body,
 ) {
@@ -176,26 +178,34 @@ Expression _expressionDateTimeTypeBuilder(
   Expression valueExpression,
 ) {
   return CodeExpression(
-    refer('DateTime').property(type.nullable ? 'tryParse' : 'parse').call(
-      [
-        type.nullable
-            ? valueExpression.ifNullThen(const CodeExpression(Code('\'\'')))
-            : valueExpression.asA(const CodeExpression(Code('String'))),
-      ],
-    ).code,
+    refer('DateTime')
+        .property(type.nullable ? 'tryParse' : 'parse')
+        .call(
+          [
+            type.nullable
+                ? valueExpression
+                : valueExpression.asA(const CodeExpression(Code('String')))
+          ],
+        )
+        .checkIfNull(type, valueExpression: valueExpression)
+        .code,
   );
 }
 
 Expression _expressionDurationTypeBuilder(
+  TypeDefinition type,
   Expression valueExpression,
   Expression? containsKeyExpression,
 ) {
   return CodeExpression(
     Block.of(
-      _nullCheckWrapper(
+      _containsKeyWrapper(
         containsKeyExpression,
         [
-          refer('Duration').call([], {'milliseconds': valueExpression}).code
+          refer('Duration')
+              .call([], {'milliseconds': valueExpression})
+              .checkIfNull(type, valueExpression: valueExpression)
+              .code
         ],
       ),
     ),
@@ -209,7 +219,7 @@ Expression _expressionByteDataBuilder(
 ) {
   return CodeExpression(
     Block.of(
-      _nullCheckWrapper(
+      _containsKeyWrapper(
         containsKeyExpression,
         [
           if (!type.nullable) const Code('('),
@@ -235,17 +245,20 @@ Expression _expressionByteDataBuilder(
 }
 
 Expression _expressionUuidValueTypeBuilder(
+  TypeDefinition type,
   Expression valueExpression,
   Expression? containsKeyExpression,
 ) {
   return CodeExpression(
     Block.of(
-      _nullCheckWrapper(
+      _containsKeyWrapper(
         containsKeyExpression,
         [
           refer('UuidValue', uuidValueUrl)
               .property('fromString')
-              .call([valueExpression]).code,
+              .call([valueExpression])
+              .checkIfNull(type, valueExpression: valueExpression)
+              .code,
         ],
       ),
     ),
@@ -280,12 +293,14 @@ Expression _expressionEnumTypeBuilder(
 
   return CodeExpression(
     Block.of(
-      _nullCheckWrapper(
+      _containsKeyWrapper(
         containsKeyExpression,
         [
           typRef
               .property('fromJson')
-              .call([valueExpression.asA(asReference)]).code,
+              .call([valueExpression.asA(asReference)])
+              .checkIfNull(type, valueExpression: valueExpression)
+              .code,
         ],
       ),
     ),
@@ -352,6 +367,35 @@ Expression _expressionMapTypeBuilder(
   GeneratorConfig config,
   ClassDefinition classDefinition,
 ) {
+  if (_getValueType(type.generics.first) == ValueType.string) {
+    return CodeExpression(
+      Block.of([
+        const Code('('),
+        valueExpression.code,
+        Code(
+          'as Map<dynamic, dynamic> ${type.nullable ? '?)?' : ')'}.map((k, v) =>',
+        ),
+        refer('MapEntry').call([
+          _expressionTypeBuilder(
+            type.generics.first,
+            serverCode,
+            config,
+            classDefinition,
+            mapExpression: refer('k'),
+          ),
+          _expressionTypeBuilder(
+            type.generics.last,
+            serverCode,
+            config,
+            classDefinition,
+            mapExpression: refer('v'),
+          ),
+        ]).code,
+        const Code(')'),
+      ]),
+    );
+  }
+
   return CodeExpression(
     Block.of([
       const Code('('),
@@ -409,21 +453,44 @@ Expression _expressionClassTypeBuilder(
 
   return CodeExpression(
     Block.of(
-      _nullCheckWrapper(
+      _containsKeyWrapper(
         containsKeyExpression,
         [
-          typeRef.property('fromJson').call([
-            CodeExpression(
-              Block.of(
-                [
-                  valueExpression.code,
-                  const Code('as Map<String, dynamic>'),
-                ],
-              ),
-            )
-          ]).code,
+          typeRef
+              .property('fromJson')
+              .call([
+                CodeExpression(
+                  Block.of(
+                    [
+                      valueExpression.code,
+                      const Code('as Map<String, dynamic>'),
+                    ],
+                  ),
+                )
+              ])
+              .checkIfNull(type, valueExpression: valueExpression)
+              .code,
         ],
       ),
     ),
   );
+}
+
+extension ExpressionExtension on Expression {
+  Expression checkIfNull(
+    TypeDefinition type, {
+    required Expression valueExpression,
+  }) {
+    if (!type.nullable) return this;
+    return CodeExpression(
+      Block.of(
+        [
+          valueExpression.code,
+          const Code('!= null ?'),
+          code,
+          const Code(': null'),
+        ],
+      ),
+    );
+  }
 }

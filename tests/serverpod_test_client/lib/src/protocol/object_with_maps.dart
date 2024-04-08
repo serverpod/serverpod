@@ -52,94 +52,97 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
 
   factory ObjectWithMaps.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithMaps(
-      dataMap: (jsonSerialization['dataMap'] as List<dynamic>)
-          .fold<Map<String, _i2.SimpleData>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    e['k'] as String:
-                        _i2.SimpleData.fromJson(e['v'] as Map<String, dynamic>)
-                  }),
-      intMap: (jsonSerialization['intMap'] as List<dynamic>)
-          .fold<Map<String, int>>(
-              {}, (t, e) => {...t, e['k'] as String: e['v'] as int}),
-      stringMap: (jsonSerialization['stringMap'] as List<dynamic>)
-          .fold<Map<String, String>>(
-              {}, (t, e) => {...t, e['k'] as String: e['v'] as String}),
-      dateTimeMap: (jsonSerialization['dateTimeMap'] as List<dynamic>)
-          .fold<Map<String, DateTime>>(
-              {},
-              (t, e) =>
-                  {...t, e['k'] as String: DateTime.parse((e['v'] as String))}),
-      byteDataMap: (jsonSerialization['byteDataMap'] as List<dynamic>)
-          .fold<Map<String, _i3.ByteData>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    e['k'] as String: (e['v'] != null && e['v'] is _i3.Uint8List
-                        ? _i3.ByteData.view(
-                            e['v'].buffer,
-                            e['v'].offsetInBytes,
-                            e['v'].lengthInBytes,
-                          )
-                        : (e['v'] as String?)?.base64DecodedByteData())!
-                  }),
-      durationMap: (jsonSerialization['durationMap'] as List<dynamic>)
-          .fold<Map<String, Duration>>(
-              {},
-              (t, e) =>
-                  {...t, e['k'] as String: Duration(milliseconds: e['v'])}),
-      uuidMap: (jsonSerialization['uuidMap'] as List<dynamic>)
-          .fold<Map<String, _i1.UuidValue>>(
-              {},
-              (t, e) =>
-                  {...t, e['k'] as String: _i4.UuidValue.fromString(e['v'])}),
-      nullableDataMap: (jsonSerialization['nullableDataMap'] as List<dynamic>)
-          .fold<Map<String, _i2.SimpleData?>>(
-              {},
-              (t, e) => {
-                    ...t,
-                    e['k'] as String:
-                        _i2.SimpleData.fromJson(e['v'] as Map<String, dynamic>)
-                  }),
-      nullableIntMap: (jsonSerialization['nullableIntMap'] as List<dynamic>)
-          .fold<Map<String, int?>>(
-              {}, (t, e) => {...t, e['k'] as String: e['v'] as int?}),
+      dataMap: (jsonSerialization['dataMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                _i2.SimpleData.fromJson(v as Map<String, dynamic>),
+              )),
+      intMap: (jsonSerialization['intMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                v as int,
+              )),
+      stringMap: (jsonSerialization['stringMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                v as String,
+              )),
+      dateTimeMap: (jsonSerialization['dateTimeMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                DateTime.parse((v as String)),
+              )),
+      byteDataMap: (jsonSerialization['byteDataMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                (v != null && v is _i3.Uint8List
+                    ? _i3.ByteData.view(
+                        v.buffer,
+                        v.offsetInBytes,
+                        v.lengthInBytes,
+                      )
+                    : (v as String?)?.base64DecodedByteData())!,
+              )),
+      durationMap: (jsonSerialization['durationMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                Duration(milliseconds: v),
+              )),
+      uuidMap: (jsonSerialization['uuidMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                _i4.UuidValue.fromString(v),
+              )),
+      nullableDataMap:
+          (jsonSerialization['nullableDataMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v != null
+                        ? _i2.SimpleData.fromJson(v as Map<String, dynamic>)
+                        : null,
+                  )),
+      nullableIntMap:
+          (jsonSerialization['nullableIntMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v as int?,
+                  )),
       nullableStringMap:
-          (jsonSerialization['nullableStringMap'] as List<dynamic>)
-              .fold<Map<String, String?>>(
-                  {}, (t, e) => {...t, e['k'] as String: e['v'] as String?}),
-      nullableDateTimeMap: (jsonSerialization['nullableDateTimeMap']
-              as List<dynamic>)
-          .fold<Map<String, DateTime?>>(
-              {},
-              (t, e) =>
-                  {...t, e['k'] as String: DateTime.tryParse(e['v'] ?? '')}),
+          (jsonSerialization['nullableStringMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v as String?,
+                  )),
+      nullableDateTimeMap:
+          (jsonSerialization['nullableDateTimeMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v != null ? DateTime.tryParse(v) : null,
+                  )),
       nullableByteDataMap:
-          (jsonSerialization['nullableByteDataMap'] as List<dynamic>)
-              .fold<Map<String, _i3.ByteData?>>(
-                  {},
-                  (t, e) => {
-                        ...t,
-                        e['k'] as String: e['v'] is _i3.Uint8List
-                            ? _i3.ByteData.view(
-                                e['v'].buffer,
-                                e['v'].offsetInBytes,
-                                e['v'].lengthInBytes,
-                              )
-                            : (e['v'] as String?)?.base64DecodedByteData()
-                      }),
+          (jsonSerialization['nullableByteDataMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v is _i3.Uint8List
+                        ? _i3.ByteData.view(
+                            v.buffer,
+                            v.offsetInBytes,
+                            v.lengthInBytes,
+                          )
+                        : (v as String?)?.base64DecodedByteData(),
+                  )),
       nullableDurationMap:
-          (jsonSerialization['nullableDurationMap'] as List<dynamic>)
-              .fold<Map<String, Duration?>>(
-                  {},
-                  (t, e) =>
-                      {...t, e['k'] as String: Duration(milliseconds: e['v'])}),
-      nullableUuidMap: (jsonSerialization['nullableUuidMap'] as List<dynamic>)
-          .fold<Map<String, _i1.UuidValue?>>(
-              {},
-              (t, e) =>
-                  {...t, e['k'] as String: _i4.UuidValue.fromString(e['v'])}),
+          (jsonSerialization['nullableDurationMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v != null ? Duration(milliseconds: v) : null,
+                  )),
+      nullableUuidMap:
+          (jsonSerialization['nullableUuidMap'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v != null ? _i4.UuidValue.fromString(v) : null,
+                  )),
       intIntMap: (jsonSerialization['intIntMap'] as List<dynamic>)
           .fold<Map<int, int>>(
               {}, (t, e) => {...t, e['k'] as int: e['v'] as int}),

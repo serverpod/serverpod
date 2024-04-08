@@ -20,14 +20,11 @@ abstract class SimpleDataMap extends _i1.SerializableEntity {
 
   factory SimpleDataMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataMap(
-        data: (jsonSerialization['data'] as List<dynamic>)
-            .fold<Map<String, _i2.SimpleData>>(
-                {},
-                (t, e) => {
-                      ...t,
-                      e['k'] as String: _i2.SimpleData.fromJson(
-                          e['v'] as Map<String, dynamic>)
-                    }));
+        data: (jsonSerialization['data'] as Map<dynamic, dynamic>)
+            .map((k, v) => MapEntry(
+                  k as String,
+                  _i2.SimpleData.fromJson(v as Map<String, dynamic>),
+                )));
   }
 
   Map<String, _i2.SimpleData> data;

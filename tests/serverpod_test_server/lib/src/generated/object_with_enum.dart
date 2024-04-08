@@ -36,13 +36,16 @@ abstract class ObjectWithEnum extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
       nullableEnum: jsonSerialization.containsKey('nullableEnum')
-          ? _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int))
+          ? jsonSerialization['nullableEnum'] != null
+              ? _i2.TestEnum.fromJson(
+                  (jsonSerialization['nullableEnum'] as int))
+              : null
           : null,
       enumList: (jsonSerialization['enumList'] as List<dynamic>)
           .map((e) => _i2.TestEnum.fromJson((e as int)))
           .toList(),
       nullableEnumList: (jsonSerialization['nullableEnumList'] as List<dynamic>)
-          .map((e) => _i2.TestEnum.fromJson((e as int)))
+          .map((e) => e != null ? _i2.TestEnum.fromJson((e as int)) : null)
           .toList(),
       enumListList: (jsonSerialization['enumListList'] as List<dynamic>)
           .map((e) => (e as List<dynamic>)

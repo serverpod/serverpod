@@ -34,8 +34,10 @@ abstract class Cat extends _i1.SerializableEntity {
       name: jsonSerialization['name'] as String,
       motherId: jsonSerialization['motherId'] as int?,
       mother: jsonSerialization.containsKey('mother')
-          ? _i2.Cat.fromJson(
-              jsonSerialization['mother'] as Map<String, dynamic>)
+          ? jsonSerialization['mother'] != null
+              ? _i2.Cat.fromJson(
+                  jsonSerialization['mother'] as Map<String, dynamic>)
+              : null
           : null,
       kittens: (jsonSerialization['kittens'] as List<dynamic>?)
           ?.map((e) => _i2.Cat.fromJson(e as Map<String, dynamic>))

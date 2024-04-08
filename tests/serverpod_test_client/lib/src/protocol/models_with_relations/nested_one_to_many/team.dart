@@ -34,8 +34,10 @@ abstract class Team extends _i1.SerializableEntity {
       name: jsonSerialization['name'] as String,
       arenaId: jsonSerialization['arenaId'] as int?,
       arena: jsonSerialization.containsKey('arena')
-          ? _i2.Arena.fromJson(
-              jsonSerialization['arena'] as Map<String, dynamic>)
+          ? jsonSerialization['arena'] != null
+              ? _i2.Arena.fromJson(
+                  jsonSerialization['arena'] as Map<String, dynamic>)
+              : null
           : null,
       players: (jsonSerialization['players'] as List<dynamic>?)
           ?.map((e) => _i2.Player.fromJson(e as Map<String, dynamic>))

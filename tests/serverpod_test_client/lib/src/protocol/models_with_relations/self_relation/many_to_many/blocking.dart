@@ -33,13 +33,17 @@ abstract class Blocking extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization.containsKey('blocked')
-          ? _i2.Member.fromJson(
-              jsonSerialization['blocked'] as Map<String, dynamic>)
+          ? jsonSerialization['blocked'] != null
+              ? _i2.Member.fromJson(
+                  jsonSerialization['blocked'] as Map<String, dynamic>)
+              : null
           : null,
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization.containsKey('blockedBy')
-          ? _i2.Member.fromJson(
-              jsonSerialization['blockedBy'] as Map<String, dynamic>)
+          ? jsonSerialization['blockedBy'] != null
+              ? _i2.Member.fromJson(
+                  jsonSerialization['blockedBy'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

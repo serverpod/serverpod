@@ -48,8 +48,10 @@ abstract class ChatMessage extends _i1.SerializableEntity {
       time: DateTime.parse((jsonSerialization['time'] as String)),
       sender: jsonSerialization['sender'] as int,
       senderInfo: jsonSerialization.containsKey('senderInfo')
-          ? _i2.UserInfoPublic.fromJson(
-              jsonSerialization['senderInfo'] as Map<String, dynamic>)
+          ? jsonSerialization['senderInfo'] != null
+              ? _i2.UserInfoPublic.fromJson(
+                  jsonSerialization['senderInfo'] as Map<String, dynamic>)
+              : null
           : null,
       removed: jsonSerialization['removed'] as bool,
       clientMessageId: jsonSerialization['clientMessageId'] as int?,

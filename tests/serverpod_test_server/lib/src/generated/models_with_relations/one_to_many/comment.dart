@@ -32,8 +32,10 @@ abstract class Comment extends _i1.TableRow {
       description: jsonSerialization['description'] as String,
       orderId: jsonSerialization['orderId'] as int,
       order: jsonSerialization.containsKey('order')
-          ? _i2.Order.fromJson(
-              jsonSerialization['order'] as Map<String, dynamic>)
+          ? jsonSerialization['order'] != null
+              ? _i2.Order.fromJson(
+                  jsonSerialization['order'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

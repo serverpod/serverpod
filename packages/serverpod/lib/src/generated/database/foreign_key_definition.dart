@@ -49,16 +49,22 @@ abstract class ForeignKeyDefinition extends _i1.SerializableEntity {
           .map((e) => e as String)
           .toList(),
       onUpdate: jsonSerialization.containsKey('onUpdate')
-          ? _i2.ForeignKeyAction.fromJson(
-              (jsonSerialization['onUpdate'] as int))
+          ? jsonSerialization['onUpdate'] != null
+              ? _i2.ForeignKeyAction.fromJson(
+                  (jsonSerialization['onUpdate'] as int))
+              : null
           : null,
       onDelete: jsonSerialization.containsKey('onDelete')
-          ? _i2.ForeignKeyAction.fromJson(
-              (jsonSerialization['onDelete'] as int))
+          ? jsonSerialization['onDelete'] != null
+              ? _i2.ForeignKeyAction.fromJson(
+                  (jsonSerialization['onDelete'] as int))
+              : null
           : null,
       matchType: jsonSerialization.containsKey('matchType')
-          ? _i2.ForeignKeyMatchType.fromJson(
-              (jsonSerialization['matchType'] as int))
+          ? jsonSerialization['matchType'] != null
+              ? _i2.ForeignKeyMatchType.fromJson(
+                  (jsonSerialization['matchType'] as int))
+              : null
           : null,
     );
   }

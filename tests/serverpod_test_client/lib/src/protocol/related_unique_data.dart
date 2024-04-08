@@ -31,8 +31,10 @@ abstract class RelatedUniqueData extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization.containsKey('uniqueData')
-          ? _i2.UniqueData.fromJson(
-              jsonSerialization['uniqueData'] as Map<String, dynamic>)
+          ? jsonSerialization['uniqueData'] != null
+              ? _i2.UniqueData.fromJson(
+                  jsonSerialization['uniqueData'] as Map<String, dynamic>)
+              : null
           : null,
       number: jsonSerialization['number'] as int,
     );

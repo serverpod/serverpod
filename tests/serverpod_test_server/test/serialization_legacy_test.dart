@@ -82,6 +82,7 @@ void main() {
             [TestEnum.one, TestEnum.two],
             [TestEnum.two, TestEnum.one]
           ]);
+
       var s = SerializationManager.encode(object);
       var unpacked = protocol.deserialize<ObjectWithEnum>(jsonDecode(s));
       expect(unpacked.testEnum, equals(TestEnum.one));

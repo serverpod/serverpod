@@ -32,8 +32,10 @@ abstract class Person extends _i1.SerializableEntity {
       name: jsonSerialization['name'] as String,
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization.containsKey('organization')
-          ? _i2.Organization.fromJson(
-              jsonSerialization['organization'] as Map<String, dynamic>)
+          ? jsonSerialization['organization'] != null
+              ? _i2.Organization.fromJson(
+                  jsonSerialization['organization'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

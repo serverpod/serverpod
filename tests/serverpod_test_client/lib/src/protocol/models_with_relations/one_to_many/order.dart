@@ -34,8 +34,10 @@ abstract class Order extends _i1.SerializableEntity {
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization.containsKey('customer')
-          ? _i2.Customer.fromJson(
-              jsonSerialization['customer'] as Map<String, dynamic>)
+          ? jsonSerialization['customer'] != null
+              ? _i2.Customer.fromJson(
+                  jsonSerialization['customer'] as Map<String, dynamic>)
+              : null
           : null,
       comments: (jsonSerialization['comments'] as List<dynamic>?)
           ?.map((e) => _i2.Comment.fromJson(e as Map<String, dynamic>))

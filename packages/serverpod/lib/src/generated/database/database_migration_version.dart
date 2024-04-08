@@ -33,7 +33,9 @@ abstract class DatabaseMigrationVersion extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       module: jsonSerialization['module'] as String,
       version: jsonSerialization['version'] as String,
-      timestamp: DateTime.tryParse(jsonSerialization['timestamp'] ?? ''),
+      timestamp: jsonSerialization['timestamp'] != null
+          ? DateTime.tryParse(jsonSerialization['timestamp'])
+          : null,
     );
   }
 

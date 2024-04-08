@@ -36,12 +36,16 @@ abstract class AuthenticationResponse extends _i1.SerializableEntity {
       key: jsonSerialization['key'] as String?,
       keyId: jsonSerialization['keyId'] as int?,
       userInfo: jsonSerialization.containsKey('userInfo')
-          ? _i2.UserInfo.fromJson(
-              jsonSerialization['userInfo'] as Map<String, dynamic>)
+          ? jsonSerialization['userInfo'] != null
+              ? _i2.UserInfo.fromJson(
+                  jsonSerialization['userInfo'] as Map<String, dynamic>)
+              : null
           : null,
       failReason: jsonSerialization.containsKey('failReason')
-          ? _i2.AuthenticationFailReason.fromJson(
-              (jsonSerialization['failReason'] as int))
+          ? jsonSerialization['failReason'] != null
+              ? _i2.AuthenticationFailReason.fromJson(
+                  (jsonSerialization['failReason'] as int))
+              : null
           : null,
     );
   }

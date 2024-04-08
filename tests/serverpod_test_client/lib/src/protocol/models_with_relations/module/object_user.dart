@@ -32,8 +32,10 @@ abstract class ObjectUser extends _i1.SerializableEntity {
       name: jsonSerialization['name'] as String?,
       userInfoId: jsonSerialization['userInfoId'] as int,
       userInfo: jsonSerialization.containsKey('userInfo')
-          ? _i2.UserInfo.fromJson(
-              jsonSerialization['userInfo'] as Map<String, dynamic>)
+          ? jsonSerialization['userInfo'] != null
+              ? _i2.UserInfo.fromJson(
+                  jsonSerialization['userInfo'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

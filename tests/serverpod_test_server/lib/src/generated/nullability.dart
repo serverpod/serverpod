@@ -124,8 +124,9 @@ abstract class Nullability extends _i1.SerializableEntity {
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
       aDateTime: DateTime.parse((jsonSerialization['aDateTime'] as String)),
-      aNullableDateTime:
-          DateTime.tryParse(jsonSerialization['aNullableDateTime'] ?? ''),
+      aNullableDateTime: jsonSerialization['aNullableDateTime'] != null
+          ? DateTime.tryParse(jsonSerialization['aNullableDateTime'])
+          : null,
       aByteData: (jsonSerialization['aByteData'] != null &&
               jsonSerialization['aByteData'] is _i2.Uint8List
           ? _i2.ByteData.view(
@@ -147,17 +148,23 @@ abstract class Nullability extends _i1.SerializableEntity {
           : null,
       aDuration: Duration(milliseconds: jsonSerialization['aDuration']),
       aNullableDuration: jsonSerialization.containsKey('aNullableDuration')
-          ? Duration(milliseconds: jsonSerialization['aNullableDuration'])
+          ? jsonSerialization['aNullableDuration'] != null
+              ? Duration(milliseconds: jsonSerialization['aNullableDuration'])
+              : null
           : null,
       aUuid: _i4.UuidValue.fromString(jsonSerialization['aUuid']),
       aNullableUuid: jsonSerialization.containsKey('aNullableUuid')
-          ? _i4.UuidValue.fromString(jsonSerialization['aNullableUuid'])
+          ? jsonSerialization['aNullableUuid'] != null
+              ? _i4.UuidValue.fromString(jsonSerialization['aNullableUuid'])
+              : null
           : null,
       anObject: _i3.SimpleData.fromJson(
           jsonSerialization['anObject'] as Map<String, dynamic>),
       aNullableObject: jsonSerialization.containsKey('aNullableObject')
-          ? _i3.SimpleData.fromJson(
-              jsonSerialization['aNullableObject'] as Map<String, dynamic>)
+          ? jsonSerialization['aNullableObject'] != null
+              ? _i3.SimpleData.fromJson(
+                  jsonSerialization['aNullableObject'] as Map<String, dynamic>)
+              : null
           : null,
       anIntList: (jsonSerialization['anIntList'] as List<dynamic>)
           .map((e) => e as int)
@@ -183,12 +190,16 @@ abstract class Nullability extends _i1.SerializableEntity {
               .toList(),
       aListWithNullableObjects:
           (jsonSerialization['aListWithNullableObjects'] as List<dynamic>)
-              .map((e) => _i3.SimpleData.fromJson(e as Map<String, dynamic>))
+              .map((e) => e != null
+                  ? _i3.SimpleData.fromJson(e as Map<String, dynamic>)
+                  : null)
               .toList(),
       aNullableListWithNullableObjects:
           (jsonSerialization['aNullableListWithNullableObjects']
                   as List<dynamic>?)
-              ?.map((e) => _i3.SimpleData.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => e != null
+                  ? _i3.SimpleData.fromJson(e as Map<String, dynamic>)
+                  : null)
               .toList(),
       aDateTimeList: (jsonSerialization['aDateTimeList'] as List<dynamic>)
           .map((e) => DateTime.parse((e as String)))
@@ -199,12 +210,12 @@ abstract class Nullability extends _i1.SerializableEntity {
               .toList(),
       aListWithNullableDateTimes:
           (jsonSerialization['aListWithNullableDateTimes'] as List<dynamic>)
-              .map((e) => DateTime.tryParse(e ?? ''))
+              .map((e) => e != null ? DateTime.tryParse(e) : null)
               .toList(),
       aNullableListWithNullableDateTimes:
           (jsonSerialization['aNullableListWithNullableDateTimes']
                   as List<dynamic>?)
-              ?.map((e) => DateTime.tryParse(e ?? ''))
+              ?.map((e) => e != null ? DateTime.tryParse(e) : null)
               .toList(),
       aByteDataList: (jsonSerialization['aByteDataList'] as List<dynamic>)
           .map((e) => (e != null && e is _i2.Uint8List
@@ -255,12 +266,12 @@ abstract class Nullability extends _i1.SerializableEntity {
               .toList(),
       aListWithNullableDurations:
           (jsonSerialization['aListWithNullableDurations'] as List<dynamic>)
-              .map((e) => Duration(milliseconds: e))
+              .map((e) => e != null ? Duration(milliseconds: e) : null)
               .toList(),
       aNullableListWithNullableDurations:
           (jsonSerialization['aNullableListWithNullableDurations']
                   as List<dynamic>?)
-              ?.map((e) => Duration(milliseconds: e))
+              ?.map((e) => e != null ? Duration(milliseconds: e) : null)
               .toList(),
       aUuidList: (jsonSerialization['aUuidList'] as List<dynamic>)
           .map((e) => _i4.UuidValue.fromString(e))
@@ -271,27 +282,37 @@ abstract class Nullability extends _i1.SerializableEntity {
               .toList(),
       aListWithNullableUuids:
           (jsonSerialization['aListWithNullableUuids'] as List<dynamic>)
-              .map((e) => _i4.UuidValue.fromString(e))
+              .map((e) => e != null ? _i4.UuidValue.fromString(e) : null)
               .toList(),
       aNullableListWithNullableUuids:
           (jsonSerialization['aNullableListWithNullableUuids']
                   as List<dynamic>?)
-              ?.map((e) => _i4.UuidValue.fromString(e))
+              ?.map((e) => e != null ? _i4.UuidValue.fromString(e) : null)
               .toList(),
-      anIntMap: (jsonSerialization['anIntMap'] as List<dynamic>)
-          .fold<Map<String, int>>(
-              {}, (t, e) => {...t, e['k'] as String: e['v'] as int}),
-      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as List<dynamic>?)
-          ?.fold<Map<String, int>>(
-              {}, (t, e) => {...t, e['k'] as String: e['v'] as int}),
+      anIntMap: (jsonSerialization['anIntMap'] as Map<dynamic, dynamic>)
+          .map((k, v) => MapEntry(
+                k as String,
+                v as int,
+              )),
+      aNullableIntMap:
+          (jsonSerialization['aNullableIntMap'] as Map<dynamic, dynamic>?)
+              ?.map((k, v) => MapEntry(
+                    k as String,
+                    v as int,
+                  )),
       aMapWithNullableInts:
-          (jsonSerialization['aMapWithNullableInts'] as List<dynamic>)
-              .fold<Map<String, int?>>(
-                  {}, (t, e) => {...t, e['k'] as String: e['v'] as int?}),
+          (jsonSerialization['aMapWithNullableInts'] as Map<dynamic, dynamic>)
+              .map((k, v) => MapEntry(
+                    k as String,
+                    v as int?,
+                  )),
       aNullableMapWithNullableInts:
-          (jsonSerialization['aNullableMapWithNullableInts'] as List<dynamic>?)
-              ?.fold<Map<String, int?>>(
-                  {}, (t, e) => {...t, e['k'] as String: e['v'] as int?}),
+          (jsonSerialization['aNullableMapWithNullableInts']
+                  as Map<dynamic, dynamic>?)
+              ?.map((k, v) => MapEntry(
+                    k as String,
+                    v as int?,
+                  )),
     );
   }
 

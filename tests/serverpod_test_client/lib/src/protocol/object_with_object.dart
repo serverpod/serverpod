@@ -38,8 +38,10 @@ abstract class ObjectWithObject extends _i1.SerializableEntity {
       data: _i2.SimpleData.fromJson(
           jsonSerialization['data'] as Map<String, dynamic>),
       nullableData: jsonSerialization.containsKey('nullableData')
-          ? _i2.SimpleData.fromJson(
-              jsonSerialization['nullableData'] as Map<String, dynamic>)
+          ? jsonSerialization['nullableData'] != null
+              ? _i2.SimpleData.fromJson(
+                  jsonSerialization['nullableData'] as Map<String, dynamic>)
+              : null
           : null,
       dataList: (jsonSerialization['dataList'] as List<dynamic>)
           .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
@@ -50,11 +52,15 @@ abstract class ObjectWithObject extends _i1.SerializableEntity {
               .toList(),
       listWithNullableData:
           (jsonSerialization['listWithNullableData'] as List<dynamic>)
-              .map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+              .map((e) => e != null
+                  ? _i2.SimpleData.fromJson(e as Map<String, dynamic>)
+                  : null)
               .toList(),
       nullableListWithNullableData:
           (jsonSerialization['nullableListWithNullableData'] as List<dynamic>?)
-              ?.map((e) => _i2.SimpleData.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => e != null
+                  ? _i2.SimpleData.fromJson(e as Map<String, dynamic>)
+                  : null)
               .toList(),
     );
   }

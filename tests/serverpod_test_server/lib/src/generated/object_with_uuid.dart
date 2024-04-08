@@ -30,7 +30,9 @@ abstract class ObjectWithUuid extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       uuid: _i2.UuidValue.fromString(jsonSerialization['uuid']),
       uuidNullable: jsonSerialization.containsKey('uuidNullable')
-          ? _i2.UuidValue.fromString(jsonSerialization['uuidNullable'])
+          ? jsonSerialization['uuidNullable'] != null
+              ? _i2.UuidValue.fromString(jsonSerialization['uuidNullable'])
+              : null
           : null,
     );
   }

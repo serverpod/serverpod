@@ -32,7 +32,10 @@ abstract class Player extends _i1.SerializableEntity {
       name: jsonSerialization['name'] as String,
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization.containsKey('team')
-          ? _i2.Team.fromJson(jsonSerialization['team'] as Map<String, dynamic>)
+          ? jsonSerialization['team'] != null
+              ? _i2.Team.fromJson(
+                  jsonSerialization['team'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

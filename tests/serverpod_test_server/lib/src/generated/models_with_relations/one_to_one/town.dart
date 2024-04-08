@@ -32,8 +32,10 @@ abstract class Town extends _i1.TableRow {
       name: jsonSerialization['name'] as String,
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization.containsKey('mayor')
-          ? _i2.Citizen.fromJson(
-              jsonSerialization['mayor'] as Map<String, dynamic>)
+          ? jsonSerialization['mayor'] != null
+              ? _i2.Citizen.fromJson(
+                  jsonSerialization['mayor'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

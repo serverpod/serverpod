@@ -32,8 +32,10 @@ abstract class Address extends _i1.TableRow {
       street: jsonSerialization['street'] as String,
       inhabitantId: jsonSerialization['inhabitantId'] as int?,
       inhabitant: jsonSerialization.containsKey('inhabitant')
-          ? _i2.Citizen.fromJson(
-              jsonSerialization['inhabitant'] as Map<String, dynamic>)
+          ? jsonSerialization['inhabitant'] != null
+              ? _i2.Citizen.fromJson(
+                  jsonSerialization['inhabitant'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }

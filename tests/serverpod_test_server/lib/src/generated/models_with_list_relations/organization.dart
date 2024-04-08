@@ -38,7 +38,10 @@ abstract class Organization extends _i1.TableRow {
           .toList(),
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization.containsKey('city')
-          ? _i2.City.fromJson(jsonSerialization['city'] as Map<String, dynamic>)
+          ? jsonSerialization['city'] != null
+              ? _i2.City.fromJson(
+                  jsonSerialization['city'] as Map<String, dynamic>)
+              : null
           : null,
     );
   }
