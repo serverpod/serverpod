@@ -32,11 +32,14 @@ abstract class ModuleDatatype extends _i1.SerializableEntity {
       list: (jsonSerialization['list'] as List<dynamic>)
           .map((e) => _i2.ModuleClass.fromJson(e as Map<String, dynamic>))
           .toList(),
-      map: (jsonSerialization['map'] as Map<dynamic, dynamic>)
-          .map((k, v) => MapEntry(
-                k as String,
-                _i2.ModuleClass.fromJson(v as Map<String, dynamic>),
-              )),
+      map: (jsonSerialization['map'] as List<dynamic>)
+          .fold<Map<String, _i2.ModuleClass>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    e['k'] as String:
+                        _i2.ModuleClass.fromJson(e['v'] as Map<String, dynamic>)
+                  }),
     );
   }
 

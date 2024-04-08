@@ -277,30 +277,20 @@ abstract class Nullability extends _i1.SerializableEntity {
                   as List<dynamic>?)
               ?.map((e) => _i4.UuidValue.fromString(e))
               .toList(),
-      anIntMap: (jsonSerialization['anIntMap'] as Map<dynamic, dynamic>)
-          .map((k, v) => MapEntry(
-                k as String,
-                v as int,
-              )),
-      aNullableIntMap:
-          (jsonSerialization['aNullableIntMap'] as Map<dynamic, dynamic>?)
-              ?.map((k, v) => MapEntry(
-                    k as String,
-                    v as int,
-                  )),
+      anIntMap: (jsonSerialization['anIntMap'] as List<dynamic>)
+          .fold<Map<String, int>>(
+              {}, (t, e) => {...t, e['k'] as String: e['v'] as int}),
+      aNullableIntMap: (jsonSerialization['aNullableIntMap'] as List<dynamic>?)
+          ?.fold<Map<String, int>>(
+              {}, (t, e) => {...t, e['k'] as String: e['v'] as int}),
       aMapWithNullableInts:
-          (jsonSerialization['aMapWithNullableInts'] as Map<dynamic, dynamic>)
-              .map((k, v) => MapEntry(
-                    k as String,
-                    v as int?,
-                  )),
+          (jsonSerialization['aMapWithNullableInts'] as List<dynamic>)
+              .fold<Map<String, int?>>(
+                  {}, (t, e) => {...t, e['k'] as String: e['v'] as int?}),
       aNullableMapWithNullableInts:
-          (jsonSerialization['aNullableMapWithNullableInts']
-                  as Map<dynamic, dynamic>?)
-              ?.map((k, v) => MapEntry(
-                    k as String,
-                    v as int?,
-                  )),
+          (jsonSerialization['aNullableMapWithNullableInts'] as List<dynamic>?)
+              ?.fold<Map<String, int?>>(
+                  {}, (t, e) => {...t, e['k'] as String: e['v'] as int?}),
     );
   }
 

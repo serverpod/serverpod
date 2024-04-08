@@ -89,10 +89,13 @@ abstract class TypesList extends _i1.SerializableEntity {
           ?.map((e) => _i3.Types.fromJson(e as Map<String, dynamic>))
           .toList(),
       aMap: (jsonSerialization['aMap'] as List<dynamic>?)
-          ?.map((e) => (e as Map<dynamic, dynamic>).map((k, v) => MapEntry(
-                k as String,
-                _i3.Types.fromJson(v as Map<String, dynamic>),
-              )))
+          ?.map((e) => (e as List<dynamic>).fold<Map<String, _i3.Types>>(
+              {},
+              (t, e) => {
+                    ...t,
+                    e['k'] as String:
+                        _i3.Types.fromJson(e['v'] as Map<String, dynamic>)
+                  }))
           .toList(),
       aList: (jsonSerialization['aList'] as List<dynamic>?)
           ?.map((e) => (e as List<dynamic>)

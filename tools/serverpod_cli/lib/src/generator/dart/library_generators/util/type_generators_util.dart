@@ -58,11 +58,16 @@ Expression _expressionTypeBuilder(
   GeneratorConfig config,
   ClassDefinition classDefinition, {
   String? fieldName,
-  Reference? reference,
+  Expression? mapExpression,
 }) {
   Reference jsonReference = refer('jsonSerialization');
+  Expression? containsKeyExpression = mapExpression != null ||
+          type.nullable == false
+      ? null
+      : jsonReference.property('containsKey').call([literalString(fieldName!)]);
+
   Expression valueExpression =
-      reference ?? jsonReference.index(literalString(fieldName!));
+      mapExpression ?? jsonReference.index(literalString(fieldName!));
 
   switch (_getValueType(type)) {
     case ValueType.int:
@@ -71,49 +76,37 @@ Expression _expressionTypeBuilder(
     case ValueType.bool:
       return _expressionPrimitiveTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
       );
     case ValueType.dateTime:
       return _expressionDateTimeTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
       );
     case ValueType.duration:
       return _expressionDurationTypeBuilder(
-        type,
-        jsonReference,
         valueExpression,
-        fieldName: fieldName,
-        reference: reference,
+        containsKeyExpression,
       );
     case ValueType.byteData:
       return _expressionByteDataBuilder(
         type,
-        jsonReference,
         valueExpression,
-        fieldName: fieldName,
-        reference: reference,
+        containsKeyExpression,
       );
     case ValueType.uuidValue:
       return _expressionUuidValueTypeBuilder(
-        type,
-        jsonReference,
         valueExpression,
-        fieldName: fieldName,
-        reference: reference,
+        containsKeyExpression,
       );
     case ValueType.isEnum:
       return _expressionEnumTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
+        containsKeyExpression,
         serverCode,
         config,
         classDefinition,
-        fieldName: fieldName,
-        reference: reference,
       );
     case ValueType.list:
       return _expressionListTypeBuilder(
@@ -127,7 +120,6 @@ Expression _expressionTypeBuilder(
     case ValueType.set:
       return _expressionSetTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
         serverCode,
         config,
@@ -136,7 +128,6 @@ Expression _expressionTypeBuilder(
     case ValueType.map:
       return _expressionMapTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
         serverCode,
         config,
@@ -145,28 +136,22 @@ Expression _expressionTypeBuilder(
     default:
       return _expressionClassTypeBuilder(
         type,
-        jsonReference,
         valueExpression,
+        containsKeyExpression,
         serverCode,
         config,
         classDefinition,
-        fieldName: fieldName,
-        reference: reference,
       );
   }
 }
 
 List<Code> _nullCheckWrapper(
-  bool shouldWrap,
-  String? fieldName,
-  Reference jsonReference,
+  Expression? containsKeyExpression,
   List<Code> body,
 ) {
-  if (!shouldWrap) return body;
+  if (containsKeyExpression == null) return body;
   return [
-    jsonReference
-        .property('containsKey')
-        .call([literalString(fieldName!)]).code,
+    containsKeyExpression.code,
     const Code('?'),
     ...body,
     const Code(': null'),
@@ -175,7 +160,6 @@ List<Code> _nullCheckWrapper(
 
 Expression _expressionPrimitiveTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -189,7 +173,6 @@ Expression _expressionPrimitiveTypeBuilder(
 
 Expression _expressionDateTimeTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
 ) {
   return CodeExpression(
@@ -204,18 +187,13 @@ Expression _expressionDateTimeTypeBuilder(
 }
 
 Expression _expressionDurationTypeBuilder(
-  TypeDefinition type,
-  Reference jsonReference,
-  Expression valueExpression, {
-  String? fieldName,
-  Reference? reference,
-}) {
+  Expression valueExpression,
+  Expression? containsKeyExpression,
+) {
   return CodeExpression(
     Block.of(
       _nullCheckWrapper(
-        type.nullable && reference == null,
-        fieldName,
-        jsonReference,
+        containsKeyExpression,
         [
           refer('Duration').call([], {'milliseconds': valueExpression}).code
         ],
@@ -226,17 +204,13 @@ Expression _expressionDurationTypeBuilder(
 
 Expression _expressionByteDataBuilder(
   TypeDefinition type,
-  Reference jsonReference,
-  Expression valueExpression, {
-  String? fieldName,
-  Reference? reference,
-}) {
+  Expression valueExpression,
+  Expression? containsKeyExpression,
+) {
   return CodeExpression(
     Block.of(
       _nullCheckWrapper(
-        type.nullable && reference == null,
-        fieldName,
-        jsonReference,
+        containsKeyExpression,
         [
           if (!type.nullable) const Code('('),
           if (!type.nullable) valueExpression.code,
@@ -261,18 +235,13 @@ Expression _expressionByteDataBuilder(
 }
 
 Expression _expressionUuidValueTypeBuilder(
-  TypeDefinition type,
-  Reference jsonReference,
-  Expression valueExpression, {
-  String? fieldName,
-  Reference? reference,
-}) {
+  Expression valueExpression,
+  Expression? containsKeyExpression,
+) {
   return CodeExpression(
     Block.of(
       _nullCheckWrapper(
-        type.nullable && reference == null,
-        fieldName,
-        jsonReference,
+        containsKeyExpression,
         [
           refer('UuidValue', uuidValueUrl)
               .property('fromString')
@@ -285,14 +254,12 @@ Expression _expressionUuidValueTypeBuilder(
 
 Expression _expressionEnumTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
+  Expression? containsKeyExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition, {
-  String? fieldName,
-  Reference? reference,
-}) {
+  ClassDefinition classDefinition,
+) {
   Reference typRef = type.asNonNullable.reference(serverCode,
       subDirParts: classDefinition.subDirParts, config: config);
 
@@ -314,9 +281,7 @@ Expression _expressionEnumTypeBuilder(
   return CodeExpression(
     Block.of(
       _nullCheckWrapper(
-        type.nullable && reference == null,
-        fieldName,
-        jsonReference,
+        containsKeyExpression,
         [
           typRef
               .property('fromJson')
@@ -347,7 +312,7 @@ Expression _expressionListTypeBuilder(
         serverCode,
         config,
         classDefinition,
-        reference: refer('e'),
+        mapExpression: refer('e'),
       ).code,
       const Code(').toList()'),
     ]),
@@ -356,7 +321,6 @@ Expression _expressionListTypeBuilder(
 
 Expression _expressionSetTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -374,7 +338,7 @@ Expression _expressionSetTypeBuilder(
         serverCode,
         config,
         classDefinition,
-        reference: refer('e'),
+        mapExpression: refer('e'),
       ).code,
       const Code(')'),
     ]),
@@ -383,7 +347,6 @@ Expression _expressionSetTypeBuilder(
 
 Expression _expressionMapTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
   bool serverCode,
   GeneratorConfig config,
@@ -394,48 +357,60 @@ Expression _expressionMapTypeBuilder(
       const Code('('),
       valueExpression.code,
       Code(
-        'as Map<dynamic, dynamic> ${type.nullable ? '?)?' : ')'}.map((k, v) =>',
+        'as List<dynamic> ${type.nullable ? '?)?' : ')'}'
+        '.fold<Map<',
       ),
-      refer('MapEntry').call([
-        _expressionTypeBuilder(
-          type.generics.first,
-          serverCode,
-          config,
-          classDefinition,
-          reference: refer('k'),
-        ),
-        _expressionTypeBuilder(
-          type.generics.last,
-          serverCode,
-          config,
-          classDefinition,
-          reference: refer('v'),
-        ),
-      ]).code,
-      const Code(')'),
+      type.generics.first
+          .reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          )
+          .code,
+      const Code(','),
+      type.generics.last
+          .reference(
+            serverCode,
+            subDirParts: classDefinition.subDirParts,
+            config: config,
+          )
+          .code,
+      const Code('>>({}, (t, e) => {...t, '),
+      _expressionTypeBuilder(
+        type.generics.first,
+        serverCode,
+        config,
+        classDefinition,
+        mapExpression: refer('e').index(literalString('k')),
+      ).code,
+      const Code(':'),
+      _expressionTypeBuilder(
+        type.generics.last,
+        serverCode,
+        config,
+        classDefinition,
+        mapExpression: refer('e').index(literalString('v')),
+      ).code,
+      const Code('})'),
     ]),
   );
 }
 
 Expression _expressionClassTypeBuilder(
   TypeDefinition type,
-  Reference jsonReference,
   Expression valueExpression,
+  Expression? containsKeyExpression,
   bool serverCode,
   GeneratorConfig config,
-  ClassDefinition classDefinition, {
-  String? fieldName,
-  Reference? reference,
-}) {
+  ClassDefinition classDefinition,
+) {
   Reference typeRef = type.asNonNullable.reference(serverCode,
       subDirParts: classDefinition.subDirParts, config: config);
 
   return CodeExpression(
     Block.of(
       _nullCheckWrapper(
-        type.nullable && reference == null,
-        fieldName,
-        jsonReference,
+        containsKeyExpression,
         [
           typeRef.property('fromJson').call([
             CodeExpression(

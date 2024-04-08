@@ -217,7 +217,9 @@ void main() {
       () {
     expect(
       TypesMap.fromJson({
-        'anIntKey': {1: 'test'},
+        'anIntKey': [
+          {'k': 1, 'v': 'test'}
+        ],
       }),
       isA<TypesMap>(),
     );
@@ -228,28 +230,36 @@ void main() {
       () {
     expect(
       () => TypesMap.fromJson({
-        'anIntKey': {"test": 1},
+        'anIntKey': [
+          {'k': " test", 'v': 1}
+        ],
       }),
       throwsA(isA<TypeError>()),
     );
 
     expect(
       () => TypesMap.fromJson({
-        'anIntKey': {"test": null},
+        'anIntKey': [
+          {'k': 'test', 'v': null}
+        ],
       }),
       throwsA(isA<TypeError>()),
     );
 
     expect(
       () => TypesMap.fromJson({
-        'anIntKey': {null: 1},
+        'anIntKey': [
+          {'k': null, 'v': 1}
+        ],
       }),
       throwsA(isA<TypeError>()),
     );
 
     expect(
       () => TypesMap.fromJson({
-        'anIntKey': {null: null},
+        'anIntKey': [
+          {'k': null, 'v': null}
+        ],
       }),
       throwsA(isA<TypeError>()),
     );
@@ -261,6 +271,17 @@ void main() {
     expect(
       () => SimpleDataMap.fromJson({
         'data': null,
+      }),
+      throwsA(isA<TypeError>()),
+    );
+  });
+
+  test(
+      'Given a class with a missing Map key and value when calling fromJson, then it throws an TypeError',
+      () {
+    expect(
+      () => SimpleDataMap.fromJson({
+        'data': [{}],
       }),
       throwsA(isA<TypeError>()),
     );
