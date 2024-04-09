@@ -53,7 +53,7 @@ void main() {
 
     test('then generated enum has static fromJson method', () {
       expect(codeMap[expectedFileName],
-          contains('static Example? fromJson(int index)'));
+          contains('static Example fromJson(int index)'));
     });
 
     test('then generated enum has toJson method', () {
@@ -77,7 +77,7 @@ void main() {
     );
     test('then generated enum has static fromJson method', () {
       expect(codeMap[expectedFileName],
-          contains('static Example? fromJson(String name)'));
+          contains('static Example fromJson(String name)'));
     });
 
     test('then generated enum has toJson method', () {
