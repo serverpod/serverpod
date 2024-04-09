@@ -11,7 +11,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
 
 abstract class Nullability extends _i1.SerializableEntity {
   Nullability._({
@@ -122,41 +123,22 @@ abstract class Nullability extends _i1.SerializableEntity {
       aNullableBool: jsonSerialization['aNullableBool'] as bool?,
       aString: jsonSerialization['aString'] as String,
       aNullableString: jsonSerialization['aNullableString'] as String?,
-      aDateTime: DateTime.parse((jsonSerialization['aDateTime'] as String)),
-      aNullableDateTime: jsonSerialization['aNullableDateTime'] != null
-          ? DateTime.tryParse(jsonSerialization['aNullableDateTime'])
-          : null,
-      aByteData: (jsonSerialization['aByteData'] != null &&
-              jsonSerialization['aByteData'] is _i2.Uint8List
-          ? _i2.ByteData.view(
-              jsonSerialization['aByteData'].buffer,
-              jsonSerialization['aByteData'].offsetInBytes,
-              jsonSerialization['aByteData'].lengthInBytes,
-            )
-          : (jsonSerialization['aByteData'] as String?)
-              ?.base64DecodedByteData())!,
-      aNullableByteData: jsonSerialization.containsKey('aNullableByteData')
-          ? jsonSerialization['aNullableByteData'] is _i2.Uint8List
-              ? _i2.ByteData.view(
-                  jsonSerialization['aNullableByteData'].buffer,
-                  jsonSerialization['aNullableByteData'].offsetInBytes,
-                  jsonSerialization['aNullableByteData'].lengthInBytes,
-                )
-              : (jsonSerialization['aNullableByteData'] as String?)
-                  ?.base64DecodedByteData()
-          : null,
-      aDuration: Duration(milliseconds: jsonSerialization['aDuration']),
-      aNullableDuration: jsonSerialization.containsKey('aNullableDuration')
-          ? jsonSerialization['aNullableDuration'] != null
-              ? Duration(milliseconds: jsonSerialization['aNullableDuration'])
-              : null
-          : null,
-      aUuid: _i4.UuidValue.fromString(jsonSerialization['aUuid']),
-      aNullableUuid: jsonSerialization.containsKey('aNullableUuid')
-          ? jsonSerialization['aNullableUuid'] != null
-              ? _i4.UuidValue.fromString(jsonSerialization['aNullableUuid'])
-              : null
-          : null,
+      aDateTime: _i4.DateTimeExt.getDateTime<DateTime>(
+          jsonSerialization['aDateTime'])!,
+      aNullableDateTime: _i4.DateTimeExt.getDateTime<DateTime?>(
+          jsonSerialization['aNullableDateTime']),
+      aByteData: _i4.ByteDataExt.getByteData<_i2.ByteData>(
+          jsonSerialization['aByteData'])!,
+      aNullableByteData: _i4.ByteDataExt.getByteData<_i2.ByteData?>(
+          jsonSerialization['aNullableByteData']),
+      aDuration: _i4.DurationExt.getDuration<Duration>(
+          jsonSerialization['aDuration'])!,
+      aNullableDuration: _i4.DurationExt.getDuration<Duration?>(
+          jsonSerialization['aNullableDuration']),
+      aUuid: _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(
+          jsonSerialization['aUuid'])!,
+      aNullableUuid: _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(
+          jsonSerialization['aNullableUuid']),
       anObject: _i3.SimpleData.fromJson(
           jsonSerialization['anObject'] as Map<String, dynamic>),
       aNullableObject: jsonSerialization.containsKey('aNullableObject')
@@ -201,92 +183,68 @@ abstract class Nullability extends _i1.SerializableEntity {
                   : null)
               .toList(),
       aDateTimeList: (jsonSerialization['aDateTimeList'] as List<dynamic>)
-          .map((e) => DateTime.parse((e as String)))
+          .map((e) => _i4.DateTimeExt.getDateTime<DateTime>(e)!)
           .toList(),
       aNullableDateTimeList:
           (jsonSerialization['aNullableDateTimeList'] as List<dynamic>?)
-              ?.map((e) => DateTime.parse((e as String)))
+              ?.map((e) => _i4.DateTimeExt.getDateTime<DateTime>(e)!)
               .toList(),
       aListWithNullableDateTimes:
           (jsonSerialization['aListWithNullableDateTimes'] as List<dynamic>)
-              .map((e) => e != null ? DateTime.tryParse(e) : null)
+              .map((e) => _i4.DateTimeExt.getDateTime<DateTime?>(e))
               .toList(),
       aNullableListWithNullableDateTimes:
           (jsonSerialization['aNullableListWithNullableDateTimes']
                   as List<dynamic>?)
-              ?.map((e) => e != null ? DateTime.tryParse(e) : null)
+              ?.map((e) => _i4.DateTimeExt.getDateTime<DateTime?>(e))
               .toList(),
       aByteDataList: (jsonSerialization['aByteDataList'] as List<dynamic>)
-          .map((e) => (e != null && e is _i2.Uint8List
-              ? _i2.ByteData.view(
-                  e.buffer,
-                  e.offsetInBytes,
-                  e.lengthInBytes,
-                )
-              : (e as String?)?.base64DecodedByteData())!)
+          .map((e) => _i4.ByteDataExt.getByteData<_i2.ByteData>(e)!)
           .toList(),
       aNullableByteDataList:
           (jsonSerialization['aNullableByteDataList'] as List<dynamic>?)
-              ?.map((e) => (e != null && e is _i2.Uint8List
-                  ? _i2.ByteData.view(
-                      e.buffer,
-                      e.offsetInBytes,
-                      e.lengthInBytes,
-                    )
-                  : (e as String?)?.base64DecodedByteData())!)
+              ?.map((e) => _i4.ByteDataExt.getByteData<_i2.ByteData>(e)!)
               .toList(),
       aListWithNullableByteDatas:
           (jsonSerialization['aListWithNullableByteDatas'] as List<dynamic>)
-              .map((e) => e is _i2.Uint8List
-                  ? _i2.ByteData.view(
-                      e.buffer,
-                      e.offsetInBytes,
-                      e.lengthInBytes,
-                    )
-                  : (e as String?)?.base64DecodedByteData())
+              .map((e) => _i4.ByteDataExt.getByteData<_i2.ByteData?>(e))
               .toList(),
       aNullableListWithNullableByteDatas:
           (jsonSerialization['aNullableListWithNullableByteDatas']
                   as List<dynamic>?)
-              ?.map((e) => e is _i2.Uint8List
-                  ? _i2.ByteData.view(
-                      e.buffer,
-                      e.offsetInBytes,
-                      e.lengthInBytes,
-                    )
-                  : (e as String?)?.base64DecodedByteData())
+              ?.map((e) => _i4.ByteDataExt.getByteData<_i2.ByteData?>(e))
               .toList(),
       aDurationList: (jsonSerialization['aDurationList'] as List<dynamic>)
-          .map((e) => Duration(milliseconds: e))
+          .map((e) => _i4.DurationExt.getDuration<Duration>(e)!)
           .toList(),
       aNullableDurationList:
           (jsonSerialization['aNullableDurationList'] as List<dynamic>?)
-              ?.map((e) => Duration(milliseconds: e))
+              ?.map((e) => _i4.DurationExt.getDuration<Duration>(e)!)
               .toList(),
       aListWithNullableDurations:
           (jsonSerialization['aListWithNullableDurations'] as List<dynamic>)
-              .map((e) => e != null ? Duration(milliseconds: e) : null)
+              .map((e) => _i4.DurationExt.getDuration<Duration?>(e))
               .toList(),
       aNullableListWithNullableDurations:
           (jsonSerialization['aNullableListWithNullableDurations']
                   as List<dynamic>?)
-              ?.map((e) => e != null ? Duration(milliseconds: e) : null)
+              ?.map((e) => _i4.DurationExt.getDuration<Duration?>(e))
               .toList(),
       aUuidList: (jsonSerialization['aUuidList'] as List<dynamic>)
-          .map((e) => _i4.UuidValue.fromString(e))
+          .map((e) => _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(e)!)
           .toList(),
       aNullableUuidList:
           (jsonSerialization['aNullableUuidList'] as List<dynamic>?)
-              ?.map((e) => _i4.UuidValue.fromString(e))
+              ?.map((e) => _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(e)!)
               .toList(),
       aListWithNullableUuids:
           (jsonSerialization['aListWithNullableUuids'] as List<dynamic>)
-              .map((e) => e != null ? _i4.UuidValue.fromString(e) : null)
+              .map((e) => _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(e))
               .toList(),
       aNullableListWithNullableUuids:
           (jsonSerialization['aNullableListWithNullableUuids']
                   as List<dynamic>?)
-              ?.map((e) => e != null ? _i4.UuidValue.fromString(e) : null)
+              ?.map((e) => _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(e))
               .toList(),
       anIntMap: (jsonSerialization['anIntMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(

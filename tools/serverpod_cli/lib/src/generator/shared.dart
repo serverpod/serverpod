@@ -12,12 +12,8 @@ String serverpodProtocolUrl(bool serverCode) {
       : 'package:serverpod_client/serverpod_client.dart';
 }
 
-/// The import url of the serverpod protocol.
-String protocolUrl(bool serverCode) {
-  return serverCode
-      ? 'package:serverpod/protocol.dart'
-      : 'package:serverpod_client/serverpod_client.dart';
-}
+/// The import url of the serialization package.
+String get serializationUrl => 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// The import url of the ByteData type.
 String get byteDataUrl => 'dart:typed_data';

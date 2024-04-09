@@ -762,10 +762,6 @@ class SerializableModelLibraryGenerator {
           p.name = 'jsonSerialization';
           p.type = refer('Map<String,dynamic>');
         }),
-        /*  Parameter((p) {
-          p.name = 'serializationManager';
-          p.type = refer('SerializationManager', serverpodUrl(serverCode));
-        }),*/
       ]);
       c.body = refer(className)
           .call([], {

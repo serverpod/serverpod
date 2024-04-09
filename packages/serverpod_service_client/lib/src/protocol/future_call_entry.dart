@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry extends _i1.SerializableEntity {
@@ -34,7 +35,7 @@ abstract class FutureCallEntry extends _i1.SerializableEntity {
     return FutureCallEntry(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      time: DateTime.parse((jsonSerialization['time'] as String)),
+      time: _i2.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,

@@ -10,6 +10,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry extends _i1.SerializableEntity {
@@ -38,19 +39,12 @@ abstract class CloudStorageEntry extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime: DateTime.parse((jsonSerialization['addedTime'] as String)),
-      expiration: jsonSerialization['expiration'] != null
-          ? DateTime.tryParse(jsonSerialization['expiration'])
-          : null,
-      byteData: (jsonSerialization['byteData'] != null &&
-              jsonSerialization['byteData'] is _i2.Uint8List
-          ? _i2.ByteData.view(
-              jsonSerialization['byteData'].buffer,
-              jsonSerialization['byteData'].offsetInBytes,
-              jsonSerialization['byteData'].lengthInBytes,
-            )
-          : (jsonSerialization['byteData'] as String?)
-              ?.base64DecodedByteData())!,
+      addedTime: _i3.DateTimeExt.getDateTime<DateTime>(
+          jsonSerialization['addedTime'])!,
+      expiration: _i3.DateTimeExt.getDateTime<DateTime?>(
+          jsonSerialization['expiration']),
+      byteData: _i3.ByteDataExt.getByteData<_i2.ByteData>(
+          jsonSerialization['byteData'])!,
       verified: jsonSerialization['verified'] as bool,
     );
   }

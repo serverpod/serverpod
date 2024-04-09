@@ -11,7 +11,8 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Types extends _i1.TableRow {
@@ -49,30 +50,15 @@ abstract class Types extends _i1.TableRow {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
       aDouble: jsonSerialization['aDouble'] as double?,
-      aDateTime: jsonSerialization['aDateTime'] != null
-          ? DateTime.tryParse(jsonSerialization['aDateTime'])
-          : null,
+      aDateTime: _i4.DateTimeExt.getDateTime<DateTime?>(
+          jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
-      aByteData: jsonSerialization.containsKey('aByteData')
-          ? jsonSerialization['aByteData'] is _i2.Uint8List
-              ? _i2.ByteData.view(
-                  jsonSerialization['aByteData'].buffer,
-                  jsonSerialization['aByteData'].offsetInBytes,
-                  jsonSerialization['aByteData'].lengthInBytes,
-                )
-              : (jsonSerialization['aByteData'] as String?)
-                  ?.base64DecodedByteData()
-          : null,
-      aDuration: jsonSerialization.containsKey('aDuration')
-          ? jsonSerialization['aDuration'] != null
-              ? Duration(milliseconds: jsonSerialization['aDuration'])
-              : null
-          : null,
-      aUuid: jsonSerialization.containsKey('aUuid')
-          ? jsonSerialization['aUuid'] != null
-              ? _i4.UuidValue.fromString(jsonSerialization['aUuid'])
-              : null
-          : null,
+      aByteData: _i4.ByteDataExt.getByteData<_i2.ByteData?>(
+          jsonSerialization['aByteData']),
+      aDuration: _i4.DurationExt.getDuration<Duration?>(
+          jsonSerialization['aDuration']),
+      aUuid: _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(
+          jsonSerialization['aUuid']),
       anEnum: jsonSerialization.containsKey('anEnum')
           ? jsonSerialization['anEnum'] != null
               ? _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int))

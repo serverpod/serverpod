@@ -178,16 +178,14 @@ Expression _expressionDateTimeTypeBuilder(
   Expression valueExpression,
 ) {
   return CodeExpression(
-    refer('DateTime')
-        .property(type.nullable ? 'tryParse' : 'parse')
+    refer('DateTimeExt', serializationUrl)
+        .property('getDateTime')
         .call(
-          [
-            type.nullable
-                ? valueExpression
-                : valueExpression.asA(const CodeExpression(Code('String')))
-          ],
+          [valueExpression],
+          {},
+          [refer(type.nullable ? 'DateTime?' : 'DateTime')],
         )
-        .checkIfNull(type, valueExpression: valueExpression)
+        .nullOrNot(type)
         .code,
   );
 }
@@ -198,49 +196,15 @@ Expression _expressionDurationTypeBuilder(
   Expression? containsKeyExpression,
 ) {
   return CodeExpression(
-    Block.of(
-      _containsKeyWrapper(
-        containsKeyExpression,
-        [
-          refer('Duration')
-              .call([], {'milliseconds': valueExpression})
-              .checkIfNull(type, valueExpression: valueExpression)
-              .code
-        ],
-      ),
-    ),
-  );
-}
-
-Expression _expressionByteDataBuilder(
-  TypeDefinition type,
-  Expression valueExpression,
-  Expression? containsKeyExpression,
-) {
-  return CodeExpression(
-    Block.of(
-      _containsKeyWrapper(
-        containsKeyExpression,
-        [
-          if (!type.nullable) const Code('('),
-          if (!type.nullable) valueExpression.code,
-          if (!type.nullable) const Code('!= null &&'),
-          valueExpression.code,
-          const Code('is'),
-          refer('Uint8List', byteDataUrl).code,
-          const Code('?'),
-          refer('ByteData', byteDataUrl).property('view').call([
-            valueExpression.property('buffer'),
-            valueExpression.property('offsetInBytes'),
-            valueExpression.property('lengthInBytes'),
-          ]).code,
-          const Code(': ('),
-          valueExpression.code,
-          const Code(' as String?)?.base64DecodedByteData()'),
-          if (!type.nullable) const Code(')!'),
-        ],
-      ),
-    ),
+    refer('DurationExt', serializationUrl)
+        .property('getDuration')
+        .call(
+          [valueExpression],
+          {},
+          [refer(type.nullable ? 'Duration?' : 'Duration')],
+        )
+        .nullOrNot(type)
+        .code,
   );
 }
 
@@ -250,18 +214,33 @@ Expression _expressionUuidValueTypeBuilder(
   Expression? containsKeyExpression,
 ) {
   return CodeExpression(
-    Block.of(
-      _containsKeyWrapper(
-        containsKeyExpression,
-        [
-          refer('UuidValue', uuidValueUrl)
-              .property('fromString')
-              .call([valueExpression])
-              .checkIfNull(type, valueExpression: valueExpression)
-              .code,
-        ],
-      ),
-    ),
+    refer('UuidValueExt', serializationUrl)
+        .property('getUuIdValue')
+        .call(
+          [valueExpression],
+          {},
+          [refer(type.nullable ? 'UuidValue?' : 'UuidValue', uuidValueUrl)],
+        )
+        .nullOrNot(type)
+        .code,
+  );
+}
+
+Expression _expressionByteDataBuilder(
+  TypeDefinition type,
+  Expression valueExpression,
+  Expression? containsKeyExpression,
+) {
+  return CodeExpression(
+    refer('ByteDataExt', serializationUrl)
+        .property('getByteData')
+        .call(
+          [valueExpression],
+          {},
+          [refer(type.nullable ? 'ByteData?' : 'ByteData', byteDataUrl)],
+        )
+        .nullOrNot(type)
+        .code,
   );
 }
 
@@ -492,5 +471,9 @@ extension ExpressionExtension on Expression {
         ],
       ),
     );
+  }
+
+  Expression nullOrNot(TypeDefinition type) {
+    return type.nullable ? this : nullChecked;
   }
 }

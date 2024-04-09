@@ -11,7 +11,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'protocol.dart' as _i2;
 import 'dart:typed_data' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
 
 abstract class ObjectWithMaps extends _i1.SerializableEntity {
   ObjectWithMaps._({
@@ -70,28 +71,22 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
       dateTimeMap: (jsonSerialization['dateTimeMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
                 k as String,
-                DateTime.parse((v as String)),
+                _i4.DateTimeExt.getDateTime<DateTime>(v)!,
               )),
       byteDataMap: (jsonSerialization['byteDataMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
                 k as String,
-                (v != null && v is _i3.Uint8List
-                    ? _i3.ByteData.view(
-                        v.buffer,
-                        v.offsetInBytes,
-                        v.lengthInBytes,
-                      )
-                    : (v as String?)?.base64DecodedByteData())!,
+                _i4.ByteDataExt.getByteData<_i3.ByteData>(v)!,
               )),
       durationMap: (jsonSerialization['durationMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
                 k as String,
-                Duration(milliseconds: v),
+                _i4.DurationExt.getDuration<Duration>(v)!,
               )),
       uuidMap: (jsonSerialization['uuidMap'] as Map<dynamic, dynamic>)
           .map((k, v) => MapEntry(
                 k as String,
-                _i4.UuidValue.fromString(v),
+                _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(v)!,
               )),
       nullableDataMap:
           (jsonSerialization['nullableDataMap'] as Map<dynamic, dynamic>)
@@ -117,31 +112,25 @@ abstract class ObjectWithMaps extends _i1.SerializableEntity {
           (jsonSerialization['nullableDateTimeMap'] as Map<dynamic, dynamic>)
               .map((k, v) => MapEntry(
                     k as String,
-                    v != null ? DateTime.tryParse(v) : null,
+                    _i4.DateTimeExt.getDateTime<DateTime?>(v),
                   )),
       nullableByteDataMap:
           (jsonSerialization['nullableByteDataMap'] as Map<dynamic, dynamic>)
               .map((k, v) => MapEntry(
                     k as String,
-                    v is _i3.Uint8List
-                        ? _i3.ByteData.view(
-                            v.buffer,
-                            v.offsetInBytes,
-                            v.lengthInBytes,
-                          )
-                        : (v as String?)?.base64DecodedByteData(),
+                    _i4.ByteDataExt.getByteData<_i3.ByteData?>(v),
                   )),
       nullableDurationMap:
           (jsonSerialization['nullableDurationMap'] as Map<dynamic, dynamic>)
               .map((k, v) => MapEntry(
                     k as String,
-                    v != null ? Duration(milliseconds: v) : null,
+                    _i4.DurationExt.getDuration<Duration?>(v),
                   )),
       nullableUuidMap:
           (jsonSerialization['nullableUuidMap'] as Map<dynamic, dynamic>)
               .map((k, v) => MapEntry(
                     k as String,
-                    v != null ? _i4.UuidValue.fromString(v) : null,
+                    _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(v),
                   )),
       intIntMap: (jsonSerialization['intIntMap'] as List<dynamic>)
           .fold<Map<int, int>>(

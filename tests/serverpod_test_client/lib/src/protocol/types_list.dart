@@ -11,7 +11,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:uuid/uuid_value.dart' as _i4;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
+import 'package:uuid/uuid_value.dart' as _i5;
 
 abstract class TypesList extends _i1.SerializableEntity {
   TypesList._({
@@ -58,25 +59,19 @@ abstract class TypesList extends _i1.SerializableEntity {
           ?.map((e) => e as double)
           .toList(),
       aDateTime: (jsonSerialization['aDateTime'] as List<dynamic>?)
-          ?.map((e) => DateTime.parse((e as String)))
+          ?.map((e) => _i4.DateTimeExt.getDateTime<DateTime>(e)!)
           .toList(),
       aString: (jsonSerialization['aString'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
       aByteData: (jsonSerialization['aByteData'] as List<dynamic>?)
-          ?.map((e) => (e != null && e is _i2.Uint8List
-              ? _i2.ByteData.view(
-                  e.buffer,
-                  e.offsetInBytes,
-                  e.lengthInBytes,
-                )
-              : (e as String?)?.base64DecodedByteData())!)
+          ?.map((e) => _i4.ByteDataExt.getByteData<_i2.ByteData>(e)!)
           .toList(),
       aDuration: (jsonSerialization['aDuration'] as List<dynamic>?)
-          ?.map((e) => Duration(milliseconds: e))
+          ?.map((e) => _i4.DurationExt.getDuration<Duration>(e)!)
           .toList(),
       aUuid: (jsonSerialization['aUuid'] as List<dynamic>?)
-          ?.map((e) => _i4.UuidValue.fromString(e))
+          ?.map((e) => _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(e)!)
           .toList(),
       anEnum: (jsonSerialization['anEnum'] as List<dynamic>?)
           ?.map((e) => _i3.TestEnum.fromJson((e as int)))

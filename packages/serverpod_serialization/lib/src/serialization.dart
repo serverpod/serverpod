@@ -72,24 +72,13 @@ abstract class SerializationManager {
     } else if (_isNullableType<bool>(t)) {
       return data;
     } else if (_isNullableType<DateTime>(t)) {
-      if (data is DateTime) return data as T;
-      if (data == null) return null as T;
-      return DateTime.tryParse(data)?.toUtc() as T;
+      return DateTimeExt.getDateTime<T>(data) as T;
     } else if (_isNullableType<ByteData>(t)) {
-      if (data is Uint8List) {
-        var byteData = ByteData.view(
-          data.buffer,
-          data.offsetInBytes,
-          data.lengthInBytes,
-        );
-        return byteData as T;
-      } else {
-        return (data as String?)?.base64DecodedByteData() as T;
-      }
+      return ByteDataExt.getByteData<T>(data) as T;
     } else if (_isNullableType<Duration>(t)) {
-      return data == null ? data : Duration(milliseconds: (data as int)) as T;
+      return DurationExt.getDuration<T>(data) as T;
     } else if (_isNullableType<UuidValue>(t)) {
-      return (data == null ? null : UuidValue.fromString(data as String)) as T;
+      return UuidValueExt.getUuIdValue<T>(data) as T;
     }
     throw FormatException('No deserialization found for type $t');
   }
@@ -172,7 +161,8 @@ abstract class SerializationManager {
           return nonEncodable.inMilliseconds;
         } else if (nonEncodable is UuidValue) {
           return nonEncodable.uuid;
-        } else if (nonEncodable is Map && nonEncodable.keyType != String) {
+        } else if (nonEncodable is Map<dynamic, dynamic> &&
+            nonEncodable.keyType != String) {
           return nonEncodable.entries
               .map((e) => {'k': e.key, 'v': e.value})
               .toList();
@@ -211,73 +201,4 @@ const extensionSerializedTypes = [
 
 extension<K, V> on Map<K, V> {
   Type get keyType => K;
-}
-
-/// Expose toJson on DateTime
-extension DateTimeToJson on DateTime {
-  /// Returns a serialized version of the [DateTime] in UTC.
-  String toJson() => toUtc().toIso8601String();
-}
-
-/// Expose toJson on Duration
-extension DurationToJson on Duration {
-  /// Returns a serialized version of the [Duration] in milliseconds.
-  int toJson() => inMilliseconds;
-}
-
-/// Expose toJson on UuidValue
-extension UuidValueToJson on UuidValue {
-  /// Returns a serialized version of the [UuidValue] as a [String].
-  String toJson() => uuid;
-}
-
-/// Expose toJson on ByteData
-extension ByteDataToJson on ByteData {
-  /// Returns a serialized version of the [ByteData] as a base64 encoded
-  /// [String].
-  String toJson() => base64encodedString();
-}
-
-/// Expose toJson on Map
-extension MapToJson<K, V> on Map<K, V> {
-  Type get _keyType => K;
-
-  /// Returns a serialized version of the [Map] with keys and values serialized.
-  dynamic toJson({
-    dynamic Function(K)? keyToJson,
-    dynamic Function(V)? valueToJson,
-  }) {
-    if (_keyType == String && keyToJson == null && valueToJson == null) {
-      return this;
-    }
-
-    // This implementation is here to support the old decoder behavior
-    // this should not be needed if the decoder is updated to not look for a nested
-    // map with 'k' and 'v' keys. If that is done the return type can be changed
-    // to Map<dynamic, dynamic>.
-    if (_keyType != String) {
-      return entries.map((e) {
-        var serializedKey = keyToJson != null ? keyToJson(e.key) : e.key;
-        var serializedValue =
-            valueToJson != null ? valueToJson(e.value) : e.value;
-        return {'k': serializedKey, 'v': serializedValue};
-      }).toList();
-    }
-
-    return map((key, value) {
-      var serializedKey = keyToJson != null ? keyToJson(key) : key;
-      var serializedValue = valueToJson != null ? valueToJson(value) : value;
-      return MapEntry(serializedKey, serializedValue);
-    });
-  }
-}
-
-/// Expose toJson on List
-extension ListToJson<T> on List<T> {
-  /// Returns a serialized version of the [List] with values serialized.
-  List<dynamic> toJson({dynamic Function(T)? valueToJson}) {
-    if (valueToJson == null) return this;
-
-    return map<dynamic>(valueToJson).toList();
-  }
 }

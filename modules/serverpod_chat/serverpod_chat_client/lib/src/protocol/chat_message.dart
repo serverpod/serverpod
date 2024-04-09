@@ -11,6 +11,7 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
 
 /// A chat message.
 abstract class ChatMessage extends _i1.SerializableEntity {
@@ -45,7 +46,7 @@ abstract class ChatMessage extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
-      time: DateTime.parse((jsonSerialization['time'] as String)),
+      time: _i4.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       sender: jsonSerialization['sender'] as int,
       senderInfo: jsonSerialization.containsKey('senderInfo')
           ? jsonSerialization['senderInfo'] != null

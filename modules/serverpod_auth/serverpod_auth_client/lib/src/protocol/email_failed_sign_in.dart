@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
@@ -31,7 +32,7 @@ abstract class EmailFailedSignIn extends _i1.SerializableEntity {
     return EmailFailedSignIn(
       id: jsonSerialization['id'] as int?,
       email: jsonSerialization['email'] as String,
-      time: DateTime.parse((jsonSerialization['time'] as String)),
+      time: _i2.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }

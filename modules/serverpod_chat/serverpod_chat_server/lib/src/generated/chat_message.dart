@@ -11,6 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'protocol.dart' as _i3;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// A chat message.
@@ -46,7 +47,7 @@ abstract class ChatMessage extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       channel: jsonSerialization['channel'] as String,
       message: jsonSerialization['message'] as String,
-      time: DateTime.parse((jsonSerialization['time'] as String)),
+      time: _i4.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       sender: jsonSerialization['sender'] as int,
       senderInfo: jsonSerialization.containsKey('senderInfo')
           ? jsonSerialization['senderInfo'] != null

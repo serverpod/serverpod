@@ -9,6 +9,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Represents a snapshot of a specific health metric. An entry is written every
@@ -40,7 +41,8 @@ abstract class ServerHealthMetric extends _i1.TableRow {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: DateTime.parse((jsonSerialization['timestamp'] as String)),
+      timestamp: _i2.DateTimeExt.getDateTime<DateTime>(
+          jsonSerialization['timestamp'])!,
       isHealthy: jsonSerialization['isHealthy'] as bool,
       value: jsonSerialization['value'] as double,
       granularity: jsonSerialization['granularity'] as int,
