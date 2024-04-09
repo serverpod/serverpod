@@ -10,7 +10,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithByteData extends _i1.TableRow {
@@ -27,7 +26,7 @@ abstract class ObjectWithByteData extends _i1.TableRow {
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData: _i3.ByteDataExt.getByteData<_i2.ByteData>(
+      byteData: _i1.ByteDataExt.getByteData<_i2.ByteData>(
           jsonSerialization['byteData'])!,
     );
   }

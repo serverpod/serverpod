@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
@@ -35,7 +34,7 @@ abstract class CloudStorageDirectUploadEntry extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration: _i2.DateTimeExt.getDateTime<DateTime>(
+      expiration: _i1.DateTimeExt.getDateTime<DateTime>(
           jsonSerialization['expiration'])!,
       authKey: jsonSerialization['authKey'] as String,
     );

@@ -10,7 +10,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Bindings to a log entry in the database.
@@ -50,7 +49,7 @@ abstract class LogEntry extends _i1.TableRow {
       messageId: jsonSerialization['messageId'] as int?,
       reference: jsonSerialization['reference'] as String?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i3.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
+      time: _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
       message: jsonSerialization['message'] as String,
       error: jsonSerialization['error'] as String?,

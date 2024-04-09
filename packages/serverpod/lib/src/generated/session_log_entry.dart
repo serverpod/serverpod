@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 /// Log entry for a session.
@@ -52,7 +51,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
     return SessionLogEntry(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i2.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
+      time: _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['time'])!,
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
@@ -64,7 +63,7 @@ abstract class SessionLogEntry extends _i1.TableRow {
       authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
       isOpen: jsonSerialization['isOpen'] as bool?,
       touched:
-          _i2.DateTimeExt.getDateTime<DateTime>(jsonSerialization['touched'])!,
+          _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['touched'])!,
     );
   }
 

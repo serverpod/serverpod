@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// Represents a version of a database migration.
 abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
@@ -33,7 +32,7 @@ abstract class DatabaseMigrationVersion extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       module: jsonSerialization['module'] as String,
       version: jsonSerialization['version'] as String,
-      timestamp: _i2.DateTimeExt.getDateTime<DateTime?>(
+      timestamp: _i1.DateTimeExt.getDateTime<DateTime?>(
           jsonSerialization['timestamp']),
     );
   }

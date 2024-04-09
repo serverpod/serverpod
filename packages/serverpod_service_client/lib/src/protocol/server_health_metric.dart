@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
@@ -40,7 +39,7 @@ abstract class ServerHealthMetric extends _i1.SerializableEntity {
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i2.DateTimeExt.getDateTime<DateTime>(
+      timestamp: _i1.DateTimeExt.getDateTime<DateTime>(
           jsonSerialization['timestamp'])!,
       isHealthy: jsonSerialization['isHealthy'] as bool,
       value: jsonSerialization['value'] as double,

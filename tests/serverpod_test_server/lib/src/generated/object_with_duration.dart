@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class ObjectWithDuration extends _i1.TableRow {
@@ -27,7 +26,7 @@ abstract class ObjectWithDuration extends _i1.TableRow {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
       duration:
-          _i2.DurationExt.getDuration<Duration>(jsonSerialization['duration'])!,
+          _i1.DurationExt.getDuration<Duration>(jsonSerialization['duration'])!,
     );
   }
 

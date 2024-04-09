@@ -82,24 +82,28 @@ Expression _expressionTypeBuilder(
       return _expressionDateTimeTypeBuilder(
         type,
         valueExpression,
+        serverCode,
       );
     case ValueType.duration:
       return _expressionDurationTypeBuilder(
         type,
         valueExpression,
         containsKeyExpression,
+        serverCode,
       );
     case ValueType.byteData:
       return _expressionByteDataBuilder(
         type,
         valueExpression,
         containsKeyExpression,
+        serverCode,
       );
     case ValueType.uuidValue:
       return _expressionUuidValueTypeBuilder(
         type,
         valueExpression,
         containsKeyExpression,
+        serverCode,
       );
     case ValueType.isEnum:
       return _expressionEnumTypeBuilder(
@@ -176,9 +180,10 @@ Expression _expressionPrimitiveTypeBuilder(
 Expression _expressionDateTimeTypeBuilder(
   TypeDefinition type,
   Expression valueExpression,
+  bool serverCode,
 ) {
   return CodeExpression(
-    refer('DateTimeExt', serializationUrl)
+    refer('DateTimeExt', serializationUrl(serverCode))
         .property('getDateTime')
         .call(
           [valueExpression],
@@ -194,9 +199,10 @@ Expression _expressionDurationTypeBuilder(
   TypeDefinition type,
   Expression valueExpression,
   Expression? containsKeyExpression,
+  bool serverCode,
 ) {
   return CodeExpression(
-    refer('DurationExt', serializationUrl)
+    refer('DurationExt', serializationUrl(serverCode))
         .property('getDuration')
         .call(
           [valueExpression],
@@ -212,9 +218,10 @@ Expression _expressionUuidValueTypeBuilder(
   TypeDefinition type,
   Expression valueExpression,
   Expression? containsKeyExpression,
+  bool serverCode,
 ) {
   return CodeExpression(
-    refer('UuidValueExt', serializationUrl)
+    refer('UuidValueExt', serializationUrl(serverCode))
         .property('getUuIdValue')
         .call(
           [valueExpression],
@@ -230,9 +237,10 @@ Expression _expressionByteDataBuilder(
   TypeDefinition type,
   Expression valueExpression,
   Expression? containsKeyExpression,
+  bool serverCode,
 ) {
   return CodeExpression(
-    refer('ByteDataExt', serializationUrl)
+    refer('ByteDataExt', serializationUrl(serverCode))
         .property('getByteData')
         .call(
           [valueExpression],

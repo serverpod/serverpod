@@ -11,8 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
-import 'package:uuid/uuid_value.dart' as _i5;
+import 'package:uuid/uuid_value.dart' as _i4;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class Types extends _i1.TableRow {
@@ -50,14 +49,14 @@ abstract class Types extends _i1.TableRow {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] as bool?,
       aDouble: jsonSerialization['aDouble'] as double?,
-      aDateTime: _i4.DateTimeExt.getDateTime<DateTime?>(
+      aDateTime: _i1.DateTimeExt.getDateTime<DateTime?>(
           jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
-      aByteData: _i4.ByteDataExt.getByteData<_i2.ByteData?>(
+      aByteData: _i1.ByteDataExt.getByteData<_i2.ByteData?>(
           jsonSerialization['aByteData']),
-      aDuration: _i4.DurationExt.getDuration<Duration?>(
+      aDuration: _i1.DurationExt.getDuration<Duration?>(
           jsonSerialization['aDuration']),
-      aUuid: _i4.UuidValueExt.getUuIdValue<_i5.UuidValue?>(
+      aUuid: _i1.UuidValueExt.getUuIdValue<_i4.UuidValue?>(
           jsonSerialization['aUuid']),
       anEnum: jsonSerialization.containsKey('anEnum')
           ? jsonSerialization['anEnum'] != null

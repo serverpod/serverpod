@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 /// Just some simple data.
 abstract class SimpleDateTime extends _i1.SerializableEntity {
@@ -27,7 +26,7 @@ abstract class SimpleDateTime extends _i1.SerializableEntity {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
       dateTime:
-          _i2.DateTimeExt.getDateTime<DateTime>(jsonSerialization['dateTime'])!,
+          _i1.DateTimeExt.getDateTime<DateTime>(jsonSerialization['dateTime'])!,
     );
   }
 

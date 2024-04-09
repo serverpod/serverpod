@@ -10,7 +10,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class BulkQueryResult extends _i1.SerializableEntity {
@@ -37,7 +36,7 @@ abstract class BulkQueryResult extends _i1.SerializableEntity {
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
       duration:
-          _i3.DurationExt.getDuration<Duration>(jsonSerialization['duration'])!,
+          _i1.DurationExt.getDuration<Duration>(jsonSerialization['duration'])!,
     );
   }
 

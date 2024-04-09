@@ -11,8 +11,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
 import 'protocol.dart' as _i3;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i4;
-import 'package:uuid/uuid_value.dart' as _i5;
+import 'package:uuid/uuid_value.dart' as _i4;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 
 abstract class TypesMap extends _i1.SerializableEntity {
@@ -90,7 +89,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
               {},
               (t, e) => {
                     ...t,
-                    _i4.DateTimeExt.getDateTime<DateTime>(e['k'])!:
+                    _i1.DateTimeExt.getDateTime<DateTime>(e['k'])!:
                         e['v'] as String
                   }),
       aStringKey: (jsonSerialization['aStringKey'] as Map<dynamic, dynamic>?)
@@ -103,7 +102,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
               {},
               (t, e) => {
                     ...t,
-                    _i4.ByteDataExt.getByteData<_i2.ByteData>(e['k'])!:
+                    _i1.ByteDataExt.getByteData<_i2.ByteData>(e['k'])!:
                         e['v'] as String
                   }),
       aDurationKey: (jsonSerialization['aDurationKey'] as List<dynamic>?)
@@ -111,7 +110,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
               {},
               (t, e) => {
                     ...t,
-                    _i4.DurationExt.getDuration<Duration>(e['k'])!:
+                    _i1.DurationExt.getDuration<Duration>(e['k'])!:
                         e['v'] as String
                   }),
       aUuidKey: (jsonSerialization['aUuidKey'] as List<dynamic>?)
@@ -119,7 +118,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
               {},
               (t, e) => {
                     ...t,
-                    _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(e['k'])!:
+                    _i1.UuidValueExt.getUuIdValue<_i4.UuidValue>(e['k'])!:
                         e['v'] as String
                   }),
       anEnumKey: (jsonSerialization['anEnumKey'] as List<dynamic>?)
@@ -188,7 +187,7 @@ abstract class TypesMap extends _i1.SerializableEntity {
           (jsonSerialization['aDateTimeValue'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(
                     k as String,
-                    _i4.DateTimeExt.getDateTime<DateTime>(v)!,
+                    _i1.DateTimeExt.getDateTime<DateTime>(v)!,
                   )),
       aStringValue:
           (jsonSerialization['aStringValue'] as Map<dynamic, dynamic>?)
@@ -200,18 +199,18 @@ abstract class TypesMap extends _i1.SerializableEntity {
           (jsonSerialization['aByteDataValue'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(
                     k as String,
-                    _i4.ByteDataExt.getByteData<_i2.ByteData>(v)!,
+                    _i1.ByteDataExt.getByteData<_i2.ByteData>(v)!,
                   )),
       aDurationValue:
           (jsonSerialization['aDurationValue'] as Map<dynamic, dynamic>?)
               ?.map((k, v) => MapEntry(
                     k as String,
-                    _i4.DurationExt.getDuration<Duration>(v)!,
+                    _i1.DurationExt.getDuration<Duration>(v)!,
                   )),
       aUuidValue: (jsonSerialization['aUuidValue'] as Map<dynamic, dynamic>?)
           ?.map((k, v) => MapEntry(
                 k as String,
-                _i4.UuidValueExt.getUuIdValue<_i5.UuidValue>(v)!,
+                _i1.UuidValueExt.getUuIdValue<_i4.UuidValue>(v)!,
               )),
       anEnumValue: (jsonSerialization['anEnumValue'] as Map<dynamic, dynamic>?)
           ?.map((k, v) => MapEntry(

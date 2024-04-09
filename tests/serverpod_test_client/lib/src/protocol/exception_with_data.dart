@@ -9,7 +9,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 
 abstract class ExceptionWithData extends _i1.SerializableEntity
     implements _i1.SerializableException {
@@ -30,7 +29,7 @@ abstract class ExceptionWithData extends _i1.SerializableEntity
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate: _i2.DateTimeExt.getDateTime<DateTime>(
+      creationDate: _i1.DateTimeExt.getDateTime<DateTime>(
           jsonSerialization['creationDate'])!,
       errorFields: (jsonSerialization['errorFields'] as List<dynamic>)
           .map((e) => e as String)
