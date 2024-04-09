@@ -51,6 +51,7 @@ abstract class AuthKey extends _i1.SerializableEntity {
   /// The id of the user to provide access to.
   int userId;
 
+  /// The hashed version of the key.
   String hash;
 
   /// The key sent to the server to authenticate.

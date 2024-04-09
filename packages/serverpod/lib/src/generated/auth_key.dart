@@ -51,6 +51,7 @@ abstract class AuthKey extends _i1.TableRow {
   /// The id of the user to provide access to.
   int userId;
 
+  /// The hashed version of the key.
   String hash;
 
   /// The key sent to the server to authenticate.
@@ -185,6 +186,7 @@ class AuthKeyTable extends _i1.Table {
   /// The id of the user to provide access to.
   late final _i1.ColumnInt userId;
 
+  /// The hashed version of the key.
   late final _i1.ColumnString hash;
 
   /// The scopes this key provides access to.
