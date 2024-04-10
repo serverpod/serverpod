@@ -34,13 +34,14 @@ void main() async {
         Enrollment(studentId: students[1].id!, courseId: courses[1].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to any course.
         where: (s) => s.enrollments.any(),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -79,14 +80,15 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to any level 2 course.
         where: (s) =>
             s.enrollments.any((e) => e.course.name.ilike('level 2:%')),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -122,13 +124,14 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to any course or is named Alex.
         where: (s) => (s.enrollments.any()) | s.name.equals('Alex'),
       );
 
-      expect(deletedStudentIds, hasLength(3));
+      expect(deletedStudents, hasLength(3));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
@@ -168,7 +171,7 @@ void main() async {
         Enrollment(studentId: students[3].id!, courseId: courses[5].id!),
       ]);
 
-      var deletedStudentIds = await Student.db.deleteWhere(
+      var deletedStudents = await Student.db.deleteWhere(
         session,
         // All students enrolled to any level 2 course or a any math course.
         where: (s) =>
@@ -176,7 +179,8 @@ void main() async {
             (s.enrollments.any((e) => e.course.name.ilike('%math%'))),
       );
 
-      expect(deletedStudentIds, hasLength(2));
+      expect(deletedStudents, hasLength(2));
+      var deletedStudentIds = deletedStudents.map((c) => c.id).toList();
       expect(
           deletedStudentIds,
           containsAll([
