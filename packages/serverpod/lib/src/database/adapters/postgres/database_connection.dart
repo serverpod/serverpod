@@ -243,7 +243,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<int>> delete<T extends TableRow>(
+  Future<List<T>> delete<T extends TableRow>(
     Session session,
     List<T> rows, {
     Transaction? transaction,
@@ -263,7 +263,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<int> deleteRow<T extends TableRow>(
+  Future<T> deleteRow<T extends TableRow>(
     Session session,
     T row, {
     Transaction? transaction,
@@ -284,7 +284,7 @@ class DatabaseConnection {
   }
 
   /// For most cases use the corresponding method in [Database] instead.
-  Future<List<int>> deleteWhere<T extends TableRow>(
+  Future<List<T>> deleteWhere<T extends TableRow>(
     Session session,
     Expression where, {
     Transaction? transaction,
@@ -292,13 +292,11 @@ class DatabaseConnection {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
 
     var query = DeleteQueryBuilder(table: table)
-        .withReturn(Returning.id)
+        .withReturn(Returning.all)
         .withWhere(where)
         .build();
 
-    var result = await _query(session, query, transaction: transaction);
-
-    return result.toList().map((r) => r.first as int).toList();
+    return await _deserializedMappedQuery(session, query, table: table);
   }
 
   /// For most cases use the corresponding method in [Database] instead.
