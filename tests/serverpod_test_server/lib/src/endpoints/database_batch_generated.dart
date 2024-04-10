@@ -34,7 +34,9 @@ class DatabaseBatchGenerated extends Endpoint {
     Session session,
     List<UniqueData> value,
   ) async {
-    return UniqueData.db.delete(session, value);
+    var result = await UniqueData.db.delete(session, value);
+
+    return result.map((e) => e.id!).toList();
   }
 
   Future<RelatedUniqueData> insertRelatedUniqueData(

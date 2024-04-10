@@ -101,19 +101,23 @@ class BasicDatabase extends Endpoint {
     Session session,
     SimpleData simpleData,
   ) async {
-    return SimpleData.db.deleteRow(
+    var result = await SimpleData.db.deleteRow(
       session,
       simpleData,
     );
+
+    return result.id!;
   }
 
   Future<List<int>> deleteWhereSimpleData(
     Session session,
   ) async {
-    return SimpleData.db.deleteWhere(
+    var result = await SimpleData.db.deleteWhere(
       where: (t) => Constant.bool(true),
       session,
     );
+
+    return result.map((e) => e.id!).toList();
   }
 
   Future<int> countSimpleData(Session session) async {
@@ -142,8 +146,10 @@ class BasicDatabase extends Endpoint {
   }
 
   Future<List<int>> deleteAllInTypes(Session session) async {
-    return await Types.db
-        .deleteWhere(session, where: (t) => Constant.bool(true));
+    var result =
+        await Types.db.deleteWhere(session, where: (t) => Constant.bool(true));
+
+    return result.map((e) => e.id!).toList();
   }
 
   Future<Types?> getTypes(Session session, int id) async {
